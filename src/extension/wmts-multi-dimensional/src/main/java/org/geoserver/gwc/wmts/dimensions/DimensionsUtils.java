@@ -80,8 +80,7 @@ public final class DimensionsUtils {
             unknownDimensions.remove(MultiDimensionalExtension.SPACE_DIMENSION);
             if (!unknownDimensions.isEmpty()) {
                 String dimensionList =
-                        unknownDimensions
-                                .stream()
+                        unknownDimensions.stream()
                                 .map(s -> "'" + s + "'")
                                 .collect(Collectors.joining(", "));
                 throw new OWSException(

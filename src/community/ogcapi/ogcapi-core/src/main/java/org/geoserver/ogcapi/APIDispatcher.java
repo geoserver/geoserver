@@ -168,8 +168,7 @@ public class APIDispatcher extends AbstractController {
         // been provided
         List<HandlerMethodReturnValueHandler> returnValueHandlers =
                 Optional.ofNullable(handlerAdapter.getReturnValueHandlers())
-                        .orElse(Collections.emptyList())
-                        .stream()
+                        .orElse(Collections.emptyList()).stream()
                         .map(
                                 f -> {
                                     if (f instanceof RequestResponseBodyMethodProcessor) {
@@ -428,8 +427,7 @@ public class APIDispatcher extends AbstractController {
     }
 
     private APIExceptionHandler getExceptionHandler(Throwable t, APIRequestInfo request) {
-        return exceptionHandlers
-                .stream()
+        return exceptionHandlers.stream()
                 .filter(h -> h.canHandle(t, request))
                 .findFirst()
                 .orElse(null);

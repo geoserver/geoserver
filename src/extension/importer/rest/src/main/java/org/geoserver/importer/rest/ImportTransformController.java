@@ -39,9 +39,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/imports/{importId}",
-    produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE}
-)
+        path = RestBaseController.ROOT_PATH + "/imports/{importId}",
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE})
 public class ImportTransformController extends ImportBaseController {
 
     @Autowired
@@ -97,9 +96,8 @@ public class ImportTransformController extends ImportBaseController {
     }
 
     @PutMapping(
-        path = {"/tasks/{taskId}/transforms/{transformId}"},
-        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE}
-    )
+            path = {"/tasks/{taskId}/transforms/{transformId}"},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE})
     public ImportWrapper putTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,

@@ -96,8 +96,7 @@ public class StoredQueryProvider {
         final List<StoredQuery> localQueries = getLocalWorkspaceStoredQueries();
         // add all global queries don't collide with local ones names
         if (shouldProcessGlobalQueries()) {
-            globalQueries
-                    .stream()
+            globalQueries.stream()
                     .filter(q -> checkQueryNotExists(q, localQueries))
                     .forEach(q -> queries.add(q));
         }
@@ -108,8 +107,7 @@ public class StoredQueryProvider {
     }
 
     private boolean checkQueryNotExists(StoredQuery query, List<StoredQuery> localQueries) {
-        return localQueries
-                .stream()
+        return localQueries.stream()
                 .noneMatch(local -> Objects.equals(query.getName(), local.getName()));
     }
 

@@ -50,9 +50,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
     public FakeHttpServletRequest(
             Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
         this.parameterMap =
-                parameterMap
-                        .entrySet()
-                        .stream()
+                parameterMap.entrySet().stream()
                         .collect(
                                 Collectors.toMap(
                                         e -> e.getKey(), e -> new String[] {e.getValue()}));

@@ -33,9 +33,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"coordinates"}
-)
+        name = "",
+        propOrder = {"coordinates"})
 public class MultiPoint {
 
     @XmlList

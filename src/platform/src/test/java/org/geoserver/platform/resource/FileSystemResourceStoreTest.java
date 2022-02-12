@@ -121,9 +121,7 @@ public class FileSystemResourceStoreTest {
                             .collect(Collectors.toList());
 
             List<FileSystemWatcher> watchers =
-                    executorService
-                            .invokeAll(tasks)
-                            .stream()
+                    executorService.invokeAll(tasks).stream()
                             .map(
                                     completedFuture -> {
                                         try {

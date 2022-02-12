@@ -247,8 +247,7 @@ class TileJSONBuilder {
             }
         }
         Map<String, String> fields =
-                simple.getAttributeDescriptors()
-                        .stream()
+                simple.getAttributeDescriptors().stream()
                         .filter(d -> !(d instanceof GeometryDescriptor))
                         .collect(
                                 Collectors.toMap(

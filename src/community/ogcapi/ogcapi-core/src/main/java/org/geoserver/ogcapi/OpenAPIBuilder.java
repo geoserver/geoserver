@@ -127,9 +127,7 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
         Content content = new Content();
         okResponse.setContent(content);
         List<String> formats =
-                APIRequestInfo.get()
-                        .getProducibleMediaTypes(binding, true)
-                        .stream()
+                APIRequestInfo.get().getProducibleMediaTypes(binding, true).stream()
                         .map(mt -> mt.toString())
                         .collect(Collectors.toList());
         for (String format : formats) {
@@ -161,8 +159,7 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
     protected String getGeoServerVersion() {
         ManifestLoader.AboutModel versions = ManifestLoader.getVersions();
         TreeSet<ManifestLoader.AboutModel.ManifestModel> manifests = versions.getManifests();
-        return manifests
-                .stream()
+        return manifests.stream()
                 .filter(m -> m.getName().equalsIgnoreCase("GeoServer"))
                 .map(m -> m.getEntries().get("Version"))
                 .findFirst()

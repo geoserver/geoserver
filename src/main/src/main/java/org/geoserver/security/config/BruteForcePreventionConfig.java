@@ -100,8 +100,7 @@ public class BruteForcePreventionConfig implements SecurityConfig {
         try {
             if (this.getWhitelistedMasks() != null && this.whitelistedAddressMatchers == null) {
                 this.whitelistedAddressMatchers =
-                        whitelistedMasks
-                                .stream()
+                        whitelistedMasks.stream()
                                 .map(mask -> new IpAddressMatcher(mask))
                                 .collect(Collectors.toList());
             }

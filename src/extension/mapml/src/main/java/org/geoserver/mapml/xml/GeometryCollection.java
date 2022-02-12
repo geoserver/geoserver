@@ -40,42 +40,35 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"pointOrLineStringOrPolygon"}
-)
+        name = "",
+        propOrder = {"pointOrLineStringOrPolygon"})
 public class GeometryCollection {
 
     @XmlElements({
         @XmlElement(
-            name = "point",
-            type = Point.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
-        ),
+                name = "point",
+                type = Point.class,
+                namespace = "http://www.w3.org/1999/xhtml/"),
         @XmlElement(
-            name = "linestring",
-            type = LineString.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
-        ),
+                name = "linestring",
+                type = LineString.class,
+                namespace = "http://www.w3.org/1999/xhtml/"),
         @XmlElement(
-            name = "polygon",
-            type = Polygon.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
-        ),
+                name = "polygon",
+                type = Polygon.class,
+                namespace = "http://www.w3.org/1999/xhtml/"),
         @XmlElement(
-            name = "multipoint",
-            type = MultiPoint.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
-        ),
+                name = "multipoint",
+                type = MultiPoint.class,
+                namespace = "http://www.w3.org/1999/xhtml/"),
         @XmlElement(
-            name = "multilinestring",
-            type = MultiLineString.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
-        ),
+                name = "multilinestring",
+                type = MultiLineString.class,
+                namespace = "http://www.w3.org/1999/xhtml/"),
         @XmlElement(
-            name = "multipolygon",
-            type = MultiPolygon.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
-        )
+                name = "multipolygon",
+                type = MultiPolygon.class,
+                namespace = "http://www.w3.org/1999/xhtml/")
     })
     protected List<Object> pointOrLineStringOrPolygon;
 

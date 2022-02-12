@@ -625,8 +625,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             throws IOException {
         // remove all related metadata
         List<Filter> filters =
-                collectionIdentifiers
-                        .stream()
+                collectionIdentifiers.stream()
                         .map(id -> FF.equal(FF.property("mid"), FF.literal(id), false))
                         .collect(Collectors.toList());
         Filter metadataFilter = FF.or(filters);
@@ -636,8 +635,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
         // remove all related OGC links
         filters =
-                collectionIdentifiers
-                        .stream()
+                collectionIdentifiers.stream()
                         .map(
                                 id ->
                                         FF.equal(

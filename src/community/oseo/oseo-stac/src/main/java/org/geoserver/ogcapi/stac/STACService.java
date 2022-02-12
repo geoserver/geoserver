@@ -26,11 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /** Implementation of OGC Features API service */
 @APIService(
-    service = "STAC",
-    version = "1.0",
-    landingPage = "ogc/stac",
-    serviceClass = OSEOInfo.class
-)
+        service = "STAC",
+        version = "1.0",
+        landingPage = "ogc/stac",
+        serviceClass = OSEOInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/stac")
 public class STACService {
 
@@ -96,14 +95,13 @@ public class STACService {
     }
 
     @GetMapping(
-        path = "api",
-        name = "getApi",
-        produces = {
-            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-            "application/x-yaml",
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "api",
+            name = "getApi",
+            produces = {
+                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+                "application/x-yaml",
+                MediaType.TEXT_XML_VALUE
+            })
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {

@@ -498,8 +498,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         final String layerName = putStyle.getLayerName();
         if (layerName != null) {
             final LayerInfo layer = catalog.getLayerByName(layerName);
-            if (!layer.getStyles()
-                    .stream()
+            if (!layer.getStyles().stream()
                     .anyMatch(s -> s != null && s.getName().equalsIgnoreCase(styleName))) {
                 layer.getStyles().add(sinfo);
                 catalog.save(layer);

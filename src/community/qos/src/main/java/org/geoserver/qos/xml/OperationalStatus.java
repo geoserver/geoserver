@@ -40,8 +40,7 @@ public enum OperationalStatus {
     }
 
     public static List<String> valuesStringList() {
-        return Arrays.asList(OperationalStatus.values())
-                .stream()
+        return Arrays.asList(OperationalStatus.values()).stream()
                 .map(x -> x.value())
                 .collect(Collectors.toList());
     }

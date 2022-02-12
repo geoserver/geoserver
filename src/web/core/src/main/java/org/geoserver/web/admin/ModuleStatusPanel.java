@@ -52,8 +52,7 @@ public class ModuleStatusPanel extends Panel {
 
         // get the list of ModuleStatuses
         List<ModuleStatus> applicationStatus =
-                GeoServerExtensions.extensions(ModuleStatus.class)
-                        .stream()
+                GeoServerExtensions.extensions(ModuleStatus.class).stream()
                         .filter(status -> !status.getModule().matches("\\A[system-](.*)"))
                         .map(ModuleStatusImpl::new)
                         .sorted(Comparator.comparing(ModuleStatus::getModule))

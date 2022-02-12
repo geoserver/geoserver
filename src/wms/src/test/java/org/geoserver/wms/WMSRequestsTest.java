@@ -154,8 +154,7 @@ public class WMSRequestsTest extends WMSTestSupport {
         GetMapRequest request = createGetMapRequest(names);
         request.setRawKvp(new KvpMap(request.getRawKvp()));
         String layers =
-                request.getLayers()
-                        .stream()
+                request.getLayers().stream()
                         .map(MapLayerInfo::getName)
                         .collect(Collectors.joining(","));
         request.getRawKvp().put("layers", layers);

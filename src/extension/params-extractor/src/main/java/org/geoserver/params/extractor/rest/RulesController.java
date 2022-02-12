@@ -42,13 +42,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = RulesController.RULES_ROOT,
-    produces = {
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaTypeExtensions.TEXT_JSON_VALUE
-    }
-)
+        path = RulesController.RULES_ROOT,
+        produces = {
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaTypeExtensions.TEXT_JSON_VALUE
+        })
 public class RulesController extends RestBaseController {
     static final String RULES_ROOT = RestBaseController.ROOT_PATH + "/params-extractor/rules";
 
@@ -58,13 +57,12 @@ public class RulesController extends RestBaseController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public ResponseEntity<String> postRule(@RequestBody Rule newValue) throws URISyntaxException {
         // force a new id like the UI would, using a random UUID
         newValue = new RuleBuilder().copy(newValue).withId(UUID.randomUUID().toString()).build();
@@ -80,8 +78,7 @@ public class RulesController extends RestBaseController {
     @GetMapping(path = "{id}")
     public RestWrapper<Rule> getRule(@PathVariable String id) {
         Rule result =
-                RulesDao.getRules()
-                        .stream()
+                RulesDao.getRules().stream()
                         .filter(r -> id.equals(r.getId()))
                         .findFirst()
                         .orElseThrow(
@@ -101,14 +98,13 @@ public class RulesController extends RestBaseController {
     }
 
     @PutMapping(
-        path = "{id}",
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "{id}",
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void putEchoParameter(@RequestBody Rule newValue, @PathVariable String id) {
         // just want the 404 side effect here
         getRule(id);

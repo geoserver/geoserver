@@ -179,9 +179,7 @@ public class ApiTest extends WFS3TestSupport {
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypes()
-                        .stream()
+                getCatalog().getFeatureTypes().stream()
                         .map(ft -> NCNameResourceCodec.encode(ft))
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
@@ -212,8 +210,7 @@ public class ApiTest extends WFS3TestSupport {
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
+                getCatalog().getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
                         .stream()
                         .map(ft -> ft.getName())
                         .collect(Collectors.toList());

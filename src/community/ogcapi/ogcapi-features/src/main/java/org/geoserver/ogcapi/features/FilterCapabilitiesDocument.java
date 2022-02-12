@@ -73,8 +73,7 @@ public class FilterCapabilitiesDocument {
             this.name = fn.getName();
             this.returns = toParameter(fn.getReturn());
             this.arguments =
-                    fn.getArguments()
-                            .stream()
+                    fn.getArguments().stream()
                             .map(FilterCapabilitiesDocument::toParameter)
                             .collect(Collectors.toList());
         }
@@ -151,11 +150,10 @@ public class FilterCapabilitiesDocument {
         functions = new ArrayList<>();
         functions =
                 new FunctionFinder(null)
-                        .getAllFunctionDescriptions()
-                        .stream()
-                        .filter(FilterCapabilitiesDocument::isSimpleFunction)
-                        .map(Function::new)
-                        .collect(Collectors.toList());
+                        .getAllFunctionDescriptions().stream()
+                                .filter(FilterCapabilitiesDocument::isSimpleFunction)
+                                .map(Function::new)
+                                .collect(Collectors.toList());
     }
 
     private static boolean isSimpleFunction(FunctionName functionName) {

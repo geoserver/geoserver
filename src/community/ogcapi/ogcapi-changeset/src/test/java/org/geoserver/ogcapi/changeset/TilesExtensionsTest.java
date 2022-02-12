@@ -48,10 +48,7 @@ public class TilesExtensionsTest extends OGCApiTestSupport {
         assertThat(multiTile, notNullValue());
         // check the extra params are in there
         List<String> parameterNames =
-                multiTile
-                        .getGet()
-                        .getParameters()
-                        .stream()
+                multiTile.getGet().getParameters().stream()
                         .map(p -> p.get$ref())
                         .collect(Collectors.toList());
         assertThat(parameterNames, hasItem("#/components/parameters/f-tile"));

@@ -103,8 +103,7 @@ public final class JmsServicesTest extends GeoServerSystemTestSupport {
         assertThat(serviceEvents.size(), is(2));
         // check the modify event
         JMSServiceModifyEvent modifyEvent =
-                serviceEvents
-                        .stream()
+                serviceEvents.stream()
                         .filter(event -> event.getEventType() == JMSEventType.MODIFIED)
                         .findFirst()
                         .orElse(null);
@@ -115,8 +114,7 @@ public final class JmsServicesTest extends GeoServerSystemTestSupport {
         assertThat(modifiedService.getAbstract(), is(newAbstract));
         // check the post modify event
         JMSServiceModifyEvent postModifyEvent =
-                serviceEvents
-                        .stream()
+                serviceEvents.stream()
                         .filter(event -> event.getEventType() == JMSEventType.ADDED)
                         .findFirst()
                         .orElse(null);

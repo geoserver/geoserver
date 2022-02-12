@@ -82,8 +82,7 @@ public class NcWmsService {
             List<DateRange> findDates(WMS wms, CoverageInfo coverage, List<Object> times)
                     throws IOException {
                 TreeSet<Date> availableDates = wms.queryCoverageNearestMatchTimes(coverage, times);
-                return availableDates
-                        .stream()
+                return availableDates.stream()
                         .map(date -> new DateRange(date, date))
                         .collect(Collectors.toList());
             }
@@ -100,16 +99,14 @@ public class NcWmsService {
                     TreeSet<Object> foundTimes =
                             wms.queryCoverageTimes(
                                     coverage, getAsRange(time, isRange), Query.DEFAULT_MAX);
-                    foundTimes
-                            .stream()
+                    foundTimes.stream()
                             .forEach(
                                     d -> {
                                         Date date = (Date) d;
                                         availableDates.add(date);
                                     });
                 }
-                return availableDates
-                        .stream()
+                return availableDates.stream()
                         .map(date -> new DateRange(date, date))
                         .collect(Collectors.toList());
             }

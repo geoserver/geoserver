@@ -84,19 +84,18 @@ public class TemplateRestController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        value = {
-            "/featurestemplates",
-            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates",
-            "/workspaces/{ws}/featurestemplates"
-        },
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XHTML_XML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-        }
-    )
+            value = {
+                "/featurestemplates",
+                "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates",
+                "/workspaces/{ws}/featurestemplates"
+            },
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XHTML_XML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+            })
     public ResponseEntity<String> templatePost(
             InputStream inputStream,
             @PathVariable(required = false) String featureType,
@@ -162,13 +161,12 @@ public class TemplateRestController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        value = {
-            "/featurestemplates",
-            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates",
-            "/workspaces/{ws}/featurestemplates"
-        },
-        consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE}
-    )
+            value = {
+                "/featurestemplates",
+                "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates",
+                "/workspaces/{ws}/featurestemplates"
+            },
+            consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE})
     public ResponseEntity<String> templateZipPost(
             InputStream is,
             @PathVariable(required = false) String featureType,
@@ -223,19 +221,18 @@ public class TemplateRestController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = {
-            "/featurestemplates/{templateName}",
-            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
-            "/workspaces/{ws}/featurestemplates/{templateName}"
-        },
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XHTML_XML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            value = {
+                "/featurestemplates/{templateName}",
+                "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
+                "/workspaces/{ws}/featurestemplates/{templateName}"
+            },
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XHTML_XML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public ResponseEntity<String> templatePut(
             InputStream inputStream,
             @PathVariable(required = false) String featureType,
@@ -268,13 +265,12 @@ public class TemplateRestController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = {
-            "/featurestemplates/{templateName}",
-            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
-            "/workspaces/{ws}/featurestemplates/{templateName}"
-        },
-        consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE}
-    )
+            value = {
+                "/featurestemplates/{templateName}",
+                "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
+                "/workspaces/{ws}/featurestemplates/{templateName}"
+            },
+            consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE})
     public ResponseEntity<String> templateZipPut(
             InputStream is,
             @PathVariable String templateName,
@@ -356,13 +352,12 @@ public class TemplateRestController extends AbstractCatalogController {
     }
 
     @DeleteMapping(
-        value = {
-            "/featurestemplates/{templateName}",
-            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
-            "/workspaces/{ws}/featurestemplates/{templateName}"
-        },
-        produces = MediaType.TEXT_PLAIN_VALUE
-    )
+            value = {
+                "/featurestemplates/{templateName}",
+                "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
+                "/workspaces/{ws}/featurestemplates/{templateName}"
+            },
+            produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTemplate(
             @PathVariable(required = false) String featureType,
@@ -387,17 +382,16 @@ public class TemplateRestController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        value = {
-            "/featurestemplates/{templateName}",
-            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
-            "/workspaces/{ws}/featurestemplates/{templateName}"
-        },
-        produces = {
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XHTML_XML_VALUE,
-        }
-    )
+            value = {
+                "/featurestemplates/{templateName}",
+                "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
+                "/workspaces/{ws}/featurestemplates/{templateName}"
+            },
+            produces = {
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XHTML_XML_VALUE,
+            })
     public void templateGet(
             @PathVariable(required = false) String ws,
             @PathVariable(required = false) String featureType,
@@ -437,18 +431,17 @@ public class TemplateRestController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        value = {
-            "/featurestemplates",
-            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates",
-            "/workspaces/{ws}/featurestemplates"
-        },
-        produces = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            value = {
+                "/featurestemplates",
+                "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates",
+                "/workspaces/{ws}/featurestemplates"
+            },
+            produces = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public RestWrapper<TemplateInfoList> templateGetAll(
             @PathVariable(required = false) String ws,
             @PathVariable(required = false) String featureType,
@@ -465,9 +458,7 @@ public class TemplateRestController extends AbstractCatalogController {
             featureType = ft.getName();
         }
         List<TemplateInfo> infos =
-                TemplateInfoDAO.get()
-                        .findAll()
-                        .stream()
+                TemplateInfoDAO.get().findAll().stream()
                         .filter(getPredicate(ws, featureType))
                         .collect(Collectors.toList());
         return wrapObject(new TemplateInfoList(infos, builder), TemplateInfoList.class);

@@ -215,8 +215,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                 feature.getProperties(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME);
         if (linkProperties != null) {
             links =
-                    linkProperties
-                            .stream()
+                    linkProperties.stream()
                             .map(p -> (SimpleFeature) p)
                             .sorted(LinkFeatureComparator.INSTANCE)
                             .map(

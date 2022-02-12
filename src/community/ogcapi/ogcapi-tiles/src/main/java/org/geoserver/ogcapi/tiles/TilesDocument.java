@@ -30,9 +30,7 @@ public class TilesDocument extends AbstractDocument {
 
     public TilesDocument(WMS wms, TileLayer tileLayer, Type type) {
         this.tileMatrixSetLinks =
-                tileLayer
-                        .getGridSubsets()
-                        .stream()
+                tileLayer.getGridSubsets().stream()
                         .map(subsetId -> new TileMatrixSetLink(tileLayer.getGridSubset(subsetId)))
                         .collect(Collectors.toList());
         this.id =
@@ -51,8 +49,7 @@ public class TilesDocument extends AbstractDocument {
         List<MimeType> tileTypes = tileLayer.getMimeTypes();
         String baseURL = APIRequestInfo.get().getBaseURL();
         if (type == Type.RawTiles) {
-            tileTypes
-                    .stream()
+            tileTypes.stream()
                     .filter(mt -> mt.isVector())
                     .collect(Collectors.toList())
                     .forEach(

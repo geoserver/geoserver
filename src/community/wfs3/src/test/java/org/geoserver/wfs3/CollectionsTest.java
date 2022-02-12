@@ -78,9 +78,7 @@ public class CollectionsTest extends WFS3TestSupport {
     public void testCollectionsWorkspaceSpecificJson() throws Exception {
         DocumentContext json = getAsJSONPath("cdf/wfs3/collections", 200);
         long expected =
-                getCatalog()
-                        .getFeatureTypes()
-                        .stream()
+                getCatalog().getFeatureTypes().stream()
                         .filter(ft -> "cdf".equals(ft.getStore().getWorkspace().getName()))
                         .count();
         // check the filtering

@@ -2257,10 +2257,9 @@ public class DownloadProcessTest extends WPSTestSupport {
      * Test download estimator for raster data. The estimate must work even when dimension type not present
      * in a saved Coverage. See GEOS-9785
      *
-     * @throws Exception the exception
      */
     @Test(expected = Test.None.class)
-    public void testDownloadEstimatorReloadsCoverageDimensionsWhenNull() throws Exception {
+    public void testDownloadEstimatorReloadsCoverageDimensionsWhenNull() {
         CoverageInfo mycoverage = getCatalog().getCoverageByName(MockData.USA_WORLDIMG.getLocalPart());
         mycoverage.getDimensions().get(0).setDimensionType(null);
         getCatalog().save(mycoverage);

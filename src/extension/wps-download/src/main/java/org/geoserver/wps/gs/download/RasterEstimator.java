@@ -5,15 +5,7 @@
  */
 package org.geoserver.wps.gs.download;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.geoserver.catalog.*;
-import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.data.resource.CoverageBandsConfigurationPanel;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -28,10 +20,10 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
 
-import static org.apache.wicket.ThreadContext.getApplication;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class check whether or not the provided download request goes beyond the provided limits for

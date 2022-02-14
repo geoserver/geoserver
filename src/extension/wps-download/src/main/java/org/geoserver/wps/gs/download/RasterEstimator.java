@@ -48,7 +48,6 @@ class RasterEstimator {
 
     private Catalog catalog;
 
-    private ApplicationContext applicationContext;
 
     /**
      * Constructor

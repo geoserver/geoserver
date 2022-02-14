@@ -249,9 +249,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     private String getSupportedSRS(CoordinateReferenceSystem crs) {
 
         List<String> supportedSRSList =
-                this.srsProvider
-                        .getItems()
-                        .stream()
+                this.srsProvider.getItems().stream()
                         .map(srsObject -> srsObject.getCode())
                         .collect(Collectors.toList());
 

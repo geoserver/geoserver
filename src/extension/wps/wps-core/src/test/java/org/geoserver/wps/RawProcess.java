@@ -20,16 +20,14 @@ import org.geotools.util.SimpleInternationalString;
 public class RawProcess {
 
     @DescribeResult(
-        name = "result",
-        description = "Output raster",
-        meta = {"mimeTypes=application/json,text/xml", "chosenMimeType=outputMimeType"}
-    )
+            name = "result",
+            description = "Output raster",
+            meta = {"mimeTypes=application/json,text/xml", "chosenMimeType=outputMimeType"})
     public RawData execute(
             @DescribeParameter(
-                        name = "data",
-                        description = "Input features",
-                        meta = {"mimeTypes=application/json,text/xml"}
-                    )
+                            name = "data",
+                            description = "Input features",
+                            meta = {"mimeTypes=application/json,text/xml"})
                     final RawData input,
             @DescribeParameter(name = "outputMimeType", min = 0) final String outputMimeType,
             @DescribeParameter(name = "returnNull", min = 0, defaultValue = "false")

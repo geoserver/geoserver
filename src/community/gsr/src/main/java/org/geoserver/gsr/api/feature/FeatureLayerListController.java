@@ -22,9 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 /** Controller for the Feature Service layers list endpoint */
 @RestController
 @RequestMapping(
-    path = "/gsr/services/{workspaceName}/FeatureServer",
-    produces = MediaType.APPLICATION_JSON_VALUE
-)
+        path = "/gsr/services/{workspaceName}/FeatureServer",
+        produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureLayerListController extends AbstractGSRController {
 
     @Autowired

@@ -147,4 +147,27 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
     public boolean checkNotNullValue(TemplateBuilderContext context) {
         return includingNode != null;
     }
+
+    /**
+     * Returns a TemplateBuilder representing the including node of this dynamic include flat
+     * builder, or null, if the including node is not an object.
+     *
+     * @param key
+     * @return
+     */
+    public TemplateBuilder getIncludingNodeBuilder(String key) {
+        if (!includingNode.isObject()) return null;
+
+        TemplateReaderConfiguration configuration =
+                new TemplateReaderConfiguration(getNamespaces());
+        TemplateBuilderMaker maker = configuration.getBuilderMaker();
+        maker.namespaces(configuration.getNamespaces());
+        JSONTemplateReader jsonTemplateReader =
+                new JSONTemplateReader(includingNode, configuration, new ArrayList<>());
+
+        CompositeBuilder result = new CompositeBuilder(key, getNamespaces(), false);
+        jsonTemplateReader.getBuilderFromJson(null, includingNode, result, maker);
+
+        return result;
+    }
 }

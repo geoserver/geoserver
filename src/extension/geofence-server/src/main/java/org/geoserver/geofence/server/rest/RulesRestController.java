@@ -109,10 +109,9 @@ public class RulesRestController extends RestBaseController {
     }
 
     @RequestMapping(
-        value = "/rules",
-        method = RequestMethod.GET,
-        produces = {"application/xml", "application/json"}
-    )
+            value = "/rules",
+            method = RequestMethod.GET,
+            produces = {"application/xml", "application/json"})
     public JaxbRuleList get(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "entries", required = false) Integer entries,
@@ -154,19 +153,17 @@ public class RulesRestController extends RestBaseController {
     }
 
     @RequestMapping(
-        value = "/rules/id/{id}",
-        method = RequestMethod.GET,
-        produces = {"application/xml", "application/json"}
-    )
+            value = "/rules/id/{id}",
+            method = RequestMethod.GET,
+            produces = {"application/xml", "application/json"})
     public JaxbRule get(@PathVariable("id") Long id) {
         return new JaxbRule(adminService.get(id));
     }
 
     @RequestMapping(
-        value = "/rules/count",
-        method = RequestMethod.GET,
-        produces = {"application/xml", "application/json"}
-    )
+            value = "/rules/count",
+            method = RequestMethod.GET,
+            produces = {"application/xml", "application/json"})
     public JaxbRuleList count(
             @RequestParam(value = "userName", required = false) String userName,
             @RequestParam(value = "userAny", required = false) Boolean userDefault,
@@ -205,16 +202,15 @@ public class RulesRestController extends RestBaseController {
     }
 
     @RequestMapping(
-        value = "/rules",
-        method = RequestMethod.POST,
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        },
-        produces = MediaType.TEXT_PLAIN_VALUE
-    )
+            value = "/rules",
+            method = RequestMethod.POST,
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            },
+            produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public String insert(@RequestBody(required = true) JaxbRule rule) {
         long priority = rule.getPriority() == null ? 0 : rule.getPriority().longValue();
@@ -360,10 +356,9 @@ public class RulesRestController extends RestBaseController {
      * an incremented priority value.
      */
     @RequestMapping(
-        value = "/rules/move",
-        method = RequestMethod.GET,
-        produces = {"application/xml", "application/json"}
-    )
+            value = "/rules/move",
+            method = RequestMethod.GET,
+            produces = {"application/xml", "application/json"})
     public ResponseEntity<JaxbRuleList> move(
             @RequestParam(value = "targetPriority", required = true) int targetPriority,
             @RequestParam(value = "rulesIds", required = true) String rulesIds) {

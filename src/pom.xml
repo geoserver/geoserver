@@ -145,10 +145,10 @@
     <jacoco.version>0.8.6</jacoco.version>
     <hazelcast.version>3.11.1</hazelcast.version>
     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
-    <fmt.action>format</fmt.action>
-    <fmt.skip>false</fmt.skip>
+    <spotless.action>apply</spotless.action>
+    <spotless.apply.skip>false</spotless.apply.skip>
     <pom.fmt.action>sort</pom.fmt.action>
-    <pom.fmt.skip>${fmt.skip}</pom.fmt.skip>
+    <pom.fmt.skip>${spotless.apply.skip}</pom.fmt.skip>
     <errorProneFlags></errorProneFlags>
     <errorProne.version>2.10.0</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
@@ -1859,21 +1859,28 @@
       </plugin>
 
       <plugin>
-        <groupId>com.coveo</groupId>
-        <artifactId>fmt-maven-plugin</artifactId>
-        <version>2.4.0</version>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.20.0</version>
         <executions>
           <execution>
+            <phase>validate</phase>
             <goals>
-              <goal>${fmt.action}</goal>
+              <goal>${spotless.action}</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <verbose>false</verbose>
-          <filesNamePattern>.*\.java</filesNamePattern>
-          <skip>${fmt.skip}</skip>
-          <style>aosp</style>
+          <java>
+            <googleJavaFormat>
+              <version>1.7</version>
+              <style>AOSP</style>
+            </googleJavaFormat>
+          </java>
+          <upToDateChecking>
+            <enabled>true</enabled>
+            <indexFile>${project.basedir}/.spotless-index</indexFile>
+          </upToDateChecking>
         </configuration>
       </plugin>
 

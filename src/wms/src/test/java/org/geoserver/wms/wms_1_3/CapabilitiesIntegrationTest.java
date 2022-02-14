@@ -762,8 +762,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         nameSpace.setURI("http://non-advertised.org");
         // remove all layer groups and store them
         List<LayerGroupInfo> layerGroups =
-                catalog.getLayerGroups()
-                        .stream()
+                catalog.getLayerGroups().stream()
                         .map(this::unwrapLayerGroup)
                         .collect(Collectors.toList());
         catalog.getLayerGroups().forEach(catalog::remove);

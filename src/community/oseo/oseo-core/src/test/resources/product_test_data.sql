@@ -1,5 +1,6 @@
 ALTER TABLE public.product_ogclink
     add column "intTest" integer, add column "floatTest" float, add column "booleanTest" boolean, add column "dateTest" date, add column "varcharTest" varchar;
+ALTER TABLE public.product add column "extraProperties" json;
 -- product data, without geometries
 INSERT INTO product
 ("id", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoResolution", "eoProductPlatform")

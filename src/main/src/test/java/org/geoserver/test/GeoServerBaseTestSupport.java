@@ -258,8 +258,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
      */
     protected Service getService(String id, Version version) {
         List<Service> services =
-                GeoServerExtensions.extensions(Service.class)
-                        .stream()
+                GeoServerExtensions.extensions(Service.class).stream()
                         .filter(s -> id.equals(s.getId()) && version.equals(s.getVersion()))
                         .collect(Collectors.toList());
         if (services.isEmpty()) {

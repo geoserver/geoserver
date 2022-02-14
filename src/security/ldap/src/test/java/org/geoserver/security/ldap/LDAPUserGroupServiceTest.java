@@ -26,13 +26,11 @@ import org.junit.runner.RunWith;
 /** @author Niels Charlier */
 @RunWith(FrameworkRunner.class)
 @CreateLdapServer(
-    transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
-    allowAnonymousAccess = true
-)
+        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
+        allowAnonymousAccess = true)
 @CreateDS(
-    name = "myDS",
-    partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
-)
+        name = "myDS",
+        partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)})
 @ApplyLdifFiles({"data4.ldif"})
 public class LDAPUserGroupServiceTest extends LDAPBaseTest {
     GeoServerUserGroupService service;

@@ -1222,8 +1222,7 @@ public class GeofenceAccessManager
         else groupStyles = groupInfo.styles();
 
         requestedStyles.addAll(
-                groupStyles
-                        .stream()
+                groupStyles.stream()
                         .map(s -> s != null ? s.prefixedName() : null)
                         .collect(Collectors.toList()));
     }

@@ -59,16 +59,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = {
-        RestBaseController.ROOT_PATH + "/layergroups",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/layergroups"
-    },
-    produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE
-    }
-)
+        path = {
+            RestBaseController.ROOT_PATH + "/layergroups",
+            RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/layergroups"
+        },
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        })
 public class LayerGroupController extends AbstractCatalogController {
     private static final Logger LOGGER = Logging.getLogger(LayerGroupController.class);
 
@@ -114,13 +113,12 @@ public class LayerGroupController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public ResponseEntity<String> layerGroupPost(
             @RequestBody LayerGroupInfo lg,
             @PathVariable(required = false) String workspaceName,
@@ -169,14 +167,13 @@ public class LayerGroupController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = "{layerGroupName}",
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            value = "{layerGroupName}",
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void layerGroupPut(
             @RequestBody LayerGroupInfo lg,
             @PathVariable(required = false) String workspaceName,

@@ -145,8 +145,7 @@ public class ApiTest extends CoveragesTestSupport {
         assertThat(coverageGet.getOperationId(), equalTo("getCoverage"));
         List<Parameter> parameters = coverageGet.getParameters();
         List<String> coverageGetParamNames =
-                parameters
-                        .stream()
+                parameters.stream()
                         .map(p -> p.get$ref())
                         .filter(n -> n != null)
                         .collect(Collectors.toList());
@@ -163,9 +162,7 @@ public class ApiTest extends CoveragesTestSupport {
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog()
-                        .getCoverages()
-                        .stream()
+                getCatalog().getCoverages().stream()
                         .map(ft -> ft.prefixedName())
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
@@ -191,8 +188,7 @@ public class ApiTest extends CoveragesTestSupport {
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog()
-                        .getCoveragesByNamespace(getCatalog().getNamespaceByPrefix("wcs"))
+                getCatalog().getCoveragesByNamespace(getCatalog().getNamespaceByPrefix("wcs"))
                         .stream()
                         .map(ci -> ci.getName())
                         .collect(Collectors.toList());

@@ -147,8 +147,7 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
 
         // remove thumbnail
         List<Filter> filters =
-                collectionIdentifiers
-                        .stream()
+                collectionIdentifiers.stream()
                         .map(id -> FF.equal(FF.property("tid"), FF.literal(id), false))
                         .collect(Collectors.toList());
         Filter metadataFilter = FF.or(filters);
@@ -158,8 +157,7 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
 
         // remove granules
         filters =
-                collectionIdentifiers
-                        .stream()
+                collectionIdentifiers.stream()
                         .map(id -> FF.equal(FF.property(granuleForeignKey), FF.literal(id), false))
                         .collect(Collectors.toList());
         Filter granulesFilter = FF.or(filters);

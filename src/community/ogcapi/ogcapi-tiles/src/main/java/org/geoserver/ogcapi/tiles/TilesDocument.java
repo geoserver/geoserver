@@ -25,9 +25,7 @@ public class TilesDocument extends AbstractDocument {
 
     public TilesDocument(WMS wms, TileLayer tileLayer, DataType dataType, String styleId) {
         this.tilesets =
-                tileLayer
-                        .getGridSubsets()
-                        .stream()
+                tileLayer.getGridSubsets().stream()
                         .map(
                                 subsetId ->
                                         new Tileset(

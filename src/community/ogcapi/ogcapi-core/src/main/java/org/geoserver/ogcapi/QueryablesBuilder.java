@@ -40,8 +40,7 @@ public class QueryablesBuilder {
 
     public QueryablesBuilder forType(SimpleFeatureType ft) {
         Map<String, Schema> properties =
-                ft.getAttributeDescriptors()
-                        .stream()
+                ft.getAttributeDescriptors().stream()
                         .collect(
                                 Collectors.toMap(
                                         ad -> ad.getLocalName(),

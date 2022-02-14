@@ -53,8 +53,7 @@ public class FeatureTypeCustomizationTest extends GeoServerSystemTestSupport {
         FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(PRIMITIVEGEOFEATURE));
         Set<String> exclude = new HashSet<>(Arrays.asList(CURVE_PROPERTY, "uriProperty"));
         List<AttributeTypeInfo> filteredAttributes =
-                fti.attributes()
-                        .stream()
+                fti.attributes().stream()
                         .filter(at -> !exclude.contains(at.getName()))
                         .collect(Collectors.toList());
         fti.getAttributes().clear();
@@ -84,8 +83,7 @@ public class FeatureTypeCustomizationTest extends GeoServerSystemTestSupport {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(PRIMITIVEGEOFEATURE));
         List<AttributeTypeInfo> filteredAttributes =
-                fti.attributes()
-                        .stream()
+                fti.attributes().stream()
                         .map(
                                 at -> {
                                     if (BOOLEAN_PROPERTY.equals(at.getName()))
@@ -123,8 +121,7 @@ public class FeatureTypeCustomizationTest extends GeoServerSystemTestSupport {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(PRIMITIVEGEOFEATURE));
         List<AttributeTypeInfo> filteredAttributes =
-                fti.attributes()
-                        .stream()
+                fti.attributes().stream()
                         .map(
                                 at -> {
                                     if (BOOLEAN_PROPERTY.equals(at.getName())) {

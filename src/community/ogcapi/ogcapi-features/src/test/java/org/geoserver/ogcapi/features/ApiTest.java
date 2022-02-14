@@ -180,9 +180,7 @@ public class ApiTest extends FeaturesTestSupport {
         @SuppressWarnings("unchecked")
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypes()
-                        .stream()
+                getCatalog().getFeatureTypes().stream()
                         .map(ft -> ft.prefixedName())
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
@@ -216,8 +214,7 @@ public class ApiTest extends FeaturesTestSupport {
         @SuppressWarnings("unchecked")
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
+                getCatalog().getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
                         .stream()
                         .map(ft -> ft.getName())
                         .collect(Collectors.toList());

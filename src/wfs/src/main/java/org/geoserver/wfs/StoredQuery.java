@@ -224,8 +224,7 @@ public class StoredQuery {
     private boolean isParameter(
             String parameterCandidate, EList<ParameterExpressionType> parameter) {
         return parameter != null
-                && parameter
-                        .stream()
+                && parameter.stream()
                         .map(pet -> "${" + pet.getName() + "}")
                         .anyMatch(name -> parameterCandidate.equals(name));
     }

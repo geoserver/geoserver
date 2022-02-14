@@ -562,8 +562,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     }
 
     private static List<String> getMarkFactoryModelsIdentifiers() {
-        return IteratorUtils.toList(DynamicSymbolFactoryFinder.getMarkFactories())
-                .stream()
+        return IteratorUtils.toList(DynamicSymbolFactoryFinder.getMarkFactories()).stream()
                 .map(mf -> mf.getClass().getSimpleName())
                 .collect(Collectors.toList());
     }

@@ -24,16 +24,14 @@ import org.springframework.web.bind.annotation.*;
 
 /** Controller for the Relationship Service */
 @APIService(
-    service = "Relationships",
-    version = "1.0",
-    landingPage = "/gsr/services",
-    serviceClass = WFSInfo.class
-)
+        service = "Relationships",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WFSInfo.class)
 @RestController
 @RequestMapping(
-    path = "/gsr/relationships/{workspaceName}",
-    produces = MediaType.APPLICATION_JSON_VALUE
-)
+        path = "/gsr/relationships/{workspaceName}",
+        produces = MediaType.APPLICATION_JSON_VALUE)
 public class RelationshipController {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(RelationshipController.class);
@@ -71,9 +69,8 @@ public class RelationshipController {
      * @return
      */
     @RequestMapping(
-        path =
-                "/originTable/{originTable}/destinationTable/{destinationTable}/originPrimaryKey/{originPrimaryKey}/originForeignKey/{originForeignKey}"
-    )
+            path =
+                    "/originTable/{originTable}/destinationTable/{destinationTable}/originPrimaryKey/{originPrimaryKey}/originForeignKey/{originForeignKey}")
     public RelationshipClass getRelationshipClassByWorkspaceAndOriginAndDestinationAndKeys(
             @PathVariable String workspaceName,
             @PathVariable String originTable,

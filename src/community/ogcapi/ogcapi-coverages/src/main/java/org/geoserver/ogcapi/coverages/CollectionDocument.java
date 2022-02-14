@@ -107,9 +107,7 @@ public class CollectionDocument extends AbstractCollectionDocument<CoverageInfo>
 
     private boolean isWMSAvailable(GeoServer geoServer) {
         ServiceInfo si =
-                geoServer
-                        .getServices()
-                        .stream()
+                geoServer.getServices().stream()
                         .filter(s -> "WMS".equals(s.getId()))
                         .findFirst()
                         .orElse(null);

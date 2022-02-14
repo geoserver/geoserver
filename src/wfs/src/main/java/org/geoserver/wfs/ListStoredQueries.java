@@ -52,8 +52,7 @@ public class ListStoredQueries {
                 // invalid
                 // in order to support both versions for the time being we'll have to list them
                 // all...
-                catalog.getFeatureTypes()
-                        .stream()
+                catalog.getFeatureTypes().stream()
                         .map(
                                 ft ->
                                         new QName(

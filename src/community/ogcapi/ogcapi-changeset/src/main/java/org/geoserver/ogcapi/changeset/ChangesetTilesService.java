@@ -51,12 +51,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /** Extension to the Tiles service allowing to retrieve changesets */
 @APIService(
-    service = "Tiles",
-    version = "1.0",
-    landingPage = "ogc/tiles",
-    core = false,
-    serviceClass = TilesServiceInfo.class
-)
+        service = "Tiles",
+        version = "1.0",
+        landingPage = "ogc/tiles",
+        core = false,
+        serviceClass = TilesServiceInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/tiles")
 public class ChangesetTilesService {
 
@@ -102,10 +101,9 @@ public class ChangesetTilesService {
     }
 
     @GetMapping(
-        path = "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}",
-        name = GET_RENDERED_COLLECTION_TILES,
-        produces = {CHANGESET_MIME, ZIP_MIME}
-    )
+            path = "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}",
+            name = GET_RENDERED_COLLECTION_TILES,
+            produces = {CHANGESET_MIME, ZIP_MIME})
     @ResponseBody
     public Object getMultiTiles(
             @PathVariable(name = "collectionId") String collectionId,

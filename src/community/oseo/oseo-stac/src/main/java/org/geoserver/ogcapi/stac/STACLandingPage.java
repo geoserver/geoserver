@@ -17,6 +17,7 @@ import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ogcapi.Queryables;
+import org.geoserver.ogcapi.Sortables;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -100,6 +101,24 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                                 Queryables.REL,
                                 true,
                                 "queryables",
+                                null)
+                        .stream()
+                        .filter(
+                                l ->
+                                        "text/html".equals(l.getType())
+                                                || SCHEMA_TYPE_VALUE.equals(l.getType()))
+                        .collect(Collectors.toList()));
+
+        // sortables
+        links.addAll(
+                APIRequestInfo.get()
+                        .getLinksFor(
+                                basePath + "/sortables",
+                                Sortables.class,
+                                "Sortables as ",
+                                Sortables.REL,
+                                true,
+                                "sortables",
                                 null)
                         .stream()
                         .filter(

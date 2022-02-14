@@ -211,13 +211,13 @@ public class ResourcePool {
      * Holds the keys for all the cache having String keys. By ensuring identity allows to
      * synchronize on id values.
      */
-    private CanonicalSet<String> stringCacheKeys;
+    private CanonicalSet<String> cacheKeys;
 
     /**
      * Holds the key for the CoverageHintReaderCache. By ensuring identity allows to synchronize on
      * the key.
      */
-    private CanonicalSet<CoverageHintReaderKey> coverageHintReaderKeys;
+    private CanonicalSet<CoverageHintReaderKey> coverageCacheKeys;
 
     /** Creates a new instance of the resource pool explicitly supplying the application context. */
     public static ResourcePool create(Catalog catalog, ApplicationContext appContext) {
@@ -246,8 +246,8 @@ public class ResourcePool {
         sldCache = createSldCache();
         styleCache = createStyleCache();
 
-        stringCacheKeys = CanonicalSet.newInstance(String.class);
-        coverageHintReaderKeys = CanonicalSet.newInstance(CoverageHintReaderKey.class);
+        cacheKeys = CanonicalSet.newInstance(String.class);
+        coverageCacheKeys = CanonicalSet.newInstance(CoverageHintReaderKey.class);
         listeners = new CopyOnWriteArrayList<>();
     }
 
@@ -417,7 +417,6 @@ public class ResourcePool {
             featureTypeCache = createFeatureTypeCache(featureTypeCacheSize);
             featureTypeAttributeCache.clear();
             featureTypeAttributeCache = createFeatureTypeAttributeCache(featureTypeCacheSize);
-            stringCacheKeys.clear();
         }
     }
 
@@ -480,7 +479,7 @@ public class ResourcePool {
     public CoordinateReferenceSystem getCRS(String srsName) throws IOException {
 
         if (srsName == null) return null;
-        srsName = stringCacheKeys.unique(srsName);
+        srsName = cacheKeys.unique(srsName);
         CoordinateReferenceSystem crs = crsCache.get(srsName);
         if (crs == null) {
             synchronized (srsName) {
@@ -505,7 +504,7 @@ public class ResourcePool {
      * <p>This method first uses {@link DataStoreInfo#getType()} to obtain the datastore. In the
      * event of a failure it falls back on {@link DataStoreInfo#getConnectionParameters()}.
      *
-     * @param info The data stofre metadata.
+     * @param info The data store metadata.
      * @return The datastore factory, or null if no such factory could be found, or the factory is
      *     not available.
      * @throws IOException Any I/O errors.
@@ -552,7 +551,8 @@ public class ResourcePool {
             // returned from un-saved DataStoreInfo objects (it would be actually
             // harmful, NPE when trying to dispose of them)
             if (storeId == null) return createDataAccess(info, expandedStore);
-            String key = stringCacheKeys.unique(storeId);
+
+            String key = cacheKeys.unique(storeId);
             dataStore = dataStoreCache.get(key);
             if (dataStore == null) {
                 synchronized (key) {
@@ -764,10 +764,7 @@ public class ResourcePool {
      */
     public void clear(DataStoreInfo info) {
         String id = info.getId();
-        if (id != null) {
-            dataStoreCache.remove(id);
-            stringCacheKeys.remove(id);
-        }
+        if (id != null) dataStoreCache.remove(id);
     }
 
     public List<AttributeTypeInfo> getAttributes(FeatureTypeInfo info) throws IOException {
@@ -784,8 +781,9 @@ public class ResourcePool {
         }
         // cache attributes only if the id is not null -> the feature type is not new
         if (info.getId() == null) return attributeTypeInfos(info);
+
         // check the cache
-        String key = stringCacheKeys.unique(info.getId());
+        String key = cacheKeys.unique(info.getId());
         List<AttributeTypeInfo> atts = featureTypeAttributeCache.get(key);
         if (atts == null) {
             synchronized (key) {
@@ -962,8 +960,9 @@ public class ResourcePool {
 
         String id = info.getId();
         if (id == null) return acquireFeatureType(info, handleProjectionPolicy);
+
         id = getFeatureTypeInfoKey(info, handleProjectionPolicy);
-        String key = stringCacheKeys.unique(id);
+        String key = cacheKeys.unique(id);
         FeatureType ft = featureTypeCache.get(key);
         if (ft == null) {
             synchronized (key) {
@@ -1226,11 +1225,6 @@ public class ResourcePool {
             featureTypeCache.remove(id2);
             featureTypeCache.remove(id3);
             featureTypeAttributeCache.remove(id);
-            featureTypeAttributeCache.remove(id2);
-            featureTypeAttributeCache.remove(id3);
-            stringCacheKeys.remove(id);
-            stringCacheKeys.remove(id2);
-            stringCacheKeys.remove(id3);
         }
     }
 
@@ -1529,7 +1523,7 @@ public class ResourcePool {
         }
         // look into the cache
         CoverageHintReaderKey key = new CoverageHintReaderKey(info.getId(), hints);
-        key = coverageHintReaderKeys.unique(key);
+        key = coverageCacheKeys.unique(key);
         GridCoverageReader reader = hintCoverageReaderCache.get(key);
 
         // if not found in cache, create it
@@ -1647,7 +1641,6 @@ public class ResourcePool {
         for (CoverageHintReaderKey key : keys) {
             if (key.id != null && key.id.equals(storeId)) {
                 hintCoverageReaderCache.remove(key);
-                coverageHintReaderKeys.remove(key);
             }
         }
     }
@@ -1796,7 +1789,7 @@ public class ResourcePool {
             if (id == null) {
                 return createWebMapServer(expandedStore, entityResolver);
             }
-            id = stringCacheKeys.unique(id);
+            id = cacheKeys.unique(id);
             WebMapServer wms = wmsCache.get(id);
             // if we have a hit but the resolver has been changed, clean and build again
             if (wms != null
@@ -1853,7 +1846,7 @@ public class ResourcePool {
             if (id == null) {
                 return createWebMapTileServer(info, entityResolver);
             }
-            id = stringCacheKeys.unique(info.getId());
+            id = cacheKeys.unique(info.getId());
             WebMapTileServer wmts = wmtsCache.get(id);
             // if we have a hit but the resolver has been changed, clean and build again
             if (wmts != null
@@ -1994,19 +1987,13 @@ public class ResourcePool {
     /** Clears the cached resource for a web map server */
     public void clear(WMSStoreInfo info) {
         String id = info.getId();
-        if (id != null) {
-            wmsCache.remove(id);
-            stringCacheKeys.remove(id);
-        }
+        if (id != null) wmsCache.remove(id);
     }
 
     /** Clears the cached resource for a web map server */
     public void clear(WMTSStoreInfo info) {
         String id = info.getId();
-        if (id != null) {
-            wmtsCache.remove(id);
-            stringCacheKeys.remove(id);
-        }
+        if (id != null) wmtsCache.remove(id);
     }
 
     /**
@@ -2023,7 +2010,7 @@ public class ResourcePool {
     public StyledLayerDescriptor getSld(final StyleInfo info) throws IOException {
         String id = info.getId();
         if (id == null) return dataDir().parsedSld(info);
-        String key = stringCacheKeys.unique(id);
+        String key = cacheKeys.unique(id);
         StyledLayerDescriptor sld = sldCache.get(key);
         if (sld == null) {
             synchronized (key) {
@@ -2062,7 +2049,7 @@ public class ResourcePool {
     public Style getStyle(final StyleInfo info) throws IOException {
         String styleId = info.getId();
         if (styleId == null) return createStyle(info);
-        String key = stringCacheKeys.unique(styleId);
+        String key = cacheKeys.unique(styleId);
         Style style = styleCache.get(key);
         if (style == null) {
             synchronized (key) {
@@ -2113,7 +2100,6 @@ public class ResourcePool {
         if (id != null) {
             styleCache.remove(id);
             sldCache.remove(id);
-            stringCacheKeys.remove(id);
         }
     }
 
@@ -2258,8 +2244,8 @@ public class ResourcePool {
         styleCache.clear();
         listeners.clear();
 
-        stringCacheKeys.clear();
-        coverageHintReaderKeys.clear();
+        cacheKeys.clear();
+        coverageCacheKeys.clear();
     }
 
     /**

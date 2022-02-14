@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A thread holding both a latch to start a task and a latch to wait for the thread to complete.
@@ -25,16 +26,43 @@ public class ResourcePoolLatchedThread<P, R> extends Thread {
     private PoolBiFunction<P, R> function;
     private R result;
     private P funParam;
+    private int maxAwaitBeforeStart;
     private List<Exception> errors = new ArrayList<>();
 
+    /**
+     * @param taskLatch a countDownLatch controlling when the task should start.
+     * @param doneLatch a countDownLatch counted down when the thread has completed the task.
+     * @param pool the ResourcePool.
+     * @param funParam the parameter of the function to be executed.
+     * @param function the function to execute.
+     */
     public ResourcePoolLatchedThread(
             CountDownLatch taskLatch,
             CountDownLatch doneLatch,
             ResourcePool pool,
             P funParam,
             PoolBiFunction<P, R> function) {
+        this(taskLatch, doneLatch, 60, pool, funParam, function);
+    }
+
+    /**
+     * @param taskLatch a countDownLatch controlling when the task should start.
+     * @param doneLatch a countDownLatch counted down when the thread has completed the task.
+     * @param maxAwaitBeforeStart max await time before starting the task, in seconds.
+     * @param pool the ResourcePool.
+     * @param funParam the parameter of the function to be executed.
+     * @param function the function to execute.
+     */
+    public ResourcePoolLatchedThread(
+            CountDownLatch taskLatch,
+            CountDownLatch doneLatch,
+            int maxAwaitBeforeStart,
+            ResourcePool pool,
+            P funParam,
+            PoolBiFunction<P, R> function) {
         this.taskLatch = taskLatch;
         this.doneLatch = doneLatch;
+        this.maxAwaitBeforeStart = maxAwaitBeforeStart;
         this.resourcePool = pool;
         this.funParam = funParam;
         this.function = function;
@@ -43,7 +71,7 @@ public class ResourcePoolLatchedThread<P, R> extends Thread {
     @Override
     public void run() {
         try {
-            taskLatch.await();
+            taskLatch.await(maxAwaitBeforeStart, TimeUnit.SECONDS);
             result = function.apply(resourcePool, funParam);
             doneLatch.countDown();
         } catch (Exception e) {

@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import javax.media.jai.PlanarImage;
@@ -984,30 +985,24 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetDataStoreConcurrency() throws Exception {
         ResourcePool pool = null;
+        List<ResourcePoolLatchedThread<DataStoreInfo, DataAccess>> threads = null;
         try {
             final Catalog catalog = getCatalog();
             DataStoreInfo ds = storeInfo(catalog, "concurrencyTest1");
-            pool =
-                    new ResourcePool(getCatalog()) {
-                        @Override
-                        protected DataAccess<? extends FeatureType, ? extends Feature>
-                                createDataAccess(DataStoreInfo info, DataStoreInfo expandedStore)
-                                        throws IOException {
-                            return super.createDataAccess(info, expandedStore);
-                        }
-                    };
+            pool = new ResourcePool(getCatalog());
 
             ResourcePoolLatchedThread.PoolBiFunction<DataStoreInfo, DataAccess> function =
                     (resPool, info) -> resPool.getDataStore(info);
             CountDownLatch taskLatch = new CountDownLatch(1);
             int numberOfThreads = 5;
             CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
-            List<ResourcePoolLatchedThread<DataStoreInfo, DataAccess>> threads =
+            threads =
                     getLatchedThreads(
                             taskLatch, completeLatch, numberOfThreads, pool, ds, function);
             threads.forEach(t -> t.start());
             taskLatch.countDown();
-            completeLatch.await();
+            completeLatch.await(60, TimeUnit.SECONDS);
+
             DataAccess dA = pool.dataStoreCache.get(ds.getId());
             assertNotNull(dA);
             for (ResourcePoolLatchedThread<DataStoreInfo, DataAccess> t : threads) {
@@ -1016,6 +1011,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             }
         } finally {
             if (pool != null) pool.dispose();
+            killThreads(threads);
         }
     }
 
@@ -1024,6 +1020,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         // test that if a thread is accessing a store in the cache
         // and is blocked, other threads can retrieve other instances from the cache.
         ResourcePool resPool = null;
+        ResourcePoolLatchedThread<DataStoreInfo, DataAccess> latchedThread1 = null;
+        ResourcePoolLatchedThread<DataStoreInfo, DataAccess> latchedThread2 = null;
         try {
             final Catalog catalog = getCatalog();
             DataStoreInfo ds = storeInfo(catalog, "concurrencyTest2");
@@ -1055,10 +1053,10 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             ResourcePoolLatchedThread.PoolBiFunction<DataStoreInfo, DataAccess> function =
                     (pool, info) -> pool.getDataStore(info);
             CountDownLatch completeLatch = new CountDownLatch(2);
-            ResourcePoolLatchedThread<DataStoreInfo, DataAccess> latchedThread1 =
+            latchedThread1 =
                     new ResourcePoolLatchedThread<>(
                             taskLatch, completeLatch, resPool, ds, function);
-            ResourcePoolLatchedThread<DataStoreInfo, DataAccess> latchedThread2 =
+            latchedThread2 =
                     new ResourcePoolLatchedThread<>(
                             taskLatch2, completeLatch, resPool, ds2, function);
             latchedThread1.start();
@@ -1067,7 +1065,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             // when it will arrive at store creation time will unblock
             // the second thread.
             taskLatch.countDown();
-            latchedThread2.join();
+            latchedThread2.join(60 * 1000);
             // thread2 completed and retrieved the data Access.
             DataAccess access = resPool.dataStoreCache.get(ds2.getId());
             assertSame(access, latchedThread2.getResult());
@@ -1076,19 +1074,22 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             synchronized (latchedThread1) {
                 latchedThread1.notify();
             }
-            completeLatch.await();
+            completeLatch.await(60, TimeUnit.SECONDS);
 
             DataAccess dA = resPool.dataStoreCache.get(ds.getId());
             assertNotNull(dA);
             assertSame(dA, latchedThread1.getResult());
         } finally {
             if (resPool != null) resPool.dispose();
+            killThread(latchedThread1);
+            killThread(latchedThread2);
         }
     }
 
     @Test
     public void testConcurrencyOnFeatureTypeCache() throws Exception {
         ResourcePool pool = null;
+        List<ResourcePoolLatchedThread<FeatureTypeInfo, FeatureType>> threads = null;
         try {
             pool = ResourcePool.create(getCatalog());
             FeatureTypeInfo info =
@@ -1101,27 +1102,27 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
             ResourcePoolLatchedThread.PoolBiFunction<FeatureTypeInfo, FeatureType> function =
                     (rl, fti) -> rl.getFeatureType(info, false);
-            List<ResourcePoolLatchedThread<FeatureTypeInfo, FeatureType>> threads =
+            threads =
                     getLatchedThreads(
                             taskLatch, completeLatch, numberOfThreads, pool, info, function);
             threads.forEach(t -> t.start());
             taskLatch.countDown();
-            completeLatch.await();
+            completeLatch.await(60, TimeUnit.SECONDS);
             FeatureType featureType = pool.getFeatureType(info, false);
             for (ResourcePoolLatchedThread<FeatureTypeInfo, FeatureType> t : threads) {
                 assertSame(featureType, t.getResult());
                 assertTrue(t.getErrors().isEmpty());
             }
         } finally {
-            if (pool != null) {
-                pool.dispose();
-            }
+            if (pool != null) pool.dispose();
+            killThreads(threads);
         }
     }
 
     @Test
     public void testConcurrencyOnCRSCache() throws Exception {
         ResourcePool pool = null;
+        List<ResourcePoolLatchedThread<String, CoordinateReferenceSystem>> threads = null;
         try {
             pool = ResourcePool.create(getCatalog());
             String srs = "EPSG:4326";
@@ -1130,12 +1131,12 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
             ResourcePoolLatchedThread.PoolBiFunction<String, CoordinateReferenceSystem> function =
                     (rl, srsName) -> rl.getCRS(srsName);
-            List<ResourcePoolLatchedThread<String, CoordinateReferenceSystem>> threads =
+            threads =
                     getLatchedThreads(
                             taskLatch, completeLatch, numberOfThreads, pool, srs, function);
             threads.forEach(t -> t.start());
             taskLatch.countDown();
-            completeLatch.await();
+            completeLatch.await(60, TimeUnit.SECONDS);
             CoordinateReferenceSystem crs = pool.getCrsCache().get(srs);
             for (ResourcePoolLatchedThread<String, CoordinateReferenceSystem> t : threads) {
                 assertSame(crs, t.getResult());
@@ -1143,12 +1144,14 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             }
         } finally {
             if (pool != null) pool.dispose();
+            killThreads(threads);
         }
     }
 
     @Test
     public void testConcurrencyOnStyleCache() throws Exception {
         ResourcePool pool = null;
+        List<ResourcePoolLatchedThread<StyleInfo, Style>> threads = null;
         try {
             pool = ResourcePool.create(getCatalog());
             StyleInfo info = getCatalog().getStyleByName(HUMANS);
@@ -1157,7 +1160,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
             ResourcePoolLatchedThread.PoolBiFunction<StyleInfo, Style> function =
                     (rl, styleInfo) -> rl.getStyle(styleInfo);
-            List<ResourcePoolLatchedThread<StyleInfo, Style>> threads =
+            threads =
                     getLatchedThreads(
                             taskLatch, completeLatch, numberOfThreads, pool, info, function);
             threads.forEach(t -> t.start());
@@ -1170,12 +1173,14 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             }
         } finally {
             if (pool != null) pool.dispose();
+            killThreads(threads);
         }
     }
 
     @Test
     public void testConcurrencyOnSLDCache() throws Exception {
         ResourcePool pool = null;
+        List<ResourcePoolLatchedThread<StyleInfo, StyledLayerDescriptor>> threads = null;
         try {
             pool = ResourcePool.create(getCatalog());
             StyleInfo info = getCatalog().getStyleByName(HUMANS);
@@ -1184,7 +1189,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
             ResourcePoolLatchedThread.PoolBiFunction<StyleInfo, StyledLayerDescriptor> function =
                     (rl, styleInfo) -> rl.getSld(styleInfo);
-            List<ResourcePoolLatchedThread<StyleInfo, StyledLayerDescriptor>> threads =
+            threads =
                     getLatchedThreads(
                             taskLatch, completeLatch, numberOfThreads, pool, info, function);
             threads.forEach(t -> t.start());
@@ -1197,12 +1202,14 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             }
         } finally {
             if (pool != null) pool.dispose();
+            killThreads(threads);
         }
     }
 
     @Test
     public void testConcurrencyOnFeatureTypeAttrsCache() throws Exception {
         ResourcePool pool = null;
+        List<ResourcePoolLatchedThread<FeatureTypeInfo, List<AttributeTypeInfo>>> threads = null;
         try {
             pool = ResourcePool.create(getCatalog());
             FeatureTypeInfo info =
@@ -1215,12 +1222,12 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
             ResourcePoolLatchedThread.PoolBiFunction<FeatureTypeInfo, List<AttributeTypeInfo>>
                     function = (rl, fti) -> rl.getAttributes(info);
-            List<ResourcePoolLatchedThread<FeatureTypeInfo, List<AttributeTypeInfo>>> threads =
+            threads =
                     getLatchedThreads(
                             taskLatch, completeLatch, numberOfThreads, pool, info, function);
             threads.forEach(t -> t.start());
             taskLatch.countDown();
-            completeLatch.await();
+            completeLatch.await(60, TimeUnit.SECONDS);
             List<AttributeTypeInfo> list = pool.getAttributes(info);
             for (ResourcePoolLatchedThread<FeatureTypeInfo, List<AttributeTypeInfo>> t : threads) {
                 assertSame(list, t.getResult());
@@ -1228,6 +1235,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             }
         } finally {
             if (pool != null) pool.dispose();
+            killThreads(threads);
         }
     }
 
@@ -1265,5 +1273,21 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             i++;
         }
         return threads;
+    }
+
+    private void killThreads(List threads) {
+        if (threads != null && !threads.isEmpty()) {
+            for (Object thread : threads) {
+                if (thread instanceof Thread) {
+                    killThread((Thread) thread);
+                }
+            }
+        }
+    }
+
+    private void killThread(Thread thread) {
+        if (thread != null && thread.isAlive()) {
+            thread.interrupt();
+        }
     }
 }

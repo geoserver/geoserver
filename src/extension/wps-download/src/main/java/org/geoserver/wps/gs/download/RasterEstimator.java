@@ -203,10 +203,8 @@ class RasterEstimator {
 
 
         if (coverageDimensionInfoList.stream().anyMatch(cdi -> cdi.getDimensionType() == null)) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Recalculating Band Dimensions Types");
-            }
-            reloadBands(coverageInfo);
+           LOGGER.log(Level.FINE, "Recalculating Band Dimensions Types");
+           coverageDimensionInfoList = getBandDimensionsFromCoverageInfo(coverageInfo);
         }
         int accumulatedPixelSizeInBits = 0;
 
@@ -259,7 +257,7 @@ class RasterEstimator {
         return true;
     }
 
-    private void reloadBands(CoverageInfo ci) throws Exception {
+    private List<CoverageDimensionInfo> getBandDimensionsFromCoverageInfo(CoverageInfo ci) throws Exception {
         String nativeName = ci.getNativeCoverageName();
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setStore(ci.getStore());
@@ -275,7 +273,6 @@ class RasterEstimator {
         } else {
             rebuilt = cb.buildCoverage(nativeName);
         }
-        ci.getDimensions().clear();
-        ci.getDimensions().addAll(rebuilt.getDimensions());
+        return rebuilt.getDimensions();
     }
 }

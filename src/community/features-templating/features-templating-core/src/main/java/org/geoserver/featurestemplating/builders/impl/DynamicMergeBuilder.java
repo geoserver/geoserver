@@ -104,8 +104,9 @@ public class DynamicMergeBuilder extends DynamicValueBuilder {
         TemplateBuilderMaker maker = configuration.getBuilderMaker();
         maker.namespaces(configuration.getNamespaces());
         writer.startObject(getKey(context), getEncodingHints());
-        jsonTemplateReader.getBuilderFromJson(getKey(context), node, this, maker);
-        for (TemplateBuilder child : getChildren()) child.evaluate(writer, context);
+        CompositeBuilder cb = new CompositeBuilder(null, getNamespaces(), true);
+        jsonTemplateReader.getBuilderFromJson(getKey(context), node, cb, maker);
+        for (TemplateBuilder child : cb.getChildren()) child.evaluate(writer, context);
         writer.endObject(getKey(context), encodingHints);
     }
 }

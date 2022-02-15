@@ -55,9 +55,7 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
         }
 
         if (finalNode != null) doIncludeFlat(finalNode, context, writer);
-        else
-            // write the node as it is
-            iterateAndWrite((ObjectNode) includingNode, writer, context);
+        else iterateAndEvaluateNestedTree(context, writer, (ObjectNode) includingNode);
     }
 
     private void doIncludeFlat(
@@ -108,17 +106,9 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
 
         TemplateBuilderMaker maker = configuration.getBuilderMaker();
         maker.namespaces(configuration.getNamespaces());
-        Iterator<String> names = node.fieldNames();
-        while (names != null && names.hasNext()) {
-            // create a builder tree from each first level attribute
-            String n = names.next();
-            JsonNode childNode = node.get(n);
-            // make sure we have a CompositeBuilder in case of ObjectNode
-            // the reader will not create it for us when passing to it directly a JSON Object
-            TemplateBuilder current = getCurrentBuilder(childNode, n);
-            jsonTemplateReader.getBuilderFromJson(n, node.get(n), current, maker);
-        }
-        List<TemplateBuilder> children = getChildren();
+        CompositeBuilder cb = new CompositeBuilder(null, getNamespaces(), false);
+        jsonTemplateReader.getBuilderFromJson(null, node, cb, maker);
+        List<TemplateBuilder> children = cb.getChildren();
         if (!children.isEmpty())
             for (TemplateBuilder child : children) child.evaluate(writer, context);
     }

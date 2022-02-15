@@ -12,6 +12,7 @@ import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
+import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
@@ -177,6 +178,10 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         if (children != null) {
             for (TemplateBuilder tb : children) {
                 String key = ((AbstractTemplateBuilder) tb).getKey(null);
+                if (tb instanceof DynamicIncludeFlatBuilder) {
+                    // go get the including node that the dynamic build inglobated
+                    tb = ((DynamicIncludeFlatBuilder) tb).getIncludingNodeBuilder(null);
+                }
                 if (matchBuilder(tb, key, pathElements, parent)) {
                     boolean isLastEl = currentEl == length;
                     if (isLastEl || tb instanceof StaticBuilder) {

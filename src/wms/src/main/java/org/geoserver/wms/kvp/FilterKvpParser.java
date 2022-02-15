@@ -81,6 +81,9 @@ public class FilterKvpParser extends KvpParser {
                     Configuration configuration = new OGCConfiguration();
                     Parser parser_1_0_0 = new Parser(configuration);
                     parser_1_0_0.setEntityResolver(resolverProvider.getEntityResolver());
+                    if (resolverProvider.skipValidation()) {
+                        parser_1_0_0.setValidating(false);
+                    }
                     filter = (Filter) parser_1_0_0.parse(input);
                 } catch (Exception e) {
                     // parsing failed, try with a Filter 1.1.0 parser
@@ -90,6 +93,9 @@ public class FilterKvpParser extends KvpParser {
                                 new org.geotools.filter.v1_1.OGCConfiguration();
                         Parser parser_1_1_0 = new Parser(configuration);
                         parser_1_1_0.setEntityResolver(resolverProvider.getEntityResolver());
+                        if (resolverProvider.skipValidation()) {
+                            parser_1_1_0.setValidating(false);
+                        }
                         filter = (Filter) parser_1_1_0.parse(input);
 
                         filters.add(filter);
@@ -127,7 +133,7 @@ public class FilterKvpParser extends KvpParser {
         // translate string into a proper SAX input source
         InputSource requestSource = new InputSource(rawRequest);
 
-        // instantiante parsers and content handlers
+        // instantiate parsers and content handlers
         FilterHandlerImpl contentHandler = new FilterHandlerImpl();
         contentHandler.setEntityResolver(resolverProvider.getEntityResolver());
         FilterFilter filterParser = new FilterFilter(contentHandler, null);
@@ -137,10 +143,12 @@ public class FilterKvpParser extends KvpParser {
         // read in XML file and parse to content handler
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            if (resolverProvider.skipValidation()) {
+                factory.setValidating(false);
+            }
             SAXParser parser = factory.newSAXParser();
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
             adapter.setEntityResolver(resolverProvider.getEntityResolver());
-
             adapter.setContentHandler(documentFilter);
             adapter.parse(requestSource);
             LOGGER.fine("just parsed: " + requestSource);

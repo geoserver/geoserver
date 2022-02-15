@@ -2298,7 +2298,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                 0d,
                 null,
                 new NullProgressListener() // progressListener
-        );
+                );
     }
     /**
      * Test download estimator for raster data. The result should exceed the limits

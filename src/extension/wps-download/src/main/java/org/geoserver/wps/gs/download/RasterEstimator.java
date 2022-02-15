@@ -8,7 +8,6 @@ package org.geoserver.wps.gs.download;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.*;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -201,10 +200,9 @@ class RasterEstimator {
         // Use sample info type for each output band to estimate size
         List<CoverageDimensionInfo> coverageDimensionInfoList = coverageInfo.getDimensions();
 
-
         if (coverageDimensionInfoList.stream().anyMatch(cdi -> cdi.getDimensionType() == null)) {
-           LOGGER.log(Level.FINE, "Recalculating Band Dimensions Types");
-           coverageDimensionInfoList = getBandDimensionsFromCoverageInfo(coverageInfo);
+            LOGGER.log(Level.FINE, "Recalculating Band Dimensions Types");
+            coverageDimensionInfoList = getBandDimensionsFromCoverageInfo(coverageInfo);
         }
         int accumulatedPixelSizeInBits = 0;
 
@@ -257,7 +255,8 @@ class RasterEstimator {
         return true;
     }
 
-    private List<CoverageDimensionInfo> getBandDimensionsFromCoverageInfo(CoverageInfo ci) throws Exception {
+    private List<CoverageDimensionInfo> getBandDimensionsFromCoverageInfo(CoverageInfo ci)
+            throws Exception {
         String nativeName = ci.getNativeCoverageName();
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setStore(ci.getStore());

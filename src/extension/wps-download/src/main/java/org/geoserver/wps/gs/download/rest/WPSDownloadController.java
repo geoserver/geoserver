@@ -29,14 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/services/wps/download",
-    produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaTypeExtensions.TEXT_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_XML_VALUE
-    }
-)
+        path = RestBaseController.ROOT_PATH + "/services/wps/download",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE
+        })
 public class WPSDownloadController extends RestBaseController {
 
     private final DownloadServiceConfigurationWatcher watcher;
@@ -53,13 +52,12 @@ public class WPSDownloadController extends RestBaseController {
     }
 
     @PutMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void setConfiguration(@RequestBody DownloadServiceConfiguration configuration)
             throws IOException {
         watcher.setConfiguration(configuration);

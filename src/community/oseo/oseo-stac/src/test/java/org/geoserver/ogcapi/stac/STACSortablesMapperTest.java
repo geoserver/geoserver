@@ -15,9 +15,11 @@ import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.FeatureSource;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.Feature;
@@ -32,6 +34,11 @@ public class STACSortablesMapperTest {
         data = JDBCOpenSearchAccessTest.setupAndReturnStore();
     }
 
+    @AfterClass
+    public static void clearExtensions() {
+        GeoServerExtensionsHelper.clear();
+    }
+
     @Test
     public void testGetSortable() throws Exception {
         FileSystemResourceStore resourceStore =
@@ -43,11 +50,12 @@ public class STACSortablesMapperTest {
         Template template = new Template(templateDefinition, config);
         STACSortablesMapper builder =
                 new STACSortablesMapper(template.getRootBuilder(), products.getSchema());
-        Map<String, String> sortables = builder.getSortables();
+        Map<String, String> sortables = builder.getSortablesMap();
 
         // common sortables from spec
         assertThat(sortables, hasEntry("collection", "parentIdentifier"));
         assertThat(sortables, hasEntry("datetime", "timeStart"));
+        assertThat(sortables, hasEntry("id", "identifier"));
 
         // common properties in the model
         assertThat(sortables, hasEntry("created", "eop:creationDate"));
@@ -55,5 +63,28 @@ public class STACSortablesMapperTest {
 
         // one custom, and nested, property
         assertThat(sortables, hasEntry("one.two.three", "eop:illuminationAzimuthAngle"));
+    }
+
+    @Test
+    public void testSortablesIncludeFlat() throws Exception {
+        FileSystemResourceStore resourceStore =
+                new FileSystemResourceStore(new File("./src/test/resources"));
+        Resource templateDefinition = resourceStore.get("items-SAS1.json");
+        FeatureSource<FeatureType, Feature> products = data.getProductSource();
+        TemplateReaderConfiguration config =
+                new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
+        Template template = new Template(templateDefinition, config);
+        STACSortablesMapper builder =
+                new STACSortablesMapper(template.getRootBuilder(), products.getSchema());
+        Map<String, String> sortables = builder.getSortablesMap();
+
+        // common sortables from spec
+        assertThat(sortables, hasEntry("collection", "parentIdentifier"));
+        assertThat(sortables, hasEntry("datetime", "timeStart"));
+        assertThat(sortables, hasEntry("id", "identifier"));
+
+        // custom sortables from template
+        assertThat(sortables, hasEntry("view:sun_azimuth", "eop:illuminationAzimuthAngle"));
+        assertThat(sortables, hasEntry("custom:clouds", "opt:cloudCover"));
     }
 }

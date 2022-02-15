@@ -157,8 +157,7 @@ public class APIRequestInfo {
             return true;
         }
 
-        return requestedMediaTypes
-                .stream()
+        return requestedMediaTypes.stream()
                 .filter(mt -> !mt.equalsTypeAndSubtype(MediaType.ALL))
                 .anyMatch(curr -> mediaType.isCompatibleWith(curr));
     }

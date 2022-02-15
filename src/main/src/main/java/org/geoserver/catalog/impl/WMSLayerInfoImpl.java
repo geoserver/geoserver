@@ -96,8 +96,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public List<String> remoteStyles() {
 
         try {
-            return allAvailableRemoteStyles
-                    .stream()
+            return allAvailableRemoteStyles.stream()
                     .map(s -> s.getName())
                     .collect(Collectors.toList());
         } catch (Exception e) {
@@ -123,13 +122,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     @Override
     public List<String> availableFormats() {
         try {
-            return getStore()
-                    .getWebMapServer(null)
-                    .getCapabilities()
-                    .getRequest()
-                    .getGetMap()
-                    .getFormats()
-                    .stream()
+            return getStore().getWebMapServer(null).getCapabilities().getRequest().getGetMap()
+                    .getFormats().stream()
                     .filter(WMSLayerInfoImpl::isImage)
                     . // only image formats
                     collect(Collectors.toList());
@@ -167,8 +161,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         // no remote styles were read from this server
         if (allAvailableRemoteStyles == null) return null;
         else
-            return allAvailableRemoteStyles
-                    .stream()
+            return allAvailableRemoteStyles.stream()
                     .filter(s -> !forcedRemoteStyle.equalsIgnoreCase(s.getName()))
                     .filter(s -> selectedRemoteStyles.contains(s.getName()))
                     .collect(Collectors.toSet());
@@ -179,8 +172,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         if (forcedRemoteStyle != null)
             if (!forcedRemoteStyle.isEmpty()) {
                 Optional<StyleInfo> defaultRemoteStyle =
-                        getAllAvailableRemoteStyles()
-                                .stream()
+                        getAllAvailableRemoteStyles().stream()
                                 .filter(s -> s.getName().equalsIgnoreCase(forcedRemoteStyle))
                                 .findFirst();
                 // will return null if forcedRemoteStyle is not empty string
@@ -198,9 +190,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public Set<StyleInfo> getRemoteStyleInfos() {
 
         try {
-            return getWMSLayer(null)
-                    .getStyles()
-                    .stream()
+            return getWMSLayer(null).getStyles().stream()
                     .map(WMSLayerInfoImpl::getStyleInfo)
                     .collect(Collectors.toSet());
         } catch (Exception e) {
@@ -220,9 +210,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         final Style style = new NamedStyleImpl();
         style.setName(name);
         try {
-            return getWMSLayer(null)
-                    .getStyles()
-                    .stream()
+            return getWMSLayer(null).getStyles().stream()
                     .filter(s -> s.getName().equalsIgnoreCase(name))
                     .map(s -> style)
                     .findFirst();

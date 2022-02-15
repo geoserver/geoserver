@@ -16,13 +16,17 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.geoserver.ogcapi.QueryablesBuilder.getSchema;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.ogcapi.APIException;
+import org.geoserver.ogcapi.Sortables;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -42,14 +46,45 @@ public class STACSortablesMapper {
 
     private final TemplateBuilder template;
     private final FeatureType itemsSchema;
+    private final String id;
 
     public STACSortablesMapper(TemplateBuilder template, FeatureType itemsSchema) {
+        this(template, itemsSchema, null);
+    }
+
+    public STACSortablesMapper(TemplateBuilder template, FeatureType itemsSchema, String id) {
+        this.id = id;
         this.template = template;
         this.itemsSchema = itemsSchema;
     }
 
+    public Sortables getSortables() {
+        Sortables result = new Sortables(id);
+
+        // force in the extra well known sortables
+        result.setProperties(new LinkedHashMap<>());
+        result.getProperties().put("id", getSchema(String.class));
+        result.getProperties().put("collection", getSchema(String.class));
+        result.getProperties().put("datetime", getSchema(Date.class));
+
+        TemplateBuilder properties =
+                TemplateBuilderUtils.getBuilderFor(template, "features", "properties");
+        if (properties != null) {
+            TemplatePropertyVisitor visitor =
+                    new TemplatePropertyVisitor(
+                            properties,
+                            (path, vb) -> {
+                                if (isSortable(vb))
+                                    result.getProperties().put(path, getSchema(getClass(vb)));
+                            });
+            visitor.visit();
+        }
+
+        return result;
+    }
+
     /** Maps sortable properties to source properties */
-    public Map<String, String> getSortables() {
+    public Map<String, String> getSortablesMap() {
         Map<String, String> result = new HashMap<>();
         TemplateBuilder properties =
                 TemplateBuilderUtils.getBuilderFor(template, "features", "properties");
@@ -66,28 +101,34 @@ public class STACSortablesMapper {
         // force in the extra well known sortables
         result.put("collection", "parentIdentifier");
         result.put("datetime", "timeStart");
+        result.put("id", "identifier");
 
         return result;
     }
 
-    private boolean isSortable(DynamicValueBuilder db) {
+    private Class getClass(DynamicValueBuilder db) {
         AttributeExpressionImpl xpath = db.getXpath();
         if (xpath != null && !xpath.getPropertyName().contains("/")) {
             Object result = xpath.evaluate(itemsSchema);
             if (result instanceof PropertyDescriptor) {
                 PropertyDescriptor pd = (PropertyDescriptor) result;
-                Class<?> binding = pd.getType().getBinding();
-                if (Number.class.isAssignableFrom(binding)
-                        || Date.class.isAssignableFrom(binding)
-                        || String.class.isAssignableFrom(binding)) return true;
+                return pd.getType().getBinding();
             }
         }
-        return false;
+        return null;
+    }
+
+    private boolean isSortable(DynamicValueBuilder db) {
+        Class<?> binding = getClass(db);
+        if (binding == null) return false;
+        return (Number.class.isAssignableFrom(binding)
+                || Date.class.isAssignableFrom(binding)
+                || String.class.isAssignableFrom(binding));
     }
 
     /** Maps a SortBy[] using public sortables back to source property names */
     public SortBy[] map(SortBy[] sortby) {
-        Map<String, String> sortables = getSortables();
+        Map<String, String> sortables = getSortablesMap();
         return Arrays.stream(sortby)
                 .map(sb -> mapSortable(sb, sortables))
                 .toArray(n -> new SortBy[n]);

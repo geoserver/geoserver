@@ -1,3 +1,7 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.featurestemplating.readers;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -7,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,9 +102,12 @@ public class XmlTemplateReaderTest {
         assertFalse(rootBuilder.needsReload());
         File file = store.get("includedGeologicUnit.xml").file();
         file.setLastModified(new Date().getTime());
-        Thread.sleep(1000);
 
-        assertTrue(rootBuilder.needsReload());
+        for (int i = 0; i < 600; i++) {
+            if (rootBuilder.needsReload()) return; // ok worked
+            Thread.sleep(100);
+        }
+        fail("Should have found a reload 60 seconds, but did not");
     }
 
     private RuntimeException checkThrowingTemplate(String s) {

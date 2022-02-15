@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -723,7 +724,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             LOGGER.fine("Getting layers and styles from reomte SLD");
         }
 
-        URL styleUrl = getMap.getStyleUrl();
+        URI styleUrl = getMap.getStyleUrl();
 
         try (InputStream input = getStream(styleUrl)) {
             if (input != null) {
@@ -815,6 +816,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                         WMSErrorCode.INVALID_CRS.get(getMap.getVersion()));
             }
         }
+    }
+
+    private InputStream getStream(URI styleUrl) throws IOException {
+        return getStream(styleUrl.toURL());
     }
 
     private InputStream getStream(URL styleUrl) throws IOException {

@@ -39,8 +39,7 @@ class FeatureTypeValidator {
 
             SimpleFeatureType ft = ds.getSchema(fti.getNativeName());
             Map<String, AttributeDescriptor> nativeAttributes =
-                    ft.getAttributeDescriptors()
-                            .stream()
+                    ft.getAttributeDescriptors().stream()
                             .collect(Collectors.toMap(ad -> ad.getLocalName(), ad -> ad));
 
             // validate each attribute

@@ -117,8 +117,7 @@ public class NcWmsService implements DisposableBean {
             List<DateRange> findDates(WMS wms, CoverageInfo coverage, List<Object> times)
                     throws IOException {
                 TreeSet<Date> availableDates = wms.queryCoverageNearestMatchTimes(coverage, times);
-                return availableDates
-                        .stream()
+                return availableDates.stream()
                         .map(date -> new DateRange(date, date))
                         .collect(Collectors.toList());
             }
@@ -138,8 +137,7 @@ public class NcWmsService implements DisposableBean {
                                     coverage, getAsRange(time, isRange), Query.DEFAULT_MAX);
                     availableDates.addAll(foundTimes);
                 }
-                return availableDates
-                        .stream()
+                return availableDates.stream()
                         .map(
                                 d ->
                                         d instanceof Date
@@ -291,8 +289,7 @@ public class NcWmsService implements DisposableBean {
 
             // sort by time and accumulate values
             List<SimpleFeature> featureList =
-                    features.entrySet()
-                            .stream()
+                    features.entrySet().stream()
                             .sorted(Comparator.comparing(e -> e.getKey()))
                             .map(e -> e.getValue())
                             .collect(Collectors.toList());

@@ -39,8 +39,7 @@ public class PropertiesParser {
         if (resource instanceof FeatureTypeInfo) {
             FeatureType schema = ((FeatureTypeInfo) resource).getFeatureType();
             Set<String> availableNames =
-                    schema.getDescriptors()
-                            .stream()
+                    schema.getDescriptors().stream()
                             .map(p -> p.getName().getLocalPart())
                             .collect(Collectors.toSet());
             if (!availableNames.containsAll(names)) {

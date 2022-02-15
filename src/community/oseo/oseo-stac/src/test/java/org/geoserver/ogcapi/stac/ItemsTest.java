@@ -7,9 +7,12 @@ package org.geoserver.ogcapi.stac;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -129,8 +132,7 @@ public class ItemsTest extends STACTestSupport {
 
         // the item identifiers
         Set<String> titles =
-                doc.select("div.card-header h2")
-                        .stream()
+                doc.select("div.card-header h2").stream()
                         .map(e -> e.text())
                         .collect(Collectors.toSet());
         assertThat(titles, Matchers.everyItem(Matchers.startsWith("S2A_OPER_MSI")));
@@ -393,6 +395,46 @@ public class ItemsTest extends STACTestSupport {
         String thumbnailTitle2 = json.read("dynamicIncludeFlatTest.thumbnail2.title");
         assertEquals("the_title", thumbnailTitle);
         assertEquals("the_title2", thumbnailTitle2);
+    }
+
+    @Test
+    public void dynamicIncludeCQLFilterTest() throws Exception {
+        // same as dynamicIncludeFlatTest2 but checking filters are getting mapped
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/stac/collections/SAS1/items?filter=sat:absolute_orbit < 60", 200);
+
+        assertEquals(1, json.read("features", List.class).size());
+        assertThat(
+                json.read("features[0].properties.sat:absolute_orbit", Double.class),
+                lessThanOrEqualTo(60d));
+
+        json = getAsJSONPath("ogc/stac/collections/SAS1/items?filter=sat:absolute_orbit > 60", 200);
+
+        assertEquals(1, json.read("features", List.class).size());
+        assertThat(
+                json.read("features[0].properties.sat:absolute_orbit", Double.class),
+                greaterThanOrEqualTo(60d));
+    }
+
+    @Test
+    public void dynamicIncludeSort() throws Exception {
+        // sorting up
+        DocumentContext json =
+                getAsJSONPath("ogc/stac/collections/SAS1/items?sortby=sat:absolute_orbit", 200);
+
+        assertEquals(2, json.read("features", List.class).size());
+        assertEquals(
+                json.read("features..properties.sat:absolute_orbit", List.class),
+                Arrays.asList(55, 65));
+
+        // sorting down
+        json = getAsJSONPath("ogc/stac/collections/SAS1/items?sortby=-sat:absolute_orbit", 200);
+
+        assertEquals(2, json.read("features", List.class).size());
+        assertEquals(
+                json.read("features..properties.sat:absolute_orbit", List.class),
+                Arrays.asList(65, 55));
     }
 
     @Test

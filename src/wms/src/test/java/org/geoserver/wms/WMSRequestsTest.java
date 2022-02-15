@@ -9,6 +9,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +98,7 @@ public class WMSRequestsTest extends WMSTestSupport {
         request.setStartIndex(25);
         request.setMaxFeatures(50);
         request.setStyleVersion("1.1.0");
-        request.setSld(new URL("http://localhost/test.sld"));
+        request.setSld(new URI("http://localhost/test.sld"));
         request.setValidateSchema(true);
         List<String> urls = getGetMapUrls(request);
         assertEquals(2, urls.size());
@@ -154,8 +155,7 @@ public class WMSRequestsTest extends WMSTestSupport {
         GetMapRequest request = createGetMapRequest(names);
         request.setRawKvp(new KvpMap(request.getRawKvp()));
         String layers =
-                request.getLayers()
-                        .stream()
+                request.getLayers().stream()
                         .map(MapLayerInfo::getName)
                         .collect(Collectors.joining(","));
         request.getRawKvp().put("layers", layers);

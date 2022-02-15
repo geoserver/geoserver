@@ -173,9 +173,7 @@ public class JDBCImportStore implements ImportStore {
                 SimpleFeature feature = mapper.toFeature(context);
                 Id filter = FF.id(Collections.singleton(FF.featureId(feature.getID())));
                 String[] names =
-                        CTX_FEATURE_TYPE
-                                .getAttributeDescriptors()
-                                .stream()
+                        CTX_FEATURE_TYPE.getAttributeDescriptors().stream()
                                 .map(ad -> ad.getLocalName())
                                 .toArray(n -> new String[n]);
                 Object[] values = feature.getAttributes().toArray();

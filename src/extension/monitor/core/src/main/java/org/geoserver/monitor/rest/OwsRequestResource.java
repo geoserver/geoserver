@@ -46,13 +46,12 @@ public class OwsRequestResource extends MonitorRequestController {
 
     @Override
     @GetMapping(
-        produces = {
-            MediaType.TEXT_HTML_VALUE,
-            CSV_MEDIATYPE_VALUE,
-            EXCEL_MEDIATYPE_VALUE,
-            ZIP_MEDIATYPE_VALUE
-        }
-    )
+            produces = {
+                MediaType.TEXT_HTML_VALUE,
+                CSV_MEDIATYPE_VALUE,
+                EXCEL_MEDIATYPE_VALUE,
+                ZIP_MEDIATYPE_VALUE
+            })
     @ResponseBody
     protected MonitorQueryResults handleObjectGet(
             @PathVariable(name = "request", required = false) String req,

@@ -138,8 +138,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     private List<FeatureTypeInfo> wrapFeatureTypesListIfNeeded(List<FeatureTypeInfo> featureTypes) {
         if (featureTypes != null && useNameDequalifyingProxyForAll()) {
-            return featureTypes
-                    .stream()
+            return featureTypes.stream()
                     .map(ft -> wrap(ft, FeatureTypeInfo.class))
                     .collect(Collectors.toList());
         }
@@ -174,8 +173,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     public List<CoverageInfo> wrapCoverageListIfNeeded(List<CoverageInfo> coverages) {
         if (coverages != null && useNameDequalifyingProxyForAll()) {
-            return coverages
-                    .stream()
+            return coverages.stream()
                     .map(ft -> wrap(ft, CoverageInfo.class))
                     .collect(Collectors.toList());
         }
@@ -508,8 +506,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             if (result instanceof Collection) {
                 Collection<?> collection = (Collection<?>) result;
                 if (collection.stream().anyMatch(i -> i instanceof CatalogInfo)) {
-                    return collection
-                            .stream()
+                    return collection.stream()
                             .map(i -> wrapNested(i))
                             .collect(Collectors.toCollection(() -> newCollection(collection)));
                 }

@@ -89,8 +89,7 @@ public class LayerGroupContainmentCache {
     }
 
     private void registerContainedGroups(LayerGroupInfo lg) {
-        lg.getLayers()
-                .stream()
+        lg.getLayers().stream()
                 .filter(IS_GROUP)
                 .forEach(
                         p -> {
@@ -107,8 +106,7 @@ public class LayerGroupContainmentCache {
     private void addGroupInfo(LayerGroupInfo lg) {
         LayerGroupSummary groupData = new LayerGroupSummary(lg);
         groupCache.put(lg.getId(), groupData);
-        lg.getLayers()
-                .stream()
+        lg.getLayers().stream()
                 .filter(IS_LAYER)
                 .forEach(
                         p -> {
@@ -123,8 +121,7 @@ public class LayerGroupContainmentCache {
     private void clearGroupInfo(LayerGroupInfo lg) {
         LayerGroupSummary data = groupCache.remove(lg.getId());
         // clear the resource containment cache
-        lg.getLayers()
-                .stream()
+        lg.getLayers().stream()
                 .filter(IS_LAYER)
                 .forEach(
                         p -> {
@@ -431,9 +428,7 @@ public class LayerGroupContainmentCache {
         }
 
         private void updateWorkspaceNames(String oldName, String newName) {
-            groupCache
-                    .values()
-                    .stream()
+            groupCache.values().stream()
                     .filter(lg -> Objects.equals(lg.workspace, oldName))
                     .forEach(lg -> lg.workspace = newName);
         }

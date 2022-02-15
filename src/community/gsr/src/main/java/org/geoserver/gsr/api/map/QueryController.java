@@ -33,9 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 /** Controller for the Map Service query endpoint */
 @RestController
 @RequestMapping(
-    path = "/gsr/services/{workspaceName}/MapServer",
-    produces = MediaType.APPLICATION_JSON_VALUE
-)
+        path = "/gsr/services/{workspaceName}/MapServer",
+        produces = MediaType.APPLICATION_JSON_VALUE)
 public class QueryController extends AbstractGSRController {
 
     @Autowired
@@ -48,19 +47,17 @@ public class QueryController extends AbstractGSRController {
             @PathVariable String workspaceName,
             @PathVariable Integer layerId,
             @RequestParam(
-                        name = "geometryType",
-                        required = false,
-                        defaultValue = "esriGeometryEnvelope"
-                    )
+                            name = "geometryType",
+                            required = false,
+                            defaultValue = "esriGeometryEnvelope")
                     String geometryTypeName,
             @RequestParam(name = "geometry", required = false) String geometryText,
             @RequestParam(name = "inSR", required = false) String inSRText,
             @RequestParam(name = "outSR", required = false) String outSRText,
             @RequestParam(
-                        name = "spatialRel",
-                        required = false,
-                        defaultValue = "esriSpatialRelIntersects"
-                    )
+                            name = "spatialRel",
+                            required = false,
+                            defaultValue = "esriSpatialRelIntersects")
                     String spatialRelText,
             @RequestParam(name = "objectIds", required = false) String objectIdsText,
             @RequestParam(name = "relationPattern", required = false) String relatePattern,

@@ -19,6 +19,7 @@
   <p>More resources:</p>
   <ul>
   <li><a href="${serviceLink("collections/${collection.name.value}/queryables")}">CQL filtering queryables</a></li>
+  <li><a href="${serviceLink("collections/${collection.name.value}/sortables")}">Sortables</a></li>
   <li><a href="${serviceLink("collections/${collection.name.value}/items")}">Collection items</a>
   </ul>
 

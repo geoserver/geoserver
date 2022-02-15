@@ -47,17 +47,17 @@
       "assets": "${assets}",
       "links": [
         {
-          "href": "$${serviceLink('ogcapi/stac/collections/%s', eop:parentIdentifier)}",
+          "href": "$${serviceLink('ogc/stac/collections/%s', eop:parentIdentifier)}",
           "rel": "collection",
           "type": "application/json"
         },
         {
-          "href": "$${serviceLink('ogcapi/stac')}",
+          "href": "$${serviceLink('ogc/stac')}",
           "rel": "root",
           "type": "application/json"
         },
         {
-          "href": "$${serviceLink('ogcapi/stac/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
+          "href": "$${serviceLink('ogc/stac/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
           "rel": "self",
           "type": "application/geo+json"
         }

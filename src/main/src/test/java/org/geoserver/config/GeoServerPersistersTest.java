@@ -1320,9 +1320,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         getGeoServer().reload();
         LoggingInitializer.LoggingListener listener =
                 (LoggingInitializer.LoggingListener)
-                        getGeoServer()
-                                .getListeners()
-                                .stream()
+                        getGeoServer().getListeners().stream()
                                 .filter(l -> l instanceof LoggingInitializer.LoggingListener)
                                 .findAny()
                                 .get();

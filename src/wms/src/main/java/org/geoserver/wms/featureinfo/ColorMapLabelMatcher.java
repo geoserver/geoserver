@@ -137,8 +137,7 @@ class ColorMapLabelMatcher {
 
     static boolean isLabelReplacingValue(List<ColorMapLabelMatcher> colorMapLabelMatchers) {
         return !colorMapLabelMatchers.isEmpty()
-                && colorMapLabelMatchers
-                        .stream()
+                && colorMapLabelMatchers.stream()
                         .allMatch(
                                 l ->
                                         l.getLabelInclusion()

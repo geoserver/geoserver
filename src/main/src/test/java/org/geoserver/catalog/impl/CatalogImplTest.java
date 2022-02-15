@@ -3565,9 +3565,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
                             for (TestListener testListener : listeners) {
                                 assertTrue(
                                         "Did not find the expected even in the listener",
-                                        testListener
-                                                .removed
-                                                .stream()
+                                        testListener.removed.stream()
                                                 .anyMatch(
                                                         event -> event.getSource() == catalogInfo));
                             }

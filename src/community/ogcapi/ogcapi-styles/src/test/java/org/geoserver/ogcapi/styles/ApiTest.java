@@ -173,9 +173,7 @@ public class ApiTest extends StylesTestSupport {
         @SuppressWarnings("unchecked")
         List<String> styleIdValues = styleId.getSchema().getEnum();
         List<String> expectedStyleIds =
-                getCatalog()
-                        .getStyles()
-                        .stream()
+                getCatalog().getStyles().stream()
                         .filter(
                                 s ->
                                         s.getWorkspace() == null
@@ -199,9 +197,7 @@ public class ApiTest extends StylesTestSupport {
         @SuppressWarnings("unchecked")
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedStyleIds =
-                getCatalog()
-                        .getStyles()
-                        .stream()
+                getCatalog().getStyles().stream()
                         .filter(s -> s.getWorkspace() == null)
                         .map(StyleInfo::getName)
                         .collect(Collectors.toList());

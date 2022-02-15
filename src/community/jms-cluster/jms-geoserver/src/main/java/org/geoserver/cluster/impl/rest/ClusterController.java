@@ -55,24 +55,22 @@ public class ClusterController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper<Properties> getClusterConfiguration() {
         return wrapObject(config.getConfigurations(), Properties.class);
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public ResponseEntity<String> postClusterConfiguration(
             @RequestBody Properties props, UriComponentsBuilder builder) throws IOException {
         for (Object key : props.keySet()) {

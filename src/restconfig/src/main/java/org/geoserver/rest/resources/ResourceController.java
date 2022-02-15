@@ -235,9 +235,8 @@ public class ResourceController extends RestBaseController {
      *     requested operation
      */
     @RequestMapping(
-        method = {RequestMethod.GET, RequestMethod.HEAD},
-        produces = {MediaType.ALL_VALUE}
-    )
+            method = {RequestMethod.GET, RequestMethod.HEAD},
+            produces = {MediaType.ALL_VALUE})
     public Object resourceGet(
             HttpServletRequest request,
             HttpServletResponse response,

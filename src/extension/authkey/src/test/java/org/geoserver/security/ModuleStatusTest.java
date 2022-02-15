@@ -18,8 +18,7 @@ public class ModuleStatusTest {
             assertNotNull(context);
 
             Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context)
-                            .stream()
+                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
                             .filter(s -> s.getModule().equalsIgnoreCase("gs-authkey"))
                             .findFirst();
             assertTrue(status.isPresent());

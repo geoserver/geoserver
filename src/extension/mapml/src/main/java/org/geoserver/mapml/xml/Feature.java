@@ -56,10 +56,9 @@ public class Feature {
     //    protected List<Object> bboxOrImageOrGeometry;
     //
     @XmlElement(
-        name = "map-featurecaption",
-        required = false,
-        namespace = "http://www.w3.org/1999/xhtml"
-    )
+            name = "map-featurecaption",
+            required = false,
+            namespace = "http://www.w3.org/1999/xhtml")
     protected String featurecaption;
 
     @XmlElement(name = "map-geometry", required = false, namespace = "http://www.w3.org/1999/xhtml")
@@ -72,10 +71,9 @@ public class Feature {
     protected Image image;
 
     @XmlElement(
-        name = "map-properties",
-        required = false,
-        namespace = "http://www.w3.org/1999/xhtml"
-    )
+            name = "map-properties",
+            required = false,
+            namespace = "http://www.w3.org/1999/xhtml")
     protected PropertyContent properties;
 
     @XmlAttribute(name = "id")

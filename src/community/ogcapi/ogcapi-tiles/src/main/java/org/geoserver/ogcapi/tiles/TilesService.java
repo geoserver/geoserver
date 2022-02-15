@@ -73,11 +73,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @APIService(
-    service = "Tiles",
-    version = "1.0",
-    landingPage = "ogc/tiles",
-    serviceClass = TilesServiceInfo.class
-)
+        service = "Tiles",
+        version = "1.0",
+        landingPage = "ogc/tiles",
+        serviceClass = TilesServiceInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/tiles")
 public class TilesService {
 
@@ -135,14 +134,13 @@ public class TilesService {
     }
 
     @GetMapping(
-        path = "api",
-        name = "getApi",
-        produces = {
-            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-            "application/x-yaml",
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "api",
+            name = "getApi",
+            produces = {
+                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+                "application/x-yaml",
+                MediaType.TEXT_XML_VALUE
+            })
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -240,9 +238,8 @@ public class TilesService {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/styles/{styleId}/map/tiles",
-        name = "describeStyledMapTilesets"
-    )
+            path = "collections/{collectionId}/styles/{styleId}/map/tiles",
+            name = "describeStyledMapTilesets")
     @ResponseBody
     @HTMLResponseBody(templateName = "tiles-style.ftl", fileName = "tiles.html")
     public TilesDocument describeStyledMapTilesets(
@@ -256,9 +253,8 @@ public class TilesService {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/map/tiles/{tileMatrixId}",
-        name = "describeMapTileset"
-    )
+            path = "collections/{collectionId}/map/tiles/{tileMatrixId}",
+            name = "describeMapTileset")
     @ResponseBody
     @HTMLResponseBody(templateName = "tileset.ftl", fileName = "tileset.html")
     public Tileset describeMapTileset(
@@ -272,9 +268,8 @@ public class TilesService {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixId}",
-        name = "describeMapTileset"
-    )
+            path = "collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixId}",
+            name = "describeMapTileset")
     @ResponseBody
     @HTMLResponseBody(templateName = "tileset-style.ftl", fileName = "tileset.html")
     public Tileset describeStyledMapTileset(
@@ -311,10 +306,9 @@ public class TilesService {
     }
 
     @GetMapping(
-        path =
-                "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-        name = "getTile"
-    )
+            path =
+                    "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+            name = "getTile")
     @ResponseBody
     public ResponseEntity<byte[]> getRawTile(
             @PathVariable(name = "collectionId") String collectionId,
@@ -338,10 +332,9 @@ public class TilesService {
     }
 
     @GetMapping(
-        path =
-                "/collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-        name = "getStyledMapTile"
-    )
+            path =
+                    "/collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+            name = "getStyledMapTile")
     @ResponseBody
     public ResponseEntity<byte[]> getStyledMapTile(
             @PathVariable(name = "collectionId") String collectionId,
@@ -366,10 +359,9 @@ public class TilesService {
     }
 
     @GetMapping(
-        path =
-                "/collections/{collectionId}/map/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-        name = "getDefaultMapTile"
-    )
+            path =
+                    "/collections/{collectionId}/map/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+            name = "getDefaultMapTile")
     @ResponseBody
     public ResponseEntity<byte[]> getDefaultMapTileTile(
             @PathVariable(name = "collectionId") String collectionId,
@@ -528,9 +520,7 @@ public class TilesService {
         // we might use the exact filter provided in input, but it should round trip ok
         // and makes it easier to support multiple filter languages in the future
         String cqlSpec = ECQL.toCQL(filter);
-        return tileLayer
-                .getParameterFilters()
-                .stream()
+        return tileLayer.getParameterFilters().stream()
                 .filter(pf -> pf.getKey().equalsIgnoreCase("CQL_FILTER") && pf.applies((cqlSpec)))
                 .map(
                         pf -> {
@@ -547,9 +537,7 @@ public class TilesService {
     }
 
     private boolean supportsCQLFilter(TileLayer tileLayer, String cqlSpec) {
-        return tileLayer
-                .getParameterFilters()
-                .stream()
+        return tileLayer.getParameterFilters().stream()
                 .anyMatch(pf -> pf.getKey().equalsIgnoreCase("CQL_FILTER") && pf.applies(cqlSpec));
     }
 
@@ -568,9 +556,7 @@ public class TilesService {
         } else {
             // look for the other possible values
             Optional<ParameterFilter> styles =
-                    tileLayer
-                            .getParameterFilters()
-                            .stream()
+                    tileLayer.getParameterFilters().stream()
                             .filter(pf -> "styles".equalsIgnoreCase(pf.getKey()))
                             .findFirst();
             if (!styles.isPresent() || !styles.get().applies(styleId)) {
@@ -692,9 +678,7 @@ public class TilesService {
     public static MimeType getRequestedFormat(
             TileLayer tileLayer, boolean renderedTile, List<MediaType> requestedTypes) {
         Map<MediaType, MimeType> layerTypes =
-                tileLayer
-                        .getMimeTypes()
-                        .stream()
+                tileLayer.getMimeTypes().stream()
                         .filter(mt -> renderedTile ? !mt.isVector() : mt.isVector())
                         .collect(
                                 Collectors.toMap(
@@ -768,9 +752,8 @@ public class TilesService {
     }
 
     @GetMapping(
-        path = "/collections/{collectionId}/map/tiles/{tileMatrixSetId}/metadata",
-        name = "getTilesMetadata"
-    )
+            path = "/collections/{collectionId}/map/tiles/{tileMatrixSetId}/metadata",
+            name = "getTilesMetadata")
     @ResponseBody
     public TileJSON getTileJSON(
             @PathVariable(name = "collectionId") String collectionId,
@@ -782,9 +765,9 @@ public class TilesService {
     }
 
     @GetMapping(
-        path = "/collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixSetId}/metadata",
-        name = "getTilesMetadata"
-    )
+            path =
+                    "/collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixSetId}/metadata",
+            name = "getTilesMetadata")
     @ResponseBody
     public TileJSON getTileJSON(
             @PathVariable(name = "collectionId") String collectionId,
@@ -797,9 +780,8 @@ public class TilesService {
     }
 
     @GetMapping(
-        path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
-        name = "getTilesMetadata"
-    )
+            path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
+            name = "getTilesMetadata")
     @ResponseBody
     public TileJSON getTileJSON(
             @PathVariable(name = "collectionId") String collectionId,

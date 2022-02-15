@@ -355,9 +355,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     String axisName = axis.getName();
                     String key = ResourceInfo.CUSTOM_DIMENSION_PREFIX + axisName;
                     Object dimInfo =
-                            meta.getMetadata()
-                                    .entrySet()
-                                    .stream()
+                            meta.getMetadata().entrySet().stream()
                                     .filter(e -> e.getKey().equalsIgnoreCase(key))
                                     .findFirst()
                                     .map(e -> e.getValue())

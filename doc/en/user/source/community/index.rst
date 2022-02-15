@@ -12,51 +12,53 @@ officially part of the GeoServer releases. They are however built along with the
    Community modules are generally considered experimental in nature and are often under constant development. For that reason documentation in this section should not be considered solid or final and will be subject to change.
 
 
+.. please keep the following list sorted alphabetically 
+
 .. toctree::
    :maxdepth: 1
 
-   oauth2/index
-   keycloak/index
-   keycloak/keycloak_role_service
-   dds/index
+   backuprestore/index
+   cog/index
    colormap/index
-   jdbcconfig/index
-   mbtiles/index
-   geopkg/index
-   pgraster/pgraster
-   jms-cluster/index
-   solr/index
+   cov-json/index
+   csw-iso/index
+   dds/index
    elasticsearch/index
-   geomesa/index
-   gwc-distributed/index
+   features-templating/index
    flatgeobuf/index
    gdal/index
-   gwc-azure-blob/index
-   gwc-sqlite/index
-   remote-wps/index
-   jdbcstore/index
-   ncwms/index
-   backuprestore/index
-   saml/index
-   notification/index
-   opensearch-eo/index
-   s3-geotiff/index
-   netcdf-ghrsst/index
-   monitor-hibernate/index
-   taskmanager/index
-   metadata/index
-   ogr-store/index
+   geomesa/index
+   geopkg/index
    geostyler/index
-   csw-iso/index
-   importer-jdbc/index
-   hana/index
-   features-templating/index
-   ogc-api/index
    gsr/index
-   cog/index
-   cov-json/index
-   smart-data-loader/index
-   schemaless-features/index
-   web-service-auth/index
+   gwc-azure-blob/index
+   gwc-distributed/index
    gwc-mbtiles/index
+   gwc-sqlite/index
+   hana/index
+   importer-jdbc/index
+   jdbcconfig/index
+   jdbcstore/index
+   jms-cluster/index
+   keycloak/index
+   keycloak/keycloak_role_service
+   mbtiles/index
+   metadata/index
+   monitor-hibernate/index
+   ncwms/index
+   netcdf-ghrsst/index
+   notification/index
+   oauth2/index
+   ogc-api/index
+   ogr-store/index
+   opensearch-eo/index
+   pgraster/pgraster
+   remote-wps/index
+   s3-geotiff/index
+   saml/index
+   schemaless-features/index
+   smart-data-loader/index
+   solr/index
+   taskmanager/index
    vsi/index
+   web-service-auth/index

@@ -112,13 +112,11 @@ public class MessageConverterResponseAdapter<T>
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         Predicate<Response> predicate = getResponseFilterPredicate();
         this.responses =
-                GeoServerExtensions.extensions(Response.class, applicationContext)
-                        .stream()
+                GeoServerExtensions.extensions(Response.class, applicationContext).stream()
                         .filter(predicate)
                         .collect(Collectors.toList());
         this.supportedMediaTypes =
-                this.responses
-                        .stream()
+                this.responses.stream()
                         .flatMap(r -> getMediaTypeStream(r))
                         .distinct()
                         .collect(Collectors.toList());
@@ -129,8 +127,7 @@ public class MessageConverterResponseAdapter<T>
     }
 
     protected Stream<MediaType> getMediaTypeStream(Response r) {
-        return r.getOutputFormats()
-                .stream()
+        return r.getOutputFormats().stream()
                 .filter(f -> f.contains("/"))
                 .filter(
                         f -> {

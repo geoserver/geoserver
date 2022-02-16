@@ -2253,6 +2253,54 @@ public class DownloadProcessTest extends WPSTestSupport {
     }
 
     /**
+     * Test download estimator for raster data. The estimate must work even when dimension type not
+     * present in a saved Coverage. See GEOS-9785
+     */
+    @Test(expected = Test.None.class)
+    public void testDownloadEstimatorReloadsCoverageDimensionsWhenNull() {
+        CoverageInfo mycoverage =
+                getCatalog().getCoverageByName(MockData.USA_WORLDIMG.getLocalPart());
+        mycoverage.getDimensions().get(0).setDimensionType(null);
+        getCatalog().save(mycoverage);
+        final WPSResourceManager resourceManager = getResourceManager();
+        DownloadEstimatorProcess limits =
+                new DownloadEstimatorProcess(
+                        new StaticDownloadServiceConfiguration(
+                                new DownloadServiceConfiguration(
+                                        DownloadServiceConfiguration.NO_LIMIT,
+                                        DownloadServiceConfiguration.NO_LIMIT,
+                                        DownloadServiceConfiguration.NO_LIMIT,
+                                        DownloadServiceConfiguration.NO_LIMIT,
+                                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
+                                        DownloadServiceConfiguration.NO_LIMIT)),
+                        getGeoServer());
+        DownloadProcess downloadProcess =
+                new DownloadProcess(getGeoServer(), limits, resourceManager);
+        // ROI as polygon
+
+        // Download the data with ROI. It should throw an exception
+        downloadProcess.execute(
+                getLayerId(MockData.USA_WORLDIMG), // layerName
+                null, // filter
+                "image/tiff", // outputFormat
+                "image/tiff",
+                null, // targetCRS
+                null, // roiCRS
+                null, // roi
+                true, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
+                null, // bandSelectIndices
+                null, // Writing params
+                false,
+                false,
+                0d,
+                null,
+                new NullProgressListener() // progressListener
+                );
+    }
+    /**
      * Test download estimator for raster data. The result should exceed the limits
      *
      * @throws Exception the exception

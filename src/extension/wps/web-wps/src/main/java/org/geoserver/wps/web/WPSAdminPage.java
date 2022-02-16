@@ -97,6 +97,12 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
                         new ParamResourceModel("storageDirectory", this),
                         false);
         form.add(chooser);
+        form.add(
+                new DirectoryParamPanel(
+                        "externalOutputDirectory",
+                        new PropertyModel<>(info, "externalOutputDirectory"),
+                        new ParamResourceModel("externalOutputDirectory", this),
+                        false));
 
         form.add(new TotalTimeValidator(maxSynchTotalTime, maxSynchExecutionTime));
         form.add(new TotalTimeValidator(maxAsynchTotalTime, maxAsynchExecutionTime));

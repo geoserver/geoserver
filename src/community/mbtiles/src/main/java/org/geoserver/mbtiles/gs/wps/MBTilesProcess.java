@@ -180,9 +180,8 @@ public class MBTilesProcess implements GeoServerProcess {
 
         String outputResourceName = name + ".mbtiles";
         if (path != null) {
-            File urlToFile = URLs.urlToFile(path);
-            urlToFile.mkdirs();
-            file = new File(urlToFile, outputResourceName);
+            String urlToFile = URLs.urlToFile(path).getPath();
+            file = resources.getExternalOutputFile(urlToFile, outputResourceName);
         } else {
             final Resource resource = resources.getOutputResource(null, outputResourceName);
             file = resource.file();

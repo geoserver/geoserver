@@ -53,7 +53,9 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.WPSTestSupport;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureReader;
@@ -774,6 +776,8 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     @Test
     public void testGeoPackageProcessWithPath() throws Exception {
         File path = getDataDirectory().findOrCreateDataRoot();
+        GeoServerExtensions.bean(WPSResourceManager.class)
+                .setExternalOutputDirectory(URLs.fileToUrl(path).toString());
 
         String urlPath = string(post("wps", getXml2(path, false))).trim();
         File file = new File(path, "test.gpkg");
@@ -810,6 +814,32 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         tr.close();
 
         gpkg.close();
+    }
+
+    @Test
+    public void testGeoPackageProcessWithPathExternalOutputDisabled() throws Exception {
+        File path = getDataDirectory().findOrCreateDataRoot();
+        String xml = string(post("wps", getXml2(path, false)));
+        assertThat(xml, containsString("Writing to external output files is disabled"));
+    }
+
+    @Test
+    public void testGeoPackageProcessWithPathTraversal() throws Exception {
+        File path = getDataDirectory().findOrCreateDataRoot();
+        GeoServerExtensions.bean(WPSResourceManager.class)
+                .setExternalOutputDirectory(URLs.fileToUrl(path).toString());
+        String xml = string(post("wps", getXml2(new File(path, ".."), false)));
+        assertThat(
+                xml, containsString("Output file contains invalid &amp;apos;..&amp;apos; in path"));
+    }
+
+    @Test
+    public void testGeoPackageProcessWithPathNotAllowed() throws Exception {
+        File path = getDataDirectory().findOrCreateDataRoot();
+        GeoServerExtensions.bean(WPSResourceManager.class)
+                .setExternalOutputDirectory(URLs.fileToUrl(path).toString());
+        String xml = string(post("wps", getXml2(getDataDirectory().root(), false)));
+        assertThat(xml, containsString("Output file is not in the allowed directory"));
     }
 
     @Test

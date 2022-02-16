@@ -71,6 +71,20 @@ public interface WPSInfo extends ServiceInfo {
     public void setStorageDirectory(String storageDirectory);
 
     /**
+     * Gets the directory where processes are allowed to store outputs outside of the WPS resource
+     * storage so that the files will not be automatically removed based on the resource expiration
+     * timeout.
+     */
+    public String getExternalOutputDirectory();
+
+    /**
+     * Sets the directory where processes are allowed to store outputs outside of the WPS resource
+     * storage so that the files will not be automatically removed based on the resource expiration
+     * timeout.
+     */
+    public void setExternalOutputDirectory(String externalOutputDirectory);
+
+    /**
      * Controls how the server allows access to secured processes, in a similar way to how the
      * catalog controls access to secured layers
      */

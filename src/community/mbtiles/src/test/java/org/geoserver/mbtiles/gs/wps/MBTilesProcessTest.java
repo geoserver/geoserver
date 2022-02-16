@@ -4,6 +4,8 @@
  */
 package org.geoserver.mbtiles.gs.wps;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -12,7 +14,9 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.WPSTestSupport;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.mbtiles.MBTilesFile;
 import org.geotools.mbtiles.MBTilesMetadata;
 import org.geotools.util.URLs;
@@ -32,6 +36,8 @@ public class MBTilesProcessTest extends WPSTestSupport {
     @Test
     public void testMBTilesProcess() throws Exception {
         File path = getDataDirectory().findOrCreateDataRoot();
+        GeoServerExtensions.bean(WPSResourceManager.class)
+                .setExternalOutputDirectory(URLs.fileToUrl(path).toString());
 
         String urlPath = string(post("wps", getXml(path))).trim();
         File file = new File(path, "World.mbtiles");
@@ -55,6 +61,32 @@ public class MBTilesProcessTest extends WPSTestSupport {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    @Test
+    public void testMBTilesProcessExternalOutputDisabled() throws Exception {
+        File path = getDataDirectory().findOrCreateDataRoot();
+        String xml = string(post("wps", getXml(path)));
+        assertThat(xml, containsString("Writing to external output files is disabled"));
+    }
+
+    @Test
+    public void testMBTilesProcessWithPathTraversal() throws Exception {
+        File path = getDataDirectory().findOrCreateDataRoot();
+        GeoServerExtensions.bean(WPSResourceManager.class)
+                .setExternalOutputDirectory(URLs.fileToUrl(path).toString());
+        String xml = string(post("wps", getXml(new File(path, ".."))));
+        assertThat(
+                xml, containsString("Output file contains invalid &amp;apos;..&amp;apos; in path"));
+    }
+
+    @Test
+    public void testMBTilesProcessWithPathNotAllowed() throws Exception {
+        File path = getDataDirectory().findOrCreateDataRoot();
+        GeoServerExtensions.bean(WPSResourceManager.class)
+                .setExternalOutputDirectory(URLs.fileToUrl(path).toString());
+        String xml = string(post("wps", getXml(getDataDirectory().root())));
+        assertThat(xml, containsString("Output file is not in the allowed directory"));
     }
 
     public String getXml(File temp) {

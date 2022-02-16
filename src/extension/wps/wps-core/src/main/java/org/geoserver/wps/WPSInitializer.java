@@ -160,6 +160,7 @@ public class WPSInitializer implements GeoServerInitializer {
                     (DefaultProcessArtifactsStore) resources.getArtifactsStore();
             artifactsStore.setResourceStore(resourceStore);
         }
+        resources.setExternalOutputDirectory(info.getExternalOutputDirectory());
 
         lookupNewProcessGroups(info, geoServer);
     }

@@ -7,13 +7,16 @@ package org.geoserver.wps.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.wps.WPSException;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.junit.After;
@@ -24,13 +27,16 @@ public class WPSResourceManagerTest extends WPSTestSupport {
 
     WPSResourceManager resourceMgr;
 
+    GeoServerResourceLoader resourceLoader;
+
     ProcessStatusTracker tracker;
 
     private static final File WPS_RESOURCE_DIR = new File("target/gs_datadir/tmp/wps");
 
     @Before
     public void setUpInternal() throws Exception {
-        resourceMgr = new WPSResourceManager();
+        resourceLoader = getResourceLoader();
+        resourceMgr = new WPSResourceManager(resourceLoader);
         resourceMgr.setApplicationContext(applicationContext);
 
         if (WPS_RESOURCE_DIR.exists()) {
@@ -94,5 +100,63 @@ public class WPSResourceManagerTest extends WPSTestSupport {
 
         // Check the processId folder doesn't exist anymore
         assertFalse(processDir.exists());
+    }
+
+    @Test
+    public void testGetExternalOutputFileDisabled() throws Exception {
+        // null output directory
+        this.resourceMgr.setExternalOutputDirectory(null);
+        checkOutputFileException(
+                "foo", null, WPSException.class, "Writing to external output files is disabled");
+
+        // empty output directory
+        this.resourceMgr.setExternalOutputDirectory("");
+        checkOutputFileException(
+                "foo", null, WPSException.class, "Writing to external output files is disabled");
+
+        // output directory all spaces
+        this.resourceMgr.setExternalOutputDirectory("    ");
+        checkOutputFileException(
+                "foo", null, WPSException.class, "Writing to external output files is disabled");
+    }
+
+    @Test
+    public void testGetExternalOutputFileEnabled() throws Exception {
+        this.resourceMgr.setExternalOutputDirectory("file:test");
+
+        // path traversal throws exception
+        checkOutputFileException(
+                "foo/../../",
+                "bar",
+                IllegalArgumentException.class,
+                "Output file contains invalid '..' in path");
+        checkOutputFileException(
+                "foo",
+                "../../bar",
+                IllegalArgumentException.class,
+                "Output file contains invalid '..' in path");
+
+        // output file outside of the allowed directory
+        String path1 = new File(resourceLoader.getBaseDirectory(), "foo").getAbsolutePath();
+        checkOutputFileException(
+                path1, "bar", WPSException.class, "Output file is not in the allowed directory");
+
+        // valid absolute output file path
+        File expected =
+                new File(resourceLoader.getBaseDirectory(), "test/foo/bar").getAbsoluteFile();
+        assertEquals(expected, this.resourceMgr.getExternalOutputFile(expected.getPath(), null));
+        String path2 = new File(resourceLoader.getBaseDirectory(), "test/foo").getAbsolutePath();
+        assertEquals(expected, this.resourceMgr.getExternalOutputFile(path2, "bar"));
+
+        // valid relative output file path
+        assertEquals(expected, this.resourceMgr.getExternalOutputFile("foo/bar", null));
+        assertEquals(expected, this.resourceMgr.getExternalOutputFile("foo", "bar"));
+    }
+
+    private void checkOutputFileException(
+            String path, String file, Class<? extends Exception> clazz, String message) {
+        Exception exception =
+                assertThrows(clazz, () -> this.resourceMgr.getExternalOutputFile(path, file));
+        assertEquals(message, exception.getMessage());
     }
 }

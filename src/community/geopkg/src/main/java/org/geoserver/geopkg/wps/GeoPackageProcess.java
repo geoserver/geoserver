@@ -171,9 +171,8 @@ public class GeoPackageProcess implements GeoServerProcess {
 
         String outputName = contents.getName() + ".gpkg";
         if (!remove && path != null) {
-            File urlToFile = URLs.urlToFile(path);
-            urlToFile.mkdirs();
-            file = new File(urlToFile, contents.getName() + ".gpkg");
+            String urlToFile = URLs.urlToFile(path).getPath();
+            file = resources.getExternalOutputFile(urlToFile, outputName);
         } else {
             file = resources.getOutputResource(null, outputName).file();
         }

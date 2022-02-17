@@ -24,6 +24,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SearchTest extends STACTestSupport {
@@ -34,6 +35,10 @@ public class SearchTest extends STACTestSupport {
 
         copyTemplate("/mandatoryLinks.json");
         copyTemplate("/items-LANDSAT8.json");
+        // these 3 needed for SAS1 to work
+        copyTemplate("/items-SAS1.json");
+        copyTemplate("/box.json");
+        copyTemplate("/parentLink.json");
     }
 
     @Test
@@ -449,6 +454,9 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    @Ignore // we changed lookups so that queryables and filter back-mapping match 1-1
+    // gsd was not considered a queryable, so it's not filterable upon... we might get this
+    // back if gsd is considered a valid queryable too
     public void testLandsat8Gsd() throws Exception {
         // gsd is statically set to 30, default template misses is, only landsat8 should come back
         // only one feature matching.
@@ -581,5 +589,18 @@ public class SearchTest extends STACTestSupport {
                         "GS_TEST_PRODUCT.01",
                         "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
                         "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04"));
+    }
+
+    @Test
+    public void testQueryByDynamicProperty() throws Exception {
+        // s2:datastrip_id is in a dynamically included JSON
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/collections/SAS1/items?filter=s2:datastrip_id = 'S2A_OPER_MSI_L2A_DS_VGS1_20201206T095713_S20201206T074838_N02.14'",
+                        200);
+
+        List<String> ids = doc.read("features[*].id");
+        assertEquals(1, ids.size());
+        assertThat(ids, contains("SAS1_20180226102021.01"));
     }
 }

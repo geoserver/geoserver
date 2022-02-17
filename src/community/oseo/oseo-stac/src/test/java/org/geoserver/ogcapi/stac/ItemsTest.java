@@ -402,19 +402,21 @@ public class ItemsTest extends STACTestSupport {
         // same as dynamicIncludeFlatTest2 but checking filters are getting mapped
         DocumentContext json =
                 getAsJSONPath(
-                        "ogc/stac/collections/SAS1/items?filter=sat:absolute_orbit < 60", 200);
+                        "ogc/stac/collections/SAS1/items?filter=sat:absolute_orbit < 17050", 200);
 
         assertEquals(1, json.read("features", List.class).size());
         assertThat(
                 json.read("features[0].properties.sat:absolute_orbit", Double.class),
-                lessThanOrEqualTo(60d));
+                lessThanOrEqualTo(17050d));
 
-        json = getAsJSONPath("ogc/stac/collections/SAS1/items?filter=sat:absolute_orbit > 60", 200);
+        json =
+                getAsJSONPath(
+                        "ogc/stac/collections/SAS1/items?filter=sat:absolute_orbit > 17050", 200);
 
         assertEquals(1, json.read("features", List.class).size());
         assertThat(
                 json.read("features[0].properties.sat:absolute_orbit", Double.class),
-                greaterThanOrEqualTo(60d));
+                greaterThanOrEqualTo(17050d));
     }
 
     @Test
@@ -426,7 +428,7 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(2, json.read("features", List.class).size());
         assertEquals(
                 json.read("features..properties.sat:absolute_orbit", List.class),
-                Arrays.asList(55, 65));
+                Arrays.asList(17030, 17060));
 
         // sorting down
         json = getAsJSONPath("ogc/stac/collections/SAS1/items?sortby=-sat:absolute_orbit", 200);
@@ -434,7 +436,7 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(2, json.read("features", List.class).size());
         assertEquals(
                 json.read("features..properties.sat:absolute_orbit", List.class),
-                Arrays.asList(65, 55));
+                Arrays.asList(17060, 17030));
     }
 
     @Test
@@ -477,5 +479,16 @@ public class ItemsTest extends STACTestSupport {
                 contains(
                         "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
                         "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
+    }
+
+    @Test
+    public void testQueryByDynamicProperty() throws Exception {
+        // s2:datastrip_id is in a dynamically included JSON
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/collections/SAS1/items?filter=s2:datastrip_id = 'S2A_OPER_MSI_L2A_DS_VGS1_20201206T095713_S20201206T074838_N02.14'",
+                        200);
+
+        assertThat((List<String>) doc.read("features[*].id"), contains("SAS1_20180226102021.01"));
     }
 }

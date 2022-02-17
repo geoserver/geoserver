@@ -62,9 +62,6 @@ public abstract class FilterKvpParser extends KvpParser {
         final Configuration configuration = getParserConfiguration();
         final Parser parser = new Parser(configuration);
         parser.setEntityResolver(entityResolverProvider.getEntityResolver());
-        if (entityResolverProvider.skipValidation()) {
-            parser.setValidating(false);
-        }
 
         // separate the individual filter strings
         List<String> unparsed = KvpUtils.readFlat(value, KvpUtils.OUTER_DELIMETER);
@@ -125,9 +122,6 @@ public abstract class FilterKvpParser extends KvpParser {
         // read in XML file and parse to content handler
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            if (entityResolverProvider.skipValidation()) {
-                factory.setValidating(false);
-            }
             SAXParser parser = factory.newSAXParser();
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
             adapter.setEntityResolver(entityResolverProvider.getEntityResolver());

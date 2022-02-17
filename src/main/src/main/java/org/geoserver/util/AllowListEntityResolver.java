@@ -18,28 +18,34 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
 
 /**
- * Internal EntityResolver allowing connections to GeoServer contents, and OGC / W3C content.
+ * Restricted EntityResolver allowing connections to geoserver base proxy, and OGC / W3C content,
+ * and those provided by GEOSERVER_ENTITY_RESOLUTION.
  *
  * @author Jody Garnett (GeoCat)
  */
-public class InternalEntityResolver implements EntityResolver2, Serializable {
+public class AllowListEntityResolver implements EntityResolver2, Serializable {
+
+    /** Location of Open Geospatical Consortium schemas for OGC OpenGIS standards */
+    private static String OGC = "schemas.opengis.net|www.opengis.net";
+
+    /**
+     * Location of {@code http://inspire.ec.europa.eu/schemas/ } XSD documents for INSPIRE program
+     */
+    private static String INSPIRE = "inspire.ec.europa.eu/schemas";
+
+    /** Location of W3C schema documents (for xlink, etc...) */
+    private static String W3C = "www.w3.org";
 
     /** Prefix used for SAXException message */
-    public static final String ERROR_MESSAGE_BASE = "Entity resolution disallowed for ";
+    private static final String ERROR_MESSAGE_BASE = "Entity resolution disallowed for ";
 
-    protected static final Logger LOGGER = Logging.getLogger(InternalEntityResolver.class);
+    protected static final Logger LOGGER = Logging.getLogger(AllowListEntityResolver.class);
 
     /** Internal uri references */
     private static final Pattern INTERNAL_URIS = Pattern.compile("(?i)(jar:file|vfs)[^?#;]*\\.xsd");
 
-    /** OGC Schema references */
-    private static final Pattern OGC_URIS =
-            Pattern.compile(
-                    "(?i)(http|https)://(schemas.opengis.net|www.opengis.net)/[^?#;]*\\.xsd");
-
-    /** W3C Schema references */
-    private static final Pattern W3C_URIS =
-            Pattern.compile("(?i)(http|https)://(www.w3.org)/[^?#;]*\\.xsd");
+    /** Allowed http(s) locations */
+    private final Pattern ALLOWED_URIS;
 
     /** Base URL from request used to identify internal http(s) references. */
     private final String baseURL;
@@ -48,26 +54,51 @@ public class InternalEntityResolver implements EntityResolver2, Serializable {
     private final GeoServer geoServer;
 
     /**
-     * InternalEntityResolver willing to resolve commong ogc and w3c entities, and those relative to
-     * GeoServer proxy base url.
+     * AllowListEntityResolver willing to resolve commong ogc and w3c entities, and those relative
+     * to GeoServer proxy base url.
      *
      * @param geoServer Used to obtain settings for proxy base url
      */
-    public InternalEntityResolver(GeoServer geoServer) {
-        this.geoServer = geoServer;
-        this.baseURL = null;
+    public AllowListEntityResolver(GeoServer geoServer) {
+        this(geoServer, null);
     }
 
     /**
-     * InternalEntityResolver willing to resolve commong ogc and w3c entities, and those relative a
+     * AllowListEntityResolver willing to resolve common ogc and w3c entities, and those relative a
      * base url.
      *
      * @param geoServer Used to obtain settings for proxy base url
      * @param baseURL Base url provided by current request
      */
-    public InternalEntityResolver(GeoServer geoServer, String baseURL) {
+    public AllowListEntityResolver(GeoServer geoServer, String baseURL) {
         this.geoServer = geoServer;
         this.baseURL = baseURL;
+        if (EntityResolverProvider.ALLOW_LIST == null
+                || EntityResolverProvider.ALLOW_LIST.length == 0) {
+            // Restrict using the built-in allow list
+            ALLOWED_URIS =
+                    Pattern.compile(
+                            "(?i)(http|https)://("
+                                    + W3C
+                                    + "|"
+                                    + OGC
+                                    + "|"
+                                    + INSPIRE
+                                    + ")/[^?#;]*\\.xsd");
+        } else {
+            StringBuilder pattern = new StringBuilder("(?i)(http|https)://(");
+            pattern.append(W3C).append('|');
+            pattern.append(OGC).append('|');
+            pattern.append(INSPIRE);
+            for (String allow : EntityResolverProvider.ALLOW_LIST) {
+                pattern.append('|').append(allow);
+            }
+            pattern.append(")/[^?#;]*\\.xsd");
+            String regex = pattern.toString();
+            LOGGER.fine("ENTITY_RESOLUTION_ALLOWLIST processed:" + regex);
+
+            ALLOWED_URIS = Pattern.compile(regex);
+        }
     }
 
     @Override
@@ -110,15 +141,18 @@ public class InternalEntityResolver implements EntityResolver2, Serializable {
                 // double check this is the same result as with URL
                 String check = new URL(new URL(baseURI), systemId).toString();
                 if (!uri.equals(check)) {
+                    LOGGER.finest("URL used to resolve systemId:" + check);
                     uri = check;
                 }
             }
             // check if the absolute systemId is an allowed URI jar or vfs reference
             if (INTERNAL_URIS.matcher(uri).matches()) {
+                LOGGER.finest("resolveEntity internal: " + uri);
                 return null;
             }
             // Allow select external locations
-            if (OGC_URIS.matcher(uri).matches() || W3C_URIS.matcher(uri).matches()) {
+            if (ALLOWED_URIS.matcher(uri).matches()) {
+                LOGGER.finest("resolveEntity allowed: " + uri);
                 return null;
             }
 
@@ -126,10 +160,12 @@ public class InternalEntityResolver implements EntityResolver2, Serializable {
             if (geoServer != null) {
                 final String PROXY_BASE = geoServer.getSettings().getProxyBaseUrl();
                 if (PROXY_BASE != null && uri_lowercase.startsWith(PROXY_BASE.toLowerCase())) {
+                    LOGGER.finest("resolveEntity proxy base: " + uri);
                     return null;
                 }
             }
             if (baseURL != null && uri_lowercase.startsWith(baseURL.toLowerCase())) {
+                LOGGER.finest("resolveEntity proxy base: " + uri);
                 return null;
             }
         } catch (Exception e) {

@@ -108,3 +108,34 @@ In case you want it set to text/xml instead, you need to setup the Java System p
 
 * -Dows10.exception.xml.responsetype=text/xml for OWS 1.0.0 version
 * -Dows11.exception.xml.responsetype=text/xml for OWS 1.1.0 version
+
+.. _production_config_external_entities:
+
+External Entities Resolution
+----------------------------
+
+When processing XML documents from service requests (POST requests, and GET requests with FILTER and SLD_BODY parameters) XML entity resolution to obtain any referenced documents. This is most commonly seen when the XML request provides the location of an XSD schema location for validation).
+
+GeoServer provides a number of facilities to control external entity resolution:
+
+* By default `http` and `https` entity resolution is unrestricted, with access to local `file` references prevented.
+  
+* To restrict `http` and `https` entity resolution::
+
+     -DENTITY_RESOLUTION_ALLOWLIST
+  
+  The built-in allow list includes w3c, ogc, and inspire schema locations::
+  
+     www.w3.org|schemas.opengis.net|www.opengis.net|inspire.ec.europa.eu/schemas
+     
+  In addition the proxy base url is included, if available from global settings.
+  
+  Access to local `file` references remains restricted. 
+  
+* To allow additional external entity `http` and `https` locations use a comma or bar separated list::
+
+     -DENTITY_RESOLUTION_ALLOWLIST=server1|server2|server3/schemas
+
+* To turn off all restrictions (allowing `http`, `https`, and `file` references) use the global setting :ref:`config_globalsettings_external_entities`.
+  
+  This setting prevents ``ENTITY_RESOLUTION_ALLOWLIST`` from being used.

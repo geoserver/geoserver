@@ -73,6 +73,7 @@ public class STACSortablesMapper {
             TemplatePropertyVisitor visitor =
                     new TemplatePropertyVisitor(
                             properties,
+                            null,
                             (path, vb) -> {
                                 if (isSortable(vb))
                                     result.getProperties().put(path, getSchema(getClass(vb)));
@@ -92,6 +93,7 @@ public class STACSortablesMapper {
             TemplatePropertyVisitor visitor =
                     new TemplatePropertyVisitor(
                             properties,
+                            null, // no sample feature, cannot sort on a jsonPointer anyways
                             (path, vb) -> {
                                 if (isSortable(vb))
                                     result.put(path, vb.getXpath().getPropertyName());

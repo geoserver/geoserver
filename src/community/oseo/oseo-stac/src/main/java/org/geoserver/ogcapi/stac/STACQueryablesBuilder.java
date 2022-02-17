@@ -4,8 +4,11 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.geoserver.ogcapi.stac.TemplatePropertyVisitor.JSON_PROPERTY_TYPE;
+
 import io.swagger.v3.oas.models.media.Schema;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,9 +20,13 @@ import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.ogcapi.AttributeType;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.QueryablesBuilder;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.ExpressionTypeVisitor;
+import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
 
 public class STACQueryablesBuilder {
 
@@ -32,6 +39,18 @@ public class STACQueryablesBuilder {
     public static final String DATETIME_SCHEMA_REF =
             "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/datetime.json#/properties/datetime";
     private static Set<String> SKIP_PROPERTIES = new HashSet<>();
+
+    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+
+    static final Map<String, String> WELL_KNOWN_PROPERTIES;
+
+    static {
+        WELL_KNOWN_PROPERTIES = new HashMap<>();
+        WELL_KNOWN_PROPERTIES.put("geometry", "footprint");
+        WELL_KNOWN_PROPERTIES.put("id", "identifier");
+        WELL_KNOWN_PROPERTIES.put("collection", "parentIdentifier");
+        WELL_KNOWN_PROPERTIES.put("datetime", "timeStart");
+    }
 
     static {
         // replaced by "datetime"
@@ -49,12 +68,15 @@ public class STACQueryablesBuilder {
     private final TemplateBuilder template;
     private final Queryables queryables;
     private final FeatureType itemsSchema;
+    private final Feature sampleFeature;
 
-    public STACQueryablesBuilder(String id, TemplateBuilder template, FeatureType itemsSchema) {
+    public STACQueryablesBuilder(
+            String id, TemplateBuilder template, FeatureType itemsSchema, Feature sampleFeature) {
         this.queryables = new QueryablesBuilder(id).build();
         this.queryables.setProperties(new LinkedHashMap<>());
         this.template = template;
         this.itemsSchema = itemsSchema;
+        this.sampleFeature = sampleFeature;
     }
 
     Queryables getQueryables() throws IOException {
@@ -65,6 +87,7 @@ public class STACQueryablesBuilder {
                 TemplatePropertyVisitor visitor =
                         new TemplatePropertyVisitor(
                                 properties,
+                                sampleFeature,
                                 (path, vb) -> {
                                     if (SKIP_PROPERTIES.contains(path)) return;
                                     queryables.getProperties().put(path, getSchema(vb));
@@ -80,6 +103,38 @@ public class STACQueryablesBuilder {
         properties.put("datetime", getSchema("Datetime", DATETIME_SCHEMA_REF));
 
         return this.queryables;
+    }
+
+    /**
+     * Returns a map between the path names used for queryables, and the expression backing them in
+     * the database
+     *
+     * @return
+     * @throws IOException
+     */
+    Map<String, Expression> getExpressionMap() {
+        AbstractTemplateBuilder features = lookupBuilder(template, "features");
+        Map<String, Expression> result = new HashMap<>();
+        if (features != null) {
+            AbstractTemplateBuilder properties = lookupBuilder(features, "properties");
+            if (properties != null) {
+                TemplatePropertyVisitor visitor =
+                        new TemplatePropertyVisitor(
+                                properties,
+                                sampleFeature,
+                                (path, vb) -> {
+                                    if (SKIP_PROPERTIES.contains(path)) return;
+                                    result.put(
+                                            path,
+                                            vb.getXpath() == null ? vb.getCql() : vb.getXpath());
+                                });
+                visitor.visit();
+            }
+        }
+        // force in the extra properties not found under properties
+        WELL_KNOWN_PROPERTIES.forEach((k, v) -> result.put(k, FF.property(v)));
+
+        return result;
     }
 
     private Schema<?> getSchema(String description, String ref) {
@@ -105,7 +160,9 @@ public class STACQueryablesBuilder {
 
     private Schema getSchema(DynamicValueBuilder db) {
         Class<?> binding = null;
-        if (db.getXpath() != null) {
+        if (db.getEncodingHints().hasHint(JSON_PROPERTY_TYPE)) {
+            binding = (Class<?>) db.getEncodingHints().get(JSON_PROPERTY_TYPE);
+        } else if (db.getXpath() != null) {
             Object result = db.getXpath().evaluate(itemsSchema);
             if (result instanceof PropertyDescriptor) {
                 PropertyDescriptor pd = (PropertyDescriptor) result;

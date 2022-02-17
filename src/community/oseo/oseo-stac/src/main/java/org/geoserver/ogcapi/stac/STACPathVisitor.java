@@ -4,13 +4,8 @@
  */
 package org.geoserver.ogcapi.stac;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import org.geoserver.featurestemplating.builders.TemplateBuilder;
-import org.geoserver.featurestemplating.request.TemplatePathVisitor;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 
@@ -22,54 +17,22 @@ import org.opengis.filter.expression.PropertyName;
  *   <li>Handles the case where multiple templates are used against the same template
  * </ul>
  */
-public class STACPathVisitor extends TemplatePathVisitor {
+public class STACPathVisitor extends DuplicatingFilterVisitor {
 
-    static final Map<String, String> WELL_KNOWN_PROPERTIES;
+    private final Map<String, Expression> propertyMap;
 
-    static {
-        WELL_KNOWN_PROPERTIES = new HashMap<>();
-        WELL_KNOWN_PROPERTIES.put("geometry", "footprint");
-        WELL_KNOWN_PROPERTIES.put("id", "identifier");
-        WELL_KNOWN_PROPERTIES.put("collection", "parentIdentifier");
-    }
-
-    public STACPathVisitor(FeatureType type) {
-        super(type);
+    public STACPathVisitor(Map<String, Expression> propertyMap) {
+        this.propertyMap = propertyMap;
     }
 
     @Override
-    public Object visit(PropertyName expression, Object extraData) {
-        String propertyName = expression.getPropertyName();
+    public Object visit(PropertyName pn, Object extraData) {
+        String propertyName = pn.getPropertyName();
 
-        // well known queriable?
-        if (WELL_KNOWN_PROPERTIES.containsKey(propertyName)) {
-            return getFactory(extraData)
-                    .property(
-                            WELL_KNOWN_PROPERTIES.get(propertyName),
-                            expression.getNamespaceContext());
-        }
+        Expression expression = propertyMap.get(propertyName);
+        if (expression != null) return expression;
 
-        // pick from template
-        if (extraData instanceof TemplateBuilder) {
-            TemplateBuilder builder = (TemplateBuilder) extraData;
-            Object newExpression = mapPropertyThroughBuilder(propertyName, builder);
-            // stricteR behavior than base class, if property is not found then it's always null
-            if (newExpression != null) {
-                return newExpression;
-            } else return ff.literal(null);
-        }
-
-        // fallback
-        return getFactory(extraData)
-                .property(expression.getPropertyName(), expression.getNamespaceContext());
-    }
-
-    @Override
-    public Expression findFunction(TemplateBuilder builder, List<String> pathElements) {
-        List<String> fullPath = new ArrayList<>();
-        fullPath.add("features");
-        fullPath.add("properties");
-        fullPath.addAll(pathElements);
-        return super.findFunction(builder, fullPath);
+        // not found, so will always be null
+        return ff.literal(null);
     }
 }

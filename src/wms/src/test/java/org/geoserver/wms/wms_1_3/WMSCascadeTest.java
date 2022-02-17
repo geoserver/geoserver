@@ -100,6 +100,13 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                                 + "&CRS=EPSG:4326&FEATURE_COUNT=50&FORMAT=image%2Fpng&HEIGHT=101&TRANSPARENT=TRUE&J=-609621&REQUEST=GetFeatureInfo"
                                 + "&I=-875268&WIDTH=101&BBOX=-103.829117187,44.3898919295,-103.804563429,44.4069939679&STYLES=&QUERY_LAYERS=world4326&VERSION=1.3.0"),
                 new MockHttpResponse(featureInfo, "application/vnd.ogc.gml"));
+        wms13Client.expectGet(
+                new URL(
+                        wms13BaseURL
+                                + "?SERVICE=WMS&INFO_FORMAT=application/vnd.ogc.gml&LAYERS=world4326"
+                                + "&CRS=EPSG:4326&FEATURE_COUNT=50&FORMAT=image%2Fpng&HEIGHT=101&TRANSPARENT=TRUE&J=50&REQUEST=GetFeatureInfo"
+                                + "&I=50&WIDTH=101&BBOX=-103.829117187,44.3898919295,-103.804563429,44.4069939679&STYLES=&QUERY_LAYERS=world4326&VERSION=1.3.0"),
+                new MockHttpResponse(featureInfo, "application/vnd.ogc.gml"));
     }
 
     @Test

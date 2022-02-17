@@ -13,6 +13,8 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Assert;
 import org.junit.Test;
@@ -112,6 +114,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             // enable entity parsing
             cfg.setXmlExternalEntitiesEnabled(true);
             getGeoServer().save(cfg);
+            EntityResolverProvider.setEntityResolver(null);
 
             String output = string(post("wfs", WFS_1_0_0_REQUEST));
             // the server tried to read a file on local file system
@@ -133,6 +136,8 @@ public class ExternalEntitiesTest extends WFSTestSupport {
         } finally {
             cfg.setXmlExternalEntitiesEnabled(null);
             getGeoServer().save(cfg);
+            EntityResolverProvider.setEntityResolver(
+                    GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
         }
     }
 

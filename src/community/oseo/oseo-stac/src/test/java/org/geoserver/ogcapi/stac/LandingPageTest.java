@@ -13,6 +13,7 @@ import com.jayway.jsonpath.DocumentContext;
 import java.io.IOException;
 import java.util.List;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
@@ -143,6 +144,15 @@ public class LandingPageTest extends STACTestSupport {
                 "links[?(@.method == 'POST' && @.href =~ /.*ogc\\/stac\\/search.*/)].rel",
                 REL_SEARCH,
                 REL_SEARCH);
+        // pySTAC compatibility hack, needs JSON first
+        assertEquals(
+                OGCAPIMediaTypes.GEOJSON_VALUE,
+                json.read("links[?(@.method == 'GET' && @.rel == 'search')].type", List.class)
+                        .get(0));
+        assertEquals(
+                OGCAPIMediaTypes.GEOJSON_VALUE,
+                json.read("links[?(@.method == 'POST' && @.rel == 'search')].type", List.class)
+                        .get(0));
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/stac\\/queryables.*/)].rel",

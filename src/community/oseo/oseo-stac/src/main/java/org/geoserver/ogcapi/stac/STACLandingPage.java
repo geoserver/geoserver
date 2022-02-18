@@ -10,18 +10,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractLandingPageDocumentNoConformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.LinksBuilder;
+import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 
 /** A STAC server landing page */
 @JsonPropertyOrder({"title", "description", "links"})
@@ -73,6 +76,14 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
             getLinks().add(link);
         }
 
+        // get JSON link first, for compatibility with pySTAC
+        Function<List<MediaType>, List<MediaType>> jsonFirstUpdater =
+                mtypes -> {
+                    mtypes.remove(OGCAPIMediaTypes.GEOJSON);
+                    mtypes.add(0, OGCAPIMediaTypes.GEOJSON);
+                    return mtypes;
+                };
+
         // search, GET
         new LinksBuilder(SearchResponse.class, basePath)
                 .segment("search")
@@ -80,6 +91,7 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                 .rel(REL_SEARCH)
                 .classification("searchGet")
                 .updater((t1, l2) -> l2.setMethod(HttpMethod.GET))
+                .mediaTypeCustomizer(jsonFirstUpdater)
                 .add(this);
 
         // search, POST
@@ -89,6 +101,7 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                 .rel(REL_SEARCH)
                 .classification("searchPost")
                 .updater((t, l1) -> l1.setMethod(HttpMethod.POST))
+                .mediaTypeCustomizer(jsonFirstUpdater)
                 .add(this);
 
         // queryables

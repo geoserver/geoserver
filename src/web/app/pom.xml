@@ -735,7 +735,7 @@
       <id>teradata</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.extension</groupId>
+          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-teradata</artifactId>
           <version>${project.version}</version>
         </dependency>

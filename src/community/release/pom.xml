@@ -411,6 +411,11 @@
       <artifactId>gs-vsi</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-teradata</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

@@ -13,10 +13,10 @@
     <version>2.21-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.extension</groupId>
+  <groupId>org.geoserver.community</groupId>
   <artifactId>gs-teradata</artifactId>
   <packaging>jar</packaging>
-  <name>Teradata DataStore Extension</name>
+  <name>Teradata DataStore Community module</name>
 
   <properties>
     <td.version>13.00.00.27</td.version>

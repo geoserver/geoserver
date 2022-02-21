@@ -16,13 +16,23 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.function.BiConsumer;
+import net.sf.json.JSONObject;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
+import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
+import org.opengis.feature.Feature;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Literal;
 
 /**
  * Class visiting a feature template and performing some action on the properties mapped via dynamic
@@ -30,14 +40,19 @@ import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
  */
 class TemplatePropertyVisitor {
 
+    public static final String JSON_PROPERTY_TYPE = "jsonPropertyType";
+
     private final TemplateBuilder templateBuilder;
     private final BiConsumer<String, DynamicValueBuilder> propertyConsumer;
+    private final Feature sampleFeature;
 
     TemplatePropertyVisitor(
             TemplateBuilder templateBuilder,
+            Feature sampleFeature,
             BiConsumer<String, DynamicValueBuilder> propertyConsumer) {
         this.templateBuilder = templateBuilder;
         this.propertyConsumer = propertyConsumer;
+        this.sampleFeature = sampleFeature;
     }
 
     public void visit() {
@@ -53,13 +68,7 @@ class TemplatePropertyVisitor {
         // get it out and visit its children directly, without further checks (the returned builder
         // is a key-less composite)
         if (atb instanceof DynamicIncludeFlatBuilder) {
-            DynamicIncludeFlatBuilder dyn = (DynamicIncludeFlatBuilder) atb;
-            TemplateBuilder builder = dyn.getIncludingNodeBuilder(parentPath);
-            if (builder instanceof CompositeBuilder) {
-                for (TemplateBuilder child : builder.getChildren()) {
-                    visitTemplateBuilder(parentPath, child, false);
-                }
-            }
+            visitDynamicIncludeFlatBuilder(parentPath, (DynamicIncludeFlatBuilder) atb);
             return;
         }
 
@@ -77,6 +86,95 @@ class TemplatePropertyVisitor {
                 visitTemplateBuilder(path, child, false);
             }
         }
+    }
+
+    private void visitDynamicIncludeFlatBuilder(String parentPath, DynamicIncludeFlatBuilder atb) {
+        DynamicIncludeFlatBuilder dyn = atb;
+
+        // handle the parent node, encapsulated to handle overrides
+        TemplateBuilder parentBuilder = dyn.getIncludingNodeBuilder(parentPath);
+        visitChildren(parentPath, parentBuilder);
+
+        // visit the overlay based on the sample feature
+        TemplateBuilder dataBuilder = dyn.getIncludeFlatBuilder(parentPath, sampleFeature);
+        if (dataBuilder == null) return;
+        visitChildren(parentPath, dataBuilder);
+
+        // however in this case we want to extract queryables also for the static builders
+        // found, as they are really coming from the database, so in fact, dynamic
+        if (dataBuilder instanceof CompositeBuilder && dyn.getXpath() != null) {
+            for (TemplateBuilder child : dataBuilder.getChildren()) {
+                if (child instanceof StaticBuilder) {
+                    StaticBuilder sb = (StaticBuilder) child;
+                    Expression keyex = sb.getKey();
+                    if (!(keyex instanceof Literal)) continue;
+                    String key = keyex.evaluate(null, String.class);
+
+                    // for now, just consider direct properties
+                    JsonNode value = sb.getStaticValue();
+                    JsonNodeType nodeType = value.getNodeType();
+                    if (nodeType == JsonNodeType.NUMBER
+                            || nodeType == JsonNodeType.STRING
+                            || nodeType == JsonNodeType.BOOLEAN) {
+                        String path = parentPath != null ? parentPath + "." + key : key;
+                        String cql =
+                                "$${jsonPointer("
+                                        + dyn.getXpath().getPropertyName()
+                                        + ", '"
+                                        + key
+                                        + "')}";
+                        DynamicValueBuilder fakeBuilder =
+                                new DynamicValueBuilder(
+                                        key,
+                                        cql,
+                                        ((CompositeBuilder) parentBuilder).getNamespaces());
+                        fakeBuilder.addEncodingHint(JSON_PROPERTY_TYPE, getClass(value));
+                        propertyConsumer.accept(path, fakeBuilder);
+                    }
+                }
+            }
+        }
+    }
+
+    private Class getClass(JsonNode value) {
+        JsonNodeType nodeType = value.getNodeType();
+        switch (nodeType) {
+            case NUMBER:
+                return Double.class;
+            case STRING:
+                if (isDate(value.textValue())) return Date.class;
+                return String.class;
+            case BOOLEAN:
+                return Boolean.class;
+            default:
+                throw new IllegalArgumentException("Cannot handle this node type: " + nodeType);
+        }
+    }
+
+    private boolean isDate(String txt) {
+        try {
+            DateTimeFormatter.ISO_INSTANT.parse(txt);
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private void visitChildren(String parentPath, TemplateBuilder parentBuilder) {
+        if (parentBuilder instanceof CompositeBuilder) {
+            for (TemplateBuilder child : parentBuilder.getChildren()) {
+                visitTemplateBuilder(parentPath, child, false);
+            }
+        }
+    }
+
+    private JSONObject evaluate(Expression exp) {
+        Object result = exp.evaluate(sampleFeature);
+        if (!(result instanceof JSONObject))
+            result = JSONFieldSupport.parseWhenJSON(exp, null, result);
+        if (result instanceof JSONObject) return (JSONObject) result;
+
+        return null;
     }
 
     private String getPath(String parentPath, String key, boolean skipPath) {

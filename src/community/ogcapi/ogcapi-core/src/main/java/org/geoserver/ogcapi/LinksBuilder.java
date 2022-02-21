@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
@@ -25,6 +26,7 @@ public class LinksBuilder {
     private boolean includeHTML = true;
     private String classification;
     private BiConsumer<MediaType, Link> updater;
+    private Function<List<MediaType>, List<MediaType>> mediaTypeCustomizer;
     private boolean appendToHead = true;
 
     public LinksBuilder(Class<?> responseType) {
@@ -42,6 +44,19 @@ public class LinksBuilder {
      */
     public LinksBuilder segment(String segment) {
         this.segments.add(segment);
+        return this;
+    }
+
+    /**
+     * Allows customization of media type list, e.g., removing entries or moving their position
+     * around
+     *
+     * @param mediaTypeCustomizer
+     * @return
+     */
+    public LinksBuilder mediaTypeCustomizer(
+            Function<List<MediaType>, List<MediaType>> mediaTypeCustomizer) {
+        this.mediaTypeCustomizer = mediaTypeCustomizer;
         return this;
     }
 
@@ -103,8 +118,13 @@ public class LinksBuilder {
     /** Builds the list of links for all formats, and returns it */
     public List<Link> build() {
         List<Link> result = new ArrayList<>();
-        for (MediaType mediaType :
-                APIRequestInfo.get().getProducibleMediaTypes(responseType, includeHTML)) {
+        List<MediaType> mediaTypes =
+                new ArrayList<>(
+                        APIRequestInfo.get().getProducibleMediaTypes(responseType, includeHTML));
+        if (mediaTypeCustomizer != null) {
+            mediaTypes = mediaTypeCustomizer.apply(mediaTypes);
+        }
+        for (MediaType mediaType : mediaTypes) {
             String format = mediaType.toString();
             Map<String, String> params = Collections.singletonMap("f", format);
             String url =

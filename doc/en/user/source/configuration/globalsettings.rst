@@ -134,12 +134,19 @@ XML POST request log buffer
 
 In more verbose logging levels, GeoServer will log the body of XML (and other format) POST requests. It will only log the initial part of the request though, since it has to store (buffer) everything that gets logged for use in the parts of GeoServer that use it normally. This setting sets the size of this buffer, in characters. A setting of **0** will disable the log buffer.
 
-XML Entities
-------------
+Service Request Settings
+------------------------
 
-XML Requests sent to GeoServer can include references to other XML documents. Since these files are processed by GeoServer the facility could be used to access files on the server.
+.. _config_globalsettings_external_entities:
 
-This option is only useful with the application schema extensions.
+Unrestriced XML External Entity Resolution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+XML Requests sent to GeoServer can include references to other XML documents. Since these files are processed by GeoServer the facility could be used to access files on the server, which is a security concern.
+
+* Enable the :guilabel:`Unrestricted XML External Entity Resolution` option when using the application schema extension to allow use of local XSD definition.
+
+  This option disables all other External Entity Resolution restrictions (see :ref:`production_config_external_entities`)
 
 Feature type cache size
 -----------------------

@@ -35,6 +35,16 @@ Import modules into Intellij
    .. image:: img/intellij_import_finish.png
       :width: 600
 
+Before Running Geoserver
+---------------------------
+
+GeoServer relies on other libraries that are mantained in parallel under the same project umbrella. These are Geotools and GeoWebCache. So for easier installation and setup of the GeoServer development environment, you may want to apply the following:
+
+#. Download the code of both and execute ``mvn clean install`` into them.
+    `Geotools <https://github.com/geotools/geotools>`_
+    `GeoWebCache <https://github.com/geowebcache/geowebcache>`_
+#. Afterwards do the same in the geoserver src folder
+
 Run GeoServer from Intellij
 ---------------------------
 
@@ -60,6 +70,11 @@ Run GeoServer from Intellij
           :width: 400
 
     #. If you want to use ``errorprone``, notably to perform the QA checks, install the ``Error Prone Compiler`` plugin, restart the IDE and set ``Javac with error-prone`` as a default compiler for the project. Please note that this will slower the build.
+#. If there are errors such as "cannot find symbol AbstractUserGroupServiceTest", rebuild the ``security-tests`` project in the security module.  Right-click on the ``security-tests`` project and click Rebuild.
+#. In the last versions of Intellij Annotations processors are enabled. If there are errors because of this uncheck this options from compiler settings.
+
+   .. image:: img/intellij_disable_annotation_processors.jpg
+      :width: 800
 #. You can now re-run GeoServer. Select ``Run -> Run 'Start'``
 
 .. note::
@@ -86,4 +101,3 @@ Run GeoServer from Intellij on Windows
 --------------------------------------
 
 #. Add bash to your Windows environment path and restart Intellij.  
-#. If there are errors such as "cannot find symbol AbstractUserGroupServiceTest", rebuild the security-tests project in the security module.  Right click on the security-tests project and click Rebuild.  

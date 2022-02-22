@@ -113,8 +113,12 @@ public class STACService {
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
     public static final String FEATURE_OAS30 =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
-    public static final String STAC_CORE = "https://api.stacspec.org/v1.0.0-beta.1/core";
-    public static final String STAC_SEARCH = "https://api.stacspec.org/v1.0.0-beta.1/item-search";
+    public static final String STAC_CORE = "https://api.stacspec.org/v1.0.0-beta.5/core";
+    public static final String STAC_SEARCH = "https://api.stacspec.org/v1.0.0-beta.5/item-search";
+    public static final String STAC_SEARCH_SORT =
+            "https://api.stacspec.org/v1.0.0-beta.5/item-search#sort";
+    public static final String STAC_SEARCH_FILTER =
+            "https://api.stacspec.org/v1.0.0-beta.5/item-search#filter";
     public static final String STAC_FEATURES =
             "https://api.stacspec.org/spec/v1.0.0-beta.1/ogcapi-features";
 
@@ -177,6 +181,8 @@ public class STACService {
                         STAC_CORE,
                         STAC_FEATURES,
                         STAC_SEARCH,
+                        STAC_SEARCH_FILTER,
+                        STAC_SEARCH_SORT,
                         FEATURES_FILTER,
                         FILTER,
                         ECQL,

@@ -5,6 +5,7 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
@@ -92,7 +93,7 @@ public class BatchManagerTest {
      *      ANYTHING
      * </pre>
      *
-     * gets aggregated as
+     * with delete batch size 100 gets aggregated as
      *
      * <pre>
      * INSERT-1
@@ -117,6 +118,66 @@ public class BatchManagerTest {
      */
     @Test
     public void testAggregation() throws Exception {
+        int lDeleteBatchSize = 100;
+        testAggregationWithDeleteBatchSize(lDeleteBatchSize);
+    }
+
+    /**
+     * Verifies that Transaction:
+     *
+     * <pre>
+     * INSERT-1
+     *      FEATURE-1
+     * INSERT-2
+     *      FEATURE-2
+     * UPDATE-1
+     *      ANYTHING
+     * INSERT-3
+     *      FEATURE-3
+     * DELETE-1 for TYPE-1
+     *      FILTER-1
+     * DELETE-2 for TYPE-1
+     *      FILTER-2
+     * DELETE-3 for TYPE-2
+     *      FILTER-3
+     * REPLACE-1
+     *      FEATURE-4
+     * NATIVE-1
+     *      ANYTHING
+     * </pre>
+     *
+     * with delete batch size 1 or 0 or smaller 0 gets aggregated as
+     *
+     * <pre>
+     * INSERT-1
+     *      FEATURE-1
+     *      FEATURE-2
+     * UPDATE-1
+     *      ANYTHING
+     * INSERT-3
+     *      FEATURE-3
+     * DELETE-1 for TYPE-1
+     *      FILTER-1
+     * DELETE-1 for TYPE-1
+     *      FILTER-2
+     * DELETE-3 for TYPE-2
+     *      FILTER-3
+     * REPLACE-1
+     *      FEATURE-4
+     * NATIVE-1
+     *      ANYTHING
+     * </pre>
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAggregationNoDeleteAgg() throws Exception {
+        testAggregationWithDeleteBatchSize(1);
+        testAggregationWithDeleteBatchSize(0);
+        testAggregationWithDeleteBatchSize(-1);
+    }
+
+    private void testAggregationWithDeleteBatchSize(int pDeleteBatchSize) {
         // given: test transactions contents...
         Insert insert1 = newInsert(feature1);
         TransactionElementHandler insert1Handler = mock(TransactionElementHandler.class);
@@ -169,15 +230,19 @@ public class BatchManagerTest {
                         stores,
                         transactionResponse,
                         element2Handlers,
-                        100);
+                        pDeleteBatchSize);
         sut.run();
 
         // then:
         // verify contents have been moved appropriately
         assertEquals("First 2 INSERTs have been merged", 2, insert1.getFeatures().size());
-        assertTrue("First 2 DELETEs have been merged", delete1.getFilter() instanceof Or);
-        int lOrCount = ((Or) delete1.getFilter()).getChildren().size();
-        assertEquals("First 2 DELETEs have been merged", 2, lOrCount);
+        if (pDeleteBatchSize <= 1) {
+            assertFalse("First 2 DELETEs must not be merged", delete1.getFilter() instanceof Or);
+        } else {
+            assertTrue("First 2 DELETEs have been merged", delete1.getFilter() instanceof Or);
+            int lOrCount = ((Or) delete1.getFilter()).getChildren().size();
+            assertEquals("First 2 DELETEs have been merged", 2, lOrCount);
+        }
 
         // verify invocations of handlers
         // INSERT-1 handler was executed with first insert?
@@ -191,7 +256,8 @@ public class BatchManagerTest {
         // DELETE-1 was executed?
         verify(delete1Handler, times(1)).execute(same(delete1), any(), any(), any(), any());
         // DELETE-2 skipped?
-        verify(delete2Handler, times(0)).execute(any(), any(), any(), any(), any());
+        verify(delete2Handler, times(pDeleteBatchSize <= 1 ? 1 : 0))
+                .execute(any(), any(), any(), any(), any());
         // DELETE-3 was executed?
         verify(delete3Handler, times(1)).execute(same(delete3), any(), any(), any(), any());
         // REPLACE-1 was executed?
@@ -201,7 +267,11 @@ public class BatchManagerTest {
 
         // verify TransactionRequest was modified appropriately
         List<TransactionElement> lElements = lTransaction.getElements();
-        assertEquals(7, lElements.size());
+        if (pDeleteBatchSize <= 1) {
+            assertEquals(8, lElements.size());
+        } else {
+            assertEquals(7, lElements.size());
+        }
     }
 
     private TransactionRequest transactionRequest(Set<TransactionElement> pElems) {

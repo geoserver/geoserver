@@ -630,9 +630,10 @@ public class Transaction {
     }
 
     /**
-     * Calls the identified {@link TransactionElementHandler}s for the corresponding {@link
-     * TransactionElement}s. On processing aggregates INSERT and DELETE operations where possible,
-     * resulting in batched executions on the data store.
+     * {@link BatchManager} restructures the contents of the transaction in order to enable batched
+     * execution in the data stores. When processing the {@link TransactionElement}s it aggregates
+     * INSERT and DELETE operations where possible before calling the corresponding {@link
+     * TransactionElementHandler}s.
      */
     protected static class BatchManager {
         private TransactionRequest request;
@@ -642,6 +643,18 @@ public class Transaction {
         private Map<TransactionElement, TransactionElementHandler> elementHandlers;
         private int maxDeleteCount;
 
+        /**
+         * Creates a new {@link BatchManager}, ready to {@link #run()} and process the transactions
+         * content.
+         *
+         * @param request The current request
+         * @param multiplexer the current transaction listener
+         * @param stores The map of stores
+         * @param result The result
+         * @param elementHandlers Mapping of {@link TransactionElement} to its corresponding {@link
+         *     TransactionElementHandler}
+         * @param maxDeleteCount Maximum number of deletes to be aggregated into and existing delete
+         */
         public BatchManager(
                 TransactionRequest request,
                 TransactionListener multiplexer,
@@ -661,6 +674,10 @@ public class Transaction {
         private TransactionElementHandler aggrTargetHandler;
         private int aggrDeleteCount = 0;
 
+        /**
+         * Runs the aggregation of the {@link TransactionElement}s and invokes the required {@link
+         * TransactionElementHandler}s.
+         */
         public void run() {
             Set<Entry<TransactionElement, TransactionElementHandler>> lEntries =
                     elementHandlers.entrySet();
@@ -685,12 +702,17 @@ public class Transaction {
             }
         }
 
+        /**
+         * @param pElem
+         * @return true, if the current target element for aggregation can accept the given element
+         *     to aggregate
+         */
         private boolean canAggregate(TransactionElement pElem) {
             if (aggrTargetElement instanceof Insert && pElem instanceof Insert) {
                 return true;
             }
             if (aggrTargetElement instanceof Delete && pElem instanceof Delete) {
-                if (aggrDeleteCount == maxDeleteCount) {
+                if (aggrDeleteCount >= maxDeleteCount - 1) {
                     return false;
                 }
                 Delete lTarget = (Delete) aggrTargetElement;
@@ -704,6 +726,11 @@ public class Transaction {
             return false;
         }
 
+        /**
+         * Aggregates the given element into the current aggregation target.
+         *
+         * @param pElem
+         */
         private void aggregate(TransactionElement pElem) {
             boolean lRemoveFromRequest = false;
             if (aggrTargetElement instanceof Insert) {
@@ -726,6 +753,7 @@ public class Transaction {
             }
         }
 
+        /** Calls the current handler with the current element, resetting the delete counter. */
         private void runAggregated() {
             aggrTargetHandler.execute(aggrTargetElement, request, stores, result, multiplexer);
             aggrDeleteCount = 0;

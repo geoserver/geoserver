@@ -127,7 +127,7 @@ public class FilterKvpParser extends KvpParser {
         // translate string into a proper SAX input source
         InputSource requestSource = new InputSource(rawRequest);
 
-        // instantiante parsers and content handlers
+        // instantiate parsers and content handlers
         FilterHandlerImpl contentHandler = new FilterHandlerImpl();
         contentHandler.setEntityResolver(resolverProvider.getEntityResolver());
         FilterFilter filterParser = new FilterFilter(contentHandler, null);
@@ -140,7 +140,6 @@ public class FilterKvpParser extends KvpParser {
             SAXParser parser = factory.newSAXParser();
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
             adapter.setEntityResolver(resolverProvider.getEntityResolver());
-
             adapter.setContentHandler(documentFilter);
             adapter.parse(requestSource);
             LOGGER.fine("just parsed: " + requestSource);

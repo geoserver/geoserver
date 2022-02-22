@@ -682,12 +682,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     LOGGER.log(l, "Exception while getting SLD.", ex);
                     // KMS: Replace with a generic exception so it can't be used to port scan
                     // the local network.
-                    if (LOGGER.isLoggable(l)) {
-                        throw new ServiceException(
-                                "Error while getting SLD.  See the log for details.");
-                    } else {
-                        throw new ServiceException("Error while getting SLD.");
-                    }
+                    throw new ServiceException("Error while getting SLD.");
                 }
             }
         }
@@ -820,8 +815,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
             // KMS: Replace with a generic exception so it can't be used to port scan the
-            // local
-            // network.
+            // local network.
             throw new ServiceException("Error while getting SLD.");
         }
     }

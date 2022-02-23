@@ -84,3 +84,21 @@ Layers served through an external WMTS have some, but not all of the functionali
 * GetLegendGraphic requests aren't supported.
 
 * Image format cannot be specified.  GeoServer will attempt to request PNG images, and if that fails will use the remote server's default image format.
+
+Images output discrepancies in a cascade WMTS Layer
+---------------------------------------------------
+
+WMTS it is a service that serves tiles and they have been generated for a concrete resolution/scale denominator, so asking a WMTS cascaded layer to generate WMS getMap images or other WMTS tiles with other scale denominators will generate discrepancies on the image outpus.
+
+* If the image is streched (scaled out) and the difference is notable, the borders, lines, and texts that appear in it could be blurring.
+
+* In the other hand if shrinked, the same object and shape could appear smaller than the original size and not display properly as they were intended to be displayed for that scale.
+  
+.. figure:: images/cascaded_wmts.png
+  :align: center
+  
+  *This figure compares a result image from a WMTS to a cascaded layer which has been slightly streched or scaled out*
+  *Left image shows a original wmts layer at its defined zoom level 4 which scale denominator is about 4M*
+  *Right image whows a cascaded wmts layer as wms layer with at different scale denominator (the closest to its homologous cascaded layer) which is about 5M*
+
+It should be taken into account this kind of performace if requesting or republishing in different scale denominators.

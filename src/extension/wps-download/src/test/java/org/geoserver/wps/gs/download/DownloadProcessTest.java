@@ -5,6 +5,9 @@
  */
 package org.geoserver.wps.gs.download;
 
+import static org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate.TILEHEIGHT;
+import static org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate.TILEWIDTH;
+import static org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate.TILING;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -32,6 +35,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +53,7 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
@@ -324,6 +329,7 @@ public class DownloadProcessTest extends WPSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(MockData.USA_WORLDIMG, "usa.zip", MockData.PNG, getCatalog());
+        testData.addRasterLayer(MockData.WORLD, "world.tiff", MockData.TIFF, getCatalog());
         testData.addRasterLayer(MIXED_RES, "mixedres.zip", null, getCatalog());
         testData.addRasterLayer(HETEROGENEOUS_CRS, "heterogeneous_crs.zip", null, getCatalog());
         testData.addRasterLayer(HETEROGENEOUS_CRS2, "heterogeneous_crs2.zip", null, getCatalog());
@@ -3435,5 +3441,261 @@ public class DownloadProcessTest extends WPSTestSupport {
         DownloadEstimatorProcess limits =
                 new DownloadEstimatorProcess(new StaticDownloadServiceConfiguration(), geoserver);
         return new DownloadProcess(geoserver, limits, resourceManager);
+    }
+
+    @Test
+    public void testDirectRasterDownloadSimpleSource() throws Exception {
+        // simple download, no extra parameters
+        RawData raster =
+                executeRasterDownload(getLayerId(MockData.WORLD), "image/tiff", null, null, null);
+
+        CoverageStoreInfo store =
+                getCatalog().getCoverageStoreByName(MockData.WORLD.getLocalPart());
+        File input = URLs.urlToFile(new URL(store.getURL()));
+        try (FileInputStream is = new FileInputStream(input);
+                InputStream os = raster.getInputStream()) {
+            assertTrue(org.apache.commons.io.IOUtils.contentEquals(is, os));
+        }
+    }
+
+    @Test
+    public void testDirectRasterDownloadMosaic() throws Exception {
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32632", true);
+        Filter filter = FF.like(FF.property("location"), "green.tif");
+
+        RawData raster =
+                executeRasterDownload(
+                        getLayerId(HETEROGENEOUS_CRS), "image/tiff", filter, targetCRS, null);
+
+        // got a single file from the source, it's exactly the same
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "hcrs/green.tif");
+        try (FileInputStream is = new FileInputStream(file);
+                InputStream os = raster.getInputStream()) {
+            assertTrue(org.apache.commons.io.IOUtils.contentEquals(is, os));
+        }
+    }
+
+    @Test
+    public void testDirectDownloadCompression() throws Exception {
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32632", true);
+        Filter filter = FF.like(FF.property("location"), "green.tif");
+
+        Parameters writeParams = new Parameters();
+        writeParams.getParameters().add(new Parameter("compression", "Deflate"));
+
+        RawData raster =
+                executeRasterDownload(
+                        getLayerId(HETEROGENEOUS_CRS),
+                        "image/tiff",
+                        filter,
+                        targetCRS,
+                        writeParams);
+
+        // got a single file from the source, it's exactly the same
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "hcrs/green.tif");
+        try (FileInputStream is = new FileInputStream(file);
+                InputStream os = raster.getInputStream()) {
+            assertTrue(org.apache.commons.io.IOUtils.contentEquals(is, os));
+        }
+    }
+
+    @Test
+    public void testDirectDownloadDifferentCompression() throws Exception {
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32632", true);
+        Filter filter = FF.like(FF.property("location"), "green.tif");
+
+        Parameters writeParams = new Parameters();
+        writeParams.getParameters().add(new Parameter("compression", "JPEG"));
+
+        RawData raster =
+                executeRasterDownload(
+                        getLayerId(HETEROGENEOUS_CRS),
+                        "image/tiff",
+                        filter,
+                        targetCRS,
+                        writeParams);
+
+        // got a single file from the source, it's exactly the same
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "hcrs/green.tif");
+        try (FileInputStream is = new FileInputStream(file);
+                InputStream os = raster.getInputStream()) {
+            assertFalse(org.apache.commons.io.IOUtils.contentEquals(is, os));
+        }
+    }
+
+    @Test
+    public void testDirectDownloadTiling() throws Exception {
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32632", true);
+        Filter filter = FF.like(FF.property("location"), "green.tif");
+
+        // tiling matches source
+        Parameters writeParams = new Parameters();
+        writeParams.getParameters().add(new Parameter(TILING, "true"));
+        writeParams.getParameters().add(new Parameter(TILEWIDTH, "256"));
+        writeParams.getParameters().add(new Parameter(TILEHEIGHT, "256"));
+
+        RawData raster =
+                executeRasterDownload(
+                        getLayerId(HETEROGENEOUS_CRS),
+                        "image/tiff",
+                        filter,
+                        targetCRS,
+                        writeParams);
+
+        // got a single file from the source, it's exactly the same
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "hcrs/green.tif");
+        try (FileInputStream is = new FileInputStream(file);
+                InputStream os = raster.getInputStream()) {
+            assertTrue(org.apache.commons.io.IOUtils.contentEquals(is, os));
+        }
+    }
+
+    @Test
+    public void testDirectDownloadTilingMismatch() throws Exception {
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32632", true);
+        Filter filter = FF.like(FF.property("location"), "green.tif");
+
+        // tiling does not match the source
+        Parameters writeParams = new Parameters();
+        writeParams.getParameters().add(new Parameter(TILING, "true"));
+        writeParams.getParameters().add(new Parameter(TILEWIDTH, "512"));
+        writeParams.getParameters().add(new Parameter(TILEHEIGHT, "512"));
+
+        RawData raster =
+                executeRasterDownload(
+                        getLayerId(HETEROGENEOUS_CRS),
+                        "image/tiff",
+                        filter,
+                        targetCRS,
+                        writeParams);
+
+        // got a single file from the source, it's exactly the same
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "hcrs/green.tif");
+        try (FileInputStream is = new FileInputStream(file);
+                InputStream os = raster.getInputStream()) {
+            assertFalse(org.apache.commons.io.IOUtils.contentEquals(is, os));
+        }
+    }
+
+    @Test
+    public void testDirectDownloadLargeROI() throws Exception {
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32632", true);
+        Filter filter = FF.like(FF.property("location"), "green.tif");
+
+        // get bounds larger than the file
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "hcrs/green.tif");
+        ReferencedEnvelope bounds = getGeoTiffBounds(file);
+        bounds.expandBy(bounds.getWidth() * 0.1, bounds.getHeight() * 0.1);
+        Polygon roi = JTS.toGeometry(bounds);
+
+        final WPSResourceManager resourceManager = getResourceManager();
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess(resourceManager);
+        RawData raster =
+                downloadProcess.execute(
+                        getLayerId(HETEROGENEOUS_CRS), // layerName
+                        filter, // filter
+                        "image/tiff", // outputFormat
+                        "image/tiff",
+                        targetCRS, // targetCRS
+                        targetCRS,
+                        roi, // roi
+                        false, // cropToGeometry
+                        null, // interpolation
+                        null, // targetSizeX
+                        null, // targetSizeY
+                        null, // bandSelectIndices
+                        null, // Writing params
+                        true,
+                        true,
+                        0d,
+                        null,
+                        new NullProgressListener() // progressListener
+                        );
+
+        // got a single file from the source, it's exactly the same
+        try (FileInputStream is = new FileInputStream(file);
+                InputStream os = raster.getInputStream()) {
+            assertTrue(org.apache.commons.io.IOUtils.contentEquals(is, os));
+        }
+    }
+
+    @Test
+    public void testDirectDownloadCroppingROI() throws Exception {
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32632", true);
+        Filter filter = FF.like(FF.property("location"), "green.tif");
+
+        // get bounds smaller than the file
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "hcrs/green.tif");
+        ReferencedEnvelope bounds = getGeoTiffBounds(file);
+        bounds.expandBy(-bounds.getWidth() * 0.1, -bounds.getHeight() * 0.1);
+        Polygon roi = JTS.toGeometry(bounds);
+
+        final WPSResourceManager resourceManager = getResourceManager();
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess(resourceManager);
+        RawData raster =
+                downloadProcess.execute(
+                        getLayerId(HETEROGENEOUS_CRS), // layerName
+                        filter, // filter
+                        "image/tiff", // outputFormat
+                        "image/tiff",
+                        targetCRS, // targetCRS
+                        targetCRS,
+                        roi, // roi
+                        false, // cropToGeometry
+                        null, // interpolation
+                        null, // targetSizeX
+                        null, // targetSizeY
+                        null, // bandSelectIndices
+                        null, // Writing params
+                        true,
+                        true,
+                        0d,
+                        null,
+                        new NullProgressListener() // progressListener
+                        );
+
+        // got a single file from the source, it's exactly the same
+        try (FileInputStream is = new FileInputStream(file);
+                InputStream os = raster.getInputStream()) {
+            assertFalse(org.apache.commons.io.IOUtils.contentEquals(is, os));
+        }
+    }
+
+    private ReferencedEnvelope getGeoTiffBounds(File file) throws DataSourceException {
+        GeoTiffReader reader = new GeoTiffReader(file);
+        ReferencedEnvelope bounds = new ReferencedEnvelope(reader.getOriginalEnvelope());
+        reader.dispose();
+        return bounds;
+    }
+
+    /** Convenience method to start a raster download, with a shorter list of parameters */
+    private RawData executeRasterDownload(
+            String layerId,
+            String format,
+            Filter filter,
+            CoordinateReferenceSystem targetCRS,
+            Parameters writeParams) {
+        final WPSResourceManager resourceManager = getResourceManager();
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess(resourceManager);
+        return downloadProcess.execute(
+                layerId, // layerName
+                filter, // filter
+                format, // outputFormat
+                format,
+                targetCRS, // targetCRS
+                targetCRS,
+                null, // roi
+                false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
+                null, // bandSelectIndices
+                writeParams, // Writing params
+                true,
+                true,
+                0d,
+                null,
+                new NullProgressListener() // progressListener
+                );
     }
 }

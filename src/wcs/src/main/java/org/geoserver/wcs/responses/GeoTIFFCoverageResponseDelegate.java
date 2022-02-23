@@ -46,6 +46,14 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
     private static final float DEFAULT_JPEG_COMPRESSION_QUALITY = 0.75f;
 
     public static final String GEOTIFF_CONTENT_TYPE = "image/tiff";
+    /** Tile width parameter name */
+    public static final String TILEWIDTH = "tilewidth";
+    /** Tile height parameter name */
+    public static final String TILEHEIGHT = "tileheight";
+    /** Boolean parameter used to enable tiled output */
+    public static final String TILING = "tiling";
+    /** Parameter controlling the compression type */
+    public static final String COMPRESSION = "compression";
 
     @SuppressWarnings("serial")
     public GeoTIFFCoverageResponseDelegate(GeoServer geoserver) {
@@ -200,14 +208,14 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
         //
         // tiling
         //
-        if (encodingParameters.containsKey("tiling")) {
+        if (encodingParameters.containsKey(TILING)) {
 
-            final String tilingS = encodingParameters.get("tiling");
+            final String tilingS = encodingParameters.get(TILING);
             if (tilingS != null && Boolean.valueOf(tilingS)) {
 
                 // tileW
-                if (encodingParameters.containsKey("tilewidth")) {
-                    final String tileW_ = encodingParameters.get("tilewidth");
+                if (encodingParameters.containsKey(TILEWIDTH)) {
+                    final String tileW_ = encodingParameters.get(TILEWIDTH);
                     if (tileW_ != null) {
                         try {
                             final int tileW = Integer.valueOf(tileW_);
@@ -230,8 +238,8 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                     }
                 }
                 // tileH
-                if (encodingParameters.containsKey("tileheight")) {
-                    final String tileH_ = encodingParameters.get("tileheight");
+                if (encodingParameters.containsKey(TILEHEIGHT)) {
+                    final String tileH_ = encodingParameters.get(TILEHEIGHT);
                     if (tileH_ != null) {
                         try {
                             final int tileH = Integer.valueOf(tileH_);
@@ -280,11 +288,11 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
             Map<String, String> encodingParameters, GeoTiffWriterHelper helper)
             throws WcsException {
         // compression
-        if (encodingParameters.containsKey("compression")) {
+        if (encodingParameters.containsKey(COMPRESSION)) {
             GeoTiffWriteParams wp = helper.getImageIoWriteParams();
             helper.disableSourceCopyOptimization();
 
-            String compressionS = encodingParameters.get("compression");
+            String compressionS = encodingParameters.get(COMPRESSION);
             if (compressionS != null && !compressionS.equalsIgnoreCase("none")) {
                 if (compressionS.equals("LZW")) {
                     wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);

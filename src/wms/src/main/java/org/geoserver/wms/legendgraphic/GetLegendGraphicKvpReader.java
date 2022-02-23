@@ -460,6 +460,10 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         String sldUrl = (String) rawKvp.get("SLD");
         String sldBody = (String) rawKvp.get("SLD_BODY");
 
+        if ((sldBody != null || sldUrl != null) && wms.isDynamicStylingDisabled()) {
+            throw new ServiceException("Dynamic style usage is forbidden");
+        }
+
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(new StringBuffer("looking for styles ").append(listOfStyles).toString());
         }

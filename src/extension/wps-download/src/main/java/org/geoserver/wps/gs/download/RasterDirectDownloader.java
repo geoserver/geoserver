@@ -93,8 +93,8 @@ class RasterDirectDownloader {
      *
      * <ul>
      *   <li>No pixel manipulation has occurred in the middle
-     *   <li>The was no request to alter the compression or tiling
-     *   <li>How about ROI?
+     *   <li>There was no request to alter the compression or tiling
+     *   <li>ROI isn't specified or it fully contains the image bounds
      * </ul>
      */
     boolean canCopySourceFile(RenderedImage image, String mimeType, Parameters writeParams)
@@ -333,7 +333,7 @@ class RasterDirectDownloader {
                 return true;
         }
 
-        // slightly longer check, geting the minimum of the ROI image
+        // slightly longer check, getting the minimum of the ROI image
         return new ImageWorker(roi.getAsImage()).getMinimums()[0] > 0;
     }
 }

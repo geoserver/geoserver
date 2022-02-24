@@ -244,6 +244,7 @@ class RasterDownload {
                                 readParameters,
                                 requestedGridGeometry,
                                 AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
+
             } else {
                 if (targetSizeX == null || targetSizeY == null) {
                     // one of the 2 sizes is not specified. Delegate
@@ -883,6 +884,14 @@ class RasterDownload {
             throws Exception {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing raster");
+        }
+
+        // check if the original data was selected as is, in that case, just copy it over,
+        // re-encoding is an expensive operation
+        RenderedImage image = gridCoverage.getRenderedImage();
+        RasterDirectDownloader directDownloader = new RasterDirectDownloader(resourceManager);
+        if (directDownloader.canCopySourceFile(image, mimeType, writeParams)) {
+            return directDownloader.copySourceFile(image);
         }
 
         // add metadata access

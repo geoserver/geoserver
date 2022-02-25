@@ -123,7 +123,7 @@ public abstract class SchemalessFeatureMapper<T> {
         if (shouldRemove) parentType.removePropertyDescriptor(attrDescriptor);
         if (attrDescriptor == null || shouldRemove) {
             typeBuilder
-                    .binding(value instanceof Number ? Number.class : value.getClass())
+                    .binding(value.getClass())
                     .name(attrName)
                     .namespaceURI(namespaceURI)
                     .maxOccurs(isCollection ? Integer.MAX_VALUE : 1)
@@ -135,9 +135,6 @@ public abstract class SchemalessFeatureMapper<T> {
             }
         }
         Class<?> binding = attrDescriptor.getType().getBinding();
-        if (!binding.equals(Object.class) && !value.getClass().equals(binding)) {
-            value = Converters.convert(value, attrDescriptor.getType().getBinding());
-        }
         attributeBuilder.setDescriptor((AttributeDescriptor) attrDescriptor);
         return attributeBuilder.buildSimple(null, value);
     }

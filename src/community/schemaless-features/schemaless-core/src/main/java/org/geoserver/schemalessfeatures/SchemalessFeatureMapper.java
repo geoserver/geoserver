@@ -10,7 +10,6 @@ import org.geoserver.schemalessfeatures.type.DynamicComplexType;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.NameImpl;
 import org.geotools.gml3.v3_2.GMLSchema;
-import org.geotools.util.Converters;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.AttributeDescriptor;

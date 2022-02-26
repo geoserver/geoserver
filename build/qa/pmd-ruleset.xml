@@ -92,13 +92,8 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/multithreading.xml/DontCallThreadRun"/>
   <rule ref="category/java/multithreading.xml/DoubleCheckedLocking"/>
   <rule ref="category/java/performance.xml/BigIntegerInstantiation"/>
-  <rule ref="category/java/performance.xml/BooleanInstantiation"/>
-  <rule ref="category/java/performance.xml/ByteInstantiation"/>
-  <rule ref="category/java/performance.xml/IntegerInstantiation"/>
-  <rule ref="category/java/performance.xml/LongInstantiation"/>
-  <rule ref="category/java/performance.xml/ShortInstantiation"/>
+  <rule ref="category/java/bestpractices.xml/PrimitiveWrapperInstantiation"/>
   <rule ref="category/java/performance.xml/StringInstantiation"/>
-  <rule ref="category/java/performance.xml/UnnecessaryWrapperObjectCreation" />
   <rule name="wildcards" language="java" message="No Wildcard Imports" class="net.sourceforge.pmd.lang.rule.XPathRule">
     <description>
       Don't use wildcard imports

@@ -149,10 +149,10 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                     enable(btnRename, node != null && !node.getObject().path().isEmpty());
                     enable(
                             btnPaste,
-                            node != null && clipBoard.getItems().size() > 0 && !node.isLeaf());
-                    enable(btnCopy, nodes.size() > 0 && !containsDir);
-                    enable(btnCut, nodes.size() > 0 && !containsRoot);
-                    enable(btnDelete, nodes.size() > 0 && !containsRoot);
+                            node != null && !clipBoard.getItems().isEmpty() && !node.isLeaf());
+                    enable(btnCopy, !nodes.isEmpty() && !containsDir);
+                    enable(btnCut, !nodes.isEmpty() && !containsRoot);
+                    enable(btnDelete, !nodes.isEmpty() && !containsRoot);
 
                     target.add(
                             btnUpload,

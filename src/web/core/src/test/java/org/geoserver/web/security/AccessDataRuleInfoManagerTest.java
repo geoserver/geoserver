@@ -5,6 +5,7 @@
 package org.geoserver.web.security;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,7 +37,7 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
     @Test
     public void testWsAccessDataRuleUpdate() throws IOException {
         Set<DataAccessRule> dataRules = ruleInfoMan.getResourceRule(ws.getName(), ws);
-        assertEquals(true, dataRules.isEmpty());
+        assertTrue(dataRules.isEmpty());
         Set<String> availableRoles = ruleInfoMan.getAvailableRoles();
         List<DataAccessRuleInfo> rulesInfo =
                 ruleInfoMan.mapTo(dataRules, availableRoles, ws.getName(), null);
@@ -52,7 +53,7 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
     public void testLayerAccessDataRuleUpdate() throws IOException {
         LayerInfo layerInfo = getCatalog().getLayerByName("BasicPolygons");
         Set<DataAccessRule> dataRules = ruleInfoMan.getResourceRule(ws.getName(), layerInfo);
-        assertEquals(true, dataRules.isEmpty());
+        assertTrue(dataRules.isEmpty());
         Set<String> availableRoles = ruleInfoMan.getAvailableRoles();
         List<DataAccessRuleInfo> rulesInfo =
                 ruleInfoMan.mapTo(dataRules, availableRoles, ws.getName(), layerInfo.getName());

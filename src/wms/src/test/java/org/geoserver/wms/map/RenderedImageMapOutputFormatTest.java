@@ -6,6 +6,8 @@
 package org.geoserver.wms.map;
 
 import static org.geoserver.data.test.CiteTestData.STREAMS;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
@@ -108,7 +110,6 @@ import org.geotools.util.URLs;
 import org.geotools.util.factory.FactoryRegistryException;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -1429,7 +1430,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         // first bands using channel selection on the raster symbolizer used for rendering.
         assertArrayEquals(destImageRowBand0, srcImageRowBand0);
         // Result band 0 should not be equal to source image band 2
-        Assert.assertFalse(Arrays.equals(destImageRowBand0, srcImageRowBand2));
+        assertThat(destImageRowBand0, not(equalTo(srcImageRowBand2)));
 
         srcImageMap.dispose();
         dstImageMap.dispose();

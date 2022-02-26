@@ -375,6 +375,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 scaleB);
     }
 
+    @SuppressWarnings("PMD.SimplifiableTestAssertion") // equality with tolerance
     protected static void assertEnvelopeEquals(
             GeneralEnvelope expected,
             double scaleExpected,

@@ -32,7 +32,7 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
     GeometryFactory gf = new GeometryFactory();
 
     @Test
-    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue") // JTS geometry equality
+    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecute() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");

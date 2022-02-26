@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -1099,7 +1099,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
             groupInfo = getCatalog().getLayerGroupByName(groupInfo.prefixedName());
             String savedName = groupInfo.getLayerGroupStyles().get(0).getName().getName();
-            assertFalse("changeName".equals(savedName));
+            assertNotEquals("changeName", savedName);
             assertEquals("editingGroupStyle", savedName);
             ft.submit("save");
             tester.assertNoErrorMessage();

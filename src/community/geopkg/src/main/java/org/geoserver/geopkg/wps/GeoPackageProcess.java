@@ -80,7 +80,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Converters;
-import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.Feature;
@@ -171,8 +170,7 @@ public class GeoPackageProcess implements GeoServerProcess {
 
         String outputName = contents.getName() + ".gpkg";
         if (!remove && path != null) {
-            String urlToFile = URLs.urlToFile(path).getPath();
-            file = resources.getExternalOutputFile(urlToFile, outputName);
+            file = resources.getExternalOutputFile(path, outputName);
         } else {
             file = resources.getOutputResource(null, outputName).file();
         }

@@ -88,11 +88,11 @@ Layers served through an external WMTS have some, but not all of the functionali
 Images output discrepancies in a cascaded WMTS Layer
 ----------------------------------------------------
 
-WMTS it is a service that serves tiles and they have been generated for a concrete resolution/scale denominator, so asking a WMTS cascaded layer to generate WMS getMap images or other WMTS tiles with other scale denominators will generate discrepancies on the image outputs.
+WMTS it is a service that serves tiles and they have been generated for a concrete resolution/scale denominator. Asking a WMTS cascaded layer to generate WMS GetMap images or other WMTS tiles, with other scale denominators, will require image re-sampling:
 
-* If the image is streched (scaled out) and the difference is notable, the borders, lines, and labels that appear in it could be blurred.
+* If the image is streched (scaled out) and the scale difference is notable, the borders, lines, and labels that appear in it could be blurred.
 
-* On the other hand if shrinked, the same object and shape could appear smaller than the original size and not display properly as they were intended to be displayed for that scale.
+* On the other hand if shrinked, the same object and shape could appear smaller than the original size and will be similarly appear blurred.
   
 .. figure:: images/cascaded_wmts.png
   :align: center
@@ -101,4 +101,4 @@ WMTS it is a service that serves tiles and they have been generated for a concre
   *Left image shows a original wmts layer at its defined zoom level 4 which scale denominator is about 4M*
   *Right image shows a cascaded wmts layer as wms layer with at different scale denominator (the closest to its homologous cascaded layer) which is about 5M*
 
-It should be taken into account this kind of performace if requesting or republishing in different scale denominators.
+

@@ -218,11 +218,6 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-teradata</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-monitor-core</artifactId>
       <version>${project.version}</version>
     </dependency>

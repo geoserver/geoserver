@@ -113,8 +113,12 @@ public class STACService {
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
     public static final String FEATURE_OAS30 =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
-    public static final String STAC_CORE = "https://api.stacspec.org/v1.0.0-beta.1/core";
-    public static final String STAC_SEARCH = "https://api.stacspec.org/v1.0.0-beta.1/item-search";
+    public static final String STAC_CORE = "https://api.stacspec.org/v1.0.0-beta.5/core";
+    public static final String STAC_SEARCH = "https://api.stacspec.org/v1.0.0-beta.5/item-search";
+    public static final String STAC_SEARCH_SORT =
+            "https://api.stacspec.org/v1.0.0-beta.5/item-search#sort";
+    public static final String STAC_SEARCH_FILTER =
+            "https://api.stacspec.org/v1.0.0-beta.5/item-search#filter";
     public static final String STAC_FEATURES =
             "https://api.stacspec.org/spec/v1.0.0-beta.1/ogcapi-features";
 
@@ -131,6 +135,7 @@ public class STACService {
     private final GeoServer geoServer;
     private final OpenSearchAccessProvider accessProvider;
     private final STACTemplates templates;
+    private final SampleFeatures sampleFeatures;
     private TimeParser timeParser = new TimeParser();
     private final APIFilterParser filterParser;
 
@@ -138,11 +143,13 @@ public class STACService {
             GeoServer geoServer,
             OpenSearchAccessProvider accessProvider,
             STACTemplates templates,
-            APIFilterParser filterParser) {
+            APIFilterParser filterParser,
+            SampleFeatures sampleFeatures) {
         this.geoServer = geoServer;
         this.accessProvider = accessProvider;
         this.templates = templates;
         this.filterParser = filterParser;
+        this.sampleFeatures = sampleFeatures;
     }
 
     public OSEOInfo getService() {
@@ -174,6 +181,8 @@ public class STACService {
                         STAC_CORE,
                         STAC_FEATURES,
                         STAC_SEARCH,
+                        STAC_SEARCH_FILTER,
+                        STAC_SEARCH_SORT,
                         FEATURES_FILTER,
                         FILTER,
                         ECQL,
@@ -412,8 +421,7 @@ public class STACService {
             filters.add(buildTimeFilter(sq.getDatetime()));
         }
         if (sq.getFilter() != null) {
-            Filter mapped =
-                    parseFilter(sq.getCollections(), source, sq.getFilter(), sq.getFilterLang());
+            Filter mapped = parseFilter(sq.getCollections(), sq.getFilter(), sq.getFilterLang());
             filters.add(mapped);
         }
         // keep only enabled products
@@ -468,14 +476,11 @@ public class STACService {
         return FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true));
     }
 
-    public Filter parseFilter(
-            List<String> collectionIds,
-            FeatureSource<FeatureType, Feature> source,
-            String filter,
-            String filterLang)
+    public Filter parseFilter(List<String> collectionIds, String filter, String filterLang)
             throws IOException {
         Filter parsed = filterParser.parse(filter, filterLang);
-        return new TemplatePropertyMapper(source, templates).mapProperties(collectionIds, parsed);
+        return new TemplatePropertyMapper(templates, sampleFeatures)
+                .mapProperties(collectionIds, parsed);
     }
 
     /** TODO: Factor out this method into a Query mapper object */
@@ -491,9 +496,6 @@ public class STACService {
             SortBy[] sortby,
             boolean excludeDisabledCollection)
             throws IOException, FactoryException, ParseException {
-        FeatureSource<FeatureType, Feature> source =
-                accessProvider.getOpenSearchAccess().getProductSource();
-
         // request parsing
         FilterMerger filters = new FilterMerger();
 
@@ -509,7 +511,7 @@ public class STACService {
             filters.add(buildTimeFilter(datetime));
         }
         if (filter != null) {
-            Filter mapped = parseFilter(collectionIds, source, filter, filterLanguage);
+            Filter mapped = parseFilter(collectionIds, filter, filterLanguage);
             filters.add(mapped);
         }
         // keep only enabled products
@@ -523,6 +525,8 @@ public class STACService {
         q.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
         q.setSortBy(mapSortProperties(collectionIds, sortby));
 
+        FeatureSource<FeatureType, Feature> source =
+                accessProvider.getOpenSearchAccess().getProductSource();
         return queryItems(source, q);
     }
 
@@ -583,7 +587,7 @@ public class STACService {
         return new QueryResult(q, items, BigInteger.valueOf(matched), returned);
     }
 
-    private Filter getCollectionsFilter(List<String> collectionIds) {
+    static Filter getCollectionsFilter(List<String> collectionIds) {
         FilterMerger filters = new FilterMerger();
         collectionIds.stream()
                 .map(id -> FF.equals(FF.property("parentIdentifier"), FF.literal(id)))
@@ -648,10 +652,12 @@ public class STACService {
                         "ogc/stac/collections/" + urlEncode(collectionId) + "/queryables",
                         null,
                         RESOURCE);
-        FeatureType itemsSchema =
-                accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         Queryables queryables =
-                new STACQueryablesBuilder(id, templates.getItemTemplate(collectionId), itemsSchema)
+                new STACQueryablesBuilder(
+                                id,
+                                templates.getItemTemplate(collectionId),
+                                sampleFeatures.getSchema(),
+                                sampleFeatures.getSample(collectionId))
                         .getQueryables();
         queryables.setCollectionId(collectionId);
         return queryables;
@@ -690,12 +696,14 @@ public class STACService {
     public Queryables searchQueryables() throws IOException {
         String baseURL = APIRequestInfo.get().getBaseURL();
         String id = buildURL(baseURL, "ogc/stac/queryables", null, RESOURCE);
-        FeatureType itemsSchema =
-                accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         LOGGER.severe(
                 "Should consider the various collection specific templates here, and decide what to do for queriables that are in one collection but not in others (replace with null and simplify filter?)");
         Queryables queryables =
-                new STACQueryablesBuilder(id, templates.getItemTemplate(null), itemsSchema)
+                new STACQueryablesBuilder(
+                                id,
+                                templates.getItemTemplate(null),
+                                sampleFeatures.getSchema(),
+                                sampleFeatures.getSample(null))
                         .getQueryables();
         return queryables;
     }

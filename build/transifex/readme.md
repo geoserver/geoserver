@@ -2,15 +2,15 @@
 
 The sync commands uses the Transifex CLI in Go, which can be retrieved from GitHub on the Releases page (https://github.com/transifex/cli/releases).
 
-On first use, the CLI will ask for an API key, which can be retrieved on Transifex website after authentication (https://www.transifex.com/user/settings/api/).
+Before use, retrieve an API token on Transifex website after authentication (https://www.transifex.com/user/settings/api/) and put the value in build.properties.
 
 # To update resources in Transifex
 
-Use `push_to_transifex.bat` or `push_to_transifex.sh`
+Use `ant tx-push`
 
 # To retrieve translations from Transifex
 
-Use `pull_from_transifex.bat` or `pull_from_transifex.sh`
+Use `ant tx-pull`
 
 # To add a new source file to Transifex
 

@@ -20,6 +20,10 @@ public class QueryablesTest extends STACTestSupport {
 
         copyTemplate("/mandatoryLinks.json");
         copyTemplate("/items-LANDSAT8.json");
+        // these 3 needed for SAS1 to work
+        copyTemplate("/items-SAS1.json");
+        copyTemplate("/box.json");
+        copyTemplate("/parentLink.json");
     }
 
     @Test

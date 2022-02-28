@@ -179,13 +179,6 @@
     </profile>
 
     <profile>
-      <id>teradata</id>
-      <modules>
-        <module>teradata</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>monitor</id>
       <activation>
         <property>
@@ -431,7 +424,6 @@
         <module>control-flow</module>
         <module>wps</module>
         <module>querylayer</module>
-        <module>teradata</module>
         <module>monitor</module>
         <module>security</module>
         <module>xslt</module>
@@ -483,7 +475,6 @@
         <module>control-flow</module>
         <module>wps</module>
         <module>querylayer</module>
-        <module>teradata</module>
         <module>monitor</module>
         <module>security</module>
         <module>xslt</module>

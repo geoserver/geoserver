@@ -27,7 +27,6 @@ Extensions are available at the :website:`GeoServer download page <download>`.
    mysql
    oracle
    sqlserver
-   teradata
    
 GeoServer provides extensive facilities for controlling how databases are accessed.
 These are covered in the following sections.

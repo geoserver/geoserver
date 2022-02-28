@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import net.opengis.wps10.ExecuteType;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
@@ -221,6 +223,13 @@ public class WPSResourceManager extends ProcessListenerAdapter
             baseUrl = execute.getBaseUrl();
         }
         String url = ResponseUtils.buildURL(baseUrl, "ows", kvp, URLType.SERVICE);
+
+        Resource mimeResource = getOutputResource(getExecutionId(executionId), name + ".mime");
+        try (OutputStream output = mimeResource.out()) {
+            IOUtils.write(mimeType, output, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new WPSException("Error storing the output resource mime type", e);
+        }
 
         return url;
     }

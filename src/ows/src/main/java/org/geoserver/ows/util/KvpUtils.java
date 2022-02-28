@@ -445,8 +445,7 @@ public class KvpUtils {
                         parsed = result;
                     }
                 } catch (Throwable t) {
-                    // dont throw any exceptions yet, befor the service is
-                    // known
+                    // don't throw any exceptions yet, before the service is known
                     errors.add(t);
                 }
             }

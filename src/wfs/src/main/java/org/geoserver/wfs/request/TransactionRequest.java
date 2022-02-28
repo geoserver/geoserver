@@ -26,6 +26,7 @@ import net.opengis.wfs20.UpdateType;
 import net.opengis.wfs20.Wfs20Factory;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.FeatureMap.ValueListIterator;
 import org.geotools.data.Transaction;
 
 /**
@@ -91,6 +92,8 @@ public abstract class TransactionRequest extends RequestObject {
     public abstract Delete createDelete();
 
     public abstract Replace createReplace();
+
+    public abstract boolean remove(TransactionElement pElement);
 
     public static class WFS11 extends TransactionRequest {
         public WFS11(EObject adaptee) {
@@ -238,6 +241,23 @@ public abstract class TransactionRequest extends RequestObject {
         public Map getExtendedProperties() {
             return ((TransactionType) adaptee).getExtendedProperties();
         }
+
+        @Override
+        public boolean remove(TransactionElement pElement) {
+            if (pElement == null) {
+                return false;
+            }
+            for (ValueListIterator<Object> it =
+                            ((TransactionType) adaptee).getGroup().valueListIterator();
+                    it.hasNext(); ) {
+                EObject el = (EObject) it.next();
+                if (pElement.getAdaptee() == el) {
+                    it.remove();
+                    return true;
+                }
+            }
+            return false;
+        };
     }
 
     public static class WFS20 extends TransactionRequest {
@@ -346,6 +366,25 @@ public abstract class TransactionRequest extends RequestObject {
         @Override
         public Map getExtendedProperties() {
             return ((net.opengis.wfs20.TransactionType) adaptee).getExtendedProperties();
+        }
+
+        @Override
+        public boolean remove(TransactionElement pElement) {
+            if (pElement == null) {
+                return false;
+            }
+            Iterator<AbstractTransactionActionType> it =
+                    ((net.opengis.wfs20.TransactionType) adaptee)
+                            .getAbstractTransactionAction()
+                            .iterator();
+            while (it.hasNext()) {
+                EObject el = (EObject) it.next();
+                if (pElement.getAdaptee() == el) {
+                    it.remove();
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

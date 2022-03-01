@@ -278,6 +278,22 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
     }
 
     @Test
+    public void testInitCoverage_DoesntOverwriteSRS() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getCoverageStoreByName(MockData.WORLD.getLocalPart()));
+        CoverageInfo cinfo = cb.buildCoverage();
+        // change SRS of Resource to random
+        cinfo.setNativeCRS(CRS.decode("EPSG:26713"));
+        cinfo.setSRS("EPSG:4230");
+        cinfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+        // catalog builder should return origin "EPSG:4236"
+        cb.initCoverage(cinfo, "srs given");
+        assertEquals("EPSG:4230", cinfo.getSRS());
+        assertEquals(ProjectionPolicy.REPROJECT_TO_DECLARED, cinfo.getProjectionPolicy());
+    }
+
+    @Test
     public void testCoverageNativeSRSLookup() throws Exception {
         Catalog cat = getCatalog();
 

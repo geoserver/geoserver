@@ -25,6 +25,7 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.platform.resource.Resource.Lock;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geotools.util.logging.Logging;
@@ -55,29 +56,36 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
 
     @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
-        final String removedObjectName; // for logging
-        final Predicate<DataAccessRule> filter;
-        final CatalogInfo eventSource = event.getSource();
-        if (eventSource instanceof WorkspaceInfo) {
-            WorkspaceInfo ws = (WorkspaceInfo) eventSource;
-            filter = workspaceFilter(ws.getName());
-            removedObjectName = "Workspace " + ws.getName();
-        } else if (eventSource instanceof LayerInfo) {
-            LayerInfo l = (LayerInfo) eventSource;
-            WorkspaceInfo ws = l.getResource().getStore().getWorkspace();
-            filter = layerFilter(ws.getName(), l.getName());
-            removedObjectName = "Layer " + l.getName();
-        } else if (eventSource instanceof LayerGroupInfo) {
-            LayerGroupInfo lg = (LayerGroupInfo) eventSource;
-            filter = layerGroupFilter(lg.getWorkspace(), lg.getName());
-            removedObjectName = "Layer Group " + lg.getName();
-        } else {
-            return;
-        }
+        Lock lock = dao.lock();
+        try {
+            final String removedObjectName; // for logging
+            final Predicate<DataAccessRule> filter;
+            final CatalogInfo eventSource = event.getSource();
+            if (eventSource instanceof WorkspaceInfo) {
+                WorkspaceInfo ws = (WorkspaceInfo) eventSource;
+                filter = workspaceFilter(ws.getName());
+                removedObjectName = "Workspace " + ws.getName();
+            } else if (eventSource instanceof LayerInfo) {
+                LayerInfo l = (LayerInfo) eventSource;
+                WorkspaceInfo ws = l.getResource().getStore().getWorkspace();
+                filter = layerFilter(ws.getName(), l.getName());
+                removedObjectName = "Layer " + l.getName();
+            } else if (eventSource instanceof LayerGroupInfo) {
+                LayerGroupInfo lg = (LayerGroupInfo) eventSource;
+                filter = layerGroupFilter(lg.getWorkspace(), lg.getName());
+                removedObjectName = "Layer Group " + lg.getName();
+            } else {
+                return;
+            }
 
-        Supplier<String> message =
-                () -> String.format("Removing Security Rules for deleted %s", removedObjectName);
-        apply(filter, dao::removeRule, message);
+            Supplier<String> message =
+                    () ->
+                            String.format(
+                                    "Removing Security Rules for deleted %s", removedObjectName);
+            apply(filter, dao::removeRule, message);
+        } finally {
+            lock.release();
+        }
     }
 
     @Override
@@ -87,49 +95,54 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
 
     @Override
     public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
-        final String oldName;
-        final String newName;
-        {
-            final int indexOfName = event.getPropertyNames().indexOf("name");
-            // no names where changed
-            if (indexOfName == -1) return;
-            oldName = String.valueOf(event.getOldValues().get(indexOfName));
-            newName = String.valueOf(event.getNewValues().get(indexOfName));
-            // dont go anything if name has not changed
-            if (oldName.equalsIgnoreCase(newName)) return;
-        }
+        Lock lock = dao.lock();
+        try {
+            final String oldName;
+            final String newName;
+            {
+                final int indexOfName = event.getPropertyNames().indexOf("name");
+                // no names where changed
+                if (indexOfName == -1) return;
+                oldName = String.valueOf(event.getOldValues().get(indexOfName));
+                newName = String.valueOf(event.getNewValues().get(indexOfName));
+                // dont go anything if name has not changed
+                if (oldName.equalsIgnoreCase(newName)) return;
+            }
 
-        final String renamedObject; // for logging
-        final CatalogInfo eventSource = event.getSource();
-        final Predicate<DataAccessRule> filter;
-        final Consumer<DataAccessRule> updater;
-        if (eventSource instanceof WorkspaceInfo) {
-            // if workspace has been renamed
-            filter = workspaceFilter(oldName);
-            updater = r -> r.setRoot(newName);
-            renamedObject = "Workspace";
-        } else if (eventSource instanceof ResourceInfo) {
-            // if a layer has been renamed
-            // similar layer names can exist in different workspaces
-            String wsName = ((ResourceInfo) eventSource).getStore().getWorkspace().getName();
-            filter = layerFilter(wsName, oldName);
-            updater = r -> r.setLayer(newName);
-            renamedObject = "Resource";
-        } else if (eventSource instanceof LayerGroupInfo) {
-            LayerGroupInfo lg = (LayerGroupInfo) eventSource;
-            filter = layerGroupFilter(lg.getWorkspace(), oldName);
-            updater = layerGroupRuleUpdater(lg.getWorkspace(), newName);
-            renamedObject = "LayerGroup";
-        } else {
-            return;
-        }
+            final String renamedObject; // for logging
+            final CatalogInfo eventSource = event.getSource();
+            final Predicate<DataAccessRule> filter;
+            final Consumer<DataAccessRule> updater;
+            if (eventSource instanceof WorkspaceInfo) {
+                // if workspace has been renamed
+                filter = workspaceFilter(oldName);
+                updater = r -> r.setRoot(newName);
+                renamedObject = "Workspace";
+            } else if (eventSource instanceof ResourceInfo) {
+                // if a layer has been renamed
+                // similar layer names can exist in different workspaces
+                String wsName = ((ResourceInfo) eventSource).getStore().getWorkspace().getName();
+                filter = layerFilter(wsName, oldName);
+                updater = r -> r.setLayer(newName);
+                renamedObject = "Resource";
+            } else if (eventSource instanceof LayerGroupInfo) {
+                LayerGroupInfo lg = (LayerGroupInfo) eventSource;
+                filter = layerGroupFilter(lg.getWorkspace(), oldName);
+                updater = layerGroupRuleUpdater(lg.getWorkspace(), newName);
+                renamedObject = "LayerGroup";
+            } else {
+                return;
+            }
 
-        Supplier<String> message =
-                () ->
-                        String.format(
-                                "Updating Security Rules for renamed %s: %s -> %s",
-                                renamedObject, oldName, newName);
-        apply(filter, updater, message);
+            Supplier<String> message =
+                    () ->
+                            String.format(
+                                    "Updating Security Rules for renamed %s: %s -> %s",
+                                    renamedObject, oldName, newName);
+            apply(filter, updater, message);
+        } finally {
+            lock.release();
+        }
     }
 
     /**

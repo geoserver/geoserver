@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Lock;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
@@ -70,6 +71,10 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
         this.propertyFileName = propertyFileName;
         this.dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
         // this.dd = org.vfny.geoserver.global.GeoserverDataDirectory.accessor();
+    }
+
+    public Lock lock() {
+        return watcher.getResource().lock();
     }
 
     /**

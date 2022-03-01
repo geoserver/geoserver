@@ -3,7 +3,7 @@
 GDAL Image Formats
 ==================
 
-GeoServer can leverage the `ImageI/O-Ext <https://github.com/geosolutions-it/imageio-ext/wiki>`_ GDAL libraries to read selected coverage formats. `GDAL <http://www.gdal.org>`_ is able to read many formats, but for the moment GeoServer supports only a few general interest formats and those that can be legally redistributed and operated in an open source server.
+GeoServer can leverage the `ImageI/O-Ext <https://github.com/geosolutions-it/imageio-ext/wiki>`__ GDAL libraries to read selected coverage formats. `GDAL <http://www.gdal.org>`__ is able to read many formats, but for the moment GeoServer supports only a few general interest formats and those that can be legally redistributed and operated in an open source server.
 
 The following image formats can be read by GeoServer using GDAL:
 
@@ -43,53 +43,76 @@ Moreover, in order for GeoServer to leverage these libraries, the GDAL (binary) 
 Installing GDAL native libraries
 ++++++++++++++++++++++++++++++++
 
-Starting GeoServer 2.16.x the imageio-ext plugin needs a GDAL version 2.x (tested in particular with 2.2.x and 2.4.x).
+Starting with GeoServer 2.21.x the imageio-ext plugin is tested with GDAL version 3.x (tested in particular with 3.2.x and 3.4.x).
+
+The imageio-ext plugin is tested with the GDAL 3.2 SWIG bindings, included in the extension download as :file:`gdal-3.2.0.jar`.
+
+In case of version mismatch
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We recommend matching the version :file:`gdal` jar to the version of gdal available in your environment:
+
+.. code-block:: console
+
+   gdalinfo --version
+   
+::
+
+   GDAL 3.4.1, released 2021/12/27
+
+If you are using a version of GDAL that does not match the one expected by GeoServer, you can go and replace the :file:`gdal-3.2.0.jar` file with the equivalent java binding jar (typically named either :file:`gdal-<version>.jar`) included with your GDAL version:
+
+* If your GDAL version does not include a bindings jar, it was probably not compiled with the java bindings and will not work with GeoServer.
+
+* You may also search for the correct :file:`gdal` jar here: https://search.maven.org/artifact/org.gdal/gdal
 
 Windows packages and setup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For Windows, `gisinternals.com <http://www.gisinternals.com/release.php>`_ provides complete packages,
-with Java bindings support, in the ``release-<version>-GDAL-<version>-mapserver-<version>.zip`` packages
-(the GDAL installers at the time of writing provide no Java support).
+with Java bindings support, in the ``release-<version>-GDAL-<version>-mapserver-<version>.zip`` packages (the GDAL binary downloads at the time of writing do not include Java support).
 
-Unpack the zip file in a suitable location, and then set the following variables before starting up
-GeoServer::
+Unpack the :file:`zip` file in a suitable location, and then set the following variables before starting up GeoServer:
+
+.. code-block:: bat
 
   set PATH=%PATH%;C:\<unzipped_package>\bin;C:\<unzipped_package>\bin\gdal\java
   set GDAL_DRIVER_PATH=C:\<unzipped_package>\bin\gdal\plugins
   set GDAL_DATA=C:\<unzipped_package>\bin\gdal-data
   
-There are a few optional drivers that you can find in ``c:\<unzipped_package>\bin\gdal\plugins-extra``
-and ``c:\<unzipped_package>\bin\gdal\plugins-optional``. Adding those paths to ``GDAL_DRIVER_PATH``
-enables the additional formats. 
+There are a few optional drivers that you can find in file:`C:\<unzipped_package>\bin\gdal\plugins-extra`
+and :file:`C:\<unzipped_package>\bin\gdal\plugins-optional`. Include these paths in ```GDAL_DRIVER_PATH`` enables the additional formats. 
 
 .. warning:: Before adding the extra formats please make sure that you are within your rights 
              to use them in a server environment (some packages are specifically forbidden from
              free usage on the server side and require a commercial licence, e.g., ECW).
   
-.. note:: Depending on the version of the underlying operating system you'll have to pick up the right one. You can google around for the one you need. Also make sure you download the 32 bit  
+.. note:: Depending on the version of the underlying operating system you will have to pick up the right one. You can google around for the one you need. Also make sure you download the 32 bit  
           version if you are using a 32 bit version of Windows or the 64 bit version (has a "-x64" suffix in the name of the zip file) if you are running a 64 bit version of Windows.
           Again, pick the one that matches your infrastructure.
-   
+
 Note on running GeoServer as a Service on Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you downloaded an installed GeoServer as a Windows service you installed the 32 bit version.
-
-Simply deploying the GDAL ImageI/O-Ext native libraries in a location referred by the PATH environment variable (like, as an instance, the JDK/bin folder) won't allow the GeoServer service to use GDAL. As a result, during the service startup, GeoServer log will likely report the following message::
+Deploying the GDAL ImageI/O-Ext native libraries in a location referred by the ``PATH`` environment variable (like, as an instance, the JDK/bin folder) will not allow the GeoServer service to use GDAL. As a result, during the service startup, GeoServer log will likely report the following message::
 
   it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
   WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path
 
-Taking a look at the ``wrapper.conf`` configuration file available inside the GeoServer installation (at ``bin/wrapper/wrapper.conf``), there is this useful entry::
+Taking a look at the ``jsl74.ini`` configuration file available inside the GeoServer installation , there is this useful entry:
 
-    # Java Library Path (location of Wrapper.DLL or libwrapper.so)
-    wrapper.java.library.path.1=bin/wrapper/lib
+.. code-block:: ini
+    
+    ;The java command line
+    ;The entry method below using a parameter list still works but the command line variant is more convenient.
+    ;Everything separated by whitespace on a java command line is broken down into a parameter here. 
+    ;You don't need to care about quotes
+    ;around strings containing spaces here. e.g. 
+    cmdline = -cp "..\src" com.roeschter.jsl.TelnetEcho
 
-To allow the GDAL native DLLs to be loaded, you have two options:
+To allow the GDAL native DLLs to be loaded:
 
-#. Move the native DLLs to the referenced path (bin/wrapper/lib)
-#. Add a ``wrapper.java.library.path.2=path/where/you/deployed/nativelibs`` entry just after the ``wrapper.java.library.path1=bin/wrapper/lib`` line.
+#. Edit the  command line to include ``-Djava.library.path`` with the location of your GDAL libraries.
 
 Linux packages and setup
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -109,37 +132,42 @@ In case you decide to build from sources instead, remember to run ``configure`` 
 and after the main build and install, get into the ``swig/java`` and run a build and install there.
 For more information about building GDAL see:
 
-* `General build information <https://trac.osgeo.org/gdal/wiki/BuildHints>`_
-* `Specific info to build GDAL Java bindings <https://trac.osgeo.org/gdal/wiki/GdalOgrInJavaBuildInstructionsUnix>`_
+* `General build information <https://trac.osgeo.org/gdal/wiki/BuildHints>`__
+* `Specific info to build GDAL Java bindings <https://trac.osgeo.org/gdal/wiki/GdalOgrInJavaBuildInstructionsUnix>`__
 
 After the build and installation, export the following variables to make GeoServer use the GDAL custom build::
 
   export LD_LIBRARY_PATH=/<path_to_gdal_install>/lib
   export GDAL_DATA=/<path_to_gdal_install>/share/gdal
 
-In case of version mismatch
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you are using a version of GDAL that does not match the one expected by GeoServer, you can go and replace the :file:`gdal-2.2.0.jar` file with the equivalent java binding jar (typically named either :file:`gdal-<version>.jar` or :file:`imageio-ext-gdal-bindings-*.jar`) included with your GDAL version. If your GDAL version does not include a bindings jar, it was probably not compiled with the java bindings and will not work with GeoServer.
 
 Testing the installation
 ------------------------
 
-Once these steps have been completed, restart GeoServer.  If all the steps have been performed  correctly, new data formats will be in the :guilabel:`Raster Data Sources` list when creating a new data store in the :guilabel:`Stores` section as shown here below.
+Once these steps have been completed, restart GeoServer.
+
+Navigate to :menuselection:`About > Server Status` page, and change to the :guilabel:`Moduels` tab, and click :guilabel:`` link for status information.
+
+.. figure:: images/gdal-extension-status.png
+   
+   ImageI/O GDAL Coverage Extension Module Status
+
+This information can be used to verify that the extension is active, the version of GDAL used, and the version of the SWIG bindings used.
+
+If all the steps have been performed  correctly, new data formats will be in the :guilabel:`Raster Data Sources` list when creating a new data store in the :guilabel:`Stores` section as shown here below.
 
 .. figure:: images/newsource.png
    :align: center
 
    *GDAL image formats in the list of raster data stores*
    
-
 If new formats do not appear in the GUI and you see the following message in the log file:
 
 *it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
 WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path*
 WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdalalljni in java.library.path*
 
-that means that the installations failed for some reason.
+This means that the extension was installed, bu twas not able to access your gdal library for some reason.
 
 Configuring a DTED data store
 -----------------------------
@@ -240,7 +268,7 @@ Suppose you have 3 raster files with the following paths:
 
 They can be represented by this tree:
 
-.. code-block:: xml
+.. code-block:: text
 
    /data
     \---raster
@@ -269,7 +297,7 @@ In order to support external footprints you should
 
 Which can be represented by this tree:
 
-.. code-block:: xml
+.. code-block:: text
 
    /footprints
     \---data
@@ -288,7 +316,7 @@ Which can be represented by this tree:
 
 Such that, in the end, you will have the following folders hierarchy tree:
 
-.. code-block:: xml
+.. code-block:: text
 
    +---data
    |   \---raster

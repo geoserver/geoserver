@@ -210,21 +210,35 @@ public abstract class FreeMarkerTemplateManager {
         }
     }
 
+    /**
+     * Processes the given template for the given FeatureCollection.
+     *
+     * @param queryLayerTxt The name of the GetFeatureInfo queryLayer or the concatenated name of
+     *     all queryLayers if the originating layer is not obvious.
+     * @param fc
+     * @param template
+     * @param osw
+     * @throws IOException
+     */
     protected void processTemplate(
-            String name, FeatureCollection fc, Template template, OutputStreamWriter osw)
+            String queryLayerTxt, FeatureCollection fc, Template template, OutputStreamWriter osw)
             throws IOException {
         try {
             template.process(fc, osw);
         } catch (TemplateException e) {
             String msg = null;
             if (fc == null) {
-                msg = "Error occured processing " + name + " template.";
+                msg = "Error occured processing " + queryLayerTxt + " template.";
             } else {
+                String schema =
+                        fc.getSchema() == null ? null : fc.getSchema().getName().getLocalPart();
                 msg =
                         "Error occurred processing content template "
                                 + template.getName()
-                                + " for "
-                                + name;
+                                + " for featureType "
+                                + schema
+                                + " of query layer "
+                                + queryLayerTxt;
             }
             throw (IOException) new IOException(msg).initCause(e);
         }

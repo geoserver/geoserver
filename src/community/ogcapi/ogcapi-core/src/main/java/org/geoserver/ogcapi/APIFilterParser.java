@@ -10,11 +10,15 @@ import java.util.Set;
 import org.geootols.filter.text.cql_2.CQL2;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Centralizes filter/filter-lang handling. */
 public class APIFilterParser {
@@ -34,6 +38,15 @@ public class APIFilterParser {
      * {@link #CQL_OBJECT}) and defaults the geometry literals in spatial filters to CRS84
      */
     public Filter parse(String filter, String filterLang) {
+        return parse(filter, filterLang, null, null);
+    }
+
+    /**
+     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT} and
+     * {@link #CQL_OBJECT}) and defaults the geometry literals in spatial filters to filter crs.
+     */
+    public Filter parse(
+            String filter, String filterLang, CoordinateReferenceSystem filterCRS, FeatureType ft) {
         if (filter == null) {
             return null;
         }
@@ -43,6 +56,9 @@ public class APIFilterParser {
 
         // by OGC-API filter spec
         if (filterLang == null) filterLang = CQL2_TEXT;
+
+        // by OGC-API filter spec
+        if (filterCRS == null) filterCRS = DefaultGeographicCRS.WGS84;
 
         // right now there is a spec only for cql-text and cql-object, will be extended when more
         // languages are recognized (could have its own extension point too,
@@ -75,9 +91,21 @@ public class APIFilterParser {
             // in OGC APIs assume CRS84 as the default, but the underlying machinery may default to
             // the native CRS in EPSG axis order instead, best making the CRS explicit instead
             if (parsedFilter != null) {
-                DefaultCRSFilterVisitor crsDefaulter =
-                        new DefaultCRSFilterVisitor(FF, DefaultGeographicCRS.WGS84);
-                return (Filter) parsedFilter.accept(crsDefaulter, null);
+                DefaultCRSFilterVisitor crsDefaulter = new DefaultCRSFilterVisitor(FF, filterCRS);
+                parsedFilter = (Filter) parsedFilter.accept(crsDefaulter, null);
+
+                // if there is not FeatureType provided, we can not reproject
+                if (ft != null) {
+                    CoordinateReferenceSystem sourceCRS = ft.getCoordinateReferenceSystem();
+
+                    if (sourceCRS != null && !CRS.equalsIgnoreMetadata(filterCRS, sourceCRS)) {
+                        ReprojectingFilterVisitor reprojector =
+                                new ReprojectingFilterVisitor(FF, ft);
+                        parsedFilter = (Filter) parsedFilter.accept(reprojector, ft);
+                    }
+                }
+
+                return parsedFilter;
             } else {
                 return null;
             }

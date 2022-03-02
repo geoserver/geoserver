@@ -6,7 +6,6 @@
 package org.geoserver.wps.ppio;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,14 +15,15 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageWriteParam;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.wcs.responses.GeoTiffWriterHelper;
 import org.geoserver.wps.WPSException;
+import org.geoserver.wps.resource.GridCoverageReaderResource;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.GridFormatFinder;
-import org.geotools.coverage.grid.io.UnknownFormat;
 import org.geotools.gce.geotiff.GeoTiffFormat;
+import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.process.ProcessException;
 import org.geotools.util.logging.Logging;
@@ -36,7 +36,7 @@ import org.opengis.parameter.ParameterValueGroup;
  * @author Simone Giannecchini, GeoSolutions
  * @author Daniele Romagnoli, GeoSolutions
  */
-public class GeoTiffPPIO extends BinaryPPIO {
+public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
 
     protected static final String TILE_WIDTH_KEY = "tilewidth";
     protected static final String TILE_HEIGHT_KEY = "tileheight";
@@ -65,26 +65,35 @@ public class GeoTiffPPIO extends BinaryPPIO {
 
     private static final Logger LOGGER = Logging.getLogger(GeoTiffPPIO.class);
 
-    protected GeoTiffPPIO() {
+    private final WPSResourceManager resources;
+
+    protected GeoTiffPPIO(WPSResourceManager resources) {
         super(GridCoverage2D.class, GridCoverage2D.class, "image/tiff");
+        this.resources = resources;
     }
 
     @Override
     public Object decode(InputStream input) throws Exception {
         // in order to read a grid coverage we need to first store it on disk
         File root = new File(System.getProperty("java.io.tmpdir", "."));
-        File f = File.createTempFile("wps", "tiff", root);
-        try (FileOutputStream os = new FileOutputStream(f)) {
-            IOUtils.copy(input, os);
+        File file = File.createTempFile("wps", ".tiff", root);
+        GridCoverageReaderResource resource = null;
+        try {
+            FileUtils.copyInputStreamToFile(input, file);
+            GeoTiffFormat format = new GeoTiffFormat();
+            if (!format.accepts(file)) {
+                throw new WPSException("Could not read " + getMimeType() + " coverage");
+            }
+            GeoTiffReader reader = format.getReader(file);
+            resource = new GridCoverageReaderResource(reader, file);
+            return reader.read(null);
+        } finally {
+            if (resource != null) {
+                resources.addResource(resource);
+            } else {
+                file.delete();
+            }
         }
-
-        // and then we try to read it as a geotiff
-        AbstractGridFormat format = GridFormatFinder.findFormat(f);
-        if (format instanceof UnknownFormat) {
-            throw new WPSException(
-                    "Could not find the GeoTIFF GT2 format, please check it's in the classpath");
-        }
-        return format.getReader(f).read(null);
     }
 
     @Override
@@ -181,5 +190,11 @@ public class GeoTiffPPIO extends BinaryPPIO {
     @Override
     public String getFileExtension() {
         return "tiff";
+    }
+
+    // Make GeoTIFF the default GridCoverage2D PPIO for backwards compatibility
+    @Override
+    public int getPriority() {
+        return HIGHEST;
     }
 }

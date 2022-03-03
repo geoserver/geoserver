@@ -268,7 +268,7 @@ public class MBTilesProcess implements GeoServerProcess {
 
             // Add a style
             if (stylePath != null) {
-                request.setStyleUrl(stylePath);
+                request.setStyleUrl(stylePath.toURI());
             } else if (styleBody != null && !styleBody.isEmpty()) {
                 request.setStyleBody(styleBody);
             } else {

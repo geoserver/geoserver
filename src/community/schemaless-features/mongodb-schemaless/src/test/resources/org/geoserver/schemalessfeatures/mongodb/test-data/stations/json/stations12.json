@@ -5,7 +5,7 @@
   "inferredAttribute": "ok",
   "groupAttribute": "groupAttribute3",
   "groupAttribute2": "groupAttribute22",
-  "numericValue": 43.0,
+  "numericValue": "43.0",
   "nullableField": "notNull",
   "simpleArrayString": [
     "stringOne",

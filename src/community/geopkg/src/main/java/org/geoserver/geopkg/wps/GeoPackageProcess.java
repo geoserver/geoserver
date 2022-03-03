@@ -283,7 +283,7 @@ public class GeoPackageProcess implements GeoServerProcess {
         request.setTransparent(tiles.isTransparent());
         request.setStyleBody(tiles.getSldBody());
         if (tiles.getSld() != null) {
-            request.setStyleUrl(tiles.getSld().toURL());
+            request.setStyleUrl(tiles.getSld());
         } else if (tiles.getSldBody() != null) {
             request.setStyleBody(tiles.getSldBody());
         } else {

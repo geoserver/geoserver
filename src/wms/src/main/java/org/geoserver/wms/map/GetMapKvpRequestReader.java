@@ -440,7 +440,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 LOGGER.fine("Getting layers and styles from reomte SLD");
             }
 
-            URL styleUrl = getMap.getStyleUrl();
+            URL styleUrl = getMap.getStyleUrl().toURL();
 
             InputStream input = null;
             if (styleUrl.getProtocol().toLowerCase().indexOf("http") == 0) {

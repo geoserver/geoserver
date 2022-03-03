@@ -215,4 +215,28 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
         JSONArray features = jsonObject.getJSONArray("features");
         assertEquals(9, features.size());
     }
+
+    @Test
+    public void testGetStationFeaturesSameAttributesDifferentTypes() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&outputFormat=application/json&cql_filter=name='station 12' OR name='station 2'");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(2, features.size());
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            JSONObject props = feature.getJSONObject("properties");
+            String name = props.getString("name");
+            Object object = props.get("numericValue");
+            if (name.equals("station 2")) {
+                assertEquals(26, object);
+            } else {
+                assertEquals("43.0", object);
+            }
+            checkStationFeature(feature);
+        }
+    }
 }

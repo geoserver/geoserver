@@ -133,7 +133,7 @@ public abstract class SchemalessFeatureMapper<T> {
                 parentType.addPropertyDescriptor(attrDescriptor);
             }
         }
-        Class<?> binding = attrDescriptor.getType().getBinding();
+
         attributeBuilder.setDescriptor((AttributeDescriptor) attrDescriptor);
         return attributeBuilder.buildSimple(null, value);
     }

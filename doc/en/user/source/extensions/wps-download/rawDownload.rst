@@ -475,6 +475,22 @@ The supported writing parameters are:
    * for ``Deflate`` lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]:  ``(deflate level = 1 + 8 * (quality))``, where level 1 is for best speed and level 9 is for best compression. (default level is 9)
  * ``writenodata`` : Supported value is one of true/false. Note that, by default, a `nodata TAG <https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html>`_ is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.
  
+Direct download
+---------------
+
+The raster process does its best to identify downloads that are in fact selecting a single, complete
+source file, and will perform a straight copy of it in such case.
+
+Conditions:
+
+* A single, complete source file is selected by the request (e.g. full input GeoTIFF, or single
+  full granule out of an image mosaic).
+* The output format matches the input (e.g. both GeoTIFF)
+* The write parameters, if present, match the structure of the input file (same compression, same tiling structure)
+
+In order to better support opportunities for direct download, it's possible to specify the write
+parameter ``compression`` as ``auto``: it won't interfere with selection of a direct download,
+if possible, and will fall back to ``deflate`` in case the direct download is not possible.
 
 .. _heterogeneous_imagemosaic:
 

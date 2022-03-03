@@ -40,7 +40,7 @@ public class ResourceRawData extends AbstractRawData {
 
     @Override
     public String toString() {
-        return "FileRawData [file="
+        return "ResourceRawData [file="
                 + file
                 + ", mimeType="
                 + mimeType

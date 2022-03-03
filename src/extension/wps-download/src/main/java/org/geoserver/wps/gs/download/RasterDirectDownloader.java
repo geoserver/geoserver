@@ -17,11 +17,14 @@ import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
 import it.geosolutions.jaiext.range.NoDataContainer;
 import it.geosolutions.jaiext.vectorbin.ROIGeometry;
+import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -59,6 +62,9 @@ class RasterDirectDownloader {
 
     static final Logger LOGGER = Logging.getLogger(RasterDirectDownloader.class);
     private static final String IMAGE_TIFF = "image/tiff";
+    private static final double EPS = 1e-6;
+    /** Automatic compression. Will use Deflate */
+    protected static final String AUTO = "auto";
 
     private final WPSResourceManager resourceManager;
 
@@ -102,6 +108,8 @@ class RasterDirectDownloader {
         // can we extract a single source file with no pixel related operations
         File file = getSourceFile(image);
         if (file == null) return false;
+
+        LOGGER.fine(() -> "Located single source file: " + file);
 
         // format matches?
         String formatName = getFormatName(file);
@@ -169,11 +177,23 @@ class RasterDirectDownloader {
                 String actual = getCompression(file);
                 // oddity of tiff spec, two deflates, one identified as "zlib"
                 if ("zlib".equalsIgnoreCase(actual)) actual = "Deflate";
-                if (!expected.equalsIgnoreCase(actual)) return false;
+                if (!AUTO.equalsIgnoreCase(expected) && !expected.equalsIgnoreCase(actual)) {
+                    LOGGER.fine(
+                            "TIFF compression is not a match, required "
+                                    + expected
+                                    + " but the file used: "
+                                    + actual);
+                    return false;
+                }
                 // only match the compression itself, if more compression params were specified
                 // like compression level, the match will fail, we cannot match them
                 matchedParams++;
             }
+
+            LOGGER.log(
+                    Level.FINE,
+                    "Matched {0} over {1} total parameters",
+                    new Object[] {matchedParams, parametersMap.size()});
 
             // no other unknown parameters found?
             return parametersMap.size() == matchedParams;
@@ -182,7 +202,7 @@ class RasterDirectDownloader {
         }
     }
 
-    private String getCompression(File file) throws IOException {
+    static String getCompression(File file) throws IOException {
         final TIFFImageReader reader =
                 (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         try (FileImageInputStream fis = new FileImageInputStream(file)) {
@@ -207,7 +227,7 @@ class RasterDirectDownloader {
         }
     }
 
-    IIOMetadataNode getTiffField(Node rootNode, final int tag) {
+    static IIOMetadataNode getTiffField(Node rootNode, final int tag) {
         Node node = rootNode.getFirstChild();
         if (node != null) {
             node = node.getFirstChild();
@@ -251,7 +271,13 @@ class RasterDirectDownloader {
 
     private File getSourceFile(RenderedImage image) {
         RenderedOp read = getImageRead(image);
-        if (read == null) return null;
+        if (read == null) {
+            LOGGER.fine(
+                    () ->
+                            "Could not perform a direct download on \n"
+                                    + RenderedImageBrowser.dumpChain(image));
+            return null;
+        }
 
         ParameterBlock params = read.getParameterBlock();
         Object source = params.getObjectParameter(0);
@@ -285,7 +311,12 @@ class RasterDirectDownloader {
         if ("Mosaic".equals(op.getOperationName()) && canIgnoreMosaic(op)) {
             PlanarImage source = op.getSourceImage(0);
             if (!(source instanceof RenderedOp)) return null;
-            // recurse, there might be more than one ignorable mosaic op
+            // recurse, there might be more than one ignorable op
+            return getImageRead(source);
+        } else if ("Scale".equals(op.getOperationName()) && canIgnoreScale(op)) {
+            PlanarImage source = op.getSourceImage(0);
+            if (!(source instanceof RenderedOp)) return null;
+            // recurse, there might be more than one ignorable op
             return getImageRead(source);
         }
 
@@ -296,6 +327,42 @@ class RasterDirectDownloader {
         return null;
     }
 
+    private boolean canIgnoreScale(RenderedOp op) {
+        ParameterBlock pb = op.getParameterBlock();
+        PlanarImage source = op.getSourceImage(0);
+
+        if (Math.abs(pb.getFloatParameter(0) - 1) > EPS
+                && Math.abs(pb.getFloatParameter(1) - 1) > EPS) {
+            LOGGER.fine("Scale is not ignorable, scale factors are too far from 1");
+
+            return false;
+        }
+
+        // same nodata?
+        Object sourceNoData = source.getProperty(NoDataContainer.GC_NODATA);
+        Object mosaicNoData = op.getProperty(NoDataContainer.GC_NODATA);
+        if (!sameNoData(sourceNoData, mosaicNoData)) {
+            LOGGER.fine(
+                    () ->
+                            "Skipping direct download, found a scale operation without the same NODATA.\nSource NODATA: "
+                                    + sourceNoData
+                                    + "\nMosaic NODATA: "
+                                    + mosaicNoData);
+            return false;
+        }
+
+        // check what the mosaic has been instructed to do
+        ROI roi = (ROI) pb.getObjectParameter(5);
+        if (roi != null && !isFullROI(roi, source)) {
+            LOGGER.fine(
+                    () ->
+                            "Skipping direct download, found a scale operation with a ROI that does not cover the full file.\nROI:"
+                                    + roi);
+        }
+
+        return true;
+    }
+
     /**
      * Checks if a mosaic operation can be skipped, as it's returning the same image as its input
      */
@@ -304,21 +371,76 @@ class RasterDirectDownloader {
         if (op.getNumSources() != 1) return false;
         PlanarImage source = op.getSourceImage(0);
 
-        // same image layout?
-        if (!new ImageLayout(op).equals(new ImageLayout(source))) return false;
+        // same image layout (ignoring internal tiling, as the source data might have
+        // a tiling structure not matching the current output one, but we may not care
+        // when the operation required no tiling directives... we are not going handle that
+        // checking the write parameters instead)
+        ImageLayout opLayout = new ImageLayout(op);
+        ImageLayout sourceLayout = new ImageLayout(source);
+        if (opLayout.getWidth(null) != sourceLayout.getWidth(null)
+                || opLayout.getHeight(null) != sourceLayout.getHeight(null)
+                || !similarSampleModel(
+                        opLayout.getSampleModel(null), sourceLayout.getSampleModel(null))
+                || !Objects.equals(
+                        opLayout.getColorModel(null), sourceLayout.getColorModel(null))) {
+            LOGGER.fine(
+                    () ->
+                            "Skipping direct download, found a mosaic operation without the same structure as requested.\nSource layout: "
+                                    + sourceLayout
+                                    + "\nMosaic layout: "
+                                    + opLayout);
+            return false;
+        }
 
         // same nodata?
         Object sourceNoData = source.getProperty(NoDataContainer.GC_NODATA);
-        if (!Objects.equals(sourceNoData, op.getProperty(NoDataContainer.GC_NODATA))) return false;
+        Object mosaicNoData = op.getProperty(NoDataContainer.GC_NODATA);
+        if (!sameNoData(sourceNoData, mosaicNoData)) {
+            LOGGER.fine(
+                    () ->
+                            "Skipping direct download, found a mosaic operation without the same NODATA.\nSource NODATA: "
+                                    + sourceNoData
+                                    + "\nMosaic NODATA: "
+                                    + mosaicNoData);
+            return false;
+        }
 
         // check what the mosaic has been instructed to do
         ParameterBlock pb = op.getParameterBlock();
         ROI[] rois = (ROI[]) pb.getObjectParameter(2);
-        if (rois != null && rois.length == 1 && !isFullROI(rois[0], source)) return false;
+        if (rois != null && rois.length == 1 && !isFullROI(rois[0], source)) {
+            LOGGER.fine(
+                    () ->
+                            "Skipping direct download, found a mosaic operation with a ROI that does not cover the full file.\nROI:"
+                                    + Arrays.toString(rois));
+        }
 
         // TODO check also background and threshold?
 
         return true;
+    }
+
+    private boolean sameNoData(Object o1, Object o2) {
+        // null safe checks
+        if (o1 == o2) return true;
+        if (!(o1 instanceof NoDataContainer) || !(o2 instanceof NoDataContainer)) return false;
+
+        // check the nodata at the single value level, there is no actuals support for
+        //
+        NoDataContainer nd1 = (NoDataContainer) o1;
+        NoDataContainer nd2 = (NoDataContainer) o2;
+        return nd1.getAsSingleValue() == nd2.getAsSingleValue(); // no tolerance on purpose
+    }
+
+    /**
+     * Compares two sample models by number of bands and data type, ignoring the width/height as
+     * that might be affected by tiling
+     */
+    private boolean similarSampleModel(SampleModel sm1, SampleModel sm2) {
+        if (Objects.equals(sm1, sm2)) return true;
+        if (sm1 == null || sm2 == null) return false;
+
+        return sm1.getNumBands() == sm2.getNumBands() && sm1.getDataType() == sm2.getDataType();
     }
 
     private boolean isFullROI(ROI roi, PlanarImage source) {

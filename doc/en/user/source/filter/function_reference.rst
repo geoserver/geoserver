@@ -545,8 +545,10 @@ Parsing and formatting functions
      - ``format``:String, ``dateString``:String
      - Parses a date from a ``dateString`` formatted according to the ``format`` specification. The format syntax can be found in the `Java SimpleDateFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_
    * - numberFormat
-     - ``format``:String, ``number``:Double
-     - Formats the number according to the specified ``format``. The format syntax can be found in the `Java DecimalFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/DecimalFormat.html>`_
+     - ``format``:String, ``number``:Double, ``locale``:String
+     - Formats the number according to the specified ``format`` using the default locale or the one 
+       provided as an optional argument. The format syntax can be found in the `Java DecimalFormat 
+       javadocs <http://java.sun.com/javase/6/docs/api/java/text/DecimalFormat.html>`_
    * - parseBoolean
      - ``boolean``:String
      - Parses a string into a boolean. The empty string, ``f``, ``0.0`` and ``0`` are considered false, everything else is considered true.

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.filter.text.ecql.ECQL;
 import org.junit.Ignore;
@@ -27,7 +28,9 @@ public class TemplatePropertyMapperTest extends STACTestSupport {
     public TemplatePropertyMapper getPropertyMapper() {
         STACTemplates templates = GeoServerExtensions.bean(STACTemplates.class);
         SampleFeatures sampleFeatures = GeoServerExtensions.bean(SampleFeatures.class);
-        return new TemplatePropertyMapper(templates, sampleFeatures);
+        CollectionsCache collectionsCache = GeoServerExtensions.bean(CollectionsCache.class);
+        OSEOInfo oseoInfo = GeoServerExtensions.bean(OSEOInfo.class);
+        return new TemplatePropertyMapper(templates, sampleFeatures, collectionsCache, oseoInfo);
     }
 
     @Test

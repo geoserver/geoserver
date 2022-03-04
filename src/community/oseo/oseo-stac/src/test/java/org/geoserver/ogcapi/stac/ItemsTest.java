@@ -22,8 +22,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minidev.json.JSONArray;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -150,7 +152,7 @@ public class ItemsTest extends STACTestSupport {
     }
 
     private void testSentinel2SampleHTML(Elements elements) {
-        assertTextContains(elements, "[data-tid='gbounds']", "-119,174, 33,333, -117,969, 34,338.");
+        assertTextContains(elements, "[data-tid='gbounds']", "-119.174, 33.333, -117.969, 34.338.");
         assertTextContains(elements, "[data-tid='ccover']", "7");
     }
 
@@ -613,5 +615,28 @@ public class ItemsTest extends STACTestSupport {
         // we excluded thumbnail2 keeping only thumbnail
         assertFalse(includeFlatField.containsKey("thumbnail2"));
         assertTrue(includeFlatField.containsKey("thumbnail"));
+    }
+
+    public void testQueryByDynamicPropertyNonQueryable() throws Exception {
+        // s2:granule_id is in a dynamically included JSON but is not in the queryables array
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/collections/SAS1/items?filter=s2:granule_id = 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
+                        200);
+        assertEquals(new Integer(0), doc.read("numberMatched", Integer.class));
+
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        String queryables = "id,geometry,collection,s2:granule_id";
+        service.setGlobalQueryables(queryables);
+        gs.save(service);
+        DocumentContext doc2 =
+                getAsJSONPath(
+                        "ogc/stac/collections/SAS1/items?filter=s2:granule_id = 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
+                        200);
+        assertThat((List<String>) doc2.read("features[*].id"), contains("SAS1_20180227102021.02"));
+
+        service.setGlobalQueryables("id,geometry,collection");
+        gs.save(service);
     }
 }

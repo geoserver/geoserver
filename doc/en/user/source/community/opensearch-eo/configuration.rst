@@ -21,6 +21,11 @@ Follow these steps:
 
   .. figure:: images/service.png
 
+* Global Queryables (applicable to the STAC API to define queryable fields for all Collections) can be configured
+  using a comma delimited list in the text box under OpenSearch specific metadata
+
+  .. figure:: images/queryables.png
+
 Advanced: adding product classes
 --------------------------------
 

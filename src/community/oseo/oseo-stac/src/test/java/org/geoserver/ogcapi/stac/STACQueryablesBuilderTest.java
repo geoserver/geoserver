@@ -20,6 +20,8 @@ import java.util.Map;
 import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.ogcapi.Queryables;
+import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.OSEOInfoImpl;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensionsHelper;
@@ -63,9 +65,17 @@ public class STACQueryablesBuilderTest {
         TemplateReaderConfiguration config =
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
+        OSEOInfo service = new OSEOInfoImpl();
+        String queryablesL = "id,geometry,collection";
+        service.setGlobalQueryables(queryablesL);
         STACQueryablesBuilder builder =
                 new STACQueryablesBuilder(
-                        FAKE_ID, template.getRootBuilder(), products.getSchema(), null);
+                        FAKE_ID,
+                        template.getRootBuilder(),
+                        products.getSchema(),
+                        null,
+                        null,
+                        service);
         Queryables queryables = builder.getQueryables();
 
         // check the time range properties have been replaced by a single property
@@ -132,17 +142,28 @@ public class STACQueryablesBuilderTest {
                 new FileSystemResourceStore(new File("./src/test/resources"));
         Resource templateDefinition = resourceStore.get("items-SAS1.json");
         FeatureSource<FeatureType, Feature> products = data.getProductSource();
+        FeatureSource<FeatureType, Feature> collections = data.getCollectionSource();
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
         Filter sampleFilter =
                 ff.equals(ff.property("identifier"), ff.literal("SAS1_20180226102021.01"));
         Feature sampleFeature = DataUtilities.first(products.getFeatures(sampleFilter));
-
+        Filter collectionSampleFilter = ff.equals(ff.property("identifier"), ff.literal("SAS1"));
+        Feature sampleCollectionFeature =
+                DataUtilities.first(collections.getFeatures(collectionSampleFilter));
         TemplateReaderConfiguration config =
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
+        OSEOInfo service = new OSEOInfoImpl();
+        String queryablesL = "id,geometry,collection";
+        service.setGlobalQueryables(queryablesL);
         STACQueryablesBuilder builder =
                 new STACQueryablesBuilder(
-                        FAKE_ID, template.getRootBuilder(), products.getSchema(), sampleFeature);
+                        FAKE_ID,
+                        template.getRootBuilder(),
+                        products.getSchema(),
+                        sampleFeature,
+                        sampleCollectionFeature,
+                        service);
         Queryables queryables = builder.getQueryables();
         Map<String, Schema> properties = queryables.getProperties();
 
@@ -185,5 +206,12 @@ public class STACQueryablesBuilderTest {
         assertNotNull(anxDateTime);
         assertEquals("string", anxDateTime.getType());
         assertEquals("date-time", anxDateTime.getFormat());
+
+        // confirm that properties not included in the queryables array are excluded
+        Schema platform = properties.get("platform");
+        assertNull(platform);
+
+        Schema constellation = properties.get("constellation");
+        assertNull(platform);
     }
 }

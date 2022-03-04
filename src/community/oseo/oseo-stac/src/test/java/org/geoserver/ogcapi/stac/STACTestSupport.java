@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import net.minidev.json.JSONArray;
 import org.apache.commons.io.IOUtils;
@@ -38,9 +39,12 @@ public class STACTestSupport extends OGCApiTestSupport {
     protected static final double EPS = 1e-5;
 
     static TimeZone currentTimeZone;
+    static Locale currentLocale;
 
     @BeforeClass
     public static void setupGMT() {
+        currentLocale = Locale.getDefault();
+        Locale.setDefault(Locale.US);
         currentTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
     }
@@ -48,6 +52,7 @@ public class STACTestSupport extends OGCApiTestSupport {
     @AfterClass
     public static void resetTimeZone() {
         TimeZone.setDefault(currentTimeZone);
+        Locale.setDefault(currentLocale);
     }
 
     @Override
@@ -57,6 +62,8 @@ public class STACTestSupport extends OGCApiTestSupport {
         GeoServer gs = getGeoServer();
         OSEOInfo service = gs.getService(OSEOInfo.class);
         service.setTitle(STAC_TITLE);
+        String queryables = "id,geometry,collection";
+        service.setGlobalQueryables(queryables);
         gs.save(service);
 
         setupBasicOpenSearch(testData, getCatalog(), gs, false);
@@ -81,6 +88,15 @@ public class STACTestSupport extends OGCApiTestSupport {
         OpenSearchAccessProvider provider =
                 GeoServerExtensions.bean(OpenSearchAccessProvider.class);
         return provider.getOpenSearchAccess();
+    }
+
+    /**
+     * Returns the {@link STACService}
+     *
+     * @return
+     */
+    public STACService getStacService() {
+        return GeoServerExtensions.bean(STACService.class);
     }
 
     protected void assertTextContains(Elements elements, String selector, String text) {

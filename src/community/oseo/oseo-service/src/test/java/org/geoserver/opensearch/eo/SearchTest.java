@@ -109,12 +109,12 @@ public class SearchTest extends OSEOTestSupport {
                         equalTo(
                                 "http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml")));
         assertThat(
-                dom, hasXPath("/at:feed/at:entry[2]/at:updated", equalTo("2016-02-26T09:20:21Z")));
+                dom, hasXPath("/at:feed/at:entry[2]/at:updated", equalTo("2016-02-26T10:20:21Z")));
         assertThat(
                 dom,
                 hasXPath(
                         "/at:feed/at:entry[2]/dc:date",
-                        equalTo("2015-07-01T08:20:21Z/2016-02-26T09:20:21Z")));
+                        equalTo("2015-07-01T10:20:21Z/2016-02-26T10:20:21Z")));
         // ... mind the lat/lon order
         assertThat(
                 dom,
@@ -561,8 +561,8 @@ public class SearchTest extends OSEOTestSupport {
                         "/at:feed/at:entry/at:title",
                         equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
         assertThat(
-                dom, hasXPath("/at:feed/at:entry/at:updated", equalTo("2017-03-08T17:54:21.026Z")));
-        assertThat(dom, hasXPath("/at:feed/at:entry/dc:date", equalTo("2017-03-08T17:54:21.026Z")));
+                dom, hasXPath("/at:feed/at:entry/at:updated", equalTo("2017-03-08T18:54:21.026Z")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/dc:date", equalTo("2017-03-08T18:54:21.026Z")));
 
         // ... the links (self, metadata)
         assertThat(
@@ -1015,7 +1015,7 @@ public class SearchTest extends OSEOTestSupport {
                 dom,
                 hasXPath(
                         "/at:feed/at:entry[1]/at:summary",
-                        containsString("17-gen-2016 10.10.30/17-gen-2016 10.10.30")));
+                        containsString("Jan 17, 2016, 10:10:30 AM")));
     }
 
     @Test

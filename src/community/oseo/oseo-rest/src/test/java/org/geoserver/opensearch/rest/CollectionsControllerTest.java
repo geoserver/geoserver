@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
@@ -171,8 +172,10 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         // grab the JSON to modify some bits
         JSONObject feature = (JSONObject) getAsJSON("/rest/oseo/collections/TEST123");
         JSONObject properties = feature.getJSONObject("properties");
+        JSONArray queryables = properties.getJSONArray("queryables");
         properties.element("eo:productType", "PT-123");
         properties.element("timeStart", "2017-01-01T00:00:00Z");
+        queryables.element(0, "eo:orbitType");
 
         // send it back
         response =
@@ -185,6 +188,9 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
         assertEquals("PT-123", json.read("$.properties['eo:productType']"));
         assertEquals("2017-01-01T00:00:00.000Z", json.read("$.properties['timeStart']"));
+        assertEquals(
+                "[\"eo:orbitType\",\"eo:productType\",\"eo:platform\",\"eo:platformSerialIdentifier\",\"eo:instrument\",\"eo:sensorType\",\"eo:compositeType\"]",
+                json.read("$.properties['queryables']").toString());
     }
 
     @Test
@@ -378,6 +384,9 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("OLI", json.read("$.properties['eo:instrument'][0]"));
         assertEquals("TIRS", json.read("$.properties['eo:instrument'][1]"));
         assertEquals("2012-04-23T18:25:43.511Z", json.read("$.properties['timeStart']"));
+        assertEquals(
+                "[\"eo:identifier\",\"eo:productType\",\"eo:platform\",\"eo:platformSerialIdentifier\",\"eo:instrument\",\"eo:sensorType\",\"eo:compositeType\"]",
+                json.read("$.properties['queryables']").toString());
         // test the JSON field
         assertEquals(
                 "https://geoserver.org/stac-examples/test123.xml",

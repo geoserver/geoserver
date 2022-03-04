@@ -26,7 +26,7 @@ public class MetadataTest extends OSEOTestSupport {
         String meta = "/gmi:MI_Metadata/";
         assertThat(
                 d, hasXPath(meta + "gmd:fileIdentifier/gco:CharacterString", equalTo("SENTINEL2")));
-        assertThat(d, hasXPath(meta + "gmd:dateStamp/gco:Date", equalTo("2015-07-01T08:20:21Z")));
+        assertThat(d, hasXPath(meta + "gmd:dateStamp/gco:Date", equalTo("2015-07-01T10:20:21Z")));
         String citation =
                 meta
                         + "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/";
@@ -35,14 +35,14 @@ public class MetadataTest extends OSEOTestSupport {
                 d,
                 hasXPath(
                         citation + "gmd:date/gmd:CI_Date/gmd:date/gco:Date",
-                        equalTo("2015-07-01T08:20:21Z")));
+                        equalTo("2015-07-01T10:20:21Z")));
         String time =
                 meta
                         + "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/"
                         + "gmd:EX_Extent/gmd:temporalElement/"
                         + "gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/";
-        assertThat(d, hasXPath(time + "gml:beginPosition", equalTo("2015-07-01T08:20:21Z")));
-        assertThat(d, hasXPath(time + "gml:endPosition", equalTo("2016-02-26T09:20:21Z")));
+        assertThat(d, hasXPath(time + "gml:beginPosition", equalTo("2015-07-01T10:20:21Z")));
+        assertThat(d, hasXPath(time + "gml:endPosition", equalTo("2016-02-26T10:20:21Z")));
         String platform =
                 meta
                         + "gmi:acquisitionInformation/gmi:MI_AcquisitionInformation/gmi:platform/gmi:MI_Platform/";
@@ -81,7 +81,7 @@ public class MetadataTest extends OSEOTestSupport {
 
         assertThat(
                 d, hasXPath(meta + "gmd:fileIdentifier/gco:CharacterString", equalTo("SENTINEL1")));
-        assertThat(d, hasXPath(meta + "gmd:dateStamp/gco:Date", equalTo("2015-02-26T09:20:21Z")));
+        assertThat(d, hasXPath(meta + "gmd:dateStamp/gco:Date", equalTo("2015-02-26T10:20:21Z")));
         String citation =
                 meta
                         + "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/";
@@ -90,13 +90,13 @@ public class MetadataTest extends OSEOTestSupport {
                 d,
                 hasXPath(
                         citation + "gmd:date/gmd:CI_Date/gmd:date/gco:Date",
-                        equalTo("2015-02-26T09:20:21Z")));
+                        equalTo("2015-02-26T10:20:21Z")));
         String time =
                 meta
                         + "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/"
                         + "gmd:EX_Extent/gmd:temporalElement/"
                         + "gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/";
-        assertThat(d, hasXPath(time + "gml:beginPosition", equalTo("2015-02-26T09:20:21Z")));
+        assertThat(d, hasXPath(time + "gml:beginPosition", equalTo("2015-02-26T10:20:21Z")));
         assertThat(d, hasXPath(time + "gml:endPosition", equalTo("")));
         String platform =
                 meta
@@ -128,7 +128,7 @@ public class MetadataTest extends OSEOTestSupport {
         // everything else
         assertThat(
                 d, hasXPath(meta + "gmd:fileIdentifier/gco:CharacterString", equalTo("LANDSAT8")));
-        assertThat(d, hasXPath(meta + "gmd:dateStamp/gco:Date", equalTo("1988-02-26T09:20:21Z")));
+        assertThat(d, hasXPath(meta + "gmd:dateStamp/gco:Date", equalTo("1988-02-26T10:20:21Z")));
         String citation =
                 meta
                         + "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/";
@@ -137,14 +137,14 @@ public class MetadataTest extends OSEOTestSupport {
                 d,
                 hasXPath(
                         citation + "gmd:date/gmd:CI_Date/gmd:date/gco:Date",
-                        equalTo("1988-02-26T09:20:21Z")));
+                        equalTo("1988-02-26T10:20:21Z")));
         String time =
                 meta
                         + "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/"
                         + "gmd:EX_Extent/gmd:temporalElement/"
                         + "gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/";
-        assertThat(d, hasXPath(time + "gml:beginPosition", equalTo("1988-02-26T09:20:21Z")));
-        assertThat(d, hasXPath(time + "gml:endPosition", equalTo("2013-03-01T09:20:21Z")));
+        assertThat(d, hasXPath(time + "gml:beginPosition", equalTo("1988-02-26T10:20:21Z")));
+        assertThat(d, hasXPath(time + "gml:endPosition", equalTo("2013-03-01T10:20:21Z")));
         String platform =
                 meta
                         + "gmi:acquisitionInformation/gmi:MI_AcquisitionInformation/gmi:platform/gmi:MI_Platform/";
@@ -179,8 +179,8 @@ public class MetadataTest extends OSEOTestSupport {
 
         String obs = "/opt:EarthObservation/";
         String timePeriod = obs + "om:phenomenonTime/gml:TimePeriod/";
-        assertThat(d, hasXPath(timePeriod + "gml:beginPosition", equalTo("2016-09-29T08:20:22Z")));
-        assertThat(d, hasXPath(timePeriod + "gml:endPosition", equalTo("2016-09-29T08:23:44Z")));
+        assertThat(d, hasXPath(timePeriod + "gml:beginPosition", equalTo("2016-09-29T10:20:22Z")));
+        assertThat(d, hasXPath(timePeriod + "gml:endPosition", equalTo("2016-09-29T10:23:44Z")));
 
         String equipment = obs + "om:procedure/eop:EarthObservationEquipment/";
         String platform = equipment + "eop:platform/eop:Platform/";

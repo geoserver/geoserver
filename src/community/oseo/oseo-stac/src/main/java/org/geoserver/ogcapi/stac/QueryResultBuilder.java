@@ -82,6 +82,8 @@ class QueryResultBuilder {
 
     private SampleFeatures sampleFeatures;
 
+    private CollectionsCache collectionsCache;
+
     private GeoServer geoServer;
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
@@ -92,12 +94,14 @@ class QueryResultBuilder {
             STACTemplates templates,
             OpenSearchAccessProvider provider,
             APIFilterParser filterParser,
-            SampleFeatures sampleFeatures) {
+            SampleFeatures sampleFeatures,
+            CollectionsCache collectionsCache) {
         this.templates = templates;
         this.accessProvider = provider;
         this.filterParser = filterParser;
         this.sampleFeatures = sampleFeatures;
         this.geoServer = GeoServerExtensions.bean(GeoServer.class);
+        this.collectionsCache = collectionsCache;
     }
 
     /**
@@ -487,7 +491,11 @@ class QueryResultBuilder {
     Filter parseFilter(List<String> collectionIds, String filter, String filterLang)
             throws IOException {
         Filter parsed = filterParser.parse(filter, filterLang);
-        return new TemplatePropertyMapper(templates, sampleFeatures)
+        return new TemplatePropertyMapper(
+                        templates,
+                        sampleFeatures,
+                        collectionsCache,
+                        geoServer.getService(OSEOInfo.class))
                 .mapProperties(collectionIds, parsed);
     }
 

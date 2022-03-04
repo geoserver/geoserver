@@ -6,26 +6,39 @@ package org.geoserver.ogcapi.stac;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
 class TemplatePropertyMapper {
 
+    static final Logger LOGGER = Logging.getLogger(TemplatePropertyMapper.class);
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     private final STACTemplates templates;
     private final SampleFeatures sampleFeatures;
+    private final CollectionsCache collectionsCache;
+    private final OSEOInfo oseoInfo;
 
-    public TemplatePropertyMapper(STACTemplates templates, SampleFeatures sampleFeatures) {
+    public TemplatePropertyMapper(
+            STACTemplates templates,
+            SampleFeatures sampleFeatures,
+            CollectionsCache collectionsCache,
+            OSEOInfo oseoInfo) {
         this.templates = templates;
         this.sampleFeatures = sampleFeatures;
+        this.collectionsCache = collectionsCache;
+        this.oseoInfo = oseoInfo;
     }
 
     /**
@@ -119,10 +132,20 @@ class TemplatePropertyMapper {
                             null,
                             t,
                             sampleFeatures.getSchema(),
-                            sampleFeatures.getSample(collectionId));
+                            sampleFeatures.getSample(collectionId),
+                            collectionsCache.getCollection(collectionId),
+                            oseoInfo);
             Map<String, Expression> expressions = builder.getExpressionMap();
-            STACPathVisitor visitor = new STACPathVisitor(expressions);
-            return (Filter) source.accept(visitor, null);
+            Set<String> queryables = builder.getPreconfiguredQueryables();
+            Set<String> notIncluded = new HashSet<>();
+            STACPathVisitor visitor = new STACPathVisitor(expressions, queryables, notIncluded);
+            Filter out = (Filter) source.accept(visitor, null);
+            if (!notIncluded.isEmpty()) {
+                LOGGER.fine(
+                        "Filter includes attribute not found in queryables configuration: "
+                                + notIncluded);
+            }
+            return out;
         } catch (IOException e) {
             throw new RuntimeException("Failed to map filter back to source data", e);
         }

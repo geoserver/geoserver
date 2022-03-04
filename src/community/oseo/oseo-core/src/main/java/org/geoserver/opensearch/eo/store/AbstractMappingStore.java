@@ -751,9 +751,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         }
 
         // update primary table
-        if (localNames.size() > 0) {
-            String[] nameArray = (String[]) localNames.toArray(new String[localNames.size()]);
-            Object[] valueArray = (Object[]) localValues.toArray(new Object[localValues.size()]);
+        if (!localNames.isEmpty()) {
+            String[] nameArray = localNames.toArray(new String[localNames.size()]);
+            Object[] valueArray = localValues.toArray(new Object[localValues.size()]);
             getDelegateCollectionStore().modifyFeatures(nameArray, valueArray, mappedFilter);
         }
 

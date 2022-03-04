@@ -8,7 +8,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
@@ -21,29 +20,24 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.springframework.stereotype.Component;
 
-/**
- * Keeps a set of sample features keyed by collection, caches them, reacts to reload/reset events to
- * clear the cache
- */
+/** Keeps a set of collections, caches them, reacts to reload/reset events to clear the cache */
 @Component
-public class SampleFeatures implements GeoServerLifecycleHandler {
-
-    private static final Object NO_COLLECTION_KEY = new Object();
+public class CollectionsCache implements GeoServerLifecycleHandler {
 
     private final OpenSearchAccessProvider accessProvider;
-    private final LoadingCache<Object, Feature> sampleFeatures =
+    private final LoadingCache<Object, Feature> collections =
             CacheBuilder.newBuilder()
                     .build(
                             new CacheLoader<Object, Feature>() {
                                 @Override
                                 public Feature load(Object o) throws Exception {
                                     FeatureSource<FeatureType, Feature> ps =
-                                            accessProvider.getOpenSearchAccess().getProductSource();
+                                            accessProvider
+                                                    .getOpenSearchAccess()
+                                                    .getCollectionSource();
                                     Filter filter = Filter.INCLUDE;
                                     if (o instanceof String) {
-                                        filter =
-                                                STACService.getProductInCollectionFilter(
-                                                        Arrays.asList((String) o));
+                                        filter = STACService.getCollectionFilter((String) o);
                                     }
                                     Query q = new Query();
                                     q.setMaxFeatures(1);
@@ -52,21 +46,23 @@ public class SampleFeatures implements GeoServerLifecycleHandler {
                                 }
                             });
 
-    public SampleFeatures(GeoServer gs, OpenSearchAccessProvider accessProvider) {
+    public CollectionsCache(GeoServer gs, OpenSearchAccessProvider accessProvider) {
         this.accessProvider = accessProvider;
     }
 
     /**
      * Returns the sample feature for the given collection
      *
-     * @param collectionId A collection identifier, or null if a random feature is desired
-     * @return The first feature found for the collection, or null if no feature was found
+     * @param collectionId A collection identifier
+     * @return The first feature found for the collection
      * @throws IOException
      */
-    public Feature getSample(String collectionId) throws IOException {
-        Object key = collectionId == null ? NO_COLLECTION_KEY : collectionId;
+    public Feature getCollection(String collectionId) throws IOException {
         try {
-            return sampleFeatures.get(key);
+            if (collectionId == null) {
+                return null;
+            }
+            return collections.get(collectionId);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof IOException) throw (IOException) cause;
@@ -80,18 +76,20 @@ public class SampleFeatures implements GeoServerLifecycleHandler {
     }
 
     @Override
-    public void onReset() {}
+    public void onReset() {
+        collections.cleanUp();
+    }
 
     @Override
     public void onDispose() {}
 
     @Override
     public void beforeReload() {
-        sampleFeatures.cleanUp();
+        collections.cleanUp();
     }
 
     @Override
     public void onReload() {
-        sampleFeatures.cleanUp();
+        collections.cleanUp();
     }
 }

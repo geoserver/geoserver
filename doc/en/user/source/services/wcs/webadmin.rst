@@ -18,8 +18,8 @@ Select :guilabel:`workspace` empty to configure global WCS settings.
 
 See section on :ref:`workspace_services` to override settings used by WCS :ref:`virtual_services`.
 
-Service Metadata
-----------------
+WCS Service Metadata
+--------------------
 
 For a description of WCS settings, see the section on :ref:`service_metadata`.
 

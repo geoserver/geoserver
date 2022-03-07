@@ -16,6 +16,7 @@ import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
 import static org.geoserver.inspire.InspireTestSupport.assertSchemaLocationContains;
 import static org.geoserver.inspire.InspireTestSupport.clearInspireMetadata;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 import org.geoserver.catalog.MetadataMap;
@@ -228,6 +229,24 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
             if (isLangNode(el)) language = el.getTextContent();
         }
         assertEquals("fre", language);
+
+        String responseString = getAsServletResponse(WMS_1_3_0_GETCAPREQUEST).getContentAsString();
+        assertTrue(
+                responseString.contains("<inspire_common:Language>eng</inspire_common:Language>"));
+    }
+
+    @Test
+    public void testSupportedLanguageIsNull() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        getGeoServer().save(serviceInfo);
+        String responseString = getAsServletResponse(WMS_1_3_0_GETCAPREQUEST).getContentAsString();
+        assertTrue(responseString.contains("SupportedLanguage"));
     }
 
     private boolean isLangNode(Node el) {

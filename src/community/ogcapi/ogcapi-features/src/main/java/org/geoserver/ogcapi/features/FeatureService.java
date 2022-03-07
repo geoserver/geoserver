@@ -338,14 +338,7 @@ public class FeatureService {
         }
 
         if (filter != null) {
-            CoordinateReferenceSystem queryCRS = DefaultGeographicCRS.WGS84;
-            if (filterCRS != null) {
-                queryCRS = CRS.decode(filterCRS);
-            }
-
-            Filter parsedFilter =
-                    filterParser.parse(filter, filterLanguage, queryCRS, ft.getFeatureType());
-
+            Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
             filters.add(parsedFilter);
         }
         query.setFilter(mergeFiltersAnd(filters));

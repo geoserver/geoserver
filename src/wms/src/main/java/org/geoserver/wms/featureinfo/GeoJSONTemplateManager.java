@@ -14,12 +14,10 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.json.GeoJSONBuilder;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wms.GetFeatureInfoRequest;
-import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureCollection;
 import org.locationtech.jts.geom.Geometry;
@@ -75,19 +73,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
             if (content == null) {
                 handleJSONWithoutTemplate(fc, osw);
             } else {
-                String queryLayerForErrorMsg;
-                List<MapLayerInfo> queryLayers = request.getQueryLayers();
-                if (i < queryLayers.size()) {
-                    queryLayerForErrorMsg = queryLayers.get(i).getName();
-                } else {
-                    // no 1:1 relationship between queryLayers and collections
-                    // for error message combine all layers
-                    queryLayerForErrorMsg =
-                            request.getQueryLayers().stream()
-                                    .map(MapLayerInfo::getName)
-                                    .collect(Collectors.joining(","));
-                }
-                processTemplate(queryLayerForErrorMsg, fc, content, osw);
+                processTemplate("content", fc, content, osw);
             }
         }
     }

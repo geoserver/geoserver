@@ -38,6 +38,7 @@ import org.geoserver.wms.featureinfo.FreemarkerStaticsAccessRule.RuleItem;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.Name;
 
 /**
  * Abstract class to manage free marker templates used to customize getFeatureInfo output format. It
@@ -213,32 +214,24 @@ public abstract class FreeMarkerTemplateManager {
     /**
      * Processes the given template for the given FeatureCollection.
      *
-     * @param queryLayerTxt The name of the GetFeatureInfo queryLayer or the concatenated name of
-     *     all queryLayers if the originating layer is not obvious.
+     * @param templateType Type of template for display in error message if required (content,
+     *     footer, header)
      * @param fc
      * @param template
      * @param osw
      * @throws IOException
      */
     protected void processTemplate(
-            String queryLayerTxt, FeatureCollection fc, Template template, OutputStreamWriter osw)
+            String templateType, FeatureCollection fc, Template template, OutputStreamWriter osw)
             throws IOException {
         try {
             template.process(fc, osw);
         } catch (TemplateException e) {
-            String msg = null;
-            if (fc == null) {
-                msg = "Error occured processing " + queryLayerTxt + " template.";
-            } else {
-                String schema =
-                        fc.getSchema() == null ? null : fc.getSchema().getName().getLocalPart();
-                msg =
-                        "Error occurred processing content template "
-                                + template.getName()
-                                + " for featureType "
-                                + schema
-                                + " of query layer "
-                                + queryLayerTxt;
+            String msg =
+                    "Error occurred processing " + templateType + " template " + template.getName();
+            if (fc != null) {
+                Name name = FeatureCollectionDecorator.getName(fc);
+                msg += " for featureType " + (name == null ? null : name.getLocalPart());
             }
             throw (IOException) new IOException(msg).initCause(e);
         }

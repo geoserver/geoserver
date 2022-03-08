@@ -87,9 +87,11 @@ public final class ServicesUtils {
         translator.end("inspire_common:DefaultLanguage");
         if (langList != null) {
             for (String lang : langList) {
-                if (!lang.equals(defaultLanguage)) {
+                if (!lang.equals(defaultLanguage) && !lang.equals("")) {
                     translator.start("inspire_common:SupportedLanguage");
+                    translator.start("inspire_common:Language");
                     translator.chars(lang);
+                    translator.end("inspire_common:Language");
                     translator.end("inspire_common:SupportedLanguage");
                 }
             }

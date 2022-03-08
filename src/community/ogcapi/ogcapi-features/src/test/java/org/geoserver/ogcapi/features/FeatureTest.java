@@ -288,7 +288,9 @@ public class FeatureTest extends FeaturesTestSupport {
                         "ogc/features/collections/"
                                 + roadSegments
                                 + "/items?filter=BBOX(pointProperty,38,1,40,3)&"
-                                + "filter-crs=" + CRS_PREFIX + "0",
+                                + "filter-crs="
+                                + CRS_PREFIX
+                                + "0",
                         400);
         assertEquals("InvalidParameterValue", json.read("code", String.class));
         assertThat(json.read("description", String.class), Matchers.containsString("EPSG:0"));

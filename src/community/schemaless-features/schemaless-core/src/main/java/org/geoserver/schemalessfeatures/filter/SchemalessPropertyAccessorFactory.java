@@ -77,7 +77,7 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
             if (object instanceof ComplexAttribute) {
                 String[] pathParts;
                 if (xpath.indexOf('/') != -1) pathParts = xpath.split("/");
-                else pathParts = xpath.split(":");
+                else pathParts = xpath.split("\\.");
                 return (T) walkComplexAttribute((ComplexAttribute) object, pathParts);
             } else if (object instanceof DynamicComplexType) {
                 return (T) ANYTYPE_TYPE;

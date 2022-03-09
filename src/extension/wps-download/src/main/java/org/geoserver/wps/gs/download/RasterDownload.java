@@ -5,6 +5,9 @@
  */
 package org.geoserver.wps.gs.download;
 
+import static org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate.COMPRESSION;
+import static org.geoserver.wps.gs.download.RasterDirectDownloader.AUTO;
+
 import it.geosolutions.imageio.stream.output.FileImageOutputStreamExtImpl;
 import it.geosolutions.io.output.adapter.OutputStreamAdapter;
 import it.geosolutions.jaiext.utilities.ImageLayout2;
@@ -244,6 +247,7 @@ class RasterDownload {
                                 readParameters,
                                 requestedGridGeometry,
                                 AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
+
             } else {
                 if (targetSizeX == null || targetSizeY == null) {
                     // one of the 2 sizes is not specified. Delegate
@@ -883,6 +887,23 @@ class RasterDownload {
             throws Exception {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing raster");
+        }
+
+        // check if the original data was selected as is, in that case, just copy it over,
+        // re-encoding is an expensive operation
+        RenderedImage image = gridCoverage.getRenderedImage();
+        RasterDirectDownloader directDownloader = new RasterDirectDownloader(resourceManager);
+        if (directDownloader.canCopySourceFile(image, mimeType, writeParams)) {
+            LOGGER.fine("Request and generated image qualify for direct download, executing it");
+            return directDownloader.copySourceFile(image);
+        }
+
+        // if direct download could not handle the request, switch "auto" compression to "deflate"
+        if (writeParams != null
+                && AUTO.equalsIgnoreCase(writeParams.getParametersMap().get(COMPRESSION))) {
+            for (org.geoserver.wps.gs.download.Parameter p : writeParams.getParameters()) {
+                if (COMPRESSION.equalsIgnoreCase(p.key)) p.value = "Deflate";
+            }
         }
 
         // add metadata access

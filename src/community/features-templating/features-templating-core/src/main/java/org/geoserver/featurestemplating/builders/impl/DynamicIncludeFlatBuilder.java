@@ -159,9 +159,9 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
     }
 
     /**
-     * @param key
-     * @param sample
-     * @return
+     * Returns the overlay builder created from the sample feature. Can be used to inspect the
+     * structure of a template builder, assuming other features in the lot will have a similar
+     * structure.
      */
     public TemplateBuilder getIncludeFlatBuilder(String key, Feature sample) {
         // perform dynamic expansion against the sample feature, if possible

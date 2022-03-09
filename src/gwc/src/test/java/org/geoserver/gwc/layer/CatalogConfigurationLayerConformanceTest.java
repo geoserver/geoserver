@@ -109,9 +109,7 @@ public class CatalogConfigurationLayerConformanceTest extends LayerConfiguration
 
             @Override
             public void seedTile(ConveyorTile tile, boolean tryCache)
-                    throws GeoWebCacheException, IOException {
-                return;
-            }
+                    throws GeoWebCacheException, IOException {}
 
             @Override
             public ConveyorTile doNonMetatilingRequest(ConveyorTile tile)

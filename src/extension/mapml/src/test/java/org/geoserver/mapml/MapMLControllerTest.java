@@ -248,6 +248,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                 response.getStatus());
     }
 
+    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     private void testLayersAndGroupsHTML(Object l) throws Exception {
         MockHttpServletRequest request =
                 createRequest("mapml/" + ((PublishedInfo) l).getName() + "/osmtile/");

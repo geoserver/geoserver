@@ -6,9 +6,9 @@ Configuration Considerations
 Use production logging
 ----------------------
 
-Logging may visibly affect the performance of your server. High logging levels are often necessary to track down issues, but by default you should run with low levels.  (You can switch the logging levels while GeoServer is running.)  
+Logging may visibly affect the performance of your server. High logging levels are often necessary to track down issues, but by default you should run with low levels.  (You can switch the logging levels while GeoServer is running.)
 
-You can change the logging level in the :ref:`web_admin`.  You'll want to choose the :guilabel:`PRODUCTION` logging configuration.
+You can change the logging level in the :ref:`config_globalsettings`.  You will want to choose the ``PRODUCTION`` logging configuration, where only problems are written to the log files.
 
 Set a service strategy
 ----------------------
@@ -38,7 +38,7 @@ This is isn't a performance consideration, but is just as important.  In order t
 
 Suggestions:
 
-* Fill out the WFS, WMS, and WCS Contents sections (this info will be broadcast as part of the capabilities documents)
+* Fill out the WFS, WMS, and WCS :ref:`service_metadata` sections (this info will be broadcast as part of the capabilities documents)
 * Serve your data with your own namespace (and provide a correct URI)
 * Remove default layers (such as ``topp:states``)
 
@@ -49,39 +49,44 @@ Make sure clients cannot request an inordinate amount of resources from your ser
 
 In particular:
 
-* Set the maximum amount of features returned by each WFS GetFeature request (this can also be set on a per featuretype basis by modifying the :file:`info.xml` files directly)
-* Set the WMS ``request limits`` so that no request will consume too much memory or too much time
+* Set the :ref:`maximum amount of features <services_webadmin_wfs>` returned by each WFS GetFeature request (this can also be set on a per featuretype basis by modifying the :ref:`layer publishing wfs settings <data_webadmin_layers>`).
+* Set the :ref:`WMS request limits <wms_configuration>` so that no request will consume too much memory or too much time
+* Set :ref:`WPS limits <webadmin_wps>`, so no process will consume too much memory or too much time. You may also limit the :ref:`size input parameters <wps_security>` for further control.
 
-Set security
-------------
+Set security for data modification
+----------------------------------
 
-GeoServer includes support for WFS-T (transactions) by default, which lets users modify your data. If you don't want your database modified, you can turn off transactions in the the :ref:`web_admin`. Set the :guilabel:`Service Level` to ``Basic``.
+GeoServer includes support for WFS-T (transactions) by default, which lets users modify your data.
 
-If you'd like some users to be able to modify some but not all of your data, you will have to set up an external security service. An easy way to accomplish this is to run two GeoServer instances and configure them differently, and use authentication to only allow certain users to have access.
+If you don't want your database modified, you can turn off transactions in the the :ref:`services_webadmin_wfs`. Set the :guilabel:`Service Level` to ``Basic``. For extra security, we recommend any database access use datastore credentials providing read-only permissions. This will eliminate the possibility of a SQL injection (though GeoServer is generally not vulnerable to that sort of attack).
 
-For extra security, make sure that the connection to the datastore that is open to all is through a user who has read-only permissions. This will eliminate the possibility of a SQL injection (though GeoServer is generally not vulnerable to that sort of attack).
+If you would like some users to be able to modify data, set the service level :guilabel:`Service Level` to ``Transactional`` (or ``Complete``) and use :ref:`security_service` to limit access to the `WFS.Transaction` operation.
+
+If you would like some users to be able to modify some but not all of your data, set the :guilabel:`Service Level` to ``Transactional`` (or ``Complete``), and use :ref:`security_layer` to limit write access to specific layers. Data security can be used to allow write access based on workspace, datastore, or layer security.
 
 Cache your data
 ---------------
 
-Server-side caching of WMS tiles is the best way to increase performance.  In caching, pre-rendered tiles will be saved, eliminating the need for redundant WMS calls.  There are several ways to set up WMS caching for GeoServer.  GeoWebCache is the simplest method, as it comes bundled with GeoServer.  (See the section on :ref:`gwc` for more details.)  Another option is `TileCache <http://tilecache.org>`_.  You can also use a more generic caching system, such as `OSCache <http://www.opensymphony.com/oscache/>`_ (an embedded cache service) or `Squid <http://www.squid-cache.org>`_ (a web cache proxy).
+Server-side caching of WMS tiles is the best way to increase performance.  In caching, pre-rendered tiles will be saved, eliminating the need for redundant WMS calls.  There are several ways to set up WMS caching for GeoServer.  GeoWebCache is the simplest method, as it comes bundled with GeoServer.  (See the section on :ref:`gwc` for more details.)  Another option is `TileCache <http://tilecache.org>`__.
 
-Caching is also possible for WFS layers, in a very limited fashion. For DataStores that don't have a quick way to determine feature counts (i.e. shapefiles), enabling caching can prevent querying a store twice during a single request. To enable caching, set the Java system property ``org.geoserver.wfs.getfeature.cachelimit`` to a positive integer. Any data sets that are smaller than the cache limit will be cached for the duration of a request, which will prevent them from being queried a second time for the feature count. Note that this may adversely affect some types of DataStores, as it bypasses any feature count optimizations that may exist.
+You can also use a more generic non-spatial caching system, such as `OSCache <http://www.opensymphony.com/oscache/>`__ (an embedded cache service) or `Squid <http://www.squid-cache.org>`__ (a web cache proxy).
+
+Caching is also possible for WFS layers, in a very limited fashion. For DataStores that don't have a quick way to determine feature counts (e.g. shapefiles), enabling caching can prevent querying a store twice during a single request. To enable caching, set the Java system property ``org.geoserver.wfs.getfeature.cachelimit`` to a positive integer. Any data sets that are smaller than the cache limit will be cached for the duration of a request, which will prevent the dataset from being queried a second time for the feature count. Note that this may adversely affect some types of DataStores, as it bypasses any feature count optimizations that may exist.
 
 Disable the GeoServer web administration interface
 --------------------------------------------------
 
 In some circumstances, you might want to completely disable the web administration interface.  There are two ways of doing this:
 
-* Set the Java system property GEOSERVER_CONSOLE_DISABLED to true by adding -DGEOSERVER_CONSOLE_DISABLED=true to your container's JVM options
-* Remove all of the gs-web*-.jar files from WEB-INF/lib
+* Set the Java system property ``GEOSERVER_CONSOLE_DISABLED`` to true by adding ``-DGEOSERVER_CONSOLE_DISABLED=true`` to your container's JVM options
+* Remove all of the :file:`gs-web*-.jar` files from :file:`WEB-INF/lib`
 
 Disable the Auto-complete on web administration interface login 
 ---------------------------------------------------------------
 
 To disable the Auto Complete on Web Admin login form:
 
-* Set the Java system property geoserver.login.autocomplete to off by adding -Dgeoserver.login.autocomplete=off to your container's JVM options
+* Set the Java system property ``geoserver.login.autocomplete`` to off by adding ``-Dgeoserver.login.autocomplete=off`` to your container's JVM options
 * If the browser has already cached the credentials, please consider clearing the cache or form data after setting the JVM option.
 
 X-Frame-Options Policy
@@ -93,28 +98,28 @@ kinds of security vulnerabilities. See the `OWASP Clickjacking entry <https://ww
 
 If you wish to change this behavior you can do so through the following properties:
 
-* geoserver.xframe.shouldSetPolicy: controls whether the X-Frame-Options filter should be set at all. Default is true.
-* geoserver.xframe.policy: controls what the set the X-Frame-Options header to. Default is SAMEORIGIN valid options are DENY, SAMEORIGIN and ALLOW-FROM [uri]
+* ``geoserver.xframe.shouldSetPolicy``: controls whether the X-Frame-Options filter should be set at all. Default is true.
+* ``geoserver.xframe.policy``: controls what the set the X-Frame-Options header to. Default is ``SAMEORIGIN`` valid options are ``DENY``, ``SAMEORIGIN`` and ``ALLOW-FROM`` [uri]
 
 These properties can be set either via Java system property, command line argument (-D), environment
 variable or web.xml init parameter.
 
-
 OWS ServiceException XML mimeType
 --------------------------------------------------
 
-By default, OWS Service Exception XML responses have content-type set to application/xml.
-In case you want it set to text/xml instead, you need to setup the Java System properties:
+By default, OWS Service Exception XML responses have content-type set to ``application/xml``.
 
-* -Dows10.exception.xml.responsetype=text/xml for OWS 1.0.0 version
-* -Dows11.exception.xml.responsetype=text/xml for OWS 1.1.0 version
+In case you want it set to ``text/xml`` instead, you need to setup the Java System properties:
+
+* ``-Dows10.exception.xml.responsetype=text/xml`` for OWS 1.0.0 version
+* ``-Dows11.exception.xml.responsetype=text/xml`` for OWS 1.1.0 version
 
 .. _production_config_external_entities:
 
 External Entities Resolution
 ----------------------------
 
-When processing XML documents from service requests (POST requests, and GET requests with FILTER and SLD_BODY parameters) XML entity resolution to obtain any referenced documents. This is most commonly seen when the XML request provides the location of an XSD schema location for validation).
+When processing XML documents from service requests (POST requests, and GET requests with FILTER and SLD_BODY parameters) XML entity resolution is used to obtain any referenced documents. This is most commonly seen when the XML request provides the location of an XSD schema location for validation).
 
 GeoServer provides a number of facilities to control external entity resolution:
 
@@ -136,6 +141,6 @@ GeoServer provides a number of facilities to control external entity resolution:
 
      -DENTITY_RESOLUTION_ALLOWLIST=server1|server2|server3/schemas
 
-* To turn off all restrictions (allowing `http`, `https`, and `file` references) use the global setting :ref:`config_globalsettings_external_entities`.
+* To turn off all restrictions (allowing ``http``, ``https``, and ``file`` references) use the global setting :ref:`config_globalsettings_external_entities`.
   
   This setting prevents ``ENTITY_RESOLUTION_ALLOWLIST`` from being used.

@@ -7,7 +7,6 @@ package org.geoserver.util;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -137,12 +136,6 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
                     uri = baseURI.substring(0, baseURI.lastIndexOf('/')) + '/' + systemId;
                 } else {
                     uri = baseURI + '/' + systemId;
-                }
-                // double check this is the same result as with URL
-                String check = new URL(new URL(baseURI), systemId).toString();
-                if (!uri.equals(check)) {
-                    LOGGER.finest("URL used to resolve systemId:" + check);
-                    uri = check;
                 }
             }
             // check if the absolute systemId is an allowed URI jar or vfs reference

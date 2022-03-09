@@ -5,6 +5,9 @@
  */
 package org.geoserver.catalog;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.image.ColorModel;
@@ -31,7 +34,6 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.Parameter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -281,17 +283,16 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         int[] srcImageRowBand0 = new int[sWidth * sHeight];
         int[] srcImageRowBand1 = new int[srcImageRowBand0.length];
         int[] srcImageRowBand2 = new int[srcImageRowBand0.length];
-        int[] srcImageRowBand3 = new int[srcImageRowBand0.length];
 
         srcImage.getData().getSamples(0, 0, sWidth, sHeight, 0, srcImageRowBand0);
         srcImage.getData().getSamples(0, 0, sWidth, sHeight, 1, srcImageRowBand1);
         srcImage.getData().getSamples(0, 0, sWidth, sHeight, 2, srcImageRowBand2);
 
-        Assert.assertArrayEquals(destImageRowBand0, srcImageRowBand2);
-        Assert.assertArrayEquals(destImageRowBand1, srcImageRowBand0);
-        Assert.assertArrayEquals(destImageRowBand2, srcImageRowBand1);
-        Assert.assertArrayEquals(destImageRowBand3, srcImageRowBand0);
-        Assert.assertFalse(Arrays.equals(destImageRowBand0, srcImageRowBand0));
+        assertThat(destImageRowBand0, equalTo(srcImageRowBand2));
+        assertThat(destImageRowBand1, equalTo(srcImageRowBand0));
+        assertThat(destImageRowBand2, equalTo(srcImageRowBand1));
+        assertThat(destImageRowBand3, equalTo(srcImageRowBand0));
+        assertThat(destImageRowBand0, not(equalTo(srcImageRowBand0)));
     }
 
     /**

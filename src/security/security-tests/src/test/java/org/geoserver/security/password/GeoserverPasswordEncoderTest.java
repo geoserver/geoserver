@@ -5,6 +5,9 @@
  */
 package org.geoserver.security.password;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -14,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
@@ -374,7 +376,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
                                     + AbstractGeoserverPasswordEncoder.PREFIX_DELIMTER));
 
             assertNotEquals(enc, password);
-            assertFalse(Arrays.equals(encFromArray.toCharArray(), passwordArray));
+            assertThat(encFromArray.toCharArray(), not(equalTo(passwordArray)));
 
             assertTrue(encoder2.isPasswordValid(enc, password, null));
             assertTrue(encoder2.isPasswordValid(encFromArray, password, null));

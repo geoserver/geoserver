@@ -32,7 +32,7 @@ public class CatalogProxiesTest extends GeoServerSystemTestSupport {
         Resource resource = getDataDirectory().config(li);
         Document dom;
         try (InputStream is = resource.in()) {
-            dom = dom(resource.in());
+            dom = dom(is);
         }
         Element defaultStyle = (Element) dom.getElementsByTagName("defaultStyle").item(0);
         Element defaultStyleId = (Element) defaultStyle.getElementsByTagName("id").item(0);

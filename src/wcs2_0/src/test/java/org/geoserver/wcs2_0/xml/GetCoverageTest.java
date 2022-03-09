@@ -514,7 +514,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
+    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testCoverageTrimmingBordersOverlap() throws Exception {
         final File xml =
                 new File(
@@ -534,7 +534,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
+    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testCoverageTrimmingBordersOverlapVertical() throws Exception {
         final File xml =
                 new File(
@@ -554,7 +554,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
+    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testCoverageTrimmingBordersOverlapOutside() throws Exception {
         final File xml =
                 new File(

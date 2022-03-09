@@ -10,7 +10,6 @@ import org.geoserver.schemalessfeatures.type.DynamicComplexType;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.NameImpl;
 import org.geotools.gml3.v3_2.GMLSchema;
-import org.geotools.util.Converters;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -134,10 +133,7 @@ public abstract class SchemalessFeatureMapper<T> {
                 parentType.addPropertyDescriptor(attrDescriptor);
             }
         }
-        Class<?> binding = attrDescriptor.getType().getBinding();
-        if (!binding.equals(Object.class) && !value.getClass().equals(binding)) {
-            value = Converters.convert(value, attrDescriptor.getType().getBinding());
-        }
+
         attributeBuilder.setDescriptor((AttributeDescriptor) attrDescriptor);
         return attributeBuilder.buildSimple(null, value);
     }

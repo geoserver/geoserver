@@ -80,4 +80,24 @@ public class SchemalessCollectionTest extends AbstractMongoDBOnlineTestSupport {
             }
         }
     }
+
+    @Test
+    public void testPropertyNameReturningNestedFeaturesList() throws Exception {
+        FeatureTypeInfo fti =
+                getCatalog().getFeatureTypeByName("gs:" + StationsTestSetup.COLLECTION_NAME);
+        @SuppressWarnings("unchecked")
+        FeatureSource<FeatureType, Feature> source =
+                (FeatureSource<FeatureType, Feature>) fti.getFeatureSource(null, null);
+        Filter eq1 = FF.equals(FF.property("name"), FF.literal("station 2"));
+        FeatureIterator<Feature> it = source.getFeatures(eq1).features();
+        // will return the values nested features.
+        PropertyName pn = FF.property("measurements.values");
+        Feature f = it.next();
+        Object result = pn.evaluate(f);
+        if (result instanceof List) {
+            List listRes = (List) result;
+            assertEquals(5, listRes.size());
+            ((List) result).forEach(e -> assertTrue(e instanceof Feature));
+        }
+    }
 }

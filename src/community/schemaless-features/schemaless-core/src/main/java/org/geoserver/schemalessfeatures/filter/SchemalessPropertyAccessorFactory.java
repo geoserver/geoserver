@@ -124,6 +124,8 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
         }
 
         private List<Object> walkList(List<Object> attributes, String[] path, int currentIndex) {
+            boolean lastPathPart = (currentIndex + 1) == path.length;
+            if (lastPathPart) return attributes;
             List<Object> results = new ArrayList<>();
             for (Object value : attributes) {
                 if (value == null) continue;

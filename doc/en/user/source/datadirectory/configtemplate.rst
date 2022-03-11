@@ -24,7 +24,27 @@ First of all to be able to use this feature, set the following flag via system v
 Then create a file called ``geoserver-environment.properties`` in the root of GeoServer's datadir. 
 This file will contain the definitions for the variables parameterized in the catalog configuration.
 
-Now edit GeoServer's configuration files of the source machine that you want to be parametric, for example let's parameterize the URL of a store 
+We can also place the ``geoserver-environment.properties`` outside the root of GeoServer's datadir. In this case the path to the  ``properties`` file must be defined in one of the following ways:
+
+  * By providing a system variable ``-DENV_PROPERTIES={properties filepath}``.
+
+  * By provinding an environment variable named  ``ENV_PROPERTIES`` and the path to the properties file as value.à
+
+  * By providing a context parameter in the ``WEB-INF/web.xml`` file for the GeoServer application.
+
+.. code-block:: xml
+
+   <web-app>
+     ...
+     <context-param>
+       <param-name>ENV_PROPERTIES</param-name>
+       <param-value>/var/lib/geoserver_data</param-value>
+     </context-param>
+     ...
+   </web-app>
+
+
+Once a strategy to load the ``ENV_PROPERTIES`` has been defined and set, it is possible to edit GeoServer's configuration files of the source machine that you want to be parametric. For example let's parameterize the URL of a store 
 (this can also be done via GeoServer admin UI):
 
     ``vim coveragestore.xml`` ::

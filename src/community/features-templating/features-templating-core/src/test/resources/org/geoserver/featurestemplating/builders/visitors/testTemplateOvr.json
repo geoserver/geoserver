@@ -1,0 +1,14 @@
+{
+  "$merge": "testTemplate.json",
+  "features": [
+    {
+      "properties": {
+        "one": "one",
+        "${one}": "oneDynamicKey",
+        "${d}": {
+          "d": "d"
+        }
+      }
+    }
+  ]
+}

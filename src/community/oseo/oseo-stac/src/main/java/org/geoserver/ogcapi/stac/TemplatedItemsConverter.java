@@ -16,12 +16,15 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
@@ -62,13 +65,15 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
                                 .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8),
                         TemplateIdentifier.GEOJSON)) {
             writer.startTemplateOutput(null);
-            try (FeatureIterator features = itemsResponse.getItems().features()) {
+            FeatureCollection collection = itemsResponse.getItems();
+            try (FeatureIterator features = collection.features()) {
                 while (features.hasNext()) {
                     // lookup the builder, might be specific to the parent collection
                     Feature feature = features.next();
                     String collectionId =
                             (String) feature.getProperty("parentIdentifier").getValue();
-                    RootBuilder builder = templates.getItemTemplate(collectionId);
+                    RootBuilder builder =
+                            getRootBuilder(collectionId, collection.getSchema(), itemsResponse);
                     builder.evaluate(writer, new TemplateBuilderContext(feature));
                 }
             }
@@ -78,6 +83,19 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    private RootBuilder getRootBuilder(
+            String collectionId, FeatureType type, AbstractItemsResponse response)
+            throws IOException {
+        RootBuilder rootBuilder = templates.getItemTemplate(collectionId);
+        if (response.isFieldsPresent()) {
+            STACPropertySelection strategy = new STACPropertySelection(response.getFields());
+            PropertySelectionVisitor propertySelectionVisitor =
+                    new PropertySelectionVisitor(strategy, type);
+            rootBuilder = (RootBuilder) rootBuilder.accept(propertySelectionVisitor, null);
+        }
+        return rootBuilder;
     }
 
     private void writeAdditionFields(STACGeoJSONWriter w, AbstractItemsResponse ir)

@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -129,6 +130,8 @@ public class STACService {
     public static String TYPE_COLLECTION = "Collection";
 
     private static final String DISPLAY_NAME = "SpatioTemporal Asset Catalog";
+
+    private static final String FIELDS_PARAM = "fields";
 
     static final Logger LOGGER = Logging.getLogger(STACService.class);
 
@@ -272,7 +275,9 @@ public class STACService {
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public ItemResponse item(
             @PathVariable(name = "collectionId") String collectionId,
-            @PathVariable(name = "itemId") String itemId)
+            @PathVariable(name = "itemId") String itemId,
+            @RequestParam(name = FIELDS_PARAM, required = false) String[] fields,
+            HttpServletRequest request)
             throws Exception {
         // run just to check the collection exists, and throw an appropriate exception otherwise
         getCollection(collectionId);
@@ -294,7 +299,10 @@ public class STACService {
                     "Could not locate item " + itemId,
                     HttpStatus.NOT_FOUND);
         }
-        return new ItemResponse(collectionId, item);
+        ItemResponse response = new ItemResponse(collectionId, item);
+        response.setFields(fields);
+        response.setFieldsPresent(request.getParameterMap().containsKey(FIELDS_PARAM));
+        return response;
     }
 
     @GetMapping(path = "collections/{collectionId}/items", name = "getItems")
@@ -308,7 +316,9 @@ public class STACService {
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "filter-lang", required = false) String filterLanguage,
-            @RequestParam(name = "sortby", required = false) SortBy[] sortBy)
+            @RequestParam(name = "sortby", required = false) SortBy[] sortBy,
+            @RequestParam(name = FIELDS_PARAM, required = false) String[] fields,
+            HttpServletRequest request)
             throws Exception {
         // check the collection is enabled
         Feature collection = getCollection(collectionId);
@@ -347,7 +357,8 @@ public class STACService {
         response.setPrevious(linksBuilder.getPrevious());
         response.setNext(linksBuilder.getNext());
         response.setSelf(linksBuilder.getSelf());
-
+        response.setFields(fields);
+        response.setFieldsPresent(request.getParameterMap().containsKey(FIELDS_PARAM));
         return response;
     }
 
@@ -363,7 +374,9 @@ public class STACService {
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "filter-lang", required = false) String filterLanguage,
-            @RequestParam(name = "sortby", required = false) SortBy[] sortBy)
+            @RequestParam(name = "sortby", required = false) SortBy[] sortBy,
+            @RequestParam(name = FIELDS_PARAM, required = false) String[] fields,
+            HttpServletRequest request)
             throws Exception {
         // query the items based on the request parameters
         QueryResult qr =
@@ -393,7 +406,8 @@ public class STACService {
         response.setPrevious(linksBuilder.getPrevious());
         response.setNext(linksBuilder.getNext());
         response.setSelf(linksBuilder.getSelf());
-
+        response.setFields(fields);
+        response.setFieldsPresent(request.getParameterMap().containsKey(FIELDS_PARAM));
         return response;
     }
 

@@ -10,13 +10,18 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.minidev.json.JSONArray;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.hamcrest.Matchers;
@@ -490,5 +495,98 @@ public class ItemsTest extends STACTestSupport {
                         200);
 
         assertThat((List<String>) doc.read("features[*].id"), contains("SAS1_20180226102021.01"));
+    }
+
+    @Test
+    public void testPropertySelectionOnDynamicMerge() throws Exception {
+        DocumentContext result =
+                getAsJSONPath(
+                        "ogc/stac/collections/LANDSAT8/items?fields=properties,-assets,assets.thumbnail.type",
+                        200);
+
+        // empty fields param only mandatory attributes should be there.
+        String id = result.read("features[0].id");
+        String type = result.read("features[0].type");
+        Map<String, Object> geom = result.read("features[0].geometry");
+        JSONArray bbox = result.read("features[0].bbox");
+        Map<String, Object> properties = result.read("features[0].properties");
+        Map<String, Object> assets = result.read("features[0].assets");
+        String thumbnailType = result.read("features[0].assets.thumbnail.type");
+        JSONArray links = result.read("features[0].links");
+
+        assertEquals("LS8_TEST.02", id);
+        assertEquals("Feature", type);
+        assertEquals(2, geom.size());
+        assertEquals(4, bbox.size());
+        assertTrue(properties.size() > 2);
+        assertNotNull(assets);
+        assertEquals(1, assets.size());
+        assertEquals("will replace", thumbnailType);
+        assertNotNull(links);
+        assertFalse(links.isEmpty());
+    }
+
+    @Test
+    public void testPropertySelectionDynamicMerge2() throws Exception {
+        DocumentContext result =
+                getAsJSONPath(
+                        "ogc/stac/collections/LANDSAT8/items?fields=properties,-properties.created,-properties.datetime,-assets.thumbnail",
+                        200);
+
+        // empty fields param only mandatory attributes should be there.
+        String id = result.read("features[0].id");
+        String type = result.read("features[0].type");
+        Map<String, Object> geom = result.read("features[0].geometry");
+        JSONArray bbox = result.read("features[0].bbox");
+        Map<String, Object> properties = result.read("features[0].properties");
+        Map<String, Object> assets = result.read("features[0].assets");
+        JSONArray links = result.read("features[0].links");
+
+        assertEquals("LS8_TEST.02", id);
+        assertEquals("Feature", type);
+        assertEquals(2, geom.size());
+        assertEquals(4, bbox.size());
+        // more then just the two mandatory ones.
+        assertTrue(properties.size() > 2);
+        assertNotNull(assets);
+        assertFalse(assets.isEmpty());
+        assertFalse(assets.containsKey("thumbnail"));
+        assertNotNull(links);
+        assertFalse(links.isEmpty());
+    }
+
+    @Test
+    public void testPropertySelectionDynamicIncludeFlat() throws Exception {
+
+        // with a base node with an attributeName equal to one of the attributes in the
+        // item json property. The item json property should override the base one.
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/stac/collections/SAS1/items/SAS1_20180226102021.01?fields=properties,dynamicIncludeFlatTest,-dynamicIncludeFlatTest.thumbnail2",
+                        200);
+
+        String id = json.read("id");
+        String type = json.read("type");
+        Map<String, Object> geom = json.read("geometry");
+        JSONArray bbox = json.read("bbox");
+        Map<String, Object> properties = json.read("properties");
+        Map<String, Object> assets = json.read("assets");
+        JSONArray links = json.read("links");
+        Map<String, Object> includeFlatField = json.read("dynamicIncludeFlatTest");
+
+        assertEquals("SAS1_20180226102021.01", id);
+        assertEquals("Feature", type);
+        assertEquals(2, geom.size());
+        assertEquals(4, bbox.size());
+        // more then just the two mandatory ones.
+        assertTrue(properties.size() > 2);
+        assertNotNull(assets);
+        assertFalse(assets.isEmpty());
+        assertNotNull(links);
+        assertFalse(links.isEmpty());
+
+        // we excluded thumbnail2 keeping only thumbnail
+        assertFalse(includeFlatField.containsKey("thumbnail2"));
+        assertTrue(includeFlatField.containsKey("thumbnail"));
     }
 }

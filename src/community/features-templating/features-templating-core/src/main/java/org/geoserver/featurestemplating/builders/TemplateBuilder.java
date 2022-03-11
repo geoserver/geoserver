@@ -54,15 +54,16 @@ public interface TemplateBuilder {
 
     /**
      * Accept method for a TemplateVisitor.
+     *
      * @param visitor the {@link TemplateVisitor} to accept.
      * @param value extra data, can be null.
      * @return the result of the visiting process if any.
      */
     Object accept(TemplateVisitor visitor, Object value);
 
-
     /**
      * Get the parent of this TemplateBuilder.
+     *
      * @return
      */
     default TemplateBuilder getParent() {
@@ -71,6 +72,7 @@ public interface TemplateBuilder {
 
     /**
      * Set the parent of this TemplateBuilder.
+     *
      * @param builder
      */
     default void setParent(TemplateBuilder builder) {

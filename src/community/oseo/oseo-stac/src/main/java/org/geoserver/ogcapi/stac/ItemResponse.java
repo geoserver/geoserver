@@ -16,6 +16,8 @@ public class ItemResponse {
 
     private Feature item;
     private String collectionId;
+    private String[] fields;
+    private boolean fieldsPresent;
 
     public ItemResponse(String collectionId, Feature item) {
         this.item = item;
@@ -28,5 +30,21 @@ public class ItemResponse {
 
     public String getCollectionId() {
         return collectionId;
+    }
+
+    public String[] getFields() {
+        return fields;
+    }
+
+    public void setFields(String[] fields) {
+        this.fields = fields;
+    }
+
+    public boolean isFieldsPresent() {
+        return fieldsPresent;
+    }
+
+    public void setFieldsPresent(boolean fieldsPresent) {
+        this.fieldsPresent = fieldsPresent;
     }
 }

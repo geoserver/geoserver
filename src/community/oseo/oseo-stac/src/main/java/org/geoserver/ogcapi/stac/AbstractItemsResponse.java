@@ -21,6 +21,8 @@ public abstract class AbstractItemsResponse extends AbstractQueryResult {
     Map<String, Object> nextBody;
     Map<String, Object> previousBody;
     boolean post;
+    private String[] fields;
+    private boolean fieldsPresent;
 
     public AbstractItemsResponse(FeatureCollection items, BigInteger numberMatched, int returned) {
         super(items, numberMatched, returned);
@@ -72,5 +74,21 @@ public abstract class AbstractItemsResponse extends AbstractQueryResult {
 
     public void setPost(boolean post) {
         this.post = post;
+    }
+
+    public String[] getFields() {
+        return fields;
+    }
+
+    public void setFields(String[] fields) {
+        this.fields = fields;
+    }
+
+    public boolean isFieldsPresent() {
+        return fieldsPresent;
+    }
+
+    public void setFieldsPresent(boolean fieldsPresent) {
+        this.fieldsPresent = fieldsPresent;
     }
 }

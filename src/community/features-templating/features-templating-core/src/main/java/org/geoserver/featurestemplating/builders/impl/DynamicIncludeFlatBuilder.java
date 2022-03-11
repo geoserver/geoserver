@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
-import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.readers.JSONMerger;
 import org.geoserver.featurestemplating.readers.JSONTemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
@@ -37,9 +37,23 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
         this.includingNode = includingNode;
     }
 
+    public DynamicIncludeFlatBuilder(DynamicIncludeFlatBuilder original, boolean includeChildren) {
+        super(original, includeChildren);
+        this.includingNode = original.getIncludingNode();
+    }
+
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
+        if (canWrite(context)) {
+            ObjectNode finalNode = getFinalJSON(context);
+
+            if (finalNode != null) doIncludeFlat(finalNode, context, writer);
+            else iterateAndEvaluateNestedTree(context, writer, (ObjectNode) includingNode);
+        }
+    }
+
+    protected ObjectNode getFinalJSON(TemplateBuilderContext context) {
         Object evaluate = null;
         if (xpath != null) {
             evaluate = evaluateXPath(context);
@@ -47,10 +61,7 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
             evaluate = evaluateExpressions(cql, context);
         }
 
-        ObjectNode finalNode = mergeNodes(evaluate);
-
-        if (finalNode != null) doIncludeFlat(finalNode, context, writer);
-        else iterateAndEvaluateNestedTree(context, writer, (ObjectNode) includingNode);
+        return mergeNodes(evaluate);
     }
 
     private ObjectNode mergeNodes(Object evaluate) {
@@ -84,7 +95,7 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
         }
     }
 
-    private void iterateAndWrite(
+    protected void iterateAndWrite(
             ObjectNode objectNode, TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
         Iterator<String> names = objectNode.fieldNames();
@@ -132,17 +143,12 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
     }
 
     @Override
-    public Object accept(TemplateVisitor visitor, Object value) {
-        return super.accept(visitor, value);
-    }
-
-    @Override
     protected boolean canWriteValue(Object value) {
         return includingNode != null;
     }
 
     @Override
-    public boolean checkNotNullValue(TemplateBuilderContext context) {
+    public boolean canWrite(TemplateBuilderContext context) {
         return includingNode != null;
     }
 
@@ -191,5 +197,28 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
         CompositeBuilder result = new CompositeBuilder(key, getNamespaces(), false);
         jsonTemplateReader.getBuilderFromJson(null, node, result, maker);
         return result;
+    }
+
+    public JsonNode getIncludingNode() {
+        return includingNode;
+    }
+
+    @Override
+    public DynamicIncludeFlatBuilder copy(boolean includeChildren) {
+        return new DynamicIncludeFlatBuilder(this, includeChildren);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        DynamicIncludeFlatBuilder that = (DynamicIncludeFlatBuilder) o;
+        return Objects.equals(includingNode, that.includingNode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), includingNode);
     }
 }

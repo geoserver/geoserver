@@ -7,6 +7,7 @@ package org.geoserver.featurestemplating.builders.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.*;
@@ -56,6 +57,14 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
             throw new IllegalArgumentException("Invalid value: " + expression);
         }
         this.contextPos = cqlManager.getContextPos();
+    }
+
+    public DynamicValueBuilder(DynamicValueBuilder dynamicBuilder, boolean includeChildren) {
+        super(dynamicBuilder, includeChildren);
+        this.cql = dynamicBuilder.getCql();
+        this.xpath = dynamicBuilder.getXpath();
+        this.encodeNull = dynamicBuilder.isEncodeNull();
+        this.contextPos = dynamicBuilder.getContextPos();
     }
 
     @Override
@@ -186,7 +195,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         return contextPos;
     }
 
-    public boolean checkNotNullValue(TemplateBuilderContext context) {
+    public boolean canWrite(TemplateBuilderContext context) {
         if (encodeNull) return true;
         Object o = null;
         if (xpath != null) {
@@ -211,7 +220,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         return visitor.visit(this, value);
     }
 
-    private Object getContextObject(TemplateBuilderContext context) {
+    protected Object getContextObject(TemplateBuilderContext context) {
         Object contextObject = context.getCurrentObj();
         if (contextObject != null && contextObject instanceof List) {
             List<Object> multipleValue = (List<Object>) contextObject;
@@ -224,5 +233,32 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
 
     protected boolean hasDynamic(JsonNode node) {
         return node.toString().contains("${");
+    }
+
+    public boolean isEncodeNull() {
+        return encodeNull;
+    }
+
+    @Override
+    public DynamicValueBuilder copy(boolean includeChildren) {
+        return new DynamicValueBuilder(this, includeChildren);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), cql, xpath, contextPos, namespaces, encodeNull);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        DynamicValueBuilder that = (DynamicValueBuilder) o;
+        return contextPos == that.contextPos
+                && encodeNull == that.encodeNull
+                && Objects.equals(cql, that.cql)
+                && Objects.equals(xpath, that.xpath)
+                && Objects.equals(namespaces, that.namespaces);
     }
 }

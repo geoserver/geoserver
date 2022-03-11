@@ -30,6 +30,10 @@ public class IteratingBuilder extends SourceBuilder {
         super(key, namespaces, topLevelComplex);
     }
 
+    public IteratingBuilder(IteratingBuilder iteratingBuilder, boolean includeChildren) {
+        super(iteratingBuilder, includeChildren);
+    }
+
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
@@ -126,7 +130,7 @@ public class IteratingBuilder extends SourceBuilder {
         }
     }
 
-    protected boolean canWrite(TemplateBuilderContext context) {
+    public boolean canWrite(TemplateBuilderContext context) {
         Object o = context.getCurrentObj();
         boolean result;
         if (o instanceof List) {
@@ -174,5 +178,10 @@ public class IteratingBuilder extends SourceBuilder {
     @Override
     public Object accept(TemplateVisitor visitor, Object value) {
         return visitor.visit(this, value);
+    }
+
+    @Override
+    public IteratingBuilder copy(boolean includeChildren) {
+        return new IteratingBuilder(this, includeChildren);
     }
 }

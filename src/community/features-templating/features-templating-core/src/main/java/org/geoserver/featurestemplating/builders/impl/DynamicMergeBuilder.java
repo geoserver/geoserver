@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
-import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.readers.JSONMerger;
 import org.geoserver.featurestemplating.readers.JSONTemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
@@ -35,26 +34,22 @@ public class DynamicMergeBuilder extends DynamicValueBuilder {
         this.overlayExpression = overlayExpression;
     }
 
-    @Override
-    protected boolean canWriteValue(Object value) {
-        if (overlayExpression) {
-            return super.canWriteValue(value);
-        } else if (node != null) {
-            return true;
-        } else {
-            return false;
-        }
+    public DynamicMergeBuilder(DynamicMergeBuilder original, boolean includeChildren) {
+        super(original, includeChildren);
+        this.node = original.node;
+        this.overlayExpression = original.overlayExpression;
     }
 
     @Override
-    public boolean checkNotNullValue(TemplateBuilderContext context) {
-        if (overlayExpression) {
-            return super.checkNotNullValue(context);
-        } else if (node != null) {
-            return true;
-        } else {
-            return false;
-        }
+    protected boolean canWriteValue(Object value) {
+        if (overlayExpression) return super.canWriteValue(value);
+        else return node != null;
+    }
+
+    @Override
+    public boolean canWrite(TemplateBuilderContext context) {
+        if (overlayExpression) return super.canWrite(context);
+        else return node != null;
     }
 
     @Override
@@ -89,12 +84,7 @@ public class DynamicMergeBuilder extends DynamicValueBuilder {
         }
     }
 
-    @Override
-    public Object accept(TemplateVisitor visitor, Object value) {
-        return super.accept(visitor, value);
-    }
-
-    private void writeFromNestedTree(
+    protected void writeFromNestedTree(
             TemplateBuilderContext context, TemplateOutputWriter writer, JsonNode node)
             throws IOException {
         TemplateReaderConfiguration configuration =
@@ -108,5 +98,10 @@ public class DynamicMergeBuilder extends DynamicValueBuilder {
         jsonTemplateReader.getBuilderFromJson(getKey(context), node, cb, maker);
         for (TemplateBuilder child : cb.getChildren()) child.evaluate(writer, context);
         writer.endObject(getKey(context), encodingHints);
+    }
+
+    @Override
+    public DynamicMergeBuilder copy(boolean includeChildren) {
+        return new DynamicMergeBuilder(this, includeChildren);
     }
 }

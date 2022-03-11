@@ -4,11 +4,13 @@
  */
 package org.geoserver.platform;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
@@ -71,6 +73,8 @@ public class GeoServerEnvironment {
 
     private static final String PROPERTYFILENAME = "geoserver-environment.properties";
 
+    final String propertiesPath = GeoServerExtensions.getProperty("ENV_PROPERTIES");
+
     private static final String nullValue = "null";
 
     private final PropertyPlaceholderHelper helper =
@@ -97,18 +101,16 @@ public class GeoServerEnvironment {
 
     public GeoServerEnvironment() {
         try {
-            GeoServerResourceLoader loader =
-                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            configFile =
-                    new FileWatcher<Properties>(loader.get(PROPERTYFILENAME)) {
-
-                        @Override
-                        protected Properties parseFileContents(InputStream in) throws IOException {
-                            Properties p = new Properties();
-                            p.load(in);
-                            return p;
-                        }
-                    };
+            if (propertiesPath != null) {
+                File propertyfile = new File(propertiesPath);
+                if (propertyfile.exists()) {
+                    resolvePropertyLoader(propertyfile);
+                } else {
+                    resolvePropertyLoader(PROPERTYFILENAME);
+                }
+            } else {
+                resolvePropertyLoader(PROPERTYFILENAME);
+            }
 
             props = configFile.read();
         } catch (Exception e) {
@@ -118,6 +120,25 @@ public class GeoServerEnvironment {
                     e);
             props = new Properties();
         }
+    }
+
+    private void resolvePropertyLoader(String propertyFile) {
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        Resource resource = loader.get(propertyFile);
+        resolvePropertyLoader(resource.file());
+    }
+
+    private void resolvePropertyLoader(File propertyFile) {
+        configFile =
+                new FileWatcher<Properties>(propertyFile) {
+
+                    @Override
+                    protected Properties parseFileContents(InputStream in) throws IOException {
+                        Properties p = new Properties();
+                        p.load(in);
+                        return p;
+                    }
+                };
     }
 
     protected String resolvePlaceholder(String placeholder) {

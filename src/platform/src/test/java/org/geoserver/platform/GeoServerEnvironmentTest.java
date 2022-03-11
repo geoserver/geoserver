@@ -5,7 +5,9 @@
 package org.geoserver.platform;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -43,6 +45,7 @@ public class GeoServerEnvironmentTest {
         EasyMock.expect(context.getInitParameter("GEOSERVER_DATA_ROOT")).andReturn(null);
         EasyMock.expect(context.getRealPath("/data")).andReturn("data");
         EasyMock.replay(context);
+
         System.setProperty("GEOSERVER_REQUIRE_FILE", "pom.xml");
         try {
             Assert.assertEquals(
@@ -93,5 +96,25 @@ public class GeoServerEnvironmentTest {
 
         assertEquals("ABC", genv.resolveValue("${TEST_SYS_PROPERTY}"));
         assertEquals("${TEST_PROPERTY}", genv.resolveValue("${TEST_PROPERTY}"));
+    }
+
+    @Test
+    public void testExternalEnvironmentPropertyFile() {
+        try {
+            URL url = getClass().getResource("GeoServerTesting.properties");
+            System.setProperty("ENV_PROPERTIES", url.getPath());
+            GeoServerEnvironment genv = new GeoServerEnvironment();
+            assertEquals("hello", genv.resolveValue("${TestParam1}"));
+            assertEquals("country", genv.resolveValue("${TestParam3}"));
+        } finally {
+            System.clearProperty("ENV_PROPERTIES");
+        }
+    }
+
+    @Test
+    public void testWithNoExternalEnvironmentPropertyFile() {
+        GeoServerEnvironment genv = new GeoServerEnvironment();
+        assertNotEquals("hello", genv.resolveValue("${TestParam1}"));
+        assertNotEquals("country", genv.resolveValue("${TestParam3}"));
     }
 }

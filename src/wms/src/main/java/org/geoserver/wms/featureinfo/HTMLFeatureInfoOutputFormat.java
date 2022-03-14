@@ -85,11 +85,9 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                 OutputStreamWriter osw,
                 GetFeatureInfoRequest request)
                 throws IOException {
-            for (int i = 0; i < collections.size(); i++) {
-                FeatureCollection fc = collections.get(i);
+            for (FeatureCollection fc : collections) {
                 Template content = getContentTemplate(fc, wms.getCharSet());
-                String typeName = request.getQueryLayers().get(i).getName();
-                processTemplate(typeName, fc, content, osw);
+                processTemplate("content", fc, content, osw);
             }
         }
 

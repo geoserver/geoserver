@@ -38,6 +38,7 @@ import org.geoserver.wms.featureinfo.FreemarkerStaticsAccessRule.RuleItem;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.Name;
 
 /**
  * Abstract class to manage free marker templates used to customize getFeatureInfo output format. It
@@ -210,21 +211,27 @@ public abstract class FreeMarkerTemplateManager {
         }
     }
 
+    /**
+     * Processes the given template for the given FeatureCollection.
+     *
+     * @param templateType Type of template for display in error message if required (content,
+     *     footer, header)
+     * @param fc
+     * @param template
+     * @param osw
+     * @throws IOException
+     */
     protected void processTemplate(
-            String name, FeatureCollection fc, Template template, OutputStreamWriter osw)
+            String templateType, FeatureCollection fc, Template template, OutputStreamWriter osw)
             throws IOException {
         try {
             template.process(fc, osw);
         } catch (TemplateException e) {
-            String msg = null;
-            if (fc == null) {
-                msg = "Error occured processing " + name + " template.";
-            } else {
-                msg =
-                        "Error occurred processing content template "
-                                + template.getName()
-                                + " for "
-                                + name;
+            String msg =
+                    "Error occurred processing " + templateType + " template " + template.getName();
+            if (fc != null) {
+                Name name = FeatureCollectionDecorator.getName(fc);
+                msg += " for featureType " + (name == null ? null : name.getLocalPart());
             }
             throw (IOException) new IOException(msg).initCause(e);
         }

@@ -73,8 +73,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
             if (content == null) {
                 handleJSONWithoutTemplate(fc, osw);
             } else {
-                String typeName = request.getQueryLayers().get(i).getName();
-                processTemplate(typeName, fc, content, osw);
+                processTemplate("content", fc, content, osw);
             }
         }
     }

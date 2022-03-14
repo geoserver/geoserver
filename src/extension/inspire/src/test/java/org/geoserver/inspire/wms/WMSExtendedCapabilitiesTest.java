@@ -16,6 +16,7 @@ import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
 import static org.geoserver.inspire.InspireTestSupport.assertSchemaLocationContains;
 import static org.geoserver.inspire.InspireTestSupport.clearInspireMetadata;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Locale;
 import org.geoserver.catalog.MetadataMap;
@@ -228,6 +229,47 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
             if (isLangNode(el)) language = el.getTextContent();
         }
         assertEquals("fre", language);
+        final Element supportedLanguage =
+                (Element)
+                        extendedCaps
+                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage")
+                                .item(0);
+
+        String nodeName = "";
+        for (int i = 0; i < supportedLanguage.getChildNodes().getLength(); i++) {
+            Node el = supportedLanguage.getChildNodes().item(i);
+            if (isLangNode(el)) {
+                language = el.getTextContent();
+                nodeName = el.getNodeName();
+            }
+        }
+
+        assertEquals("ita", language);
+        assertEquals("inspire_common:Language", nodeName);
+    }
+
+    @Test
+    public void testSupportedLanguageIsNull() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        getGeoServer().save(serviceInfo);
+
+        final Document dom = getAsDOM(WMS_1_3_0_GETCAPREQUEST);
+        NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
+        final Element extendedCaps = (Element) nodeList.item(0);
+
+        final Element supportedLanguage =
+                (Element)
+                        extendedCaps
+                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage")
+                                .item(0);
+
+        assertNull(supportedLanguage);
     }
 
     private boolean isLangNode(Node el) {

@@ -11,24 +11,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
 
 class TemplatePropertyMapper {
 
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
-    private final FeatureType sourceSchema;
     private final STACTemplates templates;
+    private final SampleFeatures sampleFeatures;
 
-    public TemplatePropertyMapper(
-            FeatureSource<FeatureType, Feature> source, STACTemplates templates) {
-        this.sourceSchema = source.getSchema();
+    public TemplatePropertyMapper(STACTemplates templates, SampleFeatures sampleFeatures) {
         this.templates = templates;
+        this.sampleFeatures = sampleFeatures;
     }
 
     /**
@@ -43,12 +40,10 @@ class TemplatePropertyMapper {
 
     private Filter mapPropertiesInternal(List<String> collectionIds, Filter filter)
             throws IOException {
-        STACPathVisitor visitor = new STACPathVisitor(sourceSchema);
-
         // do we have custom templates, and if so, for which collections?
         Set<String> customTemplateCollections = templates.getCustomItemTemplates();
         if (customTemplateCollections.isEmpty()) {
-            return (Filter) filter.accept(visitor, templates.getItemTemplate(null));
+            return mapFilter(filter, templates.getItemTemplate(null), null);
         }
 
         // if we have to go blind, we'll use all collections with a custom template, plus
@@ -58,7 +53,7 @@ class TemplatePropertyMapper {
             collectionIds.add(null); // default template
         }
 
-        Map<Filter, List<String>> collectionFilters = mapFilters(collectionIds, filter, visitor);
+        Map<Filter, List<String>> collectionFilters = mapFilters(collectionIds, filter);
 
         // if only one filter came out, it can be used as is, otherwise merge them
         if (collectionFilters.size() == 1) {
@@ -102,19 +97,35 @@ class TemplatePropertyMapper {
      * Grab the builder for each collection (might be different) and back-map collectionFilters on
      * it
      */
-    private Map<Filter, List<String>> mapFilters(
-            List<String> collectionIds, Filter result, STACPathVisitor visitor) throws IOException {
+    private Map<Filter, List<String>> mapFilters(List<String> collectionIds, Filter result)
+            throws IOException {
         Map<RootBuilder, Filter> filtersCache = new LinkedHashMap<>();
         Map<Filter, List<String>> collectionFilters = new LinkedHashMap<>();
         for (String collectionId : collectionIds) {
             RootBuilder template = templates.getItemTemplate(collectionId);
             Filter filter =
-                    filtersCache.computeIfAbsent(template, t -> (Filter) result.accept(visitor, t));
+                    filtersCache.computeIfAbsent(template, t -> mapFilter(result, t, collectionId));
             List<String> filterCollections =
                     collectionFilters.computeIfAbsent(filter, c -> new ArrayList<>());
             filterCollections.add(collectionId);
         }
         return collectionFilters;
+    }
+
+    private Filter mapFilter(Filter source, RootBuilder t, String collectionId) {
+        try {
+            STACQueryablesBuilder builder =
+                    new STACQueryablesBuilder(
+                            null,
+                            t,
+                            sampleFeatures.getSchema(),
+                            sampleFeatures.getSample(collectionId));
+            Map<String, Expression> expressions = builder.getExpressionMap();
+            STACPathVisitor visitor = new STACPathVisitor(expressions);
+            return (Filter) source.accept(visitor, null);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to map filter back to source data", e);
+        }
     }
 
     private Filter getCollectionsFilter(List<String> collectionIds) {

@@ -25,12 +25,16 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 
 public class STACQueryablesBuilderTest {
 
@@ -60,7 +64,8 @@ public class STACQueryablesBuilderTest {
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
         STACQueryablesBuilder builder =
-                new STACQueryablesBuilder(FAKE_ID, template.getRootBuilder(), products.getSchema());
+                new STACQueryablesBuilder(
+                        FAKE_ID, template.getRootBuilder(), products.getSchema(), null);
         Queryables queryables = builder.getQueryables();
 
         // check the time range properties have been replaced by a single property
@@ -127,14 +132,19 @@ public class STACQueryablesBuilderTest {
                 new FileSystemResourceStore(new File("./src/test/resources"));
         Resource templateDefinition = resourceStore.get("items-SAS1.json");
         FeatureSource<FeatureType, Feature> products = data.getProductSource();
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        Filter sampleFilter =
+                ff.equals(ff.property("identifier"), ff.literal("SAS1_20180226102021.01"));
+        Feature sampleFeature = DataUtilities.first(products.getFeatures(sampleFilter));
+
         TemplateReaderConfiguration config =
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
         STACQueryablesBuilder builder =
-                new STACQueryablesBuilder(FAKE_ID, template.getRootBuilder(), products.getSchema());
+                new STACQueryablesBuilder(
+                        FAKE_ID, template.getRootBuilder(), products.getSchema(), sampleFeature);
         Queryables queryables = builder.getQueryables();
         Map<String, Schema> properties = queryables.getProperties();
-        System.out.println(properties.keySet());
 
         // queryables from spec
         Schema id = properties.get("id");
@@ -161,5 +171,19 @@ public class STACQueryablesBuilderTest {
         Schema clouds = properties.get("custom:clouds");
         assertNotNull(clouds);
         assertEquals(TYPE_INTEGER, clouds.getType());
+
+        // extra queryable from inside the dynamically included JSON
+        Schema meanSolarAzimuth = properties.get("s2:mean_solar_azimuth");
+        assertNotNull(meanSolarAzimuth);
+        assertEquals("number", meanSolarAzimuth.getType());
+
+        Schema dataStripId = properties.get("s2:datastrip_id");
+        assertNotNull(dataStripId);
+        assertEquals("string", dataStripId.getType());
+
+        Schema anxDateTime = properties.get("sat:anx_datetime");
+        assertNotNull(anxDateTime);
+        assertEquals("string", anxDateTime.getType());
+        assertEquals("date-time", anxDateTime.getFormat());
     }
 }

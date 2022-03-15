@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -20,6 +21,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.feature.NameImpl;
 import org.geotools.styling.Style;
@@ -126,6 +128,25 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         selectedStyle = request.getLegends().get(0).getStyle();
         assertNotNull(selectedStyle);
         assertEquals("Lakes", selectedStyle.getName());
+    }
+
+    @org.junit.Test
+    public void testRemoteSLDDisabled() {
+        WMSInfo info = wms.getServiceInfo();
+        info.setDynamicStylingDisabled(true);
+        wms.getGeoServer().save(info);
+        final URL remoteSldUrl = getClass().getResource("MultipleStyles.sld");
+        this.allParameters.put("SLD", remoteSldUrl.toExternalForm());
+        this.allParameters.put("LAYER", "cite:Ponds");
+        ServiceException exception =
+                assertThrows(
+                        ServiceException.class,
+                        () ->
+                                requestReader.read(
+                                        new GetLegendGraphicRequest(),
+                                        allParameters,
+                                        allParameters));
+        assertEquals("Dynamic style usage is forbidden", exception.getMessage());
     }
 
     @org.junit.Test

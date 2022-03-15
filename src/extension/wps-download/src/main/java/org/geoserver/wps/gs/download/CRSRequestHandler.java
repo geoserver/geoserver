@@ -211,6 +211,14 @@ class CRSRequestHandler {
                         && !CRS.equalsIgnoreMetadata(originalNativeCRS, originalTargetCRS)
                         && Utils.isSupportedCRS(reader, originalTargetCRS);
 
+        // direct download case
+        if (roi == null
+                && originalTargetCRS != null
+                && descriptors.containsKey(DimensionDescriptor.CRS)
+                && (referenceFeatureForAlignment =
+                                getFirstGranuleMatchingCRS(reader, originalTargetCRS, roi, filter))
+                        != null) canUseTargetCRSAsNative = true;
+
         MathTransform reprojectionTransform = null;
         CoordinateReferenceSystem nativeCRS = getSelectedNativeCRS();
 
@@ -282,10 +290,12 @@ class CRSRequestHandler {
         GeometryDescriptor geomDescriptor = granules.getSchema().getGeometryDescriptor();
         CoordinateReferenceSystem indexCRS = geomDescriptor.getCoordinateReferenceSystem();
         DimensionDescriptor crsDescriptor = descriptors.get(DimensionDescriptor.CRS);
-        Geometry queryGeometry = DownloadUtilities.transformGeometry(roi, indexCRS);
+        if (roi != null) {
+            Geometry queryGeometry = DownloadUtilities.transformGeometry(roi, indexCRS);
 
-        final PropertyName geometryProperty = FF.property(geomDescriptor.getName());
-        filters.add(FF.intersects(geometryProperty, FF.literal(queryGeometry)));
+            final PropertyName geometryProperty = FF.property(geomDescriptor.getName());
+            filters.add(FF.intersects(geometryProperty, FF.literal(queryGeometry)));
+        }
         filters.add(
                 FF.equals(
                         FF.property(crsDescriptor.getStartAttribute()),
@@ -314,8 +324,7 @@ class CRSRequestHandler {
     /** Compute the bbox of the provided feature, taking into account its native CRS if available */
     public BoundingBox computeBBox(SimpleFeature feature, CoordinateReferenceSystem schemaCRS)
             throws FactoryException, TransformException, IOException {
-        ROIManager roiManager = getRoiManager();
-        if (roiManager != null && canUseTargetCRSAsNative()) {
+        if (canUseTargetCRSAsNative()) {
             Object nativeBoundsTest = feature.getUserData().get(GranuleSource.NATIVE_BOUNDS_KEY);
             if (nativeBoundsTest instanceof ReferencedEnvelope) {
                 ReferencedEnvelope re = (ReferencedEnvelope) nativeBoundsTest;

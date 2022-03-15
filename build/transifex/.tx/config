@@ -108,3 +108,81 @@ file_filter  = ../../src/extension/netcdf-out/src/main/resources/GeoServerApplic
 source_file  = ../../src/extension/netcdf-out/src/main/resources/GeoServerApplication.properties
 type         = PROPERTIES
 minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-geofence-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/geofence/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/geofence/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-geofence-server-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/geofence-server/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/geofence-server/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-gwc-s3-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/gwc-s3/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/gwc-s3/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-dxf-core-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/dxf/core/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/dxf/core/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-mapml-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/mapml/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/mapml/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-ogr-ogr-wfs-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/ogr/ogr-wfs/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/ogr/ogr-wfs/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-params-extractor-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/params-extractor/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/params-extractor/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-web-resource-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/web-resource/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/web-resource/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-wmts-multi-dimensional-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/wmts-multi-dimensional/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/wmts-multi-dimensional/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-printing-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/printing/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/printing/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-vectortiles-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/vectortiles/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/vectortiles/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-wcs2-0-eo-web-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/wcs2_0-eo/web/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/wcs2_0-eo/web/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:extension-authkey]
+file_filter  = ../../src/extension/authkey/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/authkey/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
+import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
 import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
@@ -15,6 +16,8 @@ import org.geoserver.featurestemplating.readers.JSONTemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Attribute;
+import org.opengis.feature.Feature;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -44,6 +47,13 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
             evaluate = evaluateExpressions(cql, context);
         }
 
+        ObjectNode finalNode = mergeNodes(evaluate);
+
+        if (finalNode != null) doIncludeFlat(finalNode, context, writer);
+        else iterateAndEvaluateNestedTree(context, writer, (ObjectNode) includingNode);
+    }
+
+    private ObjectNode mergeNodes(Object evaluate) {
         ObjectNode finalNode = null;
         if (!(evaluate instanceof ObjectNode) && evaluate != null) {
             String message = "Cannot include flat a value different from a JSON object";
@@ -53,9 +63,7 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
             JSONMerger merger = new JSONMerger();
             finalNode = merger.mergeTrees(includingNode, (ObjectNode) evaluate);
         }
-
-        if (finalNode != null) doIncludeFlat(finalNode, context, writer);
-        else iterateAndEvaluateNestedTree(context, writer, (ObjectNode) includingNode);
+        return finalNode;
     }
 
     private void doIncludeFlat(
@@ -147,17 +155,41 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
      */
     public TemplateBuilder getIncludingNodeBuilder(String key) {
         if (!includingNode.isObject()) return null;
+        return getBuilderFromNode(key, includingNode);
+    }
 
+    /**
+     * Returns the overlay builder created from the sample feature. Can be used to inspect the
+     * structure of a template builder, assuming other features in the lot will have a similar
+     * structure.
+     */
+    public TemplateBuilder getIncludeFlatBuilder(String key, Feature sample) {
+        // perform dynamic expansion against the sample feature, if possible
+        if (sample == null) return null;
+
+        Object evaluate = null;
+        if (xpath != null) {
+            evaluate = xpath.evaluate(sample);
+        } else if (cql != null) {
+            evaluate = cql.evaluate(sample);
+        }
+        if (evaluate instanceof Attribute)
+            evaluate = JSONFieldSupport.parseWhenJSON(null, null, evaluate);
+        if (!(evaluate instanceof JsonNode)) return null;
+
+        return getBuilderFromNode(key, (JsonNode) evaluate);
+    }
+
+    private TemplateBuilder getBuilderFromNode(String key, JsonNode node) {
         TemplateReaderConfiguration configuration =
                 new TemplateReaderConfiguration(getNamespaces());
         TemplateBuilderMaker maker = configuration.getBuilderMaker();
         maker.namespaces(configuration.getNamespaces());
         JSONTemplateReader jsonTemplateReader =
-                new JSONTemplateReader(includingNode, configuration, new ArrayList<>());
+                new JSONTemplateReader(node, configuration, new ArrayList<>());
 
         CompositeBuilder result = new CompositeBuilder(key, getNamespaces(), false);
-        jsonTemplateReader.getBuilderFromJson(null, includingNode, result, maker);
-
+        jsonTemplateReader.getBuilderFromJson(null, node, result, maker);
         return result;
     }
 }

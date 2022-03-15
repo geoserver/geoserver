@@ -9,11 +9,9 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.data.FeatureSource;
 import org.geotools.filter.text.ecql.ECQL;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 
 public class TemplatePropertyMapperTest extends STACTestSupport {
@@ -26,10 +24,10 @@ public class TemplatePropertyMapperTest extends STACTestSupport {
         copyTemplate("/items-LANDSAT8.json");
     }
 
-    public TemplatePropertyMapper getPropertyMapper() throws Exception {
+    public TemplatePropertyMapper getPropertyMapper() {
         STACTemplates templates = GeoServerExtensions.bean(STACTemplates.class);
-        FeatureSource<FeatureType, Feature> source = getOpenSearchAccess().getProductSource();
-        return new TemplatePropertyMapper(source, templates);
+        SampleFeatures sampleFeatures = GeoServerExtensions.bean(SampleFeatures.class);
+        return new TemplatePropertyMapper(templates, sampleFeatures);
     }
 
     @Test
@@ -76,6 +74,9 @@ public class TemplatePropertyMapperTest extends STACTestSupport {
     }
 
     @Test
+    @Ignore // we changed lookups so that queryables and filter back-mapping match 1-1
+    // gsd was not considered a queryable, so it's not filterable upon... we might get this
+    // back if gsd is considered a valid queryable too
     public void testStaticMatching() throws Exception {
         // property that exists only on LS8, and is static
         TemplatePropertyMapper mapper = getPropertyMapper();

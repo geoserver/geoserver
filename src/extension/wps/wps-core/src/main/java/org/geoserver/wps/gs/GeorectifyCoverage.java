@@ -252,20 +252,17 @@ public class GeorectifyCoverage implements GeoServerProcess {
             // if we have the output path move the final file there
             if (Boolean.TRUE.equals(store) && outputPath != null) {
                 try {
-                    String path = outputPath + (outputPath.endsWith(".tif") ? "" : ".tif");
-                    File output = resourceManager.getExternalOutputFile(path, null);
-                    if (output.exists()) {
-                        if (!output.delete()) {
-                            throw new WPSException(
-                                    "Output file " + path + " exists but cannot be overwritten");
-                        }
+                    File output = resourceManager.getExternalOutputFile(outputPath, null);
+                    if (output.exists() && !output.delete()) {
+                        throw new WPSException(
+                                "Output file " + outputPath + " exists but cannot be overwritten");
                     }
                     if (!warpedFile.renameTo(output)) {
                         throw new WPSException(
                                 "Could not move "
                                         + warpedFile.getAbsolutePath()
                                         + " to "
-                                        + path
+                                        + outputPath
                                         + ", it's likely a permission issue");
                     }
                     warpedFile = output;

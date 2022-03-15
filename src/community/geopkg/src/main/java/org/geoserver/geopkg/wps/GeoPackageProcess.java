@@ -163,17 +163,8 @@ public class GeoPackageProcess implements GeoServerProcess {
             ProgressListener listener)
             throws IOException {
 
-        final File file;
-
-        URL path = contents.getPath();
-        boolean remove = contents.getRemove() != null ? contents.getRemove() : true;
-
         String outputName = contents.getName() + ".gpkg";
-        if (!remove && path != null) {
-            file = resources.getExternalOutputFile(path, outputName);
-        } else {
-            file = resources.getOutputResource(null, outputName).file();
-        }
+        File file = resources.getOutputResource(null, outputName).file();
 
         GeoPackage gpkg = GeoPkg.getGeoPackage(file);
         // Initialize the GeoPackage file in order to avoid exceptions when accessing the geoPackage
@@ -208,12 +199,7 @@ public class GeoPackageProcess implements GeoServerProcess {
         }
 
         gpkg.close();
-        // Add to storage only if it is a temporary file
-        if (path != null && !remove) {
-            return path;
-        } else {
-            return new URL(resources.getOutputResourceUrl(outputName, MIME_TYPE));
-        }
+        return new URL(resources.getOutputResourceUrl(outputName, MIME_TYPE));
     }
 
     private void addTilesEntry(GeoPackage gpkg, Layer layer, ProgressListener listener)

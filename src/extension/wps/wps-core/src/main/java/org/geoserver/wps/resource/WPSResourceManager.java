@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -43,7 +42,6 @@ import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.resource.ProcessArtifactsStore.ArtifactType;
 import org.geoserver.wps.xml.WPSConfiguration;
-import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.geotools.wps.WPS;
 import org.geotools.xsd.Encoder;
@@ -268,15 +266,6 @@ public class WPSResourceManager extends ProcessListenerAdapter
                 throw new WPSException("Could not parse the stored WPS request", e);
             }
         }
-    }
-
-    /**
-     * Gets the output file if writing output outside of the WPS resource storage is enabled and the
-     * requested file is within the allowed output directory. Also attempts to create the parent
-     * directories for valid output files.
-     */
-    public File getExternalOutputFile(URL outPath, String outFile) throws IOException {
-        return getExternalOutputFile(URLs.urlToFile(outPath).getPath(), outFile);
     }
 
     /**

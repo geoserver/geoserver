@@ -5,8 +5,16 @@
  */
 package org.geoserver.wps.ppio;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,6 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wps.WPSException;
+import org.geoserver.wps.resource.GridCoverageReaderResource;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
@@ -34,6 +45,10 @@ public class GeotiffPPIOTest {
     File target = new File("./target/target.tiff");
     GeoTiffReader reader;
     GridCoverage2D coverage;
+    GridCoverageReaderResource resource;
+
+    WPSResourceManager resources;
+    GeoTiffPPIO ppio;
 
     @Before
     public void prepareGeoTiff() throws IOException {
@@ -41,6 +56,8 @@ public class GeotiffPPIOTest {
             FileUtils.copyInputStreamToFile(is, geotiff);
         }
         reader = new GeoTiffReader(geotiff);
+        resources = mock(WPSResourceManager.class);
+        ppio = new GeoTiffPPIO(resources);
     }
 
     @After
@@ -50,6 +67,9 @@ public class GeotiffPPIOTest {
         }
         if (reader != null) {
             reader.dispose();
+        }
+        if (resource != null) {
+            resource.delete();
         }
     }
 
@@ -72,7 +92,6 @@ public class GeotiffPPIOTest {
     @Test
     public void testRawCopy() throws Exception {
         GridCoverage2D coverage = getCoverage();
-        GeoTiffPPIO ppio = new GeoTiffPPIO();
         try (FileOutputStream fos = new FileOutputStream(target)) {
             ppio.encode(coverage, fos);
         }
@@ -87,11 +106,55 @@ public class GeotiffPPIOTest {
         ReferencedEnvelope re = ReferencedEnvelope.reference(coverage.getEnvelope2D());
         re.expandBy(-0.1);
         this.coverage = new CropCoverage().execute(coverage, JTS.toGeometry(re), null);
-        GeoTiffPPIO ppio = new GeoTiffPPIO();
         try (FileOutputStream fos = new FileOutputStream(target)) {
             ppio.encode(coverage, fos);
         }
         // not a straight copy, size is different
         assertNotEquals(geotiff.length(), target.length());
+    }
+
+    @Test
+    public void testDecodeValidGeoTIFF() throws Exception {
+        try (InputStream is = SystemTestData.class.getResourceAsStream("tazbm.tiff")) {
+            doAnswer(
+                            inv -> {
+                                resource = inv.getArgument(0, GridCoverageReaderResource.class);
+                                return null;
+                            })
+                    .when(resources)
+                    .addResource(any(GridCoverageReaderResource.class));
+            Object result = ppio.decode(is);
+            assertThat(result, instanceOf(GridCoverage2D.class));
+            coverage = (GridCoverage2D) result;
+            verify(resources).addResource(any(GridCoverageReaderResource.class));
+        }
+    }
+
+    @Test
+    public void testDecodeValidArcGrid() throws Exception {
+        try (InputStream is = getClass().getResourceAsStream("arcGrid.asc")) {
+            doAnswer(
+                            inv -> {
+                                resource = inv.getArgument(0, GridCoverageReaderResource.class);
+                                return null;
+                            })
+                    .when(resources)
+                    .addResource(any(GridCoverageReaderResource.class));
+            Object result = ppio.decode(is);
+            assertThat(result, instanceOf(GridCoverage2D.class));
+            coverage = (GridCoverage2D) result;
+            verify(resources).addResource(any(GridCoverageReaderResource.class));
+        }
+    }
+
+    @Test
+    public void testDecodeInvalid() throws Exception {
+        try (InputStream is = getClass().getResourceAsStream("empty-shapefile.zip")) {
+            WPSException exception = assertThrows(WPSException.class, () -> ppio.decode(is));
+            assertEquals(
+                    "Could not find the GeoTIFF GT2 format, please check it's in the classpath",
+                    exception.getMessage());
+            verify(resources, never()).addResource(any());
+        }
     }
 }

@@ -96,11 +96,7 @@ public abstract class ProcessParameterIO {
         // CRS
         defaults.add(new CoordinateReferenceSystemPPIO());
 
-        // grids
-        defaults.add(new GeoTiffPPIO());
-        defaults.add(new ArcGridPPIO());
-        defaults.add(new CoveragePPIO.PNGPPIO());
-        defaults.add(new CoveragePPIO.JPEGPPIO());
+        // grids - all grid PPIOs listed in the application context for backwards compatibility
 
         defaults.add(new ImagePPIO.PNGPPIO());
         defaults.add(new ImagePPIO.JPEGPPIO());

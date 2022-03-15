@@ -182,6 +182,14 @@
     </bean>
     
     <!-- The PPIO that need to be registered into SPI because of their dependencies -->
+    <bean id="geoTiffPPIO" class="org.geoserver.wps.ppio.GeoTiffPPIO">
+      <constructor-arg ref="wpsResourceManager"/>
+    </bean>
+    <bean id="arcGridPPIO" class="org.geoserver.wps.ppio.ArcGridPPIO">
+      <constructor-arg ref="wpsResourceManager"/>
+    </bean>
+    <bean id="coveragePngPPIO" class="org.geoserver.wps.ppio.CoveragePPIO.PNGPPIO"/>
+    <bean id="coverageJpegPPIO" class="org.geoserver.wps.ppio.CoveragePPIO.JPEGPPIO"/>
     <bean id="shapeZipPPIO" class="org.geoserver.wps.ppio.ShapeZipPPIO">
       <constructor-arg ref="wpsResourceManager"/>
       <constructor-arg ref="geoServer"/>

@@ -4,13 +4,12 @@
  */
 package org.geoserver.gwc.wmts;
 
-import java.io.IOException;
-import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
+import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
@@ -19,6 +18,9 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortOrder;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Utility class for aggregating several dimensions. All the dimensions will share the same spatial
@@ -127,10 +129,7 @@ public class Domains {
         ResourceInfo resourceInfo = layerInfo.getResource();
         try {
             if (resourceInfo instanceof FeatureTypeInfo) {
-                // accessing the features of a vector
-                return new FilteredFeatureType((FeatureTypeInfo) resourceInfo, filter)
-                        .getFeatureSource(null, null)
-                        .getFeatures();
+                return DimensionsUtils.getFeatures(resourceInfo).getFeatures(filter);
             }
             // accessing the features of a raster
             return getFeatureCollection((CoverageInfo) resourceInfo);

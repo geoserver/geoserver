@@ -11,3 +11,4 @@ above for a better understanding of the implemented multidimensional domain disc
 
    install.rst
    usage.rst
+   performance.rst

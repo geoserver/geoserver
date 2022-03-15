@@ -4,19 +4,6 @@
  */
 package org.geoserver.gwc.wmts;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
@@ -56,6 +43,21 @@ import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * WMTS extension that provides the necessary metadata and operations for handling multidimensional
  * requests.
@@ -88,6 +90,14 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
 
     public static final String EXPAND_LIMIT = "expandLimit";
     public static final String DOMAIN_VALUES_LIMIT = "limit";
+
+    /**
+     * Points to a secondary feature type with the same dimension columns as the main one, but with
+     * a structure allowing faster extraction of data (e.g., a summary of the unique dimension
+     * values rather than all of original records, which might report the same dimension value
+     * several times).
+     */
+    public static final String SIDECAR_TYPE = "wmtsMultidimSidecarType";
 
     private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
     private final GeoServer geoServer;

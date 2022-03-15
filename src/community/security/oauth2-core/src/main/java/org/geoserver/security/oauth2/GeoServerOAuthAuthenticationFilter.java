@@ -20,6 +20,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
@@ -131,7 +132,10 @@ public abstract class GeoServerOAuthAuthenticationFilter
                     accessTokenRequest.remove("access_token");
                 } finally {
                     SecurityContextHolder.clearContext();
-                    httpRequest.getSession(false).invalidate();
+                    HttpSession session = httpRequest.getSession(false);
+                    if (session != null) {
+                        session.invalidate();
+                    }
                     try {
                         httpRequest.logout();
                         authentication = null;

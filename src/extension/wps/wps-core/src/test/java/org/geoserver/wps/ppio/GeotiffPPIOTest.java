@@ -114,7 +114,7 @@ public class GeotiffPPIOTest {
     }
 
     @Test
-    public void testDecodeValid() throws Exception {
+    public void testDecodeValidGeoTIFF() throws Exception {
         try (InputStream is = SystemTestData.class.getResourceAsStream("tazbm.tiff")) {
             doAnswer(
                             inv -> {
@@ -131,10 +131,29 @@ public class GeotiffPPIOTest {
     }
 
     @Test
-    public void testDecodeInvalid() throws Exception {
+    public void testDecodeValidArcGrid() throws Exception {
         try (InputStream is = getClass().getResourceAsStream("arcGrid.asc")) {
+            doAnswer(
+                            inv -> {
+                                resource = inv.getArgument(0, GridCoverageReaderResource.class);
+                                return null;
+                            })
+                    .when(resources)
+                    .addResource(any(GridCoverageReaderResource.class));
+            Object result = ppio.decode(is);
+            assertThat(result, instanceOf(GridCoverage2D.class));
+            coverage = (GridCoverage2D) result;
+            verify(resources).addResource(any(GridCoverageReaderResource.class));
+        }
+    }
+
+    @Test
+    public void testDecodeInvalid() throws Exception {
+        try (InputStream is = getClass().getResourceAsStream("empty-shapefile.zip")) {
             WPSException exception = assertThrows(WPSException.class, () -> ppio.decode(is));
-            assertEquals("Could not read image/tiff coverage", exception.getMessage());
+            assertEquals(
+                    "Could not find the GeoTIFF GT2 format, please check it's in the classpath",
+                    exception.getMessage());
             verify(resources, never()).addResource(any());
         }
     }

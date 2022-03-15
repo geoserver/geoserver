@@ -37,22 +37,22 @@ public class ArcGridPPIO extends CDataPPIO {
     public Object decode(InputStream input) throws Exception {
         // in order to read a grid coverage we need to first store it on disk
         File root = new File(System.getProperty("java.io.tmpdir", "."));
-        File file = File.createTempFile("wps", ".asc", root);
+        File f = File.createTempFile("wps", "asc", root);
         GridCoverageReaderResource resource = null;
         try {
-            FileUtils.copyInputStreamToFile(input, file);
+            FileUtils.copyInputStreamToFile(input, f);
             ArcGridFormat format = new ArcGridFormat();
-            if (!format.accepts(file)) {
+            if (!format.accepts(f)) {
                 throw new WPSException("Could not read " + getMimeType() + " coverage");
             }
-            ArcGridReader reader = format.getReader(file);
-            resource = new GridCoverageReaderResource(reader, file);
+            ArcGridReader reader = format.getReader(f);
+            resource = new GridCoverageReaderResource(reader, f);
             return reader.read(null);
         } finally {
             if (resource != null) {
                 resources.addResource(resource);
             } else {
-                file.delete();
+                f.delete();
             }
         }
     }

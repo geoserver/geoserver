@@ -22,8 +22,11 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.resource.GridCoverageReaderResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridFormatFinder;
+import org.geotools.coverage.grid.io.UnknownFormat;
 import org.geotools.gce.geotiff.GeoTiffFormat;
-import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.process.ProcessException;
 import org.geotools.util.logging.Logging;
@@ -76,22 +79,23 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
     public Object decode(InputStream input) throws Exception {
         // in order to read a grid coverage we need to first store it on disk
         File root = new File(System.getProperty("java.io.tmpdir", "."));
-        File file = File.createTempFile("wps", ".tiff", root);
+        File f = File.createTempFile("wps", "tiff", root);
         GridCoverageReaderResource resource = null;
         try {
-            FileUtils.copyInputStreamToFile(input, file);
-            GeoTiffFormat format = new GeoTiffFormat();
-            if (!format.accepts(file)) {
-                throw new WPSException("Could not read " + getMimeType() + " coverage");
+            FileUtils.copyInputStreamToFile(input, f);
+            AbstractGridFormat format = GridFormatFinder.findFormat(f);
+            if (format instanceof UnknownFormat) {
+                throw new WPSException(
+                        "Could not find the GeoTIFF GT2 format, please check it's in the classpath");
             }
-            GeoTiffReader reader = format.getReader(file);
-            resource = new GridCoverageReaderResource(reader, file);
+            AbstractGridCoverage2DReader reader = format.getReader(f);
+            resource = new GridCoverageReaderResource(reader, f);
             return reader.read(null);
         } finally {
             if (resource != null) {
                 resources.addResource(resource);
             } else {
-                file.delete();
+                f.delete();
             }
         }
     }

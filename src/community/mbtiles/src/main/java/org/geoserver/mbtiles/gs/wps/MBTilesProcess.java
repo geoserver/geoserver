@@ -100,12 +100,6 @@ public class MBTilesProcess implements GeoServerProcess {
             @DescribeParameter(name = "filename", description = "Name of the .mbtile file", min = 0)
                     String filename,
             @DescribeParameter(
-                            name = "path",
-                            description =
-                                    "Path to the directory where the .mbtile file can be stored ",
-                            min = 0)
-                    URL path,
-            @DescribeParameter(
                             name = "minZoom",
                             description = "Minimum Zoom level to generate",
                             min = 0)

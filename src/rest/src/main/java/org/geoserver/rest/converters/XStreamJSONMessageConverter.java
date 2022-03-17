@@ -6,10 +6,7 @@ package org.geoserver.rest.converters;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import java.io.IOException;
-import org.codehaus.jettison.mapped.Configuration;
-import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestListWrapper;
@@ -100,11 +97,6 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
 
     @Override
     protected XStream createXStreamInstance() {
-        // needed for Jettison 1.4.1
-        Configuration configuration = new Configuration();
-        configuration.setRootElementArrayWrapper(false);
-        // preserve legacy single-element-array-as-object serialization
-        boolean useSerializeAsArray = false;
-        return new SecureXStream(new JettisonMappedXmlDriver(configuration, useSerializeAsArray));
+        throw new UnsupportedOperationException("unused");
     }
 }

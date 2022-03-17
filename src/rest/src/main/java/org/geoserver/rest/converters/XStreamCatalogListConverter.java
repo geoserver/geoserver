@@ -269,7 +269,7 @@ public abstract class XStreamCatalogListConverter
          *  </code>
          *  </pre>
          *
-         * Otherwise we'd one of:
+         * Otherwise we'd get one of:
          *
          * <pre>
          * <code>

@@ -314,7 +314,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
         Resource emptyDir = getDataDirectory().get("/emptyDir");
         emptyDir.dir();
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/resource/emptyDir?format=json");
-        //        print(json);
+        // print(json);
         String expected =
                 "{'ResourceDirectory': {\n"
                         + "  'name': 'emptyDir',\n"
@@ -336,7 +336,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testDirectoryJSON_single_child() throws Exception {
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/resource/mydir?format=json");
-        print(json);
+        // print(json);
         String expected =
                 "{'ResourceDirectory': {"
                         + "'name': 'mydir',"

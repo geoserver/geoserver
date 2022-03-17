@@ -413,7 +413,6 @@ public class ResourceController extends RestBaseController {
         xstream.alias("child", ResourceChildInfo.class);
         xstream.alias("ResourceDirectory", ResourceDirectoryInfo.class);
         xstream.alias("ResourceMetadata", ResourceMetadataInfo.class);
-
         if (converter instanceof XStreamXMLMessageConverter) {
             AtomLink.configureXML(xstream);
             xstream.aliasField("atom:link", ResourceParentInfo.class, "link");

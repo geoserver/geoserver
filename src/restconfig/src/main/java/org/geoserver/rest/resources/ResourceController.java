@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.AtomLink;
@@ -560,7 +561,7 @@ public class ResourceController extends RestBaseController {
     @XStreamAlias("ResourceDirectory")
     protected static class ResourceDirectoryInfo extends ResourceMetadataInfo {
 
-        private List<ResourceChildInfo> children = new ArrayList<>();
+        private List<ResourceChildInfo> children = Collections.emptyList();
 
         public ResourceDirectoryInfo(
                 String name, ResourceParentInfo parent, Date lastModified, String type) {
@@ -573,19 +574,25 @@ public class ResourceController extends RestBaseController {
          */
         public ResourceDirectoryInfo(Resource resource, HttpServletRequest request) {
             super(resource, request, true);
-            for (Resource child : resource.list()) {
-                children.add(
-                        new ResourceChildInfo(
-                                child.name(),
-                                new AtomLink(
-                                        href(child.path()),
-                                        "alternate",
-                                        getMediaType(child, request).toString())));
-            }
+            children =
+                    resource.list().stream()
+                            .map(child -> asResourceDirectoryInfo(child, request))
+                            .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
+                            .collect(Collectors.toList());
         }
 
         public List<ResourceChildInfo> getChildren() {
             return children;
+        }
+
+        private ResourceChildInfo asResourceDirectoryInfo(
+                Resource child, HttpServletRequest request) {
+            return new ResourceChildInfo(
+                    child.name(),
+                    new AtomLink(
+                            href(child.path()),
+                            "alternate",
+                            getMediaType(child, request).toString()));
         }
     }
 }

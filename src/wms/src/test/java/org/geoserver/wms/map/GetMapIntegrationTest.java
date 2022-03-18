@@ -172,12 +172,28 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png", response.getContentType());
 
         // check we got the
-        RenderedImage image = ImageIO.read(getBinaryInputStream(response));
-        int[] pixel = new int[3];
-        image.getData().getPixel(0, 0, pixel);
-        assertEquals(255, pixel[0]);
-        assertEquals(0, pixel[1]);
-        assertEquals(0, pixel[2]);
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertEquals(Color.RED, getPixelColor(image, 5, 10));
+    }
+
+    /**
+     * Clip on rasters used to lose the request parameters, that included the CQL_FILTER, among the
+     * others
+     */
+    @Test
+    public void testRasterFilterRedClip() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false&CQL_FILTER=location like 'red%25'&clip=POLYGON((0 0, 1 0, 0 1, 0 0))");
+
+        assertEquals("image/png", response.getContentType());
+
+        // check we got the right color
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertEquals(Color.RED, getPixelColor(image, 5, 10));
+        // and that the clip happened
+        assertEquals(Color.BLACK, getPixelColor(image, 15, 10));
     }
 
     @Test
@@ -189,12 +205,28 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         assertEquals("image/png", response.getContentType());
 
-        RenderedImage image = ImageIO.read(getBinaryInputStream(response));
-        int[] pixel = new int[3];
-        image.getData().getPixel(0, 0, pixel);
-        assertEquals(0, pixel[0]);
-        assertEquals(255, pixel[1]);
-        assertEquals(0, pixel[2]);
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertEquals(Color.GREEN, getPixelColor(image, 5, 10));
+    }
+
+    /**
+     * Clip on rasters used to lose the request parameters, that included the CQL_FILTER, among the
+     * others
+     */
+    @Test
+    public void testRasterFilterGreenClip() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false&CQL_FILTER=location like 'green%25'&clip=POLYGON((0 0, 1 0, 0 1, 0 0))");
+
+        assertEquals("image/png", response.getContentType());
+
+        // check we got the right color
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertEquals(Color.GREEN, getPixelColor(image, 5, 10));
+        // and that the clip happened
+        assertEquals(Color.BLACK, getPixelColor(image, 15, 10));
     }
 
     @Test

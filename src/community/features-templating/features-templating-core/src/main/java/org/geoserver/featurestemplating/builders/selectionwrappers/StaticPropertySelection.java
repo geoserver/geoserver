@@ -32,6 +32,12 @@ public class StaticPropertySelection extends PropertySelectionWrapper {
                                 (JsonNode) pruneJsonNodeIfNeeded(context, staticValue.deepCopy());
                         super.evaluateInternal(writer, context);
                     }
+
+                    @Override
+                    public boolean canWrite(TemplateBuilderContext context) {
+                        return StaticPropertySelection.this.canWrite(context)
+                                && super.canWrite(context);
+                    }
                 };
         return staticBuilder;
     }

@@ -501,7 +501,7 @@ public class ItemsTest extends STACTestSupport {
     public void testPropertySelectionOnDynamicMerge() throws Exception {
         DocumentContext result =
                 getAsJSONPath(
-                        "ogc/stac/collections/LANDSAT8/items?fields=properties,-assets,assets.thumbnail.type",
+                        "ogc/stac/collections/LANDSAT8/items?fields=properties.instruments,-assets,assets.thumbnail.type",
                         200);
 
         // empty fields param only mandatory attributes should be there.
@@ -519,7 +519,11 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(2, geom.size());
         assertEquals(4, bbox.size());
         assertTrue(properties.size() > 2);
+        JSONArray array = (JSONArray) properties.get("instruments");
+        assertTrue(array.contains("OLI"));
+        assertTrue(array.contains("TIRS"));
         assertNotNull(assets);
+        // size is one other assets object have been filtered out.
         assertEquals(1, assets.size());
         assertEquals("will replace", thumbnailType);
         assertNotNull(links);
@@ -548,6 +552,17 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(4, bbox.size());
         // more then just the two mandatory ones.
         assertTrue(properties.size() > 2);
+        assertFalse(properties.containsKey("created"));
+        assertFalse(properties.containsKey("datetime"));
+
+        // asserts some of the properties value included.
+        assertEquals(properties.get("platform"), "LANDSAT_8");
+        assertEquals(properties.get("constellation"), "landsat8");
+        assertEquals(properties.get("eo:cloud_cover"), 0d);
+        assertEquals(properties.get("sat:orbit_state"), "descending");
+        assertEquals(properties.get("gsd"), 30);
+        assertEquals(properties.get("landsat:orbit"), 65);
+
         assertNotNull(assets);
         assertFalse(assets.isEmpty());
         assertFalse(assets.containsKey("thumbnail"));
@@ -580,6 +595,16 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(4, bbox.size());
         // more then just the two mandatory ones.
         assertTrue(properties.size() > 2);
+        // asserts some of the properties value included.
+        assertTrue(properties.containsKey("created"));
+        assertTrue(properties.containsKey("datetime"));
+        assertEquals(properties.get("s1:frame_number"), 218);
+        assertEquals(properties.get("s1:start_anxtime"), 1090739);
+        assertEquals(properties.get("s1:stop_anxtime"), 1117820);
+        assertEquals(properties.get("s1:processing_date"), "2019-07-07T18: 33: 12.592265Z");
+        assertEquals(properties.get("s1:processing_site"), "Airbus DS-Newport");
+        assertEquals(properties.get("s1:ipf_version"), 3.1);
+
         assertNotNull(assets);
         assertFalse(assets.isEmpty());
         assertNotNull(links);

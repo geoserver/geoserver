@@ -8,15 +8,16 @@ import static org.geoserver.ogcapi.Link.REL_NEXT;
 import static org.geoserver.ogcapi.Link.REL_PREV;
 import static org.geoserver.ogcapi.Link.REL_SELF;
 import static org.geoserver.ogcapi.OGCAPIMediaTypes.GEOJSON_VALUE;
+import static org.geoserver.ogcapi.stac.QueryResultBuilder.DEF_TEMPLATE;
 import static org.springframework.http.HttpMethod.POST;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
-import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
@@ -24,7 +25,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
@@ -72,8 +72,7 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
                     Feature feature = features.next();
                     String collectionId =
                             (String) feature.getProperty("parentIdentifier").getValue();
-                    RootBuilder builder =
-                            getRootBuilder(collectionId, collection.getSchema(), itemsResponse);
+                    RootBuilder builder = getRootBuilder(collectionId, itemsResponse);
                     builder.evaluate(writer, new TemplateBuilderContext(feature));
                 }
             }
@@ -85,15 +84,16 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
         }
     }
 
-    private RootBuilder getRootBuilder(
-            String collectionId, FeatureType type, AbstractItemsResponse response)
+    private RootBuilder getRootBuilder(String collectionId, AbstractItemsResponse response)
             throws IOException {
-        RootBuilder rootBuilder = templates.getItemTemplate(collectionId);
-        if (response.isFieldsPresent()) {
-            STACPropertySelection strategy = new STACPropertySelection(response.getFields());
-            PropertySelectionVisitor propertySelectionVisitor =
-                    new PropertySelectionVisitor(strategy, type);
-            rootBuilder = (RootBuilder) rootBuilder.accept(propertySelectionVisitor, null);
+        Map<String, RootBuilder> templateMap = response.getTemplateMap();
+        RootBuilder rootBuilder = null;
+        if (templateMap != null) {
+            if (templateMap.containsKey(collectionId)) rootBuilder = templateMap.get(collectionId);
+            else rootBuilder = templateMap.get(DEF_TEMPLATE);
+        }
+        if (rootBuilder == null) {
+            rootBuilder = templates.getItemTemplate(collectionId);
         }
         return rootBuilder;
     }

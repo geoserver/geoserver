@@ -1,0 +1,16 @@
+{
+  "$merge": "testTemplate.json",
+  "features": [
+    {
+      "properties": {
+        "three": {
+          "${e}": {
+            "nested": "a dynamicKeyChild"
+          },
+          "cinq":"${five}"
+        }
+      },
+      "$includeFlat": "${b}"
+    }
+  ]
+}

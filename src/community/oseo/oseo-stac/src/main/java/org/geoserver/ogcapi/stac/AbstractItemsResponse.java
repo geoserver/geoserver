@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.stac;
 
 import java.math.BigInteger;
 import java.util.Map;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geotools.feature.FeatureCollection;
 
 /**
@@ -21,8 +22,7 @@ public abstract class AbstractItemsResponse extends AbstractQueryResult {
     Map<String, Object> nextBody;
     Map<String, Object> previousBody;
     boolean post;
-    private String[] fields;
-    private boolean fieldsPresent;
+    private Map<String, RootBuilder> templateMap;
 
     public AbstractItemsResponse(FeatureCollection items, BigInteger numberMatched, int returned) {
         super(items, numberMatched, returned);
@@ -76,19 +76,13 @@ public abstract class AbstractItemsResponse extends AbstractQueryResult {
         this.post = post;
     }
 
-    public String[] getFields() {
-        return fields;
+    @Override
+    public Map<String, RootBuilder> getTemplateMap() {
+        return templateMap;
     }
 
-    public void setFields(String[] fields) {
-        this.fields = fields;
-    }
-
-    public boolean isFieldsPresent() {
-        return fieldsPresent;
-    }
-
-    public void setFieldsPresent(boolean fieldsPresent) {
-        this.fieldsPresent = fieldsPresent;
+    @Override
+    public void setTemplateMap(Map<String, RootBuilder> templateMap) {
+        this.templateMap = templateMap;
     }
 }

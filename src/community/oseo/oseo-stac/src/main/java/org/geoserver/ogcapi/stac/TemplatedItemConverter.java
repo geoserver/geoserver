@@ -9,13 +9,11 @@ import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
-import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
 import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
@@ -53,7 +51,7 @@ public class TemplatedItemConverter extends AbstractHttpMessageConverter<ItemRes
     protected void writeInternal(ItemResponse response, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
         Feature item = response.getItem();
-        RootBuilder builder = getRootBuilder(item, item.getType(), response);
+        RootBuilder builder = getRootBuilder(item, response);
         try (GeoJSONWriter writer =
                 new GeoJSONWriter(
                         new JsonFactory()
@@ -66,15 +64,12 @@ public class TemplatedItemConverter extends AbstractHttpMessageConverter<ItemRes
         }
     }
 
-    private RootBuilder getRootBuilder(Feature item, FeatureType type, ItemResponse response)
-            throws IOException {
-        RootBuilder builder =
-                templates.getItemTemplate((String) item.getProperty("parentIdentifier").getValue());
-        if (response.isFieldsPresent()) {
-            STACPropertySelection strategy = new STACPropertySelection(response.getFields());
-            PropertySelectionVisitor visitor = new PropertySelectionVisitor(strategy, type);
-            builder = (RootBuilder) builder.accept(visitor, null);
-        }
+    private RootBuilder getRootBuilder(Feature item, ItemResponse response) throws IOException {
+        RootBuilder builder = response.getTemplate();
+        if (builder == null)
+            builder =
+                    templates.getItemTemplate(
+                            (String) item.getProperty("parentIdentifier").getValue());
         return builder;
     }
 }

@@ -1,6 +1,7 @@
 package org.geoserver.featurestemplating.builders.visitors;
 
-import static org.geoserver.featurestemplating.builders.TemplateBuildersUtils.hasSelectableKey;
+import static org.geoserver.featurestemplating.builders.TemplateBuilderUtils.hasSelectableKey;
+import static org.geoserver.featurestemplating.readers.JSONMerger.DYNAMIC_MERGE_KEY;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -26,7 +27,9 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
         boolean result;
         if (templateBuilder instanceof PropertySelectionWrapper) {
             PropertySelectionWrapper selectionWrapper = (PropertySelectionWrapper) templateBuilder;
-            result = isKeySelected(selectionWrapper.getFullKey(builderContext));
+            String fullPath = selectionWrapper.getFullKey(builderContext);
+            fullPath = removeDynamicMergeKey(fullPath);
+            result = isKeySelected(fullPath);
         } else {
             result = isBuilderSelected(templateBuilder, null);
         }
@@ -35,7 +38,7 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
 
     @Override
     public boolean isBuilderSelected(
-            AbstractTemplateBuilder templateBuilder, PropertySelectionExtradata extradata) {
+            AbstractTemplateBuilder templateBuilder, PropertySelectionContext extradata) {
 
         String key;
         if (extradata != null) {
@@ -43,6 +46,7 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
         } else {
             key = templateBuilder.getKey(null);
         }
+        key = removeDynamicMergeKey(key);
         return isKeySelected(templateBuilder, key);
     }
 
@@ -54,7 +58,9 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
      * @return true if it is selected, false otherwise.
      */
     protected boolean isKeySelected(AbstractTemplateBuilder abstractTb, String key) {
-        return hasSelectableKey(abstractTb) && isKeySelected(key) || key == null;
+        return (hasSelectableKey(abstractTb) && isKeySelected(key))
+                || key == null
+                || !hasSelectableKey(abstractTb);
     }
 
     /**
@@ -86,11 +92,14 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
         while (names.hasNext()) {
             String name = names.next();
             String fullPath = updatedFullKey(parentPath, name);
+            fullPath = removeDynamicMergeKey(fullPath);
             if (!isKeySelected(fullPath)) {
                 excluded.add(name);
             } else {
                 JsonNode node = objectNode.get(name);
-                if (node.isObject()) {
+                if (emptyArrayOrObject(node)) {
+                    excluded.add(name);
+                } else if (node.isObject()) {
                     pruneObjectNode((ObjectNode) node, fullPath);
                 } else if (node.isArray()) {
                     pruneArrayNode((ArrayNode) node, fullPath);
@@ -100,9 +109,31 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
         objectNode.remove(excluded);
     }
 
+    private boolean emptyArrayOrObject(JsonNode node) {
+        return (node.isArray() || node.isObject()) && node.isEmpty();
+    }
+
     private String updatedFullKey(String currentPath, String attribute) {
         if (currentPath == null && attribute != null) currentPath = attribute;
         else if (attribute != null) currentPath = currentPath.concat(".").concat(attribute);
         return currentPath;
+    }
+
+    private String removeDynamicMergeKey(String key) {
+        if (key != null) {
+            int index = key.indexOf(DYNAMIC_MERGE_KEY);
+            while (index != -1) {
+                String subStr = key.substring(index + DYNAMIC_MERGE_KEY.length());
+                int sepIndex = subStr.indexOf(".");
+                if (sepIndex == -1) {
+                    key = null;
+                    break;
+                }
+                String suffix = subStr.substring(0, sepIndex);
+                key = key.replace(DYNAMIC_MERGE_KEY + suffix + ".", "");
+                index = key.indexOf(DYNAMIC_MERGE_KEY);
+            }
+        }
+        return key;
     }
 }

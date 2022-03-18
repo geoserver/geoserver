@@ -40,7 +40,7 @@ public interface PropertySelectionHandler {
      *     false otherwise.
      */
     boolean isBuilderSelected(
-            AbstractTemplateBuilder templateBuilder, PropertySelectionExtradata extradata);
+            AbstractTemplateBuilder templateBuilder, PropertySelectionContext extradata);
 
     /**
      * Prune the JsonNode node from the attributes that are not selected.
@@ -59,5 +59,5 @@ public interface PropertySelectionHandler {
      * @param builder the Dynamic or Static builder.
      * @return true if must be wrapped, false otherwise.
      */
-    boolean mustWrapJsonValueBuilder(AbstractTemplateBuilder builder);
+    boolean hasSelectableJsonValue(AbstractTemplateBuilder builder);
 }

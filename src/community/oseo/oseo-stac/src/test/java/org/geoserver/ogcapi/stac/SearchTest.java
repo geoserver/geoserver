@@ -638,16 +638,17 @@ public class SearchTest extends STACTestSupport {
     public void testSearchPropertySelectionStaticJsonObj() throws Exception {
         DocumentContext doc =
                 getAsJSONPath(
-                        "ogc/stac/search?fields=properties.SENTINEL2,-properties.SENTINEL2.fullStaticObject.staticAttr1,-properties.SENTINEL2.fullStaticObject.staticAttr3.nestedStatic1&filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=id",
+                        "ogc/stac/search?collections=SENTINEL2&fields=properties,-properties.SENTINEL2.fullStaticObject.staticAttr1,-properties.SENTINEL2.fullStaticObject.staticAttr3.nestedStatic1&filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=id",
                         200);
 
-        JSONArray array =
-                doc.read("features[?(@.id != 'GS_TEST_PRODUCT.01')].properties.SENTINEL2");
+        JSONArray array = doc.read("features[?(@.id != 'GS_TEST_PRODUCT.01')].properties");
         for (int i = 0; i < array.size(); i++) {
             Map<String, Object> props = (Map<String, Object>) array.get(i);
-            Map<String, Object> staticValues = (Map<String, Object>) props.get("fullStaticObject");
+            Map<String, Object> sentinelObject = (Map<String, Object>) props.get("SENTINEL2");
+            Map<String, Object> staticValues =
+                    (Map<String, Object>) sentinelObject.get("fullStaticObject");
             assertFalse(staticValues.containsKey("staticAttr1"));
-            assertTrue(staticValues.containsKey("staticAttr2"));
+            assertEquals("staticValue2", staticValues.get("staticAttr2"));
             Map<String, Object> staticValues3 =
                     (Map<String, Object>) staticValues.get("staticAttr3");
             assertFalse(staticValues3.containsKey("nestedStatic1"));

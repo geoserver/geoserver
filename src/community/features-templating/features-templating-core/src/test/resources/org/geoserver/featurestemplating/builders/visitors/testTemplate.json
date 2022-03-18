@@ -11,7 +11,12 @@
             "a": "a",
             "$includeFlat": "${c}"
           }
-        ]
+        ],
+        "e": {
+          "nestedE": "nestedE"
+        },
+        "four": "${four}",
+        "five": "${five}"
       }
     }
   ]

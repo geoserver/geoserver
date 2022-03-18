@@ -37,7 +37,7 @@ public class StaticBuilder extends AbstractTemplateBuilder {
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (evaluateFilter(context)) {
+        if (canWrite(context) && evaluateFilter(context)) {
             evaluateInternal(writer, context);
         }
     }

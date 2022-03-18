@@ -143,4 +143,8 @@ public class TemplateBuilderWrapper extends AbstractTemplateBuilder {
     public void setParent(TemplateBuilder builder) {
         delegate.setParent(builder);
     }
+
+    public AbstractTemplateBuilder getDelegate() {
+        return delegate;
+    }
 }

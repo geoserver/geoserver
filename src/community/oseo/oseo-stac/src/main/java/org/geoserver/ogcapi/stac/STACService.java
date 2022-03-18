@@ -24,13 +24,8 @@ import static org.geoserver.ows.util.ResponseUtils.urlEncode;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,9 +34,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
-import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.ogcapi.APIBBoxParser;
+import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIFilterParser;
@@ -64,15 +58,11 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
-import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.visitor.UniqueVisitor;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
-import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -80,9 +70,9 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Literal;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
-import org.opengis.referencing.FactoryException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -239,11 +229,17 @@ public class STACService {
     }
 
     private Feature getCollection(String collectionId) throws IOException {
+        return getCollection(collectionId, Query.ALL_PROPERTIES);
+    }
+
+    private Feature getCollection(String collectionId, List<PropertyName> selectedFields)
+            throws IOException {
         Query q = new Query();
         q.setFilter(
                 FF.and(
                         getEnabledFilter(),
                         FF.equals(FF.property(EO_IDENTIFIER), FF.literal(collectionId))));
+        q.setProperties(selectedFields);
         FeatureCollection<FeatureType, Feature> collections =
                 accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
         Feature collection = DataUtilities.first(collections);
@@ -287,10 +283,22 @@ public class STACService {
                 FF.and(
                         getEnabledFilter(),
                         FF.equals(FF.property("identifier"), FF.literal(itemId))));
-        q.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
 
         FeatureSource<FeatureType, Feature> products =
                 accessProvider.getOpenSearchAccess().getProductSource();
+        boolean hasField = request.getParameterMap().containsKey(FIELDS_PARAM);
+        RootBuilder rootBuilder = null;
+        if (supportsFieldsSelection(request) && hasField) {
+            rootBuilder = templates.getItemTemplate(collectionId);
+            PropertySelectionVisitor propertySelectionVisitor =
+                    new PropertySelectionVisitor(
+                            new STACPropertySelection(fields), products.getSchema());
+            rootBuilder = (RootBuilder) rootBuilder.accept(propertySelectionVisitor, null);
+            q.setPropertyNames(new ArrayList<>(propertySelectionVisitor.getQueryProperties()));
+        } else {
+            q.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
+        }
+
         FeatureCollection<FeatureType, Feature> items = products.getFeatures(q);
         Feature item = DataUtilities.first(items);
         if (item == null) {
@@ -300,8 +308,7 @@ public class STACService {
                     HttpStatus.NOT_FOUND);
         }
         ItemResponse response = new ItemResponse(collectionId, item);
-        response.setFields(fields);
-        response.setFieldsPresent(request.getParameterMap().containsKey(FIELDS_PARAM));
+        response.setTemplate(rootBuilder);
         return response;
     }
 
@@ -320,6 +327,7 @@ public class STACService {
             @RequestParam(name = FIELDS_PARAM, required = false) String[] fields,
             HttpServletRequest request)
             throws Exception {
+
         // check the collection is enabled
         Feature collection = getCollection(collectionId);
         if (Boolean.FALSE.equals(collection.getProperty("enabled").getValue())) {
@@ -328,19 +336,25 @@ public class STACService {
                     "Collection " + collectionId + " is not avialable",
                     HttpStatus.NOT_FOUND);
         }
+        boolean hasFieldParam = request.getParameterMap().containsKey(FIELDS_PARAM);
+        QueryResultBuilder resultBuilder =
+                new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures);
+        resultBuilder
+                .collectionIds(Arrays.asList(collectionId))
+                .startIndex(startIndex)
+                .requestedLimit(requestedLimit)
+                .bbox(bbox)
+                .datetime(datetime)
+                .filter(filter)
+                .filterLanguage(filterLanguage)
+                .sortby(sortBy)
+                .excludeDisabledCollection(false)
+                .hasFieldParam(hasFieldParam)
+                .fields(fields)
+                .supportsFieldsSelection(supportsFieldsSelection(request));
+
         // query the items based on the request parameters
-        QueryResult qr =
-                queryItems(
-                        Arrays.asList(collectionId),
-                        startIndex,
-                        requestedLimit,
-                        bbox,
-                        null,
-                        datetime,
-                        filter,
-                        filterLanguage,
-                        sortBy,
-                        false);
+        QueryResult qr = resultBuilder.build();
 
         // build the links
         ItemsResponse response =
@@ -357,8 +371,7 @@ public class STACService {
         response.setPrevious(linksBuilder.getPrevious());
         response.setNext(linksBuilder.getNext());
         response.setSelf(linksBuilder.getSelf());
-        response.setFields(fields);
-        response.setFieldsPresent(request.getParameterMap().containsKey(FIELDS_PARAM));
+        response.setTemplateMap(qr.getTemplateMap());
         return response;
     }
 
@@ -378,23 +391,32 @@ public class STACService {
             @RequestParam(name = FIELDS_PARAM, required = false) String[] fields,
             HttpServletRequest request)
             throws Exception {
+        boolean hasFieldParam = request.getParameterMap().containsKey(FIELDS_PARAM);
+        QueryResultBuilder resultBuilder =
+                new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures);
+        resultBuilder
+                .collectionIds(collectionIds)
+                .startIndex(startIndex)
+                .requestedLimit(requestedLimit)
+                .bbox(bbox)
+                .intersects(intersects)
+                .datetime(datetime)
+                .filter(filter)
+                .filterLanguage(filterLanguage)
+                .sortby(sortBy)
+                .excludeDisabledCollection(true)
+                .hasFieldParam(hasFieldParam)
+                .fields(fields)
+                .supportsFieldsSelection(supportsFieldsSelection(request));
+
         // query the items based on the request parameters
-        QueryResult qr =
-                queryItems(
-                        collectionIds,
-                        startIndex,
-                        requestedLimit,
-                        bbox,
-                        intersects,
-                        datetime,
-                        filter,
-                        filterLanguage,
-                        sortBy,
-                        true);
+        QueryResult qr = resultBuilder.build();
+        // query the items based on the request parameters
 
         // build the links
         SearchResponse response =
                 new SearchResponse(qr.getItems(), qr.getNumberMatched(), qr.getReturned());
+        response.setTemplateMap(qr.getTemplateMap());
         String path = "ogc/stac/search";
         PaginationLinksBuilder linksBuilder =
                 new PaginationLinksBuilder(
@@ -406,8 +428,7 @@ public class STACService {
         response.setPrevious(linksBuilder.getPrevious());
         response.setNext(linksBuilder.getNext());
         response.setSelf(linksBuilder.getSelf());
-        response.setFields(fields);
-        response.setFieldsPresent(request.getParameterMap().containsKey(FIELDS_PARAM));
+        response.setTemplateMap(qr.getTemplateMap());
         return response;
     }
 
@@ -415,40 +436,22 @@ public class STACService {
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SearchResponse searchPost(@RequestBody SearchQuery sq) throws Exception {
-        FeatureSource<FeatureType, Feature> source =
-                accessProvider.getOpenSearchAccess().getProductSource();
 
-        // request parsing
-        FilterMerger filters = new FilterMerger();
-
-        List<String> collectionIds = sq.getCollections();
-        addCollectionsFilter(filters, collectionIds, true);
-
-        double[] bbox = sq.getBbox();
-        if (bbox != null) {
-            filters.add(APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84));
-        }
-        if (sq.getIntersection() != null) {
-            filters.add(FF.intersects(FF.property(""), FF.literal(sq.getIntersection())));
-        }
-        if (sq.getDatetime() != null) {
-            filters.add(buildTimeFilter(sq.getDatetime()));
-        }
-        if (sq.getFilter() != null) {
-            Filter mapped = parseFilter(sq.getCollections(), sq.getFilter(), sq.getFilterLang());
-            filters.add(mapped);
-        }
-        // keep only enabled products
-        filters.add(getEnabledFilter());
-
-        Query q = new Query();
-        q.setStartIndex(sq.getStartIndex());
-        int limit = getLimit(sq.getLimit());
-        q.setMaxFeatures(limit);
-        q.setFilter(filters.and());
+        QueryResultBuilder resultBuilder =
+                new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures);
+        resultBuilder
+                .collectionIds(sq.getCollections())
+                .intersects(sq.getIntersection())
+                .startIndex(sq.getStartIndex())
+                .requestedLimit(sq.getLimit())
+                .bbox(sq.getBbox())
+                .datetime(sq.getDatetime())
+                .filter(sq.getFilter())
+                .filterLanguage(sq.getFilterLang())
+                .excludeDisabledCollection(true);
 
         // query the items based on the request parameters
-        QueryResult qr = queryItems(source, q);
+        QueryResult qr = resultBuilder.build();
 
         // build the links
         SearchResponse response =
@@ -469,136 +472,8 @@ public class STACService {
         return response;
     }
 
-    private void addCollectionsFilter(
-            FilterMerger filters, List<String> collectionIds, boolean excludeDisabledCollection)
-            throws IOException {
-        List<String> disabledIds =
-                excludeDisabledCollection
-                        ? getDisabledCollections(collectionIds)
-                        : Collections.emptyList();
-
-        if (collectionIds != null && !collectionIds.isEmpty()) {
-            collectionIds.removeAll(disabledIds);
-            filters.add(getCollectionsFilter(collectionIds));
-        } else if (!disabledIds.isEmpty()) {
-            // exclude disabled collections
-            filters.add(FF.not(getCollectionsFilter(disabledIds)));
-        }
-    }
-
     public PropertyIsEqualTo getEnabledFilter() {
         return FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true));
-    }
-
-    public Filter parseFilter(List<String> collectionIds, String filter, String filterLang)
-            throws IOException {
-        Filter parsed = filterParser.parse(filter, filterLang);
-        return new TemplatePropertyMapper(templates, sampleFeatures)
-                .mapProperties(collectionIds, parsed);
-    }
-
-    /** TODO: Factor out this method into a Query mapper object */
-    private QueryResult queryItems(
-            List<String> collectionIds,
-            int startIndex,
-            Integer requestedLimit,
-            String bbox,
-            String intersects,
-            String datetime,
-            String filter,
-            String filterLanguage,
-            SortBy[] sortby,
-            boolean excludeDisabledCollection)
-            throws IOException, FactoryException, ParseException {
-        // request parsing
-        FilterMerger filters = new FilterMerger();
-
-        addCollectionsFilter(filters, collectionIds, excludeDisabledCollection);
-        if (bbox != null) {
-            filters.add(APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84));
-        }
-        if (intersects != null) {
-            Geometry geometry = GeoJSONReader.parseGeometry(intersects);
-            filters.add(FF.intersects(FF.property(""), FF.literal(geometry)));
-        }
-        if (datetime != null) {
-            filters.add(buildTimeFilter(datetime));
-        }
-        if (filter != null) {
-            Filter mapped = parseFilter(collectionIds, filter, filterLanguage);
-            filters.add(mapped);
-        }
-        // keep only enabled products
-        filters.add(getEnabledFilter());
-
-        Query q = new Query();
-        q.setStartIndex(startIndex);
-        int limit = getLimit(requestedLimit);
-        q.setMaxFeatures(limit);
-        q.setFilter(filters.and());
-        q.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
-        q.setSortBy(mapSortProperties(collectionIds, sortby));
-
-        FeatureSource<FeatureType, Feature> source =
-                accessProvider.getOpenSearchAccess().getProductSource();
-        return queryItems(source, q);
-    }
-
-    private SortBy[] mapSortProperties(List<String> collectionIds, SortBy[] sortby)
-            throws IOException {
-        // nothing to map, easy way out
-        if (sortby == null) return null;
-
-        // do we map for a specific collection, or have to deal with multiple ones?
-        FeatureType itemsSchema =
-                accessProvider.getOpenSearchAccess().getProductSource().getSchema();
-        TemplateBuilder builder;
-        if (collectionIds == null || collectionIds.size() > 1) {
-            // right now assuming multiple collections means using search, where the
-            // sortables are generic
-            builder = templates.getItemTemplate(null);
-        } else {
-            builder = templates.getItemTemplate(collectionIds.get(0));
-        }
-        STACSortablesMapper mapper = new STACSortablesMapper(builder, itemsSchema);
-        return mapper.map(sortby);
-    }
-
-    private List<String> getDisabledCollections(List<String> collectionIds) throws IOException {
-        Query q = new Query();
-        Filter filter = FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(false));
-        if (collectionIds != null && !collectionIds.isEmpty()) {
-            List<Filter> filters = new ArrayList<>();
-            filters.add(filter);
-
-            filters.addAll(
-                    collectionIds.stream()
-                            .map(cid -> FF.equals(FF.property(EO_IDENTIFIER), FF.literal(cid)))
-                            .collect(Collectors.toList()));
-            filter = FF.and(filters);
-        }
-        q.setFilter(filter);
-        q.setProperties(Arrays.asList(FF.property(EO_IDENTIFIER)));
-        FeatureCollection<FeatureType, Feature> collections =
-                accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
-        return DataUtilities.list(collections).stream()
-                .map(f -> (String) f.getProperty(EO_IDENTIFIER).getValue())
-                .collect(Collectors.toList());
-    }
-
-    private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q)
-            throws IOException {
-        // get the items
-        FeatureCollection<FeatureType, Feature> items = source.getFeatures(q);
-
-        // the counts
-        Query matchedQuery = new Query(q);
-        matchedQuery.setMaxFeatures(-1);
-        matchedQuery.setStartIndex(0);
-        int matched = source.getCount(matchedQuery);
-        int returned = items.size();
-
-        return new QueryResult(q, items, BigInteger.valueOf(matched), returned);
     }
 
     static Filter getCollectionsFilter(List<String> collectionIds) {
@@ -607,47 +482,6 @@ public class STACService {
                 .map(id -> FF.equals(FF.property("parentIdentifier"), FF.literal(id)))
                 .forEach(f -> filters.add(f));
         return filters.or();
-    }
-
-    /**
-     * Returns an actual limit based on the
-     *
-     * @param requestedLimit
-     * @return
-     */
-    private int getLimit(Integer requestedLimit) {
-        OSEOInfo oseo = getService();
-        int serviceMax = oseo.getMaximumRecordsPerPage();
-        if (requestedLimit == null) return oseo.getRecordsPerPage();
-        return Math.min(serviceMax, requestedLimit);
-    }
-
-    private Filter buildTimeFilter(String time) throws ParseException, IOException {
-        Collection times = timeParser.parse(time);
-        if (times.isEmpty() || times.size() > 1) {
-            throw new ServiceException(
-                    "Invalid time specification, must be a single time, or a time range",
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "time");
-        }
-
-        Object timeSpec = times.iterator().next();
-
-        if (timeSpec instanceof Date) {
-            // range containment
-            return FF.between(
-                    FF.literal(timeSpec), FF.property("timeStart"), FF.property("timeEnd"));
-        } else if (timeSpec instanceof DateRange) {
-            // range overlap filter
-            DateRange dateRange = (DateRange) timeSpec;
-            Literal before = FF.literal(dateRange.getMinValue());
-            Literal after = FF.literal(dateRange.getMaxValue());
-            Filter lower = FF.lessOrEqual(FF.property("timeStart"), after);
-            Filter upper = FF.greaterOrEqual(FF.property("timeEnd"), before);
-            return FF.and(lower, upper);
-        } else {
-            throw new IllegalArgumentException("Cannot build time filter out of " + timeSpec);
-        }
     }
 
     @GetMapping(
@@ -738,5 +572,16 @@ public class STACService {
         RootBuilder template = this.templates.getItemTemplate(null);
         Sortables sortables = new STACSortablesMapper(template, itemsSchema, id).getSortables();
         return sortables;
+    }
+
+    private boolean supportsFieldsSelection(HttpServletRequest request) {
+        return getMediaTypeOrDefault(request).equals(OGCAPIMediaTypes.GEOJSON_VALUE);
+    }
+
+    private String getMediaTypeOrDefault(HttpServletRequest request) {
+        String mediaType = request.getParameter("f");
+        if (mediaType == null) mediaType = request.getHeader(HttpHeaders.ACCEPT);
+        if (mediaType == null) mediaType = OGCAPIMediaTypes.GEOJSON_VALUE;
+        return mediaType;
     }
 }

@@ -62,6 +62,7 @@ public class CompositeBuilder extends SourceBuilder {
      * @param context the current context
      * @return true if can write the output, else false
      */
+    @Override
     public boolean canWrite(TemplateBuilderContext context) {
         List<TemplateBuilder> filtered =
                 children.stream()

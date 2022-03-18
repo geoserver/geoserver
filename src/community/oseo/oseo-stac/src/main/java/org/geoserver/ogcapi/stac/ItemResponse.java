@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.stac;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.opengis.feature.Feature;
 
 /**
@@ -16,8 +17,7 @@ public class ItemResponse {
 
     private Feature item;
     private String collectionId;
-    private String[] fields;
-    private boolean fieldsPresent;
+    private RootBuilder template;
 
     public ItemResponse(String collectionId, Feature item) {
         this.item = item;
@@ -32,19 +32,11 @@ public class ItemResponse {
         return collectionId;
     }
 
-    public String[] getFields() {
-        return fields;
+    public RootBuilder getTemplate() {
+        return template;
     }
 
-    public void setFields(String[] fields) {
-        this.fields = fields;
-    }
-
-    public boolean isFieldsPresent() {
-        return fieldsPresent;
-    }
-
-    public void setFieldsPresent(boolean fieldsPresent) {
-        this.fieldsPresent = fieldsPresent;
+    public void setTemplate(RootBuilder template) {
+        this.template = template;
     }
 }

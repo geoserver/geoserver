@@ -31,15 +31,12 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
 
     protected int contextPos = 0;
 
-    protected NamespaceSupport namespaces;
-
     private boolean encodeNull = false;
 
     private static final Logger LOGGER = Logging.getLogger(DynamicValueBuilder.class);
 
     public DynamicValueBuilder(String key, String expression, NamespaceSupport namespaces) {
         super(key, namespaces);
-        this.namespaces = namespaces;
 
         if (expression.endsWith("!")) {
             this.encodeNull = true;
@@ -133,10 +130,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
             result = xpath.evaluate(contextObject);
             result = JSONFieldSupport.parseWhenJSON(xpath, contextObject, result);
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Unable to evaluate xpath " + xpath + ". Exception: {0}",
-                    e.getMessage());
+            LOGGER.log(Level.SEVERE, "Unable to evaluate xpath " + xpath + ". Exception: {0}", e);
         }
         return result;
     }
@@ -184,11 +178,6 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         } else {
             return true;
         }
-    }
-
-    @Override
-    public NamespaceSupport getNamespaces() {
-        return namespaces;
     }
 
     public int getContextPos() {

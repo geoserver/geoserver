@@ -34,6 +34,12 @@ public class DynamicPropertySelection extends PropertySelectionWrapper {
                         value = pruneJsonNodeIfNeeded(context, value);
                         super.writeValue(name, writer, value, context);
                     }
+
+                    @Override
+                    public boolean canWrite(TemplateBuilderContext context) {
+                        return DynamicPropertySelection.this.canWrite(context)
+                                && super.canWrite(context);
+                    }
                 };
         return dynamic;
     }

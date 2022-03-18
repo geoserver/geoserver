@@ -38,7 +38,7 @@ public class STACPropertySelection extends AbstractPropertySelection {
         Set<String> exclude = new HashSet<>();
         if (fields != null) {
             for (String f : fields) {
-                if (f.startsWith(EXCLUDE_PREFIX)) exclude.add(f.replace(EXCLUDE_PREFIX, ""));
+                if (f.startsWith(EXCLUDE_PREFIX)) exclude.add(f.substring(1));
                 else include.add(f);
             }
         }
@@ -111,7 +111,7 @@ public class STACPropertySelection extends AbstractPropertySelection {
     }
 
     @Override
-    public boolean mustWrapJsonValueBuilder(AbstractTemplateBuilder builder) {
+    public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
         String key = builder.getKey(null);
         boolean result = false;
         if (key != null) {

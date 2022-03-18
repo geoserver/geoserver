@@ -31,7 +31,7 @@ public class GDALStatus implements ModuleStatus {
 
     @Override
     public Optional<String> getVersion() {
-        Version v = GeoTools.getVersion(GDALUtilities.class);
+        Version v = GeoTools.getVersion(GDALStatus.class);
         if (v == null) {
             return Optional.empty();
         }
@@ -81,6 +81,12 @@ public class GDALStatus implements ModuleStatus {
         msg.append("\nGDAL Version: " + gdal.VersionInfo("RELEASE_NAME"));
         msg.append("\nGDAL Release Date: " + gdal.VersionInfo("RELEASE_DATE"));
         msg.append("\nGDAL Build Info: " + gdal.VersionInfo("BUILD_INFO"));
+
+        Version v = GeoTools.getVersion(GDALUtilities.class);
+        if (v != null) {
+            msg.append("\nImageIO-Ext Version: " + v.toString());
+        }
+
         return msg.toString();
     }
 }

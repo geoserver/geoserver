@@ -6,13 +6,13 @@
 package org.geoserver.wps.ppio;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.servlet.ServletContext;
@@ -29,6 +29,7 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.URLs;
+import org.geotools.util.logging.Logging;
 
 /**
  * Handles input and output of feature collections as zipped shapefiles
@@ -36,6 +37,8 @@ import org.geotools.util.URLs;
  * @author Andrea Aime - OpenGeo
  */
 public class ShapeZipPPIO extends BinaryPPIO {
+
+    private static final Logger LOGGER = Logging.getLogger(ShapeZipPPIO.class);
 
     private final GeoServer gs;
     private final Catalog catalog;
@@ -77,42 +80,47 @@ public class ShapeZipPPIO extends BinaryPPIO {
     public Object decode(InputStream input) throws Exception {
         // create the temp directory and register it as a temporary resource
         File tempDir = IOUtils.createTempDirectory("shpziptemp");
-
-        // unzip to the temporary directory
-        File shapeFile = null;
-        try (ZipInputStream zis = new ZipInputStream(input)) {
-            ZipEntry entry = null;
-
-            while ((entry = zis.getNextEntry()) != null) {
-                File file = IOUtils.getZipOutputFile(tempDir, entry);
-                if (entry.isDirectory()) {
-                    file.mkdir();
-                } else {
-                    if (file.getName().toLowerCase().endsWith(".shp")) {
-                        shapeFile = file;
-                    }
-
-                    int count;
-                    byte[] data = new byte[4096];
-                    // write the files to the disk
-                    try (FileOutputStream fos = new FileOutputStream(file)) {
-                        while ((count = zis.read(data)) != -1) {
-                            fos.write(data, 0, count);
+        ShapefileResource resource = null;
+        try {
+            // unzip to the temporary directory
+            File shapeFile = null;
+            try (ZipInputStream zis = new ZipInputStream(input)) {
+                ZipEntry entry = null;
+                while ((entry = zis.getNextEntry()) != null) {
+                    File file = IOUtils.getZipOutputFile(tempDir, entry);
+                    if (entry.isDirectory()) {
+                        file.mkdir();
+                    } else {
+                        if (file.getName().toLowerCase().endsWith(".shp")) {
+                            shapeFile = file;
                         }
-                        fos.flush();
+                        FileUtils.copyToFile(zis, file);
                     }
+                    zis.closeEntry();
                 }
-                zis.closeEntry();
             }
-        }
 
-        if (shapeFile == null) {
-            FileUtils.deleteDirectory(tempDir);
-            throw new IOException("Could not find any file with .shp extension in the zip file");
-        } else {
+            if (shapeFile == null) {
+                throw new IOException(
+                        "Could not find any file with .shp extension in the zip file");
+            }
             ShapefileDataStore store = new ShapefileDataStore(URLs.fileToUrl(shapeFile));
-            resources.addResource(new ShapefileResource(store, tempDir));
+            resource = new ShapefileResource(store, tempDir);
             return store.getFeatureSource().getFeatures();
+        } finally {
+            if (resource != null) {
+                resources.addResource(resource);
+            } else {
+                try {
+                    FileUtils.deleteDirectory(tempDir);
+                } catch (IOException e) {
+                    LOGGER.warning(
+                            "Could not delete temp directory: "
+                                    + tempDir.getAbsolutePath()
+                                    + " due to: "
+                                    + e.getMessage());
+                }
+            }
         }
     }
 

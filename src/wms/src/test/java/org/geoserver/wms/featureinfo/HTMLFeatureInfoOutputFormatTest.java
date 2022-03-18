@@ -52,6 +52,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -65,7 +66,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
     GetFeatureInfoRequest getFeatureInfoRequest;
 
-    private static final String templateFolder = "/org/geoserver/wms/featureinfo/";
+    static final String templateFolder = "/org/geoserver/wms/featureinfo/";
 
     private String currentTemplate;
 
@@ -379,6 +380,35 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         outputFormat.write(fcType, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
         assertEquals("Hello world from de", result);
+    }
+
+    /**
+     * Ensures the template processing works when one query layer is resolved to multiple
+     * featureCollections
+     *
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testMultipleFeatureCollectionsPerQueryLayer() throws Exception {
+        currentTemplate = "test_content_multi_ft.ftl";
+        // given: further featureType and feature instance
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName(toName(MockData.WORLD));
+        SimpleFeature feature =
+                SimpleFeatureBuilder.build(builder.buildFeatureType(), new Double[0], "");
+
+        // given: further featureCollection in result data
+        fcType.getFeature().add(DataUtilities.collection(feature));
+
+        // when: processing template
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+
+        // then: assert template was processed as expected
+        assertTrue(result.contains("Type: PrimitiveGeoFeature"));
+        assertTrue(result.contains("Type: World"));
     }
 
     /** Restore FreeMarkerTemplateManager default state */

@@ -740,6 +740,70 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         fileContent.delete();
     }
 
+    /**
+     * Verifies that templates can be executed if resulting data contains multiple collections
+     * although only one layer was queried
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    public void testJSONFreeMarkerTemplateMultipleFeatureCollectionsPerQueryLayer()
+            throws Exception {
+        URL contentUrl = getClass().getResource("../content_json.ftl");
+        URL headerUrl = getClass().getResource("../header_json.ftl");
+        URL footerUrl = getClass().getResource("../footer_json.ftl");
+        GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
+        Resource templates = loader.get(Paths.path("templates"));
+
+        File fileHeader = new File(templates.dir(), "header_json.ftl");
+        File fileFooter = new File(templates.dir(), "footer_json.ftl");
+        File fileContent = new File(templates.dir(), "content_json.ftl");
+        FileUtils.copyURLToFile(headerUrl, fileHeader);
+        FileUtils.copyURLToFile(contentUrl, fileContent);
+        FileUtils.copyURLToFile(footerUrl, fileFooter);
+        GeoJSONFeatureInfoResponse geoJsonResp =
+                new GeoJSONFeatureInfoResponse(
+                        getWMS(), getCatalog().getResourceLoader(), "application/json");
+        FeatureTypeInfo ft =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                TEMPORAL_DATA.getPrefix(), TEMPORAL_DATA.getLocalPart());
+
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
+        LayerInfo layerInfo = getCatalog().getLayerByName(TEMPORAL_DATA.getLocalPart());
+        MapLayerInfo mapLayerInfo = new MapLayerInfo(layerInfo);
+        queryLayers.add(mapLayerInfo);
+        GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
+        getFeatureInfoRequest.setQueryLayers(queryLayers);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("LAYER", mapLayerInfo.getName());
+        Request request = new Request();
+        request.setKvp(parameters);
+        Dispatcher.REQUEST.set(request);
+        FeatureCollection fc = ft.getFeatureSource(null, null).getFeatures();
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        FeatureCollectionType fct = getFeatureCollectionType(fc);
+
+        FeatureTypeInfo squaresTypeInfo =
+                getCatalog().getFeatureTypeByName(SQUARES.getPrefix(), SQUARES.getLocalPart());
+        FeatureCollection squaresCollection =
+                squaresTypeInfo.getFeatureSource(null, null).getFeatures();
+
+        // further featureCollection in result data
+        fct.getFeature().add(squaresCollection);
+
+        geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+
+        // make sure features of both types where written
+        // do not repeat verification of JSON structure, done by other test already
+        assertTrue(result.contains("Points.0"));
+        assertTrue(result.contains("squares.1"));
+
+        fileHeader.delete();
+        fileContent.delete();
+        fileFooter.delete();
+    }
+
     @Test
     public void testLabelInFeatureInfoColorMapRamp() throws Exception {
         // tests that with vendorOption <VendorOption name="labelInFeatureInfo">add</VendorOption>

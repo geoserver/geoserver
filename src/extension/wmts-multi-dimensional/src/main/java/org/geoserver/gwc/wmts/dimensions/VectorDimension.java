@@ -36,7 +36,8 @@ public abstract class VectorDimension extends Dimension {
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
         FeatureSource source;
         try {
-            source = typeInfo.getFeatureSource(null, GeoTools.getDefaultHints());
+            
+            source = DimensionsUtils.getFeatures(typeInfo);
         } catch (Exception exception) {
             throw new RuntimeException(
                     String.format(

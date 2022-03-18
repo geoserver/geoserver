@@ -744,7 +744,7 @@
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>1.0.1</version>
+        <version>1.4.1</version>
       </dependency>
       <dependency>
         <groupId>lucene</groupId>
@@ -1226,7 +1226,7 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.11.1</version>
+        <version>1.4.19</version>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>

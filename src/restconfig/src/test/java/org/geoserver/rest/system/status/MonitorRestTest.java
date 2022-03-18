@@ -43,6 +43,7 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
         xs.alias("metric", MetricValue.class);
         xs.alias("metrics", Metrics.class);
         xs.addImplicitCollection(Metrics.class, "metrics");
+        xs.allowTypes(new Class[] {Metrics.class, MetricValue.class});
         Metrics metrics = (Metrics) xs.fromXML(response.getContentAsString());
         assertTrue(metrics.getMetrics().size() >= MetricInfo.values().length);
     }
@@ -57,6 +58,7 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
         xs.alias("metric", MetricValue.class);
         xs.alias("metrics", Metrics.class);
         xs.addImplicitCollection(Metrics.class, "metrics");
+        xs.allowTypes(new Class[] {Metrics.class, MetricValue.class});
         Metrics metrics = (Metrics) xs.fromXML(response.getContentAsString());
         assertTrue(metrics.getMetrics().size() >= MetricInfo.values().length);
     }
@@ -72,6 +74,7 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
         xs.alias("metric", MetricValue.class);
         xs.alias("metrics", Metrics.class);
         xs.addImplicitCollection(Metrics.class, "metrics");
+        xs.allowTypes(new Class[] {Metrics.class, MetricValue.class});
         Metrics metrics = (Metrics) xs.fromXML(response.getContentAsString());
         assertTrue(metrics.getMetrics().size() >= MetricInfo.values().length);
     }

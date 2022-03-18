@@ -14,6 +14,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import java.io.IOException;
 import java.util.Collection;
+import org.codehaus.jettison.mapped.Configuration;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
@@ -58,6 +59,7 @@ public abstract class XStreamCatalogListConverter
                 getClass().getName() + " does not support deserialization of catalog lists",
                 inputMessage);
     }
+
     //
     // writing
     //
@@ -65,7 +67,6 @@ public abstract class XStreamCatalogListConverter
     public void writeInternal(RestListWrapper<?> wrapper, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         XStream xstream = this.createXStreamInstance();
-
         Class<?> targetClass = wrapper.getObjectClass();
         Collection<?> data = wrapper.getCollection();
         this.aliasCollection(data, xstream, targetClass, wrapper);
@@ -73,7 +74,7 @@ public abstract class XStreamCatalogListConverter
         xstream.toXML(data, outputMessage.getBody());
     }
 
-    private void configureXStream(XStream xstream, Class<?> clazz, RestListWrapper<?> wrapper) {
+    protected void configureXStream(XStream xstream, Class<?> clazz, RestListWrapper<?> wrapper) {
         XStreamPersister xp = xpf.createXMLPersister();
         wrapper.configurePersister(xp, this);
         final String name = getItemName(xp, clazz);
@@ -82,7 +83,7 @@ public abstract class XStreamCatalogListConverter
         xstream.registerConverter(
                 new CollectionConverter(xstream.getMapper()) {
                     @Override
-                    public boolean canConvert(Class type) {
+                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                         return Collection.class.isAssignableFrom(type);
                     }
 
@@ -214,9 +215,28 @@ public abstract class XStreamCatalogListConverter
             writer.setValue(href(link));
         }
 
+        /**
+         * Calls {@link #writeSingleElementCollection} for single-element collections, to ensure
+         * backwards compatibility with Jettison 1.0 output, and {@code super.writeInternal()}
+         * otherwise
+         */
+        @Override
+        public void writeInternal(RestListWrapper<?> wrapper, HttpOutputMessage outputMessage)
+                throws IOException, HttpMessageNotWritableException {
+
+            if (wrapper.getCollection().size() == 1) {
+                writeSingleElementCollection(wrapper, outputMessage);
+            } else {
+                super.writeInternal(wrapper, outputMessage);
+            }
+        }
+
         @Override
         protected XStream createXStreamInstance() {
-            return new SecureXStream(new JettisonMappedXmlDriver());
+            // preserve legacy single-element-array-as-object serialization
+            // called by super.writeInternal() for non-single element collections
+            boolean useSerializeAsArray = false;
+            return createXStreamInstance(useSerializeAsArray);
         }
 
         @Override
@@ -227,6 +247,107 @@ public abstract class XStreamCatalogListConverter
         @Override
         public String getMediaType() {
             return MediaType.APPLICATION_JSON_VALUE;
+        }
+
+        private XStream createXStreamInstance(boolean useSerializeAsArray) {
+            // needed for Jettison 1.4.1
+            Configuration configuration = new Configuration();
+            configuration.setRootElementArrayWrapper(false);
+            return new SecureXStream(
+                    new JettisonMappedXmlDriver(configuration, useSerializeAsArray));
+        }
+
+        /**
+         * Special treatment for single-element collections in {@link
+         * RestListWrapper#getCollection()} to ensure encoding matches Jettison 1.0.1 (prior to
+         * XStream 1.4.18 / Jettison 1.4.1 upgrade).
+         *
+         * <p>Expected output being like:
+         *
+         * <pre>
+         * <code>
+         * {"coverages": {"coverage": [{ "name": "tazdem", ... }]}}
+         *  </code>
+         *  </pre>
+         *
+         * Otherwise we'd get one of:
+         *
+         * <pre>
+         * <code>
+         *  {"coverages": {"coverage": { "name": "tazdem", ... }}}
+         *  </code>
+         *  </pre>
+         *
+         * or
+         *
+         * <pre>
+         * <code>
+         *  {"coverages": [{"coverage": { "name": "tazdem", ... }}]}
+         *  </code>
+         *  </pre>
+         *
+         * instead.
+         */
+        private void writeSingleElementCollection(
+                RestListWrapper<?> wrapper, HttpOutputMessage outputMessage) throws IOException {
+
+            final boolean useSerializeAsArray = true;
+            XStream xstream = this.createXStreamInstance(useSerializeAsArray);
+            XStreamPersister xp = xpf.createXMLPersister();
+            wrapper.configurePersister(xp, this);
+            final Class<?> targetClass = wrapper.getObjectClass();
+            final String itemName = getItemName(xp, targetClass);
+            final String collectionAlias = itemName + "s";
+            this.configureSingleElementCollectionXStream(xstream, targetClass, wrapper);
+
+            ListRoot data = new ListRoot(wrapper.getCollection());
+            xstream.alias(collectionAlias, ListRoot.class);
+            xstream.aliasField(itemName, ListRoot.class, "values");
+            xstream.alias(itemName, targetClass);
+
+            // do not generate an @class: list JSON attribute
+            xstream.aliasSystemAttribute(null, "class");
+            xstream.toXML(data, outputMessage.getBody());
+        }
+
+        static class ListRoot {
+            private Collection<?> values;
+
+            ListRoot(Collection<?> values) {
+                this.values = values;
+            }
+
+            public Collection<?> getValues() {
+                return values;
+            }
+        }
+
+        /**
+         * Uses a {@link CollectionConverter} for single-element collection JSON encoding without
+         * calling {@code writer.start/endNode(name)}, but a single call to {@link
+         * CollectionConverter#writeBareItem writeBareItem()}, since the element name is handled by
+         * the encoding of {@link ListRoot}.
+         */
+        protected void configureSingleElementCollectionXStream(
+                XStream xstream, Class<?> clazz, RestListWrapper<?> wrapper) {
+
+            super.configureXStream(xstream, clazz, wrapper);
+            xstream.registerConverter(
+                    new CollectionConverter(xstream.getMapper()) {
+                        @Override
+                        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+                            return Collection.class.isAssignableFrom(type);
+                        }
+
+                        @Override
+                        protected void writeCompleteItem(
+                                Object item,
+                                MarshallingContext context,
+                                HierarchicalStreamWriter writer) {
+
+                            super.writeBareItem(item, context, writer);
+                        }
+                    });
         }
     }
 }

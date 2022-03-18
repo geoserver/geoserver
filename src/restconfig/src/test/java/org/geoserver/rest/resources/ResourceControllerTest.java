@@ -310,35 +310,114 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testDirectoryJSON() throws Exception {
-        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/resource/mydir?format=json");
-        print(json);
+    public void testDirectoryJSON_no_children() throws Exception {
+        Resource emptyDir = getDataDirectory().get("/emptyDir");
+        emptyDir.dir();
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/resource/emptyDir?format=json");
+        // print(json);
         String expected =
-                "{\"ResourceDirectory\": {"
-                        + "\"name\": \"mydir\","
-                        + "\"parent\":   {"
-                        + "  \"path\": \"/\","
-                        + "    \"link\":     {"
-                        + "      \"href\": \"http://localhost:8080/geoserver"
-                        + RestBaseController.ROOT_PATH
-                        + "/resource/\","
-                        + "      \"rel\": \"alternate\","
-                        + "      \"type\": \"application/json\""
+                "{'ResourceDirectory': {\n"
+                        + "  'name': 'emptyDir',\n"
+                        + "  'parent':   {\n"
+                        + "    'path': '/',\n"
+                        + "    'link':     {\n"
+                        + "      'href': 'http://localhost:8080/geoserver/rest/resource/',\n"
+                        + "      'rel': 'alternate',\n"
+                        + "      'type': 'application/json'\n"
+                        + "    }\n"
+                        + "  },\n"
+                        + "'lastModified': '"
+                        + FORMAT.format(emptyDir.lastmodified())
+                        + "'\n"
+                        + "}}";
+        JSONAssert.assertEquals(expected, (JSONObject) json);
+    }
+
+    @Test
+    public void testDirectoryJSON_single_child() throws Exception {
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/resource/mydir?format=json");
+        // print(json);
+        String expected =
+                "{'ResourceDirectory': {"
+                        + "'name': 'mydir',"
+                        + "'parent':   {"
+                        + "  'path': '/',"
+                        + "    'link':     {"
+                        + "      'href': 'http://localhost:8080/geoserver/rest/resource/',"
+                        + "      'rel': 'alternate',"
+                        + "      'type': 'application/json'"
                         + "  }"
                         + "},"
-                        + "\"lastModified\": \""
+                        + "'lastModified': '"
                         + FORMAT.format(myRes.parent().lastmodified())
-                        + "\","
-                        + "  \"children\": {\"child\": [  {"
-                        + "    \"name\": \"myres\","
-                        + "    \"link\":     {"
-                        + "      \"href\": \"http://localhost:8080/geoserver"
-                        + RestBaseController.ROOT_PATH
-                        + "/resource/mydir/myres\","
-                        + "      \"rel\": \"alternate\","
-                        + "      \"type\": \"application/octet-stream\""
+                        + "',"
+                        + "  'children': {'child': [  {"
+                        + "    'name': 'myres',"
+                        + "    'link':     {"
+                        + "      'href': 'http://localhost:8080/geoserver/rest/resource/mydir/myres',"
+                        + "      'rel': 'alternate',"
+                        + "      'type': 'application/octet-stream'"
                         + "    }"
                         + "  }]}"
+                        + "}}";
+        JSONAssert.assertEquals(expected, (JSONObject) json);
+    }
+
+    @Test
+    public void testDirectoryJSON_multiple_children() throws Exception {
+        Resource mydir2 = getDataDirectory().get("/mydir2");
+        String lastModified = FORMAT.format(mydir2.lastmodified());
+
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/resource/mydir2?format=json");
+        print(json);
+        String expected =
+                "{'ResourceDirectory': {\n"
+                        + "  'name': 'mydir2',\n"
+                        + "  'parent':   {\n"
+                        + "    'path': '/',\n"
+                        + "    'link':     {\n"
+                        + "      'href': 'http://localhost:8080/geoserver/rest/resource/',\n"
+                        + "      'rel': 'alternate',\n"
+                        + "      'type': 'application/json'\n"
+                        + "    }\n"
+                        + "  },\n"
+                        + "  'lastModified': '"
+                        + lastModified
+                        + "',\n"
+                        + "  'children': {'child':   [\n"
+                        + "        {\n"
+                        + "      'name': 'fake.png',\n"
+                        + "      'link':       {\n"
+                        + "        'href': 'http://localhost:8080/geoserver/rest/resource/mydir2/fake.png',\n"
+                        + "        'rel': 'alternate',\n"
+                        + "        'type': 'image/png'\n"
+                        + "      }\n"
+                        + "    },\n"
+                        + "        {\n"
+                        + "      'name': 'imagewithoutextension',\n"
+                        + "      'link':       {\n"
+                        + "        'href': 'http://localhost:8080/geoserver/rest/resource/mydir2/imagewithoutextension',\n"
+                        + "        'rel': 'alternate',\n"
+                        + "        'type': 'image/png'\n"
+                        + "      }\n"
+                        + "    },\n"
+                        + "        {\n"
+                        + "      'name': 'myres.json',\n"
+                        + "      'link':       {\n"
+                        + "        'href': 'http://localhost:8080/geoserver/rest/resource/mydir2/myres.json',\n"
+                        + "        'rel': 'alternate',\n"
+                        + "        'type': 'application/octet-stream'\n"
+                        + "      }\n"
+                        + "    },\n"
+                        + "        {\n"
+                        + "      'name': 'myres.xml',\n"
+                        + "      'link':       {\n"
+                        + "        'href': 'http://localhost:8080/geoserver/rest/resource/mydir2/myres.xml',\n"
+                        + "        'rel': 'alternate',\n"
+                        + "        'type': 'application/xml'\n"
+                        + "      }\n"
+                        + "    }\n"
+                        + "  ]}\n"
                         + "}}";
         JSONAssert.assertEquals(expected, (JSONObject) json);
     }

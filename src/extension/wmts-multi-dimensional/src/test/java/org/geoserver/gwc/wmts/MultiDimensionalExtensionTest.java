@@ -12,11 +12,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -40,10 +35,17 @@ import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geowebcache.io.XMLBuilder;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tests that perform requests again the multidimensional extension and check the results for the
@@ -67,6 +69,22 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         namespaces.put("gml", "http://www.opengis.net/gml");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
+    }
+
+    @After
+    public void cleanupVectorSidecar() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo vector = catalog.getFeatureTypeByName(getLayerId(VECTOR_ELEVATION_TIME));
+        vector.getMetadata().remove(MultiDimensionalExtension.SIDECAR_TYPE);
+        catalog.save(vector);
+    }
+
+    private void setupVectorSidecar() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo vector = catalog.getFeatureTypeByName(getLayerId(VECTOR_ELEVATION_TIME));
+        vector.getMetadata()
+                .put(MultiDimensionalExtension.SIDECAR_TYPE, SIDECAR_VECTOR_ET.getLocalPart());
+        catalog.save(vector);
     }
 
     @Override
@@ -320,6 +338,47 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-90.0']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='180.0']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='90.0']", "1");
+    }
+
+    @Test
+    public void testVectorSidecarDescribeDomainsOperation() throws Exception {
+        // setup sidecar, has different values than the main table, checking that indeed it's being
+        // used
+        setupVectorSidecar();
+
+        // perform the get describe domains operation request
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(VECTOR_ELEVATION_TIME));
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
+
+        // check the elevation domain
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier='elevation' and md:Size='4']",
+                "1");
+        checkXpathCount(
+                result, "/md:Domains/md:DimensionDomain[md:Domain='11.0,12.0,13.0,15.0']", "1");
+        // check the time domain
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Size='2']",
+                "1");
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[md:Domain='2011-02-11T00:00:00.000Z,2011-02-12T00:00:00.000Z']",
+                "1");
+        // check the space domain
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='-170.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-80.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='170.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='80.0']", "1");
     }
 
     @Test
@@ -851,6 +910,29 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
+    public void testVectorSidecarGetHistogramOperationForTime() throws Exception {
+        // setup sidecar, it has different values on purpose
+        setupVectorSidecar();
+
+        // perform the get histogram operation request
+        String queryRequest =
+                String.format(
+                        "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M",
+                        getLayerId(VECTOR_ELEVATION_TIME));
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check the returned histogram
+        checkXpathCount(result, "/md:Histogram[ows:Identifier='time']", "1");
+        checkXpathCount(
+                result,
+                "/md:Histogram[md:Domain="
+                        + "'2011-02-11T00:00:00.000Z/2011-02-12T00:00:00.000Z/P1M']",
+                "1");
+        checkXpathCount(result, "/md:Histogram[md:Values='4']", "1");
+    }
+
+    @Test
     public void testVectorEmptyTimeHistogram() throws Exception {
         // perform the get histogram operation request, using a non existing elevation value
         String queryRequest =
@@ -935,6 +1017,29 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/wmts:feature[wmts:dimension='5.0']", "1");
         checkXpathCount(result, "/wmts:feature[wmts:dimension='2012-02-11T00:00:00.000Z']", "3");
         checkXpathCount(result, "/wmts:feature[wmts:dimension='2012-02-12T00:00:00.000Z']", "1");
+    }
+
+    @Test
+    public void testVectorSidecarGetFeatureOperation() throws Exception {
+        // setup sidecar, it has different values on purpose
+        setupVectorSidecar();
+
+        // perform the get histogram operation request
+        String queryRequest =
+                String.format(
+                        "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(VECTOR_ELEVATION_TIME));
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
+        // check the returned features
+        checkXpathCount(result, "/wmts:feature", "4");
+        checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:Polygon", "4");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='11.0']", "1");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='12.0']", "1");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='13.0']", "1");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='15.0']", "1");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='2011-02-11T00:00:00.000Z']", "3");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='2011-02-12T00:00:00.000Z']", "1");
     }
 
     @Test
@@ -1069,6 +1174,28 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // print(dom);
         assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
         assertXpathEvaluatesTo("2012-02-11T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
+    }
+
+    @Test
+    public void testVectorSidecarGetDomainValuesOnTime() throws Exception {
+        // setup sidecar, has different domain values on purpose
+        setupVectorSidecar();
+
+        // full domain (only 2 entries)
+        String baseRequest =
+                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                        + getLayerId(VECTOR_ELEVATION_TIME)
+                        + "&TileMatrixSet=EPSG:4326&domain=time";
+        Document dom = getAsDOM(baseRequest);
+        print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo(
+                "2011-02-11T00:00:00.000Z,2011-02-12T00:00:00.000Z",
+                "/md:DomainValues/md:Domain",
+                dom);
     }
 
     @Test

@@ -8,10 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.TimeZone;
-import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
@@ -28,6 +24,12 @@ import org.geoserver.wms.dimension.VectorElevationDimensionDefaultValueTest;
 import org.geotools.data.Query;
 import org.junit.Before;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.TimeZone;
+
+import javax.xml.namespace.QName;
+
 public abstract class TestsSupport extends WMSTestSupport {
 
     protected static final QName RASTER_ELEVATION_TIME =
@@ -43,6 +45,8 @@ public abstract class TestsSupport extends WMSTestSupport {
             new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
     protected static final QName VECTOR_ELEVATION =
             new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
+    protected static final QName SIDECAR_VECTOR_ET =
+            new QName(MockData.SF_URI, "SidecarTimeElevationWithStartEnd", MockData.SF_PREFIX);
     protected static final QName VECTOR_TIME =
             new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
     protected static final QName VECTOR_CUSTOM =
@@ -84,6 +88,12 @@ public abstract class TestsSupport extends WMSTestSupport {
                 VECTOR_ELEVATION,
                 Collections.emptyMap(),
                 "/TimeElevationWithStartEnd.properties",
+                this.getClass(),
+                getCatalog());
+        testData.addVectorLayer(
+                SIDECAR_VECTOR_ET,
+                Collections.emptyMap(),
+                "/SidecarTimeElevationWithStartEnd.properties",
                 this.getClass(),
                 getCatalog());
         // vector with time dimension

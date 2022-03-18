@@ -3,7 +3,7 @@
 WMTS Multidimensional performance
 =================================
 
-The multi-dimensional extension extension is designed to get quick summary responses, either
+The multi-dimensional extension is designed to get quick summary responses, either
 when providing the full dimensions descriptions, or drilling into a particular sub-context, 
 e.g., finding the times available in a particular bounding box.
 

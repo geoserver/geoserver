@@ -6,9 +6,7 @@ package org.geoserver.rest.converters;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import java.io.IOException;
-import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestListWrapper;
@@ -99,6 +97,6 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
 
     @Override
     protected XStream createXStreamInstance() {
-        return new SecureXStream(new JettisonMappedXmlDriver());
+        throw new UnsupportedOperationException("unused");
     }
 }

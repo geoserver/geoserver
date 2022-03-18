@@ -91,6 +91,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllASJSON() throws Exception {
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/styles.json");
+        print(json);
 
         List<StyleInfo> styles = catalog.getStyles();
         assertEquals(

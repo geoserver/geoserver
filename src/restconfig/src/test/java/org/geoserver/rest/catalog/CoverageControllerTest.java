@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 import java.net.URL;
 import java.util.List;
+import javax.xml.namespace.QName;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -70,6 +71,29 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals(
                 catalog.getCoveragesByNamespace(catalog.getNamespaceByPrefix("wcs")).size(),
                 coverages.size());
+    }
+
+    @Test
+    public void testGetAllByWorkspaceJSON_no_coverages() throws Exception {
+        JSONObject json =
+                (JSONObject)
+                        getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/cite/coverages.json");
+        // returns {"coverages": ""}
+        assertEquals("", json.getString("coverages"));
+    }
+
+    @Test
+    public void testGetAllByWorkspaceJSON_single_element() throws Exception {
+        QName tazDem = new QName(SystemTestData.CDF_URI, "tazdem", SystemTestData.CDF_PREFIX);
+        getTestData().addRasterLayer(tazDem, "tazdem.tiff", null, getCatalog());
+
+        JSONObject json =
+                (JSONObject)
+                        getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/cdf/coverages.json");
+
+        JSONArray coverages = json.getJSONObject("coverages").getJSONArray("coverage");
+        assertEquals(1, coverages.size());
+        assertEquals("tazdem", coverages.getJSONObject(0).getString("name"));
     }
 
     void addCoverageStore(boolean autoConfigureCoverage) throws Exception {

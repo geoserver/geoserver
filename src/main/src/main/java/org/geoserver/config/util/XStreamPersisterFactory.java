@@ -9,6 +9,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import java.util.ArrayList;
 import java.util.List;
+import org.codehaus.jettison.mapped.Configuration;
 import org.geoserver.platform.GeoServerExtensions;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -53,9 +54,33 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
         return buildPersister(null);
     }
 
-    /** Creates an instance configured to persist JSON. */
+    /**
+     * Creates an instance configured to persist JSON.
+     *
+     * <p>Preserves legacy Jettison 1.0.1 behavior when encoding single-element collections as a
+     * JSON object instead of a single-element JSON array.
+     *
+     * <p>Use {@link #createJSONPersister(true)} to force JSON encoding to always use JSON arrays
+     * regardless of collection size.
+     */
     public XStreamPersister createJSONPersister() {
-        return buildPersister(new JettisonMappedXmlDriver());
+        // preserve legacy single-element-array-as-object serialization
+        boolean alwaysSerializeCollectionsAsArray = false;
+        return createJSONPersister(alwaysSerializeCollectionsAsArray);
+    }
+
+    /**
+     * @param alwaysSerializeCollectionsAsArray whether to encode single element collections as JSON
+     *     arrays ({@code true}), which is the default value in Jettison 1.4+, or preserve legacy
+     *     (as of Jettison 1.0.1) single-element-array-as-object serialization ({@code false}).
+     */
+    public XStreamPersister createJSONPersister(boolean alwaysSerializeCollectionsAsArray) {
+        // needed for Jettison 1.4.1
+        Configuration configuration = new Configuration();
+        configuration.setRootElementArrayWrapper(false);
+        JettisonMappedXmlDriver driver =
+                new JettisonMappedXmlDriver(configuration, alwaysSerializeCollectionsAsArray);
+        return buildPersister(driver);
     }
 
     /** Builds a persister and runs the initializers against it */

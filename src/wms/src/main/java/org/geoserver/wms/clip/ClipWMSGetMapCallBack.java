@@ -76,7 +76,10 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
                 CroppedGridCoverage2DReader croppedGridReader =
                         new CroppedGridCoverage2DReader(gr.getReader(), wktGeom);
                 CachedGridReaderLayer croppedGridLayer =
-                        new CachedGridReaderLayer(croppedGridReader, layer.getStyle());
+                        new CachedGridReaderLayer(
+                                croppedGridReader,
+                                layer.getStyle(),
+                                ((GridReaderLayer) layer).getParams());
                 BeanUtilsBean2.getInstance().copyProperties(croppedGridLayer, gr);
                 croppedGridLayer.getUserData().putAll(layer.getUserData());
                 return croppedGridLayer;

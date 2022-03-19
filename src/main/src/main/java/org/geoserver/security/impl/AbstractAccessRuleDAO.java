@@ -74,6 +74,12 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
     }
 
     public Lock lock() {
+        if (watcher == null) {
+            return new Lock() {
+                @Override
+                public void release() {}
+            };
+        }
         return watcher.getResource().lock();
     }
 

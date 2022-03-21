@@ -285,7 +285,18 @@ public class FeatureService {
             @PathVariable(name = "itemId") String itemId,
             @RequestParam(name = "crs", required = false) String crs)
             throws Exception {
-        return items(collectionId, startIndex, limit, bbox, bboxCRS, crs, time, null, null, itemId);
+        return items(
+                collectionId,
+                startIndex,
+                limit,
+                bbox,
+                bboxCRS,
+                crs,
+                time,
+                null,
+                null,
+                null,
+                itemId);
     }
 
     @GetMapping(path = "collections/{collectionId}/items", name = "getFeatures")
@@ -301,6 +312,7 @@ public class FeatureService {
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "filter-lang", required = false) String filterLanguage,
+            @RequestParam(name = "filter-crs", required = false) String filterCRS,
             @RequestParam(name = "crs", required = false) String crs,
             String itemId)
             throws Exception {
@@ -324,8 +336,9 @@ public class FeatureService {
         if (itemId != null) {
             filters.add(FF.id(FF.featureId(itemId)));
         }
+
         if (filter != null) {
-            Filter parsedFilter = filterParser.parse(filter, filterLanguage);
+            Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
             filters.add(parsedFilter);
         }
         query.setFilter(mergeFiltersAnd(filters));

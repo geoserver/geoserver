@@ -160,6 +160,7 @@ public class ApiTest extends FeaturesTestSupport {
                         "#/components/parameters/datetime",
                         "#/components/parameters/filter",
                         "#/components/parameters/filter-lang",
+                        "#/components/parameters/filter-crs",
                         "#/components/parameters/crs",
                         "#/components/parameters/bbox-crs",
                         "#/components/parameters/otherParameters"));

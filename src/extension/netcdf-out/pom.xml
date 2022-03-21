@@ -112,16 +112,13 @@
     </dependency>
 
     <!--  NetCDF logging dependencies -->
+    <!--
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <artifactId>slf4j-reload4j</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
-    </dependency>
-
+    -->
     <!-- TODO: relax this dependency: just need to depends on NetCDF java library from Unidata -->
     <dependency>
       <groupId>edu.ucar</groupId>
@@ -138,8 +135,12 @@
           <groupId>org.slf4j</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>jcl-over-slf4j</artifactId>
+          <artifactId>slf4j-api</artifactId>
           <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>log4j-slf4j-impl</artifactId>
+          <groupId>org.apache.logging.log4j</groupId>
         </exclusion>
       </exclusions>
     </dependency>

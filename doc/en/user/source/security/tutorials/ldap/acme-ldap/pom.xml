@@ -29,8 +29,8 @@
 
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.5.6</version>
+      <artifactId>slf4j-reload4j</artifactId>
+      <version>${slf4j.version}</version>
     </dependency>
   </dependencies>
 

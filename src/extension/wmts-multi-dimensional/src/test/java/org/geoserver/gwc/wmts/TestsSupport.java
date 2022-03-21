@@ -8,6 +8,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.TimeZone;
+import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
@@ -23,12 +27,6 @@ import org.geoserver.wms.dimension.RasterTimeDimensionDefaultValueTest;
 import org.geoserver.wms.dimension.VectorElevationDimensionDefaultValueTest;
 import org.geotools.data.Query;
 import org.junit.Before;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.TimeZone;
-
-import javax.xml.namespace.QName;
 
 public abstract class TestsSupport extends WMSTestSupport {
 

@@ -21,7 +21,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.mbtiles.MBTilesGetMapOutputFormat;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -34,7 +33,6 @@ import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
-import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
@@ -101,12 +99,6 @@ public class MBTilesProcess implements GeoServerProcess {
                     ReferencedEnvelope boundingbox,
             @DescribeParameter(name = "filename", description = "Name of the .mbtile file", min = 0)
                     String filename,
-            @DescribeParameter(
-                            name = "path",
-                            description =
-                                    "Path to the directory where the .mbtile file can be stored ",
-                            min = 0)
-                    URL path,
             @DescribeParameter(
                             name = "minZoom",
                             description = "Minimum Zoom level to generate",
@@ -175,18 +167,8 @@ public class MBTilesProcess implements GeoServerProcess {
             throw new ProcessException("Layers and styleNames must have the same size");
         }
 
-        // Extract the file path if present
-        final File file;
-
         String outputResourceName = name + ".mbtiles";
-        if (path != null) {
-            File urlToFile = URLs.urlToFile(path);
-            urlToFile.mkdirs();
-            file = new File(urlToFile, outputResourceName);
-        } else {
-            final Resource resource = resources.getOutputResource(null, outputResourceName);
-            file = resource.file();
-        }
+        File file = resources.getOutputResource(null, outputResourceName).file();
 
         // Create the MBTile file
         MBTilesFile mbtile = new MBTilesFile(file, true);
@@ -339,12 +321,6 @@ public class MBTilesProcess implements GeoServerProcess {
             }
         }
 
-        // Add to storage only if it is a temporary file
-        if (path != null) {
-            return URLs.fileToUrl(file);
-        } else {
-            return new URL(
-                    resources.getOutputResourceUrl(outputResourceName, "application/x-mbtiles"));
-        }
+        return new URL(resources.getOutputResourceUrl(outputResourceName, "application/x-mbtiles"));
     }
 }

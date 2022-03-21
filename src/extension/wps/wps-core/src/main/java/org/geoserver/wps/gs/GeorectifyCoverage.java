@@ -251,32 +251,25 @@ public class GeorectifyCoverage implements GeoServerProcess {
 
             // if we have the output path move the final file there
             if (Boolean.TRUE.equals(store) && outputPath != null) {
-                File output = new File(outputPath);
-                if (output.exists()) {
-                    if (!output.delete()) {
+                try {
+                    File output = resourceManager.getExternalOutputFile(outputPath, null);
+                    if (output.exists() && !output.delete()) {
                         throw new WPSException(
                                 "Output file " + outputPath + " exists but cannot be overwritten");
                     }
-                } else {
-                    File parent = output.getParentFile();
-                    if (!parent.exists()) {
-                        if (!parent.mkdirs()) {
-                            throw new WPSException(
-                                    "Output file parent directory "
-                                            + parent.getAbsolutePath()
-                                            + " does not exist and cannot be created");
-                        }
+                    if (!warpedFile.renameTo(output)) {
+                        throw new WPSException(
+                                "Could not move "
+                                        + warpedFile.getAbsolutePath()
+                                        + " to "
+                                        + outputPath
+                                        + ", it's likely a permission issue");
                     }
+                    warpedFile = output;
+                } catch (Exception e) {
+                    removeFiles.add(warpedFile);
+                    throw e;
                 }
-                if (!warpedFile.renameTo(output)) {
-                    throw new WPSException(
-                            "Could not move "
-                                    + warpedFile.getAbsolutePath()
-                                    + " to "
-                                    + outputPath
-                                    + ", it's likely a permission issue");
-                }
-                warpedFile = output;
             }
 
             // mark the output file for deletion at the end of request

@@ -34,6 +34,7 @@ Resource settings:
 
   * *Resource expiration timeout*: number of seconds the result of a asynchronous execution will be kept available on disk for user to retrieve. Once this time is expired these resources will be eligible for clearing (which happens at regular intervals).
   * *Resource storage directory*: where on disk the input, temporary and output resources associated to a certain process will be kept. By default it will be the ``temp/wps`` directory inside the GeoServer data directory
+  * *External output directory*: Some processes allow execution outputs to be stored in an external output directory (not subject to ``Resource expiration timeout``). To enable this functionality provide a path to external storage with the understanding that you are responsible for managing the contents of this folder. Leave empty to disable writing outside of the resource storage.
   
 Process status page
 -------------------

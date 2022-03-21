@@ -40,6 +40,7 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
         wps.setMaxAsynchronousTotalTime(6000);
         wps.setMaxSynchronousTotalTime(120);
+        wps.setExternalOutputDirectory("file:///foo/bar");
         getGeoServer().save(wps);
 
         // test that components have been filled as expected
@@ -51,6 +52,7 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
         tester.assertModelValue("form:maxSynchronousTotalTime:", 120);
         tester.assertModelValue("form:maxAsynchronousTotalTime:", 6000);
+        tester.assertModelValue("form:externalOutputDirectory:", "file:///foo/bar");
     }
 
     @Test

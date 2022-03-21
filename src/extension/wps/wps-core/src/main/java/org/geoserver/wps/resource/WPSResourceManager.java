@@ -5,6 +5,8 @@
  */
 package org.geoserver.wps.resource;
 
+import com.google.common.base.Splitter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,11 +29,14 @@ import org.geoserver.ows.Response;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.ProcessListenerAdapter;
 import org.geoserver.wps.WPSException;
@@ -102,6 +107,14 @@ public class WPSResourceManager extends ProcessListenerAdapter
             this.synchronouos = synchronouos;
             this.temporary = new ArrayList<>();
         }
+    }
+
+    private GeoServerResourceLoader resourceLoader;
+
+    private File outputDirectory;
+
+    public WPSResourceManager(GeoServerResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 
     private String getExecutionId(String executionId) {
@@ -261,6 +274,65 @@ public class WPSResourceManager extends ProcessListenerAdapter
             } catch (SAXException | ParserConfigurationException e) {
                 throw new WPSException("Could not parse the stored WPS request", e);
             }
+        }
+    }
+
+    /**
+     * Gets the output file if writing output outside of the WPS resource storage is enabled and the
+     * requested file is within the allowed output directory. Also attempts to create the parent
+     * directories for valid output files.
+     */
+    public File getExternalOutputFile(String outPath, String outFile) throws IOException {
+        if (outputDirectory == null) {
+            throw new WPSException("Writing to external output files is disabled");
+        }
+        File file = outFile != null ? new File(outPath, outFile) : new File(outPath);
+        String path = file.getPath();
+        if (Splitter.on(File.separatorChar).splitToStream(path).anyMatch(".."::equals)) {
+            throw new IllegalArgumentException("Output file contains invalid '..' in path");
+        } else if (!file.isAbsolute()) {
+            // resolve relative paths to the output directory
+            file = new File(outputDirectory, path).getAbsoluteFile();
+        }
+        String canonicalFile = file.getCanonicalPath();
+        String canonicalDir = outputDirectory.getCanonicalPath();
+        canonicalDir += canonicalDir.endsWith(File.separator) ? "" : File.separator;
+        if (canonicalFile.startsWith(canonicalDir)) {
+            File parent = file.getParentFile();
+            if (!parent.exists() && !parent.mkdirs()) {
+                LOGGER.severe("Unable to create directory: " + parent);
+                throw new WPSException(
+                        "Output file parent directory does not exist and cannot be created");
+            }
+            return file;
+        }
+        LOGGER.warning("Output file " + canonicalFile + " is not in directory: " + canonicalDir);
+        throw new WPSException("Output file is not in the allowed directory");
+    }
+
+    /**
+     * Sets the directory that processes are allowed to write their output to outside of the WPS
+     * resource storage.
+     */
+    public void setExternalOutputDirectory(String directory) {
+        File file = null;
+        if (directory != null && !directory.trim().isEmpty()) {
+            String path = directory.trim();
+            file = new File(path);
+            if (!file.isAbsolute()) {
+                // if it's a path relative to the data directory, make it absolute
+                File base = resourceLoader.getBaseDirectory();
+                file = Resources.find(Resources.fromURL(Files.asResource(base), path), true);
+            }
+        }
+        if (file != null) {
+            outputDirectory = file.getAbsoluteFile();
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Writing to output directory is allowed: " + outputDirectory);
+            }
+        } else {
+            outputDirectory = null;
+            LOGGER.fine("Writing to external output files is disabled");
         }
     }
 

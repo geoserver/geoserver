@@ -12,10 +12,12 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.WPSTestSupport;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.mbtiles.MBTilesFile;
 import org.geotools.mbtiles.MBTilesMetadata;
-import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 
@@ -31,11 +33,12 @@ public class MBTilesProcessTest extends WPSTestSupport {
 
     @Test
     public void testMBTilesProcess() throws Exception {
-        File path = getDataDirectory().findOrCreateDataRoot();
-
-        String urlPath = string(post("wps", getXml(path))).trim();
-        File file = new File(path, "World.mbtiles");
-        // File file = getDataDirectory().findFile("data", "test.mbtiles");
+        String url = string(post("wps", getXml())).trim();
+        String id = (String) KvpUtils.parseQueryString(url).get("executionId");
+        File file =
+                GeoServerExtensions.bean(WPSResourceManager.class)
+                        .getOutputResource(id, "World.mbtiles")
+                        .file();
         assertNotNull(file);
         assertTrue(file.exists());
 
@@ -57,19 +60,11 @@ public class MBTilesProcessTest extends WPSTestSupport {
         }
     }
 
-    public String getXml(File temp) {
+    public String getXml() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"
                 + "  <ows:Identifier>gs:MBTiles</ows:Identifier>"
                 + "  <wps:DataInputs>"
-                + "    <wps:Input>"
-                + "      <ows:Identifier>path</ows:Identifier>"
-                + "      <wps:Data>"
-                + "        <wps:LiteralData>"
-                + URLs.fileToUrl(temp)
-                + "</wps:LiteralData>"
-                + "      </wps:Data>"
-                + "    </wps:Input>"
                 + "    <wps:Input>"
                 + "      <ows:Identifier>layers</ows:Identifier>"
                 + "      <wps:Data>"

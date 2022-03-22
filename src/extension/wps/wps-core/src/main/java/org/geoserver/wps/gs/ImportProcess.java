@@ -28,8 +28,13 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.AccessLevel;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.SecureCatalogImpl.MixedModeBehavior;
+import org.geoserver.security.WrapperPolicy;
 import org.geoserver.wps.WPSException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -66,6 +71,7 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.ProgressListener;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.vfny.geoserver.util.WCSUtils;
 
 /**
@@ -161,6 +167,7 @@ public class ImportProcess implements GeoServerProcess {
                         "The catalog is empty, could not find a default workspace");
             }
         }
+        checkWriteAccess(ws);
 
         // create a builder to help build catalog objects
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -245,6 +252,21 @@ public class ImportProcess implements GeoServerProcess {
         }
 
         return null;
+    }
+
+    private static void checkWriteAccess(WorkspaceInfo workspace) {
+        // This is essentially the same code to check the access level as used by
+        // org.geoserver.security.SecureCatalogImpl.getDataStoreByName(String, String)
+        WrapperPolicy policy =
+                GeoServerExtensions.bean(SecureCatalogImpl.class)
+                        .buildWrapperPolicy(
+                                SecurityContextHolder.getContext().getAuthentication(),
+                                workspace,
+                                workspace.getName(),
+                                MixedModeBehavior.CHALLENGE);
+        if (policy.level != AccessLevel.READ_WRITE) {
+            throw new ProcessException("Operation unallowed with the current privileges");
+        }
     }
 
     private String importCoverage(

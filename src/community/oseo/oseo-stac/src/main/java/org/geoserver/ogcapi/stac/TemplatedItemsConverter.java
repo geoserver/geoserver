@@ -105,7 +105,7 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
         w.writeElementValue(ir.getNumberMatched(), null);
         // number returned
         w.writeElementName("numberReturned", null);
-        int numberReturned = ir.getItems().size();
+        int numberReturned = ir.getReturned();
         w.writeElementValue(numberReturned, null);
         // stac infos
         w.writeElementName("stac_version", null);

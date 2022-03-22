@@ -10,6 +10,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
@@ -29,6 +32,7 @@ import org.geoserver.featurestemplating.builders.selectionwrappers.MergeProperty
 import org.geoserver.featurestemplating.builders.selectionwrappers.PropertySelectionWrapper;
 import org.geoserver.featurestemplating.builders.selectionwrappers.StaticPropertySelection;
 import org.geotools.filter.FilterAttributeExtractor;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
 import org.opengis.filter.expression.Expression;
@@ -47,6 +51,8 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
     private PropertyType propertyType;
     private FilterAttributeExtractor extractor;
     private Set<String> queryProperties;
+
+    private static final Logger LOGGER = Logging.getLogger(PropertySelectionVisitor.class);
 
     public PropertySelectionVisitor(
             PropertySelectionHandler selectionHandler, PropertyType propertyType) {
@@ -316,6 +322,7 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
                     .accept(extractor, createExtradata(dynamicJsonBuilder, context));
         }
         props.addAll(extractor.getAttributeNameSet());
+        logQueryAttributes(dynamicJsonBuilder, true, extractor.getAttributeNameSet());
         extractor.clear();
         extractor.getPropertyNameSet().clear();
         if (!context.isDynamicKeyParent()) {
@@ -328,6 +335,28 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
         return props;
     }
 
+    private void logQueryAttributes(
+            AbstractTemplateBuilder templateBuilder, boolean includeKey, Set<String> attributes) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            includeKey = includeKey && !(templateBuilder instanceof DynamicIncludeFlatBuilder);
+            StringBuilder logMsg = new StringBuilder("Found ");
+            boolean hasAttributes = attributes != null && !attributes.isEmpty();
+            if (hasAttributes) logMsg.append(" the following ");
+            else logMsg.append(" 0 ");
+
+            logMsg.append("query properties for builder with type ")
+                    .append(templateBuilder.getClass().getSimpleName());
+            if (includeKey) {
+                String key = templateBuilder.getKey(null);
+                logMsg.append(" and with ");
+                if (key == null) logMsg.append("null key");
+                else logMsg.append("key ").append(key);
+            }
+            if (hasAttributes)
+                logMsg.append(": ").append(attributes.stream().collect(Collectors.joining(",")));
+        }
+    }
+
     private Set<String> getPropertiesFromDynamic(DynamicValueBuilder dynamicValueBuilder) {
         Set<String> props = new HashSet<>(1);
         if (dynamicValueBuilder.getXpath() != null) {
@@ -336,6 +365,7 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
             dynamicValueBuilder.getCql().accept(extractor, null);
         }
         props.addAll(extractor.getAttributeNameSet());
+        logQueryAttributes(dynamicValueBuilder, true, extractor.getAttributeNameSet());
         extractor.clear();
         extractor.getPropertyNameSet().clear();
         return props;
@@ -346,6 +376,7 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
         if (sourceBuilder.getSource() != null) {
             sourceBuilder.getSource().accept(extractor, null);
             props.addAll(extractor.getAttributeNameSet());
+            logQueryAttributes(sourceBuilder, true, extractor.getAttributeNameSet());
             extractor.clear();
             extractor.getPropertyNameSet().clear();
         }
@@ -359,6 +390,7 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
             exp.accept(extractor, null);
         }
         props.addAll(extractor.getAttributeNameSet());
+        logQueryAttributes(templateBuilder, false, extractor.getAttributeNameSet());
         return props;
     }
 }

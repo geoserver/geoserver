@@ -36,6 +36,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
+import org.geoserver.ogcapi.APIContentNegotiationManager;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIFilterParser;
@@ -75,6 +76,7 @@ import org.opengis.filter.sort.SortBy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,6 +84,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.ServletWebRequest;
 
 /** Implementation of OGC Features API service */
 @APIService(
@@ -411,7 +414,6 @@ public class STACService {
 
         // query the items based on the request parameters
         QueryResult qr = resultBuilder.build();
-        // query the items based on the request parameters
 
         // build the links
         SearchResponse response =
@@ -574,14 +576,28 @@ public class STACService {
         return sortables;
     }
 
-    private boolean supportsFieldsSelection(HttpServletRequest request) {
-        return getMediaTypeOrDefault(request).equals(OGCAPIMediaTypes.GEOJSON_VALUE);
-    }
+    private boolean supportsFieldsSelection(HttpServletRequest request)
+            throws HttpMediaTypeNotAcceptableException {
+        // if neither accept, neither f are present geo+json is the default.
 
-    private String getMediaTypeOrDefault(HttpServletRequest request) {
-        String mediaType = request.getParameter("f");
-        if (mediaType == null) mediaType = request.getHeader(HttpHeaders.ACCEPT);
-        if (mediaType == null) mediaType = OGCAPIMediaTypes.GEOJSON_VALUE;
-        return mediaType;
+        String strMediaType = request.getParameter("f");
+
+        if (strMediaType == null) strMediaType = request.getHeader(HttpHeaders.ACCEPT);
+
+        // default mediatype is application/geo+json according to
+        // @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
+        if (strMediaType == null) return true;
+
+        // use the APIContentNegotiationManager then
+        APIContentNegotiationManager contentNegotiationManager = new APIContentNegotiationManager();
+        List<MediaType> mediaTypes =
+                contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(request));
+        if (mediaTypes == null || mediaTypes.isEmpty()) {
+            return false;
+        } else {
+            MediaType mediaType = mediaTypes.get(0);
+            MediaType geoJSON = MediaType.parseMediaType(OGCAPIMediaTypes.GEOJSON_VALUE);
+            return mediaType.equals(MediaType.APPLICATION_JSON) || mediaType.equals(geoJSON);
+        }
     }
 }

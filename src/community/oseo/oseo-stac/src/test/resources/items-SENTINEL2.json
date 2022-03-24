@@ -1,0 +1,19 @@
+{
+  "$merge": "items.json",
+  "features": [
+    {
+      "properties": {
+        "${eop:parentIdentifier}": {
+          "fullStaticObject": {
+            "staticAttr1": "staticValue1",
+            "staticAttr2": "staticValue2",
+            "staticAttr3": {
+              "nestedStatic1": "nestedStaticVal1",
+              "nestedStatic2": "nestedStaticVal2"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

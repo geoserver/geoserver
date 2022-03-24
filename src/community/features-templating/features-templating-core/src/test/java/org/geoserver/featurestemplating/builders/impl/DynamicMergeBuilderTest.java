@@ -73,7 +73,7 @@ public class DynamicMergeBuilderTest extends DataTestCase {
 
     @Test
     public void testObtainDynamicMergeBuilder() throws JsonProcessingException {
-        JsonNode overlay = new ObjectMapper().readTree("{\"metadata\":\"${dynamicMetadata}\"}");
+        JsonNode overlay = new ObjectMapper().readTree("{\"metadata\":\"${staticMetadata}\"}");
         ObjectNode mergedNode = new JSONMerger().mergeTrees(node, overlay);
         TemplateBuilderMaker builderMaker = new TemplateBuilderMaker();
         TemplateBuilder build = builderMaker.build();
@@ -81,19 +81,6 @@ public class DynamicMergeBuilderTest extends DataTestCase {
         new JSONTemplateReader(mergedNode, configuration, new ArrayList<>())
                 .getBuilderFromJson(null, mergedNode, build, builderMaker);
         assertTrue(build.getChildren().get(0) instanceof DynamicMergeBuilder);
-    }
-
-    @Test
-    public void testMergeDynamicResultOverlayExpression() throws Exception {
-        JSONObject json = encodeDynamicMerge("${dynamicMetadata}", jsonFieldSimpleFeature, true);
-        JSONObject metadata19139 =
-                json.getJSONObject("dynamicMergeBuilder")
-                        .getJSONObject("metadata")
-                        .getJSONObject("metadata_iso_19139");
-        assertEquals("metadata_iso_19139", metadata19139.getString("title"));
-        assertEquals("http://metadata_iso_19139.org", metadata19139.getString("href"));
-        assertEquals("metadata", metadata19139.getString("type"));
-        assertEquals("dynamic value result", metadata19139.getString("dynamicValue"));
     }
 
     @Test
@@ -109,19 +96,6 @@ public class DynamicMergeBuilderTest extends DataTestCase {
     }
 
     @Test
-    public void testMergeDynamicResultBaseExpression() throws Exception {
-        JSONObject json = encodeDynamicMerge("${dynamicMetadata}", jsonFieldSimpleFeature, false);
-        JSONObject metadata19139 =
-                json.getJSONObject("dynamicMergeBuilder")
-                        .getJSONObject("metadata")
-                        .getJSONObject("metadata_iso_19139");
-        assertEquals("basetext", metadata19139.getString("title"));
-        assertEquals("basehref", metadata19139.getString("href"));
-        assertEquals("basetype", metadata19139.getString("type"));
-        assertEquals("dynamic value result", metadata19139.getString("dynamicValue"));
-    }
-
-    @Test
     public void testMergeStaticResultBaseExpression() throws Exception {
         JSONObject json = encodeDynamicMerge("${staticMetadata}", jsonFieldSimpleFeature, false);
         JSONObject metadata19139 =
@@ -134,22 +108,16 @@ public class DynamicMergeBuilderTest extends DataTestCase {
     }
 
     @Test
-    public void testNoMergeResultOverlayExpression() throws Exception {
-        JSONObject json = encodeDynamicMerge("${dynamicValue}", jsonFieldSimpleFeature, true);
-        String value = json.getString("dynamicMergeBuilder");
-        assertEquals("dynamic value result", value);
-    }
-
-    @Test
-    public void testNoMergeResultBaseExpression() throws Exception {
-        JSONObject json = encodeDynamicMerge("${dynamicValue}", jsonFieldSimpleFeature, false);
-        JSONObject metadata19139 =
-                json.getJSONObject("dynamicMergeBuilder")
-                        .getJSONObject("metadata")
-                        .getJSONObject("metadata_iso_19139");
-        assertEquals("basetext", metadata19139.getString("title"));
-        assertEquals("basehref", metadata19139.getString("href"));
-        assertEquals("basetype", metadata19139.getString("type"));
+    public void testErrorWhenJsonAttributeWithDirectives() throws IOException {
+        String message = null;
+        try {
+            encodeDynamicMerge("${dynamicMetadata}", jsonFieldSimpleFeature, false);
+        } catch (UnsupportedOperationException e) {
+            message = e.getMessage();
+        }
+        assertEquals(
+                message,
+                "A json attribute value cannot have a template directive among its fields.");
     }
 
     private JSONObject encodeDynamicMerge(

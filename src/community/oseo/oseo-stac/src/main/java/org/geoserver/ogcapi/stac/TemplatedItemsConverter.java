@@ -8,17 +8,20 @@ import static org.geoserver.ogcapi.Link.REL_NEXT;
 import static org.geoserver.ogcapi.Link.REL_PREV;
 import static org.geoserver.ogcapi.Link.REL_SELF;
 import static org.geoserver.ogcapi.OGCAPIMediaTypes.GEOJSON_VALUE;
+import static org.geoserver.ogcapi.stac.QueryResultBuilder.DEF_TEMPLATE;
 import static org.springframework.http.HttpMethod.POST;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
@@ -62,13 +65,14 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
                                 .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8),
                         TemplateIdentifier.GEOJSON)) {
             writer.startTemplateOutput(null);
-            try (FeatureIterator features = itemsResponse.getItems().features()) {
+            FeatureCollection collection = itemsResponse.getItems();
+            try (FeatureIterator features = collection.features()) {
                 while (features.hasNext()) {
                     // lookup the builder, might be specific to the parent collection
                     Feature feature = features.next();
                     String collectionId =
                             (String) feature.getProperty("parentIdentifier").getValue();
-                    RootBuilder builder = templates.getItemTemplate(collectionId);
+                    RootBuilder builder = getRootBuilder(collectionId, itemsResponse);
                     builder.evaluate(writer, new TemplateBuilderContext(feature));
                 }
             }
@@ -80,6 +84,20 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
         }
     }
 
+    private RootBuilder getRootBuilder(String collectionId, AbstractItemsResponse response)
+            throws IOException {
+        Map<String, RootBuilder> templateMap = response.getTemplateMap();
+        RootBuilder rootBuilder = null;
+        if (templateMap != null) {
+            if (templateMap.containsKey(collectionId)) rootBuilder = templateMap.get(collectionId);
+            else rootBuilder = templateMap.get(DEF_TEMPLATE);
+        }
+        if (rootBuilder == null) {
+            rootBuilder = templates.getItemTemplate(collectionId);
+        }
+        return rootBuilder;
+    }
+
     private void writeAdditionFields(STACGeoJSONWriter w, AbstractItemsResponse ir)
             throws IOException {
         // number matched
@@ -87,7 +105,7 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
         w.writeElementValue(ir.getNumberMatched(), null);
         // number returned
         w.writeElementName("numberReturned", null);
-        int numberReturned = ir.getItems().size();
+        int numberReturned = ir.getReturned();
         w.writeElementValue(numberReturned, null);
         // stac infos
         w.writeElementName("stac_version", null);

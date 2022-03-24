@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import org.geoserver.platform.resource.Resource;
 
 /** Parses a JSON structure, processing eventual includes and expanding them */
@@ -50,7 +52,81 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         // read and close before doing recursion, avoids keeping several files open in parallel
         JsonNode root = readResource();
         JsonNode result = expandIncludes(root);
+
+        // we need to do this here to properly handle dynamic inclusion
+        // regardless the presence of the $includeFlat directive
+        // in a base or overlay template in case merge directive is present.
+        result = processDynamicIncludeFlat(result);
         return result;
+    }
+
+    // Parse the JsonNode if no other inclusion/merge is pending
+    // and set the keys for the dynamic includeFlat
+    private JsonNode processDynamicIncludeFlat(JsonNode result) {
+        if (parent == null) {
+            List<JsonNode> parents = new LinkedList<>(result.findParents(INCLUDE_FLAT_KEY));
+            List<JsonNode> replacements = new LinkedList<>();
+            if (parents != null && !parents.isEmpty()) {
+                parents.forEach(p -> replacements.add(buildContainer((ObjectNode) p)));
+                int matched = -1;
+                for (int i = 0; i < parents.size(); i++) {
+                    if (parents.get(i).equals(result)) {
+                        matched = i;
+                        break;
+                    }
+                }
+                if (matched != -1) {
+                    result = replacements.get(matched);
+                    parents.remove(matched);
+                    replacements.remove(matched);
+                }
+                findAndReplace(result, parents, replacements);
+            }
+        }
+        return result;
+    }
+
+    private void findAndReplace(
+            JsonNode result, List<JsonNode> replaced, List<JsonNode> replacements) {
+        if (result.isObject()) {
+            ObjectNode objectNode = (ObjectNode) result;
+            findAndReplaceInObj(objectNode, replaced, replacements);
+        } else if (result.isArray()) {
+            ArrayNode arrayNode = (ArrayNode) result;
+            findAndReplaceInArray(arrayNode, replaced, replacements);
+        }
+    }
+
+    private void findAndReplaceInObj(
+            ObjectNode currNode, List<JsonNode> replaced, List<JsonNode> replacements) {
+        Iterator<String> names = currNode.fieldNames();
+        while (names.hasNext()) {
+            String name = names.next();
+            JsonNode node = currNode.get(name);
+            int index = replaced.indexOf(node);
+            if (index != -1) {
+                currNode.set(name, replacements.get(index));
+                replaced.remove(index);
+                replacements.remove(index);
+            } else {
+                findAndReplace(node, replaced, replacements);
+            }
+        }
+    }
+
+    private void findAndReplaceInArray(
+            ArrayNode currNode, List<JsonNode> replaced, List<JsonNode> replacements) {
+        for (int i = 0; i < currNode.size(); i++) {
+            JsonNode node = currNode.get(i);
+            int index = replaced.indexOf(node);
+            if (index != -1) {
+                currNode.set(i, replacements.get(index));
+                replaced.remove(index);
+                replacements.remove(index);
+            } else {
+                findAndReplace(node, replaced, replacements);
+            }
+        }
     }
 
     private ObjectNode processMergeDirective(ObjectNode root) throws IOException {
@@ -131,12 +207,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         if (result.has(MERGE_KEY)) {
             result = processMergeDirective(result);
         }
-        if (result.has(INCLUDE_FLAT_KEY)) {
-            // we have still an include flat directive
-            // it means is dynamic inclusion let's wrap the base json
-            // and the expression in container. The builder will handle it.
-            result = buildContainer(result);
-        }
+
         return result;
     }
 

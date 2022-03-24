@@ -7,6 +7,7 @@ package org.geoserver.featurestemplating.builders;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
@@ -32,6 +33,22 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     protected List<TemplateBuilder> children;
 
     protected EncodingHints encodingHints;
+
+    protected TemplateBuilder parent;
+
+    protected AbstractTemplateBuilder() {}
+
+    protected AbstractTemplateBuilder(
+            AbstractTemplateBuilder abstractTemplateBuilder, boolean includeChildren) {
+        this.key = abstractTemplateBuilder.getKey();
+        this.namespaces = abstractTemplateBuilder.getNamespaces();
+        this.filter = abstractTemplateBuilder.getFilter();
+        this.encodingHints = abstractTemplateBuilder.getEncodingHints();
+        if (includeChildren) {
+            this.children = abstractTemplateBuilder.getChildren();
+            this.parent = abstractTemplateBuilder.getParent();
+        } else this.children = new ArrayList<>();
+    }
 
     public AbstractTemplateBuilder(String key, NamespaceSupport namespaces) {
         this.key = getKeyAsExpression(key, namespaces);
@@ -67,6 +84,10 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     public void setKey(String key) {
         this.key = getKeyAsExpression(key, null);
     }
+
+    public void setKey(Expression key) {
+        this.key = key;
+    };
 
     /**
      * Get the filter if present
@@ -160,6 +181,7 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     @Override
     public void addChild(TemplateBuilder builder) {
         if (this.children == null) this.children = new ArrayList<>();
+        builder.setParent(this);
         this.children.add(builder);
     }
 
@@ -182,8 +204,49 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
         return action;
     }
 
+    public boolean canWrite(TemplateBuilderContext context) {
+        return true;
+    }
+
     @FunctionalInterface
     public interface ChildrenEvaluation {
         void evaluate() throws IOException;
+    }
+
+    /**
+     * Method to perform a shallow copy of this abstractTemplateBuilder.
+     *
+     * @param includeChildren flag telling if the children should be included or not.
+     * @return a shallow copy of the abstractTemplateBuilder.
+     */
+    public abstract AbstractTemplateBuilder copy(boolean includeChildren);
+
+    @Override
+    public TemplateBuilder getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(TemplateBuilder builder) {
+        this.parent = builder;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, filter, filterContextPos, namespaces, encodingHints, parent);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractTemplateBuilder that = (AbstractTemplateBuilder) o;
+        return filterContextPos == that.filterContextPos
+                && Objects.equals(key, that.key)
+                && Objects.equals(filter, that.filter)
+                && Objects.equals(namespaces, that.namespaces)
+                && Objects.equals(children, that.children)
+                && Objects.equals(encodingHints, that.encodingHints)
+                && Objects.equals(parent, that.parent);
     }
 }

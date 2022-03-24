@@ -1,0 +1,23 @@
+{
+  "features": [
+    {
+      "geometry": "${geometry}",
+      "properties": {
+        "one": "${one}",
+        "two": "two",
+        "b": "${b}",
+        "three": [
+          {
+            "a": "a",
+            "$includeFlat": "${c}"
+          }
+        ],
+        "e": {
+          "nestedE": "nestedE"
+        },
+        "four": "${four}",
+        "five": "${five}"
+      }
+    }
+  ]
+}

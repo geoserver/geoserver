@@ -33,6 +33,11 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
 
+    public FlatIteratingBuilder(FlatIteratingBuilder builder, boolean includeChildren) {
+        super(builder, includeChildren);
+        nameHelper = new AttributeNameHelper(this.key, builder.nameHelper.getSeparator());
+    }
+
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
@@ -102,5 +107,10 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
     @Override
     public void setParentKey(String parentKey) {
         this.nameHelper.setParentKey(parentKey);
+    }
+
+    @Override
+    public FlatIteratingBuilder copy(boolean includeChildren) {
+        return new FlatIteratingBuilder(this, includeChildren);
     }
 }

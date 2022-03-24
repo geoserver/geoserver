@@ -1,3 +1,7 @@
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.featurestemplating.builders.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -5,12 +9,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
-import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.readers.JSONMerger;
 import org.geoserver.featurestemplating.readers.JSONTemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
@@ -24,36 +26,43 @@ import org.xml.sax.helpers.NamespaceSupport;
  * A builder able to evaluate an $includeFlat directive. The json property will be merged with the
  * including node to handle eventually duplicate fields.
  */
-public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
+public class DynamicIncludeFlatBuilder extends DynamicJsonBuilder {
 
     private static Logger LOGGER = Logging.getLogger(DynamicIncludeFlatBuilder.class);
 
-    private JsonNode includingNode;
-
     public DynamicIncludeFlatBuilder(
-            String expression, NamespaceSupport namespaces, JsonNode includingNode) {
+            String expression, NamespaceSupport namespaces, JsonNode node) {
         // key is null since the $includeFlat key should not appear
-        super(null, expression, namespaces);
-        this.includingNode = includingNode;
+        super(null, expression, namespaces, node);
+    }
+
+    public DynamicIncludeFlatBuilder(DynamicIncludeFlatBuilder original, boolean includeChildren) {
+        super(original, includeChildren);
     }
 
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        Object evaluate = null;
-        if (xpath != null) {
-            evaluate = evaluateXPath(context);
-        } else if (cql != null) {
-            evaluate = evaluateExpressions(cql, context);
+        if (canWrite(context)) {
+            ObjectNode finalNode = getFinalJSON(context);
+
+            if (finalNode != null) doIncludeFlat(finalNode, context, writer);
+            else iterateAndEvaluateNestedTree(context, writer, node);
         }
-
-        ObjectNode finalNode = mergeNodes(evaluate);
-
-        if (finalNode != null) doIncludeFlat(finalNode, context, writer);
-        else iterateAndEvaluateNestedTree(context, writer, (ObjectNode) includingNode);
     }
 
-    private ObjectNode mergeNodes(Object evaluate) {
+    /**
+     * Get the final JSON after the inclusion is performed
+     *
+     * @param context the template context.
+     * @return the JsonNode.
+     */
+    protected ObjectNode getFinalJSON(TemplateBuilderContext context) {
+        JsonNode node = getJsonNodeAttributeValue(context);
+        return mergeNodes(node);
+    }
+
+    private ObjectNode mergeNodes(JsonNode evaluate) {
         ObjectNode finalNode = null;
         if (!(evaluate instanceof ObjectNode) && evaluate != null) {
             String message = "Cannot include flat a value different from a JSON object";
@@ -61,7 +70,7 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
             throw new UnsupportedOperationException(message);
         } else if (evaluate != null) {
             JSONMerger merger = new JSONMerger();
-            finalNode = merger.mergeTrees(includingNode, (ObjectNode) evaluate);
+            finalNode = merger.mergeTrees(node, (ObjectNode) evaluate);
         }
         return finalNode;
     }
@@ -84,7 +93,15 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
         }
     }
 
-    private void iterateAndWrite(
+    /**
+     * Iterate the final object node and write it to the output.
+     *
+     * @param objectNode the object node.
+     * @param writer the template writer.
+     * @param context the template context.
+     * @throws IOException
+     */
+    protected void iterateAndWrite(
             ObjectNode objectNode, TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
         Iterator<String> names = objectNode.fieldNames();
@@ -94,68 +111,14 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
         }
     }
 
-    /**
-     * Iterate an ObjectNode and create a Builder from every attribute. Then each builder is
-     * evaluate and its result is written. Use this if the ObjectNode being passed as one or more
-     * property interpolation or expression directive and it cannot be written as it is.
-     *
-     * @param context the current evaluation context.
-     * @param writer the writer.
-     * @param node the ObjectNode to iterate and from which build nested builders.
-     * @throws IOException
-     */
-    private void iterateAndEvaluateNestedTree(
-            TemplateBuilderContext context, TemplateOutputWriter writer, ObjectNode node)
-            throws IOException {
-        TemplateReaderConfiguration configuration =
-                new TemplateReaderConfiguration(getNamespaces());
-        JSONTemplateReader jsonTemplateReader =
-                new JSONTemplateReader(node, configuration, new ArrayList<>());
-
-        TemplateBuilderMaker maker = configuration.getBuilderMaker();
-        maker.namespaces(configuration.getNamespaces());
-        CompositeBuilder cb = new CompositeBuilder(null, getNamespaces(), false);
-        jsonTemplateReader.getBuilderFromJson(null, node, cb, maker);
-        List<TemplateBuilder> children = cb.getChildren();
-        if (!children.isEmpty())
-            for (TemplateBuilder child : children) child.evaluate(writer, context);
-    }
-
-    // returns a new compositeBuilder in case the node is an objectNode.
-    private TemplateBuilder getCurrentBuilder(JsonNode childNode, String name) {
-        TemplateBuilder result = this;
-        if (childNode.isObject()) {
-            result = new CompositeBuilder(name, getNamespaces(), false);
-            this.addChild(result);
-        }
-        return result;
-    }
-
-    @Override
-    public Object accept(TemplateVisitor visitor, Object value) {
-        return super.accept(visitor, value);
-    }
-
     @Override
     protected boolean canWriteValue(Object value) {
-        return includingNode != null;
+        return node != null;
     }
 
     @Override
-    public boolean checkNotNullValue(TemplateBuilderContext context) {
-        return includingNode != null;
-    }
-
-    /**
-     * Returns a TemplateBuilder representing the including node of this dynamic include flat
-     * builder, or null, if the including node is not an object.
-     *
-     * @param key
-     * @return
-     */
-    public TemplateBuilder getIncludingNodeBuilder(String key) {
-        if (!includingNode.isObject()) return null;
-        return getBuilderFromNode(key, includingNode);
+    public boolean canWrite(TemplateBuilderContext context) {
+        return node != null;
     }
 
     /**
@@ -191,5 +154,27 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
         CompositeBuilder result = new CompositeBuilder(key, getNamespaces(), false);
         jsonTemplateReader.getBuilderFromJson(null, node, result, maker);
         return result;
+    }
+
+    /**
+     * Returns a TemplateBuilder representing the including node of this dynamic include flat
+     * builder, or null, if the including node is not an object.
+     *
+     * @param key
+     * @return
+     */
+    public TemplateBuilder getIncludingNodeBuilder(String key) {
+        if (!node.isObject()) return null;
+        return getBuilderFromNode(key, node);
+    }
+
+    @Override
+    public TemplateBuilder getNestedTree(JsonNode node, TemplateBuilderContext context) {
+        return getNestedTree(node, context, false);
+    }
+
+    @Override
+    public DynamicIncludeFlatBuilder copy(boolean includeChildren) {
+        return new DynamicIncludeFlatBuilder(this, includeChildren);
     }
 }

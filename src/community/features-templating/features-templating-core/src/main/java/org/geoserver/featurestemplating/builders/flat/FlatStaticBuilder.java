@@ -29,6 +29,11 @@ public class FlatStaticBuilder extends StaticBuilder implements FlatBuilder {
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
 
+    public FlatStaticBuilder(FlatStaticBuilder builder, boolean includeChildren) {
+        super(builder, includeChildren);
+        nameHelper = new AttributeNameHelper(this.key, builder.nameHelper.getSeparator());
+    }
+
     @Override
     protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
@@ -46,5 +51,10 @@ public class FlatStaticBuilder extends StaticBuilder implements FlatBuilder {
     @Override
     public void setParentKey(String parentKey) {
         this.nameHelper.setParentKey(parentKey);
+    }
+
+    @Override
+    public FlatStaticBuilder copy(boolean includeChildren) {
+        return new FlatStaticBuilder(this, includeChildren);
     }
 }

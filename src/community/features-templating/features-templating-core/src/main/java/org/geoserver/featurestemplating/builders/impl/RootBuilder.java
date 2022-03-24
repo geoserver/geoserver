@@ -65,6 +65,10 @@ public class RootBuilder implements TemplateBuilder {
         vendorOptions.put(vendorOption[0], cqlManager.getExpressionFromString());
     }
 
+    public void setVendorOptions(VendorOptions vendorOptions) {
+        this.vendorOptions = vendorOptions;
+    }
+
     public void addVendorOption(String name, Object value) {
         vendorOptions.put(name, value);
     }
@@ -109,7 +113,28 @@ public class RootBuilder implements TemplateBuilder {
         return visitor.visit(this, value);
     }
 
+    public List<FileWatcher<Object>> getWatchers() {
+        return this.watchers;
+    }
+
     public void setWatchers(List<FileWatcher<Object>> watchers) {
         this.watchers = watchers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RootBuilder that = (RootBuilder) o;
+        return Objects.equals(children, that.children)
+                && Objects.equals(vendorOptions, that.vendorOptions)
+                && Objects.equals(encodingHints, that.encodingHints)
+                && Objects.equals(supportedOptions, that.supportedOptions)
+                && Objects.equals(watchers, that.watchers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(children, vendorOptions, encodingHints, supportedOptions, watchers);
     }
 }

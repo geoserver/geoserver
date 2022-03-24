@@ -5,9 +5,9 @@
 package org.geoserver.featurestemplating.builders.impl;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
@@ -20,11 +20,12 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class CompositeBuilder extends SourceBuilder {
 
-    protected List<TemplateBuilder> children;
-
     public CompositeBuilder(String key, NamespaceSupport namespaces, boolean topLevelComplex) {
         super(key, namespaces, topLevelComplex);
-        this.children = new LinkedList<>();
+    }
+
+    public CompositeBuilder(CompositeBuilder compositeBuilder, boolean includeChildren) {
+        super(compositeBuilder, includeChildren);
     }
 
     @Override
@@ -61,6 +62,7 @@ public class CompositeBuilder extends SourceBuilder {
      * @param context the current context
      * @return true if can write the output, else false
      */
+    @Override
     public boolean canWrite(TemplateBuilderContext context) {
         List<TemplateBuilder> filtered =
                 children.stream()
@@ -69,12 +71,8 @@ public class CompositeBuilder extends SourceBuilder {
         if (filtered.size() == children.size()) {
             int falseCounter = 0;
             for (TemplateBuilder b : filtered) {
-                if (b instanceof CompositeBuilder) {
-                    if (!((CompositeBuilder) b).canWrite(context)) falseCounter++;
-                } else if (b instanceof IteratingBuilder) {
-                    if (!((IteratingBuilder) b).canWrite(context)) falseCounter++;
-                } else {
-                    if (!((DynamicValueBuilder) b).checkNotNullValue(context)) falseCounter++;
+                if (b instanceof AbstractTemplateBuilder) {
+                    if (!((AbstractTemplateBuilder) b).canWrite(context)) falseCounter++;
                 }
             }
             if (falseCounter == filtered.size()) return false;
@@ -83,13 +81,8 @@ public class CompositeBuilder extends SourceBuilder {
     }
 
     @Override
-    public void addChild(TemplateBuilder children) {
-        this.children.add(children);
-    }
-
-    @Override
-    public List<TemplateBuilder> getChildren() {
-        return children;
+    public CompositeBuilder copy(boolean includeChildren) {
+        return new CompositeBuilder(this, includeChildren);
     }
 
     @Override

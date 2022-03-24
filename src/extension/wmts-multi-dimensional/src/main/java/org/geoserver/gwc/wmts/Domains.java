@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.wmts;
 
+import java.io.IOException;
+import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -18,9 +20,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortOrder;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Utility class for aggregating several dimensions. All the dimensions will share the same spatial

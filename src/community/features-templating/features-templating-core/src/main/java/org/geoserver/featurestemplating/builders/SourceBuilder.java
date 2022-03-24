@@ -7,6 +7,7 @@ package org.geoserver.featurestemplating.builders;
 import static org.geoserver.featurestemplating.builders.EncodingHints.SKIP_OBJECT_ENCODING;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Optional;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
@@ -38,6 +39,13 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
         super(key, namespaces);
         this.children = new LinkedList<>();
         this.topLevelFeature = topLevelFeature;
+    }
+
+    protected SourceBuilder(SourceBuilder sourceBuilder, boolean includeChildren) {
+        super(sourceBuilder, includeChildren);
+        this.topLevelFeature = sourceBuilder.isTopLevelFeature();
+        this.ownOutput = sourceBuilder.hasOwnOutput();
+        this.source = sourceBuilder.getSource();
     }
 
     /**
@@ -129,5 +137,21 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
 
     public void setTopLevelFeature(boolean topLevelFeature) {
         this.topLevelFeature = topLevelFeature;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), source, ownOutput, topLevelFeature);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SourceBuilder that = (SourceBuilder) o;
+        return ownOutput == that.ownOutput
+                && topLevelFeature == that.topLevelFeature
+                && Objects.equals(source, that.source);
     }
 }

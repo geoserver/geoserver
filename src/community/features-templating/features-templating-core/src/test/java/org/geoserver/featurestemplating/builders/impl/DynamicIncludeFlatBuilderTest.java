@@ -68,15 +68,15 @@ public class DynamicIncludeFlatBuilderTest extends DataTestCase {
 
     @Test
     public void testDynamicIncludeFlatDynamicResult() throws Exception {
-        JSONObject json =
-                encodeDynamicIncludeFlat("${dynamicMetadata}", jsonFieldSimpleFeature, BASE);
-        JSONObject metadata19139 =
-                json.getJSONObject("metadata").getJSONObject("metadata_iso_19139");
-        assertEquals("metadata_iso_19139", metadata19139.getString("title"));
-        assertEquals("http://metadata_iso_19139.org", metadata19139.getString("href"));
-        assertEquals("metadata", metadata19139.getString("type"));
-        assertEquals("dynamic value result", metadata19139.getString("dynamicValue"));
-        assertEquals("theValue", json.getString("someStaticValue"));
+        String message = null;
+        try {
+            encodeDynamicIncludeFlat("${dynamicMetadata}", jsonFieldSimpleFeature, BASE);
+        } catch (UnsupportedOperationException e) {
+            message = e.getMessage();
+        }
+        assertEquals(
+                message,
+                "A json attribute value cannot have a template directive among its fields.");
     }
 
     @Test

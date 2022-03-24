@@ -27,7 +27,9 @@
     </bean>
     
     <!-- Resource manager -->
-    <bean id="wpsResourceManager" class="org.geoserver.wps.resource.WPSResourceManager"/>
+    <bean id="wpsResourceManager" class="org.geoserver.wps.resource.WPSResourceManager">
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
 
     <!--  Execution manager, the thing that actually orchestrates the process execution -->
     <bean id="executionManager" class="org.geoserver.wps.executor.WPSExecutionManager">

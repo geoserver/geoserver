@@ -51,19 +51,25 @@ public class TemplatedItemConverter extends AbstractHttpMessageConverter<ItemRes
     protected void writeInternal(ItemResponse response, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
         Feature item = response.getItem();
-        RootBuilder builder =
-                templates.getItemTemplate((String) item.getProperty("parentIdentifier").getValue());
-
+        RootBuilder builder = getRootBuilder(item, response);
         try (GeoJSONWriter writer =
                 new GeoJSONWriter(
                         new JsonFactory()
                                 .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8),
                         TemplateIdentifier.GEOJSON)) {
             // no collection wrapper
-
             builder.evaluate(writer, new TemplateBuilderContext(item));
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    private RootBuilder getRootBuilder(Feature item, ItemResponse response) throws IOException {
+        RootBuilder builder = response.getTemplate();
+        if (builder == null)
+            builder =
+                    templates.getItemTemplate(
+                            (String) item.getProperty("parentIdentifier").getValue());
+        return builder;
     }
 }

@@ -22,7 +22,6 @@ It is possible to generate an ``mbtiles`` file by calling the WPS process ``gs:M
   * ``format`` : format of the final images composing the file.
   *  ``minZoom``, ``maxZoom``, ``minColumn``, ``maxColumn``, ``minRow``, ``maxRow``: *(Optional)* set the minimum and maximum zoom level, column, and rows.
   * ``boundingbox``: *(Optional)* Bounding box of the final mbtiles. If CRS is not set, the layer native one is used.
-  * ``path``: *(Optional)* path of the directory where the mbtiles file is stored.
   * ``filename``: *(Optional)* name of the mbtiles file created.
   * ``bgColor``: *(Optional)* value associated to the background colour.
   * ``transparency``: *(Optional)* parameter indicating if the transparency must be present.

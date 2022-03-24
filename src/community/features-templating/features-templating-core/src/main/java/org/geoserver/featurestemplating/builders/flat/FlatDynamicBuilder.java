@@ -21,6 +21,11 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
 
+    public FlatDynamicBuilder(FlatDynamicBuilder builder, boolean includeChildren) {
+        super(builder, includeChildren);
+        nameHelper = new AttributeNameHelper(this.key, builder.nameHelper.getSeparator());
+    }
+
     @Override
     protected void writeValue(
             TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
@@ -32,5 +37,10 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
     @Override
     public void setParentKey(String parentKey) {
         this.nameHelper.setParentKey(parentKey);
+    }
+
+    @Override
+    public FlatDynamicBuilder copy(boolean includeChildren) {
+        return new FlatDynamicBuilder(this, includeChildren);
     }
 }

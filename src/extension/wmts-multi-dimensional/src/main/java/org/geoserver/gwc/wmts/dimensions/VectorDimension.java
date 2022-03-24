@@ -14,7 +14,6 @@ import org.geoserver.wms.WMS;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.util.factory.GeoTools;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
@@ -36,7 +35,7 @@ public abstract class VectorDimension extends Dimension {
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
         FeatureSource source;
         try {
-            
+
             source = DimensionsUtils.getFeatures(typeInfo);
         } catch (Exception exception) {
             throw new RuntimeException(

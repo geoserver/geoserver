@@ -31,6 +31,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.xml.XmlConverterFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.Not;
@@ -590,6 +591,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
     }
 
     @Test
+    @Ignore("We no longer allow empty escapes")
     public void testLikeNoEscape() throws Exception {
         String request = getResourceAsString("GetRecordsAnyTextNoEscape.xml");
         Document d = postAsDOM("csw", request);

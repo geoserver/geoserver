@@ -6,9 +6,12 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
@@ -126,8 +129,14 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         // other layers remained, remove the group as well
 
         Filter groupContainsLayer = Predicates.equal("layers.id", layer.getId(), MatchAction.ANY);
+
+        // uses contains instead of equals predicate because the result of the PropertyName
+        // is a List of List and would cause the filter to fail the test.
+        Filter groupStyleContainsLayer =
+                Predicates.contains("layerGroupStyle.layers.id", layer.getId());
+        Filter orFilter = Predicates.or(groupContainsLayer, groupStyleContainsLayer);
         try (CloseableIterator<LayerGroupInfo> groups =
-                catalog.list(LayerGroupInfo.class, groupContainsLayer)) {
+                catalog.list(LayerGroupInfo.class, orFilter)) {
             while (groups.hasNext()) {
                 LayerGroupInfo group = groups.next();
 
@@ -140,9 +149,10 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
                 }
 
                 // either update or remove the group
-                if (group.getLayers().size() == 0) {
+                if (group.getLayers().isEmpty()) {
                     visit(catalog.getLayerGroup(group.getId()));
                 } else {
+                    handleGroupStyleLayers(group, layer);
                     catalog.save(group);
                 }
             }
@@ -154,6 +164,46 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         ResourceInfo resource = layer.getResource();
         catalog.remove(layer);
         catalog.remove(resource);
+    }
+
+    private void handleGroupStyleGroups(LayerGroupInfo group, LayerGroupInfo lgRemove) {
+        List<LayerGroupStyle> groupStyles = group.getLayerGroupStyles();
+        List<LayerGroupStyle> toRemove = new ArrayList<>();
+        for (LayerGroupStyle gs : groupStyles) {
+            // parallel remove of layer and styles
+            int index = getLayerGroupIndex(lgRemove, gs.getLayers());
+            while (index != -1) {
+                group.getLayers().remove(index);
+                group.getStyles().remove(index);
+                index = getLayerGroupIndex(lgRemove, gs.getLayers());
+            }
+            if (gs.getLayers().isEmpty()) {
+                toRemove.add(gs);
+            }
+        }
+        group.getLayerGroupStyles().removeAll(toRemove);
+    }
+
+    private void handleGroupStyleLayers(LayerGroupInfo group, LayerInfo layer) {
+        List<LayerGroupStyle> groupStyles = group.getLayerGroupStyles();
+        List<String> toRemove = new ArrayList<>();
+        for (LayerGroupStyle gs : groupStyles) {
+            // parallel remove of layer and styles
+            int index = gs.getLayers().indexOf(layer);
+            while (index != -1) {
+                gs.getLayers().remove(index);
+                gs.getStyles().remove(index);
+                index = gs.getLayers().indexOf(layer);
+            }
+            if (gs.getLayers().isEmpty()) {
+                toRemove.add(gs.getId());
+            }
+        }
+        List<LayerGroupStyle> groupStyleList =
+                group.getLayerGroupStyles().stream()
+                        .filter(lgs -> !toRemove.contains(lgs.getId()))
+                        .collect(Collectors.toList());
+        group.setLayerGroupStyles(groupStyleList);
     }
 
     private StyleInfo getResourceDefaultStyle(ResourceInfo resource, StyleInfo removedStyle) {
@@ -233,10 +283,32 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
                 dirty = true;
             }
         }
-
+        boolean groupStyleResult = removeStyleInGroupStyle(style, group);
+        if (!dirty) dirty = groupStyleResult;
         if (dirty) {
             catalog.save(group);
         }
+    }
+
+    private boolean removeStyleInGroupStyle(StyleInfo style, LayerGroupInfo group) {
+        boolean dirty = false;
+        List<LayerGroupStyle> groupStyles = group.getLayerGroupStyles();
+        for (LayerGroupStyle groupStyle : groupStyles) {
+            List<StyleInfo> styles = groupStyle.getStyles();
+            int index = styles.indexOf(style);
+            if (index != -1) dirty = true;
+            while (index != -1) {
+                LayerInfo layer = (LayerInfo) group.getLayers().get(index);
+                if (!layer.getDefaultStyle().equals(style)) {
+                    // use default style
+                    styles.set(index, layer.getDefaultStyle());
+                } else {
+                    styles.set(index, getResourceDefaultStyle(layer.getResource(), style));
+                }
+                index = styles.indexOf(style);
+            }
+        }
+        return dirty;
     }
 
     @Override
@@ -257,8 +329,14 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         // associated layer default style
         Filter groupAssociated =
                 Predicates.or(Predicates.equal("rootLayerStyle.id", style.getId()), anyStyle);
+
+        // uses contains instead of equals predicate because the result of the PropertyName
+        // is a List of List and would cause the filter to fail the test.
+        Filter groupStylesAssociated =
+                Predicates.contains("layerGroupStyles.styles.id", style.getId());
+        Filter allAssociated = Predicates.or(groupAssociated, groupStylesAssociated);
         try (CloseableIterator<LayerGroupInfo> it =
-                catalog.list(LayerGroupInfo.class, groupAssociated)) {
+                catalog.list(LayerGroupInfo.class, allAssociated)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
                 removeStyleInLayerGroup(group, style);
@@ -274,22 +352,25 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         // remove layerGroupToRemove references from other groups
         Filter associatedTo =
                 Predicates.equal("layers.id", layerGroupToRemove.getId(), MatchAction.ANY);
-        try (CloseableIterator<LayerGroupInfo> it =
-                catalog.list(LayerGroupInfo.class, associatedTo)) {
+        Filter stylesAssociated =
+                Predicates.equal("layerGroupStyles.layers.id", layerGroupToRemove.getId());
+        Filter or = Predicates.or(associatedTo, stylesAssociated);
+        try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class, or)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
 
                 // parallel remove of layer and styles
-                int index = getLayerGroupIndex(layerGroupToRemove, group);
+                int index = getLayerGroupIndex(layerGroupToRemove, group.getLayers());
                 while (index != -1) {
                     group.getLayers().remove(index);
                     group.getStyles().remove(index);
-                    index = getLayerGroupIndex(layerGroupToRemove, group);
+                    index = getLayerGroupIndex(layerGroupToRemove, group.getLayers());
                 }
                 if (group.getLayers().size() == 0) {
                     // if group is empty, delete it
                     visit(group);
                 } else {
+                    handleGroupStyleGroups(group, layerGroupToRemove);
                     catalog.save(group);
                 }
             }
@@ -304,10 +385,10 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
      * safer and more predictable to use a id comparison instead of a equals that accounts for each
      * and every field
      */
-    private int getLayerGroupIndex(LayerGroupInfo layerGroup, LayerGroupInfo container) {
+    private int getLayerGroupIndex(LayerGroupInfo layerGroup, List<PublishedInfo> publishables) {
         int idx = 0;
         final String id = layerGroup.getId();
-        for (PublishedInfo pi : container.getLayers()) {
+        for (PublishedInfo pi : publishables) {
             if (pi instanceof LayerGroupInfo && id.equals(pi.getId())) {
                 return idx;
             }

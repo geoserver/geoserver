@@ -9,10 +9,12 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
+import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.platform.GeoServerExtensions;
@@ -67,7 +69,10 @@ public class LayerGroupHelper {
                 LayerInfo l = (LayerInfo) p;
                 layers.add(l);
             } else if (p instanceof LayerGroupInfo) {
-                allLayers((LayerGroupInfo) p, layers);
+                LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+                LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s);
+                if (lgStyle != null) allLayers(getCrs(groupInfo.getBounds()), lgStyle, layers);
+                else allLayers(groupInfo, layers);
             } else if (p == null && s != null) {
                 expandStyleGroup(
                         s,
@@ -78,6 +83,50 @@ public class LayerGroupHelper {
                         null);
             }
         }
+    }
+
+    public List<LayerInfo> allLayers(String styleName) {
+        LayerGroupStyle lgStyle = getStyleOrThrow(group, styleName);
+        List<LayerInfo> layerInfos = new ArrayList<>();
+        CoordinateReferenceSystem crs = getCrs(group.getBounds());
+        allLayers(crs, lgStyle, layerInfos);
+        return layerInfos;
+    }
+
+    private static void allLayers(
+            CoordinateReferenceSystem crs, LayerGroupStyle groupStyle, List<LayerInfo> layers) {
+        List<PublishedInfo> published = groupStyle.getLayers();
+        List<StyleInfo> styles = groupStyle.getStyles();
+        int pSize = published.size();
+        int sSize = styles.size();
+        for (int i = 0; i < pSize; i++) {
+            PublishedInfo p = published.get(i);
+            StyleInfo s;
+            // Handle incomplete layer groups, especially those constructed by the XStreamPersister
+            if (styles == null || sSize == 0) {
+                s = null;
+            } else {
+                s = styles.get(i);
+            }
+
+            if (p instanceof LayerInfo) {
+                LayerInfo l = (LayerInfo) p;
+                layers.add(l);
+            } else if (p instanceof LayerGroupInfo) {
+                LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+                LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s);
+                if (lgStyle != null) allLayers(getCrs(groupInfo.getBounds()), lgStyle, layers);
+                else allLayers(groupInfo, layers);
+            } else if (p == null && s != null) {
+                expandStyleGroup(s, crs, layers, null);
+            }
+        }
+    }
+
+    private static CoordinateReferenceSystem getCrs(ReferencedEnvelope envelope) {
+        CoordinateReferenceSystem crs = null;
+        if (envelope != null) crs = envelope.getCoordinateReferenceSystem();
+        return crs;
     }
 
     /** Returns top level PublishedInfo, eventually expanding style groups */
@@ -109,13 +158,7 @@ public class LayerGroupHelper {
                 publisheds.add(p);
             } else if (p == null && s != null) {
                 List<LayerInfo> layers = new ArrayList<>();
-                expandStyleGroup(
-                        s,
-                        group.getBounds() == null
-                                ? null
-                                : group.getBounds().getCoordinateReferenceSystem(),
-                        layers,
-                        null);
+                expandStyleGroup(s, getCrs(group.getBounds()), layers, null);
                 publisheds.addAll(layers);
             }
         }
@@ -161,25 +204,37 @@ public class LayerGroupHelper {
             } else if (p instanceof LayerGroupInfo) {
                 allStyles((LayerGroupInfo) p, styles);
             } else if (p == null && s != null) {
-                expandStyleGroup(
-                        s,
-                        group.getBounds() == null
-                                ? null
-                                : group.getBounds().getCoordinateReferenceSystem(),
-                        null,
-                        styles);
+                expandStyleGroup(s, getCrs(group.getBounds()), null, styles);
             }
         }
     }
 
     public List<LayerInfo> allLayersForRendering() {
         List<LayerInfo> layers = new ArrayList<>();
-        allLayersForRendering(group, layers, true);
+        allLayersForRendering(group, null, layers, true);
+        return layers;
+    }
+
+    /**
+     * Retrieves all the layers according to the LayerGroup style matching the style name.
+     *
+     * @param lgStyle the layer group style.
+     * @return the list of layers contained, comprising also the ones contained by nested layer
+     *     groups.
+     */
+    public List<LayerInfo> allLayersForRendering(String lgStyle) {
+        List<LayerInfo> layers = new ArrayList<>();
+        LayerGroupStyle groupStyle = getStyleOrThrow(group, lgStyle);
+        CoordinateReferenceSystem crs = getCrs(group.getBounds());
+        allLayers(crs, groupStyle, layers);
         return layers;
     }
 
     private static void allLayersForRendering(
-            LayerGroupInfo group, List<LayerInfo> layers, boolean root) {
+            LayerGroupInfo group,
+            LayerGroupStyle groupStyle,
+            List<LayerInfo> layers,
+            boolean root) {
         switch (group.getMode()) {
             case EO:
                 layers.add(group.getRootLayer());
@@ -191,36 +246,60 @@ public class LayerGroupHelper {
                 }
                 // continue to default behaviour:
             default:
-                int size = group.getLayers().size();
+                List<PublishedInfo> publishables =
+                        groupStyle == null ? group.getLayers() : groupStyle.getLayers();
+                List<StyleInfo> styles =
+                        groupStyle == null ? group.getStyles() : groupStyle.getStyles();
+                int size = publishables.size();
                 for (int i = 0; i < size; i++) {
-                    PublishedInfo p = group.getLayers().get(i);
-                    StyleInfo s = group.getStyles().get(i);
+                    PublishedInfo p = publishables.get(i);
+                    StyleInfo s = styles.get(i);
                     if (p instanceof LayerInfo) {
                         LayerInfo l = (LayerInfo) p;
                         layers.add(l);
                     } else if (p instanceof LayerGroupInfo) {
-                        allLayersForRendering((LayerGroupInfo) p, layers, false);
+                        LayerGroupStyle gStyle = null;
+                        LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+                        gStyle = getStyleOrThrow(groupInfo, s);
+                        allLayersForRendering(groupInfo, gStyle, layers, false);
                     } else if (p == null && s != null) {
-                        expandStyleGroup(
-                                s,
-                                group.getBounds() == null
-                                        ? null
-                                        : group.getBounds().getCoordinateReferenceSystem(),
-                                layers,
-                                null);
+                        expandStyleGroup(s, getCrs(group.getBounds()), layers, null);
                     }
                 }
         }
     }
 
+    private static LayerGroupStyle getStyleOrThrow(LayerGroupInfo groupInfo, StyleInfo styleName) {
+        LayerGroupStyle groupStyle = null;
+        if (styleName != null && styleName.getName() != null && !"".equals(styleName.getName()))
+            groupStyle = getStyleOrThrow(groupInfo, styleName.getName());
+        return groupStyle;
+    }
+
+    // Get a style by name or throws exception if it is null.
+    private static LayerGroupStyle getStyleOrThrow(LayerGroupInfo groupInfo, String styleName) {
+        LayerGroupStyle groupStyle = getGroupStyleByName(groupInfo, styleName);
+        if (groupStyle == null) {
+            throw new NoSuchElementException(
+                    "No Style with name "
+                            + styleName
+                            + " found for LayerGroup "
+                            + groupInfo.getName());
+        }
+        return groupStyle;
+    }
+
     public List<StyleInfo> allStylesForRendering() {
         List<StyleInfo> styles = new ArrayList<>();
-        allStylesForRendering(group, styles, true);
+        allStylesForRendering(group, null, styles, true);
         return styles;
     }
 
     private static void allStylesForRendering(
-            LayerGroupInfo group, List<StyleInfo> styles, boolean root) {
+            LayerGroupInfo group,
+            LayerGroupStyle groupStyle,
+            List<StyleInfo> styles,
+            boolean root) {
         switch (group.getMode()) {
             case EO:
                 styles.add(group.getRootLayerStyle());
@@ -232,12 +311,15 @@ public class LayerGroupHelper {
                 }
                 // continue to default behaviour:
             default:
-                int size = group.getLayers().size();
+                List<PublishedInfo> publishables =
+                        groupStyle == null ? group.getLayers() : groupStyle.getLayers();
+                List<StyleInfo> stylesList =
+                        groupStyle == null ? group.getStyles() : groupStyle.getStyles();
+                int size = publishables.size();
                 for (int i = 0; i < size; i++) {
-                    PublishedInfo p = group.getLayers().get(i);
-                    StyleInfo s = group.getStyles().get(i);
+                    PublishedInfo p = publishables.get(i);
+                    StyleInfo s = stylesList.get(i);
                     if (p instanceof LayerInfo) {
-                        StyleInfo styleInfo = group.getStyles().get(i);
                         if (((LayerInfo) p).getResource() instanceof WMSLayerInfo) {
                             // pre 2.16.2, raster style was by default assigned to wms remote layers
                             // this was not a problem because the default style was always used to
@@ -246,21 +328,56 @@ public class LayerGroupHelper {
                             // directories, we need now to ensure that a valid style is selected
                             WMSLayerInfo wmsLayerInfo =
                                     (WMSLayerInfo) ((LayerInfo) p).getResource();
-                            styleInfo = getRemoteWmsLayerStyle(wmsLayerInfo, styleInfo);
+                            s = getRemoteWmsLayerStyle(wmsLayerInfo, s);
                         }
-                        styles.add(styleInfo);
+                        styles.add(s);
                     } else if (p instanceof LayerGroupInfo) {
-                        allStylesForRendering((LayerGroupInfo) p, styles, false);
+                        LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+                        LayerGroupStyle groupStyle2 = getStyleOrThrow(groupInfo, s);
+                        allStylesForRendering(groupInfo, groupStyle2, styles, false);
                     } else if (p == null && s != null) {
-                        expandStyleGroup(
-                                s,
-                                group.getBounds() == null
-                                        ? null
-                                        : group.getBounds().getCoordinateReferenceSystem(),
-                                null,
-                                styles);
+                        expandStyleGroup(s, getCrs(group.getBounds()), null, styles);
                     }
                 }
+        }
+    }
+
+    /**
+     * Retrieves all styles according to the LayerGroupStyle matching the styleName, including those
+     * of eventually present nested LayerGroups.
+     *
+     * @param styleName the name of the style.
+     * @return the List of all the StyleInfo contained by the LayerGroup.
+     */
+    public List<StyleInfo> allStylesForRendering(String styleName) {
+        List<StyleInfo> styles = new ArrayList<>();
+        CoordinateReferenceSystem crs = getCrs(group.getBounds());
+        LayerGroupStyle groupStyle = getStyleOrThrow(group, styleName);
+        allStylesForRendering(crs, groupStyle, styles);
+        return styles;
+    }
+
+    public void allStylesForRendering(
+            CoordinateReferenceSystem crs, LayerGroupStyle groupStyle, List<StyleInfo> styleInfos) {
+        List<PublishedInfo> publishable = groupStyle.getLayers();
+        List<StyleInfo> styles = groupStyle.getStyles();
+        int size = publishable.size();
+        for (int i = 0; i < size; i++) {
+            PublishedInfo p = publishable.get(i);
+            StyleInfo s = styles.get(i);
+            if (p instanceof LayerInfo) {
+                if (((LayerInfo) p).getResource() instanceof WMSLayerInfo) {
+                    WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) ((LayerInfo) p).getResource();
+                    s = getRemoteWmsLayerStyle(wmsLayerInfo, s);
+                }
+                styleInfos.add(s);
+            } else if (p instanceof LayerGroupInfo) {
+                LayerGroupInfo group = (LayerGroupInfo) p;
+                LayerGroupStyle groupStyle2 = getStyleOrThrow(group, s);
+                allStylesForRendering((LayerGroupInfo) p, groupStyle2, styleInfos, false);
+            } else if (p == null && s != null) {
+                expandStyleGroup(s, crs, null, styleInfos);
+            }
         }
     }
 
@@ -358,7 +475,9 @@ public class LayerGroupHelper {
      */
     public Stack<LayerGroupInfo> checkLoops() {
         Stack<LayerGroupInfo> path = new Stack<>();
-        if (checkLoops(group, path)) {
+        if (checkLoops(group, group.getLayers(), group.getStyles(), path)) {
+            return path;
+        } else if (checkLoops(group, group.getLayerGroupStyles(), path)) {
             return path;
         } else {
             return null;
@@ -378,33 +497,62 @@ public class LayerGroupHelper {
     }
 
     /**
-     * Check if a layer group contains recursive structures
+     * Check if layer group styles contains recursive structures
      *
      * @param group The current layer group
+     * @param groupStyles The list of {@LayerGroupStyle} of the current layer group.
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
-    private static boolean checkLoops(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
+    private static boolean checkLoops(
+            LayerGroupInfo group, List<LayerGroupStyle> groupStyles, Stack<LayerGroupInfo> path) {
+        if (groupStyles != null) {
+            for (LayerGroupStyle groupStyle : groupStyles) {
+                if (checkLoops(group, groupStyle.getLayers(), groupStyle.getStyles(), path)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if a layer group contains recursive structures
+     *
+     * @param group The current layer group
+     * @param layers the contained layer of the current layer group.
+     * @param styles the contained styles of the current layer group.
+     * @param path Stack of each visited/parent LayerGroup
+     * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
+     */
+    private static boolean checkLoops(
+            LayerGroupInfo group,
+            List<PublishedInfo> layers,
+            List<StyleInfo> styles,
+            Stack<LayerGroupInfo> path) {
         path.push(group);
-        if (group.getLayers() != null) {
-            int size = group.getLayers().size();
+        if (layers != null) {
+            int size = layers.size();
             for (int i = 0; i < size; i++) {
-                PublishedInfo child = group.getLayers().get(i);
+                PublishedInfo child = layers.get(i);
                 StyleInfo s;
                 // Handle incomplete layer groups, especially those constructed by the
                 // XStreamPersister
-                if (group.getStyles() == null || group.getStyles().size() == 0) {
+                if (styles == null || styles.isEmpty()) {
                     s = null;
                 } else {
-                    s = group.getStyles().get(i);
+                    s = styles.get(i);
                 }
                 if (child instanceof LayerGroupInfo) {
+                    LayerGroupInfo groupInfo = (LayerGroupInfo) child;
                     if (isGroupInStack((LayerGroupInfo) child, path)) {
                         path.push((LayerGroupInfo) child);
                         return true;
-                    } else if (checkLoops((LayerGroupInfo) child, path)) {
+                    } else if (checkLoops(
+                            groupInfo, groupInfo.getLayers(), groupInfo.getStyles(), path)) {
                         return true;
-                    }
+                    } else if (checkLoops(groupInfo, groupInfo.getLayerGroupStyles(), path))
+                        return true;
                 } else if (child == null && s != null) {
                     if (checkStyleGroupLoops(s, group, path)) {
                         return true;
@@ -469,7 +617,8 @@ public class LayerGroupHelper {
                                 if (isGroupInStack(child, path)) {
                                     path.push(child);
                                     throw recursionException;
-                                } else if (checkLoops(child, path)) {
+                                } else if (checkLoops(
+                                        child, child.getLayers(), child.getStyles(), path)) {
                                     throw recursionException;
                                 }
                                 return child;
@@ -560,6 +709,28 @@ public class LayerGroupHelper {
     }
 
     /**
+     * Find a {@link LayerGroupStyle} with the specified name if exists.
+     *
+     * @param group the LayerGroupInfo for which find the style.
+     * @param styleName the name of the style to find.
+     * @return the {@link LayerGroupStyle} corresponding to the specified name if exists, false
+     *     otherwise.
+     */
+    public static LayerGroupStyle getGroupStyleByName(LayerGroupInfo group, String styleName) {
+        List<LayerGroupStyle> styles = group.getLayerGroupStyles();
+        LayerGroupStyle result = null;
+        if (styleName != null && !"".equals(styleName)) {
+            for (LayerGroupStyle s : styles) {
+                if (s.getName().getName().equals(styleName)) {
+                    result = s;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * Converts a style group sld into a flat list of {@link LayerInfo}s and {@link StyleInfo}s.
      *
      * <p>To handle styles and layers that are not in the catalog: User layers are wrapped in {@link
@@ -618,5 +789,16 @@ public class LayerGroupHelper {
             style.setCatalog(catalog);
             styles.add(style);
         }
+    }
+
+    /**
+     * Check if a LayerGroup has Mode Single or Opaque.
+     *
+     * @param groupInfo the LayerGroup.
+     * @return true if single or opaque, false otherwise.
+     */
+    public static boolean isSingleOrOpaque(LayerGroupInfo groupInfo) {
+        Mode mode = groupInfo.getMode();
+        return mode.equals(Mode.SINGLE) || mode.equals(Mode.OPAQUE_CONTAINER);
     }
 }

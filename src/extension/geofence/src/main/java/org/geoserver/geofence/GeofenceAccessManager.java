@@ -1018,8 +1018,9 @@ public class GeofenceAccessManager
         if (candidateLayer == null) {
             LayerGroupInfo layerGroup = catalog.getLayerGroupByName(layerName);
             if (layerGroup != null) {
-                layers.addAll(layerGroup.layers());
-                addGroupStyles(layerGroup, styles);
+                boolean emptyStyleName = reqStyle == null || "".equals(reqStyle);
+                layers.addAll(emptyStyleName ? layerGroup.layers() : layerGroup.layers(reqStyle));
+                addGroupStyles(layerGroup, styles, reqStyle);
             }
         } else {
             layers.add(candidateLayer);
@@ -1197,7 +1198,8 @@ public class GeofenceAccessManager
         for (Object layer : parseLayersParameter(gsRequest, getMap)) {
             boolean outOfBound = styleIndex >= parsedStyles.size();
             if (layer instanceof LayerGroupInfo) {
-                addGroupStyles((LayerGroupInfo) layer, requestedStyles);
+                String styleName = outOfBound ? null : parsedStyles.get(styleIndex);
+                addGroupStyles((LayerGroupInfo) layer, requestedStyles, styleName);
             } else {
                 // the layer is a LayerInfo or MapLayerInfo (if it is a remote layer)
                 if (outOfBound) {
@@ -1211,8 +1213,12 @@ public class GeofenceAccessManager
         return requestedStyles;
     }
 
-    private void addGroupStyles(LayerGroupInfo groupInfo, List<String> requestedStyles) {
-        List<StyleInfo> groupStyles = groupInfo.styles();
+    private void addGroupStyles(
+            LayerGroupInfo groupInfo, List<String> requestedStyles, String styleName) {
+        List<StyleInfo> groupStyles;
+        if (styleName != null && !"".equals(styleName)) groupStyles = groupInfo.styles(styleName);
+        else groupStyles = groupInfo.styles();
+
         requestedStyles.addAll(
                 groupStyles.stream()
                         .map(s -> s != null ? s.prefixedName() : null)

@@ -83,6 +83,8 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         maxComplexInputSize.add(RangeValidator.minimum(0));
         form.add(maxComplexInputSize);
 
+        form.add(new CheckBox("remoteInputDisabled"));
+
         final AutoCompleteSettings settings = new AutoCompleteSettings();
         settings.setShowCompleteListOnFocusGain(false);
         settings.setShowListOnEmptyInput(true);

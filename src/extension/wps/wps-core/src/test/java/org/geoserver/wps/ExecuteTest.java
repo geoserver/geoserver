@@ -619,6 +619,7 @@ public class ExecuteTest extends WPSTestSupport {
     @Test
     public void testFeatureCollectionFileReference()
             throws Exception { // Standard Test A.4.4.2, A.4.4.4
+        setRemoteInputDisabled(false);
         URL collectionURL = getClass().getResource("states-FeatureCollection.xml");
         String xml =
                 "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
@@ -663,7 +664,53 @@ public class ExecuteTest extends WPSTestSupport {
     }
 
     @Test
+    public void testFeatureCollectionFileReferenceDisabled() throws Exception {
+        setRemoteInputDisabled(true);
+        URL collectionURL = getClass().getResource("states-FeatureCollection.xml");
+        String xml =
+                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                        + "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>"
+                        + "<wps:DataInputs>"
+                        + "<wps:Input>"
+                        + "<ows:Identifier>features</ows:Identifier>"
+                        + "  <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.1\" "
+                        + "xlink:href=\""
+                        + collectionURL.toExternalForm()
+                        + "\"/>\n"
+                        + "</wps:Input>"
+                        + "<wps:Input>"
+                        + "<ows:Identifier>distance</ows:Identifier>"
+                        + "<wps:Data>"
+                        + "<wps:LiteralData>10</wps:LiteralData>"
+                        + "</wps:Data>"
+                        + "</wps:Input>"
+                        + "</wps:DataInputs>"
+                        + "<wps:ResponseForm>"
+                        + "<wps:ResponseDocument storeExecuteResponse='false'>"
+                        + "<wps:Output>"
+                        + "<ows:Identifier>result</ows:Identifier>"
+                        + "</wps:Output>"
+                        + "</wps:ResponseDocument>"
+                        + "</wps:ResponseForm>"
+                        + "</wps:Execute>";
+
+        Document d = postAsDOM("wps", xml);
+        // print(d);
+        checkValidationErrors(d);
+
+        assertEquals("ows:ExceptionReport", d.getDocumentElement().getNodeName());
+
+        assertXpathExists("/ows:ExceptionReport/ows:Exception/ows:ExceptionText", d);
+        assertXpathEvaluatesTo(
+                "Failed to parse process inputs\nRemote complex input references are disabled",
+                "/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
+                d);
+    }
+
+    @Test
     public void testFeatureCollectionFileReferenceError() throws Exception {
+        setRemoteInputDisabled(false);
         URL collectionURL = getClass().getResource("my-secret.xml");
         String xml =
                 "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
@@ -710,6 +757,7 @@ public class ExecuteTest extends WPSTestSupport {
 
     @Test
     public void testFeatureCollectionFileReferenceKVP() throws Exception {
+        setRemoteInputDisabled(false);
         URL collectionURL = getClass().getResource("states-FeatureCollection.xml");
         String request =
                 "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection"
@@ -734,7 +782,35 @@ public class ExecuteTest extends WPSTestSupport {
     }
 
     @Test
+    public void testFeatureCollectionFileReferenceKVPDisabled() throws Exception {
+        setRemoteInputDisabled(true);
+        URL collectionURL = getClass().getResource("states-FeatureCollection.xml");
+        String request =
+                "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection"
+                        + "&DataInputs="
+                        + urlEncode(
+                                "features=@mimetype=application/wfs-collection-1.1@xlink:href="
+                                        + collectionURL.toExternalForm()
+                                        + ";distance=10")
+                        + "&ResponseDocument="
+                        + urlEncode("result");
+
+        Document d = getAsDOM(request);
+        // print(d);
+        checkValidationErrors(d);
+
+        assertEquals("ows:ExceptionReport", d.getDocumentElement().getNodeName());
+
+        assertXpathExists("/ows:ExceptionReport/ows:Exception/ows:ExceptionText", d);
+        assertXpathEvaluatesTo(
+                "Failed to parse process inputs\nRemote complex input references are disabled",
+                "/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
+                d);
+    }
+
+    @Test
     public void testFeatureCollectionFileReferenceKVPError() throws Exception {
+        setRemoteInputDisabled(false);
         URL collectionURL = getClass().getResource("my-secret.xml");
         String request =
                 "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection"
@@ -2254,5 +2330,13 @@ public class ExecuteTest extends WPSTestSupport {
     @Override
     protected List<Filter> getFilters() {
         return Arrays.asList(new HTTPHeadersCollector());
+    }
+
+    private void setRemoteInputDisabled(boolean enabled) {
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+        if (wps.isRemoteInputDisabled() != enabled) {
+            wps.setRemoteInputDisabled(enabled);
+            getGeoServer().save(wps);
+        }
     }
 }

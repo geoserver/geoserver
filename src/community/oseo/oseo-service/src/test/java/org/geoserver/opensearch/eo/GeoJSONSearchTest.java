@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.TimeZone;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -27,6 +28,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         super.onSetUp(testData);
 
         copyTemplate("products-LANDSAT8.json");
@@ -96,7 +98,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         JSONObject sp = sample.getJSONObject("properties");
         assertEquals("The Sentinel-2 mission", sp.getString("title"));
         assertEquals(featureId, sp.getString("identifier"));
-        assertEquals("2015-07-01T08:20:21Z/2016-02-26T09:20:21Z", sp.getString("date"));
+        assertEquals("2015-07-01T10:20:21Z/2016-02-26T10:20:21Z", sp.getString("date"));
         JSONObject acquisition = sp.getJSONObject("acquisitionInformation");
         JSONObject platform = acquisition.getJSONObject("platform");
         assertEquals("http://localhost:8080/geoserver/oseo/id/Sentinel-2", platform.get("id"));
@@ -192,8 +194,8 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         assertEquals("ARCHIVED", sp.getString("status"));
         assertEquals(featureId, sp.getString("identifier"));
         assertEquals("SENTINEL2", sp.getString("parentIdentifier"));
-        assertEquals("2016-09-29T08:20:22.026Z/2016-09-29T08:23:44.107Z", sp.getString("date"));
-        assertEquals("2016-09-29T16:59:02.000+00:00", sp.getString("created"));
+        assertEquals("2016-09-29T10:20:22.026Z/2016-09-29T10:23:44.107Z", sp.getString("date"));
+        assertEquals("2016-09-29T18:59:02.000+00:00", sp.getString("created"));
 
         // check properties derived from the collection
         JSONObject ai = sp.getJSONArray("acquisitionInformation").getJSONObject(0);
@@ -300,7 +302,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         JSONObject sp = sample.getJSONObject("properties");
 
         assertEquals(featureId, sp.getString("identifier"));
-        assertEquals("2018-02-27T09:20:21.000+00:00", sp.getString("date"));
+        assertEquals("2018-02-27T10:20:21.000+00:00", sp.getString("date"));
         JSONObject acquisition =
                 sp.getJSONObject("acquisitionInformation").getJSONObject("acquisitionParameters");
         assertEquals("DESCENDING", acquisition.getString("orbitDirection"));

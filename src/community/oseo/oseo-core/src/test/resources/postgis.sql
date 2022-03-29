@@ -11,6 +11,7 @@ drop table if exists product;
 drop table if exists collection_metadata;
 drop table if exists collection_layer;
 drop table if exists collection;
+drop table if exists queryable_idx_tracker;
 
 -- the collections and the attributes describing them
 create table collection (
@@ -39,6 +40,7 @@ create table collection (
   "eoDissemination" varchar,
   "eoAcquisitionStation" varchar,
   "license" varchar,
+  "queryables" varchar[],
   "enabled" boolean not null DEFAULT true,
   "assets" json
 );
@@ -191,6 +193,16 @@ create index "idx_product_footprint" on product using GIST("footprint");
  -- extra attribute to support heterogeneous CRS mosaic queries
  CREATE INDEX "idx_product_crs" ON product ("crs");
 
+--track indices created on queryables
+create table queryable_idx_tracker (
+  "id" serial primary key,
+  "name" varchar,
+  "collection" varchar,
+  "expression" varchar
+);
+
+CREATE INDEX "idx_q_tracker_name" on queryable_idx_tracker("name");
+CREATE INDEX "idx_q_tracker_expression" on queryable_idx_tracker("collection");
 
 -- the eo thumbs storage (small binary files, not used for search, thus separate table)
 create table product_thumb (

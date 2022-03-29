@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 import javax.servlet.Filter;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
@@ -106,6 +107,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         super.onSetUp(testData);
 
         GeoServer geoServer = getGeoServer();

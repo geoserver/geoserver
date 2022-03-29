@@ -8,11 +8,16 @@ import static org.geoserver.ogcapi.stac.TemplatePropertyVisitor.JSON_PROPERTY_TY
 
 import io.swagger.v3.oas.models.media.Schema;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
@@ -20,6 +25,7 @@ import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.ogcapi.AttributeType;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.QueryablesBuilder;
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.ExpressionTypeVisitor;
 import org.opengis.feature.Feature;
@@ -38,6 +44,8 @@ public class STACQueryablesBuilder {
             "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json#/collection";
     public static final String DATETIME_SCHEMA_REF =
             "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/datetime.json#/properties/datetime";
+
+    private static final String DEFINED_QUERYABLES_PROPERTY = "queryables";
     private static Set<String> SKIP_PROPERTIES = new HashSet<>();
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
@@ -69,14 +77,23 @@ public class STACQueryablesBuilder {
     private final Queryables queryables;
     private final FeatureType itemsSchema;
     private final Feature sampleFeature;
+    private final Feature collection;
+    private final OSEOInfo oseoInfo;
 
     public STACQueryablesBuilder(
-            String id, TemplateBuilder template, FeatureType itemsSchema, Feature sampleFeature) {
+            String id,
+            TemplateBuilder template,
+            FeatureType itemsSchema,
+            Feature sampleFeature,
+            Feature collection,
+            OSEOInfo oseoInfo) {
         this.queryables = new QueryablesBuilder(id).build();
+        this.oseoInfo = oseoInfo;
         this.queryables.setProperties(new LinkedHashMap<>());
         this.template = template;
         this.itemsSchema = itemsSchema;
         this.sampleFeature = sampleFeature;
+        this.collection = collection;
     }
 
     Queryables getQueryables() throws IOException {
@@ -84,12 +101,18 @@ public class STACQueryablesBuilder {
         if (features != null) {
             AbstractTemplateBuilder properties = lookupBuilder(features, "properties");
             if (properties != null) {
+                Set<String> preconfiguredQueryables = getPreconfiguredQueryables();
                 TemplatePropertyVisitor visitor =
                         new TemplatePropertyVisitor(
                                 properties,
                                 sampleFeature,
                                 (path, vb) -> {
                                     if (SKIP_PROPERTIES.contains(path)) return;
+                                    // if preconfigured list exists and this path is not in it, skip
+                                    // it
+                                    if (!oseoInfo.getGlobalQueryables().contains(path)
+                                            && preconfiguredQueryables != null
+                                            && !preconfiguredQueryables.contains(path)) return;
                                     queryables.getProperties().put(path, getSchema(vb));
                                 });
                 visitor.visit();
@@ -105,6 +128,28 @@ public class STACQueryablesBuilder {
         return this.queryables;
     }
 
+    public Set<String> getPreconfiguredQueryables() {
+        String[] preconfiguredQueryables = null;
+        if (collection != null && collection.getProperty(DEFINED_QUERYABLES_PROPERTY) != null) {
+            preconfiguredQueryables =
+                    (String[]) collection.getProperty(DEFINED_QUERYABLES_PROPERTY).getValue();
+        }
+
+        // collection specific list not set so all are available
+        if (preconfiguredQueryables == null) {
+            return null;
+        }
+        List<String> preconfiguredAsList =
+                new ArrayList<String>(Arrays.asList(preconfiguredQueryables));
+        if (oseoInfo != null && oseoInfo.getGlobalQueryables() != null) {
+            List<String> globalQueryablesList =
+                    Stream.of(oseoInfo.getGlobalQueryables().split(","))
+                            .collect(Collectors.toList());
+            preconfiguredAsList.addAll(globalQueryablesList);
+        }
+        return new HashSet<String>(preconfiguredAsList);
+    }
+
     /**
      * Returns a map between the path names used for queryables, and the expression backing them in
      * the database
@@ -118,12 +163,17 @@ public class STACQueryablesBuilder {
         if (features != null) {
             AbstractTemplateBuilder properties = lookupBuilder(features, "properties");
             if (properties != null) {
+                Set<String> preconfiguredQueryables = getPreconfiguredQueryables();
                 TemplatePropertyVisitor visitor =
                         new TemplatePropertyVisitor(
                                 properties,
                                 sampleFeature,
                                 (path, vb) -> {
                                     if (SKIP_PROPERTIES.contains(path)) return;
+                                    if (oseoInfo != null
+                                            && !oseoInfo.getGlobalQueryables().contains(path)
+                                            && preconfiguredQueryables != null
+                                            && !preconfiguredQueryables.contains(path)) return;
                                     result.put(
                                             path,
                                             vb.getXpath() == null ? vb.getCql() : vb.getXpath());

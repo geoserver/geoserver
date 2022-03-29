@@ -6,6 +6,15 @@ package org.geoserver.opensearch.eo.store;
 
 import com.google.common.base.Objects;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,7 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.config.GeoServer;
@@ -27,7 +39,9 @@ import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
 import org.geotools.data.Repository;
 import org.geotools.data.ServiceInfo;
+import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.postgis.PostGISDialect;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
@@ -40,12 +54,14 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.SQLDialect;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.util.SoftValueHashMap;
+import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -61,6 +77,10 @@ import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
+import org.opengis.filter.expression.Literal;
+import org.opengis.filter.expression.PropertyName;
 
 /**
  * A data store building OpenSearch for EO records based on a wrapped data store providing all
@@ -72,6 +92,8 @@ import org.opengis.filter.PropertyIsEqualTo;
  * @author Andrea Aime - GeoSolutions
  */
 public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.OpenSearchAccess {
+
+    static final Logger LOGGER = Logging.getLogger(JDBCOpenSearchAccess.class);
 
     protected static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
@@ -109,6 +131,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     private SoftValueHashMap<Name, SimpleFeatureSource> featureSourceCache =
             new SoftValueHashMap<>();
 
+    private SourcePropertyMapper propertyMapper;
+
     public JDBCOpenSearchAccess(
             Repository repository, Name delegateStoreName, String namespaceURI, GeoServer geoServer)
             throws IOException {
@@ -126,6 +150,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
         collectionFeatureType = buildCollectionFeatureType(delegate, this.namespaceURI);
         productFeatureType = buildProductFeatureType(delegate);
+        this.propertyMapper = new SourcePropertyMapper(productFeatureType);
     }
 
     String getNamespaceURI() {
@@ -413,7 +438,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             throws IOException {
         FeatureSource<FeatureType, Feature> collectionSource = getCollectionSource();
         Query query = new Query(collectionSource.getName().getLocalPart());
-        query.setPropertyNames(new String[] {COLLECTION_NAME, LAYERS});
+        query.setPropertyNames(COLLECTION_NAME, LAYERS);
         FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
         Map<String, List<CollectionLayer>> result = new LinkedHashMap<>();
         features.accepts(
@@ -465,6 +490,466 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         }
 
         throw new IOException("Schema '" + typeName + "' does not exist.");
+    }
+
+    /**
+     * Create indices on Product fields
+     *
+     * @param fieldName Product field name
+     * @param layerName Collection Type
+     * @param expression Expression that defines queryable from template
+     * @param fieldType Integer, Float, String, or NOT_JSON
+     */
+    @Override
+    public void createIndex(
+            String queryableName, String collectionName, Expression expression, FieldType fieldType)
+            throws IOException {
+        JDBCDataStore delegate = getRawDelegateStore();
+        SQLDialect dialect = delegate.getSQLDialect();
+        if (!(dialect instanceof PostGISDialect)) {
+            throw new IOException("Index creation is only current supported with PostGIS");
+        }
+        Connection cx = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            cx = delegate.getConnection(Transaction.AUTO_COMMIT);
+            switch (fieldType) {
+                case NOT_JSON:
+                    String indexTitle = getIndexTitle(collectionName, queryableName);
+                    String field = getIndexField(expression);
+                    if (!isFieldOrPointerIndexed(cx, field)) {
+                        preparedStatement =
+                                cx.prepareStatement(
+                                        "CREATE INDEX IF NOT EXISTS "
+                                                + indexTitle
+                                                + " ON product ("
+                                                + field
+                                                + ")");
+                        preparedStatement.execute();
+                    } else {
+                        indexTitle = getExistingIndexTitle(cx, field);
+                    }
+                    recordIndex(cx, collectionName, field, indexTitle);
+                    break;
+                case String:
+                    String pointer = encodeJsonPointer((Function) expression, fieldType);
+                    String stindexTitle = getIndexTitle(collectionName, queryableName);
+                    if (!isFieldOrPointerIndexed(cx, pointer)) {
+                        preparedStatement =
+                                cx.prepareStatement(
+                                        "CREATE INDEX IF NOT EXISTS "
+                                                + stindexTitle
+                                                + " ON product  USING BTREE (("
+                                                + pointer
+                                                + "))");
+                        preparedStatement.execute();
+                    } else {
+                        stindexTitle = getExistingIndexTitle(cx, pointer);
+                    }
+                    recordIndex(cx, collectionName, pointer, stindexTitle);
+                    break;
+                case Integer:
+                case Float:
+                case Double:
+                    String dpointer = encodeJsonPointer((Function) expression, fieldType);
+                    String dindexTitle = getIndexTitle(collectionName, queryableName);
+                    if (!isFieldOrPointerIndexed(cx, dpointer)) {
+                        preparedStatement =
+                                cx.prepareStatement(
+                                        "CREATE INDEX IF NOT EXISTS "
+                                                + dindexTitle
+                                                + " ON product  USING BTREE (("
+                                                + dpointer
+                                                + "))");
+                        preparedStatement.execute();
+                    } else {
+                        dindexTitle = getExistingIndexTitle(cx, dpointer);
+                    }
+                    recordIndex(cx, collectionName, dpointer, dindexTitle);
+                    break;
+            }
+
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Error when creating index on " + queryableName, e);
+        } catch (SQLException e) {
+            LOGGER.log(Level.WARNING, "Error when creating index on " + queryableName, e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+            } catch (SQLException e) {
+                LOGGER.log(Level.WARNING, "Error while closing database resource", e);
+            }
+            delegate.closeSafe(cx);
+        }
+    }
+
+    private String getExistingIndexTitle(Connection cx, String fieldOrPointer) throws SQLException {
+        String out = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        try {
+            preparedStatement =
+                    cx.prepareStatement(
+                            "SELECT name FROM queryable_idx_tracker WHERE expression = ? LIMIT 1");
+            preparedStatement.setString(1, fieldOrPointer);
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                out = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Exception while trying to query for name of index for expression "
+                            + fieldOrPointer,
+                    e);
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        }
+        return out;
+    }
+
+    private boolean isFieldOrPointerIndexed(Connection cx, String fieldOrPointer)
+            throws SQLException {
+        boolean out = false;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        try {
+            preparedStatement =
+                    cx.prepareStatement(
+                            "SELECT count(*)>0 FROM queryable_idx_tracker WHERE expression = ?");
+            preparedStatement.setString(1, fieldOrPointer);
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                out = rs.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Exception while trying to query for existence of indices for expression "
+                            + fieldOrPointer,
+                    e);
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        }
+        return out;
+    }
+
+    private void recordIndex(
+            Connection cx, String collectionName, String fieldOrPointer, String indexTitle)
+            throws SQLException {
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement =
+                    cx.prepareStatement(
+                            "insert into queryable_idx_tracker (name, collection, expression) "
+                                    + "values (?,?,?)");
+            preparedStatement.setString(1, indexTitle);
+            preparedStatement.setString(2, collectionName);
+            preparedStatement.setString(3, fieldOrPointer);
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Exception while trying to record existence of indices for expression "
+                            + fieldOrPointer,
+                    e);
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        }
+    }
+
+    /**
+     * Drop product table index
+     *
+     * @param fieldName Product field name
+     * @param value
+     * @param type
+     */
+    @Override
+    public void dropIndex(
+            String collectionName, String fieldName, Expression expression, FieldType fieldType)
+            throws IOException {
+        JDBCDataStore delegate = getRawDelegateStore();
+        SQLDialect dialect = delegate.getSQLDialect();
+        if (!(dialect instanceof PostGISDialect)) {
+            throw new IOException("Index deletion is only current supported with PostGIS");
+        }
+        Connection cx = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            cx = delegate.getConnection(Transaction.AUTO_COMMIT);
+            String indexExpression = null;
+            if (fieldType == FieldType.NOT_JSON) {
+                indexExpression = getIndexField(expression);
+            } else {
+                indexExpression = encodeJsonPointer((Function) expression, fieldType);
+            }
+            int indexWithExpressionCount = getIndexExpressionCount(cx, indexExpression);
+            String indexName = deleteIndexExpresssionRecord(cx, collectionName, indexExpression);
+            if (indexWithExpressionCount
+                    <= 1) { // we get the count before we delete the expression record and only drop
+                // index if it is the only one with this expression
+                preparedStatement = cx.prepareStatement("DROP INDEX IF EXISTS " + indexName);
+                preparedStatement.execute();
+            }
+
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Error when deleting index on " + fieldName, e);
+        } catch (SQLException e) {
+            LOGGER.log(Level.WARNING, "Error when deleting index on " + fieldName, e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+            } catch (SQLException e) {
+                LOGGER.log(Level.WARNING, "Exception while closing database resource: ", e);
+            }
+            delegate.closeSafe(cx);
+        }
+    }
+
+    private String deleteIndexExpresssionRecord(Connection cx, String collection, String expression)
+            throws SQLException {
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        String out = null;
+        try {
+            preparedStatement =
+                    cx.prepareStatement(
+                            "DELETE FROM queryable_idx_tracker WHERE collection = ? AND expression = ? RETURNING name");
+            preparedStatement.setString(1, collection);
+            preparedStatement.setString(2, expression);
+            preparedStatement.execute();
+            rs = preparedStatement.getResultSet();
+            while (rs.next()) {
+                out = rs.getString(1);
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Exception while trying to delete record of index "
+                            + collection
+                            + ":"
+                            + expression,
+                    e);
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        }
+        return out;
+    }
+
+    private int getIndexExpressionCount(Connection cx, String indexExpression) throws SQLException {
+        int out = 0;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        try {
+            preparedStatement =
+                    cx.prepareStatement(
+                            "SELECT count(*) FROM queryable_idx_tracker WHERE expression = ?");
+            preparedStatement.setString(1, indexExpression);
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                out = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Exception while trying to query for count of indices for expression "
+                            + indexExpression,
+                    e);
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        }
+        return out;
+    }
+
+    @Override
+    public List<String> getIndexNamesByLayer(String tableName) {
+        List<String> out = new ArrayList<>();
+        JDBCDataStore delegate = getRawDelegateStore();
+        SQLDialect dialect = delegate.getSQLDialect();
+        if (dialect instanceof PostGISDialect) {
+            Connection cx = null;
+            PreparedStatement preparedStatement = null;
+            ResultSet rs = null;
+            try {
+                cx = delegate.getConnection(Transaction.AUTO_COMMIT);
+                preparedStatement =
+                        cx.prepareStatement("SELECT indexname FROM pg_indexes WHERE tablename = ?");
+                preparedStatement.setString(1, tableName);
+                rs = preparedStatement.executeQuery();
+                while (rs.next()) {
+                    out.add(rs.getString(1));
+                }
+
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, "Error when getting index  list for " + tableName, e);
+            } catch (SQLException e) {
+                LOGGER.log(Level.WARNING, "Error when getting index list for " + tableName, e);
+            } finally {
+                try {
+                    if (rs != null) rs.close();
+                    if (preparedStatement != null) preparedStatement.close();
+                } catch (SQLException e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Error when closing database resources after "
+                                    + "getting index list for "
+                                    + tableName,
+                            e);
+                }
+                delegate.closeSafe(cx);
+            }
+        }
+        return out;
+    }
+
+    private String getIndexField(Expression expression) throws IOException {
+        String out = expression.toString();
+        if (expression instanceof AttributeExpressionImpl) {
+            AttributeExpressionImpl aei = (AttributeExpressionImpl) expression;
+            String rawColumn = aei.getPropertyName();
+            out = propertyMapper.getSourceName(rawColumn);
+            out = "\"" + aei.getPropertyName() + "\"";
+        } else if (expression instanceof Function) {
+            Function function = (Function) expression;
+            if (function.getParameters().get(0) instanceof PropertyName) {
+                String rawColumn = function.getParameters().get(0).toString();
+                out = propertyMapper.getSourceName(rawColumn);
+                out = "\"" + out + "\"";
+            } else {
+                throw new IOException(
+                        "The first argument for the function "
+                                + function.toString()
+                                + " arg: "
+                                + function.getParameters().get(0).toString()
+                                + " is not "
+                                + " property name and cannot be converted into a field name");
+            }
+        } else {
+            throw new IOException(
+                    "Expression "
+                            + expression.toString()
+                            + " is neither a Function nor a "
+                            + "AttributExpression and can not be converted into a field name");
+        }
+
+        return out;
+    }
+
+    private String getIndexTitle(String collectionName, String fieldName) {
+        return collectionName.replaceAll(":", "_") + fieldName.replaceAll(":", "_") + "_idx";
+    }
+
+    private String encodeJsonPointer(Function jsonPointer, FieldType type) throws IOException {
+        StringBuilder out = new StringBuilder();
+        Expression json = getParameter(jsonPointer, 0, true);
+        Expression pointer = getParameter(jsonPointer, 1, true);
+        if (json instanceof PropertyName && pointer instanceof Literal) {
+            // if not a string need to cast the json attribute
+            boolean needCast = !type.equals(FieldType.String);
+            if (needCast) out.append('(');
+            out.append("\"");
+            out.append(((PropertyName) json).getPropertyName());
+            out.append("\"");
+            String strPointer = ((Literal) pointer).getValue().toString();
+            List<String> pointerEl =
+                    Stream.of(strPointer.split("/"))
+                            .filter(p -> !p.equals(""))
+                            .collect(Collectors.toList());
+            for (int i = 0; i < pointerEl.size(); i++) {
+                String p = pointerEl.get(i);
+                if (i != pointerEl.size() - 1) out.append(" -> ");
+                // using for last element the ->> operator
+                // to have a text instead of a json returned
+                else out.append(" ->> ");
+                out.append("'");
+                out.append(p);
+                out.append("'");
+            }
+            if (needCast) {
+                // cast from text to needed type
+                out.append(')');
+                out.append(cast("", type));
+            }
+        } else {
+            throw new IOException(
+                    "The first argument of the JSONPointer has to be a property name "
+                            + "and the second has to be a literal");
+        }
+        return out.toString();
+    }
+
+    private String cast(String property, FieldType type) {
+        if (String.class.getSimpleName().equals(type.name())) {
+            return property + "::text";
+        } else if (Short.class.getSimpleName().equals(type.name())
+                || Byte.class.equals(type.name())) {
+            return property + "::smallint";
+        } else if (Integer.class.getSimpleName().equals(type.name())) {
+            return property + "::integer";
+        } else if (Long.class.getSimpleName().equals(type.name())) {
+            return property + "::bigint";
+        } else if (Float.class.getSimpleName().equals(type.name())) {
+            return property + "::real";
+        } else if (Double.class.getSimpleName().equals(type.name())) {
+            return property + "::float8";
+        } else if (BigInteger.class.getSimpleName().equals(type.name())) {
+            return property + "::numeric";
+        } else if (BigDecimal.class.getSimpleName().equals(type.name())) {
+            return property + "::decimal";
+        } else if (Double.class.getSimpleName().equals(type.name())) {
+            return property + "::float8";
+        } else if (Time.class.getSimpleName().equals(type.name())) {
+            return property + "::time";
+        } else if (Timestamp.class.getSimpleName().equals(type.name())) {
+            return property + "::timestamp";
+        } else if (Date.class.getSimpleName().equals(type.name())) {
+            return property + "::date";
+        } else if (java.util.Date.class.getSimpleName().equals(type.name())) {
+            return property + "::timestamp";
+        } else {
+            // dunno how to cast, leave as is
+            return property;
+        }
+    }
+
+    Expression getParameter(Function function, int idx, boolean mandatory) {
+        final List<Expression> params = function.getParameters();
+        if (params == null || params.size() <= idx) {
+            if (mandatory) {
+                throw new IllegalArgumentException(
+                        "Missing parameter number "
+                                + (idx + 1)
+                                + "for function "
+                                + function.getName()
+                                + ", cannot encode in SQL");
+            }
+        }
+        return params.get(idx);
     }
 
     public SimpleFeatureSource getCollectionGranulesSource(String typeName) throws IOException {

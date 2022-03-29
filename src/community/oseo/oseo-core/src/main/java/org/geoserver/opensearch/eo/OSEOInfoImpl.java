@@ -22,6 +22,8 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     String attribution;
 
+    String globalQueryables = new String();
+
     @Override
     public int getRecordsPerPage() {
         return recordsPerPage == 0 ? DEFAULT_RECORDS_PER_PAGE : recordsPerPage;
@@ -61,11 +63,23 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
         this.openSearchAccessStoreId = openSearchAccessStoreId;
     }
 
+    @Override
     public String getAttribution() {
         return attribution;
     }
 
+    @Override
     public void setAttribution(String attribution) {
         this.attribution = attribution;
+    }
+
+    @Override
+    public void setGlobalQueryables(String globalQueryables) {
+        this.globalQueryables = globalQueryables;
+    }
+
+    @Override
+    public String getGlobalQueryables() {
+        return globalQueryables;
     }
 }

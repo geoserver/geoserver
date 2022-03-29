@@ -53,7 +53,8 @@ a more up to date version of it):
       "eoWavelength" int,
       "eoSecurityConstraints" boolean,
       "eoDissemination" varchar,
-      "eoAcquisitionStation" varchar
+      "eoAcquisitionStation" varchar,
+      "queryables" varchar[]
     );
 
 Most of the attributes should be rather self-explanatory to those familiar with OGC Earth Observation terminology.

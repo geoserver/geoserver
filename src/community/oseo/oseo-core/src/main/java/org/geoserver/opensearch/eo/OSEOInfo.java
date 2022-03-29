@@ -48,4 +48,9 @@ public interface OSEOInfo extends ServiceInfo {
     String getAttribution();
 
     void setAttribution(String attribution);
+
+    /** Sets the queryable attributes for all collections */
+    void setGlobalQueryables(String globalQueryables);
+
+    String getGlobalQueryables();
 }

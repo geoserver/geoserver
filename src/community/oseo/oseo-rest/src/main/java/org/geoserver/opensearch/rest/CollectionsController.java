@@ -21,10 +21,14 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.OseoEvent;
+import org.geoserver.opensearch.eo.OseoEventListener;
+import org.geoserver.opensearch.eo.OseoEventType;
 import org.geoserver.opensearch.eo.store.CollectionLayer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -75,7 +79,7 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections")
 public class CollectionsController extends AbstractOpenSearchController {
-
+    protected List<OseoEventListener> eventListeners = new ArrayList<>();
     /** List of parts making up a zipfile for a collection */
     enum CollectionPart implements ZipPart {
         Collection("collection.json"),
@@ -112,6 +116,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             Catalog catalog) {
         super(accessProvider, jsonConverter);
         this.catalog = catalog;
+        eventListeners.addAll(GeoServerExtensions.extensions(OseoEventListener.class));
     }
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -167,6 +172,8 @@ public class CollectionsController extends AbstractOpenSearchController {
 
         // insert the new feature
         runTransactionOnCollectionStore(fs -> fs.addFeatures(singleton(collectionFeature)));
+
+        broadcastOseoEvent(OseoEventType.POST_INSERT, eoId, null);
 
         // if got here, all is fine
         return returnCreatedCollectionReference(request, eoId);
@@ -224,6 +231,7 @@ public class CollectionsController extends AbstractOpenSearchController {
                     }
                 });
 
+        broadcastOseoEvent(OseoEventType.POST_INSERT, eoId, null);
         return returnCreatedCollectionReference(request, eoId);
     }
 
@@ -299,11 +307,23 @@ public class CollectionsController extends AbstractOpenSearchController {
             names.add(propertyName);
             values.add(p.getValue());
         }
+        broadcastOseoEvent(OseoEventType.PRE_UPDATE, collection, names);
         Name[] attributeNames = (Name[]) names.toArray(new Name[names.size()]);
         Object[] attributeValues = (Object[]) values.toArray();
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(
                 fs -> fs.modifyFeatures(attributeNames, attributeValues, filter));
+        broadcastOseoEvent(OseoEventType.POST_UPDATE, collection, names);
+    }
+
+    private void broadcastOseoEvent(
+            OseoEventType eventType, String collectionName, List<Name> names) {
+        OseoListenerMux oseoListenerMux = new OseoListenerMux();
+        OseoEvent oseovent = new OseoEvent();
+        oseovent.setType(eventType);
+        oseovent.setCollectionName(collectionName);
+        oseovent.setAttributeNames(names);
+        oseoListenerMux.dataStoreChange(oseovent);
     }
 
     @DeleteMapping(path = "{collection}")
@@ -312,6 +332,8 @@ public class CollectionsController extends AbstractOpenSearchController {
             throws IOException {
         // check the collection exists
         queryCollection(collection, q -> {});
+
+        broadcastOseoEvent(OseoEventType.PRE_DELETE, collection, null);
 
         // TODO: handle cascading on products, and removing the publishing side without removing the
         // metadata
@@ -383,7 +405,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             // rethrow to make the transaction fail
             throw new RuntimeException(e);
         }
-
+        broadcastOseoEvent(OseoEventType.POST_INSERT, collection, null);
         // see if we have to return a creation or not
         if (previousLayer != null) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -498,6 +520,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         // check the collection is there
         queryCollection(collection, q -> {});
 
+        broadcastOseoEvent(OseoEventType.PRE_DELETE, collection, null);
         // prepare the update
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(
@@ -769,5 +792,19 @@ public class CollectionsController extends AbstractOpenSearchController {
             throws IOException {
         return createReplaceLayer(
                 collection, collectionLayer, l -> collectionLayer.getLayer().equals(l.getLayer()));
+    }
+
+    class OseoListenerMux implements OseoEventListener {
+        public void dataStoreChange(List listeners, OseoEvent event) {
+            for (Object o : listeners) {
+                OseoEventListener listener = (OseoEventListener) o;
+                listener.dataStoreChange(event);
+            }
+        }
+
+        @Override
+        public void dataStoreChange(OseoEvent event) {
+            dataStoreChange(eventListeners, event);
+        }
     }
 }

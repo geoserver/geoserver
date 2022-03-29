@@ -32,6 +32,11 @@
         "custom:clouds": "${opt:cloudCover}",
         "sat:absolute_orbit": "${eop:orbitNumber}",
         "sat:anx_datetime": "${eop:startTimeFromAscendingNode}",
+        "jsontest1": "$${jsonPointer(extraProperties, '/sat:platform_international_designator')}",
+        "jsontest2": "$${jsonPointer(extraProperties, '/sar:looks_range')}",
+        "jsontest3": "$${jsonPointer(extraProperties, '/sar:pixel_spacing_range')}",
+        "jsontest4": "$${jsonPointer(extraProperties, '/sar:polarizations')}",
+        "jsontest5": "$${jsonPointer(extraProperties, '/s5p:shape')}",
         "$includeFlat":"${extraProperties}"
       },
       "collection": "${eop:parentIdentifier}",

@@ -119,6 +119,7 @@ paths:
                   "primary": true,
                   "timeStart" : "2012-04-23T18:25:43.511Z",
                   "timeEnd" : null,
+                  "queryables" : [ "s2:mean_solar_azimuth", "s2:datastrip_id", "view:sun_azimuth", "sat:anx_datetime", "custom:clouds", "datetime", "eo:cloud_cover" ],
                   "productcqlfilter" : null,
                   "masked" : false,
                   "eo:identifier" : "SENTINEL2",

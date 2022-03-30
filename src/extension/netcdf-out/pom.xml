@@ -111,14 +111,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!--  NetCDF logging dependencies -->
-    <!--
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-reload4j</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    -->
     <!-- TODO: relax this dependency: just need to depends on NetCDF java library from Unidata -->
     <dependency>
       <groupId>edu.ucar</groupId>

@@ -40,8 +40,12 @@
       <!-- log4j -->
       <!-- ============================== -->
       <dependency>
-        <groupId>ch.qos.reload4j</groupId>
-        <artifactId>reload4j</artifactId>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
       </dependency>
 
       <dependency>
@@ -65,7 +69,7 @@
         <version>${spring.version}</version>
       </dependency>
       <!-- added to solve: problem with class file or dependent class; nested 
-				exception is java.lang.NoClassDefFoundError: org/springframework/context/SmartLifecycle -->
+           exception is java.lang.NoClassDefFoundError: org/springframework/context/SmartLifecycle -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>

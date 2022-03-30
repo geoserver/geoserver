@@ -26,8 +26,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.security.AccessMode;
-import org.geoserver.security.impl.DataAccessRuleDAO;
+import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
@@ -45,21 +44,24 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.SimpleInternationalString;
 import org.junit.After;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
 
 public class ImportProcessTest extends WPSTestSupport {
 
+    @Before
+    public void login() {
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+    }
+
     @After
     public void removeNewLayers() {
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings2");
-        removeLayer(SystemTestData.CITE_PREFIX, "Buildings3");
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings4");
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings5");
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings6");
-        removeLayer(SystemTestData.CITE_PREFIX, "Buildings7");
-        removeLayer(SystemTestData.CITE_PREFIX, "Buildings8");
         removeStore(SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX + "data");
         removeStore(SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX + "raster");
     }
@@ -67,7 +69,6 @@ public class ImportProcessTest extends WPSTestSupport {
     /** Try to re-import buildings as another layer (different name, different projection) */
     @Test
     public void testImportBuildings() throws Exception {
-        setUpAccess(false, false);
         FeatureTypeInfo ti =
                 getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource =
@@ -93,7 +94,6 @@ public class ImportProcessTest extends WPSTestSupport {
 
     @Test
     public void testImportBuildingsProgress() throws Exception {
-        setUpAccess(false, false);
         FeatureTypeInfo ti =
                 getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource =
@@ -132,7 +132,6 @@ public class ImportProcessTest extends WPSTestSupport {
     @Test
     public void testImportBuildingsCancellation() throws Exception {
         Assume.assumeFalse(System.getProperty("macos-github-build") != null);
-        setUpAccess(false, false);
         FeatureTypeInfo ti =
                 getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource =
@@ -156,21 +155,27 @@ public class ImportProcessTest extends WPSTestSupport {
 
         final ImportProcess importer = new ImportProcess(getCatalog());
         final DefaultProgressListener listener = new DefaultProgressListener();
+        ThreadLocalsTransfer transfer = new ThreadLocalsTransfer();
         ExecutorService executor = Executors.newCachedThreadPool();
         try {
             Future<?> future =
                     executor.submit(
                             () -> {
-                                importer.execute(
-                                        testFeatureCollection,
-                                        null,
-                                        SystemTestData.CITE_PREFIX,
-                                        SystemTestData.CITE_PREFIX,
-                                        "Buildings2",
-                                        null,
-                                        null,
-                                        null,
-                                        listener);
+                                transfer.apply();
+                                try {
+                                    importer.execute(
+                                            testFeatureCollection,
+                                            null,
+                                            SystemTestData.CITE_PREFIX,
+                                            SystemTestData.CITE_PREFIX,
+                                            "Buildings2",
+                                            null,
+                                            null,
+                                            null,
+                                            listener);
+                                } finally {
+                                    transfer.cleanup();
+                                }
                             });
             // cancel the import
             listener.setTask(new SimpleInternationalString("Test message"));
@@ -193,7 +198,6 @@ public class ImportProcessTest extends WPSTestSupport {
     /** Try to re-import buildings as another layer (different name, different projection) */
     @Test
     public void testImportBuildingsForceCRS() throws Exception {
-        setUpAccess(false, false);
         FeatureTypeInfo ti =
                 getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource =
@@ -251,7 +255,6 @@ public class ImportProcessTest extends WPSTestSupport {
     /** Test creating a coverage store when a store name is specified but does not exist */
     @Test
     public void testCreateCoverageStore() throws Exception {
-        setUpAccess(false, false);
         String storeName = SystemTestData.CITE_PREFIX + "raster";
         // use Coverage2RenderedImageAdapterTest's method, just need any sample raster
         GridCoverage2D sampleCoverage =
@@ -275,33 +278,8 @@ public class ImportProcessTest extends WPSTestSupport {
     }
 
     @Test
-    public void testCreateCoverageStoreWithLogin() throws Exception {
-        setUpAccess(true, true);
-        String storeName = SystemTestData.CITE_PREFIX + "raster";
-        // use Coverage2RenderedImageAdapterTest's method, just need any sample raster
-        GridCoverage2D sampleCoverage =
-                Coverage2RenderedImageAdapterTest.createTestCoverage(500, 500, 0, 0, 10, 10);
-        CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName(storeName);
-        assertNull("Store already exists " + storeInfo, storeInfo);
-        ImportProcess importer = new ImportProcess(getCatalog());
-        String result =
-                importer.execute(
-                        null,
-                        sampleCoverage,
-                        SystemTestData.CITE_PREFIX,
-                        storeName,
-                        "Buildings7",
-                        CRS.decode("EPSG:4326"),
-                        null,
-                        null,
-                        null);
-        // expect workspace:layername
-        assertEquals(result, SystemTestData.CITE_PREFIX + ":" + "Buildings7");
-    }
-
-    @Test
     public void testCreateCoverageStoreAccessDenied() throws Exception {
-        setUpAccess(true, false);
+        logout();
         String storeName = SystemTestData.CITE_PREFIX + "raster";
         // use Coverage2RenderedImageAdapterTest's method, just need any sample raster
         GridCoverage2D sampleCoverage =
@@ -329,7 +307,6 @@ public class ImportProcessTest extends WPSTestSupport {
     /** Test creating a vector store when a store name is specified but does not exist */
     @Test
     public void testCreateDataStore() throws Exception {
-        setUpAccess(false, false);
         FeatureTypeInfo ti =
                 getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource =
@@ -356,36 +333,8 @@ public class ImportProcessTest extends WPSTestSupport {
     }
 
     @Test
-    public void testCreateDataStoreWithLogin() throws Exception {
-        setUpAccess(true, true);
-        FeatureTypeInfo ti =
-                getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
-        SimpleFeatureCollection rawSource =
-                (SimpleFeatureCollection) ti.getFeatureSource(null, null).getFeatures();
-        ForceCoordinateSystemFeatureResults sampleData =
-                new ForceCoordinateSystemFeatureResults(rawSource, CRS.decode("EPSG:4326"));
-        String storeName = SystemTestData.CITE_PREFIX + "data";
-        DataStoreInfo storeInfo = catalog.getDataStoreByName(storeName);
-        assertNull("Store already exists " + storeInfo, storeInfo);
-        ImportProcess importer = new ImportProcess(getCatalog());
-        String result =
-                importer.execute(
-                        sampleData,
-                        null,
-                        SystemTestData.CITE_PREFIX,
-                        storeName,
-                        "Buildings8",
-                        CRS.decode("EPSG:4326"),
-                        null,
-                        null,
-                        null);
-        // expect workspace:layername
-        assertEquals(result, SystemTestData.CITE_PREFIX + ":" + "Buildings8");
-    }
-
-    @Test
     public void testCreateDataStoreAccessDenied() throws Exception {
-        setUpAccess(true, false);
+        logout();
         FeatureTypeInfo ti =
                 getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource =
@@ -411,18 +360,5 @@ public class ImportProcessTest extends WPSTestSupport {
                                         null,
                                         null));
         assertEquals("Operation unallowed with the current privileges", exception.getMessage());
-    }
-
-    private void setUpAccess(boolean limitWrite, boolean login) throws IOException {
-        DataAccessRuleDAO.get().clear();
-        addLayerAccessRule("*", "*", AccessMode.READ, "*");
-        if (limitWrite) {
-            addLayerAccessRule("*", "*", AccessMode.WRITE, "ROLE_TEST");
-            if (login) {
-                login("test", "test", "ROLE_TEST");
-            }
-        } else {
-            addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
-        }
     }
 }

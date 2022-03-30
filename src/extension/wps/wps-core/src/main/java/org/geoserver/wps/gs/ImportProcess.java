@@ -31,10 +31,9 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.security.AccessLevel;
+import org.geoserver.security.AdminRequest;
 import org.geoserver.security.SecureCatalogImpl;
-import org.geoserver.security.SecureCatalogImpl.MixedModeBehavior;
-import org.geoserver.security.WrapperPolicy;
+import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.wps.WPSException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -153,7 +152,8 @@ public class ImportProcess implements GeoServerProcess {
         listener.started();
         listener.progress(0);
 
-        // first off, decide what is the target store
+        // first off, decide what is the target workspace
+        // call getWorkspaceByName before setting the AdminRequest
         WorkspaceInfo ws;
         if (workspace != null) {
             ws = catalog.getWorkspaceByName(workspace);
@@ -167,7 +167,39 @@ public class ImportProcess implements GeoServerProcess {
                         "The catalog is empty, could not find a default workspace");
             }
         }
-        checkWriteAccess(ws);
+
+        // set the AdminRequest thread local for the rest of this request
+        try {
+            AdminRequest.start(this);
+            return executeAsAdminRequest(
+                    features,
+                    coverage,
+                    workspace,
+                    ws,
+                    store,
+                    name,
+                    srs,
+                    srsHandling,
+                    styleName,
+                    listener);
+        } finally {
+            AdminRequest.finish();
+        }
+    }
+
+    private String executeAsAdminRequest(
+            SimpleFeatureCollection features,
+            GridCoverage2D coverage,
+            String workspace,
+            WorkspaceInfo ws,
+            String store,
+            String name,
+            CoordinateReferenceSystem srs,
+            ProjectionPolicy srsHandling,
+            String styleName,
+            ProgressListener listener) {
+        // verify that the user has admin privileges for the target workspace
+        checkAdminAccess(ws);
 
         // create a builder to help build catalog objects
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -254,17 +286,13 @@ public class ImportProcess implements GeoServerProcess {
         return null;
     }
 
-    private static void checkWriteAccess(WorkspaceInfo workspace) {
-        // This is essentially the same code to check the access level as used by
-        // org.geoserver.security.SecureCatalogImpl.getDataStoreByName(String, String)
-        WrapperPolicy policy =
+    private static void checkAdminAccess(WorkspaceInfo info) {
+        WorkspaceAccessLimits wl =
                 GeoServerExtensions.bean(SecureCatalogImpl.class)
-                        .buildWrapperPolicy(
-                                SecurityContextHolder.getContext().getAuthentication(),
-                                workspace,
-                                workspace.getName(),
-                                MixedModeBehavior.CHALLENGE);
-        if (policy.level != AccessLevel.READ_WRITE) {
+                        .getResourceAccessManager()
+                        .getAccessLimits(
+                                SecurityContextHolder.getContext().getAuthentication(), info);
+        if (wl == null || !wl.isAdminable()) {
             throw new ProcessException("Operation unallowed with the current privileges");
         }
     }

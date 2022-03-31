@@ -577,6 +577,8 @@ public class GeofenceAccessManager
                 for (GrantedAuthority authority : user.getAuthorities()) {
                     if (config.getRoles().contains(authority.getAuthority())) {
                         role = authority.getAuthority();
+                        ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
+                        break;
                     }
                 }
                 LOGGER.log(Level.FINE, "Setting role for filter: {0}", new Object[] {role});

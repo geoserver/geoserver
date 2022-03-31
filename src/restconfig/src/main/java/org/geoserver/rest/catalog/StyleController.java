@@ -509,6 +509,7 @@ public class StyleController extends AbstractCatalogController {
                 && sld.getStyledLayers().length <= 1
                 && SLDHandler.VERSION_10.equals(version)) {
             info.setFormat(handler.getFormat());
+            info.setFormatVersion(version);
             resourcePool.writeStyle(info, style, true);
         } else {
             info.setFormat(handler.getFormat());

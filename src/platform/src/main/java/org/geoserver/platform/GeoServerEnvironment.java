@@ -4,11 +4,14 @@
  */
 package org.geoserver.platform;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
@@ -71,6 +74,9 @@ public class GeoServerEnvironment {
 
     private static final String PROPERTYFILENAME = "geoserver-environment.properties";
 
+    static final String ENV_PROPERTIES_NAME = "ENV_PROPERTIES";
+    private final String propertiesPath = GeoServerExtensions.getProperty(ENV_PROPERTIES_NAME);
+
     private static final String nullValue = "null";
 
     private final PropertyPlaceholderHelper helper =
@@ -97,27 +103,51 @@ public class GeoServerEnvironment {
 
     public GeoServerEnvironment() {
         try {
-            GeoServerResourceLoader loader =
-                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            configFile =
-                    new FileWatcher<Properties>(loader.get(PROPERTYFILENAME)) {
-
-                        @Override
-                        protected Properties parseFileContents(InputStream in) throws IOException {
-                            Properties p = new Properties();
-                            p.load(in);
-                            return p;
-                        }
-                    };
-
+            this.configFile = getEnvironmentProperties(propertiesPath);
             props = configFile.read();
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Could not find any '" + PROPERTYFILENAME + "' property file.",
-                    e);
+            String file = propertiesPath != null ? propertiesPath : PROPERTYFILENAME;
+            LOGGER.log(Level.WARNING, "Could not find any '" + file + "' property file.", e);
             props = new Properties();
         }
+    }
+
+    private FileWatcher<Properties> getEnvironmentProperties(String propertiesFilePath) {
+        if (propertiesFilePath != null && !"".equals(propertiesFilePath)) {
+            File propertyFile = new File(propertiesFilePath);
+            if (propertyFile.exists()) {
+                return loadGeoServerEnvProps(propertyFile);
+            } else {
+                String message =
+                        "File "
+                                + propertiesPath
+                                + " not found. Trying to load the environment properties from GeoServer datadir.";
+                LOGGER.warning(message);
+            }
+        }
+        return loadGeoServerEnvProps(PROPERTYFILENAME);
+    }
+
+    private FileWatcher<Properties> loadGeoServerEnvProps(File propertyFile) {
+        return loadGeoServerEnvProps(Files.asResource(propertyFile));
+    }
+
+    private FileWatcher<Properties> loadGeoServerEnvProps(String propertyFile) {
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        Resource resource = loader.get(propertyFile);
+        return loadGeoServerEnvProps(resource);
+    }
+
+    private FileWatcher<Properties> loadGeoServerEnvProps(Resource propertyFile) {
+        return new FileWatcher<Properties>(propertyFile) {
+
+            @Override
+            protected Properties parseFileContents(InputStream in) throws IOException {
+                Properties p = new Properties();
+                p.load(in);
+                return p;
+            }
+        };
     }
 
     protected String resolvePlaceholder(String placeholder) {

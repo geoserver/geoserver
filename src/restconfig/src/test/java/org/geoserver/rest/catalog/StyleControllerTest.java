@@ -49,6 +49,7 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.styling.Style;
 import org.geotools.util.URLs;
+import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -1400,6 +1401,26 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
         assertNotNull(getCatalog().getResourceLoader().find("styles/gear.png"));
         assertNotNull(getCatalog().getResourceLoader().find("styles/foo.sld"));
+    }
+
+    @Test
+    public void testUpdateSLD11With10() throws Exception {
+        // create the SLD 1.0
+        testPostAsSLD11();
+        StyleInfo style11 = catalog.getStyleByName("foo");
+        assertEquals(new Version("1.1.0"), style11.getFormatVersion());
+
+        // do a PUT with a 1.0 and no raw=true
+        String xml = newSLDXML();
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/styles/foo", xml, SLDHandler.MIMETYPE_10);
+        assertEquals(200, response.getStatus());
+
+        // check the version has been updated to 1.0
+        StyleInfo style10 = catalog.getStyleByName("foo");
+        assertEquals(new Version("1.0.0"), style10.getFormatVersion());
     }
 
     /**

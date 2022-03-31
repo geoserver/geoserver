@@ -103,7 +103,7 @@ public class GeoServerEnvironment {
 
     public GeoServerEnvironment() {
         try {
-            this.configFile = getFromPathOrDataDir(propertiesPath);
+            this.configFile = getEnvironmentProperties(propertiesPath);
             props = configFile.read();
         } catch (Exception e) {
             String file = propertiesPath != null ? propertiesPath : PROPERTYFILENAME;
@@ -112,24 +112,20 @@ public class GeoServerEnvironment {
         }
     }
 
-    private FileWatcher<Properties> getFromPathOrDataDir(String propertiesFilePath) {
-        FileWatcher<Properties> result = null;
+    private FileWatcher<Properties> getEnvironmentProperties(String propertiesFilePath) {
         if (propertiesFilePath != null && !"".equals(propertiesFilePath)) {
             File propertyFile = new File(propertiesFilePath);
             if (propertyFile.exists()) {
-                result = loadGeoServerEnvProps(propertyFile);
+                return loadGeoServerEnvProps(propertyFile);
             } else {
-                result = loadGeoServerEnvProps(PROPERTYFILENAME);
                 String message =
                         "File "
                                 + propertiesPath
                                 + " not found. Trying to load the environment properties from GeoServer datadir.";
                 LOGGER.warning(message);
             }
-        } else {
-            result = loadGeoServerEnvProps(PROPERTYFILENAME);
         }
-        return result;
+        return loadGeoServerEnvProps(PROPERTYFILENAME);
     }
 
     private FileWatcher<Properties> loadGeoServerEnvProps(File propertyFile) {

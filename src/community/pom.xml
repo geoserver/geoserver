@@ -42,7 +42,6 @@
             <descriptor>release/ext-pgraster.xml</descriptor>
             <descriptor>release/ext-dyndimension.xml</descriptor>
             <descriptor>release/ext-flatgeobuf.xml</descriptor>
-            <descriptor>release/ext-kmlppio.xml</descriptor>
             <descriptor>release/ext-gpx.xml</descriptor>
             <descriptor>release/ext-jms-cluster.xml</descriptor>
             <descriptor>release/ext-hz-cluster.xml</descriptor>
@@ -205,7 +204,6 @@
         <module>dyndimension</module>
         <module>flatgeobuf</module>
         <module>gpxppio</module>
-        <module>kmlppio</module>
         <module>jms-cluster</module>
         <module>hz-cluster</module>
         <module>solr</module>
@@ -351,12 +349,6 @@
       </build>
       <modules>
         <module>rest-ext</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>kmlppio</id>
-      <modules>
-        <module>kmlppio</module>
       </modules>
     </profile>
     <profile>

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -21,8 +22,11 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerTestSupport;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.junit.Test;
+import org.locationtech.jts.io.WKTReader;
+import org.opengis.feature.simple.SimpleFeature;
 import org.w3c.dom.Document;
 
 /** Test Cases for KML 2.2 Encoder. */
@@ -37,7 +41,7 @@ public class KMLPPIOTest extends GeoServerTestSupport {
         super.oneTimeSetUp();
 
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("", "http://www.topografix.com/GPX/1/1");
         namespaces.put("kml", "http://www.opengis.net/kml/2.2");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
@@ -45,7 +49,7 @@ public class KMLPPIOTest extends GeoServerTestSupport {
     }
 
     @Override
-    protected void setUpInternal() throws Exception {
+    protected void setUpInternal() {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
         SettingsInfo settings = global.getSettings();
@@ -118,5 +122,24 @@ public class KMLPPIOTest extends GeoServerTestSupport {
                 "t0000",
                 xpath.evaluate(
                         "//kml:ExtendedData/kml:SchemaData/kml:SimpleData[@name='id']", dom));
+    }
+
+    @Test
+    public void testParsePoi() throws Exception {
+        try (InputStream is = getClass().getResourceAsStream("poi.kml")) {
+            SimpleFeatureCollection pois = (SimpleFeatureCollection) ppio.decode(is);
+
+            // six pois
+            assertEquals(6, pois.size());
+
+            // parsing should respect input order, using a ListFeatureCollection
+            SimpleFeature poi = DataUtilities.first(pois);
+            assertEquals(
+                    new WKTReader().read("POINT(-74.01046109936333 40.707587626256554)"),
+                    poi.getDefaultGeometry());
+            assertEquals("museam", poi.getAttribute("NAME"));
+            assertEquals("pics/22037827-Ti.jpg", poi.getAttribute("THUMBNAIL"));
+            assertEquals("pics/22037827-L.jpg", poi.getAttribute("MAINPAGE"));
+        }
     }
 }

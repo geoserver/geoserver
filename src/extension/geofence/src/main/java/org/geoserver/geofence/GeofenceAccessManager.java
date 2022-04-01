@@ -575,7 +575,8 @@ public class GeofenceAccessManager
 
                 String role = "UNKNOWN";
                 for (GrantedAuthority authority : user.getAuthorities()) {
-                    if (config.getRoles().contains(authority.getAuthority())) {
+                    if (config.getRoles().contains(authority.getAuthority())
+                            || config.getRoles().contains("*")) {
                         role = authority.getAuthority();
                         ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
                         break;

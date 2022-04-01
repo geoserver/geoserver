@@ -30,6 +30,7 @@ Configure the following settings here:
 
 - Comma delimited list of mutually exclusive roles for authorization
 
+   - To match any role use the '*' symbol
 
 Cache
 -----

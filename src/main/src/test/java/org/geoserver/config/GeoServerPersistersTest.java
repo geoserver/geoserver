@@ -1297,13 +1297,13 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
     @Test
     public void testModifyLoggingAndReload() throws Exception {
         GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
-        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, "logs/geoserver.log");
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, "logs/geoserver.log");
         String path = getDataDirectory().getResourceLoader().getBaseDirectory().getPath();
         LoggingInfo logging = getGeoServer().getLogging();
         final File logFile = new File(path, "logging.xml");
         logging.setLocation("logs/geoserver.log");
         logging.setStdOutLogging(true);
-        logging.setLevel("VERBOSE_LOGGING.properties");
+        logging.setLevel("VERBOSE_LOGGING.xml");
         getGeoServer().save(logging);
         LoggingInfo currentLogging = getGeoServer().getLogging();
         assertEquals(currentLogging, logging);
@@ -1312,8 +1312,8 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
             content = IOUtils.toString(fis, Charset.defaultCharset());
         }
 
-        String newLevel = "QUIET_LOGGING.properties";
-        content = content.replace("VERBOSE_LOGGING.properties", newLevel);
+        String newLevel = "QUIET_LOGGING.xml";
+        content = content.replace("VERBOSE_LOGGING.xml", newLevel);
         try (FileOutputStream fos = new FileOutputStream(logFile); ) {
             IOUtils.write(content, fos, Charset.defaultCharset());
         }

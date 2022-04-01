@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.logging.Level;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
@@ -143,13 +144,17 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
      */
     @Override
     public void load() throws IOException {
-        LOGGER.info("Start reloading user/groups for service named " + getName());
+        if (LOGGER.isLoggable(Level.CONFIG)) {
+            LOGGER.config("Start reloading user/groups for service named " + getName());
+        }
         // prevent concurrent write from store and
         // read from service
         synchronized (this) {
             deserialize();
         }
-        LOGGER.info("Reloading user/groups successful for service named " + getName());
+        if (LOGGER.isLoggable(Level.CONFIG)) {
+            LOGGER.config("Reloading user/groups successful for service named " + getName());
+        }
         fireUserGroupLoadedEvent();
     }
 

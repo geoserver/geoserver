@@ -181,8 +181,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "true");
         GeoServerResourceLoader loader =
                 new GeoServerResourceLoader(testData.getDataDirectoryRoot());
-        LoggingUtils.configureGeoServerLogging(
-                loader, getClass().getResourceAsStream(getLogConfiguration()), false, true, null);
+
+        LoggingUtils.initLogging(loader, getLogConfiguration(), false, true, null);
 
         // HACK: once we port tests to the new data directory, remove this
         GeoServerLoader.setLegacy(useLegacyDataDirectory());
@@ -249,7 +249,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      * "/DEFAULT_LOGGING.properties".
      */
     protected String getLogConfiguration() {
-        return "/TEST_LOGGING.properties";
+        return "TEST_LOGGING.properties";
     }
 
     /**

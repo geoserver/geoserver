@@ -32,6 +32,43 @@ public class LoggingFilter implements Filter {
     protected boolean logBodies = true;
     protected boolean logHeaders = true;
 
+    /**
+     * Check if body can be logged, or is it a known binary type.
+     *
+     * <p>At the time of writing used to suppress application/zip logging (which would render the
+     * console unusable).
+     *
+     * @param contentType
+     * @return
+     */
+    protected boolean isBinary(String contentType) {
+        if (contentType == null) {
+            return true;
+        }
+        int sub = contentType.indexOf('/');
+        String mimeType = sub == -1 ? contentType : contentType.substring(0, sub).toLowerCase();
+        String subType = sub == -1 ? "" : contentType.substring(sub + 1).toLowerCase();
+
+        if (mimeType.equals("text")) {
+            return false;
+        } else if (mimeType.equals("image")) {
+            if (subType.contains("svg")) {
+                return false;
+            }
+            return true;
+        } else if (mimeType.equals("application")) {
+            if (subType.equals("zip")) {
+                return true;
+            }
+            if (subType.contains("xml") || subType.contains("json") || subType.contains("gml")) {
+                return false;
+            }
+            return true;
+        } else {
+            return false; // assume text by default
+        }
+    }
+
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
@@ -88,12 +125,18 @@ public class LoggingFilter implements Filter {
                     }
 
                     req = new BufferedRequestWrapper(hreq, encoding, bytes);
+
+                    if (isBinary(hreq.getHeader("Content-type"))) {
+                        message += bytes.length + " bytes\n";
+                    } else {
+                        message += (body == null ? "" : "\n" + body + "\n");
+                    }
                 }
             } else {
                 message = "" + req.getRemoteHost() + " made a non-HTTP request";
             }
+            logger.info(message);
 
-            logger.info(message + (body == null ? "" : "\n" + body + "\n"));
             long startTime = System.currentTimeMillis();
             chain.doFilter(req, res);
             long requestTime = System.currentTimeMillis() - startTime;

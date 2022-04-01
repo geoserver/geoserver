@@ -11,7 +11,7 @@ the following directory structure::
 	$GEOSERVER_DATA_DIR/data/<workspace>/<store>[/<file>]
 	
 For changing the `Root Directory` from `$GEOSERVER_DATA_DIR/data` to another directory, the user can define a parameter called `Root Directory path` 
-inside :ref:`Global Settings Page <config_globalsettings>` and :ref:`Workspace Settings Page <data_webadmin_workspaces>`. 
+inside :ref:`Global Settings Page <config_globalsettings_rest_root_dir>` and :ref:`Workspace Settings Page <data_webadmin_workspaces>`. 
 
 In order to avoid cross workspace contamination, the final path will always be::
 

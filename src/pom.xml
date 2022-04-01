@@ -1070,12 +1070,12 @@
       <dependency>
         <groupId>tomcat</groupId>
         <artifactId>jasper-compiler</artifactId>
-        <version>5.5.15</version>
+        <version>5.5.23</version>
       </dependency>
       <dependency>
         <groupId>tomcat</groupId>
         <artifactId>jasper-runtime</artifactId>
-        <version>5.5.15</version>
+        <version>5.5.23</version>
       </dependency>
       <dependency>
         <groupId>commons-el</groupId>

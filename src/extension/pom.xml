@@ -403,12 +403,6 @@
         <module>geopkg-output</module>
       </modules>
     </profile>
-    <profile>
-      <id>kmlppio</id>
-      <modules>
-        <module>kmlppio</module>
-      </modules>
-    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -458,7 +452,6 @@
         <module>wps-download</module>
         <module>mapml</module>
         <module>geopkg-output</module>
-        <module>kmlppio</module>
       </modules>
     </profile>
 
@@ -512,7 +505,6 @@
         <module>wps-jdbc</module>
         <module>mapml</module>
         <module>geopkg-output</module>
-        <module>kmlppio</module>
       </modules>
     </profile>
   </profiles>

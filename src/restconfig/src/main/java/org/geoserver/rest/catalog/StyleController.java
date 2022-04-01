@@ -374,8 +374,9 @@ public class StyleController extends AbstractCatalogController {
         PutIgnoringExtensionContentNegotiationStrategy stylePutContentNegotiationStrategy() {
             return new PutIgnoringExtensionContentNegotiationStrategy(
                     new PatternsRequestCondition(
-                            "/styles/{styleName}",
-                            "/workspaces/{workspaceName}/styles/{styleName}"),
+                            RestBaseController.ROOT_PATH + "/styles/{styleName}",
+                            RestBaseController.ROOT_PATH
+                                    + "/workspaces/{workspaceName}/styles/{styleName}"),
                     Arrays.asList(
                             MediaType.APPLICATION_JSON,
                             MediaType.APPLICATION_XML,

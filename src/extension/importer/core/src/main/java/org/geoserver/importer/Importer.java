@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -59,6 +61,7 @@ import org.geoserver.importer.transform.RasterTransformChain;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -67,14 +70,19 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.CloseableIterator;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.FeatureWriter;
+import org.geotools.data.FileGroupProvider;
+import org.geotools.data.FileServiceInfo;
+import org.geotools.data.ServiceInfo;
 import org.geotools.data.Transaction;
 import org.geotools.data.directory.DirectoryDataStore;
 import org.geotools.data.shapefile.ShapefileDataStore;
@@ -1161,7 +1169,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     /*
-     * an import that involves reading from the datastore and writing into a specified target store
+     * an import that involves reading from the store and writing into a specified target store
      */
     void doIndirectImport(ImportTask task) throws IOException {
         if (!task.getStore().isEnabled()) {
@@ -1217,32 +1225,19 @@ public class Importer implements DisposableBean, ApplicationListener {
                 currentlyProcessing.remove(task.getContext().getId());
             }
         } else {
-            // see if the store exposes a structured grid coverage reader
             StoreInfo store = task.getStore();
-            final String errorMessage =
-                    "Indirect raster import can only work against a structured grid coverage store (e.g., mosaic), this one is not: ";
             if (!(store instanceof CoverageStoreInfo)) {
-                throw new IllegalArgumentException(errorMessage + store);
+                throw new IllegalArgumentException(
+                        "Indirect raster import can only work against "
+                                + " CoverageStores, this one is not: "
+                                + store);
             }
 
-            // this is a ResourcePool reader, we should not close it
-            CoverageStoreInfo cs = (CoverageStoreInfo) store;
-            GridCoverageReader reader = cs.getGridCoverageReader(null, null);
-
-            if (!(reader instanceof StructuredGridCoverage2DReader)) {
-                throw new IllegalArgumentException(errorMessage + store);
-            }
-
-            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
-            ImportData data = task.getData();
-            harvestImportData(sr, data);
-
-            // check we have a target resource, if not, create it
-            if (task.getUpdateMode() == UpdateMode.CREATE) {
-                if (task.getLayer() != null && task.getLayer().getId() == null) {
-                    addToCatalog(task);
-                }
-            }
+            loadIntoCoverageStore(
+                    task,
+                    (CoverageStoreInfo) store,
+                    (GridFormat) format,
+                    (RasterTransformChain) tx);
         }
 
         if (!canceled && !doPostTransform(task, task.getData(), tx)) {
@@ -1492,6 +1487,156 @@ public class Importer implements DisposableBean, ApplicationListener {
         if (error != null) {
             throw error;
         }
+    }
+
+    void loadIntoCoverageStore(
+            ImportTask task, CoverageStoreInfo store, GridFormat format, RasterTransformChain tx)
+            throws IOException {
+        @SuppressWarnings("PMD.CloseResource") // conditionally created, then closed
+
+        // see if the store exposes a structured grid coverage reader
+        // this is a ResourcePool reader, we should not close it
+        GridCoverageReader reader = store.getGridCoverageReader(null, null);
+        boolean isStructured = reader instanceof StructuredGridCoverage2DReader;
+
+        if (task.getUpdateMode() == UpdateMode.REPLACE && !isStructured) {
+            // Replacing the coverage
+            replaceCoverage(format, reader, store, task);
+        } else {
+            harvestCoverage(task, store, reader, isStructured);
+        }
+    }
+
+    private void harvestCoverage(
+            ImportTask task,
+            CoverageStoreInfo store,
+            GridCoverageReader reader,
+            boolean isStructured)
+            throws IOException {
+        final String errorMessage =
+                "Indirect raster import can only work against a structured grid coverage store (e.g., mosaic), this one is not: ";
+        if (!(isStructured)) {
+            throw new IllegalArgumentException(errorMessage + store);
+        }
+        StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+        ImportData data = task.getData();
+        harvestImportData(sr, data);
+
+        // check we have a target resource, if not, create it
+        if (task.getUpdateMode() == UpdateMode.CREATE) {
+            if (task.getLayer() != null && task.getLayer().getId() == null) {
+                addToCatalog(task);
+            }
+        }
+    }
+
+    private void replaceCoverage(
+            GridFormat format, GridCoverageReader reader, CoverageStoreInfo store, ImportTask task)
+            throws IOException {
+        // Get the imported data
+        ImportData data = task.getData();
+        if (!(data instanceof SpatialFile)) {
+            throw new IllegalArgumentException(
+                    "Only FileData are supported for replace. This is " + data);
+        }
+
+        SpatialFile fileData = (SpatialFile) data;
+        File file = fileData.getFile();
+        String newFile = file.toURI().toURL().getFile();
+
+        // When replacing, we need to make sure that the provided layer and store matches what we
+        // have in the catalog.
+        CoverageStoreInfo originalStore =
+                catalog.getCoverageStoreByName(store.getWorkspace().getName(), store.getName());
+        LayerInfo inputLayer = task.getLayer();
+        LayerInfo originalLayer = checkResourceExists(store, originalStore, inputLayer);
+        CoverageInfo originalCoverage = (CoverageInfo) originalLayer.getResource();
+
+        // Marking original names for restore
+        String name = originalCoverage.getName();
+        String nativeName = originalCoverage.getNativeName();
+
+        // Marking previous file for eventual delete
+        GridCoverage2DReader oldReader = ((GridCoverage2DReader) reader);
+        List<File> oldFiles = getFiles(oldReader);
+
+        // Setting up the new coverage
+        GridCoverage2DReader newReader = (format.gridFormat()).getReader(file, null);
+        store.setURL(newFile);
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+        builder.setStore(store);
+        builder.setWorkspace(store.getWorkspace());
+        CoverageInfo coverage;
+        try {
+            coverage = builder.buildCoverage(newReader, Collections.emptyMap());
+        } catch (Exception e) {
+            throw new IOException(
+                    "Exception occurred while configuring the coverage during the replace: ", e);
+        }
+
+        // Updating the old coverage in the catalog with the properties of the imported one
+        OwsUtils.copy(coverage, originalCoverage, CoverageInfo.class);
+        List<File> newFiles = getFiles(newReader);
+
+        // Restore original names
+        originalCoverage.setName(name);
+        originalCoverage.setNativeName(nativeName);
+        catalog.save(originalCoverage);
+        catalog.save(store);
+
+        // Clean up the oldFiles when not overwriting it
+        // Removing oldFiles missing from the new list
+        oldFiles.removeAll(newFiles);
+        for (File oldFile : oldFiles) {
+            FileUtils.deleteQuietly(oldFile);
+        }
+    }
+
+    private List<File> getFiles(GridCoverage2DReader reader) throws IOException {
+        ServiceInfo info = reader.getInfo();
+        List<File> files = new ArrayList<>();
+        if (info instanceof FileServiceInfo) {
+            FileServiceInfo filesInfo = (FileServiceInfo) info;
+            // We are dealing with singleFile store so we can store the files in a list
+            try (CloseableIterator<FileGroupProvider.FileGroup> fileIterator =
+                    filesInfo.getFiles(null)) {
+                FileGroupProvider.FileGroup fileGroup = fileIterator.next();
+                File mainFile = fileGroup.getMainFile();
+                files.add(mainFile);
+                files.addAll(fileGroup.getSupportFiles());
+            }
+        } else {
+            URL url = info.getSource().toURL();
+            if ("file".equalsIgnoreCase(url.getProtocol())) {
+                files.add(new File(url.getFile()));
+            }
+        }
+        return files;
+    }
+
+    private LayerInfo checkResourceExists(
+            CoverageStoreInfo store, CoverageStoreInfo originalStore, LayerInfo inputLayer) {
+        String errorMessage =
+                "UpdateMode:REPLACE only works against existing resources in the catalog.";
+        LayerInfo originalLayer = catalog.getLayerByName(inputLayer.getName());
+        if (originalLayer == null) {
+            // the layer has been created before the REPLACE updatemode has been set,
+            // so it might have a different native name assigned.
+            // Let's try with the filename which is used by default to set the layer name
+            String url = store.getURL();
+            String baseName = FilenameUtils.getBaseName(url);
+            originalLayer = catalog.getLayerByName(baseName);
+        }
+        if (originalStore == null) {
+            errorMessage += "\nStore: " + store.getName() + " doesn't exist in the catalog";
+        }
+        if (originalLayer == null) {
+            errorMessage += "\nLayer: " + inputLayer.getName() + " doesn't exist in the catalog";
+        }
+        if (originalLayer == null || originalStore == null) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return originalLayer;
     }
 
     @SuppressWarnings("unchecked") // vague about feature types

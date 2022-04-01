@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -625,7 +626,7 @@ public class ImporterDataTest extends ImporterTestSupport {
     }
 
     @Test
-    public void testImportGeoTIFFFromDataDir() throws Exception {
+    public void testImportGeoTIFFFromDataDirAndReplace() throws Exception {
         File dataDir = getCatalog().getResourceLoader().getBaseDirectory();
 
         File dir = unpack("geotiff/EmissiveCampania.tif.bz2", dataDir);
@@ -650,6 +651,34 @@ public class ImporterDataTest extends ImporterTestSupport {
                 ((CoverageStoreInfo) task.getLayer().getResource().getStore()).getURL());
 
         runChecks("EmissiveCampania");
+        CoverageStoreInfo store = cat.getCoverageStoreByName("EmissiveCampania");
+
+        // Replacing the layer
+        File tempDir = FileUtils.getTempDirectory();
+        dir = unpack("geotiff/EmissiveCampania.tif.bz2", tempDir);
+        context =
+                importer.createContext(
+                        new SpatialFile(new File(dir, "EmissiveCampania.tif")),
+                        store.getWorkspace(),
+                        store);
+
+        List<ImportTask> tasks = context.getTasks();
+        assertEquals(1, tasks.size());
+        tasks.get(0).setUpdateMode(UpdateMode.REPLACE);
+        context.setTargetWorkspace(store.getWorkspace());
+        context.setTargetStore(store);
+        importer.run(context);
+
+        cat = getCatalog();
+        assertNotNull(cat.getLayerByName("EmissiveCampania"));
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+        runChecks("EmissiveCampania");
+        store = cat.getCoverageStoreByName("EmissiveCampania");
+        assertNotNull(store);
+        String dataDirName = FilenameUtils.getBaseName(dataDir.getAbsolutePath());
+        String url = store.getURL();
+        assertFalse(url.contains(dataDirName));
+        assertTrue(url.contains(FilenameUtils.getBaseName(tempDir.getAbsolutePath())));
     }
 
     @Test

@@ -33,7 +33,21 @@ public class DataAccessController extends AbstractAclController<DataAccessRule, 
 
     private String[] parseElements(String path) {
         // regexp: ignore extra spaces, split on dot
-        return path.split("\\s*\\.\\s*");
+        String[] rawParse = path.trim().split("\\s*\\.\\s*");
+        List<String> result = new ArrayList<>();
+        String prefix = null;
+        for (String raw : rawParse) {
+            if (prefix != null) raw = prefix + "." + raw;
+            // just assume the escape is invalid char besides \. and check it once only
+            if (raw.endsWith("\\")) {
+                prefix = raw.substring(0, raw.length() - 1);
+            } else {
+                result.add(raw);
+                prefix = null;
+            }
+        }
+
+        return result;
     }
 
     @Override

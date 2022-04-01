@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.ServiceInfo;
 import org.geoserver.kml.KMLEncoder;
 import org.geoserver.kml.KMLMapOutputFormat;
 import org.geoserver.kml.KmlEncodingContext;
@@ -28,15 +27,13 @@ import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.iterator.IteratorList;
 import org.geoserver.kml.iterator.WFSFeatureIteratorFactory;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.kml.KML;
-import org.geotools.kml.KMLConfiguration;
+import org.geotools.kml.v22.KMLConfiguration;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
@@ -74,11 +71,10 @@ public class KMLPPIO extends CDataPPIO {
         this.type = b.buildFeatureType();
     }
 
-    private static final HashMap<Name, Class<?>> getSignature(SimpleFeature f) {
-        HashMap ftype = new HashMap();
-        Collection properties = f.getProperties();
-        for (Object op : properties) {
-            Property p = (Property) op;
+    private static final Map<Name, Class<?>> getSignature(SimpleFeature f) {
+        Map<Name, Class<?>> ftype = new HashMap<>();
+        Collection<Property> properties = f.getProperties();
+        for (Property p : properties) {
             Class<?> c = p.getType().getBinding();
             if ((c.isAssignableFrom(String.class))
                     || (c.isAssignableFrom(Boolean.class))
@@ -92,7 +88,7 @@ public class KMLPPIO extends CDataPPIO {
         return ftype;
     }
 
-    private SimpleFeatureType getType(HashMap<Name, Class<?>> ftype) {
+    private SimpleFeatureType getType(Map<Name, Class<?>> ftype) {
         SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
 
         b.setName("puregeometries");
@@ -106,15 +102,16 @@ public class KMLPPIO extends CDataPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        StreamingParser parser = new StreamingParser(new KMLConfiguration(), input, KML.Placemark);
-        SimpleFeature f = null;
+        StreamingParser parser =
+                new StreamingParser(new KMLConfiguration(), input, SimpleFeature.class);
+        SimpleFeature f;
         ListFeatureCollection features = null;
-        HashMap oldftype = null;
+        Map<Name, Class<?>> oldftype = null;
         SimpleFeatureType type = null;
         SimpleFeatureBuilder featureBuilder = null;
 
         while ((f = (SimpleFeature) parser.parse()) != null) {
-            HashMap ftype = getSignature(f);
+            Map<Name, Class<?>> ftype = getSignature(f);
             if (oldftype == null) {
                 oldftype = ftype;
                 type = getType(ftype);
@@ -125,9 +122,8 @@ public class KMLPPIO extends CDataPPIO {
                     break;
                 }
             }
-            for (Object oentry : ftype.entrySet()) {
-                Map.Entry entry = (Map.Entry) oentry;
-                featureBuilder.add(f.getAttribute((Name) entry.getKey()));
+            for (Map.Entry<Name, Class<?>> entry : ftype.entrySet()) {
+                featureBuilder.add(f.getAttribute((entry.getKey())));
             }
             SimpleFeature fnew = featureBuilder.buildFeature(f.getID());
             features.add(fnew);
@@ -157,10 +153,9 @@ public class KMLPPIO extends CDataPPIO {
             fcObj = new ReprojectingFeatureCollection(fcObj, DefaultGeographicCRS.WGS84);
         }
 
-        List<SimpleFeatureCollection> collections = new ArrayList<SimpleFeatureCollection>();
+        List<SimpleFeatureCollection> collections = new ArrayList<>();
         collections.add(fcObj);
-        KmlEncodingContext context =
-                new WFSKmlEncodingContext(gs.getService(WFSInfo.class), collections);
+        KmlEncodingContext context = new WFSKmlEncodingContext(collections);
 
         // create the document
         Kml kml = new Kml();
@@ -179,9 +174,8 @@ public class KMLPPIO extends CDataPPIO {
         }
 
         // build the contents
-        for (SimpleFeatureCollection collection : collections) {
+        for (SimpleFeatureCollection fc : collections) {
             // create the folder
-            SimpleFeatureCollection fc = (SimpleFeatureCollection) collection;
             Folder folder = document.createAndAddFolder();
             folder.setName(fc.getSchema().getTypeName());
 
@@ -199,8 +193,7 @@ public class KMLPPIO extends CDataPPIO {
 
             // create the streaming features
             context.setCurrentFeatureCollection(fc);
-            List<Feature> features =
-                    new IteratorList<Feature>(new WFSFeatureIteratorFactory(context));
+            List<Feature> features = new IteratorList<>(new WFSFeatureIteratorFactory(context));
             context.addFeatures(folder, features);
         }
 
@@ -220,7 +213,7 @@ public class KMLPPIO extends CDataPPIO {
 
         private SimpleFeatureType featureType;
 
-        public WFSKmlEncodingContext(ServiceInfo si, List<SimpleFeatureCollection> collections) {
+        public WFSKmlEncodingContext(List<SimpleFeatureCollection> collections) {
             this.service = getService();
             this.collections = collections;
 
@@ -233,7 +226,7 @@ public class KMLPPIO extends CDataPPIO {
 
         @Override
         public List<SimpleFeatureType> getFeatureTypes() {
-            List<SimpleFeatureType> results = new ArrayList<SimpleFeatureType>();
+            List<SimpleFeatureType> results = new ArrayList<>();
             for (SimpleFeatureCollection fc : collections) {
                 results.add(fc.getSchema());
             }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This log4j configuration file needs to stay here, and is only used VERY BRIEFLY during geoserver -->
+<!-- startup. Initalization looks something like this:                                                -->
+<!-- 1) Web container startup                                                                         -->
+<!-- 2) geoserver.war web.xml executes org.geoserver.logging.LoggingStartupContextListener            -->
+<!--    - redirection to log4j gets initilized (and this file is used)                                -->
+<!--    - log4j get actually configured (and this file ceases to be useful                            -->
+<Configuration name="main-tests" status="warn" dest="out">
+    <CustomLevels>
+        <CustomLevel name="CONFIG" intLevel="450" />
+        <CustomLevel name="FINEST" intLevel="700" />
+    </CustomLevels>
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%date{HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.geotools" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+        <Logger name="org.geotools.factory" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+
+        <Logger name="org.geoserver" level="config" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+        <Logger name="org.vfny.geoserver" level="config" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+        <Logger name="org.vfny.geoserver.global" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+
+        <Logger name="org.geoserver.jdbcconfig" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+
+        <Logger name="org.springframework" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+        <Logger name="org.apache.wicket" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+
+        <Root level="warn">
+            <AppenderRef ref="stdout"/>
+        </Root>
+    </Loggers>
+</Configuration>

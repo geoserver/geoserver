@@ -2327,6 +2327,8 @@
               <verbose>true</verbose>
               <printFailingErrors>true</printFailingErrors>
               <includeTests>true</includeTests>
+              <sourceEncoding>UTF-8</sourceEncoding>
+              <outputEncoding>UTF-8</outputEncoding>
               <excludeRoots>
                 <excludeRoot>target/generated-sources</excludeRoot>
               </excludeRoots>
@@ -2467,6 +2469,7 @@
               </execution>
             </executions>
             <configuration>
+              <encoding>UTF-8</encoding>
               <logViolationsToConsole>true</logViolationsToConsole>
               <!-- ignore generated classes, e.g., javacc ones -->
               <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>

@@ -52,7 +52,7 @@ public class UnsupportedParameterTypeProcessFilter extends ProcessSelector
                         List<ProcessParameterIO> ppios = ProcessParameterIO.findAll(p, context);
                         if (ppios.isEmpty()) {
                             LOGGER.log(
-                                    Level.INFO,
+                                    Level.CONFIG,
                                     "Blacklisting process "
                                             + name.getURI()
                                             + " as the input "
@@ -69,7 +69,7 @@ public class UnsupportedParameterTypeProcessFilter extends ProcessSelector
                         List<ProcessParameterIO> ppios = ProcessParameterIO.findAll(p, context);
                         if (ppios.isEmpty()) {
                             LOGGER.log(
-                                    Level.INFO,
+                                    Level.CONFIG,
                                     "Blacklisting process "
                                             + name.getURI()
                                             + " as the output "
@@ -88,7 +88,7 @@ public class UnsupportedParameterTypeProcessFilter extends ProcessSelector
                     count++;
                 }
             }
-            LOGGER.info("Found " + count + " bindable processes in " + pf.getTitle());
+            LOGGER.config("Found " + count + " bindable processes in " + pf.getTitle());
         }
     }
 }

@@ -7,15 +7,28 @@ and will fail the build in case of rule violation.
 
 In case you want to just run the build with the full checks locally, use the following command::
 
-    mvn clean install -Dqa -Dall
+.. code-block:: bash
 
-Add extra parameters as you see fit, like ``-T1C -nsu`` to speed up the build, or ``-Dfmt.skip=true -DskipTests``
-to avoid running tests and code formatting.
+   mvn clean install -Dqa
+
+Add extra parameters as you see fit, like ``-T1C -nsu`` to speed up the build:
+
+.. code-block:: bash
+
+   mvn install -Prelease -Dqa -T1C -nsu -fae
+
+Flags documented below can be used to shut off individual QA checks when trouble shooting.
 
 PMD checks
 ----------
 
 The `PMD <https://pmd.github.io/>`__ checks are based on source code analysis for common errors, we have configured :command:`PMD` to check for common mistakes and bad practices such as accidentally including debug ``System.out.println()`` statements in your commit.
+
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <artifactId>maven-pmd-plugin</artifactId>
+   :end-before: </plugin>
+   :dedent: 12
 
 Rules are configured in our build `build/qa/pmd-ruleset.xml <https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml>`_:
 
@@ -24,7 +37,17 @@ Rules are configured in our build `build/qa/pmd-ruleset.xml <https://github.com/
    :start-after: </description>
    :end-before: </ruleset>
 
-In order to activate the :command:`PMD` checks, use the ``-Ppmd`` profile.
+In order to activate the :command:`PMD` checks, use the ``-Ppmd`` profile:
+
+.. code-block:: bash
+
+   mvn verify -Ppmd
+
+Or run `pmd:check` (requires use of ``initialize`` to locate `geoserverBaseDir/build/qa/pmd-ruleset.xml`):
+
+.. code-block:: bash
+
+   mvn initialize pmd:check -Ppmd
 
 :command:`PMD` will fail the build in case of violation, reporting the specific errors before the build
 error message, and a reference to a XML file with the same information after it (example taken from GeoTools)::
@@ -89,8 +112,22 @@ The `Error Prone <https://errorprone.info/>`_ checker runs a compiler plugin, re
 JDK 9 to run (hence the suggestion to use JDK 11, as the supported JDKs are currently only JDK 8 and JDK 11).
 Mind, running the profile with a JDK8 will result in a generic compile error!
 
-In order to activate the Error Prone checks, use the "-Perrorprone" for JDK 11 builds, or "Perrorprone8" for JDK 8 builds.
+In order to activate the Error Prone checks, use the "-Perrorprone" for JDK 11 builds.
 
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <id>errorprone</id>
+   :end-before: </profile>
+   :dedent: 6
+   
+Or "Perrorprone8" for JDK 8 builds.
+
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <id>errorprone8</id>
+   :end-before: </profile>
+   :dedent: 6
+   
 Any failure to comply with the "Error Prone" rules will show up as a compile error in the build output, e.g. (example taken from GeoTools)::
 
         9476 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.0:compile (default-compile) on project gt-coverage: Compilation failure
@@ -112,11 +149,19 @@ Spotbugs
 
 The `Spotbugs <https://spotbugs.github.io/>`_ checker runs as a post-compile bytecode analyzer.
 
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <groupId>com.github.spotbugs</groupId>
+   :end-before: </plugin>
+   :dedent: 12
+   
 Any failure to comply with the rules will show up as a compile error, e.g.::
 
-        33630 [ERROR] page could be null and is guaranteed to be dereferenced in org.geotools.swing.wizard.JWizard.setCurrentPanel(String) [org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard] Dereferenced at JWizard.java:[line 278]Dereferenced at JWizard.java:[line 269]Null value at JWizard.java:[line 254]Known null at JWizard.java:[line 255] NP_GUARANTEED_DEREF
+   33630 [ERROR] page could be null and is guaranteed to be dereferenced in org.geotools.swing.wizard.JWizard.setCurrentPanel(String) [org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard] Dereferenced at JWizard.java:[line 278]Dereferenced at JWizard.java:[line 269]Null value at JWizard.java:[line 254]Known null at JWizard.java:[line 255] NP_GUARANTEED_DEREF
 
-It is also possible to run the spotbugs:gui goal to have a Swing based issue explorer, e.g.::
+It is also possible to run the spotbugs:gui goal to have a Swing based issue explorer, e.g.:
+
+.. code-block:: bash
 
     mvn spotbugs:gui -Pspotbugs -f wms
 
@@ -135,7 +180,7 @@ or if it's a general one that should be ignored, the `build/qa/spotbugs-exclude.
 Checkstyle
 ----------
 
-Google Format is already in use to keep the code formatted, so Checkstyle is used mainly to verify javadocs errors
+Google Format is already in use to keep the code formatted, so `maven checkstyle plugin <https://maven.apache.org/plugins/maven-checkstyle-plugin/>`__ is used mainly to verify javadocs errors
 and presence of copyright headers, which none of the other tools can cover.
 
 Any failure to comply with the rules will show up as a compiler error in the build output, e.g.::
@@ -143,3 +188,43 @@ Any failure to comply with the rules will show up as a compiler error in the bui
         14610 [INFO] --- maven-checkstyle-plugin:3.0.0:check (default) @ gt-jdbc ---
         15563 [INFO] There is 1 error reported by Checkstyle 6.18 with /home/aaime/devel/git-gs/build/qa/checkstyle.xml ruleset.
         15572 [ERROR] wms/main/java/org/geoserver/wms/map/RenderedImageMapOutputFormat.java:[325,8] (javadoc) JavadocMethod: Unused @param tag for 'foobar'.
+
+Property ``checkstyle.skip=true`` used to skip formatting when running `qa` build:
+
+.. code-block:: bash
+
+   mvn clean install -Dqa -Dcheckstyle.skip=true
+
+
+Sortpom
+-------
+
+The `Sortpom Maven Plugin <https://github.com/Ekryd/sortpom/blob/master/README.md>`__ is used :file:`pom.xml` organized, while maintaining comments.
+
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <groupId>com.github.ekryd.sortpom</groupId>
+   :end-before: </plugin>
+   :dedent: 8
+
+Sorts current pom:
+
+.. code-block:: bash
+
+   mvn sortpom:sort
+
+Ignoring whitespace changes is the current pom.xml in the correct oder:
+
+   mvn sortpom:verify
+
+Property ``spotless.apply.skip`` used to choose ``sort`` or ``verify``:
+
+.. code-block:: bash
+
+   mvn verify -Dqa -Dpom.fmt.action=verify
+
+Property ``pom.fmt.skip`` used to skip sortpom plugin when running ``qa`` build:
+
+.. code-block:: bash
+
+   mvn clean install -Dqa -Dpom.fmt.skip=true

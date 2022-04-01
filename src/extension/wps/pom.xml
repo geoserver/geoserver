@@ -22,6 +22,7 @@
   <modules>
     <module>wps-core</module>
     <module>wps-cluster-hazelcast</module>
+    <module>wps-kml-ppio</module>
     <module>web-wps</module>
   </modules>
 </project>

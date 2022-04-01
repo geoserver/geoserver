@@ -49,7 +49,7 @@ public class DataAccessController extends AbstractAclController<DataAccessRule, 
             }
         }
 
-        return result;
+        return result.toArray(new String[result.size()]);
     }
 
     @Override

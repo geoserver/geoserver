@@ -10,7 +10,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -19,12 +18,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -513,7 +507,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
     @Test
     public void testAutoCodeLogsErrors() throws Exception {
-        try( TestAppender appender = TestAppender.createAppender("testAutoCodeLogsErrors",null)){
+        try (TestAppender appender = TestAppender.createAppender("testAutoCodeLogsErrors", null)) {
             appender.startRecording();
 
             GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);
@@ -534,5 +528,4 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             appender.stopRecording();
         }
     }
-
 }

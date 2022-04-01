@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import javax.servlet.ServletContext;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
@@ -61,23 +60,28 @@ public class LoggingUtils {
 
         // JD: before we wipe out the logging configuration, save any appenders that are not
         // console or file based. This allows for other types of appenders to remain intact
-        // when geoserver is reloaded.
-        LoggerContext ctx = (LoggerContext) org.apache.logging.log4j.LogManager.getContext(false);
-        Configuration configuration = ctx.getConfiguration();
-
+        // when geoserver is reloaded (for example a test appender)
         List<Appender> savedAppenders = new ArrayList<>();
+        {
+            @SuppressWarnings({
+                "resource",
+                "PMD.CloseResource"
+            }) // no need to close AutoClosable loggerContext here
+            LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+            Configuration configuration = loggerContext.getConfiguration();
 
-        for(Appender check : configuration.getAppenders().values()) {
-            if( check instanceof RollingFileAppender ){
-                continue;
+            for (Appender check : configuration.getAppenders().values()) {
+                if (check instanceof RollingFileAppender) {
+                    continue;
+                }
+                if (check instanceof org.apache.logging.log4j.core.appender.FileAppender) {
+                    continue;
+                }
+                if (check instanceof org.apache.logging.log4j.core.appender.ConsoleAppender) {
+                    continue;
+                }
+                savedAppenders.add(check);
             }
-            if( check instanceof org.apache.logging.log4j.core.appender.FileAppender){
-                continue;
-            }
-            if( check instanceof org.apache.logging.log4j.core.appender.ConsoleAppender){
-                continue;
-            }
-            savedAppenders.add(check);
         }
 
         Properties lprops = new Properties();
@@ -102,56 +106,83 @@ public class LoggingUtils {
             }
         }
 
-        // Configuration reset/reloaded now
-        ctx = (LoggerContext) org.apache.logging.log4j.LogManager.getContext(false);
-        configuration = ctx.getConfiguration();
+        // Configure via Log4J 1.2 API
+        org.apache.log4j.LogManager.resetConfiguration();
+        org.apache.log4j.PropertyConfigurator.configure(lprops);
 
-        if (!suppressFileLogging) {
-            // check resulting configuring of log4j file logger
-            Appender gslf = configuration.getAppender("geoserverlogfile");
+        // Check configuration via Log4J 2 API
+        {
+            @SuppressWarnings({
+                "resource",
+                "PMD.CloseResource"
+            }) // no need to close AutoClosable loggerContext here
+            LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+            Configuration configuration = loggerContext.getConfiguration();
 
-            if (gslf instanceof RollingFileAppender) {
-                RollingFileAppender fileAppender = (RollingFileAppender) gslf;
-                if( logFileName.equals(fileAppender.getFileName())) {
-                    LoggingInitializer.LOGGER.fine("Logging output set to file '" + logFileName + "'");
-                }
-                else {
-                    LoggingInitializer.LOGGER.fine("Logging output to file '" + fileAppender.getFileName() + "', ignored '"+logFileName+"'");
+            boolean reloadRequired = false;
+
+            if (!suppressFileLogging) {
+                // check resulting configuring of log4j file logger
+                Appender gslf = configuration.getAppender("geoserverlogfile");
+
+                if (gslf instanceof RollingFileAppender) {
+                    RollingFileAppender fileAppender = (RollingFileAppender) gslf;
+                    if (logFileName.equals(fileAppender.getFileName())) {
+                        LoggingInitializer.LOGGER.fine(
+                                "Logging output set to file '" + logFileName + "'");
+                    } else {
+                        LoggingInitializer.LOGGER.fine(
+                                "Logging output to file '"
+                                        + fileAppender.getFileName()
+                                        + "', ignored '"
+                                        + logFileName
+                                        + "'");
+                    }
+                } else if (gslf instanceof FileAppender) {
+                    FileAppender fileAppender = (FileAppender) gslf;
+                    if (logFileName.equals(fileAppender.getFileName())) {
+                        LoggingInitializer.LOGGER.fine(
+                                "Logging output set to file '" + logFileName + "'");
+                    } else {
+                        LoggingInitializer.LOGGER.fine(
+                                "Logging output to file '"
+                                        + fileAppender.getFileName()
+                                        + "', ignored '"
+                                        + logFileName
+                                        + "'");
+                    }
+                } else if (gslf != null) {
+                    LoggingInitializer.LOGGER.warning(
+                            "'log4j.appender.geoserverlogfile' appender is defined, but isn't a FileAppender.  GeoServer won't control the file-based logging.");
                 }
             }
-            if (gslf instanceof FileAppender) {
-                FileAppender fileAppender = (FileAppender) gslf;
-                if( logFileName.equals( fileAppender.getFileName() )){
-                    LoggingInitializer.LOGGER.fine("Logging output set to file '" + logFileName + "'");
-                }
-                else {
-                    LoggingInitializer.LOGGER.fine("Logging output to file '" + fileAppender.getFileName() + "', ignored '"+logFileName+"'");
+
+            // ... and the std output logging too
+            if (suppressStdOutLogging) {
+                LoggingInitializer.LOGGER.info(
+                        "Suppressing StdOut logging.  If you want to see GeoServer logs, be sure to look in '"
+                                + logFileName
+                                + "'");
+                for (Appender check : configuration.getAppenders().values()) {
+                    if (check instanceof ConsoleAppender) {
+                        configuration.getAppenders().values().remove(check);
+                        reloadRequired = true;
+                    }
                 }
             }
-            else if (gslf != null) {
-                LoggingInitializer.LOGGER.warning(
-                        "'log4j.appender.geoserverlogfile' appender is defined, but isn't a FileAppender.  GeoServer won't control the file-based logging.");
+            // add the appenders we saved above (for example a test appender)
+            for (Appender appender : savedAppenders) {
+                configuration.addAppender(appender);
+                reloadRequired = true;
+            }
+            LoggingInitializer.LOGGER.fine(
+                    "FINISHED CONFIGURING GEOSERVER LOGGING -------------------------");
+
+            if (reloadRequired) {
+                // we modifed the log4j configuration and should reload
+                loggerContext.reconfigure(configuration);
             }
         }
-
-        // ... and the std output logging too
-        if (suppressStdOutLogging) {
-            LoggingInitializer.LOGGER.info(
-                    "Suppressing StdOut logging.  If you want to see GeoServer logs, be sure to look in '"
-                            + logFileName
-                            + "'");
-            for( Appender check : configuration.getAppenders().values()){
-                if( check instanceof ConsoleAppender) {
-                    configuration.getAppenders().values().remove(check);
-                }
-            }
-        }
-        // add the appenders we saved above
-        for (Appender appender : savedAppenders) {
-            configuration.addAppender( appender );
-        }
-        LoggingInitializer.LOGGER.fine(
-                "FINISHED CONFIGURING GEOSERVER LOGGING -------------------------");
     }
 
     public static void initLogging(

@@ -29,8 +29,9 @@ public class LoggingStartupContextListenerTest {
 
     @Before
     public void cleanupLoggers() {
-        LoggerContext context = (LoggerContext) LogManager.getContext(false);
-        context.reconfigure();
+        try (LoggerContext context = (LoggerContext) LogManager.getContext(false)) {
+            context.reconfigure();
+        }
     }
 
     @Test
@@ -51,11 +52,20 @@ public class LoggingStartupContextListenerTest {
                 "GEOSERVER_LOG_LOCATION", new File(tmp, "foo.log").getAbsolutePath());
 
         // Lookup Log4J Core configuration
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration configuration = ctx.getConfiguration();
+        {
+            @SuppressWarnings({
+                "resource",
+                "PMD.CloseResource"
+            }) // no need to close AutoClosable loggerContext here
+            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
-        Appender appender = configuration.getAppender("geoserverlogfile");
-        assertNull("Expected geoserverlogfile to be null.  But was: " + appender, appender);
+            Configuration configuration = ctx.getConfiguration();
+
+            Appender appender = configuration.getAppender("geoserverlogfile");
+            assertNull("Expected geoserverlogfile to be null.  But was: " + appender, appender);
+
+            ctx.close();
+        }
 
         System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "false");
         try {
@@ -65,14 +75,22 @@ public class LoggingStartupContextListenerTest {
             System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "rel");
         }
 
-        ctx = (LoggerContext) LogManager.getContext(false);
-        configuration = ctx.getConfiguration();
+        // verify change
+        {
+            @SuppressWarnings({
+                "resource",
+                "PMD.CloseResource"
+            }) // no need to close AutoClosable loggerContext here
+            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
-        appender = configuration.getAppender("geoserverlogfile");
-        assertNotNull(appender);
-        assertTrue(appender instanceof RollingFileAppender);
-        RollingFileAppender fileAppender = (RollingFileAppender) appender;
-        assertEquals(new File(tmp, "foo.log").getCanonicalPath(), fileAppender.getFileName());
+            Configuration configuration = ctx.getConfiguration();
+
+            Appender appender = configuration.getAppender("geoserverlogfile");
+            assertNotNull("geoserverlogfile expected", appender);
+            assertTrue(appender instanceof RollingFileAppender);
+            RollingFileAppender fileAppender = (RollingFileAppender) appender;
+            assertEquals(new File(tmp, "foo.log").getCanonicalPath(), fileAppender.getFileName());
+        }
     }
 
     @Test

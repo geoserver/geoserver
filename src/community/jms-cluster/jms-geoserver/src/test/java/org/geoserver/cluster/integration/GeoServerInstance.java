@@ -185,11 +185,7 @@ public final class GeoServerInstance {
         GeoServerResourceLoader loader = new GeoServerResourceLoader(dataDirectory);
         // setting logging level
         LoggingUtils.configureGeoServerLogging(
-                loader,
-                this.getClass().getResourceAsStream("/TEST_LOGGING.properties"),
-                false,
-                true,
-                null);
+                loader, loader.get("/logs/TEST_LOGGING.xml"), false, true, null);
         // create a mocked servlet context and instantiate the application context
         MockServletContext servletContext = createServletContext();
         GeoServerTestApplicationContext applicationContext =

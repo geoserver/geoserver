@@ -163,7 +163,7 @@ public class LegacyConfigurationImporter {
 
                 ServiceInfo service = sl.load(geoServer);
                 if (service != null) {
-                    LOGGER.info("Loading service '" + service.getId() + "'");
+                    LOGGER.config("Loading service '" + service.getId() + "'");
                     geoServer.add(service);
                 }
             } catch (Exception e) {

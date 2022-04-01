@@ -100,8 +100,8 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache, Dispos
                         .expireAfterWrite(timeToLiveSeconds, TimeUnit.SECONDS)
                         .concurrencyLevel(concurrencyLevel)
                         .build();
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.info(
+        if (LOGGER.isLoggable(Level.CONFIG)) {
+            LOGGER.config(
                     "AuthenticationCache Initialized with "
                             + maxEntries
                             + " Max Entries, "
@@ -116,8 +116,8 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache, Dispos
         // schedule eviction thread
         scheduler.scheduleAtFixedRate(
                 evictionTask, cleanUpSeconds, cleanUpSeconds, TimeUnit.SECONDS);
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.info(
+        if (LOGGER.isLoggable(Level.CONFIG)) {
+            LOGGER.config(
                     "AuthenticationCache Eviction Task created to run every "
                             + cleanUpSeconds
                             + " seconds");

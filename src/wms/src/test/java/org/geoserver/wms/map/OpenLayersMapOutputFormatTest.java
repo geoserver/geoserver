@@ -42,6 +42,7 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.logging.TestAppender;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
@@ -512,10 +513,8 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
     @Test
     public void testAutoCodeLogsErrors() throws Exception {
-        final TestAppender appender = new TestAppender();
-        final Logger logger = Logger.getRootLogger();
-        logger.addAppender(appender);
-        try {
+        try( TestAppender appender = TestAppender.createAppender("testAutoCodeLogsErrors",null)){
+            appender.startRecording();
 
             GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);
             CoordinateReferenceSystem crs = CRS.decode("AUTO:42003,9001,-20,-45");
@@ -530,34 +529,10 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             int index = htmlDoc.indexOf("yx : {'EPSG:4326' : false}");
             assertTrue(index > -1);
 
-            for (LoggingEvent event : appender.getLog()) {
-                assertFalse(
-                        "Error was logged",
-                        event.getRenderedMessage().contains("Failed to determine CRS axis order"));
-            }
-        } finally {
-            logger.removeAppender(appender);
+            appender.assertFalse("Error was logged", "Failed to determine CRS axis order");
+
+            appender.stopRecording();
         }
     }
 
-    class TestAppender extends AppenderSkeleton {
-        private final List<LoggingEvent> log = new ArrayList<>();
-
-        @Override
-        public boolean requiresLayout() {
-            return false;
-        }
-
-        @Override
-        protected void append(final LoggingEvent loggingEvent) {
-            log.add(loggingEvent);
-        }
-
-        @Override
-        public void close() {}
-
-        public List<LoggingEvent> getLog() {
-            return new ArrayList<>(log);
-        }
-    }
 }

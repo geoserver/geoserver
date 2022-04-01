@@ -10,10 +10,10 @@
   <!-- set parent pom to community pom -->
   <parent>
     <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <artifactId>extension</artifactId>
     <version>2.20-SNAPSHOT</version>
   </parent>
-  <groupId>org.geoserver.community</groupId>
+  <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-kmlppio</artifactId>
   <packaging>jar</packaging>
   <name>KML PPIO for WPS</name>

@@ -404,6 +404,12 @@
         <module>mapml</module>
       </modules>
     </profile>
+    <profile>
+      <id>kmlppio</id>
+      <modules>
+        <module>kmlppio</module>
+      </modules>
+    </profile>
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -452,6 +458,11 @@
         <module>gwc-s3</module>
         <module>wps-download</module>
         <module>mapml</module>
+<<<<<<< HEAD
+=======
+        <module>geopkg-output</module>
+        <module>kmlppio</module>
+>>>>>>> c9cd251d66... [GEOS-10443] Graduate kml-ppio to extension. Move to extension, package along with WPS
       </modules>
     </profile>
 
@@ -505,6 +516,11 @@
         <module>wps-download</module>
         <module>wps-jdbc</module>
         <module>mapml</module>
+<<<<<<< HEAD
+=======
+        <module>geopkg-output</module>
+        <module>kmlppio</module>
+>>>>>>> c9cd251d66... [GEOS-10443] Graduate kml-ppio to extension. Move to extension, package along with WPS
       </modules>
     </profile>
   </profiles>

@@ -1043,7 +1043,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-kmlppio</artifactId>
+          <artifactId>gs-wps-kml-ppio</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

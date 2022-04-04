@@ -578,12 +578,12 @@ public class GeofenceAccessManager
                     if (config.getRoles().contains(authority.getAuthority())
                             || config.getRoles().contains("*")) {
                         role = authority.getAuthority();
-                        ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
                         break;
                     }
                 }
                 LOGGER.log(Level.FINE, "Setting role for filter: {0}", new Object[] {role});
                 ruleFilter.setRole(role);
+                ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
             } else {
                 String username = user.getName();
                 if (username == null || username.isEmpty()) {

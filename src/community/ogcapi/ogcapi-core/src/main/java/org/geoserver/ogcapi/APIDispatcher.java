@@ -131,7 +131,7 @@ public class APIDispatcher extends AbstractController {
         APIConfigurationSupport configurationSupport =
                 context.getAutowireCapableBeanFactory().createBean(APIConfigurationSupport.class);
         configurationSupport.setCallbacks(callbacks);
-        handlerAdapter = configurationSupport.requestMappingHandlerAdapter();
+        handlerAdapter = configurationSupport.createRequestMappingHandlerAdapter();
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
         // force GeoServer version of jackson as the first choice

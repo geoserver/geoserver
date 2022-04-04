@@ -167,6 +167,24 @@ public class GetRecordsTest extends MDTestSupport {
                 "http://localhost:8080/geoserver/wcs",
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[3]/gmd:linkage/gmd:URL",
                 d);
+
+        // test SRV
+        assertXpathEvaluatesTo(
+                "srv_works",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation",
+                d);
+        assertXpathEvaluatesTo(
+                "srv_works",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/srv:SV_ServiceIdentification/srv:serviceType/gco:LocalName/@codeSpace",
+                d);
+        assertXpathEvaluatesTo(
+                "srv_works",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/srv:SV_ServiceIdentification/srv:serviceTypeVersion/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "srv_works",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/srv:SV_ServiceIdentification/srv:couplingType/srv:SV_CouplingType/@codeListValue",
+                d);
     }
 
     @Test

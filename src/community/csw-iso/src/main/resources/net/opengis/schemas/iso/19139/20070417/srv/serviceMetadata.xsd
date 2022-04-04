@@ -1,0 +1,196 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" targetNamespace="http://www.isotc211.org/2005/srv" elementFormDefault="qualified" version="0.1">
+ <!-- ================================= Annotation ================================ -->
+ <xs:annotation>
+  <xs:documentation>This file was generated from ISO TC/211 UML class diagrams == 10-13-2006 11:14:04 ====== </xs:documentation>
+ </xs:annotation>
+ <!-- ================================== Imports ================================== -->
+ <xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="../gmd/identification.xsd"/>
+ <xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="../gco/gco.xsd"/>
+ <xs:include schemaLocation="../srv/serviceModel.xsd"/>
+ <!-- ########################################################################### -->
+ <!-- ########################################################################### -->
+ <!-- ================================== Classes ================================= -->
+ <xs:complexType name="SV_Parameter_Type">
+  <xs:complexContent>
+   <xs:extension base="gco:AbstractObject_Type">
+    <xs:sequence>
+     <xs:element name="name" type="gco:MemberName_Type"/>
+     <xs:element name="direction" type="srv:SV_ParameterDirection_PropertyType" minOccurs="0"/>
+     <xs:element name="description" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+     <xs:element name="optionality" type="gco:CharacterString_PropertyType"/>
+     <xs:element name="repeatability" type="gco:Boolean_PropertyType"/>
+     <xs:element name="valueType" type="gco:TypeName_PropertyType"/>
+    </xs:sequence>
+   </xs:extension>
+  </xs:complexContent>
+ </xs:complexType>
+ <!-- ........................................................................ -->
+ <xs:element name="SV_Parameter" type="srv:SV_Parameter_Type"/>
+ <!-- ........................................................................ -->
+ <xs:complexType name="SV_Parameter_PropertyType">
+  <xs:sequence>
+   <xs:element ref="srv:SV_Parameter" minOccurs="0"/>
+  </xs:sequence>
+  <xs:attributeGroup ref="gco:ObjectReference"/>
+  <xs:attribute ref="gco:nilReason"/>
+ </xs:complexType>
+ <!-- =========================================================================== -->
+ <xs:complexType name="SV_OperationMetadata_Type">
+  <xs:complexContent>
+   <xs:extension base="gco:AbstractObject_Type">
+    <xs:sequence>
+     <xs:element name="operationName" type="gco:CharacterString_PropertyType"/>
+     <xs:element name="DCP" type="srv:DCPList_PropertyType" maxOccurs="unbounded"/>
+     <xs:element name="operationDescription" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+     <xs:element name="invocationName" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+     <xs:element name="parameters" type="srv:SV_Parameter_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+     <xs:element name="connectPoint" type="gmd:CI_OnlineResource_PropertyType" maxOccurs="unbounded"/>
+     <xs:element name="dependsOn" type="srv:SV_OperationMetadata_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+   </xs:extension>
+  </xs:complexContent>
+ </xs:complexType>
+ <!-- ........................................................................ -->
+ <xs:element name="SV_OperationMetadata" type="srv:SV_OperationMetadata_Type"/>
+ <!-- ........................................................................ -->
+ <xs:complexType name="SV_OperationMetadata_PropertyType">
+  <xs:sequence>
+   <xs:element ref="srv:SV_OperationMetadata" minOccurs="0"/>
+  </xs:sequence>
+  <xs:attributeGroup ref="gco:ObjectReference"/>
+  <xs:attribute ref="gco:nilReason"/>
+ </xs:complexType>
+ <!-- =========================================================================== -->
+ <xs:complexType name="SV_ServiceIdentification_Type">
+  <xs:complexContent>
+   <xs:extension base="gmd:AbstractMD_Identification_Type">
+    <xs:sequence>
+     <xs:element name="serviceType" type="gco:GenericName_PropertyType"/>
+     <xs:element name="serviceTypeVersion" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+     <xs:element name="accessProperties" type="gmd:MD_StandardOrderProcess_PropertyType" minOccurs="0"/>
+     <xs:element name="restrictions" type="gmd:MD_Constraints_PropertyType" minOccurs="0"/>
+     <xs:element name="keywords" type="gmd:MD_Keywords_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+     <xs:element name="extent" type="gmd:EX_Extent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+     <xs:element name="coupledResource" type="srv:SV_CoupledResource_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+     <xs:element name="couplingType" type="srv:SV_CouplingType_PropertyType"/>
+     <xs:element name="containsOperations" type="srv:SV_OperationMetadata_PropertyType" maxOccurs="unbounded"/>
+     <xs:element name="operatesOn" type="gmd:MD_DataIdentification_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+   </xs:extension>
+  </xs:complexContent>
+ </xs:complexType>
+ <!-- ........................................................................ -->
+ <xs:element name="SV_ServiceIdentification" type="srv:SV_ServiceIdentification_Type" substitutionGroup="gmd:AbstractMD_Identification"/>
+ <!-- ........................................................................ -->
+ <xs:complexType name="SV_ServiceIdentification_PropertyType">
+  <xs:sequence>
+   <xs:element ref="srv:SV_ServiceIdentification" minOccurs="0"/>
+  </xs:sequence>
+  <xs:attributeGroup ref="gco:ObjectReference"/>
+  <xs:attribute ref="gco:nilReason"/>
+ </xs:complexType>
+ <!-- =========================================================================== -->
+ <xs:complexType name="SV_OperationChain_Type">
+  <xs:complexContent>
+   <xs:extension base="gco:AbstractObject_Type">
+    <xs:sequence>
+     <xs:element name="name" type="gco:CharacterString_PropertyType"/>
+     <xs:element name="description" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+     <xs:element name="operation" type="srv:SV_Operation_PropertyType" maxOccurs="unbounded"/>
+    </xs:sequence>
+   </xs:extension>
+  </xs:complexContent>
+ </xs:complexType>
+ <!-- ........................................................................ -->
+ <xs:element name="SV_OperationChain" type="srv:SV_OperationChain_Type"/>
+ <!-- ........................................................................ -->
+ <xs:complexType name="SV_OperationChain_PropertyType">
+  <xs:sequence>
+   <xs:element ref="srv:SV_OperationChain" minOccurs="0"/>
+  </xs:sequence>
+  <xs:attributeGroup ref="gco:ObjectReference"/>
+  <xs:attribute ref="gco:nilReason"/>
+ </xs:complexType>
+ <!-- =========================================================================== -->
+ <xs:complexType name="SV_OperationChainMetadata_Type">
+  <xs:complexContent>
+   <xs:extension base="gco:AbstractObject_Type">
+    <xs:sequence>
+     <xs:element name="name" type="gco:CharacterString_PropertyType"/>
+     <xs:element name="description" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+     <xs:element name="operation" type="srv:SV_OperationMetadata_PropertyType" maxOccurs="unbounded"/>
+    </xs:sequence>
+   </xs:extension>
+  </xs:complexContent>
+ </xs:complexType>
+ <!-- ........................................................................ -->
+ <xs:element name="SV_OperationChainMetadata" type="srv:SV_OperationChainMetadata_Type"/>
+ <!-- ........................................................................ -->
+ <xs:complexType name="SV_OperationChainMetadata_PropertyType">
+  <xs:sequence>
+   <xs:element ref="srv:SV_OperationChainMetadata" minOccurs="0"/>
+  </xs:sequence>
+  <xs:attributeGroup ref="gco:ObjectReference"/>
+  <xs:attribute ref="gco:nilReason"/>
+ </xs:complexType>
+ <!-- =========================================================================== -->
+ <xs:complexType name="SV_CoupledResource_Type">
+  <xs:complexContent>
+   <xs:extension base="gco:AbstractObject_Type">
+    <xs:sequence>
+     <xs:element name="operationName" type="gco:CharacterString_PropertyType"/>
+     <xs:element name="identifier" type="gco:CharacterString_PropertyType"/>
+     <xs:element ref="gco:ScopedName" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+   </xs:extension>
+  </xs:complexContent>
+ </xs:complexType>
+ <!-- ........................................................................ -->
+ <xs:element name="SV_CoupledResource" type="srv:SV_CoupledResource_Type"/>
+ <!-- ........................................................................ -->
+ <xs:complexType name="SV_CoupledResource_PropertyType">
+  <xs:sequence>
+   <xs:element ref="srv:SV_CoupledResource" minOccurs="0"/>
+  </xs:sequence>
+  <xs:attributeGroup ref="gco:ObjectReference"/>
+  <xs:attribute ref="gco:nilReason"/>
+ </xs:complexType>
+ <!-- =========================================================================== -->
+ <xs:simpleType name="SV_ParameterDirection_Type">
+  <xs:restriction base="xs:string">
+   <xs:enumeration value="in"/>
+   <xs:enumeration value="out"/>
+   <xs:enumeration value="in/out"/>
+  </xs:restriction>
+ </xs:simpleType>
+ <!-- ........................................................................ -->
+ <xs:element name="SV_ParameterDirection" type="srv:SV_ParameterDirection_Type" substitutionGroup="gco:CharacterString"/>
+ <!-- ........................................................................ -->
+ <xs:complexType name="SV_ParameterDirection_PropertyType">
+  <xs:sequence>
+   <xs:element ref="srv:SV_ParameterDirection" minOccurs="0"/>
+  </xs:sequence>
+  <xs:attribute ref="gco:nilReason"/>
+ </xs:complexType>
+ <!-- =========================================================================== -->
+ <!-- ........................................................................ -->
+ <xs:element name="DCPList" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+ <!-- ........................................................................ -->
+ <xs:complexType name="DCPList_PropertyType">
+  <xs:sequence>
+   <xs:element ref="srv:DCPList" minOccurs="0"/>
+  </xs:sequence>
+  <xs:attribute ref="gco:nilReason"/>
+ </xs:complexType>
+ <!-- =========================================================================== -->
+ <!-- ........................................................................ -->
+ <xs:element name="SV_CouplingType" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+ <!-- ........................................................................ -->
+ <xs:complexType name="SV_CouplingType_PropertyType">
+  <xs:sequence>
+   <xs:element ref="srv:SV_CouplingType" minOccurs="0"/>
+  </xs:sequence>
+  <xs:attribute ref="gco:nilReason"/>
+ </xs:complexType>
+ <!-- =========================================================================== -->
+</xs:schema>

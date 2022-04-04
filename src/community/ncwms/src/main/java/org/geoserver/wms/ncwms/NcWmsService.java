@@ -295,6 +295,8 @@ public class NcWmsService implements DisposableBean {
                             .collect(Collectors.toList());
 
             result.getFeature().add(new ListFeatureCollection(resultType, featureList));
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ServiceException("Error processing the operation", e);
         } finally {
@@ -370,6 +372,20 @@ public class NcWmsService implements DisposableBean {
             DateFinder finder = nearestMatch ? DateFinder.NEAREST : DateFinder.QUERY;
             results = finder.findDates(wms, coverage, times);
         }
+
+        // check they are not too many
+        int maxDimensions = NcWmsService.getMaxDimensions(wms);
+
+        if (maxDimensions > 0 && results.size() > maxDimensions)
+            throw new ServiceException(
+                    "This request would process "
+                            + results.size()
+                            + " times, while the maximum allowed is "
+                            + maxDimensions
+                            + ". Please reduce the size of the requested time range.",
+                    "InvalidParameterValue",
+                    "time");
+
         return results;
     }
 

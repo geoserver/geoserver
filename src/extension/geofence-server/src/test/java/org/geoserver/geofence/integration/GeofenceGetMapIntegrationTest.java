@@ -125,6 +125,45 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
         }
     }
 
+    /**
+     * Tests that the user cannot access without any role
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAccessWithoutRole() throws Exception {
+
+        configurationManager =
+                applicationContext.getBean(
+                        "geofenceConfigurationManager", GeoFenceConfigurationManager.class);
+        GeoFenceConfiguration config = configurationManager.getConfiguration();
+        config.setUseRolesToFilter(true);
+
+        LayerGroupInfo group =
+                addLakesPlacesLayerGroup(LayerGroupInfo.Mode.NAMED, "lakes_and_places");
+
+        Long ruleId1 = null;
+        try {
+            ruleId1 =
+                    addRule(GrantType.ALLOW, "john", null, "WMS", null, null, null, 1, ruleService);
+
+            login("john", "", "ROLE_WMS");
+            String url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers=Lakes"
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse resp = getAsServletResponse(url);
+
+            assertTrue(resp.getContentAsString().contains("Could not find layer Lakes"));
+        } finally {
+            deleteRules(ruleService, ruleId1);
+            config.setUseRolesToFilter(false);
+            removeLayerGroup(group);
+            logout();
+        }
+    }
+
     @Test
     public void testDenyRuleOnLayerGroup() throws Exception {
         // test deny rule on layerGroup

@@ -69,3 +69,4 @@ officially part of the GeoServer releases. They are however built along with the
    teradata/index
    vsi/index
    web-service-auth/index
+   libdeflate/index

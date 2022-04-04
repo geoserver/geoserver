@@ -16,9 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
@@ -26,7 +24,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.image.test.ImageAssert;
@@ -242,13 +239,10 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     @Test
     public void testAnimateFrameLimits() throws Exception {
         // set a limit of 1 frame
-        GeoServerDataDirectory dd = getDataDirectory();
-        Properties props = new Properties();
-        props.put(DownloadServiceConfiguration.MAX_ANIMATION_FRAMES_NAME, "1");
-        Resource config = dd.get("download.properties");
-        try (OutputStream os = config.out()) {
-            props.store(os, null);
-        }
+        final DownloadServiceConfigurationWatcher watcher =
+                GeoServerExtensions.bean(DownloadServiceConfigurationWatcher.class);
+        watcher.getConfiguration().setMaxAnimationFrames(1);
+
         try {
             String xml =
                     IOUtils.toString(
@@ -261,10 +255,9 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
                     message,
                     CoreMatchers.containsString("More than 1 times specified in the request"));
         } finally {
+            Resource config = getDataDirectory().get("download.properties");
             assertTrue("Failed to remove download configuration file", config.delete());
             // force reset of default configuration
-            final DownloadServiceConfigurationWatcher watcher =
-                    GeoServerExtensions.bean(DownloadServiceConfigurationWatcher.class);
             watcher.loadConfiguration();
         }
     }

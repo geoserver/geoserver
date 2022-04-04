@@ -52,6 +52,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
     public static final String NAMESPACE_GCO = "http://www.isotc211.org/2005/gco";
     public static final String NAMESPACE_GMD = "http://www.isotc211.org/2005/gmd";
     public static final String NAMESPACE_APISO = "http://www.opengis.net/cat/csw/apiso/1.0";
+    public static final String NAMESPACE_SRV = "http://www.isotc211.org/2005/srv";
 
     public static final String NAMESPACE_XLINK = "http://www.w3.org/1999/xlink";
 
@@ -80,6 +81,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         NAMESPACES.declarePrefix("xlink", NAMESPACE_XLINK);
         NAMESPACES.declarePrefix("gfc", NAMESPACE_GFC);
         NAMESPACES.declarePrefix("gml", NAMESPACE_GML);
+        NAMESPACES.declarePrefix("srv", NAMESPACE_SRV);
 
         FeatureTypeFactory typeFactory = new FeatureTypeFactoryImpl();
 
@@ -87,6 +89,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
 
         SchemaIndex index = null;
         SchemaIndex indexGMX = null;
+        SchemaIndex indexService = null;
         try {
             index =
                     reader.parse(
@@ -94,6 +97,10 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
             indexGMX =
                     reader.parse(
                             new URL("http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd"));
+            indexService =
+                    reader.parse(
+                            new URL(
+                                    "http://schemas.opengis.net/iso/19139/20070417/srv/serviceMetadata.xsd"));
         } catch (IOException e) {
             // this is fatal
             throw new RuntimeException(e);
@@ -116,6 +123,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
 
         featureTypeRegistry.addSchemas(index);
         featureTypeRegistry.addSchemas(indexGMX);
+        featureTypeRegistry.addSchemas(indexService);
 
         METADATA_TYPE =
                 (FeatureType)

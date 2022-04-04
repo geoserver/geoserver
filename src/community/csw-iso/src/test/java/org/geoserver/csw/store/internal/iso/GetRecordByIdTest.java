@@ -83,6 +83,24 @@ public class GetRecordByIdTest extends MDTestSupport {
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition",
                 d);
 
+        // test SRV
+        assertXpathEvaluatesTo(
+                "srv_works",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation",
+                d);
+        assertXpathEvaluatesTo(
+                "srv_works",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/srv:SV_ServiceIdentification/srv:serviceType/gco:LocalName/@codeSpace",
+                d);
+        assertXpathEvaluatesTo(
+                "srv_works",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/srv:SV_ServiceIdentification/srv:serviceTypeVersion/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "srv_works",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/srv:SV_ServiceIdentification/srv:couplingType/srv:SV_CouplingType/@codeListValue",
+                d);
+
         // check that resourceConstraints are separate tags
         // assertXpathEvaluatesTo("2", "count(//gmd:resourceConstraints)", d);
 

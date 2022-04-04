@@ -211,7 +211,8 @@ public class ImportTaskController extends ImportBaseController {
         @Bean
         PutIgnoringExtensionContentNegotiationStrategy importTaskPutContentNegotiationStrategy() {
             return new PutIgnoringExtensionContentNegotiationStrategy(
-                    new PatternsRequestCondition("/imports/{id}/tasks/{taskId:.+}"),
+                    new PatternsRequestCondition(
+                            RestBaseController.ROOT_PATH + "/imports/{id}/tasks/{taskId:.+}"),
                     Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML));
         }
     }

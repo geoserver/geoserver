@@ -138,7 +138,7 @@ Reduced accuracy times are also allowed when specifying ranges. In this case, Ge
 Specifying a list of times
 --------------------------
 
-GooServer can also accept a list of discrete time values. This is useful for some applications such as animations, where one time is equal to one frame. 
+GeoServer can also accept a list of discrete time values. This is useful for some applications such as animations, where one time is equal to one frame. 
 
 The elements of a list are separated by commas.
 

@@ -563,6 +563,7 @@ components:
         type: string
         enum:
           - cql-text
+          - cql-json
         default: cql-text
     sortby:
       name: sortby

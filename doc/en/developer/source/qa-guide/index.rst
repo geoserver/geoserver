@@ -1,13 +1,15 @@
 Automatic Quality Assurance checks
 ==================================
 
-The GeoServer builds on Github Actions and `https://build.geoserver.org/ <https://build.geoserver.org/>`_ apply
+The GeoServer builds on Github Actions and `https://build.geoserver.org/ <https://build.geoserver.org/>`__ apply
 `PMD <https://pmd.github.io/>`_ and `Error Prone <https://errorprone.info/>`_ checks on the code base
 and will fail the build in case of rule violation.
 
-In case you want to just run the build with the full checks locally, use the following command::
+In case you want to just run the build with the full checks locally, use the following command:
 
-    mvn clean install -Dqa -Dall
+.. code-block:: bash
+
+   mvn clean install -Dqa -Dall
 
 Add extra parameters as you see fit, like ``-T1C -nsu`` to speed up the build, or ``-Dfmt.skip=true -DskipTests``
 to avoid running tests and code formatting.
@@ -17,6 +19,12 @@ PMD checks
 
 The `PMD <https://pmd.github.io/>`__ checks are based on source code analysis for common errors, we have configured :command:`PMD` to check for common mistakes and bad practices such as accidentally including debug ``System.out.println()`` statements in your commit.
 
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <artifactId>maven-pmd-plugin</artifactId>
+   :end-before: </plugin>
+   :dedent: 12
+
 Rules are configured in our build `build/qa/pmd-ruleset.xml <https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml>`_:
 
 .. literalinclude:: /../../../../build/qa/pmd-ruleset.xml
@@ -24,7 +32,17 @@ Rules are configured in our build `build/qa/pmd-ruleset.xml <https://github.com/
    :start-after: </description>
    :end-before: </ruleset>
 
-In order to activate the :command:`PMD` checks, use the ``-Ppmd`` profile.
+In order to activate the :command:`PMD` checks, use the ``-Ppmd`` profile:
+
+.. code-block:: bash
+
+   mvn verify -Ppmd
+
+Or run `pmd:check` (requires use of ``initialize`` to locate `geoserverBaseDir/build/qa/pmd-ruleset.xml`):
+
+.. code-block:: bash
+
+   mvn directory:highest-basedir pmd:check -Ppmd
 
 :command:`PMD` will fail the build in case of violation, reporting the specific errors before the build
 error message, and a reference to a XML file with the same information after it (example taken from GeoTools)::
@@ -135,11 +153,52 @@ or if it's a general one that should be ignored, the `build/qa/spotbugs-exclude.
 Checkstyle
 ----------
 
-Google Format is already in use to keep the code formatted, so Checkstyle is used mainly to verify javadocs errors
+Google Format is already in use to keep the code formatted, so `maven checkstyle plugin <https://maven.apache.org/plugins/maven-checkstyle-plugin/>`__ is used mainly to verify javadocs errors
 and presence of copyright headers, which none of the other tools can cover.
+
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <artifactId>maven-checkstyle-plugin</artifactId>
+   :end-before: </plugin>
+   :dedent: 12
 
 Any failure to comply with the rules will show up as a compiler error in the build output, e.g.::
 
         14610 [INFO] --- maven-checkstyle-plugin:3.0.0:check (default) @ gt-jdbc ---
         15563 [INFO] There is 1 error reported by Checkstyle 6.18 with /home/aaime/devel/git-gs/build/qa/checkstyle.xml ruleset.
         15572 [ERROR] wms/main/java/org/geoserver/wms/map/RenderedImageMapOutputFormat.java:[325,8] (javadoc) JavadocMethod: Unused @param tag for 'foobar'.
+
+
+Sortpom
+-------
+
+The [Sortpom Maven Plugin](https://github.com/Ekryd/sortpom/blob/master/README.md) is used :file:`pom.xml` organized, while maintaining comments.
+
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <groupId>com.github.ekryd.sortpom</groupId>
+   :end-before: </plugin>
+   :dedent: 8
+
+Sorts current pom:
+
+.. code-block:: bash
+
+   mvn sortpom:sort
+
+Ignoring whitespace changes is the current pom.xml in the correct oder:
+
+   mvn sortpom:verify
+
+
+Property ``pom.fmt.action`` used to choose ``sort`` or ``verify``:
+
+.. code-block:: bash
+
+   mvn verify -Dqa -Dpom.fmt.action=verify
+
+Property ``pom.fmt.skip`` used to skipe sortpom plugin when running ``qa`` build:
+
+.. code-block:: bash
+
+   mvn -Dqa -Dpom.fmt.skip=true

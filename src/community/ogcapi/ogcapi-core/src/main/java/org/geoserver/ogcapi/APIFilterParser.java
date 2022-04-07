@@ -9,8 +9,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import org.geootols.filter.text.cql_2.CQL2;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.cqljson.CQLJsonCompiler;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -27,22 +29,26 @@ public class APIFilterParser {
             "cql-text"; // for compatibility, but should not really be advertised
     public static String ECQL_TEXT = "ecql-text"; // GeoServer own CQL
     public static String CQL2_TEXT = "cql2-text"; // OGC CQL2
+    public static String CQL2_JSON = "cql2-json"; // OGC CQL2-JSON, see requirement 5
+    // https://docs.ogc.org/DRAFTS/19-079r1.html#filter-lang-param
 
     /** The list of encodings that should go in API documents */
     public static Set<String> SUPPORTED_ENCODINGS =
-            new LinkedHashSet<>(Arrays.asList(ECQL_TEXT, CQL2_TEXT));
+            new LinkedHashSet<>(Arrays.asList(ECQL_TEXT, CQL2_TEXT, CQL2_JSON));
 
     /**
-     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT} and
-     * {@link #CQL_OBJECT}) and defaults the geometry literals in spatial filters to CRS84
+     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT},
+     * {@link #CQL2_JSON} and {@link #CQL_OBJECT}) and defaults the geometry literals in spatial
+     * filters to CRS84
      */
     public Filter parse(String filter, String filterLang) {
         return parse(filter, filterLang, null);
     }
 
     /**
-     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT} and
-     * {@link #CQL_OBJECT}) and defaults the geometry literals in spatial filters to filter crs.
+     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT},
+     * {@link #CQL2_JSON} and {@link #CQL_OBJECT}) and defaults the geometry literals in spatial
+     * filters to filter crs.
      */
     public Filter parse(String filter, String filterLang, String filterCRS) {
         if (filter == null) {
@@ -65,7 +71,8 @@ public class APIFilterParser {
             }
         }
 
-        // right now there is a spec only for cql-text and cql-object, will be extended when more
+        // right now there is a spec only for cql-text, cql-json and cql-object, will be extended
+        // when more
         // languages are recognized (could have its own extension point too,
         // if we want to allow easy extension with new custom languages)
         if (filterLang != null && (!SUPPORTED_ENCODINGS.contains(filterLang))) {
@@ -81,17 +88,14 @@ public class APIFilterParser {
             Filter parsedFilter = null;
             if (filterLang.equals(ECQL_TEXT)) {
                 parsedFilter = ECQL.toFilter(filter);
+            } else if (filterLang.equals(CQL2_JSON)) {
+                CQLJsonCompiler cqlJsonCompiler =
+                        new CQLJsonCompiler(filter, new FilterFactoryImpl());
+                cqlJsonCompiler.compileFilter();
+                parsedFilter = cqlJsonCompiler.getFilter();
             } else {
                 parsedFilter = CQL2.toFilter(filter);
             }
-
-            // commented out as it does not match any published standard anymore
-            //            else if (filterLang.equals(CQL_JSON)) {
-            //                CQLJsonCompiler cqlJsonCompiler =
-            //                        new CQLJsonCompiler(filter, new FilterFactoryImpl());
-            //                cqlJsonCompiler.compileFilter();
-            //                parsedFilter = cqlJsonCompiler.getFilter();
-            //            }
 
             // in OGC APIs assume CRS84 as the default, but the underlying machinery may default to
             // the native CRS in EPSG axis order instead, best making the CRS explicit instead

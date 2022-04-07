@@ -279,8 +279,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "true");
         GeoServerResourceLoader loader =
                 new GeoServerResourceLoader(testData.getDataDirectoryRoot());
-        LoggingUtils.configureGeoServerLogging(
-                loader, getClass().getResourceAsStream(getLogConfiguration()), false, true, null);
+        LoggingUtils.initLogging(loader, getLogConfiguration(), false, true, null);
 
         setUpTestData(testData);
 
@@ -427,9 +426,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected String getLogConfiguration() {
         if (isQuietTests()) {
-            return "/QUIET_LOGGING.properties";
+            return "QUIET_LOGGING.properties";
         }
-        return "/TEST_LOGGING.properties";
+        return "TEST_LOGGING.properties";
     }
 
     /**

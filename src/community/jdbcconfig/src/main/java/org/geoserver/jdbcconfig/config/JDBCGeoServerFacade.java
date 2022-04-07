@@ -126,10 +126,12 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
                 LOGGER.log(
                         Level.WARNING,
                         "Start up logging config does not match that in JDBCConfig.  Reconfiguring now.  Logs preceding this message may reflect a different configuration.");
+
                 LoggingUtils.initLogging(
                         resourceLoader,
                         realLogInfo.getLevel(),
                         !realLogInfo.isStdOutLogging(),
+                        false,
                         realLogInfo.getLocation());
             }
         } catch (Exception ex) {

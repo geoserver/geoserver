@@ -21,14 +21,33 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.MemoryLockProvider;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockServletContext;
 
+/**
+ * Test logging configuration.
+ *
+ * <p>To trouble shoot start with:<code>
+ *     mvn test -Dtest=LoggingStartupContextListenerTest -Dorg.apache.logging.log4j.simplelog.StatusLogger.level=DEBUG
+ * </code>
+ */
 public class LoggingStartupContextListenerTest {
 
     @Before
+    public void resetLoggers() {
+        // resetting, no need to enforce AutoClosable
+        System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level", "DEBUG");
+        try (LoggerContext context = (LoggerContext) LogManager.getContext(false)) {
+            context.reconfigure();
+        }
+    }
+
+    @After
     public void cleanupLoggers() {
+        // resetting, no need to enforce AutoClosable
+        System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level", "ERROR");
         try (LoggerContext context = (LoggerContext) LogManager.getContext(false)) {
             context.reconfigure();
         }
@@ -56,8 +75,8 @@ public class LoggingStartupContextListenerTest {
             @SuppressWarnings({
                 "resource",
                 "PMD.CloseResource"
-            }) // no need to close AutoClosable loggerContext here
-            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+            }) // current context, no need to enforce AutoClosable
+            LoggerContext ctx = (LoggerContext) LogManager.getContext(true);
 
             Configuration configuration = ctx.getConfiguration();
 
@@ -67,29 +86,56 @@ public class LoggingStartupContextListenerTest {
             ctx.close();
         }
 
+        System.setProperty("log4j2.debug", "true");
         System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "false");
         try {
             new LoggingStartupContextListener()
                     .contextInitialized(new ServletContextEvent(context));
         } finally {
             System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "rel");
+            System.getProperties().remove("log4j2.debug");
         }
 
         // verify change
         {
+            String expectedLogfile = new File(tmp, "foo.log").getCanonicalPath();
+
             @SuppressWarnings({
                 "resource",
                 "PMD.CloseResource"
-            }) // no need to close AutoClosable loggerContext here
-            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+            }) // current context, no need to enforce AutoClosable
+            LoggerContext ctx = (LoggerContext) LogManager.getContext(true);
 
             Configuration configuration = ctx.getConfiguration();
 
-            Appender appender = configuration.getAppender("geoserverlogfile");
-            assertNotNull("geoserverlogfile expected", appender);
-            assertTrue(appender instanceof RollingFileAppender);
-            RollingFileAppender fileAppender = (RollingFileAppender) appender;
-            assertEquals(new File(tmp, "foo.log").getCanonicalPath(), fileAppender.getFileName());
+            if (configuration.getProperties().containsKey("GEOSERVER_LOG_LOCATION")) {
+                // double check GEOSERVER_LOG_LOCATION property setup with expectedLogFile
+                assertEquals(
+                        "Property logfile",
+                        expectedLogfile,
+                        configuration.getProperties().get("GEOSERVER_LOG_LOCATION"));
+
+                // double check geoserverlogfile setup to use ${GEOSERVER_LOG_LOCATION}
+                Appender appender = configuration.getAppender("geoserverlogfile");
+                assertNotNull("geoserverlogfile expected", appender);
+                assertTrue(appender instanceof RollingFileAppender);
+
+                RollingFileAppender fileAppender = (RollingFileAppender) appender;
+                assertTrue(
+                        "fileName property substitution",
+                        fileAppender.getFileName().contains("${GEOSERVER_LOG_LOCATION}"));
+            } else {
+                // double check file appender setup with expectedLogFile
+                Appender appender = configuration.getAppender("geoserverlogfile");
+                assertNotNull("geoserverlogfile expected", appender);
+                assertTrue(appender instanceof RollingFileAppender);
+
+                RollingFileAppender fileAppender = (RollingFileAppender) appender;
+                assertEquals(
+                        "fileName property substitution",
+                        expectedLogfile,
+                        fileAppender.getFileName());
+            }
         }
     }
 
@@ -103,10 +149,10 @@ public class LoggingStartupContextListenerTest {
         store.setLockProvider(new MemoryLockProvider());
 
         // make it copy the log files
-        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, null);
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, true, null);
         // init once from default logging
-        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, null);
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, true, null);
         // init twice, here it used to lock up
-        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, null);
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, true, null);
     }
 }

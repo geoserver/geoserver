@@ -1297,7 +1297,8 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
     @Test
     public void testModifyLoggingAndReload() throws Exception {
         GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
-        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, "logs/geoserver.log");
+        LoggingUtils.initLogging(
+                loader, "DEFAULT_LOGGING.properties", false, true, "logs/geoserver.log");
         String path = getDataDirectory().getResourceLoader().getBaseDirectory().getPath();
         LoggingInfo logging = getGeoServer().getLogging();
         final File logFile = new File(path, "logging.xml");

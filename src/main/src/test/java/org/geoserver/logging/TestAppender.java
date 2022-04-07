@@ -53,8 +53,8 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
         @SuppressWarnings({
             "resource",
             "PMD.CloseResource"
-        }) // no need to close AutoClosable loggerContext here
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        }) // current context, no need to enforce AutoClosable
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(true);
         Configuration configuration = ctx.getConfiguration();
 
         Appender check = configuration.getAppender(getName());
@@ -92,8 +92,8 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
         @SuppressWarnings({
             "resource",
             "PMD.CloseResource"
-        }) // no need to close AutoClosable loggerContext here
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        }) // current context, no need to enforce AutoClosable
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(true);
         Configuration configuration = ctx.getConfiguration();
 
         Appender check = configuration.getAppender(getName());

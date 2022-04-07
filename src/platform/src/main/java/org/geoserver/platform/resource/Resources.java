@@ -507,6 +507,16 @@ public class Resources {
         }
     }
 
+    /**
+     * Used to generate resource based on {@link UUID#randomUUID()} with the provided prefix and
+     * suffix (primiarly for test cases).
+     *
+     * @param prefix name prefix
+     * @param suffix name suffix, often an extension
+     * @param dir location
+     * @return resouce with randomly generated name
+     * @throws IOException
+     */
     public static Resource createRandom(String prefix, String suffix, Resource dir)
             throws IOException {
         // Use only the file name from the supplied prefix

@@ -10,7 +10,7 @@
 
 <beans>
 
-
+    <bean id="configuration" class="org.geoserver.ogcapi.APIConfigurationSupport"/>
     <bean id="dispatcher" class="org.geoserver.ogcapi.APIDispatcher"/>
     <bean id="hello" class="org.geoserver.ogcapi.HelloController"/>
     <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl"/>

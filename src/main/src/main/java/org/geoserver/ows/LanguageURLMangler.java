@@ -4,10 +4,9 @@
  */
 package org.geoserver.ows;
 
-import java.util.Collections;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 /** Mangles service URL's based on the AcceptLanguages and Languages parameters */
 public class LanguageURLMangler implements URLMangler {
@@ -20,24 +19,23 @@ public class LanguageURLMangler implements URLMangler {
             StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
         if (Dispatcher.REQUEST.get() == null || !type.equals(URLType.SERVICE)) return;
 
-        String languageParameter = null;
-        String acceptLanguagesParameter = null;
+        final Map<String, Object> rawKvp =
+                Optional.ofNullable(Dispatcher.REQUEST.get().rawKvp).orElse(new HashMap<>());
 
-        HttpServletRequest httpRequest = Dispatcher.REQUEST.get().getHttpRequest();
-        Enumeration<String> parameterNames = httpRequest.getParameterNames();
+        final Optional<String> languageParameter =
+                rawKvp.keySet().stream()
+                        .filter(param -> param.equalsIgnoreCase(LANGUAGE))
+                        .findFirst();
 
-        for (String parameter : Collections.list(parameterNames)) {
-            if (parameter.equalsIgnoreCase(LANGUAGE)) {
-                languageParameter = parameter;
-            } else if (parameter.equalsIgnoreCase(ACCEPT_LANGUAGES)) {
-                acceptLanguagesParameter = parameter;
-            }
-        }
+        final Optional<String> acceptLanguagesParameter =
+                rawKvp.keySet().stream()
+                        .filter(param -> param.equalsIgnoreCase(ACCEPT_LANGUAGES))
+                        .findFirst();
 
         String language = "";
 
-        if (acceptLanguagesParameter != null) {
-            String acceptLanguages = httpRequest.getParameter(acceptLanguagesParameter);
+        if (acceptLanguagesParameter.isPresent()) {
+            String acceptLanguages = (String) rawKvp.get(acceptLanguagesParameter.get());
             if (acceptLanguages != null) {
                 String commaSplit = acceptLanguages.split(",")[0];
                 String spaceSplit = commaSplit.split(" ")[0];
@@ -49,8 +47,8 @@ public class LanguageURLMangler implements URLMangler {
             }
         }
 
-        if (languageParameter != null) {
-            language = httpRequest.getParameter(languageParameter);
+        if (languageParameter.isPresent()) {
+            language = (String) rawKvp.get(languageParameter.get());
         }
 
         if (language != null && language.length() > 0) {

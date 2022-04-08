@@ -52,7 +52,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/oseo/search?httpAccept=application%2Fgeo%2Bjson",
                 json.get("id"));
-        assertEquals(5, json.get("totalResults"));
+        assertEquals(6, json.get("totalResults"));
         assertEquals(10, json.get("itemsPerPage"));
         assertEquals(1, json.get("startIndex"));
         JSONObject request = json.getJSONObject("queries").getJSONObject("request");
@@ -77,7 +77,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
         // check features
         JSONArray features = json.getJSONArray("features");
-        assertEquals(5, features.size());
+        assertEquals(6, features.size());
         // ... sentinel2
         checkSentinel2Collection(features);
 

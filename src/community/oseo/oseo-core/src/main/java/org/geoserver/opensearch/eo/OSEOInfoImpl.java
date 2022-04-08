@@ -22,7 +22,7 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     String attribution;
 
-    String globalQueryables = new String();
+    List<String> globalQueryables = new ArrayList<>();
 
     @Override
     public int getRecordsPerPage() {
@@ -74,12 +74,7 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     }
 
     @Override
-    public void setGlobalQueryables(String globalQueryables) {
-        this.globalQueryables = globalQueryables;
-    }
-
-    @Override
-    public String getGlobalQueryables() {
+    public List<String> getGlobalQueryables() {
         return globalQueryables;
     }
 }

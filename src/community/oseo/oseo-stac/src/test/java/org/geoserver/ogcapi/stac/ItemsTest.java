@@ -627,8 +627,8 @@ public class ItemsTest extends STACTestSupport {
 
         GeoServer gs = getGeoServer();
         OSEOInfo service = gs.getService(OSEOInfo.class);
-        String queryables = "id,geometry,collection,s2:granule_id";
-        service.setGlobalQueryables(queryables);
+        service.getGlobalQueryables()
+                .addAll(Arrays.asList("id", "geometry", "collection", "s2:granule_id"));
         gs.save(service);
         DocumentContext doc2 =
                 getAsJSONPath(
@@ -636,7 +636,8 @@ public class ItemsTest extends STACTestSupport {
                         200);
         assertThat((List<String>) doc2.read("features[*].id"), contains("SAS1_20180227102021.02"));
 
-        service.setGlobalQueryables("id,geometry,collection");
+        service.getGlobalQueryables().clear();
+        service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
         gs.save(service);
     }
 }

@@ -2,6 +2,7 @@ package org.geoserver.opensearch.eo.store;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -49,8 +50,7 @@ public class GeoServerOpenSearchTestSupport {
         // configure opensearch for EO to use it
         OSEOInfo service = gs.getService(OSEOInfo.class);
         service.setOpenSearchAccessStoreId(osDs.getId());
-        String queryables = "id,geometry,collection";
-        service.setGlobalQueryables(queryables);
+        service.getGlobalQueryables().addAll(Arrays.asList("id", "goemetry", "collection"));
         gs.save(service);
 
         // configure contact info

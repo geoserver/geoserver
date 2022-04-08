@@ -190,6 +190,7 @@ public class LandingPageTest extends STACTestSupport {
                         "http://localhost:8080/geoserver/ogc/stac/collections/SENTINEL2",
                         "http://localhost:8080/geoserver/ogc/stac/collections/SENTINEL1",
                         "http://localhost:8080/geoserver/ogc/stac/collections/GS_TEST",
-                        "http://localhost:8080/geoserver/ogc/stac/collections/ATMTEST"));
+                        "http://localhost:8080/geoserver/ogc/stac/collections/ATMTEST",
+                        "http://localhost:8080/geoserver/ogc/stac/collections/ATMTEST2"));
     }
 }

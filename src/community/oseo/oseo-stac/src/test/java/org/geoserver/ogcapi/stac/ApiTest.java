@@ -173,7 +173,8 @@ public class ApiTest extends STACTestSupport {
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                Arrays.asList("ATMTEST", "GS_TEST", "LANDSAT8", "SENTINEL1", "SENTINEL2");
+                Arrays.asList(
+                        "ATMTEST", "ATMTEST2", "GS_TEST", "LANDSAT8", "SENTINEL1", "SENTINEL2");
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
 
         // check the limit parameter

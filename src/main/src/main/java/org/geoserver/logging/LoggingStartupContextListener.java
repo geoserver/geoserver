@@ -32,7 +32,6 @@ import org.geotools.util.logging.Logging;
  * <p>Results are recorded by:
  *
  * <ul>
- *   <li>{@link LoggingUtils#loggingRedirection}
  *   <li>{@link LoggingUtils#relinquishLog4jControl}
  * </ul>
  */
@@ -51,7 +50,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
         final ServletContext context = event.getServletContext();
 
         // establish logging redirection
-        LoggingUtils.loggingRedirection = establishLoggingRedirectionPolicy(context);
+        establishLoggingRedirectionPolicy(context);
 
         String relinquishLoggingControl =
                 GeoServerExtensions.getProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, context);

@@ -38,19 +38,21 @@ public class LoggingStartupContextListenerTest {
     @Before
     public void resetLoggers() {
         // resetting, no need to enforce AutoClosable
-        System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level", "DEBUG");
-        try (LoggerContext context = (LoggerContext) LogManager.getContext(false)) {
-            context.reconfigure();
-        }
+        //        System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level",
+        // "DEBUG");
+        //        try (LoggerContext context = (LoggerContext) LogManager.getContext(false)) {
+        //            context.reconfigure();
+        //        }
     }
 
     @After
     public void cleanupLoggers() {
         // resetting, no need to enforce AutoClosable
-        System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level", "ERROR");
-        try (LoggerContext context = (LoggerContext) LogManager.getContext(false)) {
-            context.reconfigure();
-        }
+        //        System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level",
+        // "ERROR");
+        //        try (LoggerContext context = (LoggerContext) LogManager.getContext(false)) {
+        //            context.reconfigure();
+        //        }
     }
 
     @Test
@@ -86,14 +88,19 @@ public class LoggingStartupContextListenerTest {
             ctx.close();
         }
 
-        System.setProperty("log4j2.debug", "true");
-        System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "false");
+        // System.setProperty("log4j2.debug", "true");
+        String restore = System.getProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL);
         try {
+            System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "false");
             new LoggingStartupContextListener()
                     .contextInitialized(new ServletContextEvent(context));
         } finally {
-            System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "rel");
-            System.getProperties().remove("log4j2.debug");
+            if (restore == null) {
+                System.getProperties().remove(LoggingUtils.RELINQUISH_LOG4J_CONTROL);
+            } else {
+                System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, restore);
+            }
+            // System.getProperties().remove("log4j2.debug");
         }
 
         // verify change

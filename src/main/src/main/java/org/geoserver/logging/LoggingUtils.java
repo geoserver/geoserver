@@ -26,6 +26,7 @@ import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.platform.GeoServerExtensions;
@@ -69,6 +70,8 @@ public class LoggingUtils {
      */
     public static final String RELINQUISH_LOG4J_CONTROL = "RELINQUISH_LOG4J_CONTROL";
 
+    // public static String loggingLocation;
+
     /** Value of loggingRedirection established by {@link LoggingStartupContextListener}. */
     static boolean relinquishLog4jControl = false;
 
@@ -82,9 +85,6 @@ public class LoggingUtils {
      * configuration.
      */
     public static final String GT2_LOGGING_REDIRECTION = "GT2_LOGGING_REDIRECTION";
-
-    /** Value of loggingRedirection established by {@link LoggingStartupContextListener}. */
-    static GeoToolsLoggingRedirection loggingRedirection;
 
     /** Flag used to override {@link LoggingInfo#getLocation()} */
     public static final String GEOSERVER_LOG_LOCATION = "GEOSERVER_LOG_LOCATION";
@@ -351,16 +351,16 @@ public class LoggingUtils {
      * This preserves GeoServer 2.20.x Log4J 1.2 API workflow.
      *
      * @param configResource log4j properties file
-     * @param suppressFileLogging True to disable and/or remove all file appenders
-     * @param suppressStdOutLogging True to disable and/or remove all console appenders
+     * @param noFileLogging True to disable and/or remove all file appenders
+     * @param noConsoleLogging True to disable and/or remove all console appenders
      * @param logFileName Logfile output location
      * @return true for successful configuration
      */
     static boolean configureFromLog4j2(
             Resource configResource,
-            boolean suppressFileLogging,
-            boolean suppressStdOutLogging,
-            String logFileName) {
+            final boolean noFileLogging,
+            final boolean noConsoleLogging,
+            final String logFileName) {
 
         String extension = Paths.extension(configResource.path());
 
@@ -370,11 +370,6 @@ public class LoggingUtils {
         }) // current context, no need to enforce AutoClosable
         LoggerContext loggerContext = (LoggerContext) LogManager.getContext(true);
 
-        // Set global variable for GeoServerXMLConfiguration to enjoy
-        GeoServerXMLConfiguration.loggingLocation = logFileName;
-        GeoServerXMLConfiguration.suppressFileLogging = suppressFileLogging;
-        GeoServerXMLConfiguration.suppressStdOutLogging = suppressStdOutLogging;
-
         try {
             URI configLocation = Resources.file(configResource).toURI();
 
@@ -383,16 +378,33 @@ public class LoggingUtils {
 
             // And configure from new location
             loggerContext.setName(configResource.name());
-            loggerContext.setConfigLocation(configLocation);
 
-            return true;
+            if (extension.equalsIgnoreCase("xml")) {
+                ConfigurationSource source = ConfigurationSource.fromUri(configLocation);
+                GeoServerXMLConfiguration configuration =
+                        new GeoServerXMLConfiguration(loggerContext, source) {
+                            @Override
+                            public void setup() {
+                                this.loggingLocation = logFileName;
+                                this.suppressFileLogging = noFileLogging;
+                                this.suppressStdOutLogging = noConsoleLogging;
+                                super.setup();
+                            }
+                        };
+
+                loggerContext.setConfiguration(configuration);
+                return true;
+            } else {
+                loggerContext.setConfigLocation(configLocation);
+                return true;
+            }
         } catch (Throwable unsuccessful) {
             LoggingInitializer.LOGGER.log(
                     Level.WARNING,
                     "Could not access Log4J 2 configuration uri '" + configResource.name() + "'",
                     unsuccessful);
-            return false;
         }
+        return false;
     }
     /**
      * Configure via Log4J 1.2 API from properties file.
@@ -584,8 +596,7 @@ public class LoggingUtils {
         Resource configResource = logs.get(configFileName);
         if (configResource.getType() != Type.RESOURCE) {
 
-            final String[] EXTENSIONS =
-                    new String[] {"xml", "yml", "yaml", "json", "jsn", "properties"};
+            final String[] EXTENSIONS = {"xml", "yml", "yaml", "json", "jsn", "properties"};
 
             Map<String, Resource> availableLoggingConfigurations =
                     logs.list().stream()

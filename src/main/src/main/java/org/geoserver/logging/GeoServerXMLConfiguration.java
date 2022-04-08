@@ -11,6 +11,7 @@ import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
+import org.geoserver.platform.resource.Paths;
 
 /**
  * GeoServerXMLConfiguration builds on Log4J XmlConfiguration, adding post-processing to adjust
@@ -21,25 +22,28 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     /**
      * Logfile location, updated by {@link LoggingInitializer} in response to configuration changes.
      */
-    static String loggingLocation = null;
+    String loggingLocation = null;
 
     /**
      * Logfile processing hint, updated by {@link LoggingInitializer} in response to configuration
      * changes.
      */
-    static boolean suppressFileLogging = false;
+    boolean suppressFileLogging = false;
 
     /**
      * Logfile processing hint, updated by {@link LoggingInitializer} in response to configuration
      * changes.
      */
-    static boolean suppressStdOutLogging = false;
+    boolean suppressStdOutLogging = false;
 
     /** Initial filename observed for geoserverlogfile appender */
     private String initialFilename;
 
     /** Initial filename observed for geoserverlogfile appender */
     private String initialFilePattern;
+
+    /** Initial logFIleLocation observed for GEOSERVER_LOG_LOCATION property */
+    private String initialLogLocation;
 
     public GeoServerXMLConfiguration(LoggerContext loggerContext, ConfigurationSource source) {
         super(loggerContext, source);
@@ -60,11 +64,10 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
             if (node.getName().equals("Property")) {
                 if (node.getAttributes().containsKey("name")
                         && node.getAttributes().get("name").equals("GEOSERVER_LOG_LOCATION")) {
-
-                    //                if (LoggingUtils.loggingLocation != null) {
-                    //                    // override value with current GEOSERVER_LOG_LOCATION
-                    //                    node.setValue(LoggingUtils.loggingLocation);
-                    //                }
+                    initialLogLocation = node.getValue();
+                    LOGGER.debug(
+                            "Preconfiguration property.GEOSERVER_LOG_LOCATION=",
+                            initialLogLocation);
                 }
             }
             if (node.getName().equals("filename")
@@ -72,17 +75,26 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
                     && node.getParent().getAttributes().get("name").equals("geoserverlogfile")) {
 
                 initialFilename = node.getValue();
+                LOGGER.debug(
+                        "Preconfiguration geoserverlogfile.FileAppender.filename=",
+                        initialFilename);
             }
             if (node.getName().equals("filePattern")
                     && node.getParent().getName().equals("RollingFile")
                     && node.getParent().getAttributes().get("name").equals("geoserverlogfile")) {
 
                 initialFilePattern = node.getValue();
+                LOGGER.debug(
+                        "Preconfiguration geoserverlogfile.FileAppender.filePattern=",
+                        initialFilePattern);
             }
             if (node.getName().equals("filename")
                     && node.getParent().getName().equals("FileAppender")
                     && node.getParent().getAttributes().get("name").equals("geoserverlogfile")) {
                 initialFilename = node.getValue();
+                LOGGER.debug(
+                        "Preconfiguration geoserverlogfile.FileAppender.filename=",
+                        initialFilename);
             }
         }
         super.preConfigure(node);
@@ -97,10 +109,14 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
             LOGGER.debug("External logfileLocation provided:" + loggingLocation);
 
             String logfile;
-            if (loggingLocation.endsWith(".log")) {
-                logfile = loggingLocation.substring(0, loggingLocation.length() - 4);
+            String extension = Paths.extension(loggingLocation);
+            if (extension != null) {
+                logfile =
+                        loggingLocation.substring(
+                                0, loggingLocation.length() - extension.length() - 1);
             } else {
                 logfile = loggingLocation;
+                extension = "log";
             }
 
             if (getProperties().containsKey("GEOSERVER_LOG_LOCATION")) {
@@ -114,18 +130,24 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
                 Appender appender = getAppenders().get("geoserverlogfile");
                 if (appender instanceof RollingFileAppender) {
                     RollingFileAppender fileAppender = (RollingFileAppender) appender;
+                    String fileName = fileAppender.getFileName();
 
-                    if (fileAppender.getFileName().contains("${GEOSERVER_LOG_LOCATION}")) {
+                    if (fileName != null && fileName.contains("${GEOSERVER_LOG_LOCATION}")) {
                         // nothing to do here property already in use
                         // allows us to respect choice of file extension and file pattern
-                    } else {
                         LOGGER.debug(
-                                "Setting up replacement 'geoserverlogfile' to use ${GEOSERVER_LOG_LOCATION} property reference");
+                                "Confirmed 'geoserverlogfile.fileName' uses ${GEOSERVER_LOG_LOCATION} property");
+                    } else {
+                        String replacementFileName = "${GEOSERVER_LOG_LOCATION}." + extension;
+                        LOGGER.debug(
+                                "Setting up replacement 'geoserverlogfile' to use ${GEOSERVER_LOG_LOCATION} property:"
+                                        + replacementFileName);
                         RollingFileAppender replacement =
                                 newBuilder(fileAppender)
                                         .setConfiguration(this)
-                                        .withFileName("${GEOSERVER_LOG_LOCATION}.log")
-                                        .withFilePattern("${GEOSERVER_LOG_LOCATION}-%i.log")
+                                        .withFileName(replacementFileName)
+                                        .withFilePattern(
+                                                "${GEOSERVER_LOG_LOCATION}-%i." + extension)
                                         .build();
 
                         getAppenders().remove("geoserverlogfile");
@@ -134,17 +156,29 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
                 }
                 if (appender instanceof FileAppender) {
                     FileAppender fileAppender = (FileAppender) appender;
+                    String fileName = fileAppender.getFileName();
+                    if (fileName != null
+                            && fileName.contains("${GEOSERVER_LOG_LOCATION}")
+                            && fileName.contains(".")) {
 
-                    if (fileAppender.getFileName().contains("${GEOSERVER_LOG_LOCATION}")) {
-                        // nothing to do here property already in use
+                        // nothing to do here property already in use and has some kind of log or
+                        // txt extension
                         // this allows us to respect configuration choice of file extension
-                    } else {
                         LOGGER.debug(
-                                "Setting up replacement 'geoserverlogfile' to use ${GEOSERVER_LOG_LOCATION} property reference");
+                                "Confirmed 'geoserverlogfile.fileName' uses ${GEOSERVER_LOG_LOCATION} property and an extension:'"
+                                        + fileName
+                                        + "'");
+
+                    } else {
+                        String replacementFileName = "${GEOSERVER_LOG_LOCATION}." + extension;
+
+                        LOGGER.debug(
+                                "Setting up replacement 'geoserverlogfile.fileName' to use ${GEOSERVER_LOG_LOCATION} property:"
+                                        + replacementFileName);
                         FileAppender replacement =
                                 newBuilder(fileAppender)
                                         .setConfiguration(this)
-                                        .withFileName("${GEOSERVER_LOG_LOCATION}.log")
+                                        .withFileName(replacementFileName)
                                         .build();
 
                         getAppenders().remove("geoserverlogfile");
@@ -163,8 +197,8 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
                         RollingFileAppender replacement =
                                 newBuilder(fileAppender)
                                         .setConfiguration(this)
-                                        .withFileName(logfile + ".log")
-                                        .withFilePattern(logfile + "-%i.log")
+                                        .withFileName(logfile + "." + extension)
+                                        .withFilePattern(logfile + "-%i." + extension)
                                         .build();
 
                         getAppenders().remove("geoserverlogfile");

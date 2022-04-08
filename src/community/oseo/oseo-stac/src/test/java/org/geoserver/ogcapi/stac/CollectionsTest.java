@@ -59,7 +59,7 @@ public class CollectionsTest extends STACTestSupport {
         assertThat(
                 titles,
                 Matchers.containsInAnyOrder(
-                        "ATMTEST", "SENTINEL2", "SENTINEL1", "LANDSAT8", "GS_TEST"));
+                        "ATMTEST", "ATMTEST2", "SENTINEL2", "SENTINEL1", "LANDSAT8", "GS_TEST"));
 
         // test the Sentinel2 entry
         Elements s2Body =

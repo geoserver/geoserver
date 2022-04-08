@@ -4,12 +4,18 @@
  */
 package org.geoserver.opensearch.eo.web;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.markup.html.image.Image;
@@ -19,6 +25,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.DataStoreInfo;
@@ -31,11 +38,28 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.HelpLink;
+import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
 
     private static final long serialVersionUID = 3056925400600634877L;
+
+    private static class QueryablesConverter implements IConverter<List<String>> {
+        static final Pattern COMMA_SEPARATED = Pattern.compile("\\s*,\\s*", Pattern.MULTILINE);
+
+        @Override
+        public String convertToString(List<String> srsList, Locale locale) {
+            if (srsList == null) return null;
+            return srsList.stream().collect(Collectors.joining(", "));
+        }
+
+        @Override
+        public List<String> convertToObject(String value, Locale locale) {
+            if (value == null || value.trim().equals("")) return null;
+            return new ArrayList<>(Arrays.asList(COMMA_SEPARATED.split(value)));
+        }
+    }
 
     DataStoreInfo backend;
     GeoServerTablePanel<ProductClass> productClasses;
@@ -67,7 +91,17 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         TextField<String> attribution = new TextField<>("attribution");
         form.add(attribution);
 
-        TextField<String> globalQueryables = new TextField<>("globalQueryables");
+        TextArea<List<String>> globalQueryables =
+                new TextArea<List<String>>(
+                        "globalQueryables",
+                        LiveCollectionModel.list(new PropertyModel(info, "globalQueryables"))) {
+                    @Override
+                    protected IConverter<?> createConverter(Class<?> type) {
+                        if (List.class.equals(type)) return new QueryablesConverter();
+                        return super.createConverter(type);
+                    }
+                };
+        globalQueryables.setType(List.class);
         form.add(globalQueryables);
 
         this.backend = null;

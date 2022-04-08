@@ -8,16 +8,13 @@ import static org.geoserver.ogcapi.stac.TemplatePropertyVisitor.JSON_PROPERTY_TY
 
 import io.swagger.v3.oas.models.media.Schema;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
@@ -98,28 +95,26 @@ public class STACQueryablesBuilder {
 
     Queryables getQueryables() throws IOException {
         AbstractTemplateBuilder features = lookupBuilder(template, "features");
+        Map<String, Schema> properties = this.queryables.getProperties();
         if (features != null) {
-            AbstractTemplateBuilder properties = lookupBuilder(features, "properties");
-            if (properties != null) {
+            AbstractTemplateBuilder builder = lookupBuilder(features, "properties");
+            if (builder != null) {
                 Set<String> preconfiguredQueryables = getPreconfiguredQueryables();
                 TemplatePropertyVisitor visitor =
                         new TemplatePropertyVisitor(
-                                properties,
+                                builder,
                                 sampleFeature,
                                 (path, vb) -> {
                                     if (SKIP_PROPERTIES.contains(path)) return;
-                                    // if preconfigured list exists and this path is not in it, skip
-                                    // it
-                                    if (!oseoInfo.getGlobalQueryables().contains(path)
-                                            && preconfiguredQueryables != null
+                                    // skip property if not among the preconfigured ones
+                                    if (preconfiguredQueryables != null
                                             && !preconfiguredQueryables.contains(path)) return;
-                                    queryables.getProperties().put(path, getSchema(vb));
+                                    properties.put(path, getSchema(vb));
                                 });
                 visitor.visit();
             }
         }
         // force in the extra properties not found under properties
-        Map<String, Schema> properties = this.queryables.getProperties();
         properties.put("id", getSchema("ID", ID_SCHEMA_REF));
         properties.put("collection", getSchema("Collection", COLLECTION_SCHEMA_REF));
         properties.put("geometry", getSchema("Geometry", GEOMETRY_SCHEMA_REF));
@@ -129,25 +124,27 @@ public class STACQueryablesBuilder {
     }
 
     public Set<String> getPreconfiguredQueryables() {
-        String[] preconfiguredQueryables = null;
-        if (collection != null && collection.getProperty(DEFINED_QUERYABLES_PROPERTY) != null) {
-            preconfiguredQueryables =
-                    (String[]) collection.getProperty(DEFINED_QUERYABLES_PROPERTY).getValue();
+        Set<String> result = null;
+
+        // global queryables apply to every collection too
+        if (oseoInfo != null && !oseoInfo.getGlobalQueryables().isEmpty()) {
+            result = new LinkedHashSet<>(oseoInfo.getGlobalQueryables());
         }
 
-        // collection specific list not set so all are available
-        if (preconfiguredQueryables == null) {
-            return null;
+        // if there is a collection, then we use the pre-configured ones only if
+        // there is a setting for them, otherwise return all of them, skipping the global ones too
+        if (collection != null) {
+            String[] collectionQueryables =
+                    (String[]) collection.getProperty(DEFINED_QUERYABLES_PROPERTY).getValue();
+            if (collectionQueryables != null) {
+                if (result == null) result = new LinkedHashSet<>();
+                result.addAll(Arrays.asList(collectionQueryables));
+            } else {
+                return null;
+            }
         }
-        List<String> preconfiguredAsList =
-                new ArrayList<String>(Arrays.asList(preconfiguredQueryables));
-        if (oseoInfo != null && oseoInfo.getGlobalQueryables() != null) {
-            List<String> globalQueryablesList =
-                    Stream.of(oseoInfo.getGlobalQueryables().split(","))
-                            .collect(Collectors.toList());
-            preconfiguredAsList.addAll(globalQueryablesList);
-        }
-        return new HashSet<String>(preconfiguredAsList);
+
+        return result;
     }
 
     /**
@@ -170,9 +167,7 @@ public class STACQueryablesBuilder {
                                 sampleFeature,
                                 (path, vb) -> {
                                     if (SKIP_PROPERTIES.contains(path)) return;
-                                    if (oseoInfo != null
-                                            && !oseoInfo.getGlobalQueryables().contains(path)
-                                            && preconfiguredQueryables != null
+                                    if (preconfiguredQueryables != null
                                             && !preconfiguredQueryables.contains(path)) return;
                                     result.put(
                                             path,

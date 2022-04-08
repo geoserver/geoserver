@@ -136,7 +136,7 @@ class TemplatePropertyMapper {
                             collectionsCache.getCollection(collectionId),
                             oseoInfo);
             Map<String, Expression> expressions = builder.getExpressionMap();
-            Set<String> queryables = builder.getPreconfiguredQueryables();
+            Set<String> queryables = builder.getQueryables().getProperties().keySet();
             Set<String> notIncluded = new HashSet<>();
             STACPathVisitor visitor = new STACPathVisitor(expressions, queryables, notIncluded);
             Filter out = (Filter) source.accept(visitor, null);

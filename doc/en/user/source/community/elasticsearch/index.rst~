@@ -294,7 +294,7 @@ BBOX and native query::
 Aggregations
 ------------
 
-Elasticsearch aggregations are supported through WMS requests by including the query in WMS requests through a custom rendering transformation, ``vec:GeoHashGrid``, which translates aggregation response data into a raster for display.
+Elasticsearch aggregations are supported through WMS requests by by including the query in WMS requests through a custom rendering transformation, ``vec:GeoHashGrid``, which translates aggregation response data into a raster for display.
 
 Note that size is set to zero when an aggregation is supplied so only aggregation features are returned (e.g. maxFeatures is ignored and there will be no search hit results). See FAQ_ for common issues using aggregations.
 

@@ -5,15 +5,11 @@
  */
 package org.geoserver.security;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.geotools.filter.v1_0.OGC;
-import org.geotools.filter.v1_1.OGCConfiguration;
-import org.geotools.xsd.Encoder;
-import org.geotools.xsd.Parser;
+import java.util.Collections;
+import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
 
 /**
@@ -22,7 +18,6 @@ import org.opengis.filter.Filter;
  * @author Andrea Aime - GeoSolutions
  */
 public class DataAccessLimits extends AccessLimits {
-    private static final OGCConfiguration CONFIGURATION = new OGCConfiguration();
 
     private static final long serialVersionUID = 2594922992934373705L;
 
@@ -74,11 +69,7 @@ public class DataAccessLimits extends AccessLimits {
      */
     protected void writeFilter(Filter filter, ObjectOutputStream out) throws IOException {
         if (filter != null) {
-            try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-                Encoder encoder = new Encoder(CONFIGURATION);
-                encoder.encode(filter, OGC.Filter, bos);
-                out.writeObject(bos.toByteArray());
-            }
+            out.writeObject(ECQL.toCQL(Collections.singletonList(filter)));
         } else {
             out.writeObject(null);
         }
@@ -89,11 +80,10 @@ public class DataAccessLimits extends AccessLimits {
      * parses it back to a Filter object
      */
     protected Filter readFilter(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        byte[] serializedReadFilter = (byte[]) in.readObject();
+        String serializedReadFilter = (String) in.readObject();
         if (serializedReadFilter != null) {
             try {
-                Parser p = new Parser(CONFIGURATION);
-                return (Filter) p.parse(new ByteArrayInputStream(serializedReadFilter));
+                return ECQL.toFilter(serializedReadFilter);
             } catch (Exception e) {
                 throw (IOException) new IOException("Failed to parse filter").initCause(e);
             }

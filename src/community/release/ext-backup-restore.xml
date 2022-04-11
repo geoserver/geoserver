@@ -27,6 +27,7 @@
          <include>javax.inject*.jar</include>
          <include>javax.json*.jar</include>
          <include>javax.servlet-api*.jar</include>
+         <include>jdom*.jar</include>
          <include>json-path*.jar</include>
          <include>json-smart*.jar</include>
          <include>plexus-utils*.jar</include>

@@ -447,9 +447,19 @@ Updating a task
 A PUT request over an existing task can be used to update its representation. The representation can be partial, and just contains
 the elements that need to be updated.
 
-The updateMode of a task normally starts as "CREATE", that is, create the target resource if missing. Other possible values are
-"REPLACE", that is, delete the existing features in the target layer and replace them with the task source ones, or "APPEND",
-to just add the features from the task source into an existing layer.
+The updateMode of a task may have different values. 
+
+.. list-table::
+   :header-rows: 1
+
+   * - UpdateMode
+     - Description
+   * - CREATE
+     - This is the default starting updateMode of a task, that is: create the target resource if missing.
+   * - REPLACE
+     - For vector stores: delete the existing features in the target layer and replace them with those from the task source. For raster stores: replace the underlying data. When dealing with StructuredGridCoverage reader (e.g. ImageMosaic) the new file will be harvested (replacing the old one). For single raster coverages (e.g. GeoTIFF) the name of the file should be the same so that the coverageStore layer will preserve the original name (the old file will be deleted).
+   * - APPEND
+     - Add the features from the task source into an existing layer.
 
 The following PUT request updates a task from "CREATE" to "APPEND" mode::
 

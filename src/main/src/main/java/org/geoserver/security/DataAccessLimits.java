@@ -5,12 +5,12 @@
  */
 package org.geoserver.security;
 
+import org.geotools.filter.text.ecql.ECQL;
+import org.opengis.filter.Filter;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Collections;
-import org.geotools.filter.text.ecql.ECQL;
-import org.opengis.filter.Filter;
 
 /**
  * Base class for all AccessLimits declared by a {@link ResourceAccessManager}
@@ -64,12 +64,12 @@ public class DataAccessLimits extends AccessLimits {
     }
 
     /**
-     * Writes the non Serializable Filter object ot the ObjectOutputStream via a OGC Filter XML
+     * Writes the non Serializable Filter object to the ObjectOutputStream using ECQL
      * encoding conversion
      */
     protected void writeFilter(Filter filter, ObjectOutputStream out) throws IOException {
         if (filter != null) {
-            out.writeObject(ECQL.toCQL(Collections.singletonList(filter)));
+            out.writeObject(ECQL.toCQL(filter));
         } else {
             out.writeObject(null);
         }

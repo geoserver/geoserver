@@ -4,9 +4,9 @@
  */
 package org.geoserver.ows;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.geoserver.ows.util.KvpMap;
 
 /** Mangles service URL's based on the AcceptLanguages and Languages parameters */
 public class LanguageURLMangler implements URLMangler {
@@ -20,22 +20,12 @@ public class LanguageURLMangler implements URLMangler {
         if (Dispatcher.REQUEST.get() == null || !type.equals(URLType.SERVICE)) return;
 
         final Map<String, Object> rawKvp =
-                Optional.ofNullable(Dispatcher.REQUEST.get().rawKvp).orElse(new HashMap<>());
-
-        final Optional<String> languageParameter =
-                rawKvp.keySet().stream()
-                        .filter(param -> param.equalsIgnoreCase(LANGUAGE))
-                        .findFirst();
-
-        final Optional<String> acceptLanguagesParameter =
-                rawKvp.keySet().stream()
-                        .filter(param -> param.equalsIgnoreCase(ACCEPT_LANGUAGES))
-                        .findFirst();
+                Optional.ofNullable(Dispatcher.REQUEST.get().rawKvp).orElse(new KvpMap<>());
 
         String language = "";
 
-        if (acceptLanguagesParameter.isPresent()) {
-            String acceptLanguages = (String) rawKvp.get(acceptLanguagesParameter.get());
+        if (rawKvp.containsKey(ACCEPT_LANGUAGES)) {
+            String acceptLanguages = (String) rawKvp.get(ACCEPT_LANGUAGES);
             if (acceptLanguages != null) {
                 String commaSplit = acceptLanguages.split(",")[0];
                 String spaceSplit = commaSplit.split(" ")[0];
@@ -47,12 +37,12 @@ public class LanguageURLMangler implements URLMangler {
             }
         }
 
-        if (languageParameter.isPresent()) {
-            language = (String) rawKvp.get(languageParameter.get());
+        if (rawKvp.containsKey(LANGUAGE)) {
+            language = (String) rawKvp.get(LANGUAGE);
         }
 
         if (language != null && language.length() > 0) {
-            kvp.put("Language", language.trim());
+            kvp.put(LANGUAGE, language.trim());
         }
     }
 }

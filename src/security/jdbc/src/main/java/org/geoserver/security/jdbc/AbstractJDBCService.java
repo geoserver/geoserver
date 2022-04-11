@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -31,6 +29,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
 import org.geoserver.util.IOUtils;
+import org.geotools.util.factory.GeoTools;
 
 /**
  * JDBC base implementation for common used methods
@@ -56,8 +55,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         if (config.isJndi()) {
             String jndiName = config.getJndiName();
             try {
-                Context initialContext = new InitialContext();
-                datasource = (DataSource) initialContext.lookup(jndiName);
+                datasource = (DataSource) GeoTools.jndiLookup(jndiName);
             } catch (NamingException e) {
                 throw new IOException(e);
             }

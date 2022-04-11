@@ -10,8 +10,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -27,6 +25,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
+import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -179,16 +178,18 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
             // models
             ((FormComponent) get("jndiName")).processInput();
 
-            Context initialContext = new InitialContext();
-            try {
-                DataSource datasource =
-                        (DataSource)
-                                initialContext.lookup(
-                                        get("jndiName").getDefaultModelObjectAsString());
-                try (Connection con = datasource.getConnection()) {}
-            } finally {
-                initialContext.close();
+            Object lookedUp = GeoTools.jndiLookup(get("jndiName").getDefaultModelObjectAsString());
+            if (lookedUp == null)
+                throw new IllegalArgumentException(
+                        "Failed to look up an object from JNDI at the given location");
+            if (!(lookedUp instanceof DataSource)) {
+                LOGGER.log(
+                        Level.WARNING,
+                        "Was trying to look up a DataSource in JNDI, but got this instead: "
+                                + lookedUp);
+                throw new IllegalArgumentException("JNDI lookup did not provide a DataSource");
             }
+            try (Connection con = ((DataSource) lookedUp).getConnection()) {}
         }
     }
 }

@@ -677,8 +677,8 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertNotNull(store);
         String dataDirName = FilenameUtils.getBaseName(dataDir.getAbsolutePath());
         String url = store.getURL();
-        assertFalse(url.contains(dataDirName));
-        assertTrue(url.contains(FilenameUtils.getBaseName(tempDir.getAbsolutePath())));
+        assertFalse(url.contains(dataDirName + File.separatorChar + "EmissiveCampania"));
+        assertTrue(url.contains("uploads"));
     }
 
     @Test

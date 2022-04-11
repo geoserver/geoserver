@@ -1542,6 +1542,13 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         SpatialFile fileData = (SpatialFile) data;
         File file = fileData.getFile();
+        Directory directory = Directory.createNew(getUploadRoot());
+        try (FileInputStream fis = new FileInputStream(file)) {
+            String name = file.getName();
+            directory.accept(name, fis);
+            file = directory.child(name);
+        }
+
         String newFile = file.toURI().toURL().getFile();
 
         // When replacing, we need to make sure that the provided layer and store matches what we

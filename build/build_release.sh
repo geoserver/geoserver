@@ -265,7 +265,7 @@ pushd src > /dev/null
 # build the release
 if [ -z $SKIP_BUILD ]; then
   echo "building release"
-  mvn clean install $MAVEN_FLAGS -DskipTests -P release
+  mvn clean install $MAVEN_FLAGS -DskipTests -P release -U
   
   # build the javadocs
   mvn javadoc:aggregate $MAVEN_FLAGS

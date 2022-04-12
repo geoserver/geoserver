@@ -113,6 +113,9 @@ echo
 echo "maven/java settings:"
 mvn -version
 
+echo "maven localRepository:"
+mvn help:evaluate -Dexpression=settings.localRepository -N | grep -v '\[INFO\]'
+
 # clear out any changes
 git reset --hard HEAD
 
@@ -280,8 +283,8 @@ if [ -z $SKIP_BUILD ]; then
   # ant user-pdf -Dproject.version=$tag
   # ant developer -Dproject.version=$tag
 
-  mvn clean compile
-  mvn package
+  mvn clean compile $MAVEN_FLAGS
+  mvn package $MAVEN_FLAGS
   
   popd > /dev/null
 else
@@ -295,7 +298,7 @@ if [ -z $SKIP_COMMUNITY ]; then
    set -e
    popd > /dev/null
 else
-   echo "Skipping mvn clean install -P communityRelease -DskipTests"
+   echo "Skipping mvn clean install -P communityRelease -DskipTests $MAVEN_FLAGS"
 fi
 
 echo "Assemble artifacts"

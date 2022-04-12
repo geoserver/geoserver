@@ -114,8 +114,10 @@ echo "maven/java settings:"
 mvn -version $MAVEN_FLAGS 
 
 echo "maven opts:"
-
 echo "$MAVEN_OPTS"
+
+echo "maven flags:"
+echo "$MAVEN_FLAGS"
 
 echo "maven localRepository:"
 mvn help:evaluate $MAVEN_FLAGS -Dexpression=settings.localRepository -N | grep -v '\[INFO\]'

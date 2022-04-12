@@ -111,10 +111,14 @@ echo "  jira id = $jira_id"
 echo "  distribution = $dist"
 echo
 echo "maven/java settings:"
-mvn -version
+mvn -version $MAVEN_FLAGS
+
+echo "maven opts:"
+
+echo "$MAVEN_OPTS"
 
 echo "maven localRepository:"
-mvn help:evaluate -Dexpression=settings.localRepository -N | grep -v '\[INFO\]'
+mvn help:evaluate -Dexpression=settings.localRepository -N $MAVEN_FLAGS | grep -v '\[INFO\]'
 
 # clear out any changes
 git reset --hard HEAD

@@ -426,9 +426,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected String getLogConfiguration() {
         if (isQuietTests()) {
-            return "QUIET_LOGGING.properties";
+            return "QUIET_LOGGING";
         }
-        return "TEST_LOGGING.properties";
+        return "TEST_LOGGING";
     }
 
     /**

@@ -111,22 +111,13 @@ public class LoggingUtils {
 
     /** Built-in logging configurations. */
     public static final String[] STANDARD_LOGGING_CONFIGURATIONS = {
-        // log4j 2 Configuration
-        "DEFAULT_LOGGING.xml",
-        "GEOSERVER_DEVELOPER_LOGGING.xml",
-        "GEOTOOLS_DEVELOPER_LOGGING.xml",
-        "PRODUCTION_LOGGING.xml",
-        "QUIET_LOGGING.xml",
-        "TEST_LOGGING.xml",
-        "VERBOSE_LOGGING.xml",
-        // log4j 1.2 Configuration
-        "DEFAULT_LOGGING.properties",
-        "GEOSERVER_DEVELOPER_LOGGING.properties",
-        "GEOTOOLS_DEVELOPER_LOGGING.properties",
-        "PRODUCTION_LOGGING.properties",
-        "QUIET_LOGGING.properties",
-        "TEST_LOGGING.properties",
-        "VERBOSE_LOGGING.properties"
+        "DEFAULT_LOGGING",
+        "GEOSERVER_DEVELOPER_LOGGING",
+        "GEOTOOLS_DEVELOPER_LOGGING",
+        "PRODUCTION_LOGGING",
+        "QUIET_LOGGING",
+        "TEST_LOGGING",
+        "VERBOSE_LOGGING",
     };
 
     /** Default logging if configResource unavailable */
@@ -567,9 +558,9 @@ public class LoggingUtils {
             LoggingInitializer.LOGGER.warning(
                     "Unable to load logging configuration '"
                             + configFileName
-                            + "'.  In addition, an attempt "
-                            + "was made to create the 'logs' directory in your data dir, and to use the DEFAULT_LOGGING configuration, but"
-                            + "this failed as well.  Is your data dir writeable?");
+                            + "'.  In addition, an attempt was made to create the 'logs' directory in your data dir, "
+                            + "and to use the DEFAULT_LOGGING configuration, but this failed as well. "
+                            + "Is your data dir writeable?");
             return;
         }
 
@@ -626,39 +617,34 @@ public class LoggingUtils {
      * Upgrade standard logging configurations to match built-in class resources.
      *
      * <p>This method will check each LOGGING profile against the internal templates and unpack any
-     * xml configurations that are missing, and remove any unmodified log4j properties
-     * configurations (that exactly match the internal templates).
+     * xml configurations that are missing, and remove any log4j properties configurations.
      */
     static void checkStandardLoggingConfiguration(GeoServerResourceLoader resourceLoader) {
         Resource logs = resourceLoader.get("logs");
         File logsDirectory = logs.dir();
 
         for (String logConfigFile : STANDARD_LOGGING_CONFIGURATIONS) {
-            File target = new File(logsDirectory.getAbsolutePath(), logConfigFile);
+            File target = new File(logsDirectory.getAbsolutePath(), logConfigFile + ".xml");
+            File properties =
+                    new File(logsDirectory.getAbsolutePath(), logConfigFile + ".properties");
+            if (properties.exists()) {
+                boolean deleted = target.delete();
+                if (deleted) {
+                    LoggingInitializer.LOGGER.finer(
+                            "Check '"
+                                    + logConfigFile
+                                    + "' logging configuration - outdated and removed");
+                } else {
+                    LoggingInitializer.LOGGER.config(
+                            "Check '"
+                                    + logConfigFile
+                                    + "' logging configuration - outdated and unable to remove. Is your data dir writeable?");
+                }
+            }
             if (target.exists()) {
                 try (FileInputStream targetContents = new FileInputStream(target);
-                        InputStream template = getStreamFromResource(logConfigFile)) {
-                    if (IOUtils.contentEquals(targetContents, template)) {
-                        if (logConfigFile.endsWith(".properties")) {
-                            boolean deleted = target.delete();
-                            if (deleted) {
-                                LoggingInitializer.LOGGER.finer(
-                                        "Check '"
-                                                + logConfigFile
-                                                + "' logging configuration - outdated and removed");
-                            } else {
-                                LoggingInitializer.LOGGER.config(
-                                        "Check '"
-                                                + logConfigFile
-                                                + "' logging configuration - outdated and unable to remove. Is your data dir writeable?");
-                            }
-                        } else {
-                            LoggingInitializer.LOGGER.finer(
-                                    "Check '"
-                                            + logConfigFile
-                                            + "' logging configuration, customized (or non-standard). Remove this file if ");
-                        }
-                    } else {
+                        InputStream template = getStreamFromResource(logConfigFile + ".xml")) {
+                    if (!IOUtils.contentEquals(targetContents, template)) {
                         LoggingInitializer.LOGGER.finer(
                                 "Check '"
                                         + logConfigFile
@@ -673,15 +659,14 @@ public class LoggingUtils {
                             e);
                 }
             } else {
-                if (!logConfigFile.endsWith(".properties")) {
-                    try {
-                        resourceLoader.copyFromClassPath(logConfigFile, target);
-                    } catch (IOException e) {
-                        LoggingInitializer.LOGGER.config(
-                                "Check '"
-                                        + logConfigFile
-                                        + "' logging configuration - unable to create. Is your data dir writeable?");
-                    }
+                try {
+                    String template = logConfigFile + ".xml";
+                    resourceLoader.copyFromClassPath(template, target);
+                } catch (IOException e) {
+                    LoggingInitializer.LOGGER.config(
+                            "Check '"
+                                    + logConfigFile
+                                    + "' logging configuration - unable to create. Is your data dir writeable?");
                 }
             }
         }

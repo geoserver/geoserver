@@ -4,11 +4,13 @@
  */
 package org.geoserver.logging;
 
+import java.io.File;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 import org.geoserver.platform.resource.Paths;
@@ -19,6 +21,34 @@ import org.geoserver.platform.resource.Paths;
  */
 public class GeoServerXMLConfiguration extends XmlConfiguration {
 
+    /** Node name for console output */
+    protected static final String CONSOLE_NODE = "Console";
+    /** Node attribute for name */
+    protected static final String NAME_ATTRIBUTE = "name";
+    /** Console node attribute name to supress for {@link #suppressStdOutLogging} */
+    protected static final String STDOUT = "stdout";
+
+    /** File output node attribute name to supress for {@link #suppressFileLogging} */
+    protected static final String GEOSERVERLOGFILE = "geoserverlogfile";
+
+    /** Node name for appender references */
+    protected static final String APPENDER_REF_NODE = "AppenderRef";
+    /** Node attribute for ref */
+    protected static final String REF_NODE = "ref";
+    /** Node name for rolling file output */
+    protected static final String ROLLING_FILE_NODE = "RollingFile";
+    /** Node name for file appender output */
+    protected static final String FILE_APPENDER_NODE = "FileAppender";
+    /** Node name for appenders */
+    protected static final String APPENDERS_NODE = "Appenders";
+    /** Node name for appender */
+    protected static final String APPENDER_NODE = "Appender";
+    /** Node name for loggers */
+    protected static final String LOGGERS_NODE = "Loggers";
+    /** Node name for appender */
+    protected static final String LOGGER_NODE = "Logger";
+
+    public static final String ROOT_NODE = "Root";
     /**
      * Logfile location, updated by {@link LoggingInitializer} in response to configuration changes.
      */
@@ -42,62 +72,133 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     /** Initial filename observed for geoserverlogfile appender */
     private String initialFilePattern;
 
-    /** Initial logFIleLocation observed for GEOSERVER_LOG_LOCATION property */
-    private String initialLogLocation;
+    /** Initial logFileLocation observed for GEOSERVER_LOG_LOCATION property */
+    // private String initialLogLocation;
 
     public GeoServerXMLConfiguration(LoggerContext loggerContext, ConfigurationSource source) {
         super(loggerContext, source);
     }
 
-    /** Modify xml document prior to processing. */
-    @Override
-    public void setup() {
-        super.setup();
-    }
-
     @Override
     protected void preConfigure(Node node) {
-        if (!node.isRoot()
-                && node.getName() != null
-                && node.getParent() != null
-                && node.getParent().getName() != null) {
-            if (node.getName().equals("Property")) {
-                if (node.getAttributes().containsKey("name")
-                        && node.getAttributes().get("name").equals("GEOSERVER_LOG_LOCATION")) {
-                    initialLogLocation = node.getValue();
-                    LOGGER.debug(
-                            "Preconfiguration property.GEOSERVER_LOG_LOCATION=",
-                            initialLogLocation);
-                }
-            }
-            if (node.getName().equals("filename")
-                    && node.getParent().getName().equals("RollingFile")
-                    && node.getParent().getAttributes().get("name").equals("geoserverlogfile")) {
-
-                initialFilename = node.getValue();
-                LOGGER.debug(
-                        "Preconfiguration geoserverlogfile.FileAppender.filename=",
-                        initialFilename);
-            }
-            if (node.getName().equals("filePattern")
-                    && node.getParent().getName().equals("RollingFile")
-                    && node.getParent().getAttributes().get("name").equals("geoserverlogfile")) {
-
-                initialFilePattern = node.getValue();
-                LOGGER.debug(
-                        "Preconfiguration geoserverlogfile.FileAppender.filePattern=",
-                        initialFilePattern);
-            }
-            if (node.getName().equals("filename")
-                    && node.getParent().getName().equals("FileAppender")
-                    && node.getParent().getAttributes().get("name").equals("geoserverlogfile")) {
-                initialFilename = node.getValue();
-                LOGGER.debug(
-                        "Preconfiguration geoserverlogfile.FileAppender.filename=",
-                        initialFilename);
-            }
+        if (suppressFileLogging) {
+            stripGeoServerLogFile(node);
+        }
+        if (suppressStdOutLogging) {
+            stripConsoleStout(node);
+        }
+        if (isGeoServerLogFile(node, ROLLING_FILE_NODE)) {
+            fixRollingFileAppender(node);
+        }
+        if (isGeoServerLogFile(node.getParent(), FILE_APPENDER_NODE)) {
+            fixFileAppender(node);
         }
         super.preConfigure(node);
+    }
+
+    protected void stripGeoServerLogFile(Node node) {
+        if (isType(node, APPENDERS_NODE)) {
+            node.getChildren()
+                    .removeIf(
+                            appender ->
+                                    isGeoServerLogFile(appender, ROLLING_FILE_NODE)
+                                            || isGeoServerLogFile(appender, FILE_APPENDER_NODE));
+        }
+        if (isType(node, LOGGERS_NODE)) {
+            for (final Node logger : node.getChildren()) {
+                if (isType(logger, LOGGER_NODE) || isType(logger, ROOT_NODE)) {
+                    logger.getChildren().removeIf(ref -> isAppenderRef(ref, GEOSERVERLOGFILE));
+                }
+            }
+            node.getChildren().removeIf(logger -> logger.getChildren().isEmpty());
+        }
+    }
+
+    protected void stripConsoleStout(Node node) {
+        if (isType(node, APPENDERS_NODE)) {
+            node.getChildren().removeIf(appender -> isConsoleStout(appender));
+        }
+        if (isType(node, LOGGERS_NODE)) {
+            for (final Node logger : node.getChildren()) {
+                if (isType(logger, LOGGER_NODE) || isType(logger, ROOT_NODE)) {
+                    logger.getChildren().removeIf(ref -> isAppenderRef(ref, STDOUT));
+                }
+            }
+            node.getChildren().removeIf(logger -> logger.getChildren().isEmpty());
+        }
+    }
+
+    protected boolean isType(Node node, String type) {
+        return node != null && node.getName() != null && node.getName().equals(type);
+    }
+
+    protected boolean isAppenderRef(Node node, String refName) {
+        return node != null
+                && node.getName() != null
+                && node.getName().equals(APPENDER_REF_NODE)
+                && node.getAttributes().containsKey(REF_NODE)
+                && node.getAttributes().get(REF_NODE).equals(refName);
+    }
+
+    protected boolean isConsoleStout(Node node) {
+        return node != null
+                && node.getName() != null
+                && node.getName().equals(CONSOLE_NODE)
+                && node.getAttributes().containsKey(NAME_ATTRIBUTE)
+                && node.getAttributes().get(NAME_ATTRIBUTE).equals(STDOUT);
+    }
+
+    protected boolean isGeoServerLogFile(Node node, String type) {
+        return node != null
+                && node.getName() != null
+                && node.getName().equals(type)
+                && node.getAttributes().containsKey(NAME_ATTRIBUTE)
+                && node.getAttributes().get(NAME_ATTRIBUTE).equals(GEOSERVERLOGFILE);
+    }
+
+    protected void fixFileAppender(Node node) {
+        String fileName = fileName();
+        initialFilename = node.getAttributes().get("filename");
+        LOGGER.debug("Preconfiguration geoserverlogfile.FileAppender.filename=", initialFilename);
+        node.getAttributes().put("filename", fileName);
+        LOGGER.debug("                 geoserverlogfile.FileAppender.filename=", fileName);
+    }
+
+    protected void fixRollingFileAppender(Node node) {
+        String fileName = fileName();
+        String extension = Paths.extension(fileName);
+        if (extension == null) {
+            extension = "log";
+        }
+        String filePattern = Paths.sidecar(fileName, null) + "-%i." + extension;
+
+        initialFilename = node.getAttributes().get("filename");
+        LOGGER.debug("Preconfiguration geoserverlogfile.RollingFile.filename=", initialFilename);
+        node.getAttributes().put("filename", fileName);
+        LOGGER.debug("                 geoserverlogfile.RollingFile.filename=", fileName);
+
+        initialFilePattern = node.getAttributes().get("filePattern");
+        LOGGER.debug(
+                "Preconfiguration geoserverlogfile.RollingFile.filePattern=", initialFilePattern);
+        node.getAttributes().put("filePattern", filePattern);
+        LOGGER.debug("                 geoserverlogfile.RollingFile.filePattern=", filePattern);
+    }
+
+    /**
+     * Clean up loggingLocation (providing default logs/geoserver.log location if required).
+     *
+     * @return fileName to use for logging
+     */
+    protected String fileName() {
+        String fileName = loggingLocation != null ? loggingLocation : "logs/geoserver.log";
+        if (fileName.startsWith("logs/")) {
+            File check = new File("pom.xml");
+            if (check.exists()) {
+                // developer testing using jetty
+                return "target/" + fileName;
+            }
+        }
+        return fileName;
     }
 
     /** Post-process configuration. */
@@ -105,151 +206,49 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     protected void doConfigure() {
         super.doConfigure();
 
-        if (loggingLocation != null) {
-            LOGGER.debug("External logfileLocation provided:" + loggingLocation);
+        if (fileName() != null) {
+            LOGGER.debug("External logfileLocation provided:" + fileName());
 
-            String logfile;
-            String extension = Paths.extension(loggingLocation);
-            if (extension != null) {
-                logfile =
-                        loggingLocation.substring(
-                                0, loggingLocation.length() - extension.length() - 1);
-            } else {
-                logfile = loggingLocation;
-                extension = "log";
+            // Confirm geoserverlogfile configured to use loggingLocation
+            Appender appender = getAppenders().get("geoserverlogfile");
+            if (appender instanceof RollingFileAppender) {
+                RollingFileAppender fileAppender = (RollingFileAppender) appender;
+                String fileName = fileAppender.getFileName();
+                String filePattern = fileAppender.getFilePattern();
+
+                LOGGER.debug("Postconfigure geoserverlogfile.filename=" + fileName);
+                LOGGER.debug("Postconfigure geoserverlogfile.filePattern=" + filePattern);
+            } else if (appender instanceof FileAppender) {
+                FileAppender fileAppender = (FileAppender) appender;
+                String fileName = fileAppender.getFileName();
+                LOGGER.debug("Postconfigure geoserverlogfile.filename=" + fileName);
             }
+        }
 
-            if (getProperties().containsKey("GEOSERVER_LOG_LOCATION")) {
-                // Configuration file setup to use property
-
-                // Step 1: update property with correct value
-                LOGGER.debug("Update 'GEOSERVER_LOG_LOCATION' to use '", logfile, "'");
-                getProperties().put("GEOSERVER_LOG_LOCATION", logfile);
-
-                // Step 2: confirm geoserverlogfile configured to use property
-                Appender appender = getAppenders().get("geoserverlogfile");
-                if (appender instanceof RollingFileAppender) {
-                    RollingFileAppender fileAppender = (RollingFileAppender) appender;
-                    String fileName = fileAppender.getFileName();
-
-                    if (fileName != null && fileName.contains("${GEOSERVER_LOG_LOCATION}")) {
-                        // nothing to do here property already in use
-                        // allows us to respect choice of file extension and file pattern
-                        LOGGER.debug(
-                                "Confirmed 'geoserverlogfile.fileName' uses ${GEOSERVER_LOG_LOCATION} property");
-                    } else {
-                        String replacementFileName = "${GEOSERVER_LOG_LOCATION}." + extension;
-                        LOGGER.debug(
-                                "Setting up replacement 'geoserverlogfile' to use ${GEOSERVER_LOG_LOCATION} property:"
-                                        + replacementFileName);
-                        RollingFileAppender replacement =
-                                newBuilder(fileAppender)
-                                        .setConfiguration(this)
-                                        .withFileName(replacementFileName)
-                                        .withFilePattern(
-                                                "${GEOSERVER_LOG_LOCATION}-%i." + extension)
-                                        .build();
-
-                        getAppenders().remove("geoserverlogfile");
-                        addAppender(replacement);
-                    }
-                }
-                if (appender instanceof FileAppender) {
-                    FileAppender fileAppender = (FileAppender) appender;
-                    String fileName = fileAppender.getFileName();
-                    if (fileName != null
-                            && fileName.contains("${GEOSERVER_LOG_LOCATION}")
-                            && fileName.contains(".")) {
-
-                        // nothing to do here property already in use and has some kind of log or
-                        // txt extension
-                        // this allows us to respect configuration choice of file extension
-                        LOGGER.debug(
-                                "Confirmed 'geoserverlogfile.fileName' uses ${GEOSERVER_LOG_LOCATION} property and an extension:'"
-                                        + fileName
-                                        + "'");
-
-                    } else {
-                        String replacementFileName = "${GEOSERVER_LOG_LOCATION}." + extension;
-
-                        LOGGER.debug(
-                                "Setting up replacement 'geoserverlogfile.fileName' to use ${GEOSERVER_LOG_LOCATION} property:"
-                                        + replacementFileName);
-                        FileAppender replacement =
-                                newBuilder(fileAppender)
-                                        .setConfiguration(this)
-                                        .withFileName(replacementFileName)
-                                        .build();
-
-                        getAppenders().remove("geoserverlogfile");
-                        addAppender(replacement);
-                    }
-                }
-            } else {
-                // Configuration file does not advertise GEOSERVER_LOG_LOCATION use
-
-                // Step 2: confirm geoserverlogfile configured to use location
-                Appender appender = getAppenders().get("geoserverlogfile");
-                if (appender instanceof RollingFileAppender) {
-                    RollingFileAppender fileAppender = (RollingFileAppender) appender;
-
-                    if (!fileAppender.getFileName().equals(logfile)) {
-                        RollingFileAppender replacement =
-                                newBuilder(fileAppender)
-                                        .setConfiguration(this)
-                                        .withFileName(logfile + "." + extension)
-                                        .withFilePattern(logfile + "-%i." + extension)
-                                        .build();
-
-                        getAppenders().remove("geoserverlogfile");
-                        addAppender(replacement);
-                    }
-                } else if (appender instanceof FileAppender) {
-                    FileAppender fileAppender = (FileAppender) appender;
-
-                    if (!fileAppender.getFileName().equals(logfile)) {
-                        FileAppender replacement =
-                                newBuilder(fileAppender)
-                                        .setConfiguration(this)
-                                        .withFileName(logfile)
-                                        .build();
-
-                        getAppenders().remove("geoserverlogfile");
-                        addAppender(replacement);
-                    }
+        if (suppressFileLogging) {
+            getAppenders().remove("geoserverlogfile");
+            for (LoggerConfig loggerConfig : getLoggers().values()) {
+                if (loggerConfig.getAppenders().containsKey("geoserverlogfile")) {
+                    LOGGER.debug(
+                            "Logger '"
+                                    + loggerConfig.getName()
+                                    + "' includes supressed 'geoserverlogfile':"
+                                    + loggerConfig.getAppenders().get("geoserverlogfile"));
                 }
             }
         }
-    }
 
-    /**
-     * Builder from existing FileAppender.
-     *
-     * @param fileAppender
-     * @param <B>
-     * @return builder
-     */
-    public static <B extends FileAppender.Builder<B>> B newBuilder(FileAppender fileAppender) {
-        return FileAppender.<B>newBuilder()
-                .setName(fileAppender.getName())
-                .withFileName(fileAppender.getFileName())
-                .setLayout(fileAppender.getLayout());
-    }
-
-    /**
-     * Builder from existing RollingFileAppender.
-     *
-     * @param rollingFileAppender
-     * @param <B>
-     * @return builder
-     */
-    public static <B extends RollingFileAppender.Builder<B>> B newBuilder(
-            RollingFileAppender rollingFileAppender) {
-        return RollingFileAppender.<B>newBuilder()
-                .setName(rollingFileAppender.getName())
-                .withFileName(rollingFileAppender.getFileName())
-                .withFilePattern(rollingFileAppender.getFilePattern())
-                .setLayout(rollingFileAppender.getLayout())
-                .withPolicy(rollingFileAppender.getTriggeringPolicy());
+        if (suppressStdOutLogging) {
+            getAppenders().remove("stdout");
+            for (LoggerConfig loggerConfig : getLoggers().values()) {
+                if (loggerConfig.getAppenders().containsKey("stdout")) {
+                    LOGGER.debug(
+                            "Logger '"
+                                    + loggerConfig.getName()
+                                    + "' includes supressed 'stdout':"
+                                    + loggerConfig.getAppenders().get("stdout"));
+                }
+            }
+        }
     }
 }

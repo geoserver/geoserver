@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This log4j configuration file needs to stay here, and is used as the default logging setup -->
 <!-- during data_dir upgrades and in case the chosen logging config isn't available.            -->
-<Configuration name="DEFAULT_LOGGING" status="error" dest="out">
+<Configuration name="TEST_LOGGING" status="fatal" dest="out">
     <CustomLevels>
         <CustomLevel name="CONFIG" intLevel="450" />
         <CustomLevel name="FINEST" intLevel="700" />

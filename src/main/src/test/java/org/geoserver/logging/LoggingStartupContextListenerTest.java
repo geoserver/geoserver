@@ -21,8 +21,6 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.MemoryLockProvider;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockServletContext;
 
@@ -35,26 +33,6 @@ import org.springframework.mock.web.MockServletContext;
  */
 public class LoggingStartupContextListenerTest {
 
-    @Before
-    public void resetLoggers() {
-        // resetting, no need to enforce AutoClosable
-        //        System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level",
-        // "DEBUG");
-        //        try (LoggerContext context = (LoggerContext) LogManager.getContext(false)) {
-        //            context.reconfigure();
-        //        }
-    }
-
-    @After
-    public void cleanupLoggers() {
-        // resetting, no need to enforce AutoClosable
-        //        System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level",
-        // "ERROR");
-        //        try (LoggerContext context = (LoggerContext) LogManager.getContext(false)) {
-        //            context.reconfigure();
-        //        }
-    }
-
     @Test
     public void testLogLocationFromServletContext() throws Exception {
         File tmp = File.createTempFile("log", "tmp", new File("target"));
@@ -65,7 +43,8 @@ public class LoggingStartupContextListenerTest {
         assertTrue(logs.mkdirs());
 
         FileUtils.copyURLToFile(
-                getClass().getResource("logging.xml"), new File(tmp, "logging.xml"));
+                LoggingStartupContextListenerTest.class.getResource("logging.xml"),
+                new File(tmp, "logging.xml"));
 
         MockServletContext context = new MockServletContext();
         context.setInitParameter("GEOSERVER_DATA_DIR", tmp.getPath());
@@ -156,10 +135,10 @@ public class LoggingStartupContextListenerTest {
         store.setLockProvider(new MemoryLockProvider());
 
         // make it copy the log files
-        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, true, null);
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
         // init once from default logging
-        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, true, null);
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
         // init twice, here it used to lock up
-        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, true, null);
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
     }
 }

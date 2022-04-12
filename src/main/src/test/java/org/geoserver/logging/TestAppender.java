@@ -4,6 +4,8 @@
  */
 package org.geoserver.logging;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +73,39 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
                             + " is already configured as '"
                             + getName()
                             + "'.");
+        }
+    }
+
+    /**
+     * Check if logger noticed provided snippet occuring in a logging message.
+     *
+     * @param snippet expected snippert of logging message.
+     */
+    public void assertTrue(String snippet) {
+        for (LogEvent event : this.log) {
+            String formattedMessage = event.getMessage().getFormattedMessage();
+            if (formattedMessage.contains(snippet)) {
+                return;
+            }
+        }
+        fail("Log does not contain '" + snippet + "'");
+    }
+    /**
+     * Check if logger noticed provided snippet occurring in a logging message.
+     *
+     * @param snippet expected snippert of logging message.
+     */
+    public void assertTrue(String message, String snippet) {
+        for (LogEvent event : this.log) {
+            String formattedMessage = event.getMessage().getFormattedMessage();
+            if (formattedMessage.contains(snippet)) {
+                return;
+            }
+        }
+        if (message != null) {
+            fail(message);
+        } else {
+            fail("Log does not contain '" + snippet + "'");
         }
     }
 

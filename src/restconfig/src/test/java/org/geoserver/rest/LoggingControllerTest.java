@@ -30,7 +30,7 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         geoServer = getGeoServer();
         LoggingInfo loggingInfo = new LoggingInfoImpl();
         loggingInfo.setLocation("logs/geoserver-test.log");
-        loggingInfo.setLevel("TEST_LOGGING.properties");
+        loggingInfo.setLevel("TEST_LOGGING.xml");
         loggingInfo.setStdOutLogging(true);
 
         geoServer.setLogging(loggingInfo);
@@ -49,7 +49,7 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         assertNotNull(jsonObject);
         JSONObject loggingInfo = jsonObject.getJSONObject("logging");
         assertNotNull(loggingInfo);
-        assertEquals("TEST_LOGGING.properties", loggingInfo.get("level"));
+        assertEquals("TEST_LOGGING.xml", loggingInfo.get("level"));
         assertEquals("logs/geoserver-test.log", loggingInfo.get("location"));
         assertEquals(true, loggingInfo.get("stdOutLogging"));
     }
@@ -72,7 +72,7 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
     public void testPutLoggingAsJSON() throws Exception {
         String inputJson =
                 "{'logging':{"
-                        + "    'level':'DEFAULT_LOGGING.properties',"
+                        + "    'level':'DEFAULT_LOGGING.xml',"
                         + "    'location':'logs/geoserver-test-2.log',"
                         + "    'stdOutLogging':false}}";
         MockHttpServletResponse response =
@@ -92,7 +92,7 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPutLoggingAsXML() throws Exception {
         String xml =
-                "<logging> <level>DEFAULT_LOGGING.properties</level>"
+                "<logging> <level>DEFAULT_LOGGING.xml</level>"
                         + "<location>logs/geoserver-test-2.log</location>"
                         + "<stdOutLogging>false</stdOutLogging> </logging>";
         MockHttpServletResponse response =

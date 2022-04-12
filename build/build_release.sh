@@ -111,14 +111,14 @@ echo "  jira id = $jira_id"
 echo "  distribution = $dist"
 echo
 echo "maven/java settings:"
-mvn -version $MAVEN_FLAGS
+mvn -version $MAVEN_FLAGS 
 
 echo "maven opts:"
 
 echo "$MAVEN_OPTS"
 
 echo "maven localRepository:"
-mvn help:evaluate -Dexpression=settings.localRepository -N $MAVEN_FLAGS | grep -v '\[INFO\]'
+mvn help:evaluate $MAVEN_FLAGS -Dexpression=settings.localRepository -N | grep -v '\[INFO\]'
 
 # clear out any changes
 git reset --hard HEAD
@@ -298,11 +298,11 @@ fi
 if [ -z $SKIP_COMMUNITY ]; then
    pushd community > /dev/null
    set +e
-   mvn clean install -P communityRelease -DskipTests $MAVEN_FLAGS || true
+   mvn clean install $MAVEN_FLAGS -P communityRelease -DskipTests || true
    set -e
    popd > /dev/null
 else
-   echo "Skipping mvn clean install -P communityRelease -DskipTests $MAVEN_FLAGS"
+   echo "Skipping mvn clean install $MAVEN_FLAGS -P communityRelease -DskipTests"
 fi
 
 echo "Assemble artifacts"

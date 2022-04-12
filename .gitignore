@@ -20,9 +20,24 @@ cucumber-report
 
 # staging release artifacts
 distribution/
+settings.xml
 
 # NSG CITE testst data directory
 data/citensg-1.0/gwc/cite*
 data/citensg-1.0/gwc/geowebcache_*.bak
 data/citensg-1.0/legendsamples/
 data/citensg-1.0/logs/geoserver.log
+
+# cite tests logs directory
+build/cite/logs
+
+# https://bugs.openjdk.java.net/browse/JDK-8214300
+.attach_pid*
+
+# Windows installer related stuff
+src/release/installer/win/*.rtf
+src/release/installer/win/source/
+src/release/installer/win/target/
+
+# spotless up to date checks
+.spotless-index

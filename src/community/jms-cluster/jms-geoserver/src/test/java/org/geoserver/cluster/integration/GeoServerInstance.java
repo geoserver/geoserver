@@ -186,7 +186,7 @@ public final class GeoServerInstance {
         // setting logging level
         LoggingUtils.configureGeoServerLogging(
                 loader,
-                this.getClass().getResourceAsStream("/TEST_LOGGING.properties"),
+                loader.get("/logs/TEST_LOGGING.xml"),
                 false,
                 true,
                 null);

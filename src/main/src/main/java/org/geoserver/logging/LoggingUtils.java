@@ -110,7 +110,7 @@ public class LoggingUtils {
     }
 
     /** Built-in logging configurations. */
-    static final String[] STANDARD_LOGGING_CONFIGURATIONS = {
+    public static final String[] STANDARD_LOGGING_CONFIGURATIONS = {
         // log4j 2 Configuration
         "DEFAULT_LOGGING.xml",
         "GEOSERVER_DEVELOPER_LOGGING.xml",

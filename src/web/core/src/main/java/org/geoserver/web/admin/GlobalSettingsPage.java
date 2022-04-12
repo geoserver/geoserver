@@ -31,6 +31,7 @@ import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.LockProvider;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
@@ -49,11 +50,11 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
     static final List<String> DEFAULT_LOG_PROFILES =
             Arrays.asList(
-                    "DEFAULT_LOGGING.properties",
-                    "VERBOSE_LOGGING.properties",
-                    "PRODUCTION_LOGGING.properties",
-                    "GEOTOOLS_DEVELOPER_LOGGING.properties",
-                    "GEOSERVER_DEVELOPER_LOGGING.properties");
+                    "DEFAULT_LOGGING",
+                    "VERBOSE_LOGGING",
+                    "PRODUCTION_LOGGING",
+                    "GEOTOOLS_DEVELOPER_LOGGING",
+                    "GEOSERVER_DEVELOPER_LOGGING");
 
     public static final ArrayList<String> AVAILABLE_CHARSETS =
             new ArrayList<>(Charset.availableCharsets().keySet());
@@ -229,14 +230,23 @@ public class GlobalSettingsPage extends ServerAdminPage {
         try {
             Resource logsDirectory = loader.get("logs");
             if (logsDirectory.getType() == Type.DIRECTORY) {
-                List<Resource> propFiles =
+                logProfiles = new ArrayList<>();
+                List<Resource> xmlFiles =
                         Resources.list(
                                 logsDirectory,
-                                obj -> obj.name().toLowerCase().endsWith("logging.properties"));
-                logProfiles = new ArrayList<>();
-                for (Resource res : propFiles) {
+                                obj -> obj.name().toLowerCase().endsWith("_logging.xml"));
+                for (Resource res : xmlFiles) {
                     logProfiles.add(res.name());
                 }
+
+                List<Resource> propertiesFiles =
+                        Resources.list(
+                                logsDirectory,
+                                obj -> obj.name().toLowerCase().endsWith("_logging.properties"));
+                for (Resource res : propertiesFiles) {
+                    logProfiles.add(res.name());
+                }
+
                 Collections.sort(logProfiles, String.CASE_INSENSITIVE_ORDER);
             }
         } catch (Exception e) {

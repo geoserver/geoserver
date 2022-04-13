@@ -123,14 +123,26 @@ public abstract class TestsSupport extends WMSTestSupport {
 
     protected abstract Dimension buildDimension(DimensionInfo dimensionInfo);
 
+    protected Dimension buildDimensionWithEndAttribute(DimensionInfo dimensionInfo) {
+        return buildDimension(dimensionInfo);
+    }
+
     protected void testDomainsValuesRepresentation(
-            int expandLimit, String... expectedDomainValues) {
+            int expandLimit, boolean useEndAttribute, String... expectedDomainValues) {
         DimensionInfo dimensionInfo = createDimension(true, null);
-        Dimension dimension = buildDimension(dimensionInfo);
+        Dimension dimension =
+                useEndAttribute
+                        ? buildDimensionWithEndAttribute(dimensionInfo)
+                        : buildDimension(dimensionInfo);
         List<String> valuesAsStrings =
                 dimension.getDomainValuesAsStrings(Query.ALL, expandLimit).second;
         assertThat(valuesAsStrings.size(), is(expectedDomainValues.length));
         assertThat(valuesAsStrings, containsInAnyOrder(expectedDomainValues));
+    }
+
+    protected void testDomainsValuesRepresentation(
+            int expandLimit, String... expectedDomainValues) {
+        testDomainsValuesRepresentation(expandLimit, false, expectedDomainValues);
     }
 
     protected void testDefaultValueStrategy(

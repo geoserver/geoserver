@@ -22,9 +22,9 @@ function usage() {
   echo " SKIP_BUILD : Skips main release build"
   echo " SKIP_COMMUNITY : Skips community release build"
   echo " SKIP_TAG : Skips tag on release branch"
-  echo " SKIP_INSTALLERS : Skips building of mac and windows installers"
   echo " SKIP_GT : Skips the GeoTools build, as used to build revision"
   echo " SKIP_GWC : Skips the GeoWebCache build, as used to build revision"
+  echo " MAVEN_FLAGS : Used to supply additional option, like -U or -X to build process.
 }
 
 # parse options
@@ -398,13 +398,6 @@ if [ -z $SKIP_TAG ]; then
 fi
 
 popd > /dev/null
-
-# fire off mac and windows build machines
-if [ -z $SKIP_INSTALLERS ]; then
-  echo "starting installer jobs"
-  start_installer_job $WIN_JENKINS $WIN_JENKINS_USER $WIN_JENKINS_KEY $tag
-  start_installer_job $MAC_JENKINS $MAC_JENKINS_USER $MAC_JENKINS_KEY $tag
-fi
 
 popd > /dev/null
 

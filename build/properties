@@ -9,17 +9,8 @@ JIRA_REST=https://osgeo-org.atlassian.net/rest/api/latest
 JIRA_PROJ=GEOS
 SF_HOST=frs.sourceforge.net
 
-SKIP_INSTALLERS=true
-# not currently in use, installers are called from jenkins
-#WIN_JENKINS=
-#WIN_JENKINS_USER=
-#WIN_JENKINS_KEY=
-#MAC_JENKINS=
-#MAC_JENKINS_USER=
-#MAC_JENKINS_KEY=
-
 # maven environment
-MAVEN_FLAGS="--batch-mode -Dfmt.skip=true"
+MAVEN_FLAGS="$MAVEN_FLAGS --batch-mode -Dfmt.skip=true"
 
 # Use settings.xml override if provided
 if [ -n "$MAVEN_SETTINGS" ]; then

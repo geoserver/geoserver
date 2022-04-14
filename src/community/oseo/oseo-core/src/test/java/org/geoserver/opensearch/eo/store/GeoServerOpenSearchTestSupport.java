@@ -50,7 +50,7 @@ public class GeoServerOpenSearchTestSupport {
         // configure opensearch for EO to use it
         OSEOInfo service = gs.getService(OSEOInfo.class);
         service.setOpenSearchAccessStoreId(osDs.getId());
-        service.getGlobalQueryables().addAll(Arrays.asList("id", "goemetry", "collection"));
+        service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
         gs.save(service);
 
         // configure contact info

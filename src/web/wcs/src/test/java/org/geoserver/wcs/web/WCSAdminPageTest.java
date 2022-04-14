@@ -122,4 +122,23 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
         ft.submit("submit");
         assertNotNull(getGeoServer().getService(WCSInfo.class).getDefaultLocale());
     }
+
+    @Test
+    public void testDefaultDeflate() {
+        login();
+        // start the page
+        tester.startPage(WCSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        // mandatory fields
+        ft.setValue("maxInputMemory", "1");
+        ft.setValue("maxOutputMemory", "1");
+        ft.setValue("maxRequestedDimensionValues", "1");
+
+        ft.select("defaultLocale", 11);
+        ft.setValue("defaultDeflateCompressionLevel", "20");
+        ft.submit();
+        // there should be an error
+        tester.assertErrorMessages(
+                "The value of 'Default Deflate Compression Level' must be between 1 and 9.");
+    }
 }

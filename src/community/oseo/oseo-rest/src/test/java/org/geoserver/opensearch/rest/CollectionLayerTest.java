@@ -40,6 +40,7 @@ import org.geoserver.config.JAIInfo.PngEncoderType;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.image.test.ImageAssert;
+import org.geotools.referencing.operation.projection.MapProjection;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.RasterSymbolizer;
@@ -47,7 +48,9 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -136,6 +139,17 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         resourceBase = file.getCanonicalFile().getAbsolutePath().replace("\\", "/");
     }
 
+    @BeforeClass
+    public static void disableProjectionChecks() {
+        // some COG data used in tests is a tad too close to the pole
+        MapProjection.SKIP_SANITY_CHECKS = true;
+    }
+
+    @AfterClass
+    public static void enableProjectionChecks() {
+        MapProjection.SKIP_SANITY_CHECKS = false;
+    }
+
     protected String getTestStringData(String location) throws IOException {
         return IOUtils.toString(getClass().getResourceAsStream(location), StandardCharsets.UTF_8);
     }
@@ -177,7 +191,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
         BufferedImage image =
                 getAsImage(
-                        "wms/reflect?layers=gs:test123&format=image/png&bbox=55.70,-21.30,55.80,-21.20&width=200",
+                        "wms/reflect?layers=gs:test123&format=image/png&bbox=-159.44,-82.04,-152.43,-81.06&width=200",
                         "image/png");
         File expected = new File("src/test/resources/test123-simple-cog.png");
         ImageAssert.assertEquals(expected, image, 1000);
@@ -205,7 +219,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
         BufferedImage image =
                 getAsImage(
-                        "wms/reflect?layers=gs:test123&format=image/png&bbox=55.75,-21.30,55.85,-21.20&width=200",
+                        "wms/reflect?layers=gs:test123&format=image/png&bbox=-159.44,-82.04,-152.43,-81.06&width=200",
                         "image/png");
         File expected = new File("src/test/resources/test123-multiband-cog.png");
         ImageAssert.assertEquals(expected, image, 1000);

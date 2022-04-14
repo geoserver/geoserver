@@ -323,16 +323,8 @@ Geohash grid aggregation visualization is supported in WMS requests through a cu
                  <ogc:Literal>data</ogc:Literal>
                </ogc:Function>
                <ogc:Function name="parameter">
-                 <ogc:Literal>aggregationDefinition</ogc:Literal>
-                 <ogc:Literal>{"agg": {"geohash_grid": {"field": "_ogr_geometry_.coordinates", "precision": 3}}}</ogc:Literal>
-               </ogc:Function>
-               <ogc:Function name="parameter">
                  <ogc:Literal>gridStrategy</ogc:Literal>
                  <ogc:Literal>Basic</ogc:Literal>
-               </ogc:Function>
-               <ogc:Function name="parameter">
-                 <ogc:Literal>pixelsPerCell</ogc:Literal>
-                 <ogc:Literal>1</ogc:Literal>
                </ogc:Function>
                <ogc:Function name="parameter">
                  <ogc:Literal>outputBBOX</ogc:Literal>
@@ -381,6 +373,18 @@ Example WMS request including Geohash grid aggregation with the above custom sty
     http://localhost:8080/geoserver/test/wms?service=WMS&version=1.1.0&request=GetMap
          &layers=test:active&styles=geohashgrid&bbox=0.0,0.0,24.0,44.0&srs=EPSG:4326
          &width=418&height=768&format=application/openlayers
+         
+The ES aggregation definition can be computed automatically, or provided as an explicit parameter,
+for example::
+
+               <ogc:Function name="parameter">
+                 <ogc:Literal>aggregationDefinition</ogc:Literal>
+                 <ogc:Literal>{"agg": {"geohash_grid": {"field": "_ogr_geometry_.coordinates", "precision": 3}}}</ogc:Literal>
+               </ogc:Function>
+
+The store may update the precision to a smaller value, if it finds it goes beyond the aggregation
+limits setup in its configuration, see ``grid_size`` and ``grid_threshold`` above.
+
 
 Grid Strategy
 ^^^^^^^^^^^^^

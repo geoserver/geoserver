@@ -125,6 +125,38 @@ public class SearchTest extends STACTestSupport {
         checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
     }
 
+    @Test
+    public void testCollectionsCql2TextPost() throws Exception {
+        // two SAS1, one Landsat, but the filter matches constellation to landsat8 only
+        String request =
+                "{\n"
+                        + "  \"collections\": [\n"
+                        + "    \"SAS1\",\n"
+                        + "    \"LANDSAT8\"\n"
+                        + "  ],\n"
+                        + "  \"filter\": \"constellation='landsat8'\",\n"
+                        + "  \"filter-lang\": \"cql2-text\"\n"
+                        + "}";
+        DocumentContext doc = postAsJSONPath("ogc/stac/search", request, 200);
+        checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
+    }
+
+    @Test
+    public void testCollectionsCql2JsonPost() throws Exception {
+        // two SAS1, one Landsat, but the filter matches constellation to landsat8 only
+        String request =
+                "{\n"
+                        + "  \"collections\": [\n"
+                        + "    \"SAS1\",\n"
+                        + "    \"LANDSAT8\"\n"
+                        + "  ],\n"
+                        + "  \"filter\":{\"op\":\"=\",\"args\":[{\"property\":\"constellation\"},\"landsat8\"]},\n"
+                        + "  \"filter-lang\": \"cql2-json\"\n"
+                        + "}";
+        DocumentContext doc = postAsJSONPath("ogc/stac/search", request, 200);
+        checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
+    }
+
     private void checkCollectionsSinglePage(
             DocumentContext doc,
             int matched,

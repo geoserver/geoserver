@@ -5,6 +5,8 @@
 package org.geoserver.ogcapi.stac;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 
@@ -58,8 +60,13 @@ public class SearchQuery {
         return filter;
     }
 
-    public void setFilter(String filter) {
-        this.filter = filter;
+    // Using JsonNode to prevent Jackson from trying to parse into object if is CQL2-JSON
+    public void setFilter(JsonNode node) {
+        if (node instanceof ObjectNode) {
+            this.filter = node.toString();
+        } else {
+            this.filter = node.textValue();
+        }
     }
 
     public String getFilterLang() {

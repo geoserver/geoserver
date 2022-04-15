@@ -1028,7 +1028,7 @@ public class SearchTest extends OSEOTestSupport {
                 dom,
                 hasXPath(
                         "/at:feed/at:entry[1]/at:summary",
-                        containsString("Jan 17, 2016 10:10:30")));
+                        containsString("Jan 17, 2016, 10:10:30")));
     }
 
     @Test

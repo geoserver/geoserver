@@ -10,13 +10,12 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.21-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-rest-upload</artifactId>
     <packaging>jar</packaging>
-    <version>2.21-SNAPSHOT</version>
     <name>Resumable REST Upload module</name>
 
     <dependencies>

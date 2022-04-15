@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.21-SNAPSHOT</version>
+  <version>${revision}</version>
   <packaging>pom</packaging>
   <name>GeoServer</name>
   <inceptionYear>2006</inceptionYear>
@@ -87,7 +87,8 @@
   </distributionManagement>
 
   <properties>
-    <gs.version>2.21-SNAPSHOT</gs.version>
+    <revision>2.21-SNAPSHOT</revision>
+    <gs.version>${project.version}</gs.version>
     <gt.version>27-SNAPSHOT</gt.version>
     <gwc.version>1.21-SNAPSHOT</gwc.version>
     <jts.version>1.18.2</jts.version>
@@ -1559,7 +1560,31 @@
     </pluginManagement>
 
     <plugins>
-
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>1.2.7</version>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+        </configuration>
+      </plugin>
       <!-- compilation -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1877,6 +1902,7 @@
         </executions>
         <configuration>
           <skip>${pom.fmt.skip}</skip>
+          <pomFile>pom.xml</pomFile>
           <keepBlankLines>true</keepBlankLines>
           <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement>
           <createBackupFile>false</createBackupFile>

@@ -33,3 +33,13 @@ Select the default language for the WCS Service.
    Default language
 
 See the :ref:`internationalization` section for a description of how this setting is used.
+
+Compression Settings
+--------------------
+
+Specify the default level for Deflate compression when requesting a coverage in TIFF format with Deflate compression.
+
+.. figure:: img/wcs_default_deflate.png
+   
+   Default Deflate compression level
+

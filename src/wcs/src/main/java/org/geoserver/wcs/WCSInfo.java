@@ -17,6 +17,8 @@ import org.geotools.coverage.grid.io.OverviewPolicy;
  */
 public interface WCSInfo extends ServiceInfo {
 
+    static final int DEFAULT_DEFLATE_COMPRESSION_LEVEL = 9;
+
     /** Flag determining if gml prefixing is used. */
     boolean isGMLPrefixing();
 
@@ -92,6 +94,14 @@ public interface WCSInfo extends ServiceInfo {
      * @param maxRequestedDimensionValues Any integer number
      */
     default void setMaxRequestedDimensionValues(int maxRequestedDimensionValues) {
+        // if not implemented nothing is done
+    }
+
+    default int getDefaultDeflateCompressionLevel() {
+        return DEFAULT_DEFLATE_COMPRESSION_LEVEL;
+    }
+
+    default void setDefaultDeflateCompressionLevel(int defaultDeflateCompressionLevel) {
         // if not implemented nothing is done
     }
 }

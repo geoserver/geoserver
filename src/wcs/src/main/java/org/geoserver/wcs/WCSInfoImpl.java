@@ -30,6 +30,8 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
 
     long maxOutputMemory = -1;
 
+    Integer defaultDeflateCompressionLevel = WCSInfo.DEFAULT_DEFLATE_COMPRESSION_LEVEL;
+
     Boolean subsamplingEnabled = Boolean.TRUE;
 
     OverviewPolicy overviewPolicy;
@@ -123,6 +125,16 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
         result = prime * result + ((srs == null) ? 0 : srs.hashCode());
         result =
                 prime * result + ((subsamplingEnabled == null) ? 0 : subsamplingEnabled.hashCode());
+        result =
+                prime * result
+                        + ((maxRequestedDimensionValues == null)
+                                ? 0
+                                : maxRequestedDimensionValues.hashCode());
+        result =
+                prime * result
+                        + ((defaultDeflateCompressionLevel == null)
+                                ? 0
+                                : defaultDeflateCompressionLevel.hashCode());
         return result;
     }
 
@@ -143,6 +155,15 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
         if (subsamplingEnabled == null) {
             if (other.subsamplingEnabled != null) return false;
         } else if (!subsamplingEnabled.equals(other.subsamplingEnabled)) return false;
+        if (maxRequestedDimensionValues == null) {
+            if (other.maxRequestedDimensionValues != null) return false;
+        } else if (!maxRequestedDimensionValues.equals(other.maxRequestedDimensionValues))
+            return false;
+        if (defaultDeflateCompressionLevel == null) {
+            if (other.defaultDeflateCompressionLevel != null) return false;
+        } else if (!defaultDeflateCompressionLevel.equals(other.defaultDeflateCompressionLevel))
+            return false;
+
         return true;
     }
 
@@ -156,5 +177,17 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
     @Override
     public void setMaxRequestedDimensionValues(int maxRequestedDimensionValues) {
         this.maxRequestedDimensionValues = maxRequestedDimensionValues;
+    }
+
+    @Override
+    public void setDefaultDeflateCompressionLevel(int defaultDeflateCompressionLevel) {
+        this.defaultDeflateCompressionLevel = defaultDeflateCompressionLevel;
+    }
+
+    @Override
+    public int getDefaultDeflateCompressionLevel() {
+        return defaultDeflateCompressionLevel == null
+                ? DEFAULT_DEFLATE_COMPRESSION_LEVEL
+                : defaultDeflateCompressionLevel;
     }
 }

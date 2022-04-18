@@ -135,25 +135,25 @@ public class ImporterTest extends ImporterTestSupport {
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertNotEquals(bbox, resource.getNativeBoundingBox());
 
-        // Test with "recalculate-bounds"=false
+        // Test with "calculate-bounds"=false
         resource.setNativeBoundingBox(customBbox);
-        resource.getMetadata().put("recalculate-bounds", false);
+        resource.getMetadata().put(Importer.CALCULATE_BOUNDS, false);
         assertNotEquals(bbox, resource.getNativeBoundingBox());
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertNotEquals(bbox, resource.getNativeBoundingBox());
 
-        // Test with "recalculate-bounds"=true
+        // Test with "calculate-bounds"=true
         resource.setNativeBoundingBox(customBbox);
-        resource.getMetadata().put("recalculate-bounds", true);
+        resource.getMetadata().put(Importer.CALCULATE_BOUNDS, true);
         assertNotEquals(bbox, resource.getNativeBoundingBox());
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertEquals(bbox, resource.getNativeBoundingBox());
 
-        // Test with "recalculate-bounds"="true"
+        // Test with "calculate-bounds"="true"
         resource.setNativeBoundingBox(customBbox);
-        resource.getMetadata().put("recalculate-bounds", "true");
+        resource.getMetadata().put(Importer.CALCULATE_BOUNDS, "true");
         assertNotEquals(bbox, resource.getNativeBoundingBox());
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());

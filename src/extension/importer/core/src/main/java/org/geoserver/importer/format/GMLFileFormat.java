@@ -27,6 +27,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
 import org.geoserver.importer.VectorFormat;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.transform.ReprojectTransform;
@@ -189,7 +190,7 @@ public class GMLFileFormat extends VectorFormat {
         }
         resource.setNativeBoundingBox(EMPTY_BOUNDS);
         resource.setLatLonBoundingBox(EMPTY_BOUNDS);
-        resource.getMetadata().put("recalculate-bounds", Boolean.TRUE);
+        resource.getMetadata().put(Importer.CALCULATE_BOUNDS, Boolean.TRUE);
 
         ImportTask task = new ImportTask(data);
         task.setLayer(layer);

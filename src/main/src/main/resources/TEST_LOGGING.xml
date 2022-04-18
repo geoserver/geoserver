@@ -14,34 +14,28 @@
     <Loggers>
         <Logger name="org.geotools" level="error" additivity="false">
             <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
         </Logger>
         <Logger name="org.geotools.factory" level="error" additivity="false">
             <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
         </Logger>
 
         <Logger name="org.geoserver" level="error" additivity="false">
             <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
         </Logger>
         <Logger name="org.vfny.geoserver" level="error" additivity="false">
             <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
         </Logger>
 
         <Logger name="org.springframework" level="error" additivity="false">
             <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
         </Logger>
 
         <Logger name="org.apache.wicket.util.tester" level="info" additivity="false">
             <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
         </Logger>
 
         <Root level="off">
-            <AppenderRef ref="error"/>
+            <AppenderRef ref="stdout"/>
         </Root>
     </Loggers>
 </Configuration>

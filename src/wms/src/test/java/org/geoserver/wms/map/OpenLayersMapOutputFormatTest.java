@@ -508,7 +508,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testAutoCodeLogsErrors() throws Exception {
         try (TestAppender appender = TestAppender.createAppender("testAutoCodeLogsErrors", null)) {
-            appender.startRecording();
+            appender.startRecording("org.geoserver.wms.map");
 
             GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);
             CoordinateReferenceSystem crs = CRS.decode("AUTO:42003,9001,-20,-45");
@@ -524,8 +524,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             assertTrue(index > -1);
 
             appender.assertFalse("Error was logged", "Failed to determine CRS axis order");
-
-            appender.stopRecording();
+            appender.stopRecording("org.geoserver.wms.map");
         }
     }
 }

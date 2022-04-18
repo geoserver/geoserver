@@ -14,6 +14,7 @@ import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Configuration;
@@ -33,6 +34,7 @@ import org.junit.Assert;
 @Plugin(name = "TestAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class TestAppender extends AbstractAppender implements AutoCloseable {
     private final List<LogEvent> log = new ArrayList<>();
+    private String trigger;
 
     /** TestAppender collecting LogEvents for verification */
     public TestAppender(String name, Filter filter) {
@@ -48,6 +50,12 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
     @Override
     public void append(LogEvent event) {
         log.add(event);
+        if (trigger != null) {
+            String formattedMessage = event.getMessage().getFormattedMessage();
+            if (formattedMessage.contains(trigger)) {
+                fail("The trigger message '" + trigger + "' is still there!");
+            }
+        }
     }
 
     /** Add appender to configuration and start listening for events. */
@@ -62,6 +70,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
         Appender check = configuration.getAppender(getName());
         if (check == null) {
             configuration.addAppender(this);
+            this.start();
         } else if (check == this) {
             return; // already configured, so that is okay then
         } else {
@@ -74,6 +83,12 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
                             + getName()
                             + "'.");
         }
+    }
+
+    public void startRecording(String name) {
+        startRecording();
+        Logger logger = (Logger) LogManager.getLogger(name);
+        logger.addAppender(this);
     }
 
     /**
@@ -136,6 +151,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
             return; // already de-configured, so nothing to do
         } else if (check == this) {
             configuration.getAppenders().remove(getName(), this);
+            this.stopRecording();
         } else {
             throw new IllegalStateException(
                     "Unable to de-configure '"
@@ -146,6 +162,13 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
                             + getName()
                             + "'.");
         }
+    }
+    /** Remove appender from logging configuration (and stop listening for events). */
+    public void stopRecording(String name) {
+        Logger logger = (Logger) LogManager.getLogger(name);
+        logger.getAppenders().values().remove(this);
+
+        stopRecording();
     }
 
     @Override
@@ -161,5 +184,14 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
         } finally {
             log.clear();
         }
+    }
+
+    /**
+     * Setup a logging "bomb" rigged to explode when the warning message we want to eliminate.
+     *
+     * @param trigger
+     */
+    public void trigger(String trigger) {
+        this.trigger = trigger;
     }
 }

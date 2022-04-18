@@ -82,8 +82,13 @@ public class UniqueProcessTest extends WPSTestSupport {
     public void testUniqueDatabaseDelegation() throws Exception {
         Logger logger = Logging.getLogger(JDBCDataStore.class);
         Level previousLevel = logger.getLevel();
+        logger.info("hello world");
         try (TestAppender appender = TestAppender.createAppender("testAutoCodeLogsErrors", null)) {
+            appender.startRecording("org.geotools.jdbc");
+
             logger.setLevel(Level.FINE);
+            logger.fine("this is fine");
+
             String xml = getUniqueRequest("gs:PrimitiveGeoFeature");
 
             Document doc = postAsDOM(root(), xml);
@@ -92,7 +97,10 @@ public class UniqueProcessTest extends WPSTestSupport {
             appender.assertTrue(
                     "Function has not been delegated to database, could not find select distinct in the logs",
                     "SELECT distinct(\"intProperty\")");
+
+            appender.stopRecording("org.geotools.jdbc");
         } finally {
+
             logger.setLevel(previousLevel);
         }
     }

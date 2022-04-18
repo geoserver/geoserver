@@ -68,6 +68,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.data.test.TestData;
 import org.geoserver.feature.retype.RetypingDataStore;
+import org.geoserver.logging.TestAppender;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
@@ -529,55 +530,26 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testLargerThanWorld() throws Exception {
-        // setup a logging "bomb" rigged to explode when the warning message we
-        // want to eliminate
-        org.apache.log4j.Logger l4jLogger = getLog4JLogger(GetMap.class, "LOGGER");
-        l4jLogger.addAppender(
-                new AppenderSkeleton() {
+        try (TestAppender appender = TestAppender.createAppender("testLargerThanWorld",null)) {
+            appender.startRecording("org.geoserver.wms");
+            appender.trigger("Failed to compute the scale denominator");
 
-                    @Override
-                    public boolean requiresLayout() {
-                        return false;
-                    }
+            MockHttpServletResponse response =
+                    getAsServletResponse(
+                            "wms?bbox=-9.6450076761637E7,-3.9566251818225E7,9.6450076761637E7,3.9566251818225E7"
+                                    + "&styles=&layers="
+                                    + layers
+                                    + "&Format=image/png"
+                                    + "&request=GetMap"
+                                    + "&width=550"
+                                    + "&height=250"
+                                    + "&srs=EPSG:900913");
+            assertEquals("image/png", response.getContentType());
+            assertEquals(
+                    "inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
 
-                    @Override
-                    public void close() {}
-
-                    @Override
-                    protected void append(LoggingEvent event) {
-                        if (event.getMessage() != null
-                                && event.getMessage()
-                                        .toString()
-                                        .startsWith("Failed to compute the scale denominator")) {
-                            // ka-blam!
-                            fail("The error message is still there!");
-                        }
-                    }
-                });
-
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox=-9.6450076761637E7,-3.9566251818225E7,9.6450076761637E7,3.9566251818225E7"
-                                + "&styles=&layers="
-                                + layers
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:900913");
-        assertEquals("image/png", response.getContentType());
-        assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
-    }
-
-    private org.apache.log4j.Logger getLog4JLogger(Class<?> targetClass, String fieldName)
-            throws NoSuchFieldException, IllegalAccessException {
-        Field field = targetClass.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        Logger jlogger = (Logger) field.get(null);
-        Field l4jField = jlogger.getClass().getDeclaredField("logger");
-        l4jField.setAccessible(true);
-        org.apache.log4j.Logger l4jLogger = (org.apache.log4j.Logger) l4jField.get(jlogger);
-        return l4jLogger;
+            appender.stopRecording("org.geoserver.wms");
+        }
     }
 
     @Test

@@ -2469,6 +2469,7 @@
               </execution>
             </executions>
             <configuration>
+              <encoding>UTF-8</encoding>
               <logViolationsToConsole>true</logViolationsToConsole>
               <!-- ignore generated classes, e.g., javacc ones -->
               <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>

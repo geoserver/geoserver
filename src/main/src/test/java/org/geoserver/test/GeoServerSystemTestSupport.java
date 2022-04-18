@@ -119,7 +119,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.PreventLocalEntityResolver;
-import org.geotools.util.logging.Log4JLoggerFactory;
+import org.geotools.util.logging.Log4J2LoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.XSD;
 import org.junit.After;
@@ -272,11 +272,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         // setup quiet logging (we need to to this here because Data
         // is loaded before GeoServer has a chance to setup logging for good)
         try {
-            Logging.ALL.setLoggerFactory(Log4JLoggerFactory.getInstance());
+            Logging.ALL.setLoggerFactory(Log4J2LoggerFactory.getInstance());
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Could not configure log4j logging redirection", e);
+            LOGGER.log(Level.SEVERE, "Could not configure log4j2 logging redirection", e);
         }
         System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "true");
+        Logging.ALL.setLoggerFactory("org.geotools.util.logging.Log4J2LoggerFactory");
         GeoServerResourceLoader loader =
                 new GeoServerResourceLoader(testData.getDataDirectoryRoot());
         LoggingUtils.initLogging(loader, getLogConfiguration(), false, true, null);

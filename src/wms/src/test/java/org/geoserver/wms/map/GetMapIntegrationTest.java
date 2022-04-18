@@ -52,7 +52,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Override
     protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
+        return "DEFAULT_LOGGING.xml";
     }
 
     @Override
@@ -539,3 +539,4 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
 }
+

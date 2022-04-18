@@ -118,6 +118,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 public class Importer implements DisposableBean, ApplicationListener {
 
     public static final String IMPORTER_STORE_KEY = "org.geoserver.importer.store";
+    // Metadata field that triggers calculation of feature native and latlong bounds
+    public static final String CALCULATE_BOUNDS = "calculate-bounds";
     static Logger LOGGER = Logging.getLogger(Importer.class);
 
     public static final String PROPERTYFILENAME = "importer.properties";
@@ -688,6 +690,13 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         if (format != null) {
             // add tasks by having the format list the available items from the input data
+            LOGGER.log(
+                    Level.INFO,
+                    "Looping through all of the items/files for the input data for "
+                                            + data.getName()
+                                    != null
+                            ? data.getName()
+                            : "null name");
             for (ImportTask t : format.list(data, catalog, context.progress())) {
                 // initialize transform chain based on vector vs raster
                 if (t.getTransform() == null) {
@@ -1157,7 +1166,9 @@ public class Importer implements DisposableBean, ApplicationListener {
                     getCatalog()
                             .getResourceByName(
                                     featureType.getQualifiedName(), FeatureTypeInfo.class);
-            calculateBounds(resource);
+            if (resource != null) {
+                calculateBounds(resource);
+            }
         }
 
         // apply post transform
@@ -1213,7 +1224,9 @@ public class Importer implements DisposableBean, ApplicationListener {
                             getCatalog()
                                     .getResourceByName(
                                             featureType.getQualifiedName(), FeatureTypeInfo.class);
-                    calculateBounds(resource);
+                    if (resource != null) {
+                        calculateBounds(resource);
+                    }
                 }
             } catch (Throwable th) {
                 LOGGER.log(Level.SEVERE, "Error occured during import", th);
@@ -1264,10 +1277,22 @@ public class Importer implements DisposableBean, ApplicationListener {
      * @param resource The resource to calculate the bounds for
      */
     protected void calculateBounds(FeatureTypeInfo resource) throws IOException {
-        if (resource.getNativeBoundingBox() == null
-                || resource.getNativeBoundingBox().isEmpty()
-                || Boolean.TRUE.equals(resource.getMetadata().get("recalculate-bounds"))
-                || "true".equals(resource.getMetadata().get("recalculate-bounds"))) {
+        if (resource != null
+                && (resource.getNativeBoundingBox() == null
+                        || resource.getNativeBoundingBox().isEmpty()
+                        || Boolean.TRUE.equals(resource.getMetadata().get(CALCULATE_BOUNDS))
+                        || "true".equals(resource.getMetadata().get(CALCULATE_BOUNDS)))) {
+            String boundsStatus = "Bounds are previously populated, calculating for again.";
+            if (resource.getNativeBoundingBox() == null
+                    || resource.getNativeBoundingBox().isEmpty()) {
+                boundsStatus = "Bounds are null/empty, calculating for the first time.";
+            }
+            LOGGER.log(
+                    Level.INFO,
+                    "Calculating bounds for "
+                            + (resource.getName() != null ? resource.getName() : "null")
+                            + " "
+                            + boundsStatus);
             // force computation
             CatalogBuilder cb = new CatalogBuilder(getCatalog());
             ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
@@ -1276,8 +1301,8 @@ public class Importer implements DisposableBean, ApplicationListener {
             getCatalog().save(resource);
 
             // Do not re-calculate on subsequent imports
-            if (resource.getMetadata().get("recalculate-bounds") != null) {
-                resource.getMetadata().remove("recalculate-bounds");
+            if (resource.getMetadata().get(CALCULATE_BOUNDS) != null) {
+                resource.getMetadata().remove(CALCULATE_BOUNDS);
             }
         }
     }
@@ -1360,6 +1385,14 @@ public class Importer implements DisposableBean, ApplicationListener {
             task.setOriginalLayerName(featureType.getTypeName());
             String nativeName = task.getLayer().getResource().getNativeName();
             if (!featureType.getTypeName().equals(nativeName)) {
+                LOGGER.log(
+                        Level.INFO,
+                        "Feature Type name has been changed from "
+                                + nativeName
+                                + " to "
+                                + (featureType.getTypeName() != null
+                                        ? featureType.getTypeName()
+                                        : "null name"));
                 SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
                 tb.init(featureType);
                 tb.setName(nativeName);

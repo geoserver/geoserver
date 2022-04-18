@@ -127,7 +127,7 @@ public class DataStoreFormat extends VectorFormat {
                     // Defer bounds calculation
                     featureType.setNativeBoundingBox(EMPTY_BOUNDS);
                     featureType.setLatLonBoundingBox(EMPTY_BOUNDS);
-                    featureType.getMetadata().put("recalculate-bounds", Boolean.TRUE);
+                    featureType.getMetadata().put(Importer.CALCULATE_BOUNDS, Boolean.TRUE);
 
                     // add attributes
                     CatalogFactory factory = catalog.getFactory();

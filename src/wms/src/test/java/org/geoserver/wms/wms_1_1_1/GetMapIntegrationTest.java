@@ -11,7 +11,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.Transparency;
@@ -23,7 +22,6 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,13 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.spi.LoggingEvent;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -72,7 +67,6 @@ import org.geoserver.logging.TestAppender;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
-import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapTest;
 import org.geoserver.wms.WMS;
@@ -530,7 +524,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testLargerThanWorld() throws Exception {
-        try (TestAppender appender = TestAppender.createAppender("testLargerThanWorld",null)) {
+        try (TestAppender appender = TestAppender.createAppender("testLargerThanWorld", null)) {
             appender.startRecording("org.geoserver.wms");
             appender.trigger("Failed to compute the scale denominator");
 

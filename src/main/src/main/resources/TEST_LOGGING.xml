@@ -8,7 +8,7 @@
     </CustomLevels>
     <Appenders>
         <Console name="stdout" target="SYSTEM_OUT">
-            <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n"/>
+            <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
         </Console>
     </Appenders>
     <Loggers>

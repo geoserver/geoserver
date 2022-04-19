@@ -539,4 +539,3 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
 }
-

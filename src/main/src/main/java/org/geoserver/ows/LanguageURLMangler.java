@@ -37,8 +37,8 @@ public class LanguageURLMangler implements URLMangler {
 
     /**
      * @return Getting the rawKvp from the Request inside the thread local search for parameter
-     * Language or AcceptLanguages and return the first one if present or the first occurrence
-     * of a language code (if present) inside the second one
+     *     Language or AcceptLanguages and return the first one if present or the first occurrence
+     *     of a language code (if present) inside the second one
      */
     protected Optional<Object> processLanguageParam() {
         return Optional.ofNullable(Dispatcher.REQUEST.get())
@@ -50,7 +50,7 @@ public class LanguageURLMangler implements URLMangler {
     /**
      * @param rawKvp Map of request parameter
      * @return the value of Language parameter inside the {@link Request#rawKvp} map or an
-     * Optional.empty
+     *     Optional.empty
      */
     protected Optional<Object> getLanguage(Map<String, Object> rawKvp) {
         return Optional.ofNullable(rawKvp.get(LANGUAGE)).filter(filterEmtpyString);

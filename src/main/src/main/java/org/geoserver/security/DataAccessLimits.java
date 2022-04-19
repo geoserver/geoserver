@@ -5,12 +5,16 @@
  */
 package org.geoserver.security;
 
-import org.geotools.filter.text.ecql.ECQL;
-import org.opengis.filter.Filter;
-
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.geotools.filter.v1_0.OGC;
+import org.geotools.filter.v1_1.OGCConfiguration;
+import org.geotools.xsd.Encoder;
+import org.geotools.xsd.Parser;
+import org.opengis.filter.Filter;
 
 /**
  * Base class for all AccessLimits declared by a {@link ResourceAccessManager}
@@ -18,6 +22,7 @@ import java.io.ObjectOutputStream;
  * @author Andrea Aime - GeoSolutions
  */
 public class DataAccessLimits extends AccessLimits {
+    private static final OGCConfiguration CONFIGURATION = new OGCConfiguration();
 
     private static final long serialVersionUID = 2594922992934373705L;
 
@@ -64,12 +69,20 @@ public class DataAccessLimits extends AccessLimits {
     }
 
     /**
-     * Writes the non Serializable Filter object to the ObjectOutputStream using ECQL
+     * Writes the non Serializable Filter object to the ObjectOutputStream via a OGC Filter XML
      * encoding conversion
      */
     protected void writeFilter(Filter filter, ObjectOutputStream out) throws IOException {
         if (filter != null) {
-            out.writeObject(ECQL.toCQL(filter));
+            if (filter != Filter.INCLUDE && filter != Filter.EXCLUDE) {
+                try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+                    Encoder encoder = new Encoder(CONFIGURATION);
+                    encoder.encode(filter, OGC.Filter, bos);
+                    out.writeObject(bos.toByteArray());
+                }
+            } else {
+                out.writeObject(filter);
+            }
         } else {
             out.writeObject(null);
         }
@@ -80,12 +93,18 @@ public class DataAccessLimits extends AccessLimits {
      * parses it back to a Filter object
      */
     protected Filter readFilter(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        String serializedReadFilter = (String) in.readObject();
+        final Object serializedReadFilter = in.readObject();
         if (serializedReadFilter != null) {
-            try {
-                return ECQL.toFilter(serializedReadFilter);
-            } catch (Exception e) {
-                throw (IOException) new IOException("Failed to parse filter").initCause(e);
+            if (serializedReadFilter != Filter.INCLUDE && serializedReadFilter != Filter.EXCLUDE) {
+                try {
+                    Parser p = new Parser(CONFIGURATION);
+                    return (Filter)
+                            p.parse(new ByteArrayInputStream((byte[]) serializedReadFilter));
+                } catch (Exception e) {
+                    throw (IOException) new IOException("Failed to parse filter").initCause(e);
+                }
+            } else {
+                return (Filter) serializedReadFilter;
             }
         } else {
             return null;

@@ -9,10 +9,15 @@ In case you want to just run the build with the full checks locally, use the fol
 
 .. code-block:: bash
 
-   mvn clean install -Dqa -Dall
+   mvn clean install -Dqa
 
-Add extra parameters as you see fit, like ``-T1C -nsu`` to speed up the build, or ``-Dfmt.skip=true -DskipTests``
-to avoid running tests and code formatting.
+Add extra parameters as you see fit, like ``-T1C -nsu`` to speed up the build:
+
+.. code-block:: bash
+
+   mvn install -Prelease -Dqa -T1C -nsu -fae
+
+Flags documented below can be used to shut off individual QA checks when trouble shooting.
 
 PMD checks
 ----------
@@ -42,7 +47,7 @@ Or run `pmd:check` (requires use of ``initialize`` to locate `geoserverBaseDir/b
 
 .. code-block:: bash
 
-   mvn directory:highest-basedir pmd:check -Ppmd
+   mvn initialize pmd:check -Ppmd
 
 :command:`PMD` will fail the build in case of violation, reporting the specific errors before the build
 error message, and a reference to a XML file with the same information after it (example taken from GeoTools)::
@@ -107,8 +112,22 @@ The `Error Prone <https://errorprone.info/>`_ checker runs a compiler plugin, re
 JDK 9 to run (hence the suggestion to use JDK 11, as the supported JDKs are currently only JDK 8 and JDK 11).
 Mind, running the profile with a JDK8 will result in a generic compile error!
 
-In order to activate the Error Prone checks, use the "-Perrorprone" for JDK 11 builds, or "Perrorprone8" for JDK 8 builds.
+In order to activate the Error Prone checks, use the "-Perrorprone" for JDK 11 builds.
 
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <id>errorprone</id>
+   :end-before: </profile>
+   :dedent: 6
+   
+Or "Perrorprone8" for JDK 8 builds.
+
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <id>errorprone8</id>
+   :end-before: </profile>
+   :dedent: 6
+   
 Any failure to comply with the "Error Prone" rules will show up as a compile error in the build output, e.g. (example taken from GeoTools)::
 
         9476 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.0:compile (default-compile) on project gt-coverage: Compilation failure
@@ -130,11 +149,19 @@ Spotbugs
 
 The `Spotbugs <https://spotbugs.github.io/>`_ checker runs as a post-compile bytecode analyzer.
 
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <groupId>com.github.spotbugs</groupId>
+   :end-before: </plugin>
+   :dedent: 12
+   
 Any failure to comply with the rules will show up as a compile error, e.g.::
 
-        33630 [ERROR] page could be null and is guaranteed to be dereferenced in org.geotools.swing.wizard.JWizard.setCurrentPanel(String) [org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard] Dereferenced at JWizard.java:[line 278]Dereferenced at JWizard.java:[line 269]Null value at JWizard.java:[line 254]Known null at JWizard.java:[line 255] NP_GUARANTEED_DEREF
+   33630 [ERROR] page could be null and is guaranteed to be dereferenced in org.geotools.swing.wizard.JWizard.setCurrentPanel(String) [org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard] Dereferenced at JWizard.java:[line 278]Dereferenced at JWizard.java:[line 269]Null value at JWizard.java:[line 254]Known null at JWizard.java:[line 255] NP_GUARANTEED_DEREF
 
-It is also possible to run the spotbugs:gui goal to have a Swing based issue explorer, e.g.::
+It is also possible to run the spotbugs:gui goal to have a Swing based issue explorer, e.g.:
+
+.. code-block:: bash
 
     mvn spotbugs:gui -Pspotbugs -f wms
 
@@ -168,11 +195,17 @@ Any failure to comply with the rules will show up as a compiler error in the bui
         15563 [INFO] There is 1 error reported by Checkstyle 6.18 with /home/aaime/devel/git-gs/build/qa/checkstyle.xml ruleset.
         15572 [ERROR] wms/main/java/org/geoserver/wms/map/RenderedImageMapOutputFormat.java:[325,8] (javadoc) JavadocMethod: Unused @param tag for 'foobar'.
 
+Property ``checkstyle.skip=true`` used to skip formatting when running `qa` build:
+
+.. code-block:: bash
+
+   mvn clean install -Dqa -Dcheckstyle.skip=true
+
 
 Sortpom
 -------
 
-The [Sortpom Maven Plugin](https://github.com/Ekryd/sortpom/blob/master/README.md) is used :file:`pom.xml` organized, while maintaining comments.
+The `Sortpom Maven Plugin <https://github.com/Ekryd/sortpom/blob/master/README.md>`__ is used :file:`pom.xml` organized, while maintaining comments.
 
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
@@ -190,15 +223,14 @@ Ignoring whitespace changes is the current pom.xml in the correct oder:
 
    mvn sortpom:verify
 
-
-Property ``pom.fmt.action`` used to choose ``sort`` or ``verify``:
+Property ``spotless.apply.skip`` used to choose ``sort`` or ``verify``:
 
 .. code-block:: bash
 
    mvn verify -Dqa -Dpom.fmt.action=verify
 
-Property ``pom.fmt.skip`` used to skipe sortpom plugin when running ``qa`` build:
+Property ``pom.fmt.skip`` used to skip sortpom plugin when running ``qa`` build:
 
 .. code-block:: bash
 
-   mvn -Dqa -Dpom.fmt.skip=true
+   mvn clean install -Dqa -Dpom.fmt.skip=true

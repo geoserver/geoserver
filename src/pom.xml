@@ -2327,7 +2327,7 @@
               <verbose>true</verbose>
               <printFailingErrors>true</printFailingErrors>
               <includeTests>true</includeTests>
-              <sourceEncoding>&gt;UTF-8</sourceEncoding>
+              <sourceEncoding>UTF-8</sourceEncoding>
               <outputEncoding>UTF-8</outputEncoding>
               <excludeRoots>
                 <excludeRoot>target/generated-sources</excludeRoot>

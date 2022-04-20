@@ -1,11 +1,11 @@
 Automatic Quality Assurance checks
 ==================================
 
-The GeoServer builds on Github Actions and `https://build.geoserver.org/ <https://build.geoserver.org/>`_ apply
+The GeoServer builds on Github Actions and `https://build.geoserver.org/ <https://build.geoserver.org/>`__ apply
 `PMD <https://pmd.github.io/>`_ and `Error Prone <https://errorprone.info/>`_ checks on the code base
 and will fail the build in case of rule violation.
 
-In case you want to just run the build with the full checks locally, use the following command::
+In case you want to just run the build with the full checks locally, use the following command:
 
 .. code-block:: bash
 
@@ -183,31 +183,13 @@ Checkstyle
 Google Format is already in use to keep the code formatted, so `maven checkstyle plugin <https://maven.apache.org/plugins/maven-checkstyle-plugin/>`__ is used mainly to verify javadocs errors
 and presence of copyright headers, which none of the other tools can cover.
 
-Any failure to comply with the rules will show up as a compiler error in the build output, e.g.::
-
-        14610 [INFO] --- maven-checkstyle-plugin:3.0.0:check (default) @ gt-jdbc ---
-        15563 [INFO] There is 1 error reported by Checkstyle 6.18 with /home/aaime/devel/git-gs/build/qa/checkstyle.xml ruleset.
-        15572 [ERROR] wms/main/java/org/geoserver/wms/map/RenderedImageMapOutputFormat.java:[325,8] (javadoc) JavadocMethod: Unused @param tag for 'foobar'.
-
-Property ``checkstyle.skip=true`` used to skip formatting when running `qa` build:
-
-.. code-block:: bash
-
-   mvn clean install -Dqa -Dcheckstyle.skip=true
-
-
-Sortpom
--------
-
-The `Sortpom Maven Plugin <https://github.com/Ekryd/sortpom/blob/master/README.md>`__ is used :file:`pom.xml` organized, while maintaining comments.
-
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
-   :start-at: <groupId>com.github.ekryd.sortpom</groupId>
+   :start-at: <artifactId>maven-checkstyle-plugin</artifactId>
    :end-before: </plugin>
-   :dedent: 8
+   :dedent: 12
 
-Sorts current pom:
+Any failure to comply with the rules will show up as a compiler error in the build output, e.g.::
 
 .. code-block:: bash
 

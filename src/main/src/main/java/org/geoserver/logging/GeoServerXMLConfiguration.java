@@ -81,7 +81,7 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
         if (isGeoServerLogFile(node, ROLLING_FILE_NODE)) {
             fixRollingFileAppender(node);
         }
-        if (isGeoServerLogFile(node.getParent(), FILE_APPENDER_NODE)) {
+        if (isGeoServerLogFile(node, FILE_APPENDER_NODE)) {
             fixFileAppender(node);
         }
         super.preConfigure(node);
@@ -250,6 +250,7 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     protected void doConfigure() {
         super.doConfigure();
 
+        // The following checks if configuration was successfully applied
         if (fileName() != null) {
             LOGGER.debug("External logfileLocation provided:" + fileName());
 
@@ -273,7 +274,7 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
             getAppenders().remove("geoserverlogfile");
             for (LoggerConfig loggerConfig : getLoggers().values()) {
                 if (loggerConfig.getAppenders().containsKey("geoserverlogfile")) {
-                    LOGGER.debug(
+                    LOGGER.warn(
                             "Logger '"
                                     + loggerConfig.getName()
                                     + "' includes supressed 'geoserverlogfile':"
@@ -286,7 +287,7 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
             getAppenders().remove("stdout");
             for (LoggerConfig loggerConfig : getLoggers().values()) {
                 if (loggerConfig.getAppenders().containsKey("stdout")) {
-                    LOGGER.debug(
+                    LOGGER.warn(
                             "Logger '"
                                     + loggerConfig.getName()
                                     + "' includes supressed 'stdout':"

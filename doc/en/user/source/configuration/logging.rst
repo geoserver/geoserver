@@ -3,16 +3,16 @@
 Advanced log configuration
 ==========================
 
-GeoServer the Log4J framework for logging, and is configured by selecting a logging profile (in the :ref:`global settings <config_globalsettings_log_location>`).
+GeoServer uses the Log4J framework for logging, which is configured by selecting a logging profile (in the :ref:`global settings <config_globalsettings_log_location>`).
 
-In addition to the built-in profiles, the logging configuration can be overridden in a number of ways, or you may create a custom logging profile, ot configure GeoServer to use another another logging library altogether.
+In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another another logging library altogether).
 
 Custom logging profiles
 -----------------------
 
 Anyone can write a new logging profile by adding a Log4J configuration file to the list of files already available in the ``$GEOSERVER_DATA_DIR/logs`` folder.
 
-Profiles in this folder that match :file:`*_LOGGING.*` will listed on the global settings page and may be selected for use. The name of the file, excluding the extension, will be used as the profile name.
+Profiles in this folder that match :file:`*_LOGGING.*` will be listed on the global settings page as available for use. The name of the file, excluding the extension, will be presented as the profile name.
 
 Here is an example, taken from the :download:`DEFAULT_LOGGING.xml </../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml>`  configuration, which enables additional GeoServer log messages to be included in the logs:
 
@@ -32,7 +32,7 @@ There are however a few rules to follow:
      :end-at: </CustomLevels>
      :dedent: 4
        
-* Appenders are used to output loggin information, with GeoServer providing external configuration for appenders named ``geoserverlogfile`` and ``stdout``.
+* Appenders are used to output logging information, with GeoServer providing external configuration for appenders named ``geoserverlogfile`` and ``stdout``.
 
   * Always include a ``geoserverlogfile`` ``FileAppender`` or ``RollingFile`` appender that GeoServer will configure to work against the location configured in the :ref:`global settings <config_globalsettings_log_location>`.
 
@@ -180,7 +180,7 @@ Force java logging example
 
 As an example to configure java logging::
 
-  -DRELINQUISH_LOG4J_CONTROL=true -DGT2_LOGGING_REDIRECTION=JavaLogging -D-Djava.util.logging.config.file=logging.properties
+  -DRELINQUISH_LOG4J_CONTROL=true -DGT2_LOGGING_REDIRECTION=JavaLogging -Djava.util.logging.config.file=logging.properties
   
 With java util logging configuration provided by :file:`logging.properties`:
 

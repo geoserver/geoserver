@@ -20,7 +20,7 @@
 
   <!-- import xAL:Address -->
   <import namespace="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0"
-    schemaLocation="http://docs.oasis-open.org/election/external/xAL.xsd"/>
+    schemaLocation="xAL.xsd"/>
 
   <!-- KML field types (simple content) -->
 

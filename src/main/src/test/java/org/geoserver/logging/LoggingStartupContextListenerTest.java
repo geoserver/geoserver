@@ -141,4 +141,37 @@ public class LoggingStartupContextListenerTest {
         // init twice, here it used to lock up
         LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
     }
+
+    @Test
+    public void testFilenameAndFilePattern() throws Exception {
+        assertEquals(
+                "some/where/logging.txt",
+                GeoServerXMLConfiguration.applyPathTemplate(
+                        "some/where/logging.txt", "logs/geoserver.log"));
+        assertEquals(
+                "some/where/logging-%d{MM-dd-yyyy}.log",
+                GeoServerXMLConfiguration.applyPathTemplate(
+                        "some/where/logging", "logs/geoserver-%d{MM-dd-yyyy}.log"));
+        assertEquals(
+                "some/where/logging-%i.txt.zip",
+                GeoServerXMLConfiguration.applyPathTemplate(
+                        "some/where/logging.txt", "logs/geoserver-%i.log.zip"));
+        assertEquals(
+                "some/where/logging-%d{MM-dd-yyyy}.txt.zip",
+                GeoServerXMLConfiguration.applyPathTemplate(
+                        "some/where/logging.txt", "logs/geoserver-%d{MM-dd-yyyy}.log.zip"));
+        assertEquals(
+                "some/where/logging$hostName.txt",
+                GeoServerXMLConfiguration.applyPathTemplate(
+                        "some/where/logging.txt", "logs/$hostName.log"));
+        assertEquals(
+                "some/where/logging-$hostName-%i.txt",
+                GeoServerXMLConfiguration.applyPathTemplate(
+                        "some/where/logging.txt", "logs/geoserver-$hostName-%i.log"));
+        // Do not allow log4j parameter substitution from global settings, only logging profile
+        assertEquals(
+                "logs/geoserver.log",
+                GeoServerXMLConfiguration.applyPathTemplate(
+                        "${baseDir}/logs/logging.log", "logs/geoserver.log"));
+    }
 }

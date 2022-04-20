@@ -66,15 +66,6 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
      */
     boolean suppressStdOutLogging = false;
 
-    /** Initial filename observed for geoserverlogfile appender */
-    private String initialFilename;
-
-    /** Initial filename observed for geoserverlogfile appender */
-    private String initialFilePattern;
-
-    /** Initial logFileLocation observed for GEOSERVER_LOG_LOCATION property */
-    // private String initialLogLocation;
-
     public GeoServerXMLConfiguration(LoggerContext loggerContext, ConfigurationSource source) {
         super(loggerContext, source);
     }
@@ -158,30 +149,31 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
 
     protected void fixFileAppender(Node node) {
         String fileName = fileName();
-        initialFilename = node.getAttributes().get("filename");
-        LOGGER.debug("Preconfiguration geoserverlogfile.FileAppender.filename=", initialFilename);
-        node.getAttributes().put("filename", fileName);
-        LOGGER.debug("                 geoserverlogfile.FileAppender.filename=", fileName);
+
+        String fileNameTemplate = node.getAttributes().get("filename");
+        LOGGER.debug("Preconfiguration geoserverlogfile.FileAppender.filename=", fileNameTemplate);
+
+        String path = applyPathTemplate(fileName, fileNameTemplate);
+        node.getAttributes().put("filename", path);
+        LOGGER.debug("                 geoserverlogfile.FileAppender.filename=", path);
     }
 
     protected void fixRollingFileAppender(Node node) {
         String fileName = fileName();
-        String extension = Paths.extension(fileName);
-        if (extension == null) {
-            extension = "log";
-        }
-        String filePattern = Paths.sidecar(fileName, null) + "-%i." + extension;
+        String fileNameTemplate = node.getAttributes().get("filename");
+        LOGGER.debug("Preconfiguration geoserverlogfile.RollingFile.filename=", fileNameTemplate);
 
-        initialFilename = node.getAttributes().get("filename");
-        LOGGER.debug("Preconfiguration geoserverlogfile.RollingFile.filename=", initialFilename);
-        node.getAttributes().put("filename", fileName);
-        LOGGER.debug("                 geoserverlogfile.RollingFile.filename=", fileName);
+        String path = applyPathTemplate(fileName, fileNameTemplate);
+        node.getAttributes().put("filename", path);
+        LOGGER.debug("                 geoserverlogfile.RollingFile.filename=", path);
 
-        initialFilePattern = node.getAttributes().get("filePattern");
+        String filePatternTemplate = node.getAttributes().get("filePattern");
         LOGGER.debug(
-                "Preconfiguration geoserverlogfile.RollingFile.filePattern=", initialFilePattern);
-        node.getAttributes().put("filePattern", filePattern);
-        LOGGER.debug("                 geoserverlogfile.RollingFile.filePattern=", filePattern);
+                "Preconfiguration geoserverlogfile.RollingFile.filePattern=", filePatternTemplate);
+
+        String pattern = applyPathTemplate(fileName, filePatternTemplate);
+        node.getAttributes().put("filePattern", pattern);
+        LOGGER.debug("                 geoserverlogfile.RollingFile.filePattern=", pattern);
     }
 
     /**
@@ -199,6 +191,58 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
             }
         }
         return fileName;
+    }
+
+    /**
+     * Use the provided template to configure fileName extensions and log4j decorations.
+     *
+     * @param path fileName providing path and base name and optional extension
+     * @param template template providing log4j decorations and default extension
+     * @return fileName configured with extension and log4j decorations from template
+     */
+    static String applyPathTemplate(String path, String template) {
+        if (path.contains("$") || path.contains("%")) {
+            // clean input, avoid any log4j property substitution
+            return template;
+        }
+
+        // default to provided extension (or .log)
+        String ext = Paths.extension(path);
+        if (ext == null) {
+            ext = ".log";
+        }
+
+        if (template.contains(".")) {
+            // recognize formats similar to "logs/geoserver.log"
+            ext = template.substring(template.lastIndexOf("."));
+        }
+
+        if (template.contains("-%")) {
+            // recognize formats similar to "logs/geoserver-%i.log"
+            ext = template.substring(template.indexOf("-%"));
+        } else if (template.contains("%")) {
+            // recognize formats similar to "logs/%hostName.log"
+            ext = template.substring(template.indexOf("%"));
+        }
+
+        if (template.contains("-$") && !ext.contains("-$")) {
+            // recognize formats similar to "logs/geoserver-$hostName-%i.log"
+            ext = template.substring(template.indexOf("-$"));
+        } else if (template.contains("$") && !ext.contains("$")) {
+            // recognize formats similar to "logs/$hostName-%i.log"
+            ext = template.substring(template.indexOf("$"));
+        }
+
+        if (Paths.extension(path) != null && ext.contains(".log")) {
+            // handles logs/geoserver-$i.log.gz
+            ext = ext.replace(".log", "." + Paths.extension(path));
+        }
+
+        if (path.lastIndexOf(".") == -1) {
+            return path + ext;
+        } else {
+            return path.substring(0, path.lastIndexOf(".")) + ext;
+        }
     }
 
     /** Post-process configuration. */

@@ -29,8 +29,10 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.LockProvider;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
@@ -46,14 +48,6 @@ import org.springframework.context.ApplicationContext;
 public class GlobalSettingsPage extends ServerAdminPage {
 
     private static final long serialVersionUID = 4716657682337915996L;
-
-    static final List<String> DEFAULT_LOG_PROFILES =
-            Arrays.asList(
-                    "DEFAULT_LOGGING",
-                    "VERBOSE_LOGGING",
-                    "PRODUCTION_LOGGING",
-                    "GEOTOOLS_DEVELOPER_LOGGING",
-                    "GEOSERVER_DEVELOPER_LOGGING");
 
     public static final ArrayList<String> AVAILABLE_CHARSETS =
             new ArrayList<>(Charset.availableCharsets().keySet());
@@ -235,7 +229,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                                 logsDirectory,
                                 obj -> obj.name().toLowerCase().endsWith("_logging.xml"));
                 for (Resource res : xmlFiles) {
-                    logProfiles.add(res.name());
+                    logProfiles.add(Paths.sidecar(res.name(), null));
                 }
 
                 List<Resource> propertiesFiles =
@@ -255,7 +249,9 @@ public class GlobalSettingsPage extends ServerAdminPage {
                     e);
         }
         // if none is found use the default set
-        if (logProfiles == null || logProfiles.isEmpty()) logProfiles = DEFAULT_LOG_PROFILES;
+        if (logProfiles == null || logProfiles.isEmpty()) {
+            logProfiles = Arrays.asList(LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS);
+        }
 
         form.add(
                 new ListChoice<>(

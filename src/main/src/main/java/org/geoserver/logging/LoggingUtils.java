@@ -99,13 +99,13 @@ public class LoggingUtils {
 
         /**
          * Returns the enum value corresponding to the name (using case insensitive comparison) or
-         * Log4j if no match is found
+         * Log4J2 if no match is found.
          */
         public static GeoToolsLoggingRedirection findValue(String name) {
             for (GeoToolsLoggingRedirection value : values()) {
                 if (value.name().equalsIgnoreCase(name)) return value;
             }
-            return Log4J;
+            return Log4J2;
         }
     }
 
@@ -624,48 +624,49 @@ public class LoggingUtils {
         File logsDirectory = logs.dir();
 
         for (String logConfigFile : STANDARD_LOGGING_CONFIGURATIONS) {
-            File target = new File(logsDirectory.getAbsolutePath(), logConfigFile + ".xml");
-            File properties =
-                    new File(logsDirectory.getAbsolutePath(), logConfigFile + ".properties");
+            String logConfigXml = logConfigFile + ".xml";
+            String logConfigProperties = logConfigFile + ".properties";
+
+            File target = new File(logsDirectory.getAbsolutePath(), logConfigXml);
+            File properties = new File(logsDirectory.getAbsolutePath(), logConfigProperties);
+
             if (properties.exists()) {
-                boolean deleted = target.delete();
+                boolean deleted = properties.delete();
                 if (deleted) {
                     LoggingInitializer.LOGGER.finer(
                             "Check '"
-                                    + logConfigFile
+                                    + logConfigProperties
                                     + "' logging configuration - outdated and removed");
                 } else {
                     LoggingInitializer.LOGGER.config(
                             "Check '"
-                                    + logConfigFile
+                                    + logConfigProperties
                                     + "' logging configuration - outdated and unable to remove. Is your data dir writeable?");
                 }
             }
             if (target.exists()) {
                 try (FileInputStream targetContents = new FileInputStream(target);
-                        InputStream template = getStreamFromResource(logConfigFile + ".xml")) {
+                        InputStream template = getStreamFromResource(logConfigXml)) {
                     if (!IOUtils.contentEquals(targetContents, template)) {
                         LoggingInitializer.LOGGER.finer(
-                                "Check '"
-                                        + logConfigFile
-                                        + "' logging configuration, customized (or non-standard)");
+                                "Check '" + logConfigXml + "' logging configuration, outdated");
+                        resourceLoader.copyFromClassPath(logConfigXml, target);
                     }
                 } catch (IOException e) {
                     LoggingInitializer.LOGGER.log(
                             Level.WARNING,
-                            "Check "
-                                    + logConfigFile
-                                    + " logging configuration - unable to check against template",
+                            "Check '"
+                                    + logConfigXml
+                                    + "' logging configuration - unable to check against template",
                             e);
                 }
             } else {
                 try {
-                    String template = logConfigFile + ".xml";
-                    resourceLoader.copyFromClassPath(template, target);
+                    resourceLoader.copyFromClassPath(logConfigXml, target);
                 } catch (IOException e) {
                     LoggingInitializer.LOGGER.config(
                             "Check '"
-                                    + logConfigFile
+                                    + logConfigXml
                                     + "' logging configuration - unable to create. Is your data dir writeable?");
                 }
             }

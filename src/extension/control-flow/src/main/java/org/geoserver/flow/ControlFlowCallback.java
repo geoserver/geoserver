@@ -134,7 +134,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                 return operation;
             }
             if (controllers.isEmpty()) {
-                LOGGER.info("Control-flow inactive, there are no configured rules");
+                LOGGER.config("Control-flow inactive, there are no configured rules");
             } else {
                 if (LOGGER.isLoggable(Level.INFO)) {
                     LOGGER.info(

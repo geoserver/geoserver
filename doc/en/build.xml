@@ -97,9 +97,11 @@
   </target>
 
   <target name="sphinx" if="sphinx.available">
-                <echo message="Running sphinx-build -D release=${project.version} -W -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/> 
+    <local name="argLine"/>
+    <property name="argLine" value="-D release=${project.version} -q -W --keep-going -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
+    <echo message="Running sphinx-build ${argLine}"/> 
     <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}/source">
-      <arg line="-D release=${project.version} -q -W --keep-going -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
+      <arg line="${argLine}"/>
     </exec>
   </target>
 

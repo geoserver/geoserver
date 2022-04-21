@@ -1022,6 +1022,52 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
     }
 
+    @Test
+    public void testVendorOptionInsidePolygonSymbolizer() {
+        final String polygonSymbolizerXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\"\n"
+                        + "                       xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
+                        + "                       xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+                        + "                       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                        + "                       version=\"1.0.0\"\n"
+                        + "                       xsi:schemaLocation=\"http://www.opengis.net/sld StyledLayerDescriptor.xsd\">\n"
+                        + "  <NamedLayer>\n"
+                        + "    <Name>test</Name>\n"
+                        + "    <UserStyle>\n"
+                        + "      <Name>test</Name>\n"
+                        + "      <Title>test</Title>\n"
+                        + "      <FeatureTypeStyle>\n"
+                        + "        <Rule>\n"
+                        + "          <Name>test</Name>\n"
+                        + "          <Title>test\n"
+                        + "          </Title>\n"
+                        + "          <PolygonSymbolizer>\n"
+                        + "            <Fill>\n"
+                        + "              <GraphicFill>\n"
+                        + "                <Graphic>\n"
+                        + "                  <ExternalGraphic>\n"
+                        + "                    <OnlineResource xlink:type=\"simple\" xlink:href=\"rectangle.png\"/>\n"
+                        + "                    <Format>image/png</Format>\n"
+                        + "                  </ExternalGraphic>\n"
+                        + "                </Graphic>\n"
+                        + "              </GraphicFill>\n"
+                        + "            </Fill>\n"
+                        + "            <VendorOption name=\"graphic-margin\">10</VendorOption>\n"
+                        + "          </PolygonSymbolizer>\n"
+                        + "        </Rule>\n"
+                        + "      </FeatureTypeStyle>\n"
+                        + "    </UserStyle>\n"
+                        + "  </NamedLayer>\n"
+                        + "</StyledLayerDescriptor>\n";
+
+        tester.newFormTester("styleForm")
+                .setValue("styleEditor:editorContainer:editorParent:editor", polygonSymbolizerXml);
+
+        tester.executeAjaxEvent("validate", "click");
+        tester.assertNoErrorMessage();
+    }
+
     public static class MockStyleComponentInfo extends StyleComponentInfo {
         public MockStyleComponentInfo(String id, AbstractStylePage clazz) {
             super("test", clazz);

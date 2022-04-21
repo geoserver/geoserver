@@ -120,7 +120,7 @@ echo "maven flags:"
 echo "$MAVEN_FLAGS"
 
 echo "maven localRepository:"
-mvn help:evaluate $MAVEN_FLAGS -Dexpression=settings.localRepository -N | grep -v '\[INFO\]'
+mvn help:evaluate $MAVEN_FLAGS -Dexpression=settings.localRepository -N --no-transfer-progress -B | grep -v '\[INFO\]'
 
 # clear out any changes
 git reset --hard HEAD
@@ -263,11 +263,11 @@ find src -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
 find doc -name conf.py -exec sed -i "s/$old_ver/$tag/g" {} \;
 find doc -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
 
-# pushd src/release > /dev/null
-# shopt -s extglob
+pushd src/release > /dev/null
+shopt -s extglob
 # sed -i "s/$old_ver/$tag/g" !(pom).xml installer/win/*.nsi installer/win/*.conf 
-# shopt -u extglob
-# popd > /dev/null
+shopt -u extglob
+popd > /dev/null
 
 pushd src > /dev/null
 

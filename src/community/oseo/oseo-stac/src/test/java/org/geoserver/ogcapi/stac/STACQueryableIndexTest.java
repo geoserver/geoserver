@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
@@ -105,8 +106,7 @@ public class STACQueryableIndexTest extends STACTestSupport {
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
         OSEOInfo service = new OSEOInfoImpl();
-        String queryables = "id,geometry,collection";
-        service.setGlobalQueryables(queryables);
+        service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
         STACTemplates templates = mock(STACTemplates.class);
         expect(templates.getItemTemplate("SAS1")).andReturn(template.getRootBuilder()).anyTimes();
         expect(templates.getItemTemplate("SAS9")).andReturn(template.getRootBuilder()).anyTimes();

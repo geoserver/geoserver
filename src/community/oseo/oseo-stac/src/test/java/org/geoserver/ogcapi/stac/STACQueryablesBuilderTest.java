@@ -16,6 +16,7 @@ import io.swagger.v3.oas.models.media.Schema;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Map;
 import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
@@ -66,8 +67,6 @@ public class STACQueryablesBuilderTest {
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
         OSEOInfo service = new OSEOInfoImpl();
-        String queryablesL = "id,geometry,collection";
-        service.setGlobalQueryables(queryablesL);
         STACQueryablesBuilder builder =
                 new STACQueryablesBuilder(
                         FAKE_ID,
@@ -154,8 +153,7 @@ public class STACQueryablesBuilderTest {
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
         OSEOInfo service = new OSEOInfoImpl();
-        String queryablesL = "id,geometry,collection";
-        service.setGlobalQueryables(queryablesL);
+        service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
         STACQueryablesBuilder builder =
                 new STACQueryablesBuilder(
                         FAKE_ID,

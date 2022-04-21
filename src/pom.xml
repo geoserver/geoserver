@@ -101,7 +101,7 @@
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.13</httpclient.version>
     <imageio-ext.version>1.4.1</imageio-ext.version>
-    <jaiext.version>1.1.21</jaiext.version>
+    <jaiext.version>1.1.22</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
     <jvm.opts></jvm.opts>
@@ -789,7 +789,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.9</version>
+        <version>1.15</version>
       </dependency>
       <dependency>
         <groupId>commons-httpclient</groupId>
@@ -1053,29 +1053,8 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jsp-2.0</artifactId>
-        <version>${jetty.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-servlets</artifactId>
         <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>tomcat</groupId>
-        <artifactId>jasper-compiler-jdt</artifactId>
-        <version>5.5.15</version>
-      </dependency>
-      <dependency>
-        <groupId>tomcat</groupId>
-        <artifactId>jasper-compiler</artifactId>
-        <version>5.5.15</version>
-      </dependency>
-      <dependency>
-        <groupId>tomcat</groupId>
-        <artifactId>jasper-runtime</artifactId>
-        <version>5.5.15</version>
       </dependency>
       <dependency>
         <groupId>commons-el</groupId>
@@ -1861,7 +1840,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.20.0</version>
+        <version>2.22.1</version>
         <executions>
           <execution>
             <phase>validate</phase>

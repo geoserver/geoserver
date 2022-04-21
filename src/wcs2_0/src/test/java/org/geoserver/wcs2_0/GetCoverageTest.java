@@ -9,7 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
@@ -18,16 +21,19 @@ import net.opengis.wcs20.ScalingType;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader;
 import org.geoserver.wcs2_0.response.MIMETypeMapper;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.junit.Before;
@@ -127,6 +133,52 @@ public class GetCoverageTest extends WCSTestSupport {
         assertNotNull(gridCoverage);
         assertTrue(hasCoverage);
         scheduleForCleaning(gridCoverage);
+    }
+
+    @Test
+    public void testDeflateCompressionLevel() throws Exception {
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(TIMESERIES));
+        GetCoverageType gc =
+                parse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=timeseries&subset=time(\"2018-01-01T00:00:00Z\")"
+                                + "&format=image/tiff&geotiff:compression=DEFLATE");
+        coverageReader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        GeoServer geoserver = getGeoServer();
+        WCSInfo service = geoserver.getService(WCSInfo.class);
+        service.setDefaultDeflateCompressionLevel(9);
+        geoserver.save(service);
+        EnvelopeAxesLabelsMapper axesMapper =
+                GeoServerExtensions.bean(EnvelopeAxesLabelsMapper.class);
+        MIMETypeMapper mimeMapper = GeoServerExtensions.bean(MIMETypeMapper.class);
+
+        GetCoverage getCoverage = new GetCoverage(service, getCatalog(), axesMapper, mimeMapper);
+        GridCoverage gridCoverage = getCoverage.run(gc);
+        GeoTIFFCoverageResponseDelegate delegate =
+                new GeoTIFFCoverageResponseDelegate(getGeoServer());
+        long small = getEncodingLength(delegate, gridCoverage);
+        service = geoserver.getService(WCSInfo.class);
+        service.setDefaultDeflateCompressionLevel(1);
+        geoserver.save(service);
+        long big = getEncodingLength(delegate, gridCoverage);
+        assertTrue(big > small);
+        scheduleForCleaning(gridCoverage);
+    }
+
+    private long getEncodingLength(
+            GeoTIFFCoverageResponseDelegate delegate, GridCoverage gridCoverage)
+            throws IOException {
+        File file = File.createTempFile("wcs", "deflate.tif");
+        file.deleteOnExit();
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+
+            delegate.encode(
+                    (GridCoverage2D) gridCoverage,
+                    "image/tiff",
+                    Collections.singletonMap("compression", "DEFLATE"),
+                    fos);
+            return file.length();
+        }
     }
 
     protected GetCoverageType parse(String url) throws Exception {

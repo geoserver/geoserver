@@ -11,6 +11,12 @@ officially part of the GeoServer releases. They are however built along with the
 
    Community modules are generally considered experimental in nature and are often under constant development. For that reason documentation in this section should not be considered solid or final and will be subject to change.
 
+.. note::
+
+   Unlike the official extensions, these modules are not released and stored on SourceForge when an official GeoServer release is produced.
+   As a consequence, using a module built against the nightly build of GeoServer with an official release won't probably work.
+
+   If you need a community module for an official release, the only way is to build it with the sources of the GitHub tag matching the release.
 
 .. please keep the following list sorted alphabetically 
 

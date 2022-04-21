@@ -49,22 +49,6 @@
       <artifactId>javax.servlet-api</artifactId>
       <version>${jetty.servlet-api.version}</version>
     </dependency>
-    <!--dependency>
-   <groupId>org.mortbay.jetty</groupId>
-   <artifactId>jsp-api-2.0</artifactId>
-  </dependency-->
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-runtime</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler-jdt</artifactId>
-    </dependency>
     <dependency>
       <groupId>commons-el</groupId>
       <artifactId>commons-el</artifactId>
@@ -384,6 +368,11 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-mapml</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-wps-kml-ppio</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

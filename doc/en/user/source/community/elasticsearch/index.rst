@@ -208,7 +208,7 @@ Requests involving spatial filter operators not natively supported by Elasticsea
 Native queries
 ^^^^^^^^^^^^^^
 
-Native Elasticsearch queries can be applied in WFS/WMS feature requests by including the ``q:{query_body}`` key:value pair in the ``viewparams`` parameter (see GeoServer SQL Views documentation for more information). If supplied, the query is combined with the query derived from the request bbox, CQL or OGC filter using the AND logical binary operator.
+Native Elasticsearch queries can be applied in WMS feature requests through a custom rendering transformation, ``vec:GeoHashGrid``, which translates aggregation response data into a raster for display.  If supplied, the query is combined with the query derived from the request bbox, CQL or OGC filter using the AND logical binary operator.
 
 Examples
 ^^^^^^^^
@@ -223,29 +223,80 @@ BBOX and CQL filter::
 BBOX and native query::
 
     http://localhost:8080/geoserver/test/wms?service=WMS&version=1.1.0&request=GetMap
-         &layers=test:active&styles=&bbox=-1,-1,10,10&width=279&height=512
+         &layers=test:active&styles=NativeQueryStyle&bbox=-1,-1,10,10&width=279&height=512
          &srs=EPSG:4326&format=application/openlayers&maxFeatures=1000
-         &viewparams=q:{"term":{"standard_ss":"IEEE 802.11b"}}
+         
+         
+ <StyledLayerDescriptor version="1.0.0"
+       xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+       xmlns="http://www.opengis.net/sld"
+       xmlns:ogc="http://www.opengis.net/ogc"
+       xmlns:xlink="http://www.w3.org/1999/xlink"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+     <NamedLayer>
+       <Name>test</Name>
+       <UserStyle>
+         <Title>Test</Title>
+         <Abstract>Test Native Query</Abstract>
+         <FeatureTypeStyle>
+           <Transformation>
+             <ogc:Function name="vec:GeoHashGrid">
+               <ogc:Function name="parameter">
+                 <ogc:Literal>data</ogc:Literal>
+               </ogc:Function>
+               <ogc:Function name="parameter">
+                 <ogc:Literal>queryDefinition</ogc:Literal>
+                 <ogc:Literal>{"term":{"standard_ss":"IEEE 802.11b"}}
+               </ogc:Function>
+               <ogc:Function name="parameter">
+                 <ogc:Literal>outputBBOX</ogc:Literal>
+                 <ogc:Function name="env">
+                   <ogc:Literal>wms_bbox</ogc:Literal>
+                 </ogc:Function>
+               </ogc:Function>
+               <ogc:Function name="parameter">
+                 <ogc:Literal>outputWidth</ogc:Literal>
+                 <ogc:Function name="env">
+                   <ogc:Literal>wms_width</ogc:Literal>
+                 </ogc:Function>
+               </ogc:Function>
+               <ogc:Function name="parameter">
+                 <ogc:Literal>outputHeight</ogc:Literal>
+                 <ogc:Function name="env">
+                   <ogc:Literal>wms_height</ogc:Literal>
+                 </ogc:Function>
+               </ogc:Function>
+             </ogc:Function>
+           </Transformation>
+           <Rule>
+            <RasterSymbolizer>
+              <Geometry>
+                <!-- Actual geometry property name in feature source -->
+                <ogc:PropertyName>geo</ogc:PropertyName></Geometry>
+              <Opacity>0.6</Opacity>
+              <ColorMap type="ramp" >
+                <ColorMapEntry color="#FFFFFF" quantity="0" label="nodata" opacity="0"/>
+                <ColorMapEntry color="#2851CC" quantity="1" label="values"/>
+                <ColorMapEntry color="#211F1F" quantity="2" label="label"/>
+                <ColorMapEntry color="#EE0F0F" quantity="3" label="label"/>
+                <ColorMapEntry color="#AAAAAA" quantity="4" label="label"/>
+                <ColorMapEntry color="#6FEE4F" quantity="5" label="label"/>
+                <ColorMapEntry color="#DDB02C" quantity="10" label="label"/>
+              </ColorMap>
+            </RasterSymbolizer>
+           </Rule>
+         </FeatureTypeStyle>
+       </UserStyle>
+     </NamedLayer>
+    </StyledLayerDescriptor>
 
-Native query with BBOX filter::
-
-    http://localhost:8080/geoserver/test/wms?service=WMS&version=1.1.0&request=GetMap
-         &layers=test:active&styles=&bbox=-1,-1,10,10&width=279&height=512
-         &srs=EPSG:4326&format=application/openlayers&maxFeatures=1000
-         &viewparams=q:{"term":{"standard_ss":"IEEE 802.11b"}}
-
-Note that commas in native queries must be escaped with a backslash.
 
 Aggregations
 ------------
 
-Elasticsearch aggregations are supported through WFS/WMS requests by including the ``a:{aggregation_body}`` key:value pair in the ``viewparams`` parameter (see GeoServer SQL Views documentation for more information)::
+Elasticsearch aggregations are supported through WMS requests by including the query in WMS requests through a custom rendering transformation, ``vec:GeoHashGrid``, which translates aggregation response data into a raster for display.
 
-    http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature
-         &typeName=test:active&bbox=0.0,0.0,24.0,44.0
-         &viewparams=a:{"agg": {"geohash_grid": {"field": "geo"\, "precision": 3}}}
-
-Aggregation WFS features will include a single attribute, ``_aggregation``, containing the raw aggregation content. Note that size is set to zero when an aggregation is supplied so only aggregation features are returned (e.g. maxFeatures is ignored and there will be no search hit results). See FAQ_ for common issues using aggregations.
+Note that size is set to zero when an aggregation is supplied so only aggregation features are returned (e.g. maxFeatures is ignored and there will be no search hit results). See FAQ_ for common issues using aggregations.
 
 Geohash grid aggregations
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -274,10 +325,6 @@ Geohash grid aggregation visualization is supported in WMS requests through a cu
                <ogc:Function name="parameter">
                  <ogc:Literal>gridStrategy</ogc:Literal>
                  <ogc:Literal>Basic</ogc:Literal>
-               </ogc:Function>
-               <ogc:Function name="parameter">
-                 <ogc:Literal>pixelsPerCell</ogc:Literal>
-                 <ogc:Literal>1</ogc:Literal>
                </ogc:Function>
                <ogc:Function name="parameter">
                  <ogc:Literal>outputBBOX</ogc:Literal>
@@ -326,7 +373,18 @@ Example WMS request including Geohash grid aggregation with the above custom sty
     http://localhost:8080/geoserver/test/wms?service=WMS&version=1.1.0&request=GetMap
          &layers=test:active&styles=geohashgrid&bbox=0.0,0.0,24.0,44.0&srs=EPSG:4326
          &width=418&height=768&format=application/openlayers
-         &viewparams=a:{"agg": {"geohash_grid": {"field": "geo"\, "precision": 3}}}
+         
+The ES aggregation definition can be computed automatically, or provided as an explicit parameter,
+for example::
+
+               <ogc:Function name="parameter">
+                 <ogc:Literal>aggregationDefinition</ogc:Literal>
+                 <ogc:Literal>{"agg": {"geohash_grid": {"field": "_ogr_geometry_.coordinates", "precision": 3}}}</ogc:Literal>
+               </ogc:Function>
+
+The store may update the precision to a smaller value, if it finds it goes beyond the aggregation
+limits setup in its configuration, see ``grid_size`` and ``grid_threshold`` above.
+
 
 Grid Strategy
 ^^^^^^^^^^^^^

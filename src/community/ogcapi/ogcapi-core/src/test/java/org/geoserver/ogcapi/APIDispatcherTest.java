@@ -36,6 +36,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
 
+@Ignore
 public class APIDispatcherTest {
 
     private FileSystemXmlApplicationContext applicationContext;

@@ -1031,8 +1031,8 @@
       <id>kmlppio</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-kmlppio</artifactId>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-wps-kml-ppio</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

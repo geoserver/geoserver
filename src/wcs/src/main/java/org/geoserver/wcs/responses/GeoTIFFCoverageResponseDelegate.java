@@ -99,21 +99,21 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
     public void encode(
             GridCoverage2D sourceCoverage,
             String outputFormat,
-            Map<String, String> econdingParameters,
+            Map<String, String> encodingParameters,
             OutputStream output)
             throws IOException {
         Utilities.ensureNonNull("sourceCoverage", sourceCoverage);
-        Utilities.ensureNonNull("econdingParameters", econdingParameters);
+        Utilities.ensureNonNull("encodingParameters", encodingParameters);
 
         GeoTiffWriterHelper writerHelper = new GeoTiffWriterHelper(sourceCoverage);
         // compression
-        handleCompression(econdingParameters, writerHelper);
+        handleCompression(encodingParameters, writerHelper);
 
         // tiling
-        handleTiling(econdingParameters, sourceCoverage, writerHelper);
+        handleTiling(encodingParameters, sourceCoverage, writerHelper);
 
         // interleaving
-        handleInterleaving(econdingParameters, sourceCoverage, writerHelper);
+        handleInterleaving(encodingParameters, sourceCoverage, writerHelper);
 
         if (geoserver.getService(WCSInfo.class).isLatLon()) {
             final ParameterValueGroup gp = writerHelper.getGeotoolsWriteParams();
@@ -355,6 +355,17 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                 } else if (compressionS.equals("DEFLATE") || compressionS.equals("Deflate")) {
                     wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
                     wp.setCompressionType("Deflate");
+                    if (geoserver != null) {
+                        WCSInfo info = geoserver.getService(WCSInfo.class);
+                        if (info != null) {
+                            int deflateLevel = info.getDefaultDeflateCompressionLevel();
+                            // ImageIO get float values between 0 and 1
+                            // and apply this rule to determine the level
+                            // deflateLevel = (1 + (8 * quality)).
+                            // Let's get the inverse transform
+                            wp.setCompressionQuality((deflateLevel - 1) * 0.125f);
+                        }
+                    }
                 } else if (compressionS.equals("Huffman")) {
                     wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
                     wp.setCompressionType("CCITT RLE");

@@ -13,6 +13,7 @@ import com.jayway.jsonpath.DocumentContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -62,8 +63,7 @@ public class STACTestSupport extends OGCApiTestSupport {
         GeoServer gs = getGeoServer();
         OSEOInfo service = gs.getService(OSEOInfo.class);
         service.setTitle(STAC_TITLE);
-        String queryables = "id,geometry,collection";
-        service.setGlobalQueryables(queryables);
+        service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
         gs.save(service);
 
         setupBasicOpenSearch(testData, getCatalog(), gs, false);

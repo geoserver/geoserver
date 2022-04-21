@@ -42,11 +42,13 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.MethodParameter;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
+import org.springframework.validation.Validator;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -129,9 +131,15 @@ public class APIDispatcher extends AbstractController {
         // create the one handler adapter we need similar to how DispatcherServlet does it
         // but with a special implementation that supports callbacks for the operation
         APIConfigurationSupport configurationSupport =
-                context.getAutowireCapableBeanFactory().createBean(APIConfigurationSupport.class);
+                context.getBean(APIConfigurationSupport.class);
         configurationSupport.setCallbacks(callbacks);
-        handlerAdapter = configurationSupport.createRequestMappingHandlerAdapter();
+
+        handlerAdapter =
+                configurationSupport.requestMappingHandlerAdapter(
+                        context.getBean(
+                                "mvcContentNegotiationManager", ContentNegotiationManager.class),
+                        context.getBean("mvcConversionService", FormattingConversionService.class),
+                        context.getBean("mvcValidator", Validator.class));
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
         // force GeoServer version of jackson as the first choice

@@ -14,7 +14,9 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
@@ -23,7 +25,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHan
  * Subclass of {@link WebMvcConfigurationSupport} adding support for dispatching {@link
  * DispatcherCallback#operationDispatched} events to callbacks
  */
-public class APIConfigurationSupport extends WebMvcConfigurationSupport {
+// Not @Configuration on purpose, or it will interfere with the REST API.
+// @Component is good enough to allow auto-wiring.
+@Component
+public class APIConfigurationSupport extends DelegatingWebMvcConfiguration {
 
     static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.ogcapi");

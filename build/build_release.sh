@@ -24,7 +24,7 @@ function usage() {
   echo " SKIP_TAG : Skips tag on release branch"
   echo " SKIP_GT : Skips the GeoTools build, as used to build revision"
   echo " SKIP_GWC : Skips the GeoWebCache build, as used to build revision"
-  echo " MAVEN_FLAGS : Used to supply additional option, like -U or -X to build process.
+  echo " MAVEN_FLAGS : Used to supply additional option, like -U or -X to build process."
 }
 
 # parse options

@@ -17,7 +17,6 @@ import javax.servlet.ServletContextListener;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
@@ -37,7 +36,8 @@ import org.geotools.util.logging.Logging;
  */
 public class LoggingStartupContextListener implements ServletContextListener {
 
-    private static Logger LOGGER;
+    /** Logger configured after logging policy established. */
+    static Logger LOGGER;
 
     @Override
     public void contextDestroyed(ServletContextEvent event) {}
@@ -48,9 +48,6 @@ public class LoggingStartupContextListener implements ServletContextListener {
         // setup GeoTools logging redirection
         // (to log4j by default, although this can be overridden)
         final ServletContext context = event.getServletContext();
-
-        // establish logging redirection
-        establishLoggingRedirectionPolicy(context);
 
         String relinquishLoggingControl =
                 GeoServerExtensions.getProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, context);
@@ -102,42 +99,6 @@ public class LoggingStartupContextListener implements ServletContextListener {
         }
     }
 
-    GeoToolsLoggingRedirection establishLoggingRedirectionPolicy(ServletContext context) {
-
-        GeoToolsLoggingRedirection policy =
-                GeoToolsLoggingRedirection.findValue(
-                        GeoServerExtensions.getProperty(
-                                LoggingUtils.GT2_LOGGING_REDIRECTION, context));
-
-        // Ensure GeoTools.init() / Logging.ALL is configured before calling getLogger() method
-        try {
-            switch (policy) {
-                case JavaLogging:
-                    Logging.ALL.setLoggerFactory((org.geotools.util.logging.LoggerFactory) null);
-                    break;
-                case Logback:
-                    Logging.ALL.setLoggerFactory("org.geotools.util.logging.LogbackLoggerFactory");
-                    break;
-                case Log4J2:
-                    Logging.ALL.setLoggerFactory("org.geotools.util.logging.Log4J2LoggerFactory");
-                    break;
-                case CommonsLogging:
-                    Logging.ALL.setLoggerFactory("org.geotools.util.logging.CommonsLoggerFactory");
-                    break;
-                case Log4J:
-                    Logging.ALL.setLoggerFactory("org.geotools.util.logging.Log4JLoggerFactory");
-            }
-        } catch (Exception e) {
-            Logging.ALL.setLoggerFactory((org.geotools.util.logging.LoggerFactory) null);
-            getLogger()
-                    .log(
-                            Level.SEVERE,
-                            "Could not configure log4j logging redirection: '" + policy + "'",
-                            e);
-        }
-        return policy;
-    }
-
     /**
      * Get the LoggingInfo used at startup before the regular configuration system is available.
      *
@@ -169,7 +130,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
      *
      * @return logger for {@code org.geoserver.logging}
      */
-    Logger getLogger() {
+    static Logger getLogger() {
         if (LOGGER == null) {
             LOGGER = Logging.getLogger("org.geoserver.logging");
         }

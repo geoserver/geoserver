@@ -6,7 +6,6 @@
 package org.geoserver.logging;
 
 import java.util.List;
-import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
@@ -15,7 +14,6 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -139,9 +137,6 @@ public class LoggingInitializer
             }
         }
     }
-
-    /** logging instance */
-    static Logger LOGGER = Logging.getLogger("org.geoserver.logging");
 
     ServletContext servletContext;
 

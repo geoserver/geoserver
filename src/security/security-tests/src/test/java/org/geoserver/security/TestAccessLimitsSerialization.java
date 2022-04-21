@@ -60,6 +60,20 @@ public class TestAccessLimitsSerialization {
     }
 
     @Test
+    public void testSerializeFilterIncludeAsObject() throws Exception {
+        DataAccessLimits limits = new DataAccessLimits(CatalogMode.CHALLENGE, Filter.INCLUDE);
+
+        testObjectSerialization(limits);
+    }
+
+    @Test
+    public void testSerializeFilterExcludeAsObject() throws Exception {
+        DataAccessLimits limits = new DataAccessLimits(CatalogMode.CHALLENGE, Filter.EXCLUDE);
+
+        testObjectSerialization(limits);
+    }
+
+    @Test
     public void testCoverageAccessLimits() throws Exception {
         CoverageAccessLimits limits = new CoverageAccessLimits(CatalogMode.MIXED, filter, g, null);
 

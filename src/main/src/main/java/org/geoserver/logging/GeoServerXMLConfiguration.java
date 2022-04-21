@@ -295,5 +295,6 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
                 }
             }
         }
+
     }
 }

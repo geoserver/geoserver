@@ -61,7 +61,15 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value>
     </context-param>
-    
+
+    <!-- do not auto init log4j, geoserver will do it -->
+    <!--
+    <context-param>
+        <param-name>isLog4jAutoInitializationDisabled</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    -->
+
     <filter>
      <filter-name>FlushSafeFilter</filter-name>
      <filter-class>org.geoserver.filters.FlushSafeFilter</filter-class>

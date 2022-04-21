@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.IOUtils;
@@ -155,7 +156,7 @@ public class LoggingUtils {
                 "resource",
                 "PMD.CloseResource"
             }) // current context, no need to enforce AutoClosable
-            LoggerContext loggerContext = (LoggerContext) LogManager.getContext(true);
+            LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
             Configuration configuration = loggerContext.getConfiguration();
 
             for (Appender check : configuration.getAppenders().values()) {
@@ -222,7 +223,7 @@ public class LoggingUtils {
                 "resource",
                 "PMD.CloseResource"
             }) // current context, no need to enforce AutoClosable
-            LoggerContext loggerContext = (LoggerContext) LogManager.getContext(true);
+            LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
             Configuration configuration = loggerContext.getConfiguration();
 
             for (Appender appender : savedAppenders) {
@@ -232,8 +233,10 @@ public class LoggingUtils {
             if (reloadRequired) {
                 // we modifed the log4j configuration and should reload
                 loggerContext.reconfigure(configuration);
+                // loggerContext.updateLoggers();
             }
         }
+
         LoggingStartupContextListener.getLogger()
                 .fine("FINISHED CONFIGURING GEOSERVER LOGGING -------------------------");
     }
@@ -253,7 +256,7 @@ public class LoggingUtils {
             "resource",
             "PMD.CloseResource"
         }) // current context, no need to enforce AutoClosable
-        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(true);
+        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 
         Configuration configuration = loggerContext.getConfiguration();
 
@@ -367,7 +370,7 @@ public class LoggingUtils {
             "resource",
             "PMD.CloseResource"
         }) // current context, no need to enforce AutoClosable
-        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(true);
+        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 
         try {
             URI configLocation = Resources.file(configResource).toURI();
@@ -391,9 +394,12 @@ public class LoggingUtils {
                             }
                         };
 
-                loggerContext.setConfiguration(configuration);
-                LoggingStartupContextListener.getLogger()
-                        .info("Log4j 2 configuration set to " + configResource.name());
+                loggerContext.reconfigure(configuration);
+//                loggerContext.setConfiguration(configuration);
+//                loggerContext.updateLoggers();
+
+                Logger LOGGER = LoggingStartupContextListener.getLogger();
+                LOGGER.info("Log4j 2 configuration set to " + configResource.name());
                 return true;
             } else {
                 loggerContext.setConfigLocation(configLocation);
@@ -528,7 +534,7 @@ public class LoggingUtils {
             "resource",
             "PMD.CloseResource"
         }) // current context, no need to enforce AutoClosable
-        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(true);
+        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure(new DefaultConfiguration());
 
         return true;

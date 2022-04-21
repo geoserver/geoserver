@@ -223,6 +223,23 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testCql2JsonFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?filter=%7B%22op%22%3A%22%3D%22%2C%22args%22%3A%5B%7B%22property%22%3A%22name%22%7D%2C%22name-f001%22%5D%7D" // {"op":"=","args":[{"property":"name"},"name-f001"]}
+                                + "&filter-lang=cql2-json",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
     public void testCqlSpatialFilter() throws Exception {
         String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
@@ -230,6 +247,23 @@ public class FeatureTest extends FeaturesTestSupport {
                         "ogc/features/collections/"
                                 + roadSegments
                                 + "/items?filter=BBOX(pointProperty,38,1,40,3)&filter-lang=cql-text",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
+    public void testCql2JsonSpatialFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?filter=%7B%22op%22%3A%22s_intersects%22%2C%22args%22%3A%5B%7B%22property%22%3A%22pointProperty%22%7D%2C%7B%22bbox%22%3A%5B38%2C1%2C40%2C3%5D%7D%5D%7D" // {"op":"s_intersects","args":[{"property":"pointProperty"},{"bbox":[38,1,40,3]}]}
+                                + "&filter-lang=cql2-json",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001

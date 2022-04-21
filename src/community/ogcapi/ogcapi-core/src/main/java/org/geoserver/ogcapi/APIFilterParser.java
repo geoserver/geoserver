@@ -29,8 +29,8 @@ public class APIFilterParser {
             "cql-text"; // for compatibility, but should not really be advertised
     public static String ECQL_TEXT = "ecql-text"; // GeoServer own CQL
     public static String CQL2_TEXT = "cql2-text"; // OGC CQL2
-    public static String CQL2_JSON = "cql2-json"; // OGC CQL2-JSON, see requirement 5
-    // https://docs.ogc.org/DRAFTS/19-079r1.html#filter-lang-param
+    public static String CQL2_JSON = "cql2-json"; // OGC CQL2-JSON, see requirement 38
+    // https://portal.ogc.org/files/96288#cql-json
 
     /** The list of encodings that should go in API documents */
     public static Set<String> SUPPORTED_ENCODINGS =

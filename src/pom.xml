@@ -1809,7 +1809,7 @@
           <version>false</version>
           <noqualifier>all</noqualifier>
           <quiet>true</quiet>
-          <maxmemory>256M</maxmemory>
+          <maxmemory>512M</maxmemory>
           <encoding>UTF-8</encoding>
 
           <additionalparam>-Xdoclint:none</additionalparam>

@@ -77,4 +77,8 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     public List<String> getGlobalQueryables() {
         return globalQueryables;
     }
+
+    public void setGlobalQueryables(List<String> globalQueryables) {
+        this.globalQueryables = globalQueryables;
+    }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="LibdeflateSettingsPanel" class="org.geoserver.web.data.settings.SettingsPluginPanelInfo">
+        <description>This bean adds the necessary form fields for Libdeflate Settings</description>
+        <property name="id" value="libdeflateSettingsPanel"/>
+        <property name="titleKey" value="LibdeflateSettings"/>
+        <property name="componentClass" value="org.geoserver.web.LibdeflateSettingsPluginPanel"/>
+        <property name="priority" value="100"/>
+    </bean>
+    <bean id="libdeflateSettingsInitializer" class="org.geoserver.libdeflate.LibdeflateSettingsInitializer" />
+    <bean id="libdeflateSettingsXStreamInitializer" class="org.geoserver.libdeflate.LibdeflateSettingsXStreamInitializer" />
+</beans>

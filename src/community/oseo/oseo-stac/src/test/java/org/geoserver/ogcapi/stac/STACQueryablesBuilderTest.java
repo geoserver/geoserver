@@ -104,7 +104,7 @@ public class STACQueryablesBuilderTest {
 
         // check the creation time
         Schema created = properties.get("created");
-        assertNotNull(datetime);
+        assertNotNull(created);
         assertEquals(TYPE_STRING, created.getType());
         assertEquals("date-time", created.getFormat());
 
@@ -133,6 +133,46 @@ public class STACQueryablesBuilderTest {
         Schema nested = properties.get("one.two.three");
         assertNotNull(nested);
         assertEquals(TYPE_NUMBER, max.getType());
+    }
+
+    @Test
+    public void testGetQueryablesUncustomized() throws Exception {
+        // setup data and templates
+        FileSystemResourceStore resourceStore =
+                new FileSystemResourceStore(new File("./src/test/resources"));
+        Resource templateDefinition = resourceStore.get("items-test.json");
+        FeatureSource<FeatureType, Feature> products = data.getProductSource();
+        TemplateReaderConfiguration config =
+                new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
+        Template template = new Template(templateDefinition, config);
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        Filter collectionSampleFilter = ff.equals(ff.property("name"), ff.literal("GS_TEST"));
+        Feature sampleCollectionFeature =
+                DataUtilities.first(data.getCollectionSource().getFeatures(collectionSampleFilter));
+        // to reproduce the queryables must not have been configured, they must be null
+        assertNull(
+                sampleCollectionFeature.getProperty(
+                        STACQueryablesBuilder.DEFINED_QUERYABLES_PROPERTY));
+        OSEOInfo service = new OSEOInfoImpl();
+        STACQueryablesBuilder builder =
+                new STACQueryablesBuilder(
+                        FAKE_ID,
+                        template.getRootBuilder(),
+                        products.getSchema(),
+                        null,
+                        sampleCollectionFeature,
+                        service);
+
+        // use to NPE here
+        Queryables queryables = builder.getQueryables();
+
+        // check a random queryable just in case
+        // check the creation time
+        Map<String, Schema> properties = queryables.getProperties();
+        Schema created = properties.get("created");
+        assertNotNull(created);
+        assertEquals(TYPE_STRING, created.getType());
+        assertEquals("date-time", created.getFormat());
     }
 
     @Test

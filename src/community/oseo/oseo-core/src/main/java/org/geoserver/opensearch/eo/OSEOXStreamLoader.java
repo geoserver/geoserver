@@ -5,6 +5,7 @@
 package org.geoserver.opensearch.eo;
 
 import com.thoughtworks.xstream.XStream;
+import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
@@ -65,6 +66,10 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
         if (!service.getVersions().contains(OSEOInfo.VERSION_1_0_0)) {
             service.getVersions().add(OSEOInfo.VERSION_1_0_0);
         }
+        if (service.getGlobalQueryables() == null) {
+            ((OSEOInfoImpl) service).setGlobalQueryables(new ArrayList<>());
+        }
+
         return service;
     }
 }

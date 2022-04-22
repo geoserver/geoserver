@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -42,7 +43,7 @@ public class STACQueryablesBuilder {
     public static final String DATETIME_SCHEMA_REF =
             "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/datetime.json#/properties/datetime";
 
-    private static final String DEFINED_QUERYABLES_PROPERTY = "queryables";
+    static final String DEFINED_QUERYABLES_PROPERTY = "queryables";
     private static Set<String> SKIP_PROPERTIES = new HashSet<>();
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
@@ -134,11 +135,12 @@ public class STACQueryablesBuilder {
         // if there is a collection, then we use the pre-configured ones only if
         // there is a setting for them, otherwise return all of them, skipping the global ones too
         if (collection != null) {
-            String[] collectionQueryables =
-                    (String[]) collection.getProperty(DEFINED_QUERYABLES_PROPERTY).getValue();
-            if (collectionQueryables != null) {
+            Optional<String[]> collectionQueryables =
+                    Optional.ofNullable(collection.getProperty(DEFINED_QUERYABLES_PROPERTY))
+                            .map(p -> (String[]) p.getValue());
+            if (collectionQueryables.isPresent()) {
                 if (result == null) result = new LinkedHashSet<>();
-                result.addAll(Arrays.asList(collectionQueryables));
+                result.addAll(Arrays.asList(collectionQueryables.get()));
             } else {
                 return null;
             }

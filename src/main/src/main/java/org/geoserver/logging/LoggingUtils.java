@@ -395,8 +395,6 @@ public class LoggingUtils {
                         };
 
                 loggerContext.reconfigure(configuration);
-//                loggerContext.setConfiguration(configuration);
-//                loggerContext.updateLoggers();
 
                 Logger LOGGER = LoggingStartupContextListener.getLogger();
                 LOGGER.info("Log4j 2 configuration set to " + configResource.name());

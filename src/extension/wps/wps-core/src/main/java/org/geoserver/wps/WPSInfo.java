@@ -142,4 +142,10 @@ public interface WPSInfo extends ServiceInfo {
      * means no limit)
      */
     public abstract void setMaxSynchronousTotalTime(Integer maxSynchronousTotalTime);
+
+    /** Returns the flag indicating whether remote inputs are enabled. */
+    boolean isRemoteInputDisabled();
+
+    /** Sets the flag indicating whether remote inputs are enabled. */
+    void setRemoteInputDisabled(boolean remoteInputDisabled);
 }

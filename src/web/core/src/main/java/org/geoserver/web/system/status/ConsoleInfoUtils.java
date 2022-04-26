@@ -13,7 +13,10 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public interface ConsoleInfoUtils {
+/** utility interface for thread and memory heap info */
+public final class ConsoleInfoUtils {
+
+    private ConsoleInfoUtils() {}
 
     /**
      * @param lockedMonitors From ThreadMXBean docs: if true, dump all locked monitors
@@ -21,7 +24,7 @@ public interface ConsoleInfoUtils {
      *     synchronizers
      * @return large text with information about JVM threads
      */
-    default String getThreadsInfo(boolean lockedMonitors, boolean lockedSynchronizers) {
+    static String getThreadsInfo(boolean lockedMonitors, boolean lockedSynchronizers) {
         return Arrays.stream(
                         ManagementFactory.getThreadMXBean()
                                 .dumpAllThreads(lockedMonitors, lockedSynchronizers))
@@ -30,12 +33,13 @@ public interface ConsoleInfoUtils {
     }
 
     /**
-     * To retrieve the PID of the Java process is used the method ManagementFactory.getRuntimeMXBean().getName()
-     * The returned name usually is the format [pid]@[machinename] but depends on the implementation of the JVM
+     * To retrieve the PID of the Java process is used the method
+     * ManagementFactory.getRuntimeMXBean().getName() The returned name usually is the format
+     * [pid]@[machinename] but depends on the implementation of the JVM
      *
      * @return the histo memory dump in the format produced by the jmap -histo:live
-     * */
-    default String getHistoMemoryDump() {
+     */
+    static String getHistoMemoryDump() {
         try {
             int pid =
                     Optional.ofNullable(ManagementFactory.getRuntimeMXBean().getName())
@@ -49,14 +53,16 @@ public interface ConsoleInfoUtils {
 
             final Process jmapProcess =
                     Runtime.getRuntime().exec(String.format("jmap -histo:live %d", pid));
-            final BufferedReader stdConsole =
-                    new BufferedReader(new InputStreamReader(jmapProcess.getInputStream()));
-            final StringBuilder accumulator = new StringBuilder();
-            String buffer;
-            while ((buffer = stdConsole.readLine()) != null) {
-                accumulator.append(buffer).append("\n");
+            try (final BufferedReader stdConsole =
+                    new BufferedReader(new InputStreamReader(jmapProcess.getInputStream()))) {
+
+                final StringBuilder accumulator = new StringBuilder();
+                String buffer;
+                while ((buffer = stdConsole.readLine()) != null) {
+                    accumulator.append(buffer).append("\n");
+                }
+                return accumulator.toString();
             }
-            return accumulator.toString();
         } catch (IOException e) {
             return String.format(
                     "Error reading the histo memory dump with the jmap command. Exception: %s",

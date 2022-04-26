@@ -17,6 +17,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -32,6 +33,7 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.ProductClass;
+import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
@@ -55,6 +57,7 @@ import org.geotools.feature.SchemaException;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.AttributeExpressionImpl;
+import org.geotools.filter.function.JsonPointerFunction;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.jdbc.JDBCDataStore;
@@ -492,265 +495,236 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         throw new IOException("Schema '" + typeName + "' does not exist.");
     }
 
-    /**
-     * Create indices on Product fields
-     *
-     * @param fieldName Product field name
-     * @param layerName Collection Type
-     * @param expression Expression that defines queryable from template
-     * @param fieldType Integer, Float, String, or NOT_JSON
-     */
     @Override
-    public void createIndex(
-            String queryableName, String collectionName, Expression expression, FieldType fieldType)
+    public void updateIndexes(String collection, List<Indexable> indexables) throws IOException {
+        try (Connection cx = getRawDelegateStore().getConnection(Transaction.AUTO_COMMIT)) {
+            List<JDBCIndex> existing = getIndexes(cx, collection);
+
+            // loop and find indexes that need to be created, and build a map from queryables to
+            // expressions as recorded in the DB, for later match and index disposal
+            Map<String, String> expressions = new HashMap<>();
+            for (Indexable indexable : indexables) {
+                try {
+                    String expression =
+                            getIndexExpression(indexable.getExpression(), indexable.getFieldType());
+                    expressions.put(indexable.getQueryable(), expression);
+                    if (!existing.stream()
+                            .anyMatch(
+                                    idx ->
+                                            idx.getQueryable().equals(indexable.getQueryable())
+                                                    && idx.getExpression().equals(expression))) {
+                        createIndex(cx, collection, indexable);
+                    }
+                } catch (IOException e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Failed to create index for "
+                                    + collection
+                                    + "/"
+                                    + indexable.getQueryable()
+                                    + " over expression "
+                                    + indexable.getExpression(),
+                            e);
+                }
+            }
+
+            // find indexes that are no longer needed and remove
+            for (JDBCIndex index : existing) {
+                String expression = expressions.get(index.getQueryable());
+                if (!Objects.equal(expression, index.getExpression())) {
+                    try {
+                        dropIndex(cx, collection, index.getQueryable(), index.getExpression());
+                    } catch (IOException e) {
+                        LOGGER.log(
+                                Level.WARNING,
+                                "Failed to create index for "
+                                        + collection
+                                        + "/"
+                                        + index.getQueryable()
+                                        + " over expression "
+                                        + index.getExpression(),
+                                e);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DataSourceException(e);
+        }
+    }
+
+    private List<JDBCIndex> getIndexes(Connection cx, String collection) throws SQLException {
+        List<JDBCIndex> indexes = new ArrayList<>();
+        try (PreparedStatement ps =
+                cx.prepareStatement("SELECT * FROM queryable_idx_tracker WHERE collection = ?")) {
+            ps.setString(1, collection);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    JDBCIndex index = new JDBCIndex();
+                    index.setQueryable(rs.getString("queryable"));
+                    index.setName(rs.getString("index_name"));
+                    index.setCollection(rs.getString("collection"));
+                    index.setExpression(rs.getString("expression"));
+                    indexes.add(index);
+                }
+            }
+        }
+        return indexes;
+    }
+
+    private String getIndexExpression(Expression expression, Indexable.FieldType fieldType)
+            throws IOException {
+        switch (fieldType) {
+            case Geometry:
+            case Other:
+                return getIndexField(expression);
+            default:
+                return encodeJsonPointer((Function) expression, fieldType);
+        }
+    }
+
+    /** Create indices on Product fields */
+    private void createIndex(Connection cx, String collectionName, Indexable idx)
             throws IOException {
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();
         if (!(dialect instanceof PostGISDialect)) {
             throw new IOException("Index creation is only current supported with PostGIS");
         }
-        Connection cx = null;
-        PreparedStatement preparedStatement = null;
         try {
-            cx = delegate.getConnection(Transaction.AUTO_COMMIT);
-            switch (fieldType) {
-                case NOT_JSON:
-                    String indexTitle = getIndexTitle(collectionName, queryableName);
-                    String field = getIndexField(expression);
-                    if (!isFieldOrPointerIndexed(cx, field)) {
-                        preparedStatement =
-                                cx.prepareStatement(
-                                        "CREATE INDEX IF NOT EXISTS "
-                                                + indexTitle
-                                                + " ON product ("
-                                                + field
-                                                + ")");
-                        preparedStatement.execute();
-                    } else {
-                        indexTitle = getExistingIndexTitle(cx, field);
-                    }
-                    recordIndex(cx, collectionName, field, indexTitle);
-                    break;
-                case String:
-                    String pointer = encodeJsonPointer((Function) expression, fieldType);
-                    String stindexTitle = getIndexTitle(collectionName, queryableName);
-                    if (!isFieldOrPointerIndexed(cx, pointer)) {
-                        preparedStatement =
-                                cx.prepareStatement(
-                                        "CREATE INDEX IF NOT EXISTS "
-                                                + stindexTitle
-                                                + " ON product  USING BTREE (("
-                                                + pointer
-                                                + "))");
-                        preparedStatement.execute();
-                    } else {
-                        stindexTitle = getExistingIndexTitle(cx, pointer);
-                    }
-                    recordIndex(cx, collectionName, pointer, stindexTitle);
-                    break;
-                case Integer:
-                case Float:
-                case Double:
-                    String dpointer = encodeJsonPointer((Function) expression, fieldType);
-                    String dindexTitle = getIndexTitle(collectionName, queryableName);
-                    if (!isFieldOrPointerIndexed(cx, dpointer)) {
-                        preparedStatement =
-                                cx.prepareStatement(
-                                        "CREATE INDEX IF NOT EXISTS "
-                                                + dindexTitle
-                                                + " ON product  USING BTREE (("
-                                                + dpointer
-                                                + "))");
-                        preparedStatement.execute();
-                    } else {
-                        dindexTitle = getExistingIndexTitle(cx, dpointer);
-                    }
-                    recordIndex(cx, collectionName, dpointer, dindexTitle);
-                    break;
-            }
+            String indexTitle = getIndexTitle(collectionName, idx.getQueryable());
+            Indexable.FieldType fieldType = idx.getFieldType();
+            String indexExpression = getIndexExpression(idx.getExpression(), fieldType);
 
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error when creating index on " + queryableName, e);
-        } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, "Error when creating index on " + queryableName, e);
-        } finally {
-            try {
-                if (preparedStatement != null) preparedStatement.close();
-            } catch (SQLException e) {
-                LOGGER.log(Level.WARNING, "Error while closing database resource", e);
+            if (!isFieldOrPointerIndexed(cx, indexExpression)) {
+                LOGGER.info(
+                        "Creating missing index on " + collectionName + "/" + idx.getQueryable());
+                StringBuilder sql = new StringBuilder("CREATE INDEX IF NOT EXISTS ");
+                sql.append(indexTitle).append(" ON product ");
+                if (fieldType == Indexable.FieldType.Geometry) {
+                    sql.append(" USING GIST ");
+                }
+                sql.append("(");
+                if (fieldType == Indexable.FieldType.Other
+                        || fieldType == Indexable.FieldType.Geometry) {
+                    sql.append(indexExpression);
+                } else {
+                    sql.append("(").append(indexExpression).append(")");
+                }
+                sql.append(")");
+                LOGGER.log(Level.FINE, "Creating index " + sql);
+                try (PreparedStatement preparedStatement = cx.prepareStatement(sql.toString())) {
+                    preparedStatement.execute();
+                }
+            } else {
+                LOGGER.info(
+                        "Index for indexExpression already exists, tracking new queryable: "
+                                + collectionName
+                                + "/"
+                                + idx.getQueryable());
+                indexTitle = getExistingIndexTitle(cx, indexExpression);
             }
-            delegate.closeSafe(cx);
+            recordIndex(cx, collectionName, idx.getQueryable(), indexExpression, indexTitle);
+        } catch (IOException | SQLException e) {
+            LOGGER.log(Level.WARNING, "Error when creating index on " + idx.getQueryable(), e);
         }
     }
 
     private String getExistingIndexTitle(Connection cx, String fieldOrPointer) throws SQLException {
-        String out = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet rs = null;
-        try {
-            preparedStatement =
-                    cx.prepareStatement(
-                            "SELECT name FROM queryable_idx_tracker WHERE expression = ? LIMIT 1");
-            preparedStatement.setString(1, fieldOrPointer);
-            rs = preparedStatement.executeQuery();
-            while (rs.next()) {
-                out = rs.getString(1);
-            }
-        } catch (SQLException e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Exception while trying to query for name of index for expression "
-                            + fieldOrPointer,
-                    e);
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (preparedStatement != null) {
-                preparedStatement.close();
+        try (PreparedStatement ps =
+                cx.prepareStatement(
+                        "SELECT index_name FROM queryable_idx_tracker WHERE expression = ? LIMIT 1")) {
+            ps.setString(1, fieldOrPointer);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    return rs.getString(1);
+                }
             }
         }
-        return out;
+
+        return null;
     }
 
     private boolean isFieldOrPointerIndexed(Connection cx, String fieldOrPointer)
             throws SQLException {
         boolean out = false;
-        PreparedStatement preparedStatement = null;
-        ResultSet rs = null;
-        try {
-            preparedStatement =
-                    cx.prepareStatement(
-                            "SELECT count(*)>0 FROM queryable_idx_tracker WHERE expression = ?");
+        try (PreparedStatement preparedStatement =
+                cx.prepareStatement(
+                        "SELECT count(*)>0 FROM queryable_idx_tracker WHERE expression = ?")) {
             preparedStatement.setString(1, fieldOrPointer);
-            rs = preparedStatement.executeQuery();
-            while (rs.next()) {
-                out = rs.getBoolean(1);
-            }
-        } catch (SQLException e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Exception while trying to query for existence of indices for expression "
-                            + fieldOrPointer,
-                    e);
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (preparedStatement != null) {
-                preparedStatement.close();
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    out = rs.getBoolean(1);
+                }
             }
         }
         return out;
     }
 
     private void recordIndex(
-            Connection cx, String collectionName, String fieldOrPointer, String indexTitle)
+            Connection cx,
+            String collectionName,
+            String queryable,
+            String fieldOrPointer,
+            String indexTitle)
             throws SQLException {
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement =
-                    cx.prepareStatement(
-                            "insert into queryable_idx_tracker (name, collection, expression) "
-                                    + "values (?,?,?)");
+        try (PreparedStatement preparedStatement =
+                cx.prepareStatement(
+                        "insert into queryable_idx_tracker (index_name, collection, queryable, expression) "
+                                + "values (?,?,?,?)")) {
             preparedStatement.setString(1, indexTitle);
             preparedStatement.setString(2, collectionName);
-            preparedStatement.setString(3, fieldOrPointer);
+            preparedStatement.setString(3, queryable);
+            preparedStatement.setString(4, fieldOrPointer);
             preparedStatement.execute();
-
-        } catch (SQLException e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Exception while trying to record existence of indices for expression "
-                            + fieldOrPointer,
-                    e);
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
         }
     }
 
-    /**
-     * Drop product table index
-     *
-     * @param fieldName Product field name
-     * @param value
-     * @param type
-     */
-    @Override
-    public void dropIndex(
-            String collectionName, String fieldName, Expression expression, FieldType fieldType)
+    /** Drop product table index */
+    private void dropIndex(
+            Connection cx, String collectionName, String queryable, String indexExpression)
             throws IOException {
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();
         if (!(dialect instanceof PostGISDialect)) {
             throw new IOException("Index deletion is only current supported with PostGIS");
         }
-        Connection cx = null;
-        PreparedStatement preparedStatement = null;
         try {
-            cx = delegate.getConnection(Transaction.AUTO_COMMIT);
-            String indexExpression = null;
-            if (fieldType == FieldType.NOT_JSON) {
-                indexExpression = getIndexField(expression);
-            } else {
-                indexExpression = encodeJsonPointer((Function) expression, fieldType);
-            }
             int indexWithExpressionCount = getIndexExpressionCount(cx, indexExpression);
-            String indexName = deleteIndexExpresssionRecord(cx, collectionName, indexExpression);
-            if (indexWithExpressionCount
-                    <= 1) { // we get the count before we delete the expression record and only drop
-                // index if it is the only one with this expression
-                preparedStatement = cx.prepareStatement("DROP INDEX IF EXISTS " + indexName);
-                preparedStatement.execute();
+            LOGGER.info("Removing tracking of : " + collectionName + "/" + queryable);
+            String indexName =
+                    deleteIndexExpressionRecord(cx, collectionName, queryable, indexExpression);
+            // if there is an index, and this is the last field using it, drop
+            if (indexWithExpressionCount <= 1 && indexName != null) {
+                LOGGER.info("Dropping index " + indexName);
+                String sql = "DROP INDEX IF EXISTS " + indexName;
+                try (PreparedStatement ps = cx.prepareStatement(sql)) {
+                    ps.execute();
+                }
             }
-
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error when deleting index on " + fieldName, e);
         } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, "Error when deleting index on " + fieldName, e);
-        } finally {
-            try {
-                if (preparedStatement != null) preparedStatement.close();
-            } catch (SQLException e) {
-                LOGGER.log(Level.WARNING, "Exception while closing database resource: ", e);
-            }
-            delegate.closeSafe(cx);
+            LOGGER.log(Level.WARNING, "Error when deleting index on " + indexExpression, e);
         }
     }
 
-    private String deleteIndexExpresssionRecord(Connection cx, String collection, String expression)
+    private String deleteIndexExpressionRecord(
+            Connection cx, String collection, String queryable, String expression)
             throws SQLException {
-        PreparedStatement preparedStatement = null;
-        ResultSet rs = null;
         String out = null;
-        try {
-            preparedStatement =
-                    cx.prepareStatement(
-                            "DELETE FROM queryable_idx_tracker WHERE collection = ? AND expression = ? RETURNING name");
+        // two queryables might be pointing to the same field, just remove one
+        try (PreparedStatement preparedStatement =
+                cx.prepareStatement(
+                        "DELETE FROM queryable_idx_tracker "
+                                + " WHERE collection = ? AND queryable = ? AND expression = ? "
+                                + "RETURNING index_name")) {
             preparedStatement.setString(1, collection);
-            preparedStatement.setString(2, expression);
+            preparedStatement.setString(2, queryable);
+            preparedStatement.setString(3, expression);
             preparedStatement.execute();
-            rs = preparedStatement.getResultSet();
-            while (rs.next()) {
-                out = rs.getString(1);
-            }
-
-        } catch (SQLException e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Exception while trying to delete record of index "
-                            + collection
-                            + ":"
-                            + expression,
-                    e);
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (preparedStatement != null) {
-                preparedStatement.close();
+            try (ResultSet rs = preparedStatement.getResultSet()) {
+                while (rs.next()) {
+                    out = rs.getString(1);
+                }
             }
         }
         return out;
@@ -758,119 +732,91 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     private int getIndexExpressionCount(Connection cx, String indexExpression) throws SQLException {
         int out = 0;
-        PreparedStatement preparedStatement = null;
-        ResultSet rs = null;
-        try {
-            preparedStatement =
-                    cx.prepareStatement(
-                            "SELECT count(*) FROM queryable_idx_tracker WHERE expression = ?");
+        try (PreparedStatement preparedStatement =
+                cx.prepareStatement(
+                        "SELECT count(*) FROM queryable_idx_tracker WHERE expression = ?")) {
             preparedStatement.setString(1, indexExpression);
-            rs = preparedStatement.executeQuery();
-            while (rs.next()) {
-                out = rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Exception while trying to query for count of indices for expression "
-                            + indexExpression,
-                    e);
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (preparedStatement != null) {
-                preparedStatement.close();
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    out = rs.getInt(1);
+                }
             }
         }
         return out;
     }
 
     @Override
-    public List<String> getIndexNamesByLayer(String tableName) {
-        List<String> out = new ArrayList<>();
+    public List<String> getIndexNamesByLayer(String tableName) throws IOException {
+        // check we're running against PostGIS
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();
-        if (dialect instanceof PostGISDialect) {
-            Connection cx = null;
-            PreparedStatement preparedStatement = null;
-            ResultSet rs = null;
-            try {
-                cx = delegate.getConnection(Transaction.AUTO_COMMIT);
-                preparedStatement =
-                        cx.prepareStatement("SELECT indexname FROM pg_indexes WHERE tablename = ?");
-                preparedStatement.setString(1, tableName);
-                rs = preparedStatement.executeQuery();
+        if (!(dialect instanceof PostGISDialect)) {
+            throw new IOException("Index creation is only current supported with PostGIS");
+        }
+
+        List<String> out = new ArrayList<>();
+        try (Connection cx = delegate.getConnection(Transaction.AUTO_COMMIT);
+                PreparedStatement ps =
+                        cx.prepareStatement(
+                                "SELECT indexname FROM pg_indexes WHERE tablename = ?")) {
+            ps.setString(1, tableName);
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     out.add(rs.getString(1));
                 }
-
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Error when getting index  list for " + tableName, e);
-            } catch (SQLException e) {
-                LOGGER.log(Level.WARNING, "Error when getting index list for " + tableName, e);
-            } finally {
-                try {
-                    if (rs != null) rs.close();
-                    if (preparedStatement != null) preparedStatement.close();
-                } catch (SQLException e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Error when closing database resources after "
-                                    + "getting index list for "
-                                    + tableName,
-                            e);
-                }
-                delegate.closeSafe(cx);
             }
+        } catch (IOException | SQLException e) {
+            LOGGER.log(Level.WARNING, "Error when getting index  list for " + tableName, e);
         }
+
         return out;
     }
 
     private String getIndexField(Expression expression) throws IOException {
-        String out = expression.toString();
+        String indexField;
         if (expression instanceof AttributeExpressionImpl) {
             AttributeExpressionImpl aei = (AttributeExpressionImpl) expression;
-            String rawColumn = aei.getPropertyName();
-            out = propertyMapper.getSourceName(rawColumn);
-            out = "\"" + aei.getPropertyName() + "\"";
-        } else if (expression instanceof Function) {
+            indexField = propertyMapper.getSourceName(aei.getPropertyName());
+        } else if (expression instanceof JsonPointerFunction) {
             Function function = (Function) expression;
-            if (function.getParameters().get(0) instanceof PropertyName) {
-                String rawColumn = function.getParameters().get(0).toString();
-                out = propertyMapper.getSourceName(rawColumn);
-                out = "\"" + out + "\"";
+            Expression p0 = function.getParameters().get(0);
+            if (p0 instanceof PropertyName) {
+                indexField = propertyMapper.getSourceName(((PropertyName) p0).getPropertyName());
             } else {
                 throw new IOException(
                         "The first argument for the function "
-                                + function.toString()
+                                + function
                                 + " arg: "
-                                + function.getParameters().get(0).toString()
+                                + p0
                                 + " is not "
                                 + " property name and cannot be converted into a field name");
             }
         } else {
             throw new IOException(
                     "Expression "
-                            + expression.toString()
-                            + " is neither a Function nor a "
-                            + "AttributExpression and can not be converted into a field name");
+                            + expression
+                            + " is neither a JSON pointer nor a "
+                            + "attribute and can not be converted into a field name, cannot index it.");
         }
 
-        return out;
+        if (indexField == null)
+            throw new IOException("Could not map " + expression + " to a source field");
+
+        return "\"" + indexField + "\"";
     }
 
     private String getIndexTitle(String collectionName, String fieldName) {
-        return collectionName.replaceAll(":", "_") + fieldName.replaceAll(":", "_") + "_idx";
+        return collectionName.replaceAll(":", "_") + "_" + fieldName.replaceAll(":", "_") + "_idx";
     }
 
-    private String encodeJsonPointer(Function jsonPointer, FieldType type) throws IOException {
+    private String encodeJsonPointer(Function jsonPointer, Indexable.FieldType type)
+            throws IOException {
         StringBuilder out = new StringBuilder();
         Expression json = getParameter(jsonPointer, 0, true);
         Expression pointer = getParameter(jsonPointer, 1, true);
         if (json instanceof PropertyName && pointer instanceof Literal) {
             // if not a string need to cast the json attribute
-            boolean needCast = !type.equals(FieldType.String);
+            boolean needCast = !type.equals(Indexable.FieldType.JsonString);
             if (needCast) out.append('(');
             out.append("\"");
             out.append(((PropertyName) json).getPropertyName());
@@ -903,7 +849,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return out.toString();
     }
 
-    private String cast(String property, FieldType type) {
+    private String cast(String property, Indexable.FieldType type) {
         if (String.class.getSimpleName().equals(type.name())) {
             return property + "::text";
         } else if (Short.class.getSimpleName().equals(type.name())

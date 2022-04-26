@@ -14,7 +14,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
-import org.opengis.filter.expression.Expression;
 
 /**
  * Provides access to OpenSearch for EO collections and products as an extension of {@link
@@ -83,41 +82,35 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      */
     String PREFIX = "prefix";
 
-    /** Field types, primarily for index creation */
-    enum FieldType {
-        String,
-        Integer,
-        Float,
-        Double,
-        NOT_JSON
-    }
-
     /**
      * Returns the feature source backing collections (dynamic, as the store has to respect the
      * namespace URI given by GeoServer)
      */
     FeatureSource<FeatureType, Feature> getCollectionSource() throws IOException;
 
-    /**
-     * Creates index on field if backed by database
-     *
-     * @param collectionName Collection Type
-     * @param fieldName Product field name
-     * @param fieldType Integer, Float, String, or NOT_JSON
-     */
-    void createIndex(
-            String fieldName, String collectionName, Expression expression, FieldType fieldType)
-            throws IOException;
+    void updateIndexes(String indexable, List<Indexable> indexables) throws IOException;
 
-    /**
-     * Drops existing index on field if backed by database
-     *
-     * @param collectionName Collection type
-     * @param fieldName Product field name
-     * @param type Integer, Float, String, or NOT_JSON
-     */
-    void dropIndex(String collectionName, String fieldName, Expression value, FieldType type)
-            throws IOException;
+    //    /**
+    //     * Creates index on field if backed by database
+    //     *
+    //     * @param collectionName Collection Type
+    //     * @param fieldName Product field name
+    //     * @param fieldType Integer, Float, String, or NOT_JSON
+    //     */
+    //    void createIndex(
+    //            String fieldName, String collectionName, Expression expression, FieldType
+    // fieldType)
+    //            throws IOException;
+    //
+    //    /**
+    //     * Drops existing index on field if backed by database
+    //     *
+    //     * @param collectionName Collection type
+    //     * @param fieldName Product field name
+    //     * @param type Integer, Float, String, or NOT_JSON
+    //     */
+    //    void dropIndex(String collectionName, String fieldName, Expression value, FieldType type)
+    //            throws IOException;
 
     /**
      * Get List of Index Names for a Table
@@ -125,7 +118,7 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      * @param tableName Table Name
      * @return
      */
-    List<String> getIndexNamesByLayer(String tableName);
+    List<String> getIndexNamesByLayer(String tableName) throws IOException;
 
     /**
      * Returns the feature source backing products (dynamic, as the store has to respect the

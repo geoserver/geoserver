@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutionException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.OseoEvent;
+import org.geoserver.opensearch.eo.OseoEventListener;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -22,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 /** Keeps a set of collections, caches them, reacts to reload/reset events to clear the cache */
 @Component
-public class CollectionsCache implements GeoServerLifecycleHandler {
+public class CollectionsCache implements GeoServerLifecycleHandler, OseoEventListener {
 
     private final OpenSearchAccessProvider accessProvider;
     private final LoadingCache<Object, Feature> collections =
@@ -91,5 +93,11 @@ public class CollectionsCache implements GeoServerLifecycleHandler {
     @Override
     public void onReload() {
         collections.cleanUp();
+    }
+
+    @Override
+    public void dataStoreChange(OseoEvent event) {
+        String collection = event.getCollectionName();
+        if (collection != null) collections.refresh(collection);
     }
 }

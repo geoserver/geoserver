@@ -4,14 +4,16 @@
  */
 package org.geoserver.opensearch.eo;
 
-import java.util.List;
-import org.opengis.feature.type.Name;
+import org.opengis.feature.Feature;
 
 /** Event associated with OSEO data store changes */
 public class OseoEvent {
     private OseoEventType type;
     private String collectionName;
-    private List<Name> attributeNames;
+
+    private Feature collectionBefore;
+
+    private Feature collectionAfter;
 
     public OseoEventType getType() {
         return type;
@@ -29,11 +31,19 @@ public class OseoEvent {
         this.collectionName = collectionName;
     }
 
-    public List<Name> getAttributeNames() {
-        return attributeNames;
+    public Feature getCollectionBefore() {
+        return collectionBefore;
     }
 
-    public void setAttributeNames(List<Name> attributeNames) {
-        this.attributeNames = attributeNames;
+    public void setCollectionBefore(Feature collectionBefore) {
+        this.collectionBefore = collectionBefore;
+    }
+
+    public Feature getCollectionAfter() {
+        return collectionAfter;
+    }
+
+    public void setCollectionAfter(Feature collectionAfter) {
+        this.collectionAfter = collectionAfter;
     }
 }

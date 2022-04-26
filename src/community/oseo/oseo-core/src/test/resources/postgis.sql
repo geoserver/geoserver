@@ -196,12 +196,13 @@ create index "idx_product_footprint" on product using GIST("footprint");
 --track indices created on queryables
 create table queryable_idx_tracker (
   "id" serial primary key,
-  "name" varchar,
   "collection" varchar,
-  "expression" varchar
+  "queryable" varchar,
+  "expression" varchar,
+  "index_name" varchar
 );
 
-CREATE INDEX "idx_q_tracker_name" on queryable_idx_tracker("name");
+CREATE INDEX "idx_q_tracker_index_name" on queryable_idx_tracker("index_name");
 CREATE INDEX "idx_q_tracker_expression" on queryable_idx_tracker("collection");
 
 -- the eo thumbs storage (small binary files, not used for search, thus separate table)

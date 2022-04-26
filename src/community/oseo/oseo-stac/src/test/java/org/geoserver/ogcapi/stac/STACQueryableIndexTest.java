@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.stac;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.mock;
 import static org.easymock.EasyMock.replay;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -29,6 +30,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
+import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,24 +66,28 @@ public class STACQueryableIndexTest extends STACTestSupport {
         oseoEvent.setCollectionName("SAS1");
         stacOseoListener.dataStoreChange(oseoEvent);
         indices = stacOseoListener.getIndexListByTable("product");
-        assertEquals(62, indices.size());
+        assertEquals(65, indices.size());
+        // check a few of them
+        assertThat(indices, CoreMatchers.hasItem("sas1_geometry_idx")); // geometry
+        assertThat(indices, CoreMatchers.hasItem("sas1_view_sun_azimuth_idx")); // plain field
+        assertThat(indices, CoreMatchers.hasItem("sas1_jsontest1_idx")); // JSON index
+        assertThat(indices, CoreMatchers.hasItem("sas1_s1_ipf_version_idx")); // JSON index
+        // this one cannot be created, strToLowercase is used and no machinery to recognize it
+        assertThat(indices, CoreMatchers.not(CoreMatchers.hasItem("sas1_constellation_idx")));
+
         OseoEvent oseoEvent2 = new OseoEvent();
         oseoEvent2.setType(OseoEventType.POST_INSERT);
         oseoEvent2.setCollectionName("SAS9");
         stacOseoListener.dataStoreChange(oseoEvent2);
         indices = stacOseoListener.getIndexListByTable("product");
-        assertEquals(
-                62,
-                indices.size()); // there should not be any new indices because SAS9 fields are the
-        // same as SAS1
+        // there should not be any new indices because SAS9 fields are the same as SAS1
+        assertEquals(65, indices.size());
         oseoEvent.setType(OseoEventType.PRE_DELETE);
         oseoEvent.setCollectionName("SAS1");
         stacOseoListener.dataStoreChange(oseoEvent);
         indices = stacOseoListener.getIndexListByTable("product");
-        assertEquals(
-                62,
-                indices.size()); // None of the indices were deleted because they are still needed
-        // for SAS9
+        // None of the indices were deleted because they are still needed for SAS9
+        assertEquals(65, indices.size());
         oseoEvent2.setType(OseoEventType.PRE_DELETE);
         oseoEvent2.setCollectionName("SAS9");
         stacOseoListener.dataStoreChange(oseoEvent2);

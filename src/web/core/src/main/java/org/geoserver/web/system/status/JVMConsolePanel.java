@@ -4,17 +4,16 @@
  */
 package org.geoserver.web.system.status;
 
-import java.util.logging.Logger;
+import static org.geoserver.web.system.status.ConsoleInfoUtils.getHistoMemoryDump;
+import static org.geoserver.web.system.status.ConsoleInfoUtils.getThreadsInfo;
+
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.geotools.util.logging.Logging;
 
 /** Panel displaying the JVM threads allocated or the heap memory objects */
-public class JVMConsolePanel extends Panel implements ConsoleInfoUtils {
-
-    private static final Logger LOGGER = Logging.getLogger(JVMConsolePanel.class);
+public class JVMConsolePanel extends Panel {
 
     private final boolean lockedMonitors = true;
     private final boolean lockedSynchronizers = true;
@@ -25,12 +24,11 @@ public class JVMConsolePanel extends Panel implements ConsoleInfoUtils {
         super(id);
 
         add(
-                new Link("dumpThread") {
+                new Link<String>("dumpThread") {
                     private static final long serialVersionUID = 9014754243470867547L;
 
                     @Override
                     public void onClick() {
-                        LOGGER.info("get thread dump");
                         dumpLog = getThreadsInfo(lockedMonitors, lockedSynchronizers);
                     }
                 });
@@ -41,7 +39,6 @@ public class JVMConsolePanel extends Panel implements ConsoleInfoUtils {
 
                     @Override
                     public void onClick() {
-                        LOGGER.info("get heap dump");
                         dumpLog = getHistoMemoryDump();
                     }
                 });
@@ -58,14 +55,5 @@ public class JVMConsolePanel extends Panel implements ConsoleInfoUtils {
         logs.setOutputMarkupId(true);
         logs.setMarkupId("dumpContent");
         add(logs);
-
-        add(
-                new Link<Object>("download") {
-
-                    @Override
-                    public void onClick() {
-                        LOGGER.info("download file");
-                    }
-                });
     }
 }

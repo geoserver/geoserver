@@ -74,6 +74,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
                         new AbstractTab(new StringResourceModel("JVMConsolePanel.title")) {
                             private static final long serialVersionUID = -542587671248411767L;
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new JVMConsolePanel(id);
                             }

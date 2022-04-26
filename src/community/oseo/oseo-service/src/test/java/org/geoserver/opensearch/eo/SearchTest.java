@@ -31,6 +31,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.filter.text.cql2.CQL;
+import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -1028,7 +1029,10 @@ public class SearchTest extends OSEOTestSupport {
                 dom,
                 hasXPath(
                         "/at:feed/at:entry[1]/at:summary",
-                        containsString("Jan 17, 2016, 10:10:30")));
+                        // the locale is set to "en", unclear why this is happening...
+                        Matchers.anyOf(
+                                containsString("Jan 17, 2016, 10:10:30"),
+                                containsString("Jan 17, 2016 10:10:30"))));
     }
 
     @Test

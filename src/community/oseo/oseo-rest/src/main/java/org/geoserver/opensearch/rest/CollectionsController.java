@@ -173,7 +173,8 @@ public class CollectionsController extends AbstractOpenSearchController {
         // insert the new feature
         runTransactionOnCollectionStore(fs -> fs.addFeatures(singleton(collectionFeature)));
 
-        broadcastOseoEvent(OseoEventType.POST_INSERT, eoId, null);
+        Feature collectionAfter = queryCollection(eoId, q -> {});
+        broadcastOseoEvent(OseoEventType.POST_INSERT, eoId, null, collectionAfter);
 
         // if got here, all is fine
         return returnCreatedCollectionReference(request, eoId);
@@ -231,7 +232,8 @@ public class CollectionsController extends AbstractOpenSearchController {
                     }
                 });
 
-        broadcastOseoEvent(OseoEventType.POST_INSERT, eoId, null);
+        Feature collectionAfter = queryCollection(eoId, q -> {});
+        broadcastOseoEvent(OseoEventType.POST_INSERT, eoId, null, collectionAfter);
         return returnCreatedCollectionReference(request, eoId);
     }
 
@@ -286,7 +288,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             @RequestBody(required = true) SimpleFeature feature)
             throws IOException, URISyntaxException {
         // check the collection exists
-        queryCollection(collection, q -> {});
+        Feature collectionBefore = queryCollection(collection, q -> {});
 
         // check the id, mind, could be different from the collection one if the client
         // is trying to change
@@ -307,22 +309,27 @@ public class CollectionsController extends AbstractOpenSearchController {
             names.add(propertyName);
             values.add(p.getValue());
         }
-        broadcastOseoEvent(OseoEventType.PRE_UPDATE, collection, names);
-        Name[] attributeNames = (Name[]) names.toArray(new Name[names.size()]);
-        Object[] attributeValues = (Object[]) values.toArray();
+        broadcastOseoEvent(OseoEventType.PRE_UPDATE, collection, collectionBefore, null);
+        Name[] attributeNames = names.toArray(new Name[names.size()]);
+        Object[] attributeValues = values.toArray();
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
+
         runTransactionOnCollectionStore(
                 fs -> fs.modifyFeatures(attributeNames, attributeValues, filter));
-        broadcastOseoEvent(OseoEventType.POST_UPDATE, collection, names);
+        Feature collectionAfter = queryCollection(collection, q -> {});
+        broadcastOseoEvent(
+                OseoEventType.POST_UPDATE, collection, collectionBefore, collectionAfter);
     }
 
     private void broadcastOseoEvent(
-            OseoEventType eventType, String collectionName, List<Name> names) {
+            OseoEventType eventType,
+            String collectionName,
+            Feature collection,
+            Feature collectionAfter) {
         OseoListenerMux oseoListenerMux = new OseoListenerMux();
         OseoEvent oseovent = new OseoEvent();
         oseovent.setType(eventType);
         oseovent.setCollectionName(collectionName);
-        oseovent.setAttributeNames(names);
         oseoListenerMux.dataStoreChange(oseovent);
     }
 
@@ -331,9 +338,9 @@ public class CollectionsController extends AbstractOpenSearchController {
             @PathVariable(required = true, name = "collection") String collection)
             throws IOException {
         // check the collection exists
-        queryCollection(collection, q -> {});
+        Feature collectionBefore = queryCollection(collection, q -> {});
 
-        broadcastOseoEvent(OseoEventType.PRE_DELETE, collection, null);
+        broadcastOseoEvent(OseoEventType.PRE_DELETE, collection, collectionBefore, null);
 
         // TODO: handle cascading on products, and removing the publishing side without removing the
         // metadata
@@ -368,7 +375,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             Predicate<CollectionLayer> previousLayerPredicate)
             throws IOException {
         // check the collection is there
-        queryCollection(collection, q -> {});
+        Feature collectionBefore = queryCollection(collection, q -> {});
 
         // validate the layer
         validateLayer(layer);
@@ -405,7 +412,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             // rethrow to make the transaction fail
             throw new RuntimeException(e);
         }
-        broadcastOseoEvent(OseoEventType.POST_INSERT, collection, null);
+        broadcastOseoEvent(OseoEventType.POST_INSERT, collection, collectionBefore, null);
         // see if we have to return a creation or not
         if (previousLayer != null) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -520,7 +527,6 @@ public class CollectionsController extends AbstractOpenSearchController {
         // check the collection is there
         queryCollection(collection, q -> {});
 
-        broadcastOseoEvent(OseoEventType.PRE_DELETE, collection, null);
         // prepare the update
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(

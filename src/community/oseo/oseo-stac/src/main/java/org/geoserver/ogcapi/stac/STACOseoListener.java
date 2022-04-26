@@ -11,21 +11,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.OseoEvent;
 import org.geoserver.opensearch.eo.OseoEventListener;
-import org.geoserver.opensearch.eo.store.OpenSearchAccess;
+import org.geoserver.opensearch.eo.store.Indexable;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.filter.function.JsonPointerFunction;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.NilExpression;
+import org.opengis.filter.expression.PropertyName;
 import org.springframework.stereotype.Component;
 
 /**
@@ -65,16 +68,10 @@ public class STACOseoListener implements OseoEventListener {
     public void dataStoreChange(OseoEvent event) {
         switch (event.getType().name()) {
             case "PostInsert":
-                handleCollectionsInsertEvent(event.getCollectionName());
-                break;
-            case "PreInsert":
-                handleCollectionsInsertEvent(event.getCollectionName());
-                break;
-            case "PreUpdate":
-                handleCollectionsDeleteEvent(event.getCollectionName());
+                handleCollectionsUpdateEvent(event.getCollectionName());
                 break;
             case "PostUpdate":
-                handleCollectionsInsertEvent(event.getCollectionName());
+                handleCollectionsUpdateEvent(event.getCollectionName());
                 break;
             case "PreDelete":
                 handleCollectionsDeleteEvent(event.getCollectionName());
@@ -99,18 +96,10 @@ public class STACOseoListener implements OseoEventListener {
     }
 
     private void handleCollectionsDeleteEvent(String collectionName) {
-        Map<String, Expression> expressionMap = null;
         try {
-            expressionMap = getQueryablesMap(collectionName);
-
-            for (Map.Entry<String, Expression> entry : expressionMap.entrySet()) {
-                LOGGER.log(Level.INFO, entry.getKey() + ":" + entry.getValue().toString());
-                Feature sampleFeature = sampleFeatures.getSample(collectionName);
-                OpenSearchAccess.FieldType type = getFieldType(sampleFeature, entry.getValue());
-                accessProvider
-                        .getOpenSearchAccess()
-                        .dropIndex(collectionName, entry.getKey(), entry.getValue(), type);
-            }
+            accessProvider
+                    .getOpenSearchAccess()
+                    .updateIndexes(collectionName, Collections.emptyList());
         } catch (IOException e) {
             LOGGER.warning(
                     "Error while getting expression map for "
@@ -120,38 +109,34 @@ public class STACOseoListener implements OseoEventListener {
         }
     }
 
-    private void handleCollectionsInsertEvent(String collectionName) {
-        Map<String, Expression> expressionMap = null;
+    private void handleCollectionsUpdateEvent(String collectionName) {
         try {
-            expressionMap = getQueryablesMap(collectionName);
+            Map<String, Expression> expressionMap = getQueryablesMap(collectionName);
+            Feature sampleFeature = sampleFeatures.getSample(collectionName);
+            List<Indexable> indexables =
+                    expressionMap.entrySet().stream()
+                            .map(
+                                    entry ->
+                                            new Indexable(
+                                                    entry.getKey(),
+                                                    entry.getValue(),
+                                                    getFieldType(sampleFeature, entry.getValue())))
+                            .collect(Collectors.toList());
+            accessProvider.getOpenSearchAccess().updateIndexes(collectionName, indexables);
         } catch (IOException e) {
             LOGGER.warning(
-                    "Error while getting expression map for "
+                    "Error while getting creating index for "
                             + collectionName
                             + " "
                             + e.getMessage());
         }
-        for (Map.Entry<String, Expression> entry : expressionMap.entrySet()) {
-            LOGGER.log(Level.INFO, entry.getKey() + ":" + entry.getValue().toString());
-            try {
-                Feature sampleFeature = sampleFeatures.getSample(collectionName);
-                OpenSearchAccess.FieldType type = getFieldType(sampleFeature, entry.getValue());
-                accessProvider
-                        .getOpenSearchAccess()
-                        .createIndex(entry.getKey(), collectionName, entry.getValue(), type);
-            } catch (IOException e) {
-                LOGGER.warning(
-                        "Error while getting creating index for "
-                                + collectionName
-                                + " "
-                                + e.getMessage());
-            }
-        }
     }
 
-    private OpenSearchAccess.FieldType getFieldType(Feature sampleFeature, Expression expression) {
+    private Indexable.FieldType getFieldType(Feature sampleFeature, Expression expression) {
         if (!(expression instanceof JsonPointerFunction)) {
-            return OpenSearchAccess.FieldType.NOT_JSON;
+            if (isGeometry(expression, sampleFeature.getType()))
+                return Indexable.FieldType.Geometry;
+            return Indexable.FieldType.Other;
         }
         JsonPointerFunction jsonPointerFunction = (JsonPointerFunction) expression;
         checkAndFixJsonPointerWithoutLeadingSlash(jsonPointerFunction);
@@ -160,14 +145,20 @@ public class STACOseoListener implements OseoEventListener {
                 || evaluated == null
                 || (evaluated instanceof Literal && ((Literal) evaluated).getValue() == null)) {
             // if sample returns null try your best with text
-            return OpenSearchAccess.FieldType.String;
+            return Indexable.FieldType.JsonString;
         }
         String out = expression.evaluate(sampleFeature).getClass().getSimpleName();
         if (isNumeric(out)) { // Convert all numeric types to double due to uncertainty of json
             // conversions from sample
             out = Double.class.getSimpleName();
         }
-        return OpenSearchAccess.FieldType.valueOf(out);
+        return Indexable.FieldType.valueOf("Json" + out);
+    }
+
+    private boolean isGeometry(Expression expression, FeatureType type) {
+        if (!(expression instanceof PropertyName)) return false;
+        PropertyName pn = (PropertyName) expression;
+        return type.getDescriptor(pn.getPropertyName()) instanceof GeometryDescriptor;
     }
 
     private boolean isNumeric(String test) {

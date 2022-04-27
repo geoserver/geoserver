@@ -632,3 +632,25 @@ See also :ref:`transformation_func`.
        It defines whether the target values are numeric or RGB color specifications.
 
 
+
+
+JSON functions
+--------------------------------
+
+JSON functions give the ability to use filters inside json data, on text or stored on a RDBMS.
+
+.. list-table::
+   :widths: 20 25 55
+
+   * - **Name**
+     - **Arguments**
+     - **Description**
+   * - jsonPointer
+     - ``json``:String,
+       ``pointer``:String
+     - Retrieve the value of a particular pointer (See the `JSON Pointer RFC <https://datatracker.ietf.org/doc/html/rfc6901>`_ for more details about valid expressions) inside a provided json.
+   * - jsonArrayContains
+     - ``json``:String,
+       ``pointer``:String,
+       ``expected``: Numeric *or* String
+     - Check if the ``expected`` value is present inside the array field specified by the ``pointer`` parameter inside a provided ``json``.

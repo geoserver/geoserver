@@ -132,7 +132,7 @@ The JDBC user/group service persists the user/group database via JDBC, managing 
      - NO
      - PRI
 
-The ``users`` table is the primary table and contains the list of users with associated passwords. The ``user_props`` table maps additional properties to a user. (See :ref:`security_rolesystem_usergroups` for more details.)  The ``groups`` table lists all available groups, and the ``group_members`` table maps which users belong to which groups.
+The ``users`` table is the primary table and contains the list of users with associated passwords. The ``user_props`` table maps additional properties to a user. There is currently no documentation about utilizing the ``user_props`` table.  The ``groups`` table lists all available groups, and the ``group_members`` table maps which users belong to which groups.
 
 The default GeoServer security configuration is:
 

@@ -139,7 +139,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         SecurityManagerConfig config = manager.getSecurityConfig();
         GeoServerSecurityFilterChain chain = config.getFilterChain();
         RequestFilterChain www = chain.getRequestChainByName("web");
-        www.setFilterNames("openidconnect");
+        www.setFilterNames("openidconnect", "anonymous");
         manager.saveSecurityConfig(config);
     }
 

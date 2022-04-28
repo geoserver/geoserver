@@ -17,6 +17,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     String principalKey = "email";
     String jwkURI;
     String tokenRolesClaim;
+    String responseMode;
 
     /** Supports extraction of roles among the token claims */
     public static enum OpenIdRoleSource implements RoleSource {
@@ -61,5 +62,22 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     public void setTokenRolesClaim(String tokenRolesClaim) {
         this.tokenRolesClaim = tokenRolesClaim;
+    }
+
+    public String getResponseMode() {
+        return responseMode;
+    }
+
+    public void setResponseMode(String responseMode) {
+        this.responseMode = responseMode;
+    }
+
+    @Override
+    protected StringBuilder buildAuthorizationUrl() {
+        StringBuilder sb = super.buildAuthorizationUrl();
+        String responseMode = getResponseMode();
+        if (responseMode != null && !"".equals(responseMode.trim()))
+            sb.append("&response_mode=").append(responseMode);
+        return sb;
     }
 }

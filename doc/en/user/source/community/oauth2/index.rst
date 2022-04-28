@@ -302,6 +302,11 @@ either the ID token or the Access Token:
 The chosen attribute must be present in either the Access Token or in the Id token, 
 and be either a string or an array of strings.
 
+From UI it is also possible to set the ``Response Mode`` value. The field can be kept empty but it is needed when the OpenId server used as Identity Provider doesn't send by default the authorization code as a query string (that is mandatory in order to allow GeoServer and OpenId integration to work properly).
+For instance the ADFS OpenID implementation is sending it by default as an url fragment. In order to make it sending it as a query string it is necessary to set the value of the ``Response Mode`` as ``query``, according to the documentation.
+
+   .. figure:: images/adfs-setup.png
+      :align: center
 
 SSL Trusted Certificates
 ------------------------

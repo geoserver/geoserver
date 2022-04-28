@@ -56,6 +56,9 @@ public class OpenIdConnectAuthProviderPanel
 
         add(new HelpLink("jwkURIHelp", this).setDialog(dialog));
         add(new TextField<String>("jwkURI"));
+
+        add(new HelpLink("responseModeHelp", this).setDialog(dialog));
+        add(new TextField<String>("responseMode"));
     }
 
     @Override

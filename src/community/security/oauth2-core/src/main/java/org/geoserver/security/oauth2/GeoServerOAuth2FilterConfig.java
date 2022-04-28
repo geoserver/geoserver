@@ -179,18 +179,7 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
                     HttpServletResponse response,
                     AuthenticationException authException)
                     throws IOException, ServletException {
-                final StringBuilder loginUri = new StringBuilder(getUserAuthorizationUri());
-                loginUri.append("?")
-                        .append("response_type=code")
-                        .append("&")
-                        .append("client_id=")
-                        .append(getCliendId())
-                        .append("&")
-                        .append("scope=")
-                        .append(getScopes().replace(",", "%20"))
-                        .append("&")
-                        .append("redirect_uri=")
-                        .append(getRedirectUri());
+                final StringBuilder loginUri = buildAuthorizationUrl();
 
                 if (getEnableRedirectAuthenticationEntryPoint()
                         || request.getRequestURI().endsWith(getLoginEndpoint())) {
@@ -198,6 +187,22 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
                 }
             }
         };
+    }
+
+    protected StringBuilder buildAuthorizationUrl() {
+        final StringBuilder loginUri = new StringBuilder(getUserAuthorizationUri());
+        loginUri.append("?")
+                .append("response_type=code")
+                .append("&")
+                .append("client_id=")
+                .append(getCliendId())
+                .append("&")
+                .append("scope=")
+                .append(getScopes().replace(",", "%20"))
+                .append("&")
+                .append("redirect_uri=")
+                .append(getRedirectUri());
+        return loginUri;
     }
 
     @Override

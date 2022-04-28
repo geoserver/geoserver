@@ -102,10 +102,7 @@ public class STACOseoListener implements OseoEventListener {
                     .updateIndexes(collectionName, Collections.emptyList());
         } catch (IOException e) {
             LOGGER.warning(
-                    "Error while getting expression map for "
-                            + collectionName
-                            + " "
-                            + e.getMessage());
+                    "Error while updating indexes for " + collectionName + " " + e.getMessage());
         }
     }
 

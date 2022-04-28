@@ -1,5 +1,15 @@
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.opensearch.eo.store;
 
+import java.util.Objects;
+
+/**
+ * In memory representation of the information stored in the index tracking table. It's the
+ * persistent parallel to an {@link Indexable}.
+ */
 class JDBCIndex {
 
     String collection;
@@ -56,5 +66,11 @@ class JDBCIndex {
                 + name
                 + '\''
                 + '}';
+    }
+
+    /** Checks whether this JDBCIndex matches the given queryable and indexed expression */
+    public boolean matches(String queryable, String expression) {
+        return Objects.equals(this.queryable, queryable)
+                && Objects.equals(this.expression, expression);
     }
 }

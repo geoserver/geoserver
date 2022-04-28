@@ -90,28 +90,6 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
 
     void updateIndexes(String indexable, List<Indexable> indexables) throws IOException;
 
-    //    /**
-    //     * Creates index on field if backed by database
-    //     *
-    //     * @param collectionName Collection Type
-    //     * @param fieldName Product field name
-    //     * @param fieldType Integer, Float, String, or NOT_JSON
-    //     */
-    //    void createIndex(
-    //            String fieldName, String collectionName, Expression expression, FieldType
-    // fieldType)
-    //            throws IOException;
-    //
-    //    /**
-    //     * Drops existing index on field if backed by database
-    //     *
-    //     * @param collectionName Collection type
-    //     * @param fieldName Product field name
-    //     * @param type Integer, Float, String, or NOT_JSON
-    //     */
-    //    void dropIndex(String collectionName, String fieldName, Expression value, FieldType type)
-    //            throws IOException;
-
     /**
      * Get List of Index Names for a Table
      *

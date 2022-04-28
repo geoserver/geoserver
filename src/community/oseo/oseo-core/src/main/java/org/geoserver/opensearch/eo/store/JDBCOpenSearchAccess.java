@@ -505,52 +505,50 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             Map<String, String> expressions = new HashMap<>();
             for (Indexable indexable : indexables) {
                 try {
+                    String queryable = indexable.getQueryable();
                     String expression =
                             getIndexExpression(indexable.getExpression(), indexable.getFieldType());
-                    expressions.put(indexable.getQueryable(), expression);
-                    if (!existing.stream()
-                            .anyMatch(
-                                    idx ->
-                                            idx.getQueryable().equals(indexable.getQueryable())
-                                                    && idx.getExpression().equals(expression))) {
-                        createIndex(cx, collection, indexable);
-                    }
+                    expressions.put(queryable, expression);
+                    boolean exists =
+                            existing.stream().anyMatch(idx -> idx.matches(queryable, expression));
+                    logIndexHandling("already exists", collection, queryable, expression, exists);
+                    if (!exists) createIndex(cx, collection, indexable);
                 } catch (IOException e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Failed to create index for "
-                                    + collection
-                                    + "/"
-                                    + indexable.getQueryable()
-                                    + " over expression "
-                                    + indexable.getExpression(),
-                            e);
+                    // thrown only by getIndexExpression
+                    LOGGER.log(Level.WARNING, "Failed to index expression", e);
                 }
             }
 
             // find indexes that are no longer needed and remove
             for (JDBCIndex index : existing) {
-                String expression = expressions.get(index.getQueryable());
-                if (!Objects.equal(expression, index.getExpression())) {
-                    try {
-                        dropIndex(cx, collection, index.getQueryable(), index.getExpression());
-                    } catch (IOException e) {
-                        LOGGER.log(
-                                Level.WARNING,
-                                "Failed to create index for "
-                                        + collection
-                                        + "/"
-                                        + index.getQueryable()
-                                        + " over expression "
-                                        + index.getExpression(),
-                                e);
-                    }
+                String queryable = index.getQueryable();
+                String expression = expressions.get(queryable);
+                boolean exists = Objects.equal(expression, index.getExpression());
+                logIndexHandling("still needed", collection, queryable, expression, exists);
+                if (!exists) {
+                    dropIndex(cx, collection, queryable, index.getExpression());
                 }
             }
 
         } catch (SQLException e) {
             throw new DataSourceException(e);
         }
+    }
+
+    private void logIndexHandling(
+            String action, String collection, String queryable, String expression, boolean exists) {
+        LOGGER.severe(
+                () ->
+                        "Checking if index is "
+                                + action
+                                + " for"
+                                + collection
+                                + "/"
+                                + queryable
+                                + " over "
+                                + expression
+                                + ": "
+                                + exists);
     }
 
     private List<JDBCIndex> getIndexes(Connection cx, String collection) throws SQLException {
@@ -584,12 +582,12 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     }
 
     /** Create indices on Product fields */
-    private void createIndex(Connection cx, String collectionName, Indexable idx)
-            throws IOException {
+    private void createIndex(Connection cx, String collectionName, Indexable idx) {
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();
         if (!(dialect instanceof PostGISDialect)) {
-            throw new IOException("Index creation is only current supported with PostGIS");
+            throw new IllegalArgumentException(
+                    "Index creation is only current supported with PostGIS");
         }
         try {
             String indexTitle = getIndexTitle(collectionName, idx.getQueryable());
@@ -682,12 +680,12 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     /** Drop product table index */
     private void dropIndex(
-            Connection cx, String collectionName, String queryable, String indexExpression)
-            throws IOException {
+            Connection cx, String collectionName, String queryable, String indexExpression) {
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();
         if (!(dialect instanceof PostGISDialect)) {
-            throw new IOException("Index deletion is only current supported with PostGIS");
+            throw new IllegalArgumentException(
+                    "Index deletion is only current supported with PostGIS");
         }
         try {
             int indexWithExpressionCount = getIndexExpressionCount(cx, indexExpression);

@@ -25,7 +25,6 @@
         <include>spring-aop-*</include>
         <include>spring-context-*</include>
         <include>spring-webmvc-*</include>
-        <include>spring-security-*</include>
       </includes>
     </fileSet>
   </fileSets>

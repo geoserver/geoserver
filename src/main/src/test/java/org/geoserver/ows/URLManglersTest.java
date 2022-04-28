@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -50,6 +51,7 @@ public class URLManglersTest extends GeoServerSystemTestSupport {
 
     @Before
     public void setup() {
+        Dispatcher.REQUEST.remove();
         GeoServerInfo gi = getGeoServer().getGlobal();
         gi.getSettings().setProxyBaseUrl(null);
         getGeoServer().save(gi);
@@ -70,6 +72,15 @@ public class URLManglersTest extends GeoServerSystemTestSupport {
                         Collections.singletonMap("param", "value()"),
                         URLType.SERVICE);
         assertEquals("http://localhost:8080/geoserver/test?param=value%28%29", url);
+    }
+
+    @Test
+    public void testUpdateRawKVP() {
+        Request wrappedRequest = new Request();
+        wrappedRequest.setRawKvp(Collections.singletonMap(LanguageURLMangler.LANGUAGE, "value"));
+        Dispatcher.REQUEST.set(wrappedRequest);
+        String url = buildURL(BASEURL, "test", new HashMap<>(), URLType.SERVICE);
+        assertEquals("http://localhost:8080/geoserver/test?Language=value", url);
     }
 
     @Test

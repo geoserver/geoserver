@@ -7,6 +7,15 @@ package org.geoserver.opensearch.eo.store;
 import java.util.Objects;
 import org.opengis.filter.expression.Expression;
 
+/**
+ * Represents an indexable property essential traits:
+ *
+ * <ul>
+ *   <li>The queryable name
+ *   <li>The expression backing it
+ *   <li>The type of field, influencing how the index is built
+ * </ul>
+ */
 public class Indexable {
 
     /** Field types, primarily for index creation */

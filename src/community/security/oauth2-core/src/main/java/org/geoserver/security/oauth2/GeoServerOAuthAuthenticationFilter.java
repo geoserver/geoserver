@@ -20,6 +20,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
@@ -121,24 +122,13 @@ public abstract class GeoServerOAuthAuthenticationFilter
             if (accessToken == null && customSessionCookie == null && authentication == null) {
                 final AccessTokenRequest accessTokenRequest =
                         restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
-                if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
-                    restTemplate
-                            .getOAuth2ClientContext()
-                            .removePreservedState(accessTokenRequest.getStateKey());
-                }
-
-                try {
-                    accessTokenRequest.remove("access_token");
-                } finally {
-                    SecurityContextHolder.clearContext();
-                    httpRequest.getSession(false).invalidate();
-                    try {
-                        httpRequest.logout();
-                        authentication = null;
-                    } catch (ServletException e) {
-                        LOGGER.fine(e.getLocalizedMessage());
-                    }
-                    LOGGER.fine("Cleaned out Session Access Token Request!");
+                if (accessTokenRequest != null) {
+                    if (accessTokenRequest.getStateKey() != null)
+                        restTemplate
+                                .getOAuth2ClientContext()
+                                .removePreservedState(accessTokenRequest.getStateKey());
+                    if (accessTokenRequest.containsKey("access_token"))
+                        clearAccessTokenRequest(httpRequest, accessTokenRequest);
                 }
             }
 
@@ -163,6 +153,25 @@ public abstract class GeoServerOAuthAuthenticationFilter
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private void clearAccessTokenRequest(
+            HttpServletRequest httpRequest, AccessTokenRequest accessTokenRequest) {
+        try {
+            accessTokenRequest.remove("access_token");
+        } finally {
+            SecurityContextHolder.clearContext();
+            HttpSession session = httpRequest.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+            try {
+                httpRequest.logout();
+            } catch (ServletException e) {
+                LOGGER.fine(e.getLocalizedMessage());
+            }
+            LOGGER.fine("Cleaned out Session Access Token Request!");
+        }
     }
 
     protected String getBearerToken(ServletRequest request) {

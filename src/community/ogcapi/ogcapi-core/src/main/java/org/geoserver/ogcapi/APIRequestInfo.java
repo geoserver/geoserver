@@ -75,7 +75,10 @@ public class APIRequestInfo {
         return ResponseUtils.buildURL(baseURL, path, null, URLMangler.URLType.SERVICE);
     }
 
-    /** Returns the APIRequestInfo from the current {@link RequestContextHolder} */
+    /**
+     * Returns the APIRequestInfo from the current {@link RequestContextHolder}, or {@code null}
+     * indicating there's no OGC API request bound to the calling thread
+     */
     public static APIRequestInfo get() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) return null;

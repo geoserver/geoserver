@@ -872,7 +872,7 @@ public class CatalogBuilder {
 
         CoordinateReferenceSystem nativeCRS = cinfo.getNativeCRS();
 
-        if (nativeCRS != null) {
+        if (nativeCRS != null && cinfo.getSRS() == null) {
             try {
                 Integer code = CRS.lookupEpsgCode(nativeCRS, false);
                 if (code != null) {

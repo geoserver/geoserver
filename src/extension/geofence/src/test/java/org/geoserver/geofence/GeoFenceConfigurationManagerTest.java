@@ -26,7 +26,7 @@ import org.geoserver.test.GeoServerTestSupport;
 import org.junit.Test;
 import org.springframework.core.io.UrlResource;
 
-public class AccessManagerConfigTest extends GeoServerTestSupport {
+public class GeoFenceConfigurationManagerTest extends GeoServerTestSupport {
 
     // protected GeofenceAccessManager manager;
     // protected RuleReaderService geofenceService;

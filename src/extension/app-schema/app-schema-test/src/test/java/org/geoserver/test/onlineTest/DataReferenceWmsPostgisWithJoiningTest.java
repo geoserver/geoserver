@@ -18,7 +18,7 @@ public class DataReferenceWmsPostgisWithJoiningTest extends DataReferenceWmsOnli
 
     @Override
     protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
+        return "DEFAULT_LOGGING";
     }
 
     @Override

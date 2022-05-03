@@ -243,13 +243,14 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     }
 
     /**
-     * Returns the logging configuration path. The default value is "/TEST_LOGGING.properties",
-     * which is a pretty quiet configuration. Should you need more verbose logging override this
-     * method in subclasses and choose a different configuration, for example
-     * "/DEFAULT_LOGGING.properties".
+     * Returns the logging configuration profile. The default value is "TEST_LOGGING", which is a
+     * pretty quiet configuration. Should you need more verbose logging override this method in
+     * subclasses and choose a different configuration, for example "DEFAULT_LOGGING".
+     *
+     * <p>To overide with a custom configuration copy the required into position.
      */
     protected String getLogConfiguration() {
-        return "TEST_LOGGING.properties";
+        return "TEST_LOGGING";
     }
 
     /**

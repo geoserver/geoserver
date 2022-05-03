@@ -420,10 +420,14 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     // test behaviour methods
     //
     /**
-     * Returns the logging configuration path. The default value is "/TEST_LOGGING.properties",
-     * which is a pretty quiet configuration. Should you need more verbose logging override this
-     * method in subclasses and choose a different configuration, for example
-     * "/DEFAULT_LOGGING.properties".
+     * Returns the logging configuration profile.
+     *
+     * <p>The default value is "TEST_LOGGING", which is a pretty quiet configuration, or
+     * "QUIET_LOGGING" based on {@link #isQuietTests()} check of system property {@code
+     * -DquietTests}.
+     *
+     * <p>Should you need more verbose logging override this method in subclasses and choose a
+     * different configuration, for example "DEFAULT_LOGGING".
      */
     protected String getLogConfiguration() {
         if (isQuietTests()) {

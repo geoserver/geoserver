@@ -38,7 +38,7 @@ public class LegacyConfigurationImporterTest {
         LoggingInfo logging = importer.getConfiguration().getLogging();
         assertNotNull(logging);
 
-        assertEquals("DEFAULT_LOGGING.properties", logging.getLevel());
+        assertEquals("DEFAULT_LOGGING", logging.getLevel());
         assertTrue(logging.isStdOutLogging());
         assertEquals("logs/geoserver.log", logging.getLocation());
         assertFalse(info.getSettings().isVerbose());

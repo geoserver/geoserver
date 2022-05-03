@@ -31,7 +31,7 @@ paths:
           examples:
             application/xml: |
               <logging>
-                <level>TEST_LOGGING.properties</level>
+                <level>TEST_LOGGING</level>
                 <location>logs/geoserver.log</location>
                 <stdOutLogging>true</stdOutLogging>
               </logging>
@@ -39,7 +39,7 @@ paths:
             application/json: |
               {
                 "logging": {
-                  "level": "TEST_LOGGING.properties",
+                  "level": "TEST_LOGGING",
                   "location": "logs/geoserver.log",
                   "stdOutLogging": true
                 }
@@ -84,7 +84,7 @@ definitions:
         description: For internal use only. Do not modify.
       level:
         type: string
-        description: Logging level of GeoServer such as DEFAULT_LOGGING.properties
+        description: Logging level of GeoServer such as DEFAULT_LOGGING
       location:
         type: string
         description: Logging file path. Relative to the GeoServer data directory.

@@ -216,7 +216,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
     }
 
     private void logLevelsAppend(Form<GeoServerInfo> form, IModel<LoggingInfo> loggingInfoModel) {
-        // search for *LOGGING.properties files in the data directory
+        // search for *LOGGING xml and properties files in the data directory
         GeoServerResourceLoader loader =
                 GeoServerApplication.get().getBeanOfType(GeoServerResourceLoader.class);
         List<String> logProfiles = null;
@@ -252,7 +252,20 @@ public class GlobalSettingsPage extends ServerAdminPage {
         if (logProfiles == null || logProfiles.isEmpty()) {
             logProfiles = Arrays.asList(LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS);
         }
-
+        // fix optional properties suffix
+        String level = loggingInfoModel.getObject().getLevel();
+        if (level != null && !logProfiles.contains(level)) {
+            for (String profile : logProfiles) {
+                if (profile.startsWith(level)) {
+                    loggingInfoModel.getObject().setLevel(profile);
+                    break;
+                }
+                if (profile.startsWith(Paths.sidecar(level, null))) {
+                    loggingInfoModel.getObject().setLevel(profile);
+                    break;
+                }
+            }
+        }
         form.add(
                 new ListChoice<>(
                         "log4jConfigFile",

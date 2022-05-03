@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This log4j configuration file needs to stay here, and is used as the default logging setup -->
 <!-- during data_dir upgrades and in case the chosen logging config isn't available.            -->
-<Configuration name="DEFAULT_LOGGING" status="fatal" dest="out">
-    <CustomLevels>
-        <CustomLevel name="CONFIG" intLevel="450" />
-        <CustomLevel name="FINEST" intLevel="700" />
-    </CustomLevels>
+<Configuration name="PRODUCTION_LOGGING" status="fatal" dest="out">
     <Appenders>
         <Console name="stdout" target="SYSTEM_OUT">
-            <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n"/>
+            <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
         </Console>
         <RollingFile name="geoserverlogfile">
             <filename>logs/geoserver.log</filename>
             <filePattern>logs/geoserver-%i.log</filePattern>
-            <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n"/>
+            <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="20 MB" />
             </Policies>

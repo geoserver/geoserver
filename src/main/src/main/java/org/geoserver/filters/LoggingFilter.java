@@ -49,20 +49,12 @@ public class LoggingFilter implements Filter {
         String mimeType = sub == -1 ? contentType : contentType.substring(0, sub).toLowerCase();
         String subType = sub == -1 ? "" : contentType.substring(sub + 1).toLowerCase();
 
-        if (mimeType.equals("text")) {
-            return false;
-        } else if (mimeType.equals("image")) {
-            if (subType.contains("svg")) {
-                return false;
-            }
+        if (mimeType.equals("image") && !subType.contains("svg")) {
             return true;
-        } else if (mimeType.equals("application")) {
-            if (subType.equals("zip")) {
-                return true;
-            }
-            if (subType.contains("xml") || subType.contains("json") || subType.contains("gml")) {
-                return false;
-            }
+        } else if ("application".equals(mimeType)
+                && !(subType.contains("xml")
+                        || subType.contains("json")
+                        || subType.contains("gml"))) {
             return true;
         } else {
             return false; // assume text by default
@@ -127,7 +119,7 @@ public class LoggingFilter implements Filter {
                     req = new BufferedRequestWrapper(hreq, encoding, bytes);
 
                     if (isBinary(hreq.getHeader("Content-type"))) {
-                        message += bytes.length + " bytes\n";
+                        message += bytes.length + " bytes (binary content)\n";
                     } else {
                         message += (body == null ? "" : "\n" + body + "\n");
                     }

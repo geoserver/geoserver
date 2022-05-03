@@ -71,10 +71,7 @@ import org.opengis.feature.type.Name;
     "PMD.JUnit4TestShouldUseAfterAnnotation"
 })
 public abstract class GeoServerBaseTestSupport<T extends TestData> {
-    //    static {
-    //
-    // org.geotools.util.logging.Logging.ALL.setLoggerFactory(Log4J2LoggerFactory.getInstance());
-    //    }
+
     /** Common logger for test cases */
     protected static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.test");

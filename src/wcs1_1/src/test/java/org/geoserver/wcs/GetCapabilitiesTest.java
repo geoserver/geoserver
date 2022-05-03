@@ -57,11 +57,6 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     //
     // }
 
-    // @Override
-    // protected String getDefaultLogConfiguration() {
-    // return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
-    // }
-
     @Before
     public void revertTasmaniaDem() throws IOException {
         getTestData().addDefaultRasterLayer(TASMANIA_DEM, getCatalog());

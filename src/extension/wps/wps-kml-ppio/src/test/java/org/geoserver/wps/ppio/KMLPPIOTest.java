@@ -6,6 +6,7 @@
 package org.geoserver.wps.ppio;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,7 +22,9 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.junit.Test;
@@ -58,7 +61,7 @@ public class KMLPPIOTest extends GeoServerTestSupport {
         contact.setOnlineResource("http://www.geoserver.org");
         gs.save(global);
 
-        ppio = new KMLPPIO(gs);
+        ppio = new KMLPPIO(gs, GeoServerExtensions.bean(EntityResolverProvider.class));
     }
 
     @Test
@@ -141,5 +144,14 @@ public class KMLPPIOTest extends GeoServerTestSupport {
             assertEquals("pics/22037827-Ti.jpg", poi.getAttribute("THUMBNAIL"));
             assertEquals("pics/22037827-L.jpg", poi.getAttribute("MAINPAGE"));
         }
+    }
+
+    @Test
+    public void testDecodeXXE() throws Exception {
+        String kml =
+                "<!DOCTYPE foo [<!ENTITY xxe SYSTEM \"file:///\" >]>"
+                        + "<kml><Placemark><name>&xxe;</name></Placemark></kml>";
+        // StreamingParser returns null if the parsing fails
+        assertNull(ppio.decode(kml));
     }
 }

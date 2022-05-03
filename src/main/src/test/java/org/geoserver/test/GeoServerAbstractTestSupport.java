@@ -48,6 +48,9 @@ import javax.xml.validation.Validator;
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -285,6 +288,15 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
                 // kill static caches
                 GeoServerExtensionsHelper.init(null);
+
+                // reset log4j2 to default, to drop any open files
+
+                @SuppressWarnings({
+                    "resource",
+                    "PMD.CloseResource"
+                }) // current context, no need to enforce AutoClosable
+                LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+                loggerContext.reconfigure(new DefaultConfiguration());
 
                 // some tests do need a kick on the GC to fully clean up
                 if (isMemoryCleanRequired()) {

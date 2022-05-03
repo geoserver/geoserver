@@ -197,17 +197,17 @@ To run the plugin directly:
 
    mvn spotless:apply
 
-When using ``verify`` any failure to comply with the rules will show up as a compiler error in the build output.
+When using ``check`` any failure to comply with the rules will show up as a compiler error in the build output.
 
 .. code-block:: bash
 
-   mvn spotless:verify
+   mvn spotless:check
 
-Property ``spotless.action`` is used to choose ``apply`` or ``verify`` (defaults to ``apply``):
+When verifying ``spotless.action`` is used to choose ``apply`` or ``check`` (defaults to ``apply``):
 
 .. code-block:: bash
 
-   mvn verify -Dqa -Dspotless.action=verify
+   mvn verify -Dqa -Dspotless.action=check
 
 Property ``spotless.apply.skip`` is used to skip spotless plugin when running ``qa`` build:
 

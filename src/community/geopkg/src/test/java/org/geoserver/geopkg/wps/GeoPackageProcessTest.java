@@ -99,7 +99,8 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         Resource resource = loader.get("logs/GPKG_LOGGING.properties");
         if (resource.getType() == Resource.Type.UNDEFINED) {
             try {
-                loader.copyFromClassPath("/GPKG_LOGGING.properties", "logs/GPKG_LOGGING.properties");
+                loader.copyFromClassPath(
+                        "/GPKG_LOGGING.properties", "logs/GPKG_LOGGING.properties");
             } catch (IOException e) {
                 LOGGER.fine("Unable to configure with GPKG_LOGGING");
                 return "TEST_LOGGING";

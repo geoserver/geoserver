@@ -136,7 +136,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
     }
-    
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         // workaround to add our custom multi dimensional format

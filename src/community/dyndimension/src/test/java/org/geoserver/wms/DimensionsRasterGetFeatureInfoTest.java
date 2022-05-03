@@ -33,7 +33,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDynamicDimensionTestS
 
     @Override
     protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
+        return "DEFAULT_LOGGING";
     }
 
     @Before

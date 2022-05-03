@@ -17,7 +17,7 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
 
     @Override
     protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
+        return "DEFAULT_LOGGING";
     }
 
     @Before

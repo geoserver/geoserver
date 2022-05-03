@@ -76,11 +76,6 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     public static QName GIANT_POLYGON =
             new QName(MockData.CITE_URI, "giantPolygon", MockData.CITE_PREFIX);
 
-    // @Override
-    // protected String getLogConfiguration() {
-    // return "/DEFAULT_LOGGING.properties";
-    // }
-
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);

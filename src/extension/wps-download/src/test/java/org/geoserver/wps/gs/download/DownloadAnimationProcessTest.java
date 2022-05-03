@@ -52,9 +52,9 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     @Override
     protected String getLogConfiguration() {
         if (isQuietTests()) {
-            return "/QUIET_LOGGING.properties";
+            return "QUIET_LOGGING";
         }
-        return "/DEFAULT_LOGGING.properties";
+        return "DEFAULT_LOGGING";
     }
 
     @Test

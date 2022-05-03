@@ -8,23 +8,33 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.logging.Level;
+import java.io.File;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
+/**
+ * Tests functionality using TEST_LOGGING profile (which does not use a file appender) and
+ * DEFAULT_LOGGING which will create a log file (and require {@link #cleanupLogs()}) after testing
+ * is completed.
+ */
 public class LoggingControllerTest extends CatalogRESTTestSupport {
 
     protected GeoServer geoServer;
+
+    protected static File logsDir = null;
 
     @Before
     public void init() {
@@ -39,15 +49,25 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
 
     @After
     public void reset() throws Exception {
+        Resource logs = getDataDirectory().get("logs");
+        if (logs.getType() == Resource.Type.DIRECTORY) {
+            logsDir = logs.dir();
+        }
         LocalWorkspace.remove();
+    }
+
+    @AfterClass
+    public static void cleanupLogs() {
+        if (logsDir != null) {
+            Files.delete(logsDir);
+            logsDir = null;
+        }
     }
 
     @Test
     public void testGetLoggingAsJSON() throws Exception {
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/logging.json");
-        if (LOGGER.isLoggable(Level.FINE)) {
-            print(json);
-        }
+        print(json);
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject loggingInfo = jsonObject.getJSONObject("logging");

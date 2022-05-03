@@ -4,7 +4,7 @@
 -->
 <serverConfiguration >
   <global >
-    <log4jConfigFile>DEFAULT_LOGGING.properties</log4jConfigFile>
+    <log4jConfigFile>DEFAULT_LOGGING</log4jConfigFile>
     <suppressStdOutLogging value = "false" />
     <logLocation>logs/geoserver.log</logLocation>
     <JaiMemoryCapacity value = "0.5" />

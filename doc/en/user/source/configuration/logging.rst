@@ -24,14 +24,8 @@ Any custom configuration can be setup to enable specific packages to emit logs a
 
 There are however a few rules to follow:
 
-* Custom levels are required (as shown) for ``CONFIG`` and ``FINEST`` levels.
-
-  .. literalinclude:: /../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml
-     :language: xml
-     :start-at: <CustomLevels>
-     :end-at: </CustomLevels>
-     :dedent: 4
-       
+* Custom levels are are available for ``CONFIG`` and ``FINEST`` levels.
+  
 * Appenders are used to output logging information, with GeoServer providing external configuration for appenders named ``geoserverlogfile`` and ``stdout``.
 
   * Always include a ``geoserverlogfile`` ``FileAppender`` or ``RollingFile`` appender that GeoServer will configure to work against the location configured in the :ref:`global settings <config_globalsettings_log_location>`.

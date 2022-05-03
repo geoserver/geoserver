@@ -57,7 +57,7 @@ public class LoggingStartupContextListenerTest {
                 "resource",
                 "PMD.CloseResource"
             }) // current context, no need to enforce AutoClosable
-            LoggerContext ctx = (LoggerContext) LogManager.getContext(true);
+            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
             Configuration configuration = ctx.getConfiguration();
 
@@ -90,7 +90,7 @@ public class LoggingStartupContextListenerTest {
                 "resource",
                 "PMD.CloseResource"
             }) // current context, no need to enforce AutoClosable
-            LoggerContext ctx = (LoggerContext) LogManager.getContext(true);
+            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
             Configuration configuration = ctx.getConfiguration();
 

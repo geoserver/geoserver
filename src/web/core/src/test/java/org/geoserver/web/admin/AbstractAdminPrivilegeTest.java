@@ -357,9 +357,4 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
                 (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
         assertNotEquals(UnauthorizedPage.class, handler.getPageClass());
     }
-
-    @Override
-    protected String getLogConfiguration() {
-        return "/GEOSERVER_DEVELOPER_LOGGING.properties";
-    }
 }

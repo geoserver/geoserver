@@ -61,7 +61,7 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value>
     </context-param>
-    
+
     <filter>
      <filter-name>FlushSafeFilter</filter-name>
      <filter-class>org.geoserver.filters.FlushSafeFilter</filter-class>

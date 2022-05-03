@@ -35,11 +35,6 @@ public class TolerantStartupTest extends GeoServerSystemTestSupport {
         testData.setUpSecurity();
     }
 
-    //    @Override
-    //    protected String getLogConfiguration() {
-    //        return "/DEFAULT_LOGGING.properties";
-    //    }
-
     @Test
     public void testContextStartup() {
         GeoServer config = (GeoServer) applicationContext.getBean("geoServer");

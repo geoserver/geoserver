@@ -38,6 +38,8 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.logging.TestAppender;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.wms.GetMapRequest;
@@ -68,7 +70,19 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     @Override
     protected String getLogConfiguration() {
         // needed for a test on logging capabilities
-        return "/OL_LOGGING.properties";
+        GeoServerResourceLoader loader =
+                new GeoServerResourceLoader(testData.getDataDirectoryRoot());
+
+        Resource resource = loader.get("logs/OL_LOGGING.properties");
+        if (resource.getType() == Resource.Type.UNDEFINED) {
+            try {
+                loader.copyFromClassPath("/OL_LOGGING.properties", "logs/OL_LOGGING.properties");
+            } catch (IOException e) {
+                LOGGER.fine("Unable to configure with OL_LOGGING");
+                return "TEST_LOGGING";
+            }
+        }
+        return "OL_LOGGING";
     }
 
     @Override

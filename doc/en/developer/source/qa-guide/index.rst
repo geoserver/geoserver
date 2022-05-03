@@ -120,7 +120,7 @@ In order to activate the Error Prone checks, use the "-Perrorprone" for JDK 11 b
    :end-before: </profile>
    :dedent: 6
    
-Or "Perrorprone8" for JDK 8 builds.
+Or "-Perrorprone8" for JDK 8 builds.
 
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
@@ -177,10 +177,83 @@ or if it's a general one that should be ignored, the `build/qa/spotbugs-exclude.
    :language: xml
 
 
+Spotless
+--------
+
+Spotless is used as a fast way to check that the google-java-format is being applied to the codebase.
+
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <groupId>com.diffplug.spotless</groupId>
+   :end-before: </plugin>
+   :dedent: 8
+
+This has been setup for incremental checking, with hidden :file:`.spotless-index` files used determine
+when files were last checked.
+
+To run the plugin directly:
+
+.. code-block:: bash
+
+   mvn spotless:apply
+
+When using ``verify`` any failure to comply with the rules will show up as a compiler error in the build output.
+
+.. code-block:: bash
+
+   mvn spotless:verify
+
+Property ``spotless.action`` is used to choose ``apply`` or ``verify`` (defaults to ``apply``):
+
+.. code-block:: bash
+
+   mvn verify -Dqa -Dspotless.action=verify
+
+Property ``spotless.apply.skip`` is used to skip spotless plugin when running ``qa`` build:
+
+.. code-block:: bash
+
+   mvn clean install -Dqa -Dspotless.apply.skip=true
+
+Sortpom
+-------
+
+Sortpom is used to keep the :file:`pom.xml` files formatting consistent:
+
+.. literalinclude:: /../../../../src/pom.xml
+   :language: xml
+   :start-at: <groupId>com.github.ekryd.sortpom</groupId>
+   :end-before: </plugin>
+   :dedent: 8
+
+The plugin is attached to verification phase to sort :file:`pom.xml` files.
+
+To run the plugin directly:
+
+.. code-block:: bash
+
+   mvn sortpom:sort
+
+Verification checks if (ignoring whitespace changes) is the current :file:`pom.xml` in the correct order:
+
+   mvn sortpom:verify
+
+Property ``pom.fmt.action`` is used to choose ``sort`` or ``verify`` (defaults to ``sort``):
+
+.. code-block:: bash
+
+   mvn verify -Dqa -Dpom.fmt.action=verify
+
+Property ``pom.fmt.skip`` used to skip sortpom plugin when running ``qa`` build (defaults to ``spotless.apply.skip`` setting):
+
+.. code-block:: bash
+
+   mvn clean install -Dqa -Dpom.fmt.skip=true
+
 Checkstyle
 ----------
 
-Google Format is already in use to keep the code formatted, so `maven checkstyle plugin <https://maven.apache.org/plugins/maven-checkstyle-plugin/>`__ is used mainly to verify javadocs errors
+Spotless is already in use to keep the code formatted, so `maven checkstyle plugin <https://maven.apache.org/plugins/maven-checkstyle-plugin/>`__ is used mainly to verify javadocs errors
 and presence of copyright headers, which none of the other tools can cover.
 
 .. literalinclude:: /../../../../src/pom.xml
@@ -189,24 +262,14 @@ and presence of copyright headers, which none of the other tools can cover.
    :end-before: </plugin>
    :dedent: 12
 
-Any failure to comply with the rules will show up as a compiler error in the build output, e.g.::
+The checkstyle ruleset checks the following:
+
+.. literalinclude:: /../../../../build/qa/checkstyle.xml
+   :language: xml
+   :start-at: <module name="Checker">
+
+To run the plugin directly:
 
 .. code-block:: bash
 
-   mvn sortpom:sort
-
-Ignoring whitespace changes is the current pom.xml in the correct oder:
-
-   mvn sortpom:verify
-
-Property ``spotless.apply.skip`` used to choose ``sort`` or ``verify``:
-
-.. code-block:: bash
-
-   mvn verify -Dqa -Dpom.fmt.action=verify
-
-Property ``pom.fmt.skip`` used to skip sortpom plugin when running ``qa`` build:
-
-.. code-block:: bash
-
-   mvn clean install -Dqa -Dpom.fmt.skip=true
+   mvn initialize checkstyle:check

@@ -22,7 +22,7 @@ public class OpenIdConnectLoginButtonTest extends GeoServerWicketTestSupport {
 
     @Override
     protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
+        return "DEFAULT_LOGGING";
     }
 
     @Override

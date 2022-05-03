@@ -25,11 +25,6 @@ import org.w3c.dom.Document;
 
 public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
-    // @Override
-    // protected String getDefaultLogConfiguration() {
-    // return "/DEFAULT_LOGGING.properties";
-    // }
-
     @Test
     public void testKvpBasic() throws Exception {
         String request =

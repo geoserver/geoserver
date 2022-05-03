@@ -14,6 +14,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 import org.geoserver.platform.resource.Paths;
+import org.geotools.util.logging.Log4J2Logger;
 
 /**
  * GeoServerXMLConfiguration builds on Log4J XmlConfiguration, adding post-processing to adjust
@@ -245,9 +246,12 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
         }
     }
 
-    /** Post-process configuration. */
+    /** Post-process configuration check. */
     @Override
     protected void doConfigure() {
+        LOGGER.debug("Custom CONFIG level=" + Log4J2Logger.CONFIG.intLevel());
+        LOGGER.debug("Custom FINEST level=" + Log4J2Logger.FINEST.intLevel());
+
         super.doConfigure();
 
         // The following checks if configuration was successfully applied
@@ -271,26 +275,30 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
         }
 
         if (suppressFileLogging) {
-            getAppenders().remove("geoserverlogfile");
+            if (getAppenders().containsKey("geoserverlogfile")) {
+                LOGGER.warn("Appender 'geoserverlogfile' expected to be suppressed");
+            }
             for (LoggerConfig loggerConfig : getLoggers().values()) {
                 if (loggerConfig.getAppenders().containsKey("geoserverlogfile")) {
                     LOGGER.warn(
                             "Logger '"
                                     + loggerConfig.getName()
-                                    + "' includes supressed 'geoserverlogfile':"
+                                    + "' includes suppressed 'geoserverlogfile':"
                                     + loggerConfig.getAppenders().get("geoserverlogfile"));
                 }
             }
         }
 
         if (suppressStdOutLogging) {
-            getAppenders().remove("stdout");
+            if (getAppenders().containsKey("stdout")) {
+                LOGGER.warn("Appender 'stdout' expected to be suppressed");
+            }
             for (LoggerConfig loggerConfig : getLoggers().values()) {
                 if (loggerConfig.getAppenders().containsKey("stdout")) {
                     LOGGER.warn(
                             "Logger '"
                                     + loggerConfig.getName()
-                                    + "' includes supressed 'stdout':"
+                                    + "' includes suppressed 'stdout':"
                                     + loggerConfig.getAppenders().get("stdout"));
                 }
             }

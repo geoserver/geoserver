@@ -330,7 +330,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     protected String getDefaultLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
+        return "DEFAULT_LOGGING";
     }
 
     @Test

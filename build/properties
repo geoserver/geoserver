@@ -10,7 +10,7 @@ JIRA_PROJ=GEOS
 SF_HOST=frs.sourceforge.net
 
 # maven environment
-MAVEN_FLAGS="$MAVEN_FLAGS --batch-mode -Dfmt.skip=true"
+MAVEN_FLAGS="$MAVEN_FLAGS --batch-mode -Dspotless.apply.skip=true"
 
 # Use settings.xml override if provided
 if [ -n "$MAVEN_SETTINGS" ]; then

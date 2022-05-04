@@ -320,23 +320,23 @@ final class HistogramUtils {
             Range r = buckets.get(i);
             Comparable min = value.getMinValue();
             Comparable max = value.getMaxValue();
-            if (isMinIncluded(r, min) && isMaxIncluded(r, max)) indexes.add(i);
+            if (intersectsMin(r, min) && intersectsMax(r, max)) indexes.add(i);
         }
         return indexes;
     }
 
-    private static boolean isMinIncluded(Range<?> range, Comparable min) {
+    private static boolean intersectsMin(Range<?> range, Comparable min) {
         Comparable maxBoundary = range.getMaxValue();
         @SuppressWarnings("unchecked")
-        int minInMax = min.compareTo(maxBoundary);
-        return range.isMaxIncluded() ? minInMax <= 0 : minInMax < 0;
+        int intersectsMin = min.compareTo(maxBoundary);
+        return range.isMaxIncluded() ? intersectsMin <= 0 : intersectsMin < 0;
     }
 
-    private static boolean isMaxIncluded(Range<?> range, Comparable max) {
+    private static boolean intersectsMax(Range<?> range, Comparable max) {
         Comparable minBoundary = range.getMinValue();
         @SuppressWarnings("unchecked")
-        int maxInMin = max.compareTo(minBoundary);
-        return range.isMinIncluded() ? maxInMin >= 0 : maxInMin > 0;
+        int intersectsMax = max.compareTo(minBoundary);
+        return range.isMinIncluded() ? intersectsMax >= 0 : intersectsMax > 0;
     }
 
     /**

@@ -653,7 +653,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
 
     public void checkVectorElevationFullDomain(Document result) throws Exception {
         // check the space domain, should be regular whole world
-        assertXpathEvaluatesTo("1.1", "/md:Domains/@version", result);
+        assertXpathEvaluatesTo("1.2", "/md:Domains/@version", result);
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='-180.0']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-90.0']", "1");
@@ -1445,7 +1445,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
             assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
             // sorted by end date too
             assertXpathEvaluatesTo(
-                    "2012-02-12T00:00:00.000Z/2012-02-12T09:00:00.000Z,2012-02-11T00:00:00.000Z/2012-02-13T00:00:00.000Z",
+                    "2012-02-12T00:00:00.000Z/2012-02-12T10:00:00.000Z,2012-02-11T00:00:00.000Z/2012-02-13T00:00:00.000Z",
                     "/md:DomainValues/md:Domain",
                     dom);
         } finally {

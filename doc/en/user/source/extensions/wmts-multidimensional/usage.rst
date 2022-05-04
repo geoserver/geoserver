@@ -8,7 +8,7 @@ All described operations including is optional parameters and other extensions w
 The ``GetFeature`` operation only supports the profile GML 3.1 as feature info format ("application/gml+xml; version=3.1") and the ``GetHistogram`` operation only supports ``text/xml`` as output format.
 
 
-This module support well defined dimensions like elevation, time and also custom dimensions. 
+This module support well defined dimensions like elevation and time, but also custom dimensions. 
 
 GetCapabilities
 ---------------
@@ -515,7 +515,7 @@ filtering on elevations between 0 and 15 will return this instead:
   </Histogram>
 
 
-Note that if an end attribute is specified the bucket matching will be applied on ranges rather than on single values. In this case buckets are filled by intersection of ranges' values with bucket limits and not by containment within buckets. This is done in order to avoid that some range values are falling outside every bucket but as a side effects the same range can match more than one bucket. 
+Note that if an end attribute is specified the bucket matching will be applied on ranges rather than on single values. In this case, buckets are filled by the intersection of ranges' values with bucket limits and not by containment. This is done in order to avoid some range values falling outside every bucket, but as a side effect, the same range can match more than one bucket.
 
 GetFeature
 ^^^^^^^^^^

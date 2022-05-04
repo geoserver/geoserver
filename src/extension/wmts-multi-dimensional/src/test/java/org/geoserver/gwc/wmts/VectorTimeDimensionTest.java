@@ -77,7 +77,7 @@ public class VectorTimeDimensionTest extends VectorTimeTestSupport {
                 true,
                 "2012-02-11T00:00:00.000Z/2012-02-11T11:00:00.000Z",
                 "2012-02-11T00:00:00.000Z/2012-02-13T00:00:00.000Z",
-                "2012-02-12T00:00:00.000Z/2012-02-12T09:00:00.000Z");
+                "2012-02-12T00:00:00.000Z/2012-02-12T10:00:00.000Z");
 
         testDomainsValuesRepresentation(
                 0, true, "2012-02-11T00:00:00.000Z--2012-02-13T00:00:00.000Z");

@@ -325,23 +325,26 @@ public final class DimensionsUtils {
             List<Object> values = (List<Object>) val;
             Object start = values.get(0);
             Object end = values.get(1);
-            Comparable range = (Comparable) toRange(start, end);
+            Comparable range = toRange(start, end);
             if (range != null) resultSet.add(range);
         }
         return resultSet;
     }
 
     private static TreeSet<Comparable> getTreeSet(SortBy sortBy, String endAttribute) {
-        TreeSet<Comparable> resultSet = new TreeSet<>();
+        TreeSet<Comparable> resultSet;
+
         if (sortBy != null) {
-            if (isSortByEnd(endAttribute, sortBy)) {
-                Comparator<Comparable> comparator = comparatorSortByEnd();
-                if (sortBy.getSortOrder().equals(SortOrder.DESCENDING))
-                    comparator = comparatorSortByEnd().reversed();
-                resultSet = new TreeSet<>(comparator);
-            } else if (sortBy.getSortOrder().equals(SortOrder.DESCENDING)) {
-                resultSet = new TreeSet<>(comparatorSortByStart().reversed());
-            }
+            Comparator<Comparable> comparator;
+            if (isSortByEnd(endAttribute, sortBy)) comparator = new SortByEndComparator();
+            else comparator = new SortByStartComparator();
+
+            if (sortBy.getSortOrder().equals(SortOrder.DESCENDING))
+                comparator = comparator.reversed();
+
+            resultSet = new TreeSet<>(comparator);
+        } else {
+            resultSet = new TreeSet<>();
         }
         return resultSet;
     }
@@ -351,41 +354,7 @@ public final class DimensionsUtils {
         return sortBy.getPropertyName().getPropertyName().equals(endAttribute);
     }
 
-    private static Comparator<Comparable> comparatorSortByEnd() {
-        return new Comparator<Comparable>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public int compare(Comparable o1, Comparable o2) {
-                if (o1 instanceof ComparableRange && o2 instanceof ComparableRange) {
-                    ComparableRange comp1 = (ComparableRange) o1;
-                    ComparableRange comp2 = (ComparableRange) o2;
-                    int result = comp1.getMaxValue().compareTo(comp2.getMaxValue());
-                    if (result == 0) result = comp1.getMinValue().compareTo(comp2.getMinValue());
-                    return result;
-                }
-                return o1.compareTo(o2);
-            }
-        };
-    }
-
-    private static Comparator<Comparable> comparatorSortByStart() {
-        return new Comparator<Comparable>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public int compare(Comparable o1, Comparable o2) {
-                if (o1 instanceof ComparableRange && o2 instanceof ComparableRange) {
-                    ComparableRange comp1 = (ComparableRange) o1;
-                    ComparableRange comp2 = (ComparableRange) o2;
-                    int result = comp1.getMinValue().compareTo(comp2.getMinValue());
-                    if (result == 0) result = comp1.getMaxValue().compareTo(comp2.getMaxValue());
-                    return result;
-                }
-                return o1.compareTo(o2);
-            }
-        };
-    }
-
-    private static Range<?> toRange(Object start, Object end) {
+    private static ComparableRange toRange(Object start, Object end) {
         if (start == null && end == null) return null;
 
         // if one of the two values is null
@@ -393,20 +362,21 @@ public final class DimensionsUtils {
         if (start == null) start = end;
         else if (end == null) end = start;
         @SuppressWarnings("unchecked")
-        Range<?> resultRange =
+        ComparableRange result =
                 new ComparableRange(Comparable.class, (Comparable) start, (Comparable) end);
-        return resultRange;
+        return result;
     }
 
     static Map<Aggregate, Comparable> getMinMaxAggregate(
             String attributeName, String endAttribute, FeatureCollection featureCollection) {
         Map<Aggregate, Comparable> result = new HashMap<>();
-        PropertyName start = FF.property(attributeName);
-        PropertyName end = FF.property(endAttribute);
+        PropertyName minProp = FF.property(attributeName);
+        PropertyName maxProp =
+                endAttribute != null ? FF.property(endAttribute) : FF.property(attributeName);
         Aggregate min = Aggregate.MIN;
         Aggregate max = Aggregate.MAX;
-        FeatureCalc minCalc = min.create(start);
-        FeatureCalc maxCalc = max.create(end);
+        FeatureCalc minCalc = min.create(minProp);
+        FeatureCalc maxCalc = max.create(maxProp);
         try {
             featureCollection.accepts(minCalc, null);
             Comparable minVal = (Comparable) minCalc.getResult().getValue();
@@ -464,13 +434,10 @@ public final class DimensionsUtils {
                 SimpleFeature feature = (SimpleFeature) featuresIterator.next();
                 Object attr = feature.getAttribute(attributeName);
                 if (endAttributeName != null) {
-                    Comparable comparableRange =
-                            new ComparableRange(
-                                    attr.getClass(),
-                                    (Comparable) attr,
-                                    (Comparable) feature.getAttribute(endAttributeName));
-                    values.add(comparableRange);
-                } else {
+                    Object endAttribute = feature.getAttribute(endAttributeName);
+                    Comparable comparableRange = toRange(attr, endAttribute);
+                    if (comparableRange != null) values.add(comparableRange);
+                } else if (attr != null) {
                     values.add((Comparable) attr);
                 }
             }
@@ -642,6 +609,38 @@ public final class DimensionsUtils {
         } else {
             throw new RuntimeException(
                     "Cannot get restriction attributes on this resource: " + resource);
+        }
+    }
+
+    private static class SortByEndComparator implements Comparator<Comparable> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public int compare(Comparable o1, Comparable o2) {
+            if (o1 instanceof ComparableRange && o2 instanceof ComparableRange) {
+                ComparableRange comp1 = (ComparableRange) o1;
+                ComparableRange comp2 = (ComparableRange) o2;
+                int result = comp1.getMaxValue().compareTo(comp2.getMaxValue());
+                if (result == 0) result = comp1.getMinValue().compareTo(comp2.getMinValue());
+                return result;
+            }
+            return o1.compareTo(o2);
+        }
+    }
+
+    private static class SortByStartComparator implements Comparator<Comparable> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public int compare(Comparable o1, Comparable o2) {
+            if (o1 instanceof ComparableRange && o2 instanceof ComparableRange) {
+                ComparableRange comp1 = (ComparableRange) o1;
+                ComparableRange comp2 = (ComparableRange) o2;
+                int result = comp1.getMinValue().compareTo(comp2.getMinValue());
+                if (result == 0) result = comp1.getMaxValue().compareTo(comp2.getMaxValue());
+                return result;
+            }
+            return o1.compareTo(o2);
         }
     }
 }

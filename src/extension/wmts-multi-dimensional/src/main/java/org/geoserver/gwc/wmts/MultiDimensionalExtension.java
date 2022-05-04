@@ -334,10 +334,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                             + dimension.getDimensionType().getSimpleName());
         }
         Tuple<String, String> attributes = DimensionsUtils.getAttributes(resource, dimension);
-        String attribute =
-                useEndValue
-                        ? attributes.second
-                        : attributes.first; // getDomain only uses first attribute to list values
+        String attribute = useEndValue ? attributes.second : attributes.first;
         if (sortOrder == SortOrder.ASCENDING) {
             return filterFactory.greater(
                     filterFactory.property(attribute), filterFactory.literal(converted));

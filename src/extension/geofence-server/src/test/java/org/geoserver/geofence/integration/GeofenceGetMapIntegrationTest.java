@@ -499,4 +499,65 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
             removeLayerGroup(group);
         }
     }
+
+    /**
+     * Tests that the user can access based on any role
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAnyRoleMatch() throws Exception {
+
+        configurationManager =
+                applicationContext.getBean(
+                        "geofenceConfigurationManager", GeoFenceConfigurationManager.class);
+        GeoFenceConfiguration config = configurationManager.getConfiguration();
+        config.setUseRolesToFilter(true);
+        config.getRoles().add("*");
+
+        LayerGroupInfo group =
+                addLakesPlacesLayerGroup(LayerGroupInfo.Mode.NAMED, "lakes_and_places");
+
+        Long ruleId1 = null;
+        try {
+            ruleId1 =
+                    addRule(
+                            GrantType.ALLOW,
+                            null,
+                            "ROLE_WMS",
+                            null,
+                            null,
+                            null,
+                            null,
+                            0,
+                            ruleService);
+
+            login("john", "", "ROLE_WMS");
+            String url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers=Lakes"
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse resp = getAsServletResponse(url);
+
+            assertEquals(200, resp.getStatus());
+
+            // check that user is able to access the layer
+            assertEquals("image/png", resp.getContentType());
+            logout();
+
+            login("jane", "", "ROLE_USER");
+            MockHttpServletResponse resp2 = getAsServletResponse(url);
+
+            assertEquals(200, resp2.getStatus());
+            // check that user is not allowed to access the layer
+            assertTrue(resp2.getContentAsString().contains("Could not find layer Lakes"));
+        } finally {
+            deleteRules(ruleService, ruleId1);
+            config.setUseRolesToFilter(false);
+            config.getRoles().remove("*");
+            removeLayerGroup(group);
+            logout();
+        }
+    }
 }

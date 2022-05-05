@@ -63,6 +63,19 @@ public class VectorElevationDimensionTest extends TestsSupport {
         testDomainsValuesRepresentation(7, "1.0", "2.0", "3.0", "5.0");
     }
 
+    @Test
+    public void testGetDomainsValuesRange() throws Exception {
+        testDomainsValuesRepresentation(2, true, "1.0--7.0");
+        testDomainsValuesRepresentation(4, true, "1.0/2.0", "2.0/3.0", "3.0/4.0", "5.0/7.0");
+        testDomainsValuesRepresentation(7, true, "1.0/2.0", "2.0/3.0", "3.0/4.0", "5.0/7.0");
+    }
+
+    @Override
+    protected Dimension buildDimensionWithEndAttribute(DimensionInfo dimensionInfo) {
+        dimensionInfo.setEndAttribute("endElevation");
+        return buildDimension(dimensionInfo);
+    }
+
     @Override
     protected Dimension buildDimension(DimensionInfo dimensionInfo) {
         dimensionInfo.setAttribute("startElevation");
@@ -89,6 +102,24 @@ public class VectorElevationDimensionTest extends TestsSupport {
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "0.75");
         assertThat(histogram.first, is("1.0/5.0/0.75"));
         assertThat(histogram.second, equalTo(Arrays.asList(1, 1, 1, 0, 0, 1)));
+    }
+
+    @Test
+    public void testGetHistogramWithRangeValues() {
+        DimensionInfo dimensionInfo = createDimension(true, null);
+        Dimension dimension = buildDimensionWithEndAttribute(dimensionInfo);
+        Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "1");
+        assertThat(histogram.first, is("1.0/8.0/1.0"));
+        assertThat(histogram.second, equalTo(Arrays.asList(1, 2, 2, 1, 1, 1, 1)));
+    }
+
+    @Test
+    public void testGetHistogramWithRangeValues2() {
+        DimensionInfo dimensionInfo = createDimension(true, null);
+        Dimension dimension = buildDimensionWithEndAttribute(dimensionInfo);
+        Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "3");
+        assertThat(histogram.first, is("1.0/10.0/3.0"));
+        assertThat(histogram.second, equalTo(Arrays.asList(3, 2, 1)));
     }
 
     /** Helper method that just returns the current layer info. */

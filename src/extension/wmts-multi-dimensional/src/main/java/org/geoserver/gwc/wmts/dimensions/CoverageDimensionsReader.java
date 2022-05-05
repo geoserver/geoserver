@@ -83,7 +83,7 @@ abstract class CoverageDimensionsReader {
             return new TreeSet<>();
         }
         // extracting the values keeping the duplicates
-        return DimensionsUtils.getValuesWithoutDuplicates(values.first, values.second);
+        return DimensionsUtils.getValuesWithoutDuplicates(values.first, null, values.second);
     }
 
     /**

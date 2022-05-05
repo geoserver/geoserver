@@ -8,13 +8,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -33,6 +36,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.visitor.Aggregate;
+import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -41,6 +45,7 @@ import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
+import org.geotools.util.logging.Logging;
 import org.geowebcache.service.OWSException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
@@ -48,6 +53,8 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
@@ -60,6 +67,8 @@ public final class DimensionsUtils {
 
     /** No expansion limit provided */
     public static final int NO_LIMIT = Integer.MIN_VALUE;
+
+    public static final Logger LOGGER = Logging.getLogger(DimensionsUtils.class);
 
     /** Helper method that will extract a layer dimensions. */
     public static List<Dimension> extractDimensions(
@@ -186,7 +195,7 @@ public final class DimensionsUtils {
             // this domain value is a range, we use the min and max value
             Object minValue = ((Range) value).getMinValue();
             Object maxValue = ((Range) value).getMaxValue();
-            return formatDomainSimpleValue(minValue) + "--" + formatDomainSimpleValue(maxValue);
+            return formatDomainSimpleValue(minValue) + "/" + formatDomainSimpleValue(maxValue);
         }
         return formatDomainSimpleValue(value);
     }
@@ -221,9 +230,15 @@ public final class DimensionsUtils {
      * the maximum value of the range is returned.
      */
     private static Object getMaxValue(List<Comparable> values) {
-        Object maxValue = values.get(values.size() - 1);
+        int last = values.size() - 1;
+        Object maxValue = values.get(last);
         if (maxValue instanceof Range) {
-            return ((Range) maxValue).getMaxValue();
+            values =
+                    values.stream()
+                            .map(c -> ((Range) c).getMaxValue())
+                            .sorted()
+                            .collect(Collectors.toList());
+            maxValue = values.get(last);
         }
         return maxValue;
     }
@@ -240,30 +255,134 @@ public final class DimensionsUtils {
      * attribute removing duplicate values.
      */
     static Set<Comparable> getValuesWithoutDuplicates(
-            String attributeName, FeatureCollection featureCollection) {
-        Set<Comparable> uniques = getUniqueValues(featureCollection, attributeName, NO_LIMIT);
+            String attributeName, String endAttribute, FeatureCollection featureCollection) {
+        Set<Comparable> uniques =
+                getUniqueValues(featureCollection, attributeName, endAttribute, NO_LIMIT);
 
         // dimension values are dates/numbers/strings, all comparable, native sorting is fine
         Set<Comparable> values = new TreeSet<>(uniques);
         return values;
     }
 
+    static Set<Comparable> getUniqueValues(
+            FeatureCollection featureCollection,
+            String attributeName,
+            String endAttributeName,
+            int limit) {
+        return getUniqueValues(featureCollection, attributeName, endAttributeName, limit, null);
+    }
+
     @SuppressWarnings("unchecked")
     static Set<Comparable> getUniqueValues(
-            FeatureCollection featureCollection, String attributeName, int limit) {
+            FeatureCollection featureCollection,
+            String attributeName,
+            String endAttributeName,
+            int limit,
+            SortBy sortBy) {
         // using the unique visitor to remove duplicate values
-        UniqueVisitor uniqueVisitor = new UniqueVisitor(attributeName);
+        UniqueVisitor uniqueVisitor =
+                endAttributeName != null
+                        ? new UniqueVisitor(attributeName, endAttributeName)
+                        : new UniqueVisitor(attributeName);
+        uniqueVisitor.setPreserveOrder(true);
         if (limit > 0 && limit < Integer.MAX_VALUE) {
             uniqueVisitor.setMaxFeatures(limit);
         }
-        uniqueVisitor.setPreserveOrder(true);
         try {
             featureCollection.accepts(uniqueVisitor, null);
         } catch (Exception exception) {
             throw new RuntimeException("Error visiting collection with unique visitor.");
         }
+        if (uniqueVisitor.getAttrNames().size() > 1)
+            return resultToComparableSet(uniqueVisitor.getResult(), endAttributeName, sortBy);
         // all dimension values are comparable
         return uniqueVisitor.getUnique();
+    }
+
+    private static Set<Comparable> resultToComparableSet(
+            CalcResult result, String endAttributeName, SortBy sortBy) {
+        if (result == CalcResult.NULL_RESULT) return new HashSet<>();
+        @SuppressWarnings("unchecked")
+        Set<Object> values = result.toSet();
+        if (values.isEmpty()) return Collections.emptySet();
+        else return toComparableSet(values, endAttributeName, sortBy);
+    }
+
+    private static Set<Comparable> toComparableSet(
+            Set<Object> set, String endAttribute, SortBy sortBy) {
+        Set<Comparable> resultSet = getTreeSet(sortBy, endAttribute);
+        Iterator<Object> objects = set.iterator();
+
+        while (objects.hasNext()) {
+            Object val = objects.next();
+            @SuppressWarnings("unchecked")
+            List<Object> values = (List<Object>) val;
+            Object start = values.get(0);
+            Object end = values.get(1);
+            Comparable range = toRange(start, end);
+            if (range != null) resultSet.add(range);
+        }
+        return resultSet;
+    }
+
+    private static TreeSet<Comparable> getTreeSet(SortBy sortBy, String endAttribute) {
+        TreeSet<Comparable> resultSet;
+
+        if (sortBy != null) {
+            Comparator<Comparable> comparator;
+            if (isSortByEnd(endAttribute, sortBy)) comparator = new SortByEndComparator();
+            else comparator = new SortByStartComparator();
+
+            if (sortBy.getSortOrder().equals(SortOrder.DESCENDING))
+                comparator = comparator.reversed();
+
+            resultSet = new TreeSet<>(comparator);
+        } else {
+            resultSet = new TreeSet<>();
+        }
+        return resultSet;
+    }
+
+    private static boolean isSortByEnd(String endAttribute, SortBy sortBy) {
+        if (endAttribute == null) return false;
+        return sortBy.getPropertyName().getPropertyName().equals(endAttribute);
+    }
+
+    private static ComparableRange toRange(Object start, Object end) {
+        if (start == null && end == null) return null;
+
+        // if one of the two values is null
+        // we set the other right?
+        if (start == null) start = end;
+        else if (end == null) end = start;
+        @SuppressWarnings("unchecked")
+        ComparableRange result =
+                new ComparableRange(Comparable.class, (Comparable) start, (Comparable) end);
+        return result;
+    }
+
+    static Map<Aggregate, Comparable> getMinMaxAggregate(
+            String attributeName, String endAttribute, FeatureCollection featureCollection) {
+        Map<Aggregate, Comparable> result = new HashMap<>();
+        PropertyName minProp = FF.property(attributeName);
+        PropertyName maxProp =
+                endAttribute != null ? FF.property(endAttribute) : FF.property(attributeName);
+        Aggregate min = Aggregate.MIN;
+        Aggregate max = Aggregate.MAX;
+        FeatureCalc minCalc = min.create(minProp);
+        FeatureCalc maxCalc = max.create(maxProp);
+        try {
+            featureCollection.accepts(minCalc, null);
+            Comparable minVal = (Comparable) minCalc.getResult().getValue();
+            featureCollection.accepts(maxCalc, null);
+            Comparable maxVal = (Comparable) maxCalc.getResult().getValue();
+            result.put(min, minVal);
+            result.put(max, maxVal);
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Failed to collect summary aggregates on attribute " + attributeName, e);
+        }
+        return result;
     }
 
     /**
@@ -295,13 +414,26 @@ public final class DimensionsUtils {
     @SuppressWarnings("unchecked")
     static List<Comparable> getValuesWithDuplicates(
             String attributeName, FeatureCollection featureCollection) {
+        return getValuesWithDuplicates(attributeName, null, featureCollection);
+    }
+
+    @SuppressWarnings("unchecked")
+    static List<Comparable> getValuesWithDuplicates(
+            String attributeName, String endAttributeName, FeatureCollection featureCollection) {
         // full data values are returned including duplicate values
         List<Comparable> values = new ArrayList<>();
         try (FeatureIterator featuresIterator = featureCollection.features()) {
             while (featuresIterator.hasNext()) {
                 // extracting the feature attribute that contain our dimension value
                 SimpleFeature feature = (SimpleFeature) featuresIterator.next();
-                values.add((Comparable) feature.getAttribute(attributeName));
+                Object attr = feature.getAttribute(attributeName);
+                if (endAttributeName != null) {
+                    Object endAttribute = feature.getAttribute(endAttributeName);
+                    Comparable comparableRange = toRange(attr, endAttribute);
+                    if (comparableRange != null) values.add(comparableRange);
+                } else if (attr != null) {
+                    values.add((Comparable) attr);
+                }
             }
             Collections.sort(values, new ComparableComparator());
             return values;
@@ -440,6 +572,38 @@ public final class DimensionsUtils {
         } else {
             throw new RuntimeException(
                     "Cannot get restriction attributes on this resource: " + resource);
+        }
+    }
+
+    private static class SortByEndComparator implements Comparator<Comparable> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public int compare(Comparable o1, Comparable o2) {
+            if (o1 instanceof ComparableRange && o2 instanceof ComparableRange) {
+                ComparableRange comp1 = (ComparableRange) o1;
+                ComparableRange comp2 = (ComparableRange) o2;
+                int result = comp1.getMaxValue().compareTo(comp2.getMaxValue());
+                if (result == 0) result = comp1.getMinValue().compareTo(comp2.getMinValue());
+                return result;
+            }
+            return o1.compareTo(o2);
+        }
+    }
+
+    private static class SortByStartComparator implements Comparator<Comparable> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public int compare(Comparable o1, Comparable o2) {
+            if (o1 instanceof ComparableRange && o2 instanceof ComparableRange) {
+                ComparableRange comp1 = (ComparableRange) o1;
+                ComparableRange comp2 = (ComparableRange) o2;
+                int result = comp1.getMinValue().compareTo(comp2.getMinValue());
+                if (result == 0) result = comp1.getMaxValue().compareTo(comp2.getMaxValue());
+                return result;
+            }
+            return o1.compareTo(o2);
         }
     }
 }

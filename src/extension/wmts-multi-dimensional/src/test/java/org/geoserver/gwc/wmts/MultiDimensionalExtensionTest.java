@@ -595,7 +595,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
 
     public void checkVectorElevationFullDomain(Document result) throws Exception {
         // check the space domain, should be regular whole world
-        assertXpathEvaluatesTo("1.1", "/md:Domains/@version", result);
+        assertXpathEvaluatesTo("1.2", "/md:Domains/@version", result);
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='-180.0']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-90.0']", "1");
@@ -972,11 +972,22 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         return defaultValueSetting;
     }
 
+    private void registerLayerDimension(
+            ResourceInfo info,
+            String dimensionName,
+            String attributeName,
+            DimensionPresentation presentation,
+            DimensionDefaultValueSetting defaultValue) {
+        registerLayerDimension(
+                info, dimensionName, attributeName, null, presentation, defaultValue);
+    }
+
     /** Helper method that will register a dimension for some layer. */
     private void registerLayerDimension(
             ResourceInfo info,
             String dimensionName,
             String attributeName,
+            String endAttribute,
             DimensionPresentation presentation,
             DimensionDefaultValueSetting defaultValue) {
         DimensionInfo dimension = new DimensionInfoImpl();
@@ -984,6 +995,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         dimension.setPresentation(presentation);
         dimension.setDefaultValue(defaultValue);
         dimension.setAttribute(attributeName);
+        if (endAttribute != null) dimension.setEndAttribute(endAttribute);
         info.getMetadata().put(dimensionName, dimension);
         getCatalog().save(info);
     }
@@ -1281,5 +1293,77 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // the call below  was used to throw an exception when dealing with different
         // TileLayer implementations
         extension.encodeLayer(xml, tileLayer);
+    }
+
+    @Test
+    public void testVectorGetDomainValuesTimeByEndAttribute() throws Exception {
+        FeatureTypeInfo vectorInfo =
+                getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
+        try {
+            registerLayerDimension(
+                    vectorInfo,
+                    ResourceInfo.TIME,
+                    "startTime",
+                    "endTime",
+                    DimensionPresentation.LIST,
+                    minimumValue());
+
+            String baseRequest =
+                    "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                            + getLayerId(VECTOR_ELEVATION_TIME)
+                            + "&TileMatrixSet=EPSG:4326&domain=time";
+
+            Document dom =
+                    getAsDOM(baseRequest + "&fromValue=2012-02-12T09:00:00.000Z&fromEnd=true");
+
+            assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+            // sorted by end date too
+            assertXpathEvaluatesTo(
+                    "2012-02-12T00:00:00.000Z/2012-02-12T10:00:00.000Z,2012-02-11T00:00:00.000Z/2012-02-13T00:00:00.000Z",
+                    "/md:DomainValues/md:Domain",
+                    dom);
+        } finally {
+            registerLayerDimension(
+                    vectorInfo,
+                    ResourceInfo.TIME,
+                    "startTime",
+                    null,
+                    DimensionPresentation.LIST,
+                    minimumValue());
+        }
+    }
+
+    @Test
+    public void testVectorGetDomainValuesOnElevationsByEndAttribute() throws Exception {
+        FeatureTypeInfo vectorInfo =
+                getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
+        try {
+            registerLayerDimension(
+                    vectorInfo,
+                    ResourceInfo.ELEVATION,
+                    "startElevation",
+                    "endElevation",
+                    DimensionPresentation.LIST,
+                    minimumValue());
+            // full domain (only 2 entries)
+            String baseRequest =
+                    "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                            + getLayerId(VECTOR_ELEVATION_TIME)
+                            + "&TileMatrixSet=EPSG:4326&domain=elevation";
+            Document dom = getAsDOM(baseRequest + "&fromValue=3.5&fromEnd=true&limit=3");
+            assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+            assertXpathEvaluatesTo("3", "/md:DomainValues/md:Limit", dom);
+            assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+            assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
+            assertXpathEvaluatesTo("3.0/4.0,5.0/7.0", "/md:DomainValues/md:Domain", dom);
+        } finally {
+            registerLayerDimension(
+                    vectorInfo,
+                    ResourceInfo.ELEVATION,
+                    "startElevation",
+                    null,
+                    DimensionPresentation.LIST,
+                    minimumValue());
+        }
     }
 }

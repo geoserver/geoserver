@@ -60,7 +60,7 @@ class TemplatePropertyVisitor {
     }
 
     private void visitTemplateBuilder(String parentPath, TemplateBuilder atb, boolean skipPath) {
-        // no queryables out of static builders for the moment, we migth want
+        // no queryables out of static builders for the moment, we might want
         // to revisit once we consider eventual filters
         if (atb instanceof StaticBuilder || !(atb instanceof AbstractTemplateBuilder)) return;
 
@@ -75,7 +75,7 @@ class TemplatePropertyVisitor {
         // check the key, if we get a null it means the key is dynamic and it's not possible
         // to do anything with this JSON sub-tree
         String key = ((AbstractTemplateBuilder) atb).getKey(null);
-        if (key == null) return;
+        if (key == null && ((AbstractTemplateBuilder) atb).getKey() != null) return;
 
         String path = getPath(parentPath, key, skipPath);
         if (atb instanceof DynamicValueBuilder) {

@@ -31,6 +31,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.text.cql2.CQL;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,6 +39,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
 
 public class STACQueryablesBuilderTest {
 
@@ -173,6 +175,50 @@ public class STACQueryablesBuilderTest {
         assertNotNull(created);
         assertEquals(TYPE_STRING, created.getType());
         assertEquals("date-time", created.getFormat());
+    }
+
+    @Test
+    public void testGetQueryablesTopLevelProperty() throws Exception {
+        // setup data and templates
+        FileSystemResourceStore resourceStore =
+                new FileSystemResourceStore(new File("./src/test/resources"));
+        Resource templateDefinition = resourceStore.get("items-test.json");
+        FeatureSource<FeatureType, Feature> products = data.getProductSource();
+        TemplateReaderConfiguration config =
+                new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
+        Template template = new Template(templateDefinition, config);
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        Filter collectionSampleFilter = ff.equals(ff.property("name"), ff.literal("SENTINEL2"));
+        Feature sampleCollectionFeature =
+                DataUtilities.first(data.getCollectionSource().getFeatures(collectionSampleFilter));
+        OSEOInfo service = new OSEOInfoImpl();
+        STACQueryablesBuilder builder =
+                new STACQueryablesBuilder(
+                        FAKE_ID,
+                        template.getRootBuilder(),
+                        products.getSchema(),
+                        null,
+                        sampleCollectionFeature,
+                        service);
+
+        // grab the queryables
+        Queryables queryables = builder.getQueryables();
+        Map<String, Schema> properties = queryables.getProperties();
+        System.out.println(properties);
+
+        // check the keywords queryable, top level, not in "properties"
+        Schema keywords = properties.get("keywords");
+        assertNotNull(keywords);
+        assertEquals(TYPE_STRING, keywords.getType());
+
+        // this one is inside properties instead
+        Schema cloudCover = properties.get("eo:cloud_cover");
+        assertNotNull(cloudCover);
+        assertEquals(TYPE_INTEGER, cloudCover.getType());
+
+        // check the expression map as well
+        Map<String, Expression> expressions = builder.getExpressionMap();
+        assertEquals(CQL.toExpression("keywords"), expressions.get("keywords"));
     }
 
     @Test

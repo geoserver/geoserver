@@ -39,6 +39,7 @@
         }
       },
       "collection": "${eop:parentIdentifier}",
+      "keywords": "${keywords}",
       "assets": {
       },
       "links": [

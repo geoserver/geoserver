@@ -66,12 +66,13 @@ public class STACQueryableIndexTest extends STACTestSupport {
         oseoEvent.setCollectionName("SAS1");
         stacOseoListener.dataStoreChange(oseoEvent);
         indices = stacOseoListener.getIndexListByTable("product");
-        assertEquals(65, indices.size());
+        assertEquals(66, indices.size());
         // check a few of them
         assertThat(indices, CoreMatchers.hasItem("sas1_geometry_idx")); // geometry
         assertThat(indices, CoreMatchers.hasItem("sas1_view_sun_azimuth_idx")); // plain field
         assertThat(indices, CoreMatchers.hasItem("sas1_jsontest1_idx")); // JSON index
         assertThat(indices, CoreMatchers.hasItem("sas1_s1_ipf_version_idx")); // JSON index
+        assertThat(indices, CoreMatchers.hasItem("sas1_keywords_idx")); // JSON index
         // this one cannot be created, strToLowercase is used and no machinery to recognize it
         assertThat(indices, CoreMatchers.not(CoreMatchers.hasItem("sas1_constellation_idx")));
 
@@ -81,13 +82,13 @@ public class STACQueryableIndexTest extends STACTestSupport {
         stacOseoListener.dataStoreChange(oseoEvent2);
         indices = stacOseoListener.getIndexListByTable("product");
         // there should not be any new indices because SAS9 fields are the same as SAS1
-        assertEquals(65, indices.size());
+        assertEquals(66, indices.size());
         oseoEvent.setType(OseoEventType.PRE_DELETE);
         oseoEvent.setCollectionName("SAS1");
         stacOseoListener.dataStoreChange(oseoEvent);
         indices = stacOseoListener.getIndexListByTable("product");
         // None of the indices were deleted because they are still needed for SAS9
-        assertEquals(65, indices.size());
+        assertEquals(66, indices.size());
         oseoEvent2.setType(OseoEventType.PRE_DELETE);
         oseoEvent2.setCollectionName("SAS9");
         stacOseoListener.dataStoreChange(oseoEvent2);

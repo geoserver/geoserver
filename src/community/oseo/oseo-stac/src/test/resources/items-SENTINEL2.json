@@ -2,6 +2,7 @@
   "$merge": "items.json",
   "features": [
     {
+      "keywords": "${keywords}",
       "properties": {
         "${eop:parentIdentifier}": {
           "fullStaticObject": {

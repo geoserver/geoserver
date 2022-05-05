@@ -39,6 +39,7 @@ public class ItemsTest extends STACTestSupport {
 
         copyTemplate("/mandatoryLinks.json");
         copyTemplate("/items-LANDSAT8.json");
+        copyTemplate("/items-SENTINEL2.json");
         copyTemplate("/items-SAS1.json");
         copyTemplate("/box.json");
         copyTemplate("/parentLink.json");
@@ -617,6 +618,7 @@ public class ItemsTest extends STACTestSupport {
         assertTrue(includeFlatField.containsKey("thumbnail"));
     }
 
+    @Test
     public void testQueryByDynamicPropertyNonQueryable() throws Exception {
         // s2:granule_id is in a dynamically included JSON but is not in the queryables array
         DocumentContext doc =
@@ -639,5 +641,30 @@ public class ItemsTest extends STACTestSupport {
         service.getGlobalQueryables().clear();
         service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
         gs.save(service);
+    }
+
+    @Test
+    public void testTopLevelArrayProperty() throws Exception {
+        // query with an existing keyword
+        DocumentContext doc =
+                getAsJSONPath("ogc/stac/collections/SENTINEL2/items?filter=keywords = 'k1'", 200);
+        assertEquals(new Integer(1), doc.read("numberMatched", Integer.class));
+        assertEquals(
+                "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
+                readSingleContext(doc, "features").read("id"));
+
+        // query with an existing keyword (
+        doc = getAsJSONPath("ogc/stac/collections/SENTINEL2/items?filter=keywords = 'k2'", 200);
+        assertEquals(new Integer(1), doc.read("numberMatched", Integer.class));
+        assertEquals(
+                "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
+                readSingleContext(doc, "features").read("id"));
+
+        // query with a missing keyword
+        doc =
+                getAsJSONPath(
+                        "ogc/stac/collections/SENTINEL2/items?filter=keywords = 'notAKeyword'",
+                        200);
+        assertEquals(new Integer(0), doc.read("numberMatched", Integer.class));
     }
 }

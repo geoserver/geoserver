@@ -537,11 +537,11 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     private void logIndexHandling(
             String action, String collection, String queryable, String expression, boolean exists) {
-        LOGGER.severe(
+        LOGGER.info(
                 () ->
                         "Checking if index is "
                                 + action
-                                + " for"
+                                + " for "
                                 + collection
                                 + "/"
                                 + queryable
@@ -574,6 +574,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             throws IOException {
         switch (fieldType) {
             case Geometry:
+            case Array:
             case Other:
                 return getIndexField(expression);
             default:
@@ -601,6 +602,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
                 sql.append(indexTitle).append(" ON product ");
                 if (fieldType == Indexable.FieldType.Geometry) {
                     sql.append(" USING GIST ");
+                } else if (fieldType == Indexable.FieldType.Array) {
+                    sql.append(" USING GIN ");
                 }
                 sql.append("(");
                 if (fieldType == Indexable.FieldType.Other
@@ -744,7 +747,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     }
 
     @Override
-    public List<String> getIndexNamesByLayer(String tableName) throws IOException {
+    public List<String> getIndexNames(String tableName) throws IOException {
         // check we're running against PostGIS
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();

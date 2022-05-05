@@ -25,6 +25,7 @@ public class Indexable {
         JsonFloat,
         JsonDouble,
         Geometry,
+        Array,
         Other
     }
 

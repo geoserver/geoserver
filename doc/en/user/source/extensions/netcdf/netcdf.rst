@@ -515,15 +515,19 @@ attribute (position is important, mosaic construction will fail if the attribute
 
   <attributes>the_geom:Polygon,imageindex:Integer,location:String,time:java.util.Date</attributes>
 
-Also, find every XML file holding a indexer like configuration, and add the parameter:
+Also, find every XML file holding a indexer like configuration, and add the parameter ``AuxiliaryDatastoreFile``
+parameter:
 
 .. code-block:: xml
 
-  <parameter name="AuxiliaryDatastoreFile" value="netcdf_datastore.properties" /> 
+  <parameter name="AuxiliaryDatastoreFile" value="<path/to/mosaic/directory/>netcdf_datastore.properties" /> 
 
 Finally, do the same with the property files for each coverage, adding::
 
-  AuxiliaryDatastoreFile=netcdf_datastore.properties
+  AuxiliaryDatastoreFile=<path/to/mosaic/directory/>netcdf_datastore.properties
+
+The path to ``netcdf_datastore.properties`` can also be relative, but only if the image mosaic
+is configured to use relative paths.
 
 If GeoServer was running during the migration, the mosaic store just migrated needs to be reset
 so that it reads again its configuration: go to the mosaic store, open its configuration,

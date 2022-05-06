@@ -63,7 +63,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
     @Override
     protected List<Filter> getFilters() {
-        LoggingFilter filter = new LoggingFilter();
+        LoggingFilter filter = new LoggingFilter(null);
         filter.setEnabled(true);
         filter.setLogBodies(true);
         return Collections.singletonList(filter);

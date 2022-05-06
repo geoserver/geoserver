@@ -1,6 +1,12 @@
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.decorators;
 
 import org.easymock.EasyMock;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.security.WrapperPolicy;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,6 +35,18 @@ public class DefaultSecureCatalogFactoryTest {
     }
 
     @Test
+    public void canSecureWMSStoreInfo() {
+        // Given
+        Class<WMSStoreInfo> clazz = WMSStoreInfo.class;
+
+        // When
+        boolean bool = defaultSecureCatalogFactory.canSecure(clazz);
+
+        // Then
+        Assert.assertTrue(bool);
+    }
+
+    @Test
     public void secureWMTSStoreInfo() {
         // Given
         DefaultSecureCatalogFactory defaultSecureCatalogFactory = new DefaultSecureCatalogFactory();
@@ -40,5 +58,17 @@ public class DefaultSecureCatalogFactoryTest {
 
         // Then
         Assert.assertTrue(object instanceof SecuredWMTSStoreInfo);
+    }
+
+    @Test
+    public void canSecureWMTSStoreInfo() {
+        // Given
+        Class<WMTSStoreInfo> clazz = WMTSStoreInfo.class;
+
+        // When
+        boolean bool = defaultSecureCatalogFactory.canSecure(clazz);
+
+        // Then
+        Assert.assertTrue(bool);
     }
 }

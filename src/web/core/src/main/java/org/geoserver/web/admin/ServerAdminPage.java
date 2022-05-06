@@ -31,12 +31,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
     }
 
     public IModel<GeoServerInfo> getGlobalInfoModel() {
-        return new LoadableDetachableModel<GeoServerInfo>() {
-            @Override
-            public GeoServerInfo load() {
-                return getGeoServerApplication().getGeoServer().getGlobal();
-            }
-        };
+        return new Model<>(getGeoServerApplication().getGeoServer().getGlobal());
     }
 
     public IModel<JAIInfo> getJAIModel() {

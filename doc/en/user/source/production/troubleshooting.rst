@@ -24,23 +24,10 @@ The amount of information logged can vary based on the logging profile chosen in
 Logging service requests
 ------------------------
 
-GeoServer provides a request logging filter that is normally inactive. The filter can log both the requested URL and POST requests contents.
-Normally it is disabled due to its overhead. If you need to have an history of the incoming requests you can enable it by changing the ``geoserver/WEB-INF/web.xml`` contents to look like:
+GeoServer provides a request logging capability that is normally inactive. When enabled on the *Server Settings* configuration page it can log both the requested URL and POST requests contents.
+Normally it is disabled due to its overhead. If you need to have an history of the incoming requests you can enable it by checking *Enable Request Logging* (and optionally *Log Request Bodies* and *Log Request Headers*) under *Internal Settings* *Logging Settings* on the *Server Settings* before clicking *Save* as seen below.
 
-.. code-block:: xml 
-   
-   <filter>
-     <filter-name>Request Logging Filter</filter-name>
-     <filter-class>org.geoserver.filters.LoggingFilter</filter-class>
-     <init-param>
-         <param-name>enabled</param-name>
-         <param-value>true</param-value>
-     </init-param>
-     <init-param>
-         <param-name>log-request-bodies</param-name>
-         <param-value>true</param-value>
-     </init-param>
-   </filter>
+.. figure:: images/request_logging_settings.png
 
 
 This will log both the requests and the bodies, resulting in something like the following::

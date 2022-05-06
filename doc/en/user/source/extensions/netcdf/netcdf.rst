@@ -429,7 +429,7 @@ index file to speed up slices lookups, as well as a H2 database containing infor
 This H2 store is opened and closed every time the associated NetCDF is read, causing less than optimal performance in map rendering.
 
 As an alternative, it's possible to store all slice metadata from H2 to a centralized database, and have GeoServer manage the store
-connecting to it, thus keeping it always open. Some work is in order to make that happen thought.
+connecting to it, thus keeping it always open. Some work is needed in order to make that happen thought.
 
 As a first step, create a store connection property file named ``netcdf_datastore.properties``.
 Here is an example file, suitable to connect to a PostGIS enabled database, which makes
@@ -462,7 +462,7 @@ the ``indexer.xml`` file and adding this new line in the parameters section:
 
 The ``_auxiliary.xml`` file also needs to be modified, open it and change the ``attributes``
 element(s), adding a ``location:String`` attribute right after the ``imageIndex:Integer``
-attribute (position is important, mosaic construction will fail if the attribute is mispaced):
+attribute (position is important, mosaic construction will fail if the attribute is misplaced):
 
 .. code-block:: xml
 

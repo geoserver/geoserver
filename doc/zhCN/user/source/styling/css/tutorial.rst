@@ -508,4 +508,4 @@
 CSS 工作室
 ^^^^^^^^^^^^
 
-For more details, 请访问下一部分， `CSS workshop <../workshop/index.html>`_。 该研讨会过去曾教授 CSS 扩展用于课程设置，现已移植到用户文档中。
+更多详细信息, 请访问下一部分， `CSS workshop <../workshop/index.html>`_。 该研讨会过去曾教授 CSS 扩展并被采用于课程设置，现已移植到用户文档中。

@@ -5,6 +5,10 @@
  */
 package org.geoserver.web.admin;
 
+import static org.geoserver.filters.LoggingFilter.LOG_BODIES_ENABLED;
+import static org.geoserver.filters.LoggingFilter.LOG_HEADERS_ENABLED;
+import static org.geoserver.filters.LoggingFilter.LOG_REQUESTS_ENABLED;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -24,6 +30,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
@@ -38,6 +45,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.data.resource.LocalesDropdown;
 import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
+import org.geoserver.web.util.MetadataMapModel;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
@@ -67,6 +75,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         CompoundPropertyModel<GeoServerInfo> globalModel =
                 new CompoundPropertyModel<>(globalInfoModel);
         PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(globalModel, "settings");
+        PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(globalInfoModel, "metadata");
         Form<GeoServerInfo> form = new Form<>("form", globalModel);
 
         add(form);
@@ -110,6 +119,42 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         new PropertyModel<>(globalInfoModel, "xmlPostRequestLogBufferSize"));
         xmlPostRequestLogBufferSize.add(RangeValidator.minimum(0));
         form.add(xmlPostRequestLogBufferSize);
+        CheckBox logBodiesCheckBox =
+                new CheckBox(
+                        "requestLoggingBodies",
+                        new MetadataMapModel<>(metadataModel, LOG_BODIES_ENABLED, Boolean.class));
+        form.add(logBodiesCheckBox);
+        CheckBox logHeadersCheckBox =
+                new CheckBox(
+                        "requestLoggingHeaders",
+                        new MetadataMapModel<>(metadataModel, LOG_HEADERS_ENABLED, Boolean.class));
+        WebMarkupContainer wmc = new WebMarkupContainer("requestLoggingSub");
+        wmc.setOutputMarkupId(true);
+        wmc.add(logBodiesCheckBox);
+        wmc.add(logHeadersCheckBox);
+        MetadataMapModel<Boolean> requestCheckModel =
+                new MetadataMapModel<Boolean>(metadataModel, LOG_REQUESTS_ENABLED, Boolean.class) {
+                    @Override
+                    public void setObject(Boolean object) {
+                        super.setObject(object);
+                    }
+                };
+        wmc.setEnabled(Boolean.TRUE.equals(requestCheckModel.getObject()));
+        form.add(wmc);
+
+        AjaxCheckBox requestCheckBox =
+                new AjaxCheckBox("requestLogging", requestCheckModel) {
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        wmc.setEnabled(Boolean.TRUE.equals(requestCheckModel.getObject()));
+                        logBodiesCheckBox.getModel().setObject(false);
+                        logHeadersCheckBox.getModel().setObject(false);
+                        target.add(wmc);
+                    }
+                };
+
+        form.add(requestCheckBox);
 
         form.add(new CheckBox("xmlExternalEntitiesEnabled"));
 

@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.logging.Logger;
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -18,6 +17,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.RequestUtils;
 
 /**
@@ -25,16 +26,45 @@ import org.geoserver.ows.util.RequestUtils;
  *
  * @author David Winslow <dwinslow@openplans.org>
  */
-public class LoggingFilter implements Filter {
+public class LoggingFilter implements GeoServerFilter {
     protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
 
-    protected boolean enabled = true;
-    protected boolean logBodies = true;
-    protected boolean logHeaders = true;
+    public static final String LOG_REQUESTS_ENABLED = "logRequestsEnabled";
+    public static final String LOG_HEADERS_ENABLED = "logHeadersEnabled";
+    public static final String LOG_BODIES_ENABLED = "logBodiesEnabled";
+
+    protected boolean enabled = false;
+    protected boolean logBodies = false;
+    protected boolean logHeaders = false;
+
+    private final GeoServer geoServer;
+
+    public LoggingFilter(GeoServer geoServer) {
+        this.geoServer = geoServer;
+    }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
+        // Pulling setting from global settings object
+        boolean geoServerHasMetadata =
+                (geoServer != null
+                        && geoServer.getGlobal() != null
+                        && geoServer.getGlobal().getMetadata() != null);
+
+        if (geoServerHasMetadata) {
+            MetadataMap metadataMap = geoServer.getGlobal().getMetadata();
+            enabled =
+                    (metadataMap.containsKey(LOG_REQUESTS_ENABLED)
+                            && metadataMap.get(LOG_REQUESTS_ENABLED, Boolean.class));
+            logBodies =
+                    (metadataMap.containsKey(LOG_BODIES_ENABLED)
+                            && metadataMap.get(LOG_BODIES_ENABLED, Boolean.class));
+            logHeaders =
+                    (metadataMap.containsKey(LOG_HEADERS_ENABLED)
+                            && metadataMap.get(LOG_HEADERS_ENABLED, Boolean.class));
+        }
+
         String message = "";
         String body = null;
         String path = "";

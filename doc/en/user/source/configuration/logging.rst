@@ -119,7 +119,7 @@ Example of console only logging
 
 1. Copy an example such as :download:`QUIET_LOGGING.xml </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>` to :file:`CONSOLE_LOGGING.xml`:
 
-2. Update the :file:`CONSOLE_LOGGING.xml` intro with the new name:
+2. Update the initial part of :file:`CONSOLE_LOGGING.xml` with the new name:
    
    .. code-block:: xml
    

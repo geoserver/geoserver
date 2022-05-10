@@ -5,6 +5,20 @@ Advanced log configuration
 
 GeoServer uses the Log4J framework for logging, which is configured by selecting a logging profile (in the :ref:`global settings <config_globalsettings_log_location>`).
 
+The GeoServer logging profiles assign logging levels to specific server operations:
+
+* GeoServer loggers record server function and the activity of individual services.
+* GeoWebCache loggers record the activity of tile protocol library used by GeoServer.
+* GeoTools loggers record the activity of the data access and rendering library used by GeoServer.
+* The appender ``stdout`` is setup as a Console appender sending information to standard output, based on :guilabel:`Log to Stdout` :ref:`global settings <config_globalsettings_log_stdout>`.
+* The appender ``geoserverlogfile`` is setup as a FileAppender or RollingFile appender sending information to the :guilabel:`Log location` :ref:`global settings <config_globalsettings_log_location>`.
+* Logging levels range from:
+  
+  * Failure (``FATAL``, ``ERROR``, ``WARN``) levels
+  * Operational (``INFO``, ``CONFIG``) levels
+  * Verbose (``DEBUG``, ``TRACE``, ``FINEST``) levels
+
+
 In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another another logging library altogether).
 
 Custom logging profiles
@@ -103,9 +117,45 @@ There are however a few rules to follow:
 Example of console only logging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Copy :download:`QUIET_LOGGING.xml </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>`
+1. Copy an example such as :download:`QUIET_LOGGING.xml </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>` to :file:`CONSOLE_LOGGING.xml`:
 
-2. Add appenders for geoserver 
+2. Update the :file:`CONSOLE_LOGGING.xml` intro with the new name:
+   
+   .. code-block:: xml
+   
+       <?xml version="1.0" encoding="UTF-8"?>
+       <Configuration name="CONSOLE_LOGGING" status="fatal" dest="out">
+
+3. Double check the Console appender configuration:
+   
+   .. code-block:: xml
+   
+      <Appenders>
+          <Console name="stdout" target="SYSTEM_OUT">
+              <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n%"/>
+          </Console>
+      </Appenders>
+    
+3. Add appenders for geoserver (and any others you wish to track):
+
+   .. code-block:: xml
+   
+        <Logger name="org.geoserver" level="ERROR" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+        <Logger name="org.vfny.geoserver" level="ERROR" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+
+4. Double check the root logger:
+   
+   .. code-block:: xml
+   
+      <Root level="FATAL">
+          <AppenderRef ref="stdout"/>
+      </Root>
+
+5. This result provides minimal feedback to the console, only reporting when GeoServer encounters an error.
 
 Overriding the log location setup in the GeoServer configuration
 ----------------------------------------------------------------

@@ -189,7 +189,7 @@ The built-in logging profiles available on the global settings page are:
   
   This developer profile is recommended for active debugging of GeoServer. 
 
-* **GeoTools Developer Logging** (``GEOTOOLS_DEVELOPER_LOGGING``) — A verbose logging profile that includes ``DEBUG`` messages for the GeoTools library.
+* **GeoTools Developer Logging** (``GEOTOOLS_DEVELOPER_LOGGING``) - A verbose logging profile that includes ``DEBUG`` messages for the GeoTools library.
   
   This developer profile is recommended for active debugging of GeoTools. This is especially good for troubleshooting rendering and data access issues.
 

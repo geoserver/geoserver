@@ -179,7 +179,7 @@ Select a :guilabel:`Logging profile` to determine the amount of detail GeoServer
 
 The built-in logging profiles available on the global settings page are:
  
-* **Default Logging** (``DEFAULT_LOGGING``) — Provides a good mix of detail without being VERBOSE. 
+* **Default Logging** (``DEFAULT_LOGGING``) — Provides a good mix of detail without being too verbose. 
   
   Default logging enables ``CONFIG`` and ``INFO`` messages, with a few (chatty) GeoServer and GeoTools packages reduced to ``WARN``.
   

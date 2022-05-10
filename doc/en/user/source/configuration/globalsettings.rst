@@ -199,7 +199,7 @@ The built-in logging profiles available on the global settings page are:
 
 * **Quiet Logging** (``QUIET_LOGGING``) - Turns off logging.
 
-* **Verbose Logging**  (``VERBOSE_LOGGING``) — Provides more detail by enabling ``DEBUG`` messages.
+* **Verbose Logging**  (``VERBOSE_LOGGING``) - Provides more detail by enabling ``DEBUG`` messages.
   
   This profile is only useful when troubleshooting.
   

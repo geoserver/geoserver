@@ -8,7 +8,7 @@ GeoServer uses the Log4J framework for logging, which is configured by selecting
 The GeoServer logging profiles assign logging levels to specific server operations:
 
 * GeoServer loggers record server function and the activity of individual services.
-* GeoWebCache loggers record the activity of tile protocol library used by GeoServer.
+* GeoWebCache loggers record the activity of the tile protocol library used by GeoServer.
 * GeoTools loggers record the activity of the data access and rendering library used by GeoServer.
 * The appender ``stdout`` is setup as a Console appender sending information to standard output, based on :guilabel:`Log to Stdout` :ref:`global settings <config_globalsettings_log_stdout>`.
 * The appender ``geoserverlogfile`` is setup as a FileAppender or RollingFile appender sending information to the :guilabel:`Log location` :ref:`global settings <config_globalsettings_log_location>`.

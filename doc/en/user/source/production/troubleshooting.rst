@@ -66,7 +66,7 @@ jstack
 
 `jstack <http://java.sun.com/javase/6/docs/technotes/tools/share/jstack.html>`__ is a tool extracting a the current stack trace for each thread running in the virtual machine. It can be used to identify scalability issues and to gather what the program is actually doing. 
 
-It usually takes people knowing about the inner workings of GeoServer can properly interpret the jstack output.
+It usually requires detailed understanding of the inner workings of GeoServer to properly interpret the jstack output.
   
 An example of usage::
 

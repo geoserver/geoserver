@@ -122,7 +122,7 @@ jmap
 `jmap <http://java.sun.com/javase/6/docs/technotes/tools/share/jmap.html>`__ is a tool to gather information about the a Java virtual machine. 
 It can be used in a few interesting ways.
 
-By running it without arguments (past the pid of the JVM) it will print out a **dump of the native libraries used by the JVM**. This can come in handy when one wants to double check GeoServer is actually using a certain version of a native library (e.g., GDAL)::
+By running it without arguments (other than the process id of the JVM) it will print out a **dump of the native libraries used by the JVM**. This can come in handy when one wants to double check GeoServer is actually using a certain version of a native library (e.g., GDAL)::
 
    > jmap 17251
 

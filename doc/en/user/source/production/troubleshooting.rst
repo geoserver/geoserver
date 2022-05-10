@@ -28,7 +28,7 @@ Logging service requests
 
 GeoServer provides a request logging capability that is normally inactive. When enabled in the :ref:`global settings <config_globalsettings_log_request>` GeoServer can log both the requested URL and POST requests contents.
 
-These settings are disabled by default due to their overhead. If you need a history of the incoming requests enable request logging by navigating to :menuselection:`Settings > Global` page, and scroll down to **Logging Settings** to :ref:`Enable Request Logging <config_globalsettings_log_request>``. You can enable this feature using *Enable Request Logging* (and optionally *Log Request Bodies* and *Log Request Headers*) before clicking :guilabel:`Apply` as shown below.
+These settings are disabled by default due to their overhead. If you need a history of the incoming requests enable request logging by navigating to :menuselection:`Settings > Global` page, and scroll down to **Logging Settings** to :ref:`Enable Request Logging <config_globalsettings_log_request>`. You can enable this feature using *Enable Request Logging* (and optionally *Log Request Bodies* and *Log Request Headers*) before clicking :guilabel:`Apply` as shown below.
 
 Normally it is disabled due to its overhead. If you need to have an history of the incoming requests you navigate to :menuselection:`Settings > Global` page under *Internal Settings* *Logging Settings* as shown below. Enable logging service requests by selecting :guilabel:`Enable Request Logging` (and optionally :guilabel:`Log Request Bodies` and :guilabel:`Log Request Headers``) before clicking :guilabel:`Apply`.
 

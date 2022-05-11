@@ -26,20 +26,30 @@ The amount of information logged can vary based on the logging profile chosen in
 Logging service requests
 ------------------------
 
-GeoServer provides a request logging capability that is normally inactive. When enabled in the :ref:`global settings <config_globalsettings_log_request>` GeoServer can log both the requested URL and POST requests contents.
-
-These settings are disabled by default due to their overhead. If you need a history of the incoming requests enable request logging by navigating to :menuselection:`Settings > Global` page, and scroll down to **Logging Settings** to :ref:`Enable Request Logging <config_globalsettings_log_request>`. You can enable this feature using *Enable Request Logging* (and optionally *Log Request Bodies* and *Log Request Headers*) before clicking :guilabel:`Apply` as shown below.
-
-Normally it is disabled due to its overhead. If you need to have an history of the incoming requests you navigate to :menuselection:`Settings > Global` page under *Internal Settings* *Logging Settings* as shown below. Enable logging service requests by selecting :guilabel:`Enable Request Logging` (and optionally :guilabel:`Log Request Bodies` and :guilabel:`Log Request Headers``) before clicking :guilabel:`Apply`.
+GeoServer provides a request logging capability that is inactive by default. When enabled in the :ref:`global settings <config_globalsettings_log_request>` GeoServer can log both the requested URL and POST requests contents.
 
 .. figure:: images/request_logging_settings.png
+   
+   Global Settings
 
-This will log both the requests and the bodies, resulting in something like the following::
+To track a history of the incoming requests:
 
-   08 gen 11:30:13 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?HEIGHT=330&WIDTH=660&LAYERS=nurc%3AArc_Sample&STYLES=&SRS=EPSG%3A4326&FORMAT=image%2Fjpeg&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&BBOX=-93.515625,-40.078125,138.515625,75.9375" "Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.15) Gecko/2009102815 Ubuntu/9.04 (jaunty) Firefox/3.0.15" "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=nurc:Arc_Sample&styles=&bbox=-180.0,-90.0,180.0,90.0&width=660&height=330&srs=EPSG:4326&format=application/openlayers" 
-   08 gen 11:30:13 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?HEIGHT=330&WIDTH=660&LAYERS=nurc%3AArc_Sample&STYLES=&SRS=EPSG%3A4326&FORMAT=image%2Fjpeg&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&BBOX=-93.515625,-40.078125,138.515625,75.9375" took 467ms
-   08 gen 11:30:14 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml&BBOX=-93.515625%2C-40.078125%2C138.515625%2C75.9375&X=481&Y=222&INFO_FORMAT=text%2Fhtml&QUERY_LAYERS=nurc%3AArc_Sample&FEATURE_COUNT=50&Layers=nurc%3AArc_Sample&Styles=&Srs=EPSG%3A4326&WIDTH=660&HEIGHT=330&format=image%2Fjpeg" "Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.15) Gecko/2009102815 Ubuntu/9.04 (jaunty) Firefox/3.0.15" "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=nurc:Arc_Sample&styles=&bbox=-180.0,-90.0,180.0,90.0&width=660&height=330&srs=EPSG:4326&format=application/openlayers" 
-   08 gen 11:30:14 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml&BBOX=-93.515625%2C-40.078125%2C138.515625%2C75.9375&X=481&Y=222&INFO_FORMAT=text%2Fhtml&QUERY_LAYERS=nurc%3AArc_Sample&FEATURE_COUNT=50&Layers=nurc%3AArc_Sample&Styles=&Srs=EPSG%3A4326&WIDTH=660&HEIGHT=330&format=image%2Fjpeg" took 314ms
+1. Enable request logging by navigating to :menuselection:`Settings > Global` page, scroll down to **Logging Settings**, and  :ref:`Enable Request Logging <config_globalsettings_log_request>`.
+
+2. Enable this feature using :guilabel:`Enable Request Logging`.
+
+3. Optionally select :guilabel:`Log Request Bodies` to troubleshoot POST requests (for example WFS Transaction).
+
+4. Optionally select :guilabel:`Log Request Headers` to troubleshoot Request Headers (for example when checking security credentials).
+
+5. Click :guilabel:`Apply` to apply these settings.
+
+6. This will log request information, resulting in something like the following::
+
+     08 gen 11:30:13 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?HEIGHT=330&WIDTH=660&LAYERS=nurc%3AArc_Sample&STYLES=&SRS=EPSG%3A4326&FORMAT=image%2Fjpeg&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&BBOX=-93.515625,-40.078125,138.515625,75.9375" "Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.15) Gecko/2009102815 Ubuntu/9.04 (jaunty) Firefox/3.0.15" "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=nurc:Arc_Sample&styles=&bbox=-180.0,-90.0,180.0,90.0&width=660&height=330&srs=EPSG:4326&format=application/openlayers" 
+     08 gen 11:30:13 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?HEIGHT=330&WIDTH=660&LAYERS=nurc%3AArc_Sample&STYLES=&SRS=EPSG%3A4326&FORMAT=image%2Fjpeg&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&BBOX=-93.515625,-40.078125,138.515625,75.9375" took 467ms
+     08 gen 11:30:14 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml&BBOX=-93.515625%2C-40.078125%2C138.515625%2C75.9375&X=481&Y=222&INFO_FORMAT=text%2Fhtml&QUERY_LAYERS=nurc%3AArc_Sample&FEATURE_COUNT=50&Layers=nurc%3AArc_Sample&Styles=&Srs=EPSG%3A4326&WIDTH=660&HEIGHT=330&format=image%2Fjpeg" "Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.15) Gecko/2009102815 Ubuntu/9.04 (jaunty) Firefox/3.0.15" "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=nurc:Arc_Sample&styles=&bbox=-180.0,-90.0,180.0,90.0&width=660&height=330&srs=EPSG:4326&format=application/openlayers" 
+     08 gen 11:30:14 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml&BBOX=-93.515625%2C-40.078125%2C138.515625%2C75.9375&X=481&Y=222&INFO_FORMAT=text%2Fhtml&QUERY_LAYERS=nurc%3AArc_Sample&FEATURE_COUNT=50&Layers=nurc%3AArc_Sample&Styles=&Srs=EPSG%3A4326&WIDTH=660&HEIGHT=330&format=image%2Fjpeg" took 314ms
 
 Using JDK tools to get stack and memory dumps
 ---------------------------------------------

@@ -51,7 +51,7 @@ All tools work against a live Java Virtual Machine, the one running GeoServer in
 jps
 ````
 
-`jps <http://java.sun.com/javase/6/docs/technotes/tools/share/jps.html>`__ is a tool listing all the Java processing running. It can be used to retried the ``pid`` (process id) of the virtual machine that is running GeoServer. For example::
+`jps <http://java.sun.com/javase/6/docs/technotes/tools/share/jps.html>`__ is a tool listing all the Java processing running. It can be used to retrieve the ``pid`` (process id) of the virtual machine that is running GeoServer. For example::
 
    > jps -mlv
    

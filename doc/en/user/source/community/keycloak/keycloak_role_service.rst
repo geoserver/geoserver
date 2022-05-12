@@ -79,7 +79,8 @@ Role syncing with Keycloak will be tied to the confidential client.
 
 GeoServer Configuration for Keycloak Authentication Filters
 -----------------------------------------------------------
+
 Under the Authentication section of GeoServer:
 
 * Add the Keycloak authentication filter to the top of the web and default filter chains.
-* Add geofence to the selected provider chains, and place it above the default.
+* Add keycloak to the selected provider chains, and place it above the default.

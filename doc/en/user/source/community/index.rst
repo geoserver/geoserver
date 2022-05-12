@@ -47,7 +47,6 @@ officially part of the GeoServer releases. They are however built along with the
    jdbcstore/index
    jms-cluster/index
    keycloak/index
-   keycloak/keycloak_role_service
    mbtiles/index
    metadata/index
    monitor-hibernate/index

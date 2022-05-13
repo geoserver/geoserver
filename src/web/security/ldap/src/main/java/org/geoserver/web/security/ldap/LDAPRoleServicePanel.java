@@ -57,6 +57,11 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
         add(new TextField<String>("groupSearchFilter"));
         add(new TextField<String>("allGroupsSearchFilter"));
         add(new TextField<String>("userFilter"));
+        TextField<String> rolePrefixField = new TextField<>("rolePrefix");
+        rolePrefixField.setConvertEmptyInputStringToNull(
+                false); // empty string is a legitimate prefix value
+        add(rolePrefixField);
+        add(new CheckBox("convertToUpperCase"));
         add(
                 new AjaxCheckBox("bindBeforeGroupSearch") {
                     private static final long serialVersionUID = -1675695153498067857L;

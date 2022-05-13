@@ -49,8 +49,9 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     static Logger LOGGER = Logging.getLogger("org.geoserver.security.ldap");
     protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
-    private String rolePrefix = "ROLE_";
-    private boolean convertToUpperCase = true;
+    private String rolePrefix = LDAPBaseSecurityServiceConfig.ROLE_PREFIX_DEFAULT;
+    private boolean convertToUpperCase =
+            LDAPBaseSecurityServiceConfig.CONVERT_ROLE_UPPERCASE_DEFAULT;
 
     private String adminGroup;
     private String groupAdminGroup;
@@ -64,6 +65,14 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
         }
         if (!isEmpty(ldapConfig.getGroupAdminGroup())) {
             this.groupAdminGroup = ldapConfig.getGroupAdminGroup();
+        }
+        if (ldapConfig.getRolePrefix() != null) {
+            this.rolePrefix = ldapConfig.getRolePrefix().trim();
+        } else {
+            this.rolePrefix = "";
+        }
+        if (ldapConfig.getConvertToUpperCase() != null) {
+            this.convertToUpperCase = ldapConfig.getConvertToUpperCase();
         }
     }
     /** Read only store. */
@@ -287,9 +296,9 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
 
     @Override
     public GeoServerRole getRoleByName(String role) throws IOException {
-        if (role.startsWith("ROLE_")) {
+        if (role.startsWith(rolePrefix)) {
             // remove standard role prefix
-            role = role.substring(5);
+            role = role.substring(rolePrefix.length());
         }
         final String roleName = role;
         final SortedSet<String> roles = new TreeSet<>();
@@ -353,9 +362,9 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     }
 
     private String normalizeGroupName(String role) {
-        if (role.startsWith("ROLE_")) {
+        if (role.startsWith(rolePrefix)) {
             // remove standard role prefix
-            role = role.substring(5);
+            role = role.substring(rolePrefix.length());
         }
         return role;
     }

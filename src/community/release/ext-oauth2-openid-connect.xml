@@ -15,6 +15,7 @@
         <include>spring-security-config-*</include>
         <include>spring-security-web-*</include>
         <include>spring-security-oauth2*</include>
+        <include>spring-security-jwt*</include>
         <include>commons-codec*</include>
         <include>jackson-core-*</include>
         <include>jackson-mapper-asl-*</include>

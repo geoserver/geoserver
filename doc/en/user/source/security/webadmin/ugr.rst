@@ -414,6 +414,10 @@ To add a new LDAP role service, click the :guilabel:`Add new` link, and then the
    * - Filter used to lookup user. 
      - optional filter used to extract a user dn, to be used together with *Group user membership search filter* when the {1} placeholder is specified. This may contain a placeholder value:
        ``{0}``, the ``username`` of the user, for example ``bob``.
+   * - Role prefix 
+     - Prefix appended in front of role names extracted from the LDAP. If left blank, no prefix will be inserted.
+   * - Convert Role To Upper Case 
+     - If selected all role names extracted from the LDAP will be converted to upper case.              
      
    * - Authenticate to extract roles
      - When checked all LDAP searches will be done in authenticated mode, using the credentials given with the *Username* and *Password* options

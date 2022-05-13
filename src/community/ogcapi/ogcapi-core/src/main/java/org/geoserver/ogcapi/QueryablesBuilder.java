@@ -23,20 +23,15 @@ import org.opengis.feature.type.AttributeType;
 
 public class QueryablesBuilder {
 
-    public static final String POINT_SCHEMA_REF =
-            "https://geojson.org/schema/Point.json";
-    public static final String MULTIPOINT_SCHEMA_REF =
-            "https://geojson.org/schema/MultiPoint.json";
-    public static final String LINESTRING_SCHEMA_REF =
-            "https://geojson.org/schema/LineString.json";
+    public static final String POINT_SCHEMA_REF = "https://geojson.org/schema/Point.json";
+    public static final String MULTIPOINT_SCHEMA_REF = "https://geojson.org/schema/MultiPoint.json";
+    public static final String LINESTRING_SCHEMA_REF = "https://geojson.org/schema/LineString.json";
     public static final String MULTILINESTRING_SCHEMA_REF =
             "https://geojson.org/schema/MultiLineString.json";
-    public static final String POLYGON_SCHEMA_REF =
-            "https://geojson.org/schema/Polygon.json";
+    public static final String POLYGON_SCHEMA_REF = "https://geojson.org/schema/Polygon.json";
     public static final String MULTIPOLYGON_SCHEMA_REF =
             "https://geojson.org/schema/MultiPolygon.json";
-    public static final String GEOMETRY_SCHEMA_REF =
-            "https://geojson.org/schema/Geometry.json";
+    public static final String GEOMETRY_SCHEMA_REF = "https://geojson.org/schema/Geometry.json";
 
     Queryables queryables;
 

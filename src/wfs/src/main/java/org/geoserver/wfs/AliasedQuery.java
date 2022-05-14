@@ -368,6 +368,11 @@ class AliasedQuery extends Query {
     }
 
     @Override
+    public void setSortBy(List<SortBy> sortBy) {
+        delegate.setSortBy(sortBy);
+    }
+
+    @Override
     public List<XlinkPropertyNameType> getXlinkPropertyNames() {
         return delegate.getXlinkPropertyNames();
     }

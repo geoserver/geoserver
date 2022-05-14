@@ -151,6 +151,7 @@ paths:
         - $ref: '#/components/parameters/filter'
         - $ref: '#/components/parameters/filter-lang'
         - $ref: '#/components/parameters/filter-crs'
+        - $ref: '#/components/parameters/sortby'
         - $ref: '#/components/parameters/crs'
         - $ref: '#/components/parameters/bbox-crs'
         - $ref: '#/components/parameters/otherParameters'
@@ -297,14 +298,29 @@ components:
         type: string
         enum:
           - cql-text
+          - cql2-text
         default: cql-text
     filter-crs:
       name: filter-crs
       in: query
+      description: Filter CRS which is being used to encode geometries in the filter parameter
       required: false
       schema:
         type: string
         format: uri-reference
+      style: form
+      explode: false
+    sortby:
+      name: sortby
+      in: query
+      description: Defines how features in a response should be ordered for presentation.
+      required: false
+      schema:
+        type: array
+        minItems: 1
+        items:
+          type: string
+          pattern: '[+|-]?[A-Za-z_].*'
       style: form
       explode: false
     otherParameters:

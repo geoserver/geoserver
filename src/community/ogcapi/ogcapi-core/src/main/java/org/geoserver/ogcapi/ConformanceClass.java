@@ -26,6 +26,11 @@ public class ConformanceClass {
     public static final String FILTER =
             "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/filter";
 
+
+    /** Sorting conformance class from OGC API - Records. */
+    public static final String SORTBY =
+            "http://www.opengis.net/spec/ogcapi-records-1/1.0/req/sorting";
+
     /**
      * A custom conformance class for GeoServer own ECQL, not further split into parts (as only
      * GeoServer implements it anyways

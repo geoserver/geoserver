@@ -462,7 +462,7 @@ public class STACService {
                         templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
         resultBuilder
                 .collectionIds(sq.getCollections())
-                .intersects(sq.getIntersection())
+                .intersects(sq.getIntersects())
                 .startIndex(sq.getStartIndex())
                 .requestedLimit(sq.getLimit())
                 .bbox(sq.getBbox())

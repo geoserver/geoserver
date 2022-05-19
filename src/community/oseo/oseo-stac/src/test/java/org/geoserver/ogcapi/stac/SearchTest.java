@@ -253,7 +253,7 @@ public class SearchTest extends STACTestSupport {
         // only SAS and LANDSAT intersecting this point
         String request =
                 "{\n"
-                        + "  \"intersection\": {\n"
+                        + "  \"intersects\": {\n"
                         + "    \"type\": \"Point\",\n"
                         + "    \"coordinates\": [\n"
                         + "      16.5,\n"

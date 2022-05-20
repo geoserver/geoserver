@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.ErrorListener;
@@ -37,7 +38,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import net.opengis.wfs.FeatureCollectionType;
+
 import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -66,6 +67,8 @@ import org.geotools.xsd.Encoder;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
+
+import net.opengis.wfs.FeatureCollectionType;
 
 public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         implements ComplexFeatureAwareFormat {
@@ -243,6 +246,12 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         Encoder encoder = createEncoder(configuration, ns2metas, gft);
 
         encoder.setEncoding(Charset.forName(geoServer.getSettings().getCharset()));
+        if (wfs.isVerbose() || geoServer.getSettings().isVerbose()) {
+          geoServer.getSettings().setVerbose(true);
+          encoder.setIndenting(true);
+        } else {
+          encoder.setIndenting(false);
+        }
         Request dispatcherRequest = Dispatcher.REQUEST.get();
         if (dispatcherRequest != null) {
             encoder.setOmitXMLDeclaration(dispatcherRequest.isSOAP());
@@ -267,7 +276,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
                         "request",
                         "DescribeFeatureType");
         for (Map.Entry<String, Set<ResourceInfo>> stringSetEntry : ns2metas.entrySet()) {
-            Map.Entry entry = (Map.Entry) stringSetEntry;
+            Map.Entry entry = stringSetEntry;
 
             String namespaceURI = (String) entry.getKey();
             Set metas = (Set) entry.getValue();

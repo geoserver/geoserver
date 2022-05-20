@@ -25,6 +25,10 @@ public class BufferedRequestStream extends ServletInputStream {
         myInputStream.reset();
     }
 
+    public BufferedRequestStream(InputStream inputStream) throws IOException {
+        myInputStream = inputStream;
+    }
+
     @Override
     public int readLine(byte[] b, int off, int len) throws IOException {
         int read;

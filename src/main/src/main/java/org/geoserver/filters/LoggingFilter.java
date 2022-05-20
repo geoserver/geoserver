@@ -5,9 +5,11 @@
  */
 package org.geoserver.filters;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.Enumeration;
 import java.util.logging.Logger;
 import javax.servlet.FilterChain;
@@ -16,7 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.RequestUtils;
@@ -33,8 +34,14 @@ public class LoggingFilter implements GeoServerFilter {
     public static final String LOG_HEADERS_ENABLED = "logHeadersEnabled";
     public static final String LOG_BODIES_ENABLED = "logBodiesEnabled";
 
+    public static final String REQUEST_LOG_BUFFER_SIZE = "requestLogBufferSize";
+
+    public static final Integer REQUEST_LOG_BUFFER_SIZE_DEFAULT = 1024;
+
     protected boolean enabled = false;
     protected boolean logBodies = false;
+
+    protected Integer requestLogBufferSize = REQUEST_LOG_BUFFER_SIZE_DEFAULT;
     protected boolean logHeaders = false;
 
     private final GeoServer geoServer;
@@ -44,6 +51,7 @@ public class LoggingFilter implements GeoServerFilter {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource")
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
         // Pulling setting from global settings object
@@ -63,6 +71,11 @@ public class LoggingFilter implements GeoServerFilter {
             logHeaders =
                     (metadataMap.containsKey(LOG_HEADERS_ENABLED)
                             && metadataMap.get(LOG_HEADERS_ENABLED, Boolean.class));
+            // Grabbed from global directly, not metadatamap for backwards compatibility
+            requestLogBufferSize =
+                    geoServer.getGlobal().getXmlPostRequestLogBufferSize() != null
+                            ? geoServer.getGlobal().getXmlPostRequestLogBufferSize()
+                            : REQUEST_LOG_BUFFER_SIZE_DEFAULT;
         }
 
         String message = "";
@@ -99,7 +112,10 @@ public class LoggingFilter implements GeoServerFilter {
                 }
 
                 if (logBodies
-                        && (hreq.getMethod().equals("PUT") || hreq.getMethod().equals("POST"))) {
+                        && requestLogBufferSize > 0
+                        && (hreq.getMethod().equals("PUT")
+                                || hreq.getMethod().equals("POST")
+                                || hreq.getMethod().equals("PATCH"))) {
                     message += " request-size: " + hreq.getContentLength();
                     message += " body: ";
 
@@ -108,16 +124,26 @@ public class LoggingFilter implements GeoServerFilter {
                         // the default encoding for HTTP 1.1
                         encoding = "ISO-8859-1";
                     }
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    byte[] bytes;
                     try (InputStream is = hreq.getInputStream()) {
-                        IOUtils.copy(is, bos);
-                        bytes = bos.toByteArray();
 
-                        body = new String(bytes, encoding);
+                        Charset charset = Charset.defaultCharset();
+                        try {
+                            charset = Charset.forName(encoding);
+                        } catch (IllegalCharsetNameException icn) {
+                            logger.info(
+                                    "Request character set not recognized, defaulting to ISO-8859-1");
+                        }
+                        float maxBytesPerCharacter = charset.newEncoder().maxBytesPerChar();
+                        int byteSize = (int) (requestLogBufferSize * (double) maxBytesPerCharacter);
+                        byte[] reqCharacters = new byte[byteSize];
+                        BufferedInputStream bufferedStream = new BufferedInputStream(is);
+                        bufferedStream.mark(byteSize);
+                        bufferedStream.read(reqCharacters, 0, byteSize);
+                        body = new String(reqCharacters, encoding).trim();
+                        bufferedStream.reset();
+                        req = new BufferedRequestWrapper(hreq, encoding, bufferedStream);
                     }
-
-                    req = new BufferedRequestWrapper(hreq, encoding, bytes);
+                    message += (body == null ? "" : "\n" + body + "\n");
                 }
             } else {
                 message = "" + req.getRemoteHost() + " made a non-HTTP request";

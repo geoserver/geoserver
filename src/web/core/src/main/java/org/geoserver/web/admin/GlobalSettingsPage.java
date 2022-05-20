@@ -126,6 +126,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         wmc.setOutputMarkupId(true);
         wmc.add(logBodiesCheckBox);
         wmc.add(logHeadersCheckBox);
+        wmc.add(xmlPostRequestLogBufferSize);
         MetadataMapModel<Boolean> requestCheckModel =
                 new MetadataMapModel<Boolean>(metadataModel, LOG_REQUESTS_ENABLED, Boolean.class) {
                     @Override

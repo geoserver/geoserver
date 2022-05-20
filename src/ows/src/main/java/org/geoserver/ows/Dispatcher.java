@@ -123,9 +123,6 @@ public class Dispatcher extends AbstractController {
     /** flag to control wether the dispatcher is cite compliant */
     boolean citeCompliant = false;
 
-    /** buffer size for incoming XML POST requests */
-    int xmlPostRequestLogBufferSize = 1024;
-
     /** thread local variable for the request */
     public static final ThreadLocal<Request> REQUEST = new InheritableThreadLocal<>();
 
@@ -373,17 +370,6 @@ public class Dispatcher extends AbstractController {
                 request.setInput(null);
             } else {
                 request.getInput().reset();
-            }
-            if (request.getInput() != null && logger.isLoggable(Level.FINE)) {
-                char[] req = new char[xmlPostRequestLogBufferSize];
-                final int read = request.getInput().read(req, 0, xmlPostRequestLogBufferSize);
-                request.getInput().reset();
-
-                if (read < xmlPostRequestLogBufferSize) {
-                    logger.fine("Raw XML request: " + new String(req));
-                } else {
-                    logger.fine("Raw XML request starts with: " + new String(req) + "...");
-                }
             }
         }
         // parse the request path into two components. (1) the 'path' which
@@ -1804,13 +1790,5 @@ public class Dispatcher extends AbstractController {
     public static boolean isSecurityException(Throwable t) {
         return t != null
                 && t.getClass().getPackage().getName().startsWith("org.springframework.security");
-    }
-
-    public int getXMLPostRequestLogBufferSize() {
-        return xmlPostRequestLogBufferSize;
-    }
-
-    public void setXMLPostRequestLogBufferSize(int bufferSize) {
-        this.xmlPostRequestLogBufferSize = bufferSize;
     }
 }

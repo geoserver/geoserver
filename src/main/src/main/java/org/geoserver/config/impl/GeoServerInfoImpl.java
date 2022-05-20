@@ -16,6 +16,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.filters.LoggingFilter;
 
 public class GeoServerInfoImpl implements GeoServerInfo {
 
@@ -44,7 +45,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected transient GeoServer geoServer;
 
-    protected Integer xmlPostRequestLogBufferSize = 1024;
+    protected Integer xmlPostRequestLogBufferSize = LoggingFilter.REQUEST_LOG_BUFFER_SIZE_DEFAULT;
 
     protected Boolean xmlExternalEntitiesEnabled = Boolean.FALSE;
 

@@ -91,6 +91,7 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
     }
 
     @Before
+    @SuppressWarnings("deprecation")
     public void setDefaultUserService() throws Exception {
         service = createRoleService("test");
         service = getSecurityManager().loadRoleService("test");
@@ -137,6 +138,7 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testInternalUserResolver() throws Exception {
         InternalUserResolver resolver = new InternalUserResolver(getSecurityManager());
 

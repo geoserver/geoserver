@@ -5,6 +5,7 @@
  */
 package org.geoserver.filters;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -43,13 +45,23 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
         this.charset = charset;
     }
 
+    public BufferedRequestWrapper(
+            HttpServletRequest req, String charset, BufferedInputStream bufferedInputStream)
+            throws IOException {
+        super(req);
+        this.myWrappedRequest = req;
+        this.myReader = new BufferedReader(new InputStreamReader(bufferedInputStream, charset));
+        this.charset = charset;
+        this.myStream = new BufferedRequestStream(bufferedInputStream);
+    }
+
     @Override
     public ServletInputStream getInputStream() throws IOException {
         if (myStream == null) {
             if (myReader == null) {
                 myStream = new BufferedRequestStream(myBuffer);
-            } else {
-                throw new IOException("Requesting a stream after a reader is already in use!!");
+            } else if (!myReader.ready()) {
+                throw new IOException("Reader is not ready!!");
             }
         }
 
@@ -142,7 +154,11 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
         // parse the body
         String[] pairs;
         try {
-            pairs = new String(myBuffer, charset).split("\\&");
+            if (myBuffer != null) {
+                pairs = new String(myBuffer, charset).split("\\&");
+            } else {
+                pairs = myReader.lines().collect(Collectors.joining()).split("\\&");
+            }
         } catch (UnsupportedEncodingException e) {
             // should not happen
             throw new RuntimeException(e);

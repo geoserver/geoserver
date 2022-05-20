@@ -166,49 +166,44 @@ Logging Settings
 Log Location
 ''''''''''''
 
-Sets the written output location for the logs. A log location may be a directory or a file, and can be specified as an absolute path (e.g., :file:`C:\\GeoServer\\GeoServer.log`) or a relative one (for example, :file:`GeoServer.log`). Relative paths are relative to the GeoServer data directory. Default is :file:`logs/geoserver.log`.
+Sets the written output location for the logs. A log location may be a directory or a file, and can be specified as an absolute path (e.g., :file:`C:\\GeoServer\\GeoServer.log`) or a relative one (for example, :file:`geoserver.log`). Relative paths are relative to the GeoServer data directory. Default is :file:`logs/geoserver.log`.
 
-This setting can be overriden by ``GEOSERVER_LOG_LOCATION`` property, see :ref:`logging` for details (this setting is applied FileAppender or RollingFile ``geoserverlogfile`` appender).
+This :guilabel:`Log location` setting can be overriden by ``GEOSERVER_LOG_LOCATION`` property, see :ref:`logging` for details (this setting is applied FileAppender or RollingFile ``geoserverlogfile`` appender).
 
 .. _config_globalsettings_log_profile:
 
 Logging Profile
 '''''''''''''''
 
-Logging Profile corresponds to a log4j configuration file in the GeoServer data directory. (Apache `log4j <https://logging.apache.org/log4j/2.x/>`_ is a Java-based logging utility.)
-
-The GeoServer logging profiles assign logging levels to specific server operations:
-
-* Logging levels range from the verbose (``FINEST``, ``TRACE``, ``DBEUG``) levels, operation (``CONFIG``, ``INFO``) levels, and (``WARN``, ``ERROR``, ``FATAL``) failure levels.
-* GeoServer appenders log server function and the activity of individual services.
-* GeoWebCache appenders log the activity of tile protocol library used by GeoServer.
-* GeoTools appenders log the activuty of the data access and rendering library used by GeoServer.
+Select a :guilabel:`Logging profile` to determine the amount of detail GeoServer logs during operation. 
 
 The built-in logging profiles available on the global settings page are:
  
-* **Default Logging** (``DEFAULT_LOGGING``)—Provides a good mix of detail without being VERBOSE. 
-
-  Default logging enables ``INFO`` on all GeoTools and GeoServer levels, except certain (chatty) GeoTools and GeoServer packages which require ``WARN``.
+* **Default Logging** (``DEFAULT_LOGGING``) — Provides a good mix of detail without being too verbose. 
+  
+  Default logging enables ``CONFIG`` and ``INFO`` messages, with a few (chatty) GeoServer and GeoTools packages reduced to ``WARN``.
   
   This logging level is useful for seeing the incoming requests to GeoServer in order to double check that requests being received have been parsed correctly.
 
-* **GeoServer Developer Logging** (``GEOSERVER_DEVELOPER_LOGGING``)-A verbose logging profile that includes ``DEBUG`` information for GeoServer activities.
+* **GeoServer Developer Logging** (``GEOSERVER_DEVELOPER_LOGGING``) - A verbose logging profile that includes ``DEBUG`` information for GeoServer activities.
   
   This developer profile is recommended for active debugging of GeoServer. 
 
-* **GeoTools Developer Logging** (``GEOTOOLS_DEVELOPER_LOGGING``)—A verbose logging profile that includes ``DEBUG`` information only on GeoTools.
+* **GeoTools Developer Logging** (``GEOTOOLS_DEVELOPER_LOGGING``) - A verbose logging profile that includes ``DEBUG`` messages for the GeoTools library.
   
   This developer profile is recommended for active debugging of GeoTools. This is especially good for troubleshooting rendering and data access issues.
 
-* **Production Logging** (``PRODUCTION_LOGGING``)-Minimal logging profile, with only ``WARN`` enabled on all GeoTools and GeoServer levels.
+* **Production Logging** (``PRODUCTION_LOGGING``) - Minimal logging profile, with only ``WARN`` log messages.
   
   With production level logging, only problems are written to the log files.
 
-* **Quiet Logging** (``QUIET_LOGGING``)-Turns off logging.
+* **Quiet Logging** (``QUIET_LOGGING``) - Turns off logging.
 
-* **Verbose Logging**  (``VERBOSE_LOGGING``)—Provides more detail by enabling ``DEBUG`` level logging on GeoServer and GeoTools.
+* **Verbose Logging**  (``VERBOSE_LOGGING``) - Provides more detail by enabling ``DEBUG`` messages.
   
-Additional customized profiles can be added by copying one of the above examples, in the :file:`logs` folder, and editing the log4j file. Use of log4j can be disabled using ``RELINQUISH_LOG4J_CONTROL`` property. See :ref:`logging` for more information.
+  This profile is only useful when troubleshooting.
+  
+Each profile corresponds to a log4j configuration file in the GeoServer data directory (Apache `log4j <https://logging.apache.org/log4j/2.x/>`_ is a Java-based logging utility). Additional customized profiles can be added by copying one of the built-in profiles above, in the :file:`logs` folder, and editing the log4j file. Use of log4j can be disabled using ``RELINQUISH_LOG4J_CONTROL`` property. See :ref:`logging` for more information.
 
 .. _config_globalsettings_log_stdout:
 
@@ -221,28 +216,23 @@ If you are running GeoServer in a large J2EE container, you might not want your 
 
 This setting can be overriden by system property, see :ref:`logging` for details (this setting removes Console ``stdout`` appender).
 
-.. _config_globalsettings_log_buffer:
-
-Number of characters to log for incoming POST requests
-''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-In more verbose logging levels, GeoServer will log the body of XML (and other text format) POST requests. It will only log the initial part of the request though, since it has to store (buffer) everything that gets logged for use in the parts of GeoServer that use it normally. This setting sets the size of this buffer, in characters.
-
-A setting of **0** will disable the log buffer.
+.. _config_globalsettings_log_request:
 
 Enable Request Logging 
 ''''''''''''''''''''''
 
-These settings enable the logging of the requested URL, and optionally request headers and the POST requests' contents. Normally they are disabled due to overhead.
+These settings enable the logging of the requested URL, and optionally request headers and the POST requests' contents, for all requests sent to GeoServer.
 
-.. figure:: img/request_logging_settings2.png
+* :guilabel:`Enable Request Logging`: Select to enable logging of incoming requests, this will include the operation (``GET``,``POST``,etc...) and the URL requested.
 
-Checking all three boxes will turn on logging the requests, headers and the bodies, resulting in something like the following::
+* :guilabel:`Log Request Bodies`: Select to enable logging the body of the incoming request. Text content will be logged, or the number of bytes for binary content, based on the setting Number of characters to log for incoming requests setting below.
 
-	08 gen 11:30:13 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?HEIGHT=330&WIDTH=660&LAYERS=nurc%3AArc_Sample&STYLES=&SRS=EPSG%3A4326&FORMAT=image%2Fjpeg&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&BBOX=-93.515625,-40.078125,138.515625,75.9375" "Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.15) Gecko/2009102815 Ubuntu/9.04 (jaunty) Firefox/3.0.15" "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=nurc:Arc_Sample&styles=&bbox=-180.0,-90.0,180.0,90.0&width=660&height=330&srs=EPSG:4326&format=application/openlayers" 
-	08 gen 11:30:13 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?HEIGHT=330&WIDTH=660&LAYERS=nurc%3AArc_Sample&STYLES=&SRS=EPSG%3A4326&FORMAT=image%2Fjpeg&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&BBOX=-93.515625,-40.078125,138.515625,75.9375" took 467ms
-	08 gen 11:30:14 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml&BBOX=-93.515625%2C-40.078125%2C138.515625%2C75.9375&X=481&Y=222&INFO_FORMAT=text%2Fhtml&QUERY_LAYERS=nurc%3AArc_Sample&FEATURE_COUNT=50&Layers=nurc%3AArc_Sample&Styles=&Srs=EPSG%3A4326&WIDTH=660&HEIGHT=330&format=image%2Fjpeg" "Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.15) Gecko/2009102815 Ubuntu/9.04 (jaunty) Firefox/3.0.15" "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=nurc:Arc_Sample&styles=&bbox=-180.0,-90.0,180.0,90.0&width=660&height=330&srs=EPSG:4326&format=application/openlayers" 
-	08 gen 11:30:14 INFO [geoserver.filters] - 127.0.0.1 "GET /geoserver/wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml&BBOX=-93.515625%2C-40.078125%2C138.515625%2C75.9375&X=481&Y=222&INFO_FORMAT=text%2Fhtml&QUERY_LAYERS=nurc%3AArc_Sample&FEATURE_COUNT=50&Layers=nurc%3AArc_Sample&Styles=&Srs=EPSG%3A4326&WIDTH=660&HEIGHT=330&format=image%2Fjpeg" took 314ms
+* :guilabel:`Number of characters to log for incoming POST requests`: In more verbose logging levels, GeoServer will log the body of incoming requests. It will only log the initial part of the request though, since it has to store (buffer) everything that gets logged for use in the parts of GeoServer that use it normally. This setting sets the size of this buffer, in characters.  A setting of **0** will disable logging the body of the request.
+
+* :guilabel:`Log Request Headers`: Select to enable logging of request header information.
+
+
+We recommend leaving these settings disabled in day to day operations. For more information on applying these settings and their use in troubleshooting see  :ref:`troubleshooting <troubleshooting_requests>`.
 
 Catalog Settings
 ^^^^^^^^^^^^^^^^

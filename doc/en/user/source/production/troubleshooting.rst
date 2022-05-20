@@ -38,7 +38,7 @@ To track a history of the incoming requests:
 
 2. Enable this feature using :guilabel:`Enable Request Logging`.
 
-3. Optionally select :guilabel:`Log Request Bodies` to troubleshoot POST requests (for example WFS Transaction).
+3. Optionally select :guilabel:`Log Request Bodies` to troubleshoot POST or PUT requests (for example WFS Transaction).  The Number of characters to log setting will put an upper limit on the amount of data that is logged in order to avoid logging related performance issues.
 
 4. Optionally select :guilabel:`Log Request Headers` to troubleshoot Request Headers (for example when checking security credentials).
 

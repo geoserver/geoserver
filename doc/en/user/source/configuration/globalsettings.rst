@@ -216,17 +216,6 @@ If you are running GeoServer in a large J2EE container, you might not want your 
 
 This setting can be overriden by system property, see :ref:`logging` for details (this setting removes Console ``stdout`` appender).
 
-.. _config_globalsettings_log_buffer:
-
-Number of characters to log for incoming POST requests
-''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-GeoServer logs incoming service requests as they are received. 
-
-In more verbose logging levels, GeoServer will log the body of XML (and other text formats) recieved by ``POST`` and ``PUT`` requests. It will only log the initial part of the request though, since it has to store (buffer) everything that gets logged for use in the parts of GeoServer that use it normally. This setting sets the size of this buffer, in characters.
-
-A setting of **0** will disable the log buffer.
-
 .. _config_globalsettings_log_request:
 
 Enable Request Logging 
@@ -236,9 +225,12 @@ These settings enable the logging of the requested URL, and optionally request h
 
 * :guilabel:`Enable Request Logging`: Select to enable logging of incoming requests, this will include the operation (``GET``,``POST``,etc...) and the URL requested.
 
-* :guilabel:`Log Request Bodies`: Select to enable logging of request body information when accepting (``POST``,``PUT``) requests. Text content will be logged, or the number of bytes for binary content, based on the setting :ref:`config_globalsettings_log_buffer` setting above.
+* :guilabel:`Log Request Bodies`: Select to enable logging the body of the incoming request. Text content will be logged, or the number of bytes for binary content, based on the setting Number of characters to log for incoming requests setting below.
 
-* :guilabel:`Log Request Bodies`: Select to enable logging of request header information.
+* :guilabel:`Number of characters to log for incoming POST requests`: In more verbose logging levels, GeoServer will log the body of incoming requests. It will only log the initial part of the request though, since it has to store (buffer) everything that gets logged for use in the parts of GeoServer that use it normally. This setting sets the size of this buffer, in characters.  A setting of **0** will disable logging the body of the request.
+
+* :guilabel:`Log Request Headers`: Select to enable logging of request header information.
+
 
 We recommend leaving these settings disabled in day to day operations. For more information on applying these settings and their use in troubleshooting see  :ref:`troubleshooting <troubleshooting_requests>`.
 

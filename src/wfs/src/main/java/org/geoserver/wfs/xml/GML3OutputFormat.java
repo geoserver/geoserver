@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.ErrorListener;
@@ -38,7 +37,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
+import net.opengis.wfs.FeatureCollectionType;
 import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -67,8 +66,6 @@ import org.geotools.xsd.Encoder;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
-
-import net.opengis.wfs.FeatureCollectionType;
 
 public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         implements ComplexFeatureAwareFormat {
@@ -247,10 +244,10 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
 
         encoder.setEncoding(Charset.forName(geoServer.getSettings().getCharset()));
         if (wfs.isVerbose() || geoServer.getSettings().isVerbose()) {
-          geoServer.getSettings().setVerbose(true);
-          encoder.setIndenting(true);
+            geoServer.getSettings().setVerbose(true);
+            encoder.setIndenting(true);
         } else {
-          encoder.setIndenting(false);
+            encoder.setIndenting(false);
         }
         Request dispatcherRequest = Dispatcher.REQUEST.get();
         if (dispatcherRequest != null) {

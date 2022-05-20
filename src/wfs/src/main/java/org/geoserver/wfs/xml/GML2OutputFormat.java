@@ -19,9 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -193,8 +191,10 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
 
         WFSInfo wfs = getInfo();
 
-        transformer
-            .setIndentation((wfs.isVerbose() || geoServer.getSettings().isVerbose()) ? INDENT_SIZE : (NO_FORMATTING));
+        transformer.setIndentation(
+                (wfs.isVerbose() || geoServer.getSettings().isVerbose())
+                        ? INDENT_SIZE
+                        : (NO_FORMATTING));
         transformer.setNumDecimals(numDecimals);
         transformer.setPadWithZeros(padWithZeros);
         transformer.setForceDecimalEncoding(forcedDecimal);

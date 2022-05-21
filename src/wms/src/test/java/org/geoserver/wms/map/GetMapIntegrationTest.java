@@ -51,11 +51,6 @@ import org.w3c.dom.Document;
 public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
-
-    @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpWcs10RasterLayers();

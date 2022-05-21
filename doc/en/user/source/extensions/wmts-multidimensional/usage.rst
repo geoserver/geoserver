@@ -8,7 +8,7 @@ All described operations including is optional parameters and other extensions w
 The ``GetFeature`` operation only supports the profile GML 3.1 as feature info format ("application/gml+xml; version=3.1") and the ``GetHistogram`` operation only supports ``text/xml`` as output format.
 
 
-This module support well defined dimensions like elevation and time and also custom dimensions.
+This module support well defined dimensions like elevation and time, but also custom dimensions. 
 
 GetCapabilities
 ---------------
@@ -167,6 +167,35 @@ and the result will be similar to this:
     </DimensionDomain>
   </Domains>
 
+
+Note that if an end attribute has been defined in the layer dimension configuration page, the result will show ranges in place of single values. The result in this case will look like the following:
+
+.. code-block:: xml
+
+  <Domains xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+    <SpaceDomain>
+      <BoundingBox CRS="EPSG:4326" 
+       maxx="179.875" maxy="89.9375" minx="-180.125" miny="-90.125"/>
+    </SpaceDomain>
+    <DimensionDomain>
+      <ows:Identifier>elevation</ows:Identifier>
+      <Domain>0.0/50.0,200.0/300.0,400.0/500.0</Domain>
+      <Size>6</Size>
+    </DimensionDomain>
+    <DimensionDomain>
+      <ows:Identifier>REFERENCE_TIME</ows:Identifier>
+      <Domain>2016-02-23T00:00:00.000Z/2016-02-23T23:00:00.000Z,2016-02-24T00:00:00.000Z/2016-02-24T12:00:00.000Z</Domain>
+      <Size>2</Size>
+    </DimensionDomain>
+    <DimensionDomain>
+      <ows:Identifier>time</ows:Identifier>
+      <Domain>2016-02-23T03:00:00.000Z/2016-02-23T06:00:00.000Z,2016-02-23T06:00:00.000Z/2016-02-23T12:00:00.000Z</Domain>
+      <Size>2</Size>
+    </DimensionDomain>
+  </Domains>
+
+
+
 From the information above we can see that we have three dimensions ``time``, ``elevation`` and ``REFERENCE_TIME`` and the respective domains values.
 
 Now let's see how elevations relate to time dimension by asking which elevations under 500.0 meters are available at time 2016-02-23T03:00:00.000Z:
@@ -257,6 +286,9 @@ is too large for DescribeDomain to return them in a single shot.
    * - FromValue
      - No
      - Sets the beginning of domain enumeration, for paging purposes. It's not included in the result
+   * - FromEnd
+     - No
+     - If equals to true specifies that the beginning of domain enumeration, set by the FromValue, should be applied to the end attribute. When set to true results will be sorted by end attribute.
    * - Sort
      - No
      - Can be "asc" or "desc", determines if the enumeration is from low to high, or from high to low
@@ -360,6 +392,28 @@ between client and server migth then look as follows:
       <Size>0</Size>
     </DomainValues>
 
+
+Assume now that along with the values 1,2,3,5 we have end attribute values respectively equal to 5,3,4,6.
+
+The following request:
+
+.. code-block:: guess
+
+  http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=3.5&fromEnd=true
+          
+
+will return
+
+.. code-block:: xml
+
+    <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+      <ows:Identifier>elevation</ows:Identifier>
+      <Limit>2</Limit>
+      <Sort>asc</Sort>
+      <Domain>3.0/4.0,1.0/5.0,5.0/6.0</Domain>
+      <Size>2</Size>
+    </DomainValues>
+
 The paging approach might seem odd for those used to using "limit" and "offset". The main reason it's done
 this way it's performance, paging through unique values via limit and offset means that the data source
 has to compute and collect the unique values that are not needed (the ones in previous pages) in order to
@@ -459,6 +513,9 @@ filtering on elevations between 0 and 15 will return this instead:
     <Domain>0/20/10</Domain>
     <Values>5,3</Values>
   </Histogram>
+
+
+Note that if an end attribute is specified the bucket matching will be applied on ranges rather than on single values. In this case, buckets are filled by the intersection of ranges' values with bucket limits and not by containment. This is done in order to avoid some range values falling outside every bucket, but as a side effect, the same range can match more than one bucket.
 
 GetFeature
 ^^^^^^^^^^

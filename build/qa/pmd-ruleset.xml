@@ -29,12 +29,27 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/bestpractices.xml/SystemPrintln"/>
   <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach" />
   <rule ref="category/java/bestpractices.xml/UseTryWithResources" >
+    <description>
+        Use try-with-resources to avoid memory / resources leaks.
+    </description>
     <properties>
-      // The rule reports false positives for closeable arguments that are used
-      // closed within the method body. This suppression tries to avoid false positives for
-      // this case, until we can switch to Java 9 and just use try(variable) {...} without
-      // the need to instatiate the variable in the try
-      <property name="violationSuppressXPath" value="./FinallyStatement//Name[substring-after(@Image, '.') = 'close' or substring-after(@Image, '.') = 'closeQuietly'][pmd-java:typeIs('java.lang.AutoCloseable') and fn:substring-before(@Image, '.') = ancestor::MethodDeclaration/MethodDeclarator//VariableDeclaratorId/@Name]"/>
+      <!-- The rule reports false positives for closeable arguments that are used             -->
+      <!-- closed within the method body. This suppression tries to avoid false positives for -->
+      <!-- this case, until we can switch to Java 9 and just use try(variable) {...} without  -->
+      <!-- the need to instatiate the variable in the try                                     -->
+      <property name="violationSuppressXPath">
+        <value>
+          <![CDATA[
+              ./FinallyStatement//Name[
+                substring-after(@Image, '.') = 'close' or
+                substring-after(@Image, '.') = 'closeQuietly'
+              ]
+              [ pmd-java:typeIs('java.lang.AutoCloseable') and
+                fn:substring-before(@Image, '.') = ancestor::MethodDeclaration/MethodDeclarator//VariableDeclaratorId/@Name
+              ]"/>
+            ]]>
+        </value>
+      </property>
     </properties>
   </rule>
   <rule ref="category/java/bestpractices.xml/ReplaceHashtableWithMap" />
@@ -81,11 +96,11 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/errorprone.xml/UnusedNullCheckInEquals"/>
   <rule ref="category/java/errorprone.xml/UselessOperationOnImmutable"/>
   <rule ref="category/java/errorprone.xml/CloseResource">
-
     <properties>
-      <!-- When calling the store to close, PMD wants the full prefix before the call to the method to match, so let's try to use common var names for store ... -->
+        <!-- When calling the store to close, PMD wants the full prefix before the call to -->
+        <!-- the method to match, so let's try to use common var names for store ...       -->
         <property name="closeTargets" value="releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt,closeFinally,JDBCUtils.close"/>
-	<property name="allowedResourceTypes" value="java.io.ByteArrayOutputStream|java.io.ByteArrayInputStream|java.io.StringWriter|java.io.CharArrayWriter|java.util.stream.Stream|java.util.stream.IntStream|java.util.stream.LongStream|java.util.stream.DoubleStream|java.io.StringReader" />	    
+        <property name="allowedResourceTypes" value="java.io.ByteArrayOutputStream|java.io.ByteArrayInputStream|java.io.StringWriter|java.io.CharArrayWriter|java.util.stream.Stream|java.util.stream.IntStream|java.util.stream.LongStream|java.util.stream.DoubleStream|java.io.StringReader" />
     </properties>
   </rule>
   <rule ref="category/java/multithreading.xml/AvoidThreadGroup"/>

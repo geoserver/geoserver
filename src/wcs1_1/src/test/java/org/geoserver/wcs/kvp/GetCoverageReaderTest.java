@@ -38,10 +38,6 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         reader = new GetCoverageRequestReader(catalog);
     }
 
-    // protected String getDefaultLogConfiguration() {
-    // return "/DEFAULT_LOGGING.properties";
-    // }
-
     Map<String, Object> baseMap() {
         Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WCS");

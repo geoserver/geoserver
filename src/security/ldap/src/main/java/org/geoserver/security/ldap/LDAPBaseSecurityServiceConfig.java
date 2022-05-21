@@ -15,6 +15,8 @@ import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
  */
 public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedServiceConfig {
     private static final long serialVersionUID = -6478665500954608763L;
+    public static final String ROLE_PREFIX_DEFAULT = "ROLE_";
+    public static final boolean CONVERT_ROLE_UPPERCASE_DEFAULT = true;
 
     String serverURL;
     String groupSearchBase;
@@ -50,6 +52,8 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
 
     String adminGroup;
     String groupAdminGroup;
+    String rolePrefix = ROLE_PREFIX_DEFAULT;
+    Boolean convertToUpperCase = CONVERT_ROLE_UPPERCASE_DEFAULT;
 
     /** user complete name for authenticated search of roles */
     String user;
@@ -239,5 +243,27 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
 
     public void setNestedGroupSearchFilter(String nestedGroupSearchFilter) {
         this.nestedGroupSearchFilter = nestedGroupSearchFilter;
+    }
+
+    public String getRolePrefix() {
+        if (rolePrefix == null) {
+            return ROLE_PREFIX_DEFAULT;
+        }
+        return rolePrefix;
+    }
+
+    public void setRolePrefix(String rolePrefix) {
+        this.rolePrefix = rolePrefix;
+    }
+
+    public Boolean getConvertToUpperCase() {
+        if (convertToUpperCase == null) {
+            return CONVERT_ROLE_UPPERCASE_DEFAULT;
+        }
+        return convertToUpperCase;
+    }
+
+    public void setConvertToUpperCase(Boolean convertToUpperCase) {
+        this.convertToUpperCase = convertToUpperCase;
     }
 }

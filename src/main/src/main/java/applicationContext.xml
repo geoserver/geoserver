@@ -232,6 +232,11 @@
   <bean id="catalogRepository" class="org.geoserver.catalog.CatalogRepository">
     <constructor-arg ref="catalog"/>
   </bean>
+
+    <!-- Request Logging Filter -->
+    <bean id="loggingFilter" class="org.geoserver.filters.LoggingFilter">
+        <constructor-arg ref="geoServer"/>
+    </bean>
   
   <!-- the proxyfing URL mangler, along with machinery to support headers expansion usage in asynch requests -->
   <bean id="proxyfier" class="org.geoserver.ows.ProxifyingURLMangler">

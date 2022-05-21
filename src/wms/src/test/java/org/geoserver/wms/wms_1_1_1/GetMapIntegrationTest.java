@@ -11,7 +11,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.Transparency;
@@ -23,7 +22,6 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,13 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.spi.LoggingEvent;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -68,10 +63,10 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.data.test.TestData;
 import org.geoserver.feature.retype.RetypingDataStore;
+import org.geoserver.logging.TestAppender;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
-import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapTest;
 import org.geoserver.wms.WMS;
@@ -335,7 +330,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     protected String getDefaultLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
+        return "DEFAULT_LOGGING";
     }
 
     @Test
@@ -529,55 +524,26 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testLargerThanWorld() throws Exception {
-        // setup a logging "bomb" rigged to explode when the warning message we
-        // want to eliminate
-        org.apache.log4j.Logger l4jLogger = getLog4JLogger(GetMap.class, "LOGGER");
-        l4jLogger.addAppender(
-                new AppenderSkeleton() {
+        try (TestAppender appender = TestAppender.createAppender("testLargerThanWorld", null)) {
+            appender.startRecording("org.geoserver.wms");
+            appender.trigger("Failed to compute the scale denominator");
 
-                    @Override
-                    public boolean requiresLayout() {
-                        return false;
-                    }
+            MockHttpServletResponse response =
+                    getAsServletResponse(
+                            "wms?bbox=-9.6450076761637E7,-3.9566251818225E7,9.6450076761637E7,3.9566251818225E7"
+                                    + "&styles=&layers="
+                                    + layers
+                                    + "&Format=image/png"
+                                    + "&request=GetMap"
+                                    + "&width=550"
+                                    + "&height=250"
+                                    + "&srs=EPSG:900913");
+            assertEquals("image/png", response.getContentType());
+            assertEquals(
+                    "inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
 
-                    @Override
-                    public void close() {}
-
-                    @Override
-                    protected void append(LoggingEvent event) {
-                        if (event.getMessage() != null
-                                && event.getMessage()
-                                        .toString()
-                                        .startsWith("Failed to compute the scale denominator")) {
-                            // ka-blam!
-                            fail("The error message is still there!");
-                        }
-                    }
-                });
-
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox=-9.6450076761637E7,-3.9566251818225E7,9.6450076761637E7,3.9566251818225E7"
-                                + "&styles=&layers="
-                                + layers
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:900913");
-        assertEquals("image/png", response.getContentType());
-        assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
-    }
-
-    private org.apache.log4j.Logger getLog4JLogger(Class<?> targetClass, String fieldName)
-            throws NoSuchFieldException, IllegalAccessException {
-        Field field = targetClass.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        Logger jlogger = (Logger) field.get(null);
-        Field l4jField = jlogger.getClass().getDeclaredField("logger");
-        l4jField.setAccessible(true);
-        org.apache.log4j.Logger l4jLogger = (org.apache.log4j.Logger) l4jField.get(jlogger);
-        return l4jLogger;
+            appender.stopRecording("org.geoserver.wms");
+        }
     }
 
     @Test

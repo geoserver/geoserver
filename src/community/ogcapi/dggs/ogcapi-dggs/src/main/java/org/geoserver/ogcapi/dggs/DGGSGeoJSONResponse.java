@@ -38,6 +38,10 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
             GeoJSONBuilder jw,
             String featureId) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
+        if (null == requestInfo) {
+            // request comes from WFS, not from ogcapi
+            return;
+        }
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String baseUrl = request.getBaseUrl();
         jw.key("links");

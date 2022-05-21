@@ -10,7 +10,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -19,12 +18,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -42,7 +36,10 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.logging.TestAppender;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.wms.GetMapRequest;
@@ -73,7 +70,19 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     @Override
     protected String getLogConfiguration() {
         // needed for a test on logging capabilities
-        return "/OL_LOGGING.properties";
+        GeoServerResourceLoader loader =
+                new GeoServerResourceLoader(testData.getDataDirectoryRoot());
+
+        Resource resource = loader.get("logs/OL_LOGGING.properties");
+        if (resource.getType() == Resource.Type.UNDEFINED) {
+            try {
+                loader.copyFromClassPath("/OL_LOGGING.properties", "logs/OL_LOGGING.properties");
+            } catch (IOException e) {
+                LOGGER.fine("Unable to configure with OL_LOGGING");
+                return "TEST_LOGGING";
+            }
+        }
+        return "OL_LOGGING";
     }
 
     @Override
@@ -512,10 +521,8 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
     @Test
     public void testAutoCodeLogsErrors() throws Exception {
-        final TestAppender appender = new TestAppender();
-        final Logger logger = Logger.getRootLogger();
-        logger.addAppender(appender);
-        try {
+        try (TestAppender appender = TestAppender.createAppender("testAutoCodeLogsErrors", null)) {
+            appender.startRecording("org.geoserver.wms.map");
 
             GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);
             CoordinateReferenceSystem crs = CRS.decode("AUTO:42003,9001,-20,-45");
@@ -530,34 +537,8 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             int index = htmlDoc.indexOf("yx : {'EPSG:4326' : false}");
             assertTrue(index > -1);
 
-            for (LoggingEvent event : appender.getLog()) {
-                assertFalse(
-                        "Error was logged",
-                        event.getRenderedMessage().contains("Failed to determine CRS axis order"));
-            }
-        } finally {
-            logger.removeAppender(appender);
-        }
-    }
-
-    class TestAppender extends AppenderSkeleton {
-        private final List<LoggingEvent> log = new ArrayList<>();
-
-        @Override
-        public boolean requiresLayout() {
-            return false;
-        }
-
-        @Override
-        protected void append(final LoggingEvent loggingEvent) {
-            log.add(loggingEvent);
-        }
-
-        @Override
-        public void close() {}
-
-        public List<LoggingEvent> getLog() {
-            return new ArrayList<>(log);
+            appender.assertFalse("Error was logged", "Failed to determine CRS axis order");
+            appender.stopRecording("org.geoserver.wms.map");
         }
     }
 }

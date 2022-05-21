@@ -12,7 +12,9 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.security.WrapperPolicy;
@@ -35,7 +37,9 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
                 || FeatureTypeInfo.class.isAssignableFrom(clazz)
                 || LayerInfo.class.isAssignableFrom(clazz)
                 || WMSLayerInfo.class.isAssignableFrom(clazz)
-                || WMTSLayerInfo.class.isAssignableFrom(clazz);
+                || WMTSLayerInfo.class.isAssignableFrom(clazz)
+                || WMSStoreInfo.class.isAssignableFrom(clazz)
+                || WMTSStoreInfo.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -62,6 +66,10 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
             return new SecuredWMSLayerInfo(logIfSecured((WMSLayerInfo) object), policy);
         else if (WMTSLayerInfo.class.isAssignableFrom(clazz))
             return new SecuredWMTSLayerInfo(logIfSecured((WMTSLayerInfo) object), policy);
+        else if (WMSStoreInfo.class.isAssignableFrom(clazz))
+            return new SecuredWMSStoreInfo(logIfSecured((WMSStoreInfo) object), policy);
+        else if (WMTSStoreInfo.class.isAssignableFrom(clazz))
+            return new SecuredWMTSStoreInfo(logIfSecured((WMTSStoreInfo) object), policy);
         else throw new IllegalArgumentException("Don't know how to wrap " + object);
     }
     /**
@@ -200,6 +208,42 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
      */
     private DataStoreInfo logIfSecured(DataStoreInfo object) {
         DataStoreInfo unwrapped = ModificationProxy.unwrap(object);
+        if (unwrapped instanceof SecuredDataStoreInfo) {
+            logDoubleWrap(unwrapped, object);
+        }
+        return object;
+    }
+
+    /**
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
+     * method is only intended to log a situation where a Catalog Info object is being secured, but
+     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
+     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
+     * issue, as opposed to masking it here.
+     *
+     * @param object {@link WMSStoreInfo} to check.
+     * @return The original object to be checked.
+     */
+    private WMSStoreInfo logIfSecured(WMSStoreInfo object) {
+        WMSStoreInfo unwrapped = ModificationProxy.unwrap(object);
+        if (unwrapped instanceof SecuredDataStoreInfo) {
+            logDoubleWrap(unwrapped, object);
+        }
+        return object;
+    }
+
+    /**
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
+     * method is only intended to log a situation where a Catalog Info object is being secured, but
+     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
+     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
+     * issue, as opposed to masking it here.
+     *
+     * @param object {@link WMTSStoreInfo} to check.
+     * @return The original object to be checked.
+     */
+    private WMTSStoreInfo logIfSecured(WMTSStoreInfo object) {
+        WMTSStoreInfo unwrapped = ModificationProxy.unwrap(object);
         if (unwrapped instanceof SecuredDataStoreInfo) {
             logDoubleWrap(unwrapped, object);
         }

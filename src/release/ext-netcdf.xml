@@ -26,6 +26,8 @@
         <include>jcommander*.jar</include>
         <include>opendap*.jar</include>
         <include>jna*.jar</include>
+        <include>jaxen*.jar</include>
+        <include>commons-cli*.jar</include>
       </includes>
       <excludes>
         <exclude>gs-netcdf-out*.jar</exclude>

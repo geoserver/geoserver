@@ -283,70 +283,6 @@ It is possible to place the files in three different locations:
 * If the above are missing the root of the GeoServer data directory will be searched
 * If none of the above provide a file, then the built-in configuration will be used
 
-Migrating mosaics with H2 NetCDF index files to a centralized index
--------------------------------------------------------------------
-
-By default the NetCDF reader creates a hidden directory, either as a sidecar or in the NetCDF data dir, containing a low level
-index file to speed up slices lookups, as well as a H2 database containing information about slice indexes and dimensions associated to them.
-This H2 store is opened and closed every time the associated NetCDF is read, causing less than optimal performance in map rendering.
-
-As an alternative, it's possible to store all slice metadata from H2 to a centralized database, and have GeoServer manage the store
-connecting to it, thus keeping it always open. Some work is in order to make that happen thought.
-
-First, the image mosaic needs a ``indexer.xml`` and a NetCDF auxiliary file, describing the coverages structure.
-These two files can be generated using a tool available in the GeoServer classpath, that one has to invoke from 
-the command line.
-
-Given a sample NetCDF file, you can get into the mosaic directory and run the **CreateIndexer** tool (for the NetCDF projection files, see above)::
-
-  java -cp <path-to-geoserver>/WEB-INF/lib/*.jar org.geotools.coverage.io.netcdf.tools.CreateIndexer <path-to-sample-nc-file> -p <path-to-netcdf-projections> [<path-to-output-directory>]
-  
-This will generate the files and it's going to be good enough if each NetCDF contains the same coverages.
-If instead there are different NetCDF files containing different coverages in the same mosaic, you'll have to:
-
-    * run the above command using a different sample NetCDF file for each coverage, generating the output in different folders,
-    * manually merge them into a unified ``indexer.xml`` and ``_auxiliary.xml`` that will be placed in the mosaic directory.
-
-Once those files are in position, a second tool can be run in order to migrate all H2 files to a centralized datatabase.
-First, prepare a property file with connection parameters to the target index database.
-For example, it could be a ``netcdf_index.properties`` file with the following contents::
-
-    SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
-    host=localhost
-    port=5432
-    database=netcdfidx
-    schema=public
-    user=user
-    passwd=pwd
-    Loose\ bbox=true
-    Estimated\ extends=false
-    validate\ connections=true
-    Connection\ timeout=10
-    preparedStatements=true
-    max\ connections=20
-
-Then, in order to migrate a specific mosaic, run the **H2Migrate** tool::
-
-    java -cp <path-to-geoserver>/WEB-INF/lib/*.jar org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -is <indexPropertyFile> -isn <storeNameForIndex> -v
-
-This will connect to the target store using the information in indexPropertyFile, locate the granules to be migrated inspecting the mosaic contents, create a ``netcdf_index.properties``
-file with ``StoreName=storeNameForIndex`` and update the mosaic to use it (basically, update the indexer.xml and all coverage property files to have a ``AuxiliaryDatastoreFile`` property
-pointing to ``netcdf_indexer.properties``, as well ensure that there is a ``AuxiliaryFile`` property pointing to ``_auxiliary.xml``).
-
-It will also generate two files, ``migrated.txt`` and ``h2.txt``:
-
-  * ``migrated.txt`` contains the list of files successfully migrated, for audit purposes
-  * ``h2.txt`` the list of H2 database files that can now be removed. The tool won't do it automatically to ensure that the migration, but with this one one could automate removal, e.g., on Linux a simple ``cat h2.txt | rm`` would do the trick (the ``<name>.log.db`` files change name often, it's likely that they will have to be hunted down and removed with other means, e.g. if on Linux, using the "find").
-
-If the mosaic to be migrated is backed by a **OpenSearch** index, then the tool won't be able to open the mosaic (it would require running inside GeoServer), so the connection
-parameters will have to be provided in a second property file, along with the list of tables containing the granules paths in the "location" attribute, e.g.:
-
-    java -cp <path-to-geoserver>/WEB-INF/lib/\*.jar org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -ms <mosaicStorePropertyFile> -mit granule -is <indexPropertyFile> -isn <storeNameForIndex> -v
-
-The tool supports other options as well, they can be discovered by running the tool without any parameter::
-
-  java -cp <path-to-geoserver>/WEB-INF/lib/*.jar org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -is <indexPropertyFile> -isn <storeNameForIndex> -v
-  
 Caching
 -------
 When opening a NetCDF file, metadata and structures need to be setup, such as the Coordinate Reference System and related Coordinate Systems, the optional datastore configuration, the coverages structure (schemas and dimensions). Depending on the complexity of the file itself, those can be time consuming tasks. Operations that are continuously and repeatedly accessing the same files will be impacted by that. Therefore, starting with GeoServer 2.20.x, a caching mechanism has been setup. 
@@ -367,3 +303,232 @@ These Java system variables can be set to enable and configure the file caching:
 * ``org.geotools.coverage.io.netcdf.cache.cleanup.period`` : integer value representing the time period (in seconds) before the next cache cleanup occurs (0 for no periodic cleanup, default is 12 minutes)
 
 .. note:: When enabling the file caching and setting up an ImageMosaic of NetCDFs, consider disabling the Deferred Loading from the coverage configuration so that the underlying readers get access to the NetCDF dataset and release them as soon as the read is done.
+
+Mosaic of NetCDF files
+======================
+
+Setting up a basic mosaic
+-------------------------
+
+A mosaic of NetCDF files is a bit different than usual, because each NetCDF file can contain
+multiple coverages. As a result, the mosaic setup requires extra configuration files, an
+``indexer.xml`` acting as the mosaic index, and a ``_auxiliary.xml``, describing the NetCDF
+file contents.
+
+Setting up these files can be a cumbersome process, so a utility has been written, which automatically
+fills their contents based on a sample NetCDF file (under the assumeption that all NetCDF files
+in the mosaic share the same variables and dimensions).
+
+Given a sample NetCDF file, you can get into the mosaic directory and run the **CreateIndexer** tool (for the NetCDF projection files, see above).
+On Windows::
+
+  java -cp <path-to-geoserver>\WEB-INF\lib\*.jar org.geotools.coverage.io.netcdf.tools.CreateIndexer <path-to-sample-nc-file> [-p <path-to-netcdf-projections>] [<path-to-output-directory>]
+  
+On Linux::
+
+  java -cp '<path-to-geoserver>/WEB-INF/lib/*' org.geotools.coverage.io.netcdf.tools.CreateIndexer <path-to-sample-nc-file> [-p <path-to-netcdf-projections>] [<path-to-output-directory>]
+
+
+.. warning:: On older GeoServer version the command might fail complaining it cannot find ``org.jaxen.NamespaceContext``. If that's the case, download `Jaxen 1.1.6 <https://repo1.maven.org/maven2/jaxen/jaxen/1.1.6/jaxen-1.1.6.jar>`_, add it into the GeoServer ``WEB-INF/lib`` directory, and try again. 
+
+This will generate the files and it's going to be good enough if each NetCDF contains the same coverages.
+The ``indexer.xml`` file might look as follows:
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?><Indexer>
+      <domains>
+        <domain name="time">
+          <attributes><attribute>time</attribute></attributes>
+        </domain>
+      </domains>
+      <coverages>
+        <coverage>
+          <name>dbz</name>
+          <schema name="dbz">
+            <attributes>
+               the_geom:Polygon,imageindex:Integer,location:String,time:java.util.Date
+            </attributes>
+          </schema>
+          <domains>
+            <domain ref="time" />
+          </domains>
+        </coverage>
+      </coverages>
+      <parameters>
+        <parameter name="AuxiliaryFile" value="/path/to/the/mosaic/_auxiliary.xml" />
+        <parameter name="AbsolutePath" value="true" />
+      </parameters>
+    </Indexer>
+
+While the ``_auxiliary.xml`` file might look like:
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?><Indexer>
+        <coverages>
+            <coverage>
+                <schema name="dbz">
+                    <attributes>
+                       the_geom:Polygon,imageindex:Integer,time:java.util.Date
+                    </attributes>
+                </schema>
+                <origName>dbz</origName>
+                <name>dbz</name>
+            </coverage>
+        </coverages>
+    </Indexer>
+
+
+If instead there are different NetCDF files containing different coverages in the same mosaic, you'll have to:
+
+* Run the above command using a different sample NetCDF file for each coverage, generating the output in different folders.
+* Manually merge them into a unified ``indexer.xml`` and ``_auxiliary.xml`` that will be placed in the mosaic directory.
+
+NetCDF files contain usually time dimensions, as a result, it's not possible to rely on Shapefile
+based indexes, but use a relational database instead.
+So, add a ``datastore.properties`` file into the mosaic directory, pointing to a database of choice.
+Here is an example file, suitable to connect to a PostGIS enabled database, with a schema
+dedicated to contain the mosaic indexes (make sure it already exists in the database, GeoServer
+won't create it)::
+
+    SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
+    host=localhost
+    port=5432
+    database=netcdf
+    schema=mosaic_indexes
+    user=user
+    passwd=pwd
+    Loose\ bbox=true
+    Estimated\ extends=false
+    validate\ connections=true
+    Connection\ timeout=10
+    preparedStatements=true
+    max\ connections=20
+
+With this in place, it's possible to create stores and layers in GeoServer:
+
+* Create a new Image Mosaic store, pointing to the mosaic directory.
+* After a bit of processing, the list of available coverages should appear, ready for layer creation.
+* Create each layer, and remember to configure time, elevation and custom dimensions in the "dimensions" tab.
+
+In case of error during the set up, the following suggestions apply:
+
+* Remove all extra files the mosaic might have created in the mosaic directory.
+* Remove the eventual new tables created in the database.
+* Enable the ``GeoTools developer logging`` profile in the global settings.
+* Run the mosaic creation again, inspect the logs to find out the reason (often it's due to
+  database permissions, or to NetCDF files that are not conforming to the CF conventions).
+* Repeat from the top until the mosaic creation succeeds. 
+
+Storing NetCDF internal indexes in a centralized index
+------------------------------------------------------
+
+By default the NetCDF reader creates a hidden directory, either as a sidecar or in the NetCDF data dir, containing a low level
+index file to speed up slices lookups, as well as a H2 database containing information about slice indexes and dimensions associated to them.
+This H2 store is opened and closed every time the associated NetCDF is read, causing less than optimal performance in map rendering.
+
+As an alternative, it's possible to store all slice metadata from H2 to a centralized database, and have GeoServer manage the store
+connecting to it, thus keeping it always open. Some work is needed in order to make that happen thought.
+
+As a first step, create a store connection property file named ``netcdf_datastore.properties``.
+Here is an example file, suitable to connect to a PostGIS enabled database, which makes
+the pair with the previously introduced ``datastore.properties`` ::
+
+
+    SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
+    host=localhost
+    port=5432
+    database=netcdf
+    schema=netcdf_indexes
+    user=user
+    passwd=pwd
+    Loose\ bbox=true
+    Estimated\ extends=false
+    validate\ connections=true
+    Connection\ timeout=10
+    preparedStatements=true
+    max\ connections=20
+
+Notice how the NetCDF indexes are going to be stored in a different database schema, to prevent
+eventual table name conflicts (again, make sure the schema already exists in the database).
+
+GeoServer needs to be informed of this new configuration file, by editing
+the ``indexer.xml`` file and adding this new line in the parameters section:
+
+.. code-block:: xml
+
+  <parameter name="AuxiliaryDatastoreFile" value="netcdf_datastore.properties" /> 
+
+The ``_auxiliary.xml`` file also needs to be modified, open it and change the ``attributes``
+element(s), adding a ``location:String`` attribute right after the ``imageIndex:Integer``
+attribute (position is important, mosaic construction will fail if the attribute is misplaced):
+
+.. code-block:: xml
+
+  <attributes>the_geom:Polygon,imageindex:Integer,location:String,time:java.util.Date</attributes>
+
+At this point the mosaic construction can be repeated from the GUI, just like a normal
+NetCDF image mosaic.
+
+Migrating mosaics with H2 NetCDF index files to a centralized index
+-------------------------------------------------------------------
+
+While the above setup allows to centralized index for NetCDF file contents. In case
+one already has a (very) large image mosaic of NetCDF files, having to re-harvest the NetCDF files
+can be time consuming and, in general, not practical.
+
+A utility has been created to perform the migration of existing mosaics to a centralized database
+index, the **H2Migrate** tool. 
+
+On Windows::
+
+    java -cp <path-to-geoserver>/WEB-INF/lib/*.jar org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -is <indexPropertyFile> -v
+    
+On Linux::
+
+    java -cp '<path-to-geoserver>/WEB-INF/lib/*' org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -is <indexPropertyFile> -v
+
+The tool supports other options as well, they can be discovered by running the tool without any parameter.
+
+.. warning:: On older GeoServer version the command might fail complaining it cannot find ``org.apache.commons.cli.ParseException``. If that's the case, download `commons-cli 1.1.4 <https://repo1.maven.org/maven2/commons-cli/commons-cli/1.4/commons-cli-1.4.jar>`_, add it into the GeoServer ``WEB-INF/lib`` directory, and try again. 
+
+``H2Migrate`` will connect to the target store using the information in indexPropertyFile, locate the granules to be migrated inspecting the mosaic contents, create a ``netcdf_index.properties``
+file with ``StoreName=storeNameForIndex`` and update the mosaic to use it (basically, update the indexer.xml and all coverage property files to have a ``AuxiliaryDatastoreFile`` property pointing to ``netcdf_indexer.properties``).
+
+It will also generate two files, ``migrated.txt`` and ``h2.txt``:
+
+  * ``migrated.txt`` contains the list of files successfully migrated, for audit purposes
+  * ``h2.txt`` the list of H2 database files that can now be removed. The tool won't do it automatically to ensure that the migration, but with this one one could automate removal, e.g., on Linux a simple ``cat h2.txt | xargs rm`` would do the trick (the ``<name>.log.db`` files change name often, it's likely that they will have to be hunted down and removed with other means, e.g. if on Linux, using the "find").
+
+If the mosaic to be migrated is backed by a **OpenSearch** index, then the tool won't be able to open the mosaic (it would require running inside GeoServer), so the connection
+parameters will have to be provided in a second property file, along with the list of tables containing the granules paths in the "location" attribute, e.g.:
+
+    java -cp <path-to-geoserver>/WEB-INF/lib/\*.jar org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -ms <mosaicStorePropertyFile> -mit granule -is <indexPropertyFile> -isn <storeNameForIndex> -v
+
+After a successful migration, one final manual step is required.
+As before, the ``_auxiliary.xml`` file also needs to be modified. Open it and change the ``attributes``
+element(s), adding a ``location:String`` attribute right after the ``imageIndex:Integer``
+attribute (position is important, mosaic construction will fail if the attribute is mispaced):
+
+.. code-block:: xml
+
+  <attributes>the_geom:Polygon,imageindex:Integer,location:String,time:java.util.Date</attributes>
+
+Also, find every XML file holding a indexer like configuration, and add the parameter ``AuxiliaryDatastoreFile``
+parameter:
+
+.. code-block:: xml
+
+  <parameter name="AuxiliaryDatastoreFile" value="<path/to/mosaic/directory/>netcdf_datastore.properties" /> 
+
+Finally, do the same with the property files for each coverage, adding::
+
+  AuxiliaryDatastoreFile=<path/to/mosaic/directory/>netcdf_datastore.properties
+
+The path to ``netcdf_datastore.properties`` can also be relative, but only if the image mosaic
+is configured to use relative paths.
+
+If GeoServer was running during the migration, the mosaic store just migrated needs to be reset
+so that it reads again its configuration: go to the mosaic store, open its configuration,
+and without changing any parameter, save it again: the layers backed by the mosaic are now ready to use.

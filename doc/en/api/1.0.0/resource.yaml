@@ -86,8 +86,8 @@ paths:
             <lastModified>2017-09-15 18:50:54.0 UTC</lastModified>
             <children>
               <child>
-                <name>DEFAULT_LOGGING.properties</name>
-                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/DEFAULT_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+                <name>DEFAULT_LOGGING.xml</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/DEFAULT_LOGGING.xml" rel="alternate" type="application/octet-stream"/>
               </child>
               <child>
                 <name>geoserver.log</name>
@@ -102,28 +102,28 @@ paths:
                 <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/geoserver.log.2" rel="alternate" type="application/octet-stream"/>
               </child>
               <child>
-                <name>GEOSERVER_DEVELOPER_LOGGING.properties</name>
-                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/GEOSERVER_DEVELOPER_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+                <name>GEOSERVER_DEVELOPER_LOGGING.xml</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/GEOSERVER_DEVELOPER_LOGGING.xml" rel="alternate" type="application/octet-stream"/>
               </child>
               <child>
-                <name>GEOTOOLS_DEVELOPER_LOGGING.properties</name>
-                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/GEOTOOLS_DEVELOPER_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+                <name>GEOTOOLS_DEVELOPER_LOGGING.xml</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/GEOTOOLS_DEVELOPER_LOGGING.xml" rel="alternate" type="application/octet-stream"/>
               </child>
               <child>
-                <name>PRODUCTION_LOGGING.properties</name>
-                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/PRODUCTION_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+                <name>PRODUCTION_LOGGING.xml</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/PRODUCTION_LOGGING.xml" rel="alternate" type="application/octet-stream"/>
               </child>
               <child>
-                <name>QUIET_LOGGING.properties</name>
-                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/QUIET_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+                <name>QUIET_LOGGING.xml</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/QUIET_LOGGING.xml" rel="alternate" type="application/octet-stream"/>
               </child>
               <child>
-                <name>TEST_LOGGING.properties</name>
-                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/TEST_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+                <name>TEST_LOGGING.xml</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/TEST_LOGGING.xml" rel="alternate" type="application/octet-stream"/>
               </child>
               <child>
-                <name>VERBOSE_LOGGING.properties</name>
-                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/VERBOSE_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+                <name>VERBOSE_LOGGING.xml</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/VERBOSE_LOGGING.xml" rel="alternate" type="application/octet-stream"/>
               </child>
             </children>
           </ResourceDirectory>
@@ -131,7 +131,7 @@ paths:
 
         - `http://localhost:8080/geoserver/rest/resource/logs?operation=default&format=json`
           ```
-          {"ResourceDirectory":{"name":"logs","parent":{"path":"\/","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/","rel":"alternate","type":"application\/json"}},"lastModified":"2017-09-15 18:50:54.0 UTC","children":{"child":[{"name":"DEFAULT_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/DEFAULT_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"geoserver.log","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/geoserver.log","rel":"alternate","type":"application\/octet-stream"}},{"name":"geoserver.log.1","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/geoserver.log.1","rel":"alternate","type":"application\/octet-stream"}},{"name":"geoserver.log.2","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/geoserver.log.2","rel":"alternate","type":"application\/octet-stream"}},{"name":"GEOSERVER_DEVELOPER_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/GEOSERVER_DEVELOPER_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"GEOTOOLS_DEVELOPER_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/GEOTOOLS_DEVELOPER_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"PRODUCTION_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/PRODUCTION_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"QUIET_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/QUIET_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"TEST_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/TEST_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"VERBOSE_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/VERBOSE_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}}]}}}
+          {"ResourceDirectory":{"name":"logs","parent":{"path":"\/","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/","rel":"alternate","type":"application\/json"}},"lastModified":"2017-09-15 18:50:54.0 UTC","children":{"child":[{"name":"DEFAULT_LOGGING.xml","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/DEFAULT_LOGGING.xml","rel":"alternate","type":"application\/octet-stream"}},{"name":"geoserver.log","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/geoserver.log","rel":"alternate","type":"application\/octet-stream"}},{"name":"geoserver.log.1","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/geoserver.log.1","rel":"alternate","type":"application\/octet-stream"}},{"name":"geoserver.log.2","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/geoserver.log.2","rel":"alternate","type":"application\/octet-stream"}},{"name":"GEOSERVER_DEVELOPER_LOGGING.xml","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/GEOSERVER_DEVELOPER_LOGGING.xml","rel":"alternate","type":"application\/octet-stream"}},{"name":"GEOTOOLS_DEVELOPER_LOGGING.xml","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/GEOTOOLS_DEVELOPER_LOGGING.xml","rel":"alternate","type":"application\/octet-stream"}},{"name":"PRODUCTION_LOGGING.xml","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/PRODUCTION_LOGGING.xml","rel":"alternate","type":"application\/octet-stream"}},{"name":"QUIET_LOGGING.xml","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/QUIET_LOGGING.xml","rel":"alternate","type":"application\/octet-stream"}},{"name":"TEST_LOGGING.xml","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/TEST_LOGGING.xml","rel":"alternate","type":"application\/octet-stream"}},{"name":"VERBOSE_LOGGING.xml","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/VERBOSE_LOGGING.xml","rel":"alternate","type":"application\/octet-stream"}}]}}}
           ```
 
         With `operation=metadata`, a "ResourceMetadata" object is returned. If the resource is a directory, this metadata object will not list the children of the directory.

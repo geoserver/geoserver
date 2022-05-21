@@ -53,7 +53,7 @@ class DescribeDomainsTransformer extends TransformerBase {
                                 "xmlns:ows",
                                 "http://www.opengis.net/ows/1.1",
                                 "version",
-                                "1.1"
+                                "1.2"
                             });
             start("Domains", attributes);
             Map<String, Tuple<Integer, List<String>>> domainsValues = new HashMap<>();

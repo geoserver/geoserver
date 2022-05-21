@@ -25,6 +25,7 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.NilExpression;
@@ -87,7 +88,7 @@ public class STACOseoListener implements OseoEventListener {
      */
     public List<String> getIndexListByTable(String tableName) {
         try {
-            return accessProvider.getOpenSearchAccess().getIndexNamesByLayer(tableName);
+            return accessProvider.getOpenSearchAccess().getIndexNames(tableName);
         } catch (IOException e) {
             LOGGER.warning(
                     "Error while getting index list for " + tableName + " " + e.getMessage());
@@ -133,6 +134,7 @@ public class STACOseoListener implements OseoEventListener {
         if (!(expression instanceof JsonPointerFunction)) {
             if (isGeometry(expression, sampleFeature.getType()))
                 return Indexable.FieldType.Geometry;
+            else if (isArray(expression, sampleFeature.getType())) return Indexable.FieldType.Array;
             return Indexable.FieldType.Other;
         }
         JsonPointerFunction jsonPointerFunction = (JsonPointerFunction) expression;
@@ -156,6 +158,13 @@ public class STACOseoListener implements OseoEventListener {
         if (!(expression instanceof PropertyName)) return false;
         PropertyName pn = (PropertyName) expression;
         return type.getDescriptor(pn.getPropertyName()) instanceof GeometryDescriptor;
+    }
+
+    private boolean isArray(Expression expression, FeatureType type) {
+        if (!(expression instanceof PropertyName)) return false;
+        PropertyName pn = (PropertyName) expression;
+        PropertyDescriptor pd = type.getDescriptor(pn.getPropertyName());
+        return pd != null && pd.getType().getBinding().isArray();
     }
 
     private boolean isNumeric(String test) {

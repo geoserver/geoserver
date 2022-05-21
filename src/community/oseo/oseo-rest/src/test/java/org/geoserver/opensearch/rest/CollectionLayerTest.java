@@ -63,7 +63,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
     @Override
     protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
+        return "DEFAULT_LOGGING";
     }
 
     @Override

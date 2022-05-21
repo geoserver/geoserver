@@ -36,12 +36,14 @@ import javax.media.jai.RegistryElementDescriptor;
 import javax.media.jai.RegistryMode;
 import javax.media.jai.remote.SerializableRenderedImage;
 import javax.media.jai.util.ImagingListener;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.logging.LoggingUtils;
+import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.data.DataAccessFinder;
@@ -66,7 +68,7 @@ import org.opengis.referencing.FactoryException;
 public class GeoserverInitStartupListener implements ServletContextListener {
     static final String COM_SUN_JPEG2000_PACKAGE = "com.sun.media.imageioimpl.plugins.jpeg2000";
 
-    private static final Logger LOGGER = Logging.getLogger("org.geoserver.logging");
+    private static Logger LOGGER;
 
     boolean relinquishLoggingControl;
 
@@ -78,8 +80,14 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         // start up tctool - remove it before committing!!!!
         // new tilecachetool.TCTool().setVisible(true);
-
         // Register logging, and bridge to JAI logging
+
+        // establish logging redirection
+        GeoToolsLoggingRedirection policy =
+                establishLoggingRedirectionPolicy(sce.getServletContext());
+
+        LOGGER = Logging.getLogger("org.geoserver.logging");
+        LOGGER.info("Logging policy: " + policy);
         GeoTools.init((Hints) null);
 
         // Custom GeoTools ImagingListener used to ignore common warnings
@@ -432,6 +440,75 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             // if anything goes south during the cleanup procedures I want to know what it is
             LOGGER.log(Level.SEVERE, "", t);
         }
+    }
+
+    /**
+     * Looks up for a named string property into the following contexts (in order):
+     *
+     * <ul>
+     *   <li>System Property
+     *   <li>web.xml init parameters
+     *   <li>Environment variable
+     * </ul>
+     *
+     * and returns the first non null, non empty value found.
+     *
+     * @param propertyName The property name to be searched
+     * @param context The servlet context used to look into web.xml (may be null)
+     * @return The property value, or null if not found
+     */
+    public static String getProperty(String propertyName, ServletContext context) {
+        // This logic is the same as GeoServerExtensions.getProperty(name, context)
+        // and data directory lookup (and it's useful).
+        // Cannot use those implementations as logging is not yet configured
+        String property = System.getProperty(propertyName);
+        if (context != null && property == null) {
+            property = context.getInitParameter(propertyName);
+        }
+        if (property == null) {
+            property = System.getenv(propertyName);
+        }
+        return property;
+    }
+
+    /**
+     * Establish logging redirection policy based on GT2_LOGGING_REDIRECTION property.
+     *
+     * @param context The servlet context used to look into web.xml (may be null)
+     * @return logging redirection policy
+     */
+    GeoToolsLoggingRedirection establishLoggingRedirectionPolicy(ServletContext context) {
+        GeoToolsLoggingRedirection policy =
+                GeoToolsLoggingRedirection.findValue(
+                        getProperty(LoggingUtils.GT2_LOGGING_REDIRECTION, context));
+        try {
+            // Use string to reference logger factory to protect from init failure
+            switch (policy) {
+                case JavaLogging:
+                    Logging.ALL.setLoggerFactory((org.geotools.util.logging.LoggerFactory) null);
+                    break;
+                case Logback:
+                    Logging.ALL.setLoggerFactory("org.geotools.util.logging.LogbackLoggerFactory");
+                    break;
+                case Log4J2:
+                    Logging.ALL.setLoggerFactory("org.geotools.util.logging.Log4J2LoggerFactory");
+                    break;
+                case CommonsLogging:
+                    Logging.ALL.setLoggerFactory("org.geotools.util.logging.CommonsLoggerFactory");
+                    break;
+                case Log4J:
+                    Logging.ALL.setLoggerFactory("org.geotools.util.logging.Log4JLoggerFactory");
+            }
+        } catch (Exception e) {
+            Logging.ALL.setLoggerFactory((org.geotools.util.logging.LoggerFactory) null);
+            Logging.getLogger("org.geoserver.logging")
+                    .log(
+                            Level.SEVERE,
+                            "Could not configure log4j logging redirection: '" + policy + "'",
+                            e);
+            return null;
+        }
+        return policy;
     }
 
     private void disposeAuthorityFactories(Set<? extends AuthorityFactory> factories)

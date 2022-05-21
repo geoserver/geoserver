@@ -25,6 +25,7 @@ public class QueryablesTest extends STACTestSupport {
 
         copyTemplate("/mandatoryLinks.json");
         copyTemplate("/items-LANDSAT8.json");
+        copyTemplate("/items-SENTINEL2.json");
         // these 3 needed for SAS1 to work
         copyTemplate("/items-SAS1.json");
         copyTemplate("/box.json");
@@ -56,6 +57,11 @@ public class QueryablesTest extends STACTestSupport {
         DocumentContext cc = readContext(properties, "eo:cloud_cover");
         assertEquals("integer", cc.read("type"));
         assertEquals("integer", cc.read("description"));
+
+        // top level queryable
+        DocumentContext kw = readContext(properties, "keywords");
+        assertEquals("string", kw.read("type"));
+        assertEquals("string", kw.read("description"));
     }
 
     /**

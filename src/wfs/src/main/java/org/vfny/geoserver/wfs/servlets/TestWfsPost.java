@@ -327,6 +327,7 @@ public class TestWfsPost extends HttpServlet {
             throw new IllegalArgumentException("Invalid url requested; not a URL: " + urlString, e);
         }
         String requestString = request.getRequestURL().toString();
+        requestString = requestString.substring(0, requestString.lastIndexOf(TEST_WFS_POST_PATH));
         try {
             requestUrl = new URL(requestString);
         } catch (MalformedURLException e) {
@@ -349,27 +350,40 @@ public class TestWfsPost extends HttpServlet {
                     "Unepected, the TestWfsPost was accessed by a path from a different servlet context: "
                             + requestString);
         }
+        if (!url.getProtocol().equalsIgnoreCase("http")
+                && !url.getProtocol().equalsIgnoreCase("https")) {
+            throw new IllegalArgumentException(
+                    "Invalid url requested; not an HTTP or HTTPS URL: " + urlString);
+        } else {
+            for (String path : url.getPath().split("/")) {
+                if (path.equals("..") || ResponseUtils.urlDecode(path).equals("..")) {
+                    throw new IllegalArgumentException(
+                            "Invalid url requested; illegal sequence '..' in URL: " + urlString);
+                }
+            }
+        }
 
+        String baseUrlString = requestString;
+        URL baseUrl = requestUrl;
         if (proxyBase != null) {
             try {
-                URL proxyBaseUrl = new URL(proxyBase);
-
-                if (!url.getHost().equals(proxyBaseUrl.getHost())) {
-                    throw new IllegalArgumentException(
-                            "Invalid url requested, the demo requests should be hitting: "
-                                    + proxyBase);
-                }
+                baseUrlString = proxyBase;
+                baseUrl = new URL(proxyBase);
             } catch (MalformedURLException e) {
                 throw new IllegalArgumentException(
                         "Invalid Proxy Base URL; not a URL: " + proxyBase, e);
             }
-        } else {
-            if (!url.getHost().equals(requestUrl.getHost())) {
-                throw new IllegalStateException(
-                        "Invalid url requested, the demo requests should be hitting: "
-                                + requestString.substring(
-                                        0, requestString.lastIndexOf(TEST_WFS_POST_PATH)));
-            }
+        }
+        String urlPath = url.getPath();
+        urlPath += urlPath.endsWith("/") ? "" : "/";
+        String baseUrlPath = baseUrl.getPath();
+        baseUrlPath += baseUrlPath.endsWith("/") ? "" : "/";
+        if (!url.getProtocol().equals(baseUrl.getProtocol())
+                || !url.getHost().equals(baseUrl.getHost())
+                || url.getPort() != baseUrl.getPort()
+                || !urlPath.startsWith(baseUrlPath)) {
+            throw new IllegalArgumentException(
+                    "Invalid url requested, the demo requests should be hitting: " + baseUrlString);
         }
     }
 }

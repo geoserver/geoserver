@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.21-SNAPSHOT</version>
+  <version>2.22-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>GeoServer</name>
   <inceptionYear>2006</inceptionYear>
@@ -87,9 +87,9 @@
   </distributionManagement>
 
   <properties>
-    <gs.version>2.21-SNAPSHOT</gs.version>
-    <gt.version>27-SNAPSHOT</gt.version>
-    <gwc.version>1.21-SNAPSHOT</gwc.version>
+    <gs.version>2.22-SNAPSHOT</gs.version>
+    <gt.version>28-SNAPSHOT</gt.version>
+    <gwc.version>1.22-SNAPSHOT</gwc.version>
     <jts.version>1.18.2</jts.version>
     <spring.version>5.2.20.RELEASE</spring.version>
     <spring.security.version>5.1.13.RELEASE</spring.security.version>
@@ -101,7 +101,7 @@
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.13</httpclient.version>
     <imageio-ext.version>1.4.4</imageio-ext.version>
-    <jaiext.version>1.1.22</jaiext.version>
+    <jaiext.version>1.1.23</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
     <jvm.opts></jvm.opts>
@@ -126,8 +126,8 @@
     <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
     <hibernate-spatial-version>1.1.3.2</hibernate-spatial-version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
-    <!-- NOTE: be careful if upgrading slf4j, check the netcdf and netcdf-out build correcly -->
-    <slf4j.version>1.6.4</slf4j.version>
+    <!-- NOTE: be careful if upgrading log4j, check transitive slf4j with netcdf and netcdf-out -->
+    <log4j.version>2.17.2</log4j.version>
     <joda-time.version>2.8.1</joda-time.version>
     <git.commit.useNative>false</git.commit.useNative>
     <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
@@ -809,7 +809,7 @@
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>1.1.1</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -820,6 +820,16 @@
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>3.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-cli</groupId>
+        <artifactId>commons-cli</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>1.1.6</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -860,12 +870,54 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>${httpclient.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient-cache</artifactId>
         <version>${httpclient.version}</version>
       </dependency>
+
+      <!-- logging dependencies -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-1.2-api</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-jul</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <!-- bridge slf4j to log4j -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <!-- bridge commons-logging to log4j -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-jcl</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+
+      <!-- springframework -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
@@ -1007,26 +1059,6 @@
         <version>${wicket.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>log4j-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.17.norce</version>
-      </dependency>
-      <dependency>
         <groupId>com.github.librepdf</groupId>
         <artifactId>openpdf</artifactId>
         <version>1.3.26</version>
@@ -1065,11 +1097,6 @@
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
         <version>${ant.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl104-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.media</groupId>
@@ -1206,6 +1233,12 @@
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
         <version>1.4.19</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>xpp3</artifactId>
+            <groupId>xpp3_min</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
@@ -1606,10 +1639,10 @@
           <excludedGroups>${test.excludedGroups}</excludedGroups>
           <!-- Adding opens for build to work.
                Needed for mock frameworks: java.base/java.lang
-           		 Additional needs for XStream:  java.base/java.util, java.base/java.lang.reflect, java.base/java.text, java.desktop/java.awt.font
+               Additional needs for XStream:  java.base/java.util, java.base/java.lang.reflect, java.base/java.text, java.desktop/java.awt.font
                Additional needs for JAI: java.desktop/sun.awt.image 
                Additional needs for LDAP tests:  java.naming/com.sun.jndi.ldap
-        	-->
+            -->
           <argLine>@{argLine} -XX:+IgnoreUnrecognizedVMOptions -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED</argLine>
         </configuration>
       </plugin>
@@ -1786,7 +1819,7 @@
           <version>false</version>
           <noqualifier>all</noqualifier>
           <quiet>true</quiet>
-          <maxmemory>256M</maxmemory>
+          <maxmemory>512M</maxmemory>
           <encoding>UTF-8</encoding>
 
           <additionalparam>-Xdoclint:none</additionalparam>
@@ -2304,6 +2337,8 @@
               <verbose>true</verbose>
               <printFailingErrors>true</printFailingErrors>
               <includeTests>true</includeTests>
+              <sourceEncoding>UTF-8</sourceEncoding>
+              <outputEncoding>UTF-8</outputEncoding>
               <excludeRoots>
                 <excludeRoot>target/generated-sources</excludeRoot>
               </excludeRoots>
@@ -2444,6 +2479,7 @@
               </execution>
             </executions>
             <configuration>
+              <encoding>UTF-8</encoding>
               <logViolationsToConsole>true</logViolationsToConsole>
               <!-- ignore generated classes, e.g., javacc ones -->
               <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>

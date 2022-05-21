@@ -12,7 +12,7 @@ application directory.
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.21-SNAPSHOT</version>
+    <version>2.22-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -118,9 +118,9 @@ application directory.
             <version>${scalalogging.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.5</version>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-slf4j-impl</artifactId>
+          <version>${log4j.version}</version>
         </dependency>
 
         <dependency>
@@ -147,14 +147,6 @@ application directory.
         </dependency>
 
         <!-- test deps -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2_2.10</artifactId>

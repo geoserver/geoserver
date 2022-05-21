@@ -61,7 +61,7 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value>
     </context-param>
-    
+
     <filter>
      <filter-name>FlushSafeFilter</filter-name>
      <filter-class>org.geoserver.filters.FlushSafeFilter</filter-class>
@@ -100,39 +100,6 @@
               -->
          <param-name>compressed-types</param-name>
          <param-value>text/.*,.*xml.*,application/json,application/x-javascript</param-value>
-     </init-param>
-   </filter>
-
-   <filter>
-     <filter-name>Request Logging Filter</filter-name>
-     <filter-class>org.geoserver.filters.LoggingFilter</filter-class>
-     <init-param>
-         <!-- The 'enabled' parameter is a boolean value, "true" (case-insensitive) for true or
-              any other value for false.  If enabled, then the logging will be performed;
-              otherwise the logging filter will have no effect.  If not specified, this 
-              parameter defaults to false.
-              -->
-         <param-name>enabled</param-name>
-         <param-value>false</param-value>
-     </init-param>
-     <init-param>
-         <!-- The 'log-request-headers' parameter is a boolean value, "true" (case-insensitive) for
-              true or any other value for false.  If enabled, then the logging will include the HTTP 
-              headers of requests.  If not specified, this parameter defaults to false.
-              -->
-         <param-name>log-request-headers</param-name>
-         <param-value>false</param-value>
-     </init-param>  
-     <init-param>
-     <!-- The 'log-request-bodies' parameter is a boolean value, "true" (case-insensitive) for
-          true or any other value for false.  If enabled, then the logging will include the body
-          of POST and PUT requests.  If not specified, this parameter defaults to false.
-          Note that this may noticeably degrade responsiveness of your geoserver since it will
-          not begin to process requests until the entire request body has been received by the 
-          server.
-          -->
-     <param-name>log-request-bodies</param-name>
-     <param-value>false</param-value>
      </init-param>
    </filter>
    
@@ -243,11 +210,6 @@
 
     <filter-mapping>
       <filter-name>xFrameOptionsFilter</filter-name>
-      <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    
-    <filter-mapping>
-      <filter-name>Request Logging Filter</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
    

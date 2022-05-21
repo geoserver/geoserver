@@ -162,7 +162,7 @@ public class GeofenceAccessManager
             if (isAdmin(user)) {
                 LOGGER.log(
                         Level.FINE,
-                        "Admin level access, returning " + "full rights for workspace {0}",
+                        "Admin level access, returning full rights for workspace {0}",
                         workspace.getName());
 
                 return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, true);
@@ -177,23 +177,27 @@ public class GeofenceAccessManager
             return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, canWrite, canAdmin);
         }
 
-        // further logic disabled because of https://github.com/geosolutions-it/geofence/issues/6
-        return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, false);
+        // further logic disabled because of
+        // https://github.com/geosolutions-it/geofence/issues/6 (gone)
+        final boolean readable = true;
+        final boolean writable = false;
+        return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, readable, writable);
     }
 
     /** We expect the user not to be null and not to be admin */
     private boolean isWorkspaceAdmin(Authentication user, String workspaceName) {
         LOGGER.log(Level.FINE, "Getting admin auth for Workspace {0}", workspaceName);
 
-        // get the request infos
-        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
-
+        RuleFilter ruleFilter;
+        String username = getUserNameFromAuth(user);
+        if (null != username) {
+            ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
+            ruleFilter.setUser(username);
+        } else {
+            ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.DEFAULT);
+        }
         ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
         ruleFilter.setWorkspace(workspaceName);
-        String username = user.getName();
-        if (username == null || username.isEmpty()) {
-            ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
-        }
 
         String sourceAddress = retrieveCallerIpAddress();
         if (sourceAddress != null) {

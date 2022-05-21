@@ -36,7 +36,7 @@ import org.opengis.filter.spatial.Intersects;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
 
-public class AccessManagerTest extends GeofenceBaseTest {
+public class GeofenceAccessManagerTest extends GeofenceBaseTest {
 
     @Test
     public void testAdmin() {

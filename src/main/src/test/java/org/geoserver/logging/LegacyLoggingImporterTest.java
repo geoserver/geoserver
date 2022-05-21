@@ -29,7 +29,7 @@ public class LegacyLoggingImporterTest {
 
     @Test
     public void test() throws Exception {
-        assertEquals("DEFAULT_LOGGING.properties", importer.getConfigFileName());
+        assertEquals("DEFAULT_LOGGING.xml", importer.getConfigFileName());
         assertFalse(importer.getSuppressStdOutLogging());
         assertEquals("logs/geoserver.log", importer.getLogFile());
     }

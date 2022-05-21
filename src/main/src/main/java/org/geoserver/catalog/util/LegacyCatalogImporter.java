@@ -142,7 +142,7 @@ public class LegacyCatalogImporter {
                     }
                     catalog.add(featureType);
 
-                    LOGGER.info("Loaded feature type '" + featureType.prefixedName() + "'");
+                    LOGGER.config("Loaded feature type '" + featureType.prefixedName() + "'");
 
                     // create a wms layer for the feature type
                     LayerInfo layer = factory.createLayer();
@@ -333,7 +333,7 @@ public class LegacyCatalogImporter {
                     dataStore.getDataStore(null);
 
                     // connection ok
-                    LOGGER.info(
+                    LOGGER.config(
                             "Processed data store '"
                                     + dataStore.getName()
                                     + "', "
@@ -394,7 +394,7 @@ public class LegacyCatalogImporter {
                 catalog.setDefaultWorkspace(workspace);
             }
 
-            LOGGER.info(
+            LOGGER.config(
                     "Loaded namespace '"
                             + namespace.getPrefix()
                             + "' ("
@@ -403,7 +403,7 @@ public class LegacyCatalogImporter {
         }
 
         if (catalog.getDefaultNamespace() != null) {
-            LOGGER.info("Default namespace: '" + catalog.getDefaultNamespace().getPrefix() + "'");
+            LOGGER.config("Default namespace: '" + catalog.getDefaultNamespace().getPrefix() + "'");
         } else {
             LOGGER.warning("No default namespace set.");
         }

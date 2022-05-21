@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.text.DateFormat;
@@ -364,7 +365,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testDirectoryJSON_multiple_children() throws Exception {
+    public void testDirectoryJSONMultipleChildren() throws Exception {
         Resource mydir2 = getDataDirectory().get("/mydir2");
         String lastModified = FORMAT.format(mydir2.lastmodified());
 
@@ -419,6 +420,9 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                         + "    }\n"
                         + "  ]}\n"
                         + "}}";
+        // starting with JDK 17 (v3?) json is correctly recognized, the test output
+        String jsonType = URLConnection.guessContentTypeFromName("test.json");
+        if (jsonType != null) expected = expected.replace("application/octet-stream", jsonType);
         JSONAssert.assertEquals(expected, (JSONObject) json);
     }
 

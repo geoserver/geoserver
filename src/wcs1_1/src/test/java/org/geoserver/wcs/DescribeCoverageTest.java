@@ -39,11 +39,6 @@ public class DescribeCoverageTest extends WCSTestSupport {
     private static final QName GS_RAIN =
             new QName(MockData.DEFAULT_URI, "rain", MockData.DEFAULT_PREFIX);
 
-    // @Override
-    // protected String getDefaultLogConfiguration() {
-    // return "/DEFAULT_LOGGING.properties";
-    // }
-
     // public void testCRS() throws NoSuchAuthorityCodeException, FactoryException {
     // System.out.println(CRS.decode("EPSG:4326"));
     // System.out.println(CRS.decode("urn:ogc:def:crs:EPSG:4326"));

@@ -6,26 +6,25 @@
 package org.geoserver.wps.gs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.logging.TestAppender;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -81,39 +80,29 @@ public class UniqueProcessTest extends WPSTestSupport {
 
     @Test
     public void testUniqueDatabaseDelegation() throws Exception {
-        org.apache.log4j.Logger logger =
-                org.apache.log4j.Logger.getLogger(JDBCDataStore.class.getPackage().getName());
-        logger.setLevel(Level.DEBUG);
-        logger.removeAllAppenders();
-        AtomicBoolean foundDistinctCall = new AtomicBoolean();
-        logger.addAppender(
-                new AppenderSkeleton() {
-                    @Override
-                    public void close() {}
+        Logger logger = Logging.getLogger(JDBCDataStore.class);
+        Level previousLevel = logger.getLevel();
+        logger.info("hello world");
+        try (TestAppender appender = TestAppender.createAppender("testAutoCodeLogsErrors", null)) {
+            appender.startRecording("org.geotools.jdbc");
 
-                    @Override
-                    public boolean requiresLayout() {
-                        return false;
-                    }
+            logger.setLevel(Level.FINE);
+            logger.fine("this is fine");
 
-                    @Override
-                    protected void append(LoggingEvent event) {
-                        boolean curr = foundDistinctCall.get();
-                        String message = event.getRenderedMessage();
-                        curr |=
-                                message != null
-                                        && message.startsWith("SELECT distinct(\"intProperty\")");
-                        foundDistinctCall.set(curr);
-                    }
-                });
+            String xml = getUniqueRequest("gs:PrimitiveGeoFeature");
 
-        String xml = getUniqueRequest("gs:PrimitiveGeoFeature");
+            Document doc = postAsDOM(root(), xml);
+            assertXpathEvaluatesTo("5", "count(//gml:value)", doc);
 
-        Document doc = postAsDOM(root(), xml);
-        assertXpathEvaluatesTo("5", "count(//gml:value)", doc);
-        assertTrue(
-                "Function has not been delegated to database, could not find select dinstinct in the logs",
-                foundDistinctCall.get());
+            appender.assertTrue(
+                    "Function has not been delegated to database, could not find select distinct in the logs",
+                    "SELECT distinct(\"intProperty\")");
+
+            appender.stopRecording("org.geotools.jdbc");
+        } finally {
+
+            logger.setLevel(previousLevel);
+        }
     }
 
     public String getUniqueRequest(String layerId) {

@@ -88,15 +88,14 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      */
     FeatureSource<FeatureType, Feature> getCollectionSource() throws IOException;
 
-    void updateIndexes(String indexable, List<Indexable> indexables) throws IOException;
-
     /**
-     * Get List of Index Names for a Table
-     *
-     * @param tableName Table Name
-     * @return
+     * Updates indexes on the given collection, based on a set of indexables. Compares with existing
+     * indexes and creates/removes them as needed.
      */
-    List<String> getIndexNamesByLayer(String tableName) throws IOException;
+    void updateIndexes(String collection, List<Indexable> indexables) throws IOException;
+
+    /** Get List of Index Names for a Table */
+    List<String> getIndexNames(String tableName) throws IOException;
 
     /**
      * Returns the feature source backing products (dynamic, as the store has to respect the

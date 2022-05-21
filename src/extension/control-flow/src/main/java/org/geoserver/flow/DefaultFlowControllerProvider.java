@@ -49,7 +49,7 @@ public class DefaultFlowControllerProvider implements FlowControllerProvider {
     private void initControllers() {
         checkConfiguration();
         if (controllers.isEmpty()) {
-            LOGGER.info("Control-flow inactive, there are no configured rules");
+            LOGGER.config("Control-flow inactive, there are no configured rules");
         }
     }
 
@@ -86,9 +86,9 @@ public class DefaultFlowControllerProvider implements FlowControllerProvider {
             controllers = newControllers;
             int controllersCount = controllers.size();
             if (controllersCount > 0) {
-                LOGGER.info("Control-flow active with " + controllersCount + " flow controllers");
+                LOGGER.config("Control-flow active with " + controllersCount + " flow controllers");
             } else {
-                LOGGER.info("Control-flow inactive, there are no configured rules");
+                LOGGER.config("Control-flow inactive, there are no configured rules");
             }
             timeout = configurator.getTimeout();
         } catch (Exception e) {

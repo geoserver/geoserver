@@ -13,6 +13,7 @@
       "type": "Feature",
       "geometry": "${footprint}",
       "bbox": "$include{box.json}",
+      "keywords": "${keywords}",
       "properties": {
         "start_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeStart}",
         "end_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeEnd}",

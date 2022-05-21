@@ -36,7 +36,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.w3c.dom.Document;
 
-public class AccessManagerWMTSLayerTest extends GeofenceBaseTest {
+public class GeofenceAccessManager_WMTSLayerTest extends GeofenceBaseTest {
 
     private static final String LAYER_NAME = "AMSR2_Snow_Water_Equivalent";
 

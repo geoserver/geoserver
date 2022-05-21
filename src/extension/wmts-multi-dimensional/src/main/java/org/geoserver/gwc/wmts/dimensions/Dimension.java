@@ -6,6 +6,7 @@ package org.geoserver.gwc.wmts.dimensions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -21,22 +24,25 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.Tuple;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.Aggregate;
+import org.geotools.feature.visitor.CountVisitor;
 import org.geotools.feature.visitor.GroupByVisitor;
 import org.geotools.feature.visitor.GroupByVisitorBuilder;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
+import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
 /**
@@ -61,6 +67,8 @@ public abstract class Dimension {
 
     protected final ResourceInfo resourceInfo;
 
+    private static final Logger LOGGER = Logging.getLogger(Dimension.class);
+
     public Dimension(
             WMS wms, String dimensionName, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
         this.wms = wms;
@@ -79,19 +87,43 @@ public abstract class Dimension {
     /**
      * Returns the domain summary. If the count is lower than <code>expandLimit</code> then only the
      * count will be returned, otherwise min and max will also be returned
+     *
+     * @param features the featureCollection.
+     * @param attribute the dimension attribute name.
+     * @param expandLimit value determining if count or also min and max should be returned.
+     * @return the DomainSummary of the Resource.
      */
     protected DomainSummary getDomainSummary(
             FeatureCollection features, String attribute, int expandLimit) {
+        return getDomainSummary(features, attribute, null, expandLimit);
+    }
+
+    /**
+     * Returns the domain summary. If the count is lower than <code>expandLimit</code> then only the
+     * count will be returned, otherwise min and max will also be returned
+     *
+     * @param features the featureCollection.
+     * @param attribute the dimension attribute name.
+     * @param endAttributeName the dimension end attribute name. Can be null.
+     * @param expandLimit value determining if count or also min and max should be returned.
+     * @return the DomainSummary of the Resource.
+     */
+    protected DomainSummary getDomainSummary(
+            FeatureCollection features,
+            String attribute,
+            String endAttributeName,
+            int expandLimit) {
         // grab domain, but at most expandLimit + 1, to know if there are too many
         if (expandLimit != 0) {
             Set<Comparable> uniqueValues =
-                    DimensionsUtils.getUniqueValues(features, attribute, expandLimit + 1);
+                    DimensionsUtils.getUniqueValues(
+                            features, attribute, endAttributeName, expandLimit + 1);
             if (uniqueValues.size() <= expandLimit || expandLimit < 0) {
                 return new DomainSummary(new TreeSet<>(uniqueValues));
             }
         }
         Map<Aggregate, Comparable> minMax =
-                DimensionsUtils.getAggregates(attribute, features, Aggregate.MIN, Aggregate.MAX);
+                DimensionsUtils.getMinMaxAggregate(attribute, endAttributeName, features);
         // we return only the number of non null mix/max elements, as computing the whole count
         // might take just too much time on large datasets
         return new DomainSummary(
@@ -101,13 +133,39 @@ public abstract class Dimension {
     }
 
     /**
-     * Returns the domain summary. If the count is lower than <code>expandLimit</code> then only the
+     * Returns the domain summary. If the count is lower than <code>maxValues</code> then only the
      * count will be returned, otherwise min and max will also be returned
+     *
+     * @param features the featureCollection.
+     * @param attribute the dimension attribute name.
+     * @param maxValues the limit of values to return.
+     * @return the domain summary of the resource.
      */
     protected DomainSummary getPagedDomainValues(
             FeatureCollection features, String attribute, int maxValues) {
+        return getPagedDomainValues(features, attribute, null, maxValues, null);
+    }
+
+    /**
+     * Returns the domain summary. If the count is lower than <code>maxValues</code> then only the
+     * count will be returned, otherwise min and max will also be returned
+     *
+     * @param features the featureCollection.
+     * @param attribute the dimension attribute name.
+     * @param endAttribute the dimension end attribute name.
+     * @param maxValues the limit of values to return.
+     * @param sortBy the sortBy query. Used to properly sort ranges.
+     * @return the domain summary of the resource.
+     */
+    protected DomainSummary getPagedDomainValues(
+            FeatureCollection features,
+            String attribute,
+            String endAttribute,
+            int maxValues,
+            SortBy sortBy) {
         Set<Comparable> uniqueValues =
-                DimensionsUtils.getUniqueValues(features, attribute, maxValues);
+                DimensionsUtils.getUniqueValues(
+                        features, attribute, endAttribute, maxValues, sortBy);
         return new DomainSummary(uniqueValues);
     }
 
@@ -130,29 +188,39 @@ public abstract class Dimension {
      */
     public Tuple<String, List<Integer>> getHistogram(Filter filter, String resolutionSpec) {
         if (loadDataInMemory()) {
-            return HistogramUtils.buildHistogram(getDomainValues(filter, false), resolutionSpec);
+            boolean isRange = dimensionInfo.getEndAttribute() != null;
+            return HistogramUtils.buildHistogram(
+                    getDomainValues(filter, false), resolutionSpec, isRange);
         }
 
         FilterFactory2 ff = DimensionsUtils.FF;
         String dimensionAttributeName = getDimensionAttributeName();
         PropertyName dimensionProperty = ff.property(dimensionAttributeName);
         Query query = new Query(null, filter);
-        if (Number.class.isAssignableFrom(getDimensionType())) {
-            DomainSummary summary = getDomainSummary(query, 0);
-            // empty domain case?
-            if (summary.getMin() == null || summary.getMax() == null) {
-                return EMPTY_HISTOGRAM;
-            }
-            double min = ((Number) summary.getMin()).doubleValue();
-            double max = ((Number) summary.getMax()).doubleValue();
+        Class<?> dimType = getDimensionType();
+        boolean isNumeric = Number.class.isAssignableFrom(dimType);
+        boolean isDate = Date.class.isAssignableFrom(dimType);
+        if (!isNumeric && !isDate)
+            return getCustomDimHistogram(filter, dimensionProperty, dimensionAttributeName);
 
-            Tuple<String, List<Range>> specAndBuckets =
-                    HistogramUtils.getNumericBuckets(min, max, resolutionSpec);
+        DomainSummary summary = getDomainSummary(query, 0);
+
+        if (summary.getMin() == null || summary.getMax() == null) return EMPTY_HISTOGRAM;
+
+        Tuple<String, List<Range>> specAndBuckets =
+                getSpecsBuckets(isDate, summary, resolutionSpec);
+
+        if (hasEndAttribute())
+            return getRangeHistogram(
+                    specAndBuckets, dimensionAttributeName, dimensionInfo.getEndAttribute(), query);
+
+        if (isNumeric) {
+
             List<Range> buckets = specAndBuckets.second;
             @SuppressWarnings("unchecked")
             Range<Double> referenceBucket = buckets.get(0);
             double resolution = referenceBucket.getMaxValue() - referenceBucket.getMinValue();
-
+            double min = ((Number) summary.getMin()).doubleValue();
             // the aggregation expression classifies results in buckets numbered from 1 on
             Function classifier =
                     ff.function(
@@ -171,17 +239,10 @@ public abstract class Dimension {
                 counts.add(count.intValue());
             }
             return Tuple.tuple(specAndBuckets.first, counts);
-        } else if (Date.class.isAssignableFrom(getDimensionType())) {
-            DomainSummary summary = getDomainSummary(query, 0);
-            Date min = (Date) summary.getMin();
-            Date max = (Date) summary.getMax();
-            // empty domain case?
-            if (min == null || max == null) {
-                return EMPTY_HISTOGRAM;
-            }
+        } else {
 
-            Tuple<String, List<Range>> specAndBuckets =
-                    HistogramUtils.getTimeBuckets(min, max, resolutionSpec);
+            Date min = (Date) summary.getMin();
+
             List<Range> buckets = specAndBuckets.second;
             @SuppressWarnings("unchecked")
             Range<Date> referenceBucket = buckets.get(0);
@@ -208,26 +269,91 @@ public abstract class Dimension {
                 counts.add(count.intValue());
             }
             return Tuple.tuple(specAndBuckets.first, counts);
-        } else {
-            // assuming custom dimension, will handle as strings, once there is support
-            // for custom dimensions of different type (for structured readers) this will
-            // have to be modified
-            TreeMap<Object, Object> results =
-                    groupByDomainOnExpression(
-                            filter, dimensionProperty, dimensionAttributeName, String.class);
-
-            // map out domain representation and histogram value representation
-            List<Integer> counts =
-                    results.values().stream()
-                            .map(v -> ((Number) v).intValue())
-                            .collect(Collectors.toList());
-            String domainRepresentation =
-                    results.keySet().stream()
-                            .map(v -> v.toString())
-                            .collect(Collectors.joining(","));
-
-            return Tuple.tuple(domainRepresentation, counts);
         }
+    }
+
+    private Tuple<String, List<Range>> getSpecsBuckets(
+            boolean isDate, DomainSummary summary, String resolutionSpec) {
+        Tuple<String, List<Range>> result;
+        if (isDate) {
+            Date min = (Date) summary.getMin();
+            Date max = (Date) summary.getMax();
+            result = HistogramUtils.getTimeBuckets(min, max, resolutionSpec);
+        } else {
+            double min = ((Number) summary.getMin()).doubleValue();
+            double max = ((Number) summary.getMax()).doubleValue();
+            result = HistogramUtils.getNumericBuckets(min, max, resolutionSpec);
+        }
+        return result;
+    }
+
+    private Tuple<String, List<Integer>> getCustomDimHistogram(
+            Filter filter, PropertyName dimensionProperty, String dimensionAttributeName) {
+        // assuming custom dimension, will handle as strings, once there is support
+        // for custom dimensions of different type (for structured readers) this will
+        // have to be modified
+        TreeMap<Object, Object> results =
+                groupByDomainOnExpression(
+                        filter, dimensionProperty, dimensionAttributeName, String.class);
+
+        // map out domain representation and histogram value representation
+        List<Integer> counts =
+                results.values().stream()
+                        .map(v -> ((Number) v).intValue())
+                        .collect(Collectors.toList());
+        String domainRepresentation =
+                results.keySet().stream().map(v -> v.toString()).collect(Collectors.joining(","));
+
+        return Tuple.tuple(domainRepresentation, counts);
+    }
+
+    private Tuple<String, List<Integer>> getRangeHistogram(
+            Tuple<String, List<Range>> specAndBuckets,
+            String attributeName,
+            String endAttributeName,
+            Query query) {
+        List<Range> buckets = specAndBuckets.second;
+        List<Integer> counts = new ArrayList<>(buckets.size());
+        CountVisitor visitor = new CountVisitor();
+        Filter original = query.getFilter();
+        FilterFactory2 ff = DimensionsUtils.FF;
+        PropertyName startPn = ff.property(attributeName);
+        PropertyName endPn = ff.property(endAttributeName);
+        for (Range r : buckets) {
+            Filter rangeFilter = getRangeIntersectionFilter(original, r, startPn, endPn);
+            Query q = new Query();
+            q.setFilter(rangeFilter);
+            q.setProperties(Arrays.asList(startPn, endPn));
+            FeatureCollection domain = getDomain(q);
+            try {
+                domain.accepts(visitor, null);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Error while counting ranges in bucket.", e);
+                throw new RuntimeException(e);
+            }
+            counts.add(visitor.getResult().toInt());
+            visitor.reset();
+        }
+        return Tuple.tuple(specAndBuckets.first, counts);
+    }
+
+    private Filter getRangeIntersectionFilter(
+            Filter original, Range bucket, PropertyName startPn, PropertyName endPn) {
+        Comparable min = bucket.getMinValue();
+        Comparable max = bucket.getMaxValue();
+        FilterFactory2 ff = DimensionsUtils.FF;
+        Literal maxLiteral = ff.literal(max);
+        Literal minLiteral = ff.literal(min);
+        Filter low =
+                bucket.isMaxIncluded()
+                        ? ff.lessOrEqual(startPn, maxLiteral)
+                        : ff.less(startPn, maxLiteral);
+        Filter upper =
+                bucket.isMinIncluded()
+                        ? ff.greaterOrEqual(endPn, minLiteral)
+                        : ff.greater(endPn, minLiteral);
+        Filter and = ff.and(low, upper);
+        return ff.and(and, original);
     }
 
     /**
@@ -239,8 +365,7 @@ public abstract class Dimension {
      * (completely missing right now, that would be a significant API change).
      */
     private boolean loadDataInMemory() {
-        String value = GeoServerExtensions.getProperty("WMTS_HISTOGRAM_IN_MEMORY");
-        return Boolean.getBoolean(value);
+        return Boolean.getBoolean("WMTS_HISTOGRAM_IN_MEMORY");
     }
 
     public TreeMap<Object, Object> groupByDomainOnExpression(
@@ -278,6 +403,10 @@ public abstract class Dimension {
                     sortedResults.put(classifierValue, v);
                 });
         return sortedResults;
+    }
+
+    protected boolean hasEndAttribute() {
+        return dimensionInfo.getEndAttribute() != null;
     }
 
     /** Returns the attribute name representing the dimension */

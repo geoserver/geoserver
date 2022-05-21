@@ -17,87 +17,85 @@ import javax.servlet.ServletContextListener;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
-import org.geotools.util.logging.CommonsLoggerFactory;
-import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
 
 /**
- * Listens for GeoServer startup and tries to configure logging redirection to LOG4J, then
- * configures LOG4J according to the GeoServer configuration files (provided logging control hasn't
- * been disabled)
+ * Listens for GeoServer startup to configure logging redirection to LOG4J, then redirect LOG4J
+ * output according to the GeoServer configuration files (provided logging control hasn't been
+ * disabled).
+ *
+ * <p>Results are recorded by:
+ *
+ * <ul>
+ *   <li>{@link LoggingUtils#relinquishLog4jControl}
+ * </ul>
  */
 public class LoggingStartupContextListener implements ServletContextListener {
-    private static Logger LOGGER;
+
+    /** Logger configured after logging policy established. */
+    static Logger LOGGER;
 
     @Override
     public void contextDestroyed(ServletContextEvent event) {}
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        // setup GeoTools logging redirection (to log4j by default, but so that it can be
-        // overridden)
+
+        // setup GeoTools logging redirection
+        // (to log4j by default, although this can be overridden)
         final ServletContext context = event.getServletContext();
-        GeoToolsLoggingRedirection logging =
-                GeoToolsLoggingRedirection.findValue(
-                        GeoServerExtensions.getProperty(
-                                LoggingUtils.GT2_LOGGING_REDIRECTION, context));
-        try {
-            if (logging == GeoToolsLoggingRedirection.CommonsLogging) {
-                Logging.ALL.setLoggerFactory(CommonsLoggerFactory.getInstance());
-            } else if (logging != GeoToolsLoggingRedirection.JavaLogging) {
-                Logging.ALL.setLoggerFactory(Log4JLoggerFactory.getInstance());
-            }
-        } catch (Exception e) {
-            getLogger().log(Level.SEVERE, "Could not configure log4j logging redirection", e);
-        }
 
         String relinquishLoggingControl =
                 GeoServerExtensions.getProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, context);
-        if (Boolean.valueOf(relinquishLoggingControl)) {
-            getLogger()
-                    .info(
-                            "RELINQUISH_LOG4J_CONTROL on, won't attempt to reconfigure LOG4J loggers");
-        } else {
-            try {
-                File baseDir =
-                        new File(GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
-                GeoServerResourceLoader loader = new GeoServerResourceLoader(baseDir);
 
-                LoggingInfo loginfo = getLogging(loader);
-                if (loginfo != null) {
+        LoggingUtils.relinquishLog4jControl = Boolean.valueOf(relinquishLoggingControl);
+
+        if (LoggingUtils.relinquishLog4jControl) {
+            getLogger().info("RELINQUISH_LOG4J_CONTROL on, won't attempt to reconfigure LOG4J");
+            return;
+        }
+
+        try {
+            File baseDir = new File(GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
+
+            GeoServerResourceLoader loader = new GeoServerResourceLoader(baseDir);
+            LoggingInfo loginfo = getLogging(loader);
+
+            if (loginfo != null) {
+                final String location =
+                        LoggingUtils.getLogFileLocation(loginfo.getLocation(), context);
+
+                LoggingUtils.initLogging(
+                        loader, loginfo.getLevel(), !loginfo.isStdOutLogging(), false, location);
+            } else {
+                // check for old style data directory
+                File f = loader.find("services.xml");
+                if (f != null) {
+                    LegacyLoggingImporter loggingImporter = new LegacyLoggingImporter();
+                    loggingImporter.imprt(baseDir);
+
                     final String location =
-                            LoggingUtils.getLogFileLocation(
-                                    loginfo.getLocation(), event.getServletContext());
+                            LoggingUtils.getLogFileLocation(loggingImporter.getLogFile(), context);
+
                     LoggingUtils.initLogging(
-                            loader, loginfo.getLevel(), !loginfo.isStdOutLogging(), location);
+                            loader,
+                            loggingImporter.getConfigFileName(),
+                            loggingImporter.getSuppressStdOutLogging(),
+                            false,
+                            location);
                 } else {
-                    // check for old style data directory
-                    File f = loader.find("services.xml");
-                    if (f != null) {
-                        LegacyLoggingImporter loggingImporter = new LegacyLoggingImporter();
-                        loggingImporter.imprt(baseDir);
-                        final String location =
-                                LoggingUtils.getLogFileLocation(loggingImporter.getLogFile(), null);
-                        LoggingUtils.initLogging(
-                                loader,
-                                loggingImporter.getConfigFileName(),
-                                loggingImporter.getSuppressStdOutLogging(),
-                                location);
-                    } else {
-                        getLogger()
-                                .log(
-                                        Level.WARNING,
-                                        "Could not find configuration file for logging");
-                    }
+                    getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Could not find GeoServer logging.xml (or old services.xml) settings for logging");
                 }
-            } catch (Exception e) {
-                getLogger().log(Level.SEVERE, "Could not configure log4j overrides", e);
             }
+        } catch (Exception e) {
+            getLogger().log(Level.SEVERE, "Could not reconfigure LOG4J loggers", e);
         }
     }
 
@@ -125,7 +123,14 @@ public class LoggingStartupContextListener implements ServletContextListener {
         }
     }
 
-    Logger getLogger() {
+    /**
+     * Lazy creation of {@code org.geoserver.logging} Logger.
+     *
+     * <p>Configure {@link Logging#ALL} prior to use.
+     *
+     * @return logger for {@code org.geoserver.logging}
+     */
+    static Logger getLogger() {
         if (LOGGER == null) {
             LOGGER = Logging.getLogger("org.geoserver.logging");
         }

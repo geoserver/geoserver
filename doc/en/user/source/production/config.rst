@@ -8,7 +8,7 @@ Use production logging
 
 Logging may visibly affect the performance of your server. High logging levels are often necessary to track down issues, but by default you should run with low levels.  (You can switch the logging levels while GeoServer is running.)
 
-You can change the logging level in the :ref:`config_globalsettings`.  You will want to choose the ``PRODUCTION`` logging configuration, where only problems are written to the log files.
+You can change the logging level in the :ref:`config_globalsettings_log_profile`.  You will want to choose the ``PRODUCTION`` logging configuration, where only problems are written to the log files.
 
 Set a service strategy
 ----------------------

@@ -27,6 +27,7 @@ import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.iterator.IteratorList;
 import org.geoserver.kml.iterator.WFSFeatureIteratorFactory;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ReprojectingFeatureCollection;
@@ -52,14 +53,17 @@ public class KMLPPIO extends CDataPPIO {
 
     GeoServer gs;
 
+    EntityResolverProvider resolverProvider;
+
     Configuration xml;
 
     SimpleFeatureType type;
 
-    public KMLPPIO(GeoServer gs) {
+    public KMLPPIO(GeoServer gs, EntityResolverProvider resolverProvider) {
         super(FeatureCollection.class, FeatureCollection.class, KMLMapOutputFormat.MIME_TYPE);
 
         this.gs = gs;
+        this.resolverProvider = resolverProvider;
         this.xml = new KMLConfiguration();
         SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
 
@@ -104,6 +108,7 @@ public class KMLPPIO extends CDataPPIO {
     public Object decode(InputStream input) throws Exception {
         StreamingParser parser =
                 new StreamingParser(new KMLConfiguration(), input, SimpleFeature.class);
+        parser.setEntityResolver(resolverProvider.getEntityResolver());
         SimpleFeature f;
         ListFeatureCollection features = null;
         Map<Name, Class<?>> oldftype = null;

@@ -19,7 +19,7 @@ public class SearchQuery {
     private String datetime;
     private String filter;
     private Integer startIndex;
-    Geometry intersection;
+    Geometry intersects;
 
     @JsonProperty("filter-lang")
     String filterLang;
@@ -85,11 +85,11 @@ public class SearchQuery {
         this.startIndex = startIndex;
     }
 
-    public Geometry getIntersection() {
-        return intersection;
+    public Geometry getIntersects() {
+        return intersects;
     }
 
-    public void setIntersection(Geometry intersection) {
-        this.intersection = intersection;
+    public void setIntersects(Geometry intersects) {
+        this.intersects = intersects;
     }
 }

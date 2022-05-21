@@ -481,7 +481,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
                             + ". Check write permissions on target folder for user "
                             + System.getProperty("user.name"));
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error trying to copy logging configuration file", e);
+            LOGGER.log(Level.FINE, "Unable to copy logging configuration file", e);
         }
     }
 

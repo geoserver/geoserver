@@ -165,7 +165,7 @@ from the LDAP repository and allow access rights to be assigned to those roles.
 
 #. Click the ``LDAP`` option under the  ``New Role Service`` section.
 
-   .. figure:: images/ldap15.jpg
+   .. figure:: images/ldap15.png
       :align: center
       
 #. Enter ``ldaprs`` in the  ``Name`` text field.

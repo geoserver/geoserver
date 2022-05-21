@@ -119,7 +119,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.PreventLocalEntityResolver;
-import org.geotools.util.logging.Log4JLoggerFactory;
+import org.geotools.util.logging.Log4J2LoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.XSD;
 import org.junit.After;
@@ -272,15 +272,15 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         // setup quiet logging (we need to to this here because Data
         // is loaded before GeoServer has a chance to setup logging for good)
         try {
-            Logging.ALL.setLoggerFactory(Log4JLoggerFactory.getInstance());
+            Logging.ALL.setLoggerFactory(Log4J2LoggerFactory.getInstance());
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Could not configure log4j logging redirection", e);
+            LOGGER.log(Level.SEVERE, "Could not configure log4j2 logging redirection", e);
         }
         System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "true");
+        Logging.ALL.setLoggerFactory("org.geotools.util.logging.Log4J2LoggerFactory");
         GeoServerResourceLoader loader =
                 new GeoServerResourceLoader(testData.getDataDirectoryRoot());
-        LoggingUtils.configureGeoServerLogging(
-                loader, getClass().getResourceAsStream(getLogConfiguration()), false, true, null);
+        LoggingUtils.initLogging(loader, getLogConfiguration(), false, true, null);
 
         setUpTestData(testData);
 
@@ -420,16 +420,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     // test behaviour methods
     //
     /**
-     * Returns the logging configuration path. The default value is "/TEST_LOGGING.properties",
-     * which is a pretty quiet configuration. Should you need more verbose logging override this
-     * method in subclasses and choose a different configuration, for example
-     * "/DEFAULT_LOGGING.properties".
+     * Returns the logging configuration profile.
+     *
+     * <p>The default value is "TEST_LOGGING", which is a pretty quiet configuration, or
+     * "QUIET_LOGGING" based on {@link #isQuietTests()} check of system property {@code
+     * -DquietTests}.
+     *
+     * <p>Should you need more verbose logging override this method in subclasses and choose a
+     * different configuration, for example "DEFAULT_LOGGING".
      */
     protected String getLogConfiguration() {
         if (isQuietTests()) {
-            return "/QUIET_LOGGING.properties";
+            return "QUIET_LOGGING";
         }
-        return "/TEST_LOGGING.properties";
+        return "TEST_LOGGING";
     }
 
     /**

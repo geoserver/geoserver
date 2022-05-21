@@ -55,7 +55,7 @@ public class GeoServerConfigurationLock {
             enabled = true;
         }
 
-        LOGGER.info("GeoServer configuration lock is " + (enabled ? "enabled" : "disabled"));
+        LOGGER.config("GeoServer configuration lock is " + (enabled ? "enabled" : "disabled"));
     }
 
     /**

@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.logging.Logger;
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -18,6 +17,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.RequestUtils;
 
 /**
@@ -25,16 +26,74 @@ import org.geoserver.ows.util.RequestUtils;
  *
  * @author David Winslow <dwinslow@openplans.org>
  */
-public class LoggingFilter implements Filter {
+public class LoggingFilter implements GeoServerFilter {
     protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
 
-    protected boolean enabled = true;
-    protected boolean logBodies = true;
-    protected boolean logHeaders = true;
+    public static final String LOG_REQUESTS_ENABLED = "logRequestsEnabled";
+    public static final String LOG_HEADERS_ENABLED = "logHeadersEnabled";
+    public static final String LOG_BODIES_ENABLED = "logBodiesEnabled";
+
+    protected boolean enabled = false;
+    protected boolean logBodies = false;
+    protected boolean logHeaders = false;
+
+    private final GeoServer geoServer;
+
+    public LoggingFilter(GeoServer geoServer) {
+        this.geoServer = geoServer;
+    }
+
+    /**
+     * Check if body can be logged, or is it a known binary type.
+     *
+     * <p>At the time of writing used to suppress application/zip logging (which would render the
+     * console unusable).
+     *
+     * @param contentType
+     * @return
+     */
+    protected boolean isBinary(String contentType) {
+        if (contentType == null) {
+            return true;
+        }
+        int sub = contentType.indexOf('/');
+        String mimeType = sub == -1 ? contentType : contentType.substring(0, sub).toLowerCase();
+        String subType = sub == -1 ? "" : contentType.substring(sub + 1).toLowerCase();
+
+        if (mimeType.equals("image") && !subType.contains("svg")) {
+            return true;
+        } else if ("application".equals(mimeType)
+                && !(subType.contains("xml")
+                        || subType.contains("json")
+                        || subType.contains("gml"))) {
+            return true;
+        } else {
+            return false; // assume text by default
+        }
+    }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
+        // Pulling setting from global settings object
+        boolean geoServerHasMetadata =
+                (geoServer != null
+                        && geoServer.getGlobal() != null
+                        && geoServer.getGlobal().getMetadata() != null);
+
+        if (geoServerHasMetadata) {
+            MetadataMap metadataMap = geoServer.getGlobal().getMetadata();
+            enabled =
+                    (metadataMap.containsKey(LOG_REQUESTS_ENABLED)
+                            && metadataMap.get(LOG_REQUESTS_ENABLED, Boolean.class));
+            logBodies =
+                    (metadataMap.containsKey(LOG_BODIES_ENABLED)
+                            && metadataMap.get(LOG_BODIES_ENABLED, Boolean.class));
+            logHeaders =
+                    (metadataMap.containsKey(LOG_HEADERS_ENABLED)
+                            && metadataMap.get(LOG_HEADERS_ENABLED, Boolean.class));
+        }
+
         String message = "";
         String body = null;
         String path = "";
@@ -88,12 +147,18 @@ public class LoggingFilter implements Filter {
                     }
 
                     req = new BufferedRequestWrapper(hreq, encoding, bytes);
+
+                    if (isBinary(hreq.getHeader("Content-type"))) {
+                        message += bytes.length + " bytes (binary content)\n";
+                    } else {
+                        message += (body == null ? "" : "\n" + body + "\n");
+                    }
                 }
             } else {
                 message = "" + req.getRemoteHost() + " made a non-HTTP request";
             }
+            logger.info(message);
 
-            logger.info(message + (body == null ? "" : "\n" + body + "\n"));
             long startTime = System.currentTimeMillis();
             chain.doFilter(req, res);
             long requestTime = System.currentTimeMillis() - startTime;

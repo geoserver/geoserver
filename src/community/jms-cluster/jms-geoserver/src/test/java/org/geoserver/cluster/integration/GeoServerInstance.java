@@ -27,7 +27,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.DirectoryResourceLoader;
 import org.geoserver.test.GeoServerTestApplicationContext;
 import org.geoserver.util.IOUtils;
-import org.geotools.util.logging.Log4JLoggerFactory;
+import org.geotools.util.logging.Log4J2LoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.XSD;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -148,7 +148,7 @@ public final class GeoServerInstance {
             // disable security manager to speed up tests
             System.setSecurityManager(null);
             // take control of the logging
-            Logging.ALL.setLoggerFactory(Log4JLoggerFactory.getInstance());
+            Logging.ALL.setLoggerFactory(Log4J2LoggerFactory.getInstance());
             System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "true");
             // initialize Spring application context
             applicationContext = initInstance();
@@ -185,11 +185,7 @@ public final class GeoServerInstance {
         GeoServerResourceLoader loader = new GeoServerResourceLoader(dataDirectory);
         // setting logging level
         LoggingUtils.configureGeoServerLogging(
-                loader,
-                this.getClass().getResourceAsStream("/TEST_LOGGING.properties"),
-                false,
-                true,
-                null);
+                loader, loader.get("/logs/TEST_LOGGING.xml"), false, true, null);
         // create a mocked servlet context and instantiate the application context
         MockServletContext servletContext = createServletContext();
         GeoServerTestApplicationContext applicationContext =

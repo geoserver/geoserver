@@ -417,7 +417,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         if (isGeoServerExtensionsContext) {
             if (context == null) {
                 if (isSpringContext) {
-                    LOGGER.warning(
+                    LOGGER.fine(
                             "Extension lookup '"
                                     + bean
                                     + "', prior to bean geoserverExtensions initialisation.");

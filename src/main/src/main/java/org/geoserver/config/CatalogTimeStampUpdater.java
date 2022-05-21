@@ -38,7 +38,7 @@ public class CatalogTimeStampUpdater implements CatalogListener {
         this.catalog = catalog;
         catalog.addListener(this);
 
-        LOGGER.info("Initiated CatalogTimeStampUpdater");
+        LOGGER.fine("Initiated CatalogTimeStampUpdater");
     }
 
     @Override

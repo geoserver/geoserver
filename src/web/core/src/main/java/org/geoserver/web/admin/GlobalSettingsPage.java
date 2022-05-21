@@ -5,6 +5,10 @@
  */
 package org.geoserver.web.admin;
 
+import static org.geoserver.filters.LoggingFilter.LOG_BODIES_ENABLED;
+import static org.geoserver.filters.LoggingFilter.LOG_HEADERS_ENABLED;
+import static org.geoserver.filters.LoggingFilter.LOG_REQUESTS_ENABLED;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -24,13 +30,16 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.LockProvider;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
@@ -38,6 +47,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.data.resource.LocalesDropdown;
 import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
+import org.geoserver.web.util.MetadataMapModel;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
@@ -46,14 +56,6 @@ import org.springframework.context.ApplicationContext;
 public class GlobalSettingsPage extends ServerAdminPage {
 
     private static final long serialVersionUID = 4716657682337915996L;
-
-    static final List<String> DEFAULT_LOG_PROFILES =
-            Arrays.asList(
-                    "DEFAULT_LOGGING.properties",
-                    "VERBOSE_LOGGING.properties",
-                    "PRODUCTION_LOGGING.properties",
-                    "GEOTOOLS_DEVELOPER_LOGGING.properties",
-                    "GEOSERVER_DEVELOPER_LOGGING.properties");
 
     public static final ArrayList<String> AVAILABLE_CHARSETS =
             new ArrayList<>(Charset.availableCharsets().keySet());
@@ -67,6 +69,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         CompoundPropertyModel<GeoServerInfo> globalModel =
                 new CompoundPropertyModel<>(globalInfoModel);
         PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(globalModel, "settings");
+        PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(globalInfoModel, "metadata");
         Form<GeoServerInfo> form = new Form<>("form", globalModel);
 
         add(form);
@@ -110,6 +113,42 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         new PropertyModel<>(globalInfoModel, "xmlPostRequestLogBufferSize"));
         xmlPostRequestLogBufferSize.add(RangeValidator.minimum(0));
         form.add(xmlPostRequestLogBufferSize);
+        CheckBox logBodiesCheckBox =
+                new CheckBox(
+                        "requestLoggingBodies",
+                        new MetadataMapModel<>(metadataModel, LOG_BODIES_ENABLED, Boolean.class));
+        form.add(logBodiesCheckBox);
+        CheckBox logHeadersCheckBox =
+                new CheckBox(
+                        "requestLoggingHeaders",
+                        new MetadataMapModel<>(metadataModel, LOG_HEADERS_ENABLED, Boolean.class));
+        WebMarkupContainer wmc = new WebMarkupContainer("requestLoggingSub");
+        wmc.setOutputMarkupId(true);
+        wmc.add(logBodiesCheckBox);
+        wmc.add(logHeadersCheckBox);
+        MetadataMapModel<Boolean> requestCheckModel =
+                new MetadataMapModel<Boolean>(metadataModel, LOG_REQUESTS_ENABLED, Boolean.class) {
+                    @Override
+                    public void setObject(Boolean object) {
+                        super.setObject(object);
+                    }
+                };
+        wmc.setEnabled(Boolean.TRUE.equals(requestCheckModel.getObject()));
+        form.add(wmc);
+
+        AjaxCheckBox requestCheckBox =
+                new AjaxCheckBox("requestLogging", requestCheckModel) {
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        wmc.setEnabled(Boolean.TRUE.equals(requestCheckModel.getObject()));
+                        logBodiesCheckBox.getModel().setObject(false);
+                        logHeadersCheckBox.getModel().setObject(false);
+                        target.add(wmc);
+                    }
+                };
+
+        form.add(requestCheckBox);
 
         form.add(new CheckBox("xmlExternalEntitiesEnabled"));
 
@@ -222,21 +261,30 @@ public class GlobalSettingsPage extends ServerAdminPage {
     }
 
     private void logLevelsAppend(Form<GeoServerInfo> form, IModel<LoggingInfo> loggingInfoModel) {
-        // search for *LOGGING.properties files in the data directory
+        // search for *LOGGING xml and properties files in the data directory
         GeoServerResourceLoader loader =
                 GeoServerApplication.get().getBeanOfType(GeoServerResourceLoader.class);
         List<String> logProfiles = null;
         try {
             Resource logsDirectory = loader.get("logs");
             if (logsDirectory.getType() == Type.DIRECTORY) {
-                List<Resource> propFiles =
+                logProfiles = new ArrayList<>();
+                List<Resource> xmlFiles =
                         Resources.list(
                                 logsDirectory,
-                                obj -> obj.name().toLowerCase().endsWith("logging.properties"));
-                logProfiles = new ArrayList<>();
-                for (Resource res : propFiles) {
+                                obj -> obj.name().toLowerCase().endsWith("_logging.xml"));
+                for (Resource res : xmlFiles) {
+                    logProfiles.add(Paths.sidecar(res.name(), null));
+                }
+
+                List<Resource> propertiesFiles =
+                        Resources.list(
+                                logsDirectory,
+                                obj -> obj.name().toLowerCase().endsWith("_logging.properties"));
+                for (Resource res : propertiesFiles) {
                     logProfiles.add(res.name());
                 }
+
                 Collections.sort(logProfiles, String.CASE_INSENSITIVE_ORDER);
             }
         } catch (Exception e) {
@@ -246,8 +294,23 @@ public class GlobalSettingsPage extends ServerAdminPage {
                     e);
         }
         // if none is found use the default set
-        if (logProfiles == null || logProfiles.isEmpty()) logProfiles = DEFAULT_LOG_PROFILES;
-
+        if (logProfiles == null || logProfiles.isEmpty()) {
+            logProfiles = Arrays.asList(LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS);
+        }
+        // fix optional properties suffix
+        String level = loggingInfoModel.getObject().getLevel();
+        if (level != null && !logProfiles.contains(level)) {
+            for (String profile : logProfiles) {
+                if (profile.startsWith(level)) {
+                    loggingInfoModel.getObject().setLevel(profile);
+                    break;
+                }
+                if (profile.startsWith(Paths.sidecar(level, null))) {
+                    loggingInfoModel.getObject().setLevel(profile);
+                    break;
+                }
+            }
+        }
         form.add(
                 new ListChoice<>(
                         "log4jConfigFile",

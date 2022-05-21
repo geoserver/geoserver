@@ -739,7 +739,7 @@ public abstract class BackupRestoreItem<T> {
                 ((DataStoreInfo) target).getDataStore(null);
 
                 // connection ok
-                LOGGER.info(
+                LOGGER.config(
                         "Processed data store '"
                                 + target.getName()
                                 + "', "

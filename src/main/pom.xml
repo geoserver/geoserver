@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.21-SNAPSHOT</version>
+    <version>2.22-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -67,10 +67,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-cql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -197,22 +193,16 @@
       <artifactId>gt-jdbc-postgis</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-platform</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
     </dependency>
-    <!-- 
-  <dependency>
-   <groupId>org.springframework.security</groupId>
-   <artifactId>spring-security-core</artifactId>
-   <classifier>tests</classifier>
-   <scope>test</scope>
-  </dependency>  
--->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
@@ -233,6 +223,7 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.jasypt</groupId>
       <artifactId>jasypt</artifactId>
@@ -245,10 +236,12 @@
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15on</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-h2</artifactId>

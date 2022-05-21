@@ -11,5 +11,6 @@
   <!-- KML PPIO -->
   <bean id="KMLPPIO" class="org.geoserver.wps.ppio.KMLPPIO">
       <constructor-arg ref="geoServer"/>
+      <constructor-arg ref="entityResolverProvider"/>
   </bean>
 </beans>

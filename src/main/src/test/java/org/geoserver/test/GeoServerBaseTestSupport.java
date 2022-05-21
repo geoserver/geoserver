@@ -10,6 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
@@ -136,7 +139,15 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         if (testData == null) {
             test = this;
             testData = createTestData();
-            testData.setUp();
+
+            Logger imageLogger = Logger.getLogger("org.geotools.image");
+            Level previousLevel = imageLogger.getLevel();
+            try {
+                imageLogger.setLevel(Level.WARNING);
+                testData.setUp();
+            } finally {
+                imageLogger.setLevel(previousLevel);
+            }
 
             setUp((T) testData);
         }
@@ -191,11 +202,33 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     public static final void doTearDownClass() throws Exception {
         if (testData != null) {
             try {
-                test.tearDown(testData);
-                testData.tearDown();
+                try {
+                    test.tearDown(testData);
+                } catch (Throwable t) {
+                    LOGGER.log(Logging.FATAL, "Failure to tear down test support: " + t, t);
+                    throw t;
+                }
+                // reset log4j2 to default, to drop any open files
+                LogManager.shutdown();
+                @SuppressWarnings({
+                    "resource",
+                    "PMD.CloseResource"
+                }) // current context, no need to enforce AutoClosable
+                LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+                loggerContext.reconfigure(new DefaultConfiguration());
+
+                try {
+                    testData.tearDown();
+                } catch (Throwable t) {
+                    LOGGER.log(
+                            Logging.FATAL,
+                            "Failure to remove contents of the temporary data directory: " + t,
+                            t);
+                    throw t;
+                }
             } finally {
                 // clean up the static variables anyways, otherwise a failure
-                // to tear down will pullute the test and test data used by subsequent tests
+                // to tear down will pollute the test and test data used by subsequent tests
                 testData = null;
                 test = null;
             }

@@ -22,6 +22,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
@@ -53,6 +54,8 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
@@ -89,8 +92,21 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
     @Override
     protected String getLogConfiguration() {
-        // needed to verify proper process cancellation
-        return "/GPKG_LOGGING.properties";
+        // needed for a test on logging capabilities
+        GeoServerResourceLoader loader =
+                new GeoServerResourceLoader(testData.getDataDirectoryRoot());
+
+        Resource resource = loader.get("logs/GPKG_LOGGING.properties");
+        if (resource.getType() == Resource.Type.UNDEFINED) {
+            try {
+                loader.copyFromClassPath(
+                        "/GPKG_LOGGING.properties", "logs/GPKG_LOGGING.properties");
+            } catch (IOException e) {
+                LOGGER.fine("Unable to configure with GPKG_LOGGING");
+                return "TEST_LOGGING";
+            }
+        }
+        return "GPKG_LOGGING";
     }
 
     @Override

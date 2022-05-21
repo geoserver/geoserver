@@ -16,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
@@ -98,20 +99,28 @@ public class STACQueryablesBuilder {
         AbstractTemplateBuilder features = lookupBuilder(template, "features");
         Map<String, Schema> properties = this.queryables.getProperties();
         if (features != null) {
+            Set<String> preconfiguredQueryables = getPreconfiguredQueryables();
+            BiConsumer<String, DynamicValueBuilder> collector =
+                    (path, vb) -> {
+                        if (SKIP_PROPERTIES.contains(path)) return;
+                        // skip property if not among the preconfigured ones
+                        if (preconfiguredQueryables != null
+                                && !preconfiguredQueryables.contains(path)) return;
+                        properties.put(path, getSchema(vb));
+                    };
+
+            // lookup the queryables among the properties
             AbstractTemplateBuilder builder = lookupBuilder(features, "properties");
             if (builder != null) {
-                Set<String> preconfiguredQueryables = getPreconfiguredQueryables();
                 TemplatePropertyVisitor visitor =
-                        new TemplatePropertyVisitor(
-                                builder,
-                                sampleFeature,
-                                (path, vb) -> {
-                                    if (SKIP_PROPERTIES.contains(path)) return;
-                                    // skip property if not among the preconfigured ones
-                                    if (preconfiguredQueryables != null
-                                            && !preconfiguredQueryables.contains(path)) return;
-                                    properties.put(path, getSchema(vb));
-                                });
+                        new TemplatePropertyVisitor(builder, sampleFeature, collector);
+                visitor.visit();
+            }
+            // if any pre-configured queryable was missed, look at the top level propeties too
+            if (preconfiguredQueryables != null
+                    && properties.size() < preconfiguredQueryables.size()) {
+                TemplatePropertyVisitor visitor =
+                        new TemplatePropertyVisitor(features, sampleFeature, collector);
                 visitor.visit();
             }
         }
@@ -158,30 +167,33 @@ public class STACQueryablesBuilder {
      */
     Map<String, Expression> getExpressionMap() {
         AbstractTemplateBuilder features = lookupBuilder(template, "features");
-        Map<String, Expression> result = new HashMap<>();
+        Map<String, Expression> expressions = new HashMap<>();
         if (features != null) {
+            Set<String> preconfigured = getPreconfiguredQueryables();
+            BiConsumer<String, DynamicValueBuilder> collector =
+                    (path, vb) -> {
+                        if (SKIP_PROPERTIES.contains(path)) return;
+                        if (preconfigured != null && !preconfigured.contains(path)) return;
+                        expressions.put(path, vb.getXpath() == null ? vb.getCql() : vb.getXpath());
+                    };
+
             AbstractTemplateBuilder properties = lookupBuilder(features, "properties");
             if (properties != null) {
-                Set<String> preconfiguredQueryables = getPreconfiguredQueryables();
                 TemplatePropertyVisitor visitor =
-                        new TemplatePropertyVisitor(
-                                properties,
-                                sampleFeature,
-                                (path, vb) -> {
-                                    if (SKIP_PROPERTIES.contains(path)) return;
-                                    if (preconfiguredQueryables != null
-                                            && !preconfiguredQueryables.contains(path)) return;
-                                    result.put(
-                                            path,
-                                            vb.getXpath() == null ? vb.getCql() : vb.getXpath());
-                                });
+                        new TemplatePropertyVisitor(properties, sampleFeature, collector);
+                visitor.visit();
+            }
+            // if missing queryables, look up the top level as well
+            if (preconfigured != null && preconfigured.size() > expressions.size()) {
+                TemplatePropertyVisitor visitor =
+                        new TemplatePropertyVisitor(features, sampleFeature, collector);
                 visitor.visit();
             }
         }
         // force in the extra properties not found under properties
-        WELL_KNOWN_PROPERTIES.forEach((k, v) -> result.put(k, FF.property(v)));
+        WELL_KNOWN_PROPERTIES.forEach((k, v) -> expressions.put(k, FF.property(v)));
 
-        return result;
+        return expressions;
     }
 
     private Schema<?> getSchema(String description, String ref) {

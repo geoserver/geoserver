@@ -139,17 +139,17 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
      */
     @Override
     public synchronized void load() throws IOException {
-        LOGGER.info("Start reloading roles for service named " + getName());
+        LOGGER.config("Start reloading roles for service named " + getName());
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             Gson gson = new Gson();
-            LOGGER.info("Obtaining access token for Keycloak");
+            LOGGER.config("Obtaining access token for Keycloak");
             String accessToken = getAccessToken(httpClient, gson);
             if (accessToken == null || accessToken.trim().isEmpty()) {
                 return;
             }
 
-            LOGGER.info("Retrieving roles from Keycloak");
+            LOGGER.config("Retrieving roles from Keycloak");
             List<GeoServerRole> roles = getRoles(httpClient, gson, accessToken);
             if (roles == null) {
                 return;
@@ -157,7 +157,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
             roleSet = new TreeSet<GeoServerRole>();
             roleSet.addAll(roles);
 
-            LOGGER.info("Reloading roles successful for service named " + getName());
+            LOGGER.config("Reloading roles successful for service named " + getName());
             fireRoleLoadedEvent();
         }
     }

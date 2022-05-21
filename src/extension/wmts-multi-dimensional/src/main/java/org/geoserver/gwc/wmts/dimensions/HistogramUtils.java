@@ -66,18 +66,21 @@ final class HistogramUtils {
      * type.
      */
     static Tuple<String, List<Integer>> buildHistogram(
-            List<Comparable> domainValues, String resolution) {
+            List<Comparable> domainValues, String resolution, boolean isRange) {
         if (domainValues.isEmpty()) {
             // FIXME: How to represent a domain with no values ?
             return Tuple.tuple("", Collections.emptyList());
         }
         Tuple<String, List<Range>> buckets = computeBuckets(domainValues, resolution);
+
+        if (isRange) return buildRangeHistogram(domainValues, buckets);
+
         ArrayList<Integer> histogramValues = new ArrayList<>(buckets.second.size());
         for (int i = 0; i < buckets.second.size(); i++) {
             histogramValues.add(0);
         }
-        for (Object value : domainValues) {
-            int index = getBucketIndex(buckets.second, (Comparable) value);
+        for (Comparable value : domainValues) {
+            int index = getBucketIndex(buckets.second, value);
             if (index >= 0) {
                 histogramValues.set(index, histogramValues.get(index) + 1);
             } else if (LOGGER.isLoggable(Level.FINE)) {
@@ -86,6 +89,31 @@ final class HistogramUtils {
         }
 
         return Tuple.tuple(buckets.first, histogramValues);
+    }
+
+    static Tuple<String, List<Integer>> buildRangeHistogram(
+            List<Comparable> domainValues, Tuple<String, List<Range>> bucketsTuple) {
+        List<Range> buckets = bucketsTuple.second;
+        int bucketsSize = buckets.size();
+        ArrayList<Integer> histogramValues = new ArrayList<>(bucketsSize);
+        for (int i = 0; i < bucketsSize; i++) {
+            histogramValues.add(0);
+        }
+        for (Comparable value : domainValues) {
+            Range range = (Range) value;
+            List<Integer> indexes = getBucketIntervalIndex(buckets, range);
+            if (!indexes.isEmpty()) {
+                indexes.forEach(i -> histogramValues.set(i, histogramValues.get(i) + 1));
+            } else if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(
+                        Level.FINE,
+                        "No values found for interval: "
+                                + range.getMinValue()
+                                + "-"
+                                + range.getMaxValue());
+            }
+        }
+        return Tuple.tuple(bucketsTuple.first, histogramValues);
     }
 
     /** Compute the buckets for the given domain values and resolution. */
@@ -284,6 +312,31 @@ final class HistogramUtils {
             }
         }
         return -1;
+    }
+
+    private static List<Integer> getBucketIntervalIndex(List<Range> buckets, Range value) {
+        List<Integer> indexes = new ArrayList<>(buckets.size());
+        for (int i = 0; i < buckets.size(); i++) {
+            Range r = buckets.get(i);
+            Comparable min = value.getMinValue();
+            Comparable max = value.getMaxValue();
+            if (intersectsMin(r, min) && intersectsMax(r, max)) indexes.add(i);
+        }
+        return indexes;
+    }
+
+    private static boolean intersectsMin(Range<?> range, Comparable min) {
+        Comparable maxBoundary = range.getMaxValue();
+        @SuppressWarnings("unchecked")
+        int intersectsMin = min.compareTo(maxBoundary);
+        return range.isMaxIncluded() ? intersectsMin <= 0 : intersectsMin < 0;
+    }
+
+    private static boolean intersectsMax(Range<?> range, Comparable max) {
+        Comparable minBoundary = range.getMinValue();
+        @SuppressWarnings("unchecked")
+        int intersectsMax = max.compareTo(minBoundary);
+        return range.isMinIncluded() ? intersectsMax >= 0 : intersectsMax > 0;
     }
 
     /**

@@ -204,12 +204,12 @@ public abstract class GeoServerLoader {
                 return;
             }
 
-            if (LOGGER.isLoggable(Level.INFO)) {
+            if (LOGGER.isLoggable(Level.CONFIG)) {
                 String type =
                         ft instanceof CoverageInfo
                                 ? "coverage"
                                 : ft instanceof FeatureTypeInfo ? "feature type" : "resource";
-                LOGGER.info(
+                LOGGER.config(
                         "Loaded "
                                 + type
                                 + " '"
@@ -222,7 +222,7 @@ public abstract class GeoServerLoader {
                 LayerInfo l = depersist(xp, lc.layerContents, LayerInfo.class);
                 catalog.add(l);
 
-                LOGGER.info("Loaded layer '" + l.getName() + "'");
+                LOGGER.config("Loaded layer '" + l.getName() + "'");
 
                 for (StyleInfo style : l.getStyles()) {
                     if (null == style) {
@@ -445,9 +445,9 @@ public abstract class GeoServerLoader {
         if (!Resources.exists(f)) {
             // assume 2.x style data directory
             Stopwatch sw = Stopwatch.createStarted();
-            LOGGER.info("Loading catalog...");
+            LOGGER.config("Loading catalog...");
             catalog2 = (CatalogImpl) readCatalog(xp);
-            LOGGER.info("Read catalog in " + sw.stop());
+            LOGGER.config("Read catalog in " + sw.stop());
         } else {
             // import old style catalog, register the persister now so that we start
             // with a new version of the catalog
@@ -508,7 +508,10 @@ public abstract class GeoServerLoader {
             if (Resources.exists(dws)) {
                 try {
                     defaultWorkspace = depersist(xp, dws, WorkspaceInfo.class);
-                    LOGGER.info("Loaded default workspace " + defaultWorkspace.getName());
+                    if (LOGGER.isLoggable(Level.CONFIG)) {
+                        LOGGER.config(
+                                "Loaded default workspace '" + defaultWorkspace.getName() + "'");
+                    }
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Failed to load default workspace", e);
                 }
@@ -535,9 +538,9 @@ public abstract class GeoServerLoader {
                     try {
                         ws = depersist(xp, wc.contents, WorkspaceInfo.class);
                         catalog.add(ws);
-                        if (LOGGER.isLoggable(Level.INFO)) {
-                            LOGGER.info("Loaded workspace '" + ws.getName() + "'");
-                        }
+                        LOGGER.log(
+                                Level.CONFIG,
+                                () -> String.format("Loaded workspace '%s'", ws.getName()));
                     } catch (Exception e) {
                         LOGGER.log(
                                 Level.WARNING,
@@ -787,8 +790,8 @@ public abstract class GeoServerLoader {
             ds = depersist(xp, SingleResourceContents.contents, DataStoreInfo.class);
             catalog.add(ds);
 
-            if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info(
+            if (LOGGER.isLoggable(Level.CONFIG)) {
+                LOGGER.config(
                         "Loaded data store '"
                                 + ds.getName()
                                 + "', "
@@ -1015,7 +1018,7 @@ public abstract class GeoServerLoader {
                     catalog.add(s);
 
                     if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.info("Loaded style '" + s.getName() + "'");
+                        LOGGER.config("Loaded style '" + s.getName() + "'");
                     }
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Failed to load style" + r.resource.name(), e);
@@ -1038,7 +1041,7 @@ public abstract class GeoServerLoader {
                     }
                     catalog.add(lg);
 
-                    LOGGER.info("Loaded layer group '" + lg.getName() + "'");
+                    LOGGER.config("Loaded layer group '" + lg.getName() + "'");
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Failed to load layer group " + r.resource.name(), e);
                 }
@@ -1058,7 +1061,7 @@ public abstract class GeoServerLoader {
 
                 geoServer.add(s);
 
-                LOGGER.info(
+                LOGGER.config(
                         "Loaded service '"
                                 + s.getId()
                                 + "', "

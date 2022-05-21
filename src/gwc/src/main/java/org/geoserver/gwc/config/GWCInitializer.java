@@ -90,7 +90,7 @@ public class GWCInitializer implements GeoServerReinitializer {
     /** @see org.geoserver.config.GeoServerInitializer#initialize(org.geoserver.config.GeoServer) */
     @Override
     public void initialize(final GeoServer geoServer) throws Exception {
-        LOGGER.info(
+        LOGGER.config(
                 "Initializing GeoServer specific GWC configuration from "
                         + GWCConfigPersister.GWC_CONFIG_FILE);
 

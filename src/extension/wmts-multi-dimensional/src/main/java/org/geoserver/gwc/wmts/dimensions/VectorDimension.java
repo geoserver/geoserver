@@ -10,6 +10,7 @@ import java.util.Set;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.gwc.wmts.MultiDimensionalExtension;
 import org.geoserver.wms.WMS;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -17,6 +18,8 @@ import org.geotools.feature.FeatureCollection;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /** Base class for vector based dimension */
 public abstract class VectorDimension extends Dimension {
@@ -64,31 +67,47 @@ public abstract class VectorDimension extends Dimension {
             // no duplicate values should be included
             Set<Comparable> values =
                     DimensionsUtils.getValuesWithoutDuplicates(
-                            dimensionInfo.getAttribute(), featureCollection);
+                            dimensionInfo.getAttribute(),
+                            dimensionInfo.getEndAttribute(),
+                            featureCollection);
             return new ArrayList<>(values);
         }
         // we need the duplicate values (this is useful for some operations like get histogram
         // operation)
         return DimensionsUtils.getValuesWithDuplicates(
-                dimensionInfo.getAttribute(), featureCollection);
+                dimensionInfo.getAttribute(), dimensionInfo.getEndAttribute(), featureCollection);
     }
 
     @Override
     protected DomainSummary getDomainSummary(Query query, int expandLimit) {
         FeatureCollection features = getDomain(query);
         String attribute = dimensionInfo.getAttribute();
-
-        return getDomainSummary(features, attribute, expandLimit);
+        String endAttribute = dimensionInfo.getEndAttribute();
+        return getDomainSummary(features, attribute, endAttribute, expandLimit);
     }
 
     @Override
     protected DomainSummary getPagedDomainValues(
             Query query, int maxNumberOfValues, SortOrder sortOrder) {
         String attribute = dimensionInfo.getAttribute();
+        String endAttribute = dimensionInfo.getEndAttribute();
         Query sortedQuery = new Query(query);
-        sortedQuery.setSortBy(new SortBy[] {FILTER_FACTORY.sort(attribute, sortOrder)});
+        boolean sortByEnd = sortByEnd();
+        SortBy sortByDim = FILTER_FACTORY.sort(sortByEnd ? endAttribute : attribute, sortOrder);
+        sortedQuery.setSortBy(new SortBy[] {sortByDim});
         FeatureCollection features = getDomain(sortedQuery);
+        return getPagedDomainValues(
+                features, attribute, endAttribute, maxNumberOfValues, sortByDim);
+    }
 
-        return getPagedDomainValues(features, attribute, maxNumberOfValues);
+    private boolean sortByEnd() {
+        RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            Object o = attrs.getAttribute(MultiDimensionalExtension.SORT_BY_END, 0);
+            if (o instanceof Boolean) {
+                return (Boolean) o;
+            }
+        }
+        return false;
     }
 }

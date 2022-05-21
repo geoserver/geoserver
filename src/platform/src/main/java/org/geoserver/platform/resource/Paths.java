@@ -31,7 +31,17 @@ public class Paths {
     /** Path to base resource. */
     public static final String BASE = "";
 
-    static String parent(String path) {
+    /**
+     * Parent dir of this resource, or {@link #BASE} dir for top-level resources.
+     *
+     * <p>A special case is {@code null} as parent of {@link #BASE} dir to indicate no parent is
+     * available.
+     *
+     * @param path resource path
+     * @return path of parent dir, this {@link #BASE} for top-level resources, or {@code null} for
+     *     {@link #BASE} dir.
+     */
+    public static String parent(String path) {
         if (path == null) {
             return null;
         }
@@ -47,7 +57,13 @@ public class Paths {
         }
     }
 
-    static String name(String path) {
+    /**
+     * Name of resource.
+     *
+     * @param path resource path
+     * @return name of resource
+     */
+    public static String name(String path) {
         if (path == null) {
             return null;
         }
@@ -60,8 +76,13 @@ public class Paths {
         }
     }
 
-    /** Used to quickly check path extension */
-    static String extension(String path) {
+    /**
+     * Path extension (in lower-case) or {@code null} if there is no extension.
+     *
+     * @param path resource path
+     * @return resource extension (lowercase)
+     */
+    public static String extension(String path) {
         String name = name(path);
         if (name == null) {
             return null;
@@ -70,19 +91,31 @@ public class Paths {
         if (last == -1) {
             return null; // no extension
         } else {
-            return name.substring(last + 1);
+            return name.substring(last + 1).toLowerCase();
         }
     }
 
-    static String sidecar(String path, String extension) {
-        if (extension == null) {
-            return null;
-        }
+    /**
+     * Path to sidecar, replacing resource extension with the provided sidecar extension.
+     *
+     * @param path resource path
+     * @param sidecarExtension Sidecar extension (or {@code null} for no extension)
+     * @return complete path to sidecar (result of changing extension)
+     */
+    public static String sidecar(String path, String sidecarExtension) {
         int last = path.lastIndexOf('.');
+
+        if (sidecarExtension == null) {
+            if (last == -1) {
+                return path;
+            } else {
+                return path.substring(0, last);
+            }
+        }
         if (last == -1) {
-            return path + "." + extension;
+            return path + "." + sidecarExtension;
         } else {
-            return path.substring(0, last) + "." + extension;
+            return path.substring(0, last) + "." + sidecarExtension;
         }
     }
 
@@ -103,7 +136,7 @@ public class Paths {
      * @param path Items defining a Path
      * @return path Path used to identify a Resource
      */
-    static String path(boolean strictPath, String... path) {
+    public static String path(boolean strictPath, String... path) {
         if (path == null || (path.length == 1 && path[0] == null)) {
             return null;
         }
@@ -164,10 +197,10 @@ public class Paths {
                 continue; // skip null names
             }
             if (INVALID.contains(item)) {
-                reportInvalidPath(names, item);
+                return reportInvalidPath(names, item);
             }
             if (!VALID.matcher(item).matches()) {
-                reportInvalidPath(names, item);
+                return reportInvalidPath(names, item);
             }
             if (!WARN.matcher(item).matches()) {
                 if (strictPath) {
@@ -182,6 +215,14 @@ public class Paths {
         return buf.toString();
     }
 
+    /**
+     * Internal method to report an invalid path.
+     *
+     * @param names Names forming path
+     * @param item Invalid item identified
+     * @return path is not returned as exception thrown.
+     * @throws IllegalArgumentException Indicating invalid item identified
+     */
     private static String reportInvalidPath(List<String> names, String item) {
         throw new IllegalArgumentException(
                 "Contains invalid '"
@@ -215,11 +256,11 @@ public class Paths {
             throw new IllegalArgumentException("Relative paths not supported " + path);
         }
         if (!VALID.matcher(path).matches()) {
-            throw new IllegalArgumentException("Contains invalid chracters " + path);
+            throw new IllegalArgumentException("Contains invalid characters " + path);
         }
         if (!WARN.matcher(path).matches()) {
             if (strictPath) {
-                throw new IllegalArgumentException("Contains invalid chracters " + path);
+                throw new IllegalArgumentException("Contains invalid characters " + path);
             }
         }
         return path;

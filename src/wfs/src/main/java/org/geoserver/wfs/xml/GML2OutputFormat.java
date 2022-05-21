@@ -190,7 +190,10 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
 
         WFSInfo wfs = getInfo();
 
-        transformer.setIndentation(wfs.isVerbose() ? INDENT_SIZE : (NO_FORMATTING));
+        transformer.setIndentation(
+                (wfs.isVerbose() || geoServer.getSettings().isVerbose())
+                        ? INDENT_SIZE
+                        : (NO_FORMATTING));
         transformer.setNumDecimals(numDecimals);
         transformer.setPadWithZeros(padWithZeros);
         transformer.setForceDecimalEncoding(forcedDecimal);

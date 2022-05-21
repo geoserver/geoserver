@@ -36,8 +36,8 @@ GeoServer is distributed under the GNU General Public License Version 2.0 licens
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335  USA
 
-For latest contact information of Open Source Geospatial Foundation see the website at
-http://www.osgeo.org.  Current email is info@osgeo.org and address is OSGeo, 14525 SW Millikan #42523, Beaverton, Oregon, United States, 97005-2343.
+For the latest contact information of the Open Source, Geospatial Foundation see the website at
+http://www.osgeo.org.  The current email is info@osgeo.org and the address is OSGeo, 14525 SW Millikan #42523, Beaverton, Oregon, United States, 97005-2343.
 
 The full GPL license is available in this directory in the file GPL.txt
 
@@ -68,18 +68,18 @@ Algorithm.  The copyright notice is intact in the source code and also here:
  *
  * Any party obtaining a copy of these files from the author, directly or
  * indirectly, is granted, free of charge, a full and unrestricted irrevocable,
- * world-wide, paid up, royalty-free, nonexclusive right and license to deal
+ * worldwide, paid-up, royalty-free, nonexclusive right and license to deal
  * in this software and documentation files (the "Software"), including without
- * limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * limitation of the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons who receive
  * copies from any such party to do so, with the only requirement being
- * that this copyright notice remain intact.
+ * that this copyright notice remains intact.
  */
 
 
-The GeoServer Project also thank J. M. G. Elliot for his improvements on 
-Jef Poskanzer's GifEncoder.  Notice is included below on his Elliot's 
-release to public domain and Poskanzer's original notice (which is new
+The GeoServer Project also thanks J. M. G. Elliot for his improvements on 
+Jef Poskanzer's GifEncoder.  Notice is included below on Elliot's 
+release to the public domain and Poskanzer's original notice (which is new
 BSD).  Source code is included in GeoServer source, with modifications done
 by David Blasby for The Open Planning Project (now OpenPlans).  
 
@@ -141,14 +141,14 @@ modification, are permitted provided that the following conditions
 are met: 
 
 - Redistribution of source code must retain the above copyright 
-  notice, this  list of conditions and the following disclaimer.
+  notice, this list of conditions and the following disclaimer.
 
 - Redistribution in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in 
   the documentation and/or other materials provided with the
   distribution.
 
-Neither the name of Sun Microsystems, Inc. or the names of 
+Neither the name of Sun Microsystems, Inc. nor the names of 
 contributors may be used to endorse or promote products derived 
 from this software without specific prior written permission.
 
@@ -158,32 +158,32 @@ WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY
 EXCLUDED. SUN MIDROSYSTEMS, INC. ("SUN") AND ITS LICENSORS SHALL 
 NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF 
-USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+USING, MODIFYING, OR DISTRIBUTING THIS SOFTWARE OR ITS
 DERIVATIVES. IN NO EVENT WILL SUN OR ITS LICENSORS BE LIABLE FOR 
-ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
-CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND
+ANY LOST REVENUE, PROFIT, OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
+CONSEQUENTIAL, INCIDENTAL, OR PUNITIVE DAMAGES, HOWEVER, CAUSED AND
 REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
 INABILITY TO USE THIS SOFTWARE, EVEN IF SUN HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGES. 
 
 You acknowledge that this software is not designed or intended for 
-use in the design, construction, operation or maintenance of any 
+use in the design, construction, operation, or maintenance of any 
 nuclear facility. 
 -------
 
 GeoServer also includes binaries and from Jetty, the standard version can be 
 found at http://www.eclipse.org/jetty/, released under an OSI-approved artistic
 license.  We include the license completely, as some versions will be 
-distributed without full source.
+distributed without the full source.
 
 ------
 Jetty License
 $Revision: 3.7 $
 Preamble:
 
-The intent of this document is to state the conditions under which the Jetty Package may be copied, such that the Copyright Holder maintains some semblance of control over the development of the package, while giving the users of the package the right to use, distribute and make reasonable modifications to the Package in accordance with the goals and ideals of the Open Source concept as described at http://www.opensource.org.
+The intent of this document is to state the conditions under which the Jetty Package may be copied, such that the Copyright Holder maintains some semblance of control over the development of the package while giving the users of the package the right to use, distribute and make reasonable modifications to the Package in accordance with the goals and ideals of the Open Source concept as described at http://www.opensource.org.
 
-It is the intent of this license to allow commercial usage of the Jetty package, so long as the source code is distributed or suitable visible credit given or other arrangements made with the copyright holders.
+It is the intent of this license to allow commercial usage of the Jetty package, so long as the source code is distributed or suitable visible credit is given or other arrangements made with the copyright holders.
 
 Definitions:
 

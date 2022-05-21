@@ -244,7 +244,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
 
         encoder.setEncoding(Charset.forName(geoServer.getSettings().getCharset()));
         if (wfs.isVerbose() || geoServer.getSettings().isVerbose()) {
-            geoServer.getSettings().setVerbose(true);
+
             encoder.setIndenting(true);
         } else {
             encoder.setIndenting(false);

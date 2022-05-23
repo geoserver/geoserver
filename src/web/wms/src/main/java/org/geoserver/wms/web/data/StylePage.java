@@ -24,6 +24,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geoserver.web.wicket.StyleFormatLabel;
 
 /** Page listing all the styles, allows to edit, add, remove styles */
 @SuppressWarnings("serial")
@@ -63,6 +64,11 @@ public class StylePage extends GeoServerSecuredPage {
                                             id,
                                             StyleProvider.CREATED_TIMESTAMP.getModel(itemModel));
                                 }
+                                if (property == StyleProvider.FORMAT) {
+                                    return new StyleFormatLabel(
+                                            id, StyleProvider.FORMAT.getModel(itemModel));
+                                }
+
                                 return null;
                             }
 

@@ -38,7 +38,9 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
     static final Property<StyleInfo> CREATED_TIMESTAMP =
             new BeanProperty<>("datecreated", "dateCreated");
 
-    static List<Property<StyleInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE);
+    static final Property<StyleInfo> FORMAT = new BeanProperty<>("format", "format");
+
+    static List<Property<StyleInfo>> PROPERTIES = Arrays.asList(NAME, FORMAT, WORKSPACE);
 
     public StyleProvider() {
         setSort(new SortParam<>(NAME.getName(), true));

@@ -637,7 +637,11 @@ See also :ref:`transformation_func`.
 JSON functions
 --------------------------------
 
-JSON functions give the ability to use filters inside json data, on text or stored on a RDBMS.
+JSON functions give the ability to provide conditions that are able to filter over json data.
+The implementation for this functions is provided for this datasources:
+  - inmemory
+  - Postgres
+  - Oracle
 
 .. list-table::
    :widths: 20 25 55

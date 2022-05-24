@@ -5,6 +5,7 @@
  */
 package org.geoserver.logging;
 
+import static org.geoserver.logging.GeoServerXMLConfiguration.attributeGet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Node;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.MemoryLockProvider;
@@ -173,5 +175,29 @@ public class LoggingStartupContextListenerTest {
                 "logs/geoserver.log",
                 GeoServerXMLConfiguration.applyPathTemplate(
                         "${baseDir}/logs/logging.log", "logs/geoserver.log"));
+    }
+
+    @Test
+    public void testNodeAttributes() {
+        Node node = new Node();
+        node.getAttributes().put("fileName", "logs/geoserver.log");
+
+        assertNotNull("attribute name lookup", attributeGet(node, "fileName"));
+        assertNotNull("attribute case-insensitive lookup", attributeGet(node, "filename"));
+
+        assertEquals("attribute style", "logs/geoserver.log", attributeGet(node, "fileName"));
+        assertEquals("element style", "logs/geoserver.log", attributeGet(node, "FileName"));
+        assertEquals("quick style", "logs/geoserver.log", attributeGet(node, "filename"));
+
+        node.getAttributes().remove("fileName");
+        assertNull("attribute style", attributeGet(node, "fileName"));
+        assertNull("element style", attributeGet(node, "FileName"));
+        assertNull("quick style", attributeGet(node, "filename"));
+
+        GeoServerXMLConfiguration.attributePut(node, "filename", "history.txt");
+        assertEquals("store direct", "history.txt", node.getAttributes().get("filename"));
+
+        GeoServerXMLConfiguration.attributePut(node, "fileName", "geoserver.log");
+        assertEquals("store match", "geoserver.log", node.getAttributes().get("filename"));
     }
 }

@@ -243,6 +243,11 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         Encoder encoder = createEncoder(configuration, ns2metas, gft);
 
         encoder.setEncoding(Charset.forName(geoServer.getSettings().getCharset()));
+        if (wfs.isVerbose() || geoServer.getSettings().isVerbose()) {
+            encoder.setIndenting(true);
+        } else {
+            encoder.setIndenting(false);
+        }
         Request dispatcherRequest = Dispatcher.REQUEST.get();
         if (dispatcherRequest != null) {
             encoder.setOmitXMLDeclaration(dispatcherRequest.isSOAP());

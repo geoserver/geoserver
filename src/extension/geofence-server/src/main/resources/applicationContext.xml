@@ -75,11 +75,9 @@
     </bean>
 
     <!-- use the internal user resolver so geofence uses geoserver users and roles rather than its own -->
-    <bean id="internalUserResolver" class="org.geoserver.geofence.internal.InternalUserResolver" >
-	   <constructor-arg index="0" ref="geoServerSecurityManager"/>
-	</bean>
-	
-	<alias name="internalUserResolver" alias="defaultUserResolver" />
+    <bean id="securityContextUserResolver" class="org.geoserver.geofence.internal.SecurityContextUserResolver" />
+
+	  <alias name="securityContextUserResolver" alias="defaultUserResolver" />
     
     <!-- web admin page -->
     <bean id="geofenceServerPage" class="org.geoserver.web.MenuPageInfo">

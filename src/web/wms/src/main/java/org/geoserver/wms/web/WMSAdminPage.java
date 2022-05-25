@@ -49,6 +49,7 @@ import org.geoserver.web.data.store.panel.FileModel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
+import org.geoserver.web.wicket.HTTPURLsListTextArea;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SRSListTextArea;
@@ -376,6 +377,15 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 new TextField<>("remoteStyleMaxRequestTime");
         remoteStylesMaxRequestTime.add(RangeValidator.minimum(1));
         form.add(remoteStylesMaxRequestTime);
+
+        // limited srs list
+        TextArea allowedRemoteSLDUrlsForAuthorizationForwarding =
+                new HTTPURLsListTextArea(
+                        "allowedURLsForAuthForwarding",
+                        LiveCollectionModel.list(
+                                new PropertyModel(info, "allowedURLsForAuthForwarding")));
+        form.add(allowedRemoteSLDUrlsForAuthorizationForwarding);
+
         form.add(new CheckBox("defaultGroupStyleEnabled"));
         form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
         // add mark factory optimization

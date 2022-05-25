@@ -13,6 +13,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -20,6 +23,7 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -28,6 +32,7 @@ import java.net.URLDecoder;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -41,11 +46,18 @@ import java.util.logging.Logger;
 import javax.media.jai.InterpolationBicubic;
 import javax.media.jai.InterpolationBilinear;
 import javax.media.jai.InterpolationNearest;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.cache.HttpCacheContext;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.message.BasicHeader;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
@@ -80,6 +92,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     private static final Logger LOG = Logging.getLogger(GetMapKvpRequestReaderTest.class);
 
     GetMapKvpRequestReader reader;
+
+    WMS wms;
 
     Dispatcher dispatcher;
     public static final String STATES_SLD =
@@ -135,7 +149,13 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         super.setUpInternal();
 
         dispatcher = (Dispatcher) applicationContext.getBean("dispatcher");
-        WMS wms = new WMS(getGeoServer());
+        GeoServer geoserver = getGeoServer();
+        WMSInfo wmsInfo = geoserver.getService(WMSInfo.class);
+        WMSInfoImpl impl = (WMSInfoImpl) ModificationProxy.unwrap(wmsInfo);
+
+        impl.setAllowedURLsForAuthForwarding(
+                Collections.singletonList("http://localhost/geoserver/rest/sldurl"));
+        wms = new WMS(geoserver);
         reader = new GetMapKvpRequestReader(wms);
     }
 
@@ -722,6 +742,76 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
             assertNull("Exception should not reveal its cause", e.getCause());
+        }
+    }
+
+    @Test
+    public void testSldRemoteHttp() throws Exception {
+        final String fakeBasicAuth = "FakeBasicAuth";
+        final String authHeader = "Authorization";
+        BasicHeader expectedBasicHeader = new BasicHeader(authHeader, fakeBasicAuth);
+
+        GetMapRequest request = reader.createRequest();
+        GetMapRequest spyRequest = spy(request);
+        when(spyRequest.getHttpRequestHeader(authHeader)).thenReturn(fakeBasicAuth);
+        Header[] headers = new Header[1];
+
+        // Using an allowed URL
+        URL url = new URL("http://localhost/geoserver/rest/sldurl/sample.sld");
+        requestWithHeaders(spyRequest, url, headers, authHeader);
+        assertSameHeader(headers, expectedBasicHeader);
+
+        // Using a not allowed URL
+        url = new URL("http://not-allowed-endpoint/sample.sld");
+        requestWithHeaders(spyRequest, url, headers, authHeader);
+        // No header will be forwarded when not allowed
+        assertSameHeader(headers, null);
+    }
+
+    private void requestWithHeaders(
+            GetMapRequest spyRequest, URL url, Header[] headers, String authHeader)
+            throws Exception {
+        String urlDecoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        HashMap kvp = new HashMap();
+        kvp.put(
+                "layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        kvp.put("sld", urlDecoded);
+
+        try (InputStream sld =
+                GetMapKvpRequestReader.class.getResourceAsStream(
+                        "BasicPolygonsLibraryNoDefault.sld")) {
+
+            GetMapKvpRequestReader reqReader =
+                    new GetMapKvpRequestReader(wms, null) {
+
+                        @Override
+                        protected CloseableHttpResponse executeRequest(
+                                HttpCacheContext cacheContext, HttpGet httpget) throws IOException {
+                            CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+                            HttpEntity entity = mock(HttpEntity.class);
+
+                            when(response.getEntity()).thenReturn(entity);
+                            when(entity.getContent()).thenReturn(sld);
+
+                            Header[] httpHeaders =
+                                    httpget.containsHeader(authHeader)
+                                            ? httpget.getHeaders(authHeader)
+                                            : null;
+                            headers[0] = httpHeaders != null ? httpHeaders[0] : null;
+                            return response;
+                        }
+                    };
+
+            reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        }
+    }
+
+    private void assertSameHeader(Header[] headers, BasicHeader expectedBasicHeader) {
+        if (expectedBasicHeader == null) {
+            assertNull(headers[0]);
+        } else {
+            assertEquals(expectedBasicHeader.toString(), headers[0].toString());
         }
     }
 

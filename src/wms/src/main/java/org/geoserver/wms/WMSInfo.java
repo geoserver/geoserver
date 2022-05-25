@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -196,6 +197,11 @@ public interface WMSInfo extends ServiceInfo {
 
     /** Sets the remote style max request time in milliseconds */
     void setRemoteStyleMaxRequestTime(int time);
+
+    /** Returns the remote SLD Urls that are allowed for authorization forwarding */
+    default List<String> getAllowedURLsForAuthForwarding() {
+        return Collections.emptyList();
+    }
 
     /** Returns the remote style timeout in milliseconds * */
     int getRemoteStyleTimeout();

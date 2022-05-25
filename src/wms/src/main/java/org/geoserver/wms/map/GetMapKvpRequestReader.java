@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +30,7 @@ import javax.media.jai.Interpolation;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.EnumerationUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.cache.CacheResponseStatus;
 import org.apache.http.client.cache.HttpCacheContext;
@@ -724,9 +724,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             LOGGER.fine("Getting layers and styles from reomte SLD");
         }
 
-        URI styleUrl = getMap.getStyleUrl();
-
-        try (InputStream input = getStream(styleUrl)) {
+        try (InputStream input = getStream(getMap)) {
             if (input != null) {
                 try (InputStreamReader reader = new InputStreamReader(input)) {
                     if (getMap.getValidateSchema().booleanValue()) {
@@ -813,14 +811,11 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
     }
 
-    private InputStream getStream(URI styleUrl) throws IOException {
-        return getStream(styleUrl.toURL());
-    }
-
-    private InputStream getStream(URL styleUrl) throws IOException {
+    private InputStream getStream(GetMapRequest getMap) throws IOException {
+        URL styleUrl = getMap.getStyleUrl().toURL();
         InputStream input;
         if (styleUrl.getProtocol().toLowerCase().indexOf("http") == 0) {
-            input = getHttpInputStream(styleUrl);
+            input = getHttpInputStream(styleUrl, getMap.getHttpRequestHeader("Authorization"));
         } else {
             try {
                 input = Requests.getInputStream(styleUrl);
@@ -835,11 +830,15 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         return input;
     }
 
-    private InputStream getHttpInputStream(URL styleUrl) throws IOException {
+    private InputStream getHttpInputStream(URL styleUrl, String authorizationHeader)
+            throws IOException {
         InputStream input = null;
         HttpCacheContext cacheContext = HttpCacheContext.create();
 
         HttpGet httpget = new HttpGet(styleUrl.toExternalForm());
+        if (StringUtils.isNotBlank(authorizationHeader) && isAllowedURL(styleUrl)) {
+            httpget.addHeader("Authorization", authorizationHeader);
+        }
         try (CloseableHttpResponse response = executeRequest(cacheContext, httpget)) {
             if (cacheContext != null) {
                 CacheResponseStatus responseStatus = cacheContext.getCacheResponseStatus();
@@ -888,8 +887,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
     }
 
+    private boolean isAllowedURL(URL styleUrl) {
+        String url = styleUrl.toString();
+        return wms.getAllowedURLsForAuthForwarding().stream().anyMatch(s -> url.startsWith(s));
+    }
+
     /** Executes the HTTP request with the max request time settings. */
-    private CloseableHttpResponse executeRequest(HttpCacheContext cacheContext, HttpGet httpget)
+    protected CloseableHttpResponse executeRequest(HttpCacheContext cacheContext, HttpGet httpget)
             throws IOException, ClientProtocolException {
         // get the max request time from WMS settings
         int hardTimeout = wms.getServiceInfo().getRemoteStyleMaxRequestTime();

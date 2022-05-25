@@ -24,6 +24,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     List<String> srs = new ArrayList<>();
 
+    List<String> allowedURLsForAuthForwarding = new ArrayList<>();
+
     Boolean bboxForEachCRS;
 
     WatermarkInfo watermark = new WatermarkInfoImpl();
@@ -348,5 +350,17 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     @Override
     public void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract) {
         this.internationalRootLayerAbstract = InternationalStringUtils.growable(rootLayerAbstract);
+    }
+
+    @Override
+    public List<String> getAllowedURLsForAuthForwarding() {
+        if (allowedURLsForAuthForwarding == null) {
+            allowedURLsForAuthForwarding = new ArrayList<>();
+        }
+        return allowedURLsForAuthForwarding;
+    }
+
+    public void setAllowedURLsForAuthForwarding(List<String> allowedURLsForAuthForwarding) {
+        this.allowedURLsForAuthForwarding = allowedURLsForAuthForwarding;
     }
 }

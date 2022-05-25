@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.wmts;
 
+import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +57,8 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * WMTS extension that provides the necessary metadata and operations for handling multidimensional
@@ -88,6 +92,15 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
 
     public static final String EXPAND_LIMIT = "expandLimit";
     public static final String DOMAIN_VALUES_LIMIT = "limit";
+    /**
+     * Points to a secondary feature type with the same dimension columns as the main one, but with
+     * a structure allowing faster extraction of data (e.g., a summary of the unique dimension
+     * values rather than all of original records, which might report the same dimension value
+     * several times).
+     */
+    public static final String SIDECAR_TYPE = "wmtsMultidimSidecarType";
+
+    public static final String SORT_BY_END = "SORT_BY_END";
 
     private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
     private final GeoServer geoServer;
@@ -261,7 +274,12 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         // add the filter and the sorting
         SortOrder sortOrder = getSortOrder(conveyor);
         String fromValue = (String) conveyor.getParameter("fromValue", false);
-        Filter fromValueFilter = getStartValueFilter(fromValue, dimension, sortOrder, resource);
+        Boolean useEnd = Converters.convert(conveyor.getParameter("fromEnd", false), Boolean.class);
+        boolean useEndValue = useEnd == null ? false : useEnd.booleanValue();
+        RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+        if (attrs != null) attrs.setAttribute(SORT_BY_END, useEndValue, SCOPE_REQUEST);
+        Filter fromValueFilter =
+                getStartValueFilter(fromValue, dimension, sortOrder, resource, useEndValue);
         if (!Filter.INCLUDE.equals(fromValueFilter)) {
             filter = filterFactory.and(filter, fromValueFilter);
         }
@@ -295,7 +313,11 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     }
 
     private Filter getStartValueFilter(
-            String fromValue, Dimension dimension, SortOrder sortOrder, ResourceInfo resource)
+            String fromValue,
+            Dimension dimension,
+            SortOrder sortOrder,
+            ResourceInfo resource,
+            boolean useEndValue)
             throws OWSException {
         if (fromValue == null) {
             return Filter.INCLUDE;
@@ -311,7 +333,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                             + dimension.getDimensionType().getSimpleName());
         }
         Tuple<String, String> attributes = DimensionsUtils.getAttributes(resource, dimension);
-        String attribute = attributes.first; // getDomain only uses first attribute to list values
+        String attribute = useEndValue ? attributes.second : attributes.first;
         if (sortOrder == SortOrder.ASCENDING) {
             return filterFactory.greater(
                     filterFactory.property(attribute), filterFactory.literal(converted));

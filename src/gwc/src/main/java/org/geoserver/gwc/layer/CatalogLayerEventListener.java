@@ -9,17 +9,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static org.geoserver.gwc.GWC.tileLayerName;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.httpclient.util.LangUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogInfo;
@@ -372,7 +371,7 @@ public class CatalogLayerEventListener implements CatalogListener {
 
             final String oldStyleName = oldStyle.prefixedName();
             defaultStyle = newStyle.prefixedName();
-            if (!Objects.equal(oldStyleName, defaultStyle)) {
+            if (!Objects.equals(oldStyleName, defaultStyle)) {
                 save = true;
                 defaultStyleChanged = true;
                 log.info(
@@ -421,11 +420,11 @@ public class CatalogLayerEventListener implements CatalogListener {
             MetadataMap oldMetadata = (MetadataMap) oldValues.get(metadataIdx);
             MetadataMap newMetadata = (MetadataMap) newValues.get(metadataIdx);
             boolean cachingEnabledChanged =
-                    LangUtils.equals(
+                    Objects.equals(
                             oldMetadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class),
                             newMetadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class));
             boolean cachingMaxAgeChanged =
-                    LangUtils.equals(
+                    Objects.equals(
                             oldMetadata.get(ResourceInfo.CACHE_AGE_MAX, Boolean.class),
                             newMetadata.get(ResourceInfo.CACHE_AGE_MAX, Boolean.class));
             // we do we don't need to truncate the layer, but we need to update

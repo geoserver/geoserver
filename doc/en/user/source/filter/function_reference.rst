@@ -639,9 +639,9 @@ JSON functions
 
 JSON functions give the ability to provide conditions that are able to filter over json data.
 The implementation for this functions is provided for this datasources:
-  - inmemory
-  - Postgres
-  - Oracle
+- inmemory
+- Postgres
+- Oracle
 
 .. list-table::
    :widths: 20 25 55

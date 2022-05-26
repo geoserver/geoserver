@@ -44,8 +44,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
-import org.apache.commons.httpclient.util.DateParseException;
-import org.apache.commons.httpclient.util.DateUtil;
+import org.apache.http.client.utils.DateUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -2674,26 +2673,25 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         map.put("ETag", etag);
 
         final long tileTimeStamp = cachedTile.getTSCreated();
-        // commons-httpclient's DateUtil can encode and decode timestamps formatted as per RFC-1123,
+        // Apache HttpClient's DateUtils can encode and decode timestamps formatted as per RFC-1123,
         // which is one of the three formats allowed for Last-Modified and If-Modified-Since headers
         // (e.g. 'Sun, 06 Nov 1994 08:49:37 GMT'). See
         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
 
-        final String lastModified =
-                org.apache.commons.httpclient.util.DateUtil.formatDate(new Date(tileTimeStamp));
+        final String lastModified = DateUtils.formatDate(new Date(tileTimeStamp));
         map.put("Last-Modified", lastModified);
 
         final Date ifModifiedSince;
         if (ifModSinceHeader != null && ifModSinceHeader.length() > 0) {
-            try {
-                ifModifiedSince = DateUtil.parseDate(ifModSinceHeader);
+            ifModifiedSince = DateUtils.parseDate(ifModSinceHeader);
+            if (ifModifiedSince != null) {
                 // the HTTP header has second precision
                 long ifModSinceSeconds = 1000 * (ifModifiedSince.getTime() / 1000);
                 long tileTimeStampSeconds = 1000 * (tileTimeStamp / 1000);
                 if (ifModSinceSeconds >= tileTimeStampSeconds) {
                     throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_MODIFIED);
                 }
-            } catch (DateParseException e) {
+            } else {
                 if (log.isLoggable(Level.FINER)) {
                     log.finer(
                             "Can't parse client's If-Modified-Since header: '"

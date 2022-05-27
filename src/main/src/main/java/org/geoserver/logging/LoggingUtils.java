@@ -127,7 +127,7 @@ public class LoggingUtils {
             String logFileName)
             throws FileNotFoundException, IOException, ConfigurationException {
         if (!relinquishLog4jControl) {
-            Log4jUtils.configureGeoServerLogging(
+            LoggingUtilsDelegate.configureGeoServerLogging(
                     loader,
                     configResource,
                     suppressStdOutLogging,
@@ -160,7 +160,7 @@ public class LoggingUtils {
             String logFileName)
             throws Exception {
         if (!relinquishLog4jControl) {
-            Log4jUtils.initLogging(
+            LoggingUtilsDelegate.initLogging(
                     resourceLoader,
                     configFileName,
                     suppressStdOutLogging,

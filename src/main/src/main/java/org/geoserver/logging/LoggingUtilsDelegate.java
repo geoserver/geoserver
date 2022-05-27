@@ -1,5 +1,4 @@
 /* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -58,7 +57,7 @@ import org.vfny.geoserver.global.ConfigurationException;
  *
  * @see org.geoserver.config.LoggingInfo
  */
-public class Log4jUtils {
+class LoggingUtilsDelegate {
 
     /**
      * Reconfigures GeoServer logging using the provided loggingConfigStream, which is interpreted

@@ -99,6 +99,17 @@ Some clients can have problems processing the large list of SRS (projections) th
 
 The ``Output bounding box for every supported CRS`` flag is only respected if a Limited SRS list has been specified.Setting this flag causes the WMS capabilities document to contain a Bounding Box for each supported CRS, for each Layer. Doing this for every CRS in the EPSG database, for each Layer in the catalog, would result in a impractically huge capabilities document.
 
+Authorization headers forwarding for remote SLDs
+------------------------------------------------
+A GetMap request may specify the style by referring a remote URL in the SLD parameter.
+There might be the case that the remote URL require same authorization headers as the current GetMap request.
+If that's the case a list of allowed style URLs can be specified using newline as separators (URLs might be long).
+Authorization headers will be only forwarded to a remote URL when it starts with one of the specified URLs.
+
+.. figure:: img/services_WMS_remoteurlsauth.png
+
+  The list of remote URLs being allowed for authorization headers forwarding.
+
 Advanced projection handling and map wrapping
 ---------------------------------------------
 

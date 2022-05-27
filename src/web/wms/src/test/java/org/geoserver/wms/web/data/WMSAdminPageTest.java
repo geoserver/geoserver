@@ -242,4 +242,28 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         assertNotNull(getGeoServer().getService(WMSInfo.class).getDefaultLocale());
     }
+
+    @Test
+    public void testAllowedUrlsAuth() {
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        String allowedUrlForAuthForwarding = "http://localhost:8080/geoserver/rest/sldremote";
+        ft.setValue("allowedURLsForAuthForwarding", allowedUrlForAuthForwarding);
+        ft.submit("submit");
+        assertEquals(
+                allowedUrlForAuthForwarding,
+                getGeoServer().getService(WMSInfo.class).getAllowedURLsForAuthForwarding().get(0));
+
+        tester.startPage(WMSAdminPage.class);
+        ft = tester.newFormTester("form");
+        allowedUrlForAuthForwarding =
+                "invalid-remote-url\n" + "htPP://invalidhttpurl\n" + "http://validurl";
+
+        ft.setValue("allowedURLsForAuthForwarding", allowedUrlForAuthForwarding);
+        ft.submit("submit");
+        String reportedInvalidURLs = "invalid-remote-url, htPP://invalidhttpurl";
+        tester.assertErrorMessages(
+                String.format(
+                        "The provided values are not valid HTTP urls: [%s]", reportedInvalidURLs));
+    }
 }

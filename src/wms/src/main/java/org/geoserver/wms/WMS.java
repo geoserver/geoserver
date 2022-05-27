@@ -831,6 +831,11 @@ public class WMS implements ApplicationContextAware {
         return mimeTypes;
     }
 
+    /** @return a list of allowed remote SLD Urls for AuthorizationHeader forwarding. */
+    public List<String> getAllowedURLsForAuthForwarding() {
+        return getServiceInfo().getAllowedURLsForAuthForwarding();
+    }
+
     /**
      * @param mimeType the mime type to look a GetMapOutputFormat for
      * @return the GetMapOutputFormat that can handle {@code mimeType}, or {@code null} if none is

@@ -193,7 +193,7 @@ Upon receipt GeoServer will do its best to stop the running process, and subsequ
 or ``GetExecutionStatus`` will report that the executionId is not known anymore.
 Internally, GeoServer will stop any process that attempts to report progress, and poison input and
 outputs to break the execution of the process, but the execution of processes that already got their
-inputs, and are not reporting their progress back, will continue until its natural end.  
+inputs, and are not reporting their progress back, will continue until their natural end.  
 
 For example, let's consider the "geo:Buffer" process, possibly working against a very large input 
 GML geometry, to be fetched from another host. The process itself does a single call to a  JTS function,
@@ -226,7 +226,7 @@ If the “lineage” option of the WPS Execute Request has been specified, the c
 StatusInfo Document
 ^^^^^^^^^^^^^^^^^^^
 
-Refers to http://docs.opengeospatial.org/is/14-065/14-065.html 9.5 and extends it.
+Refers to http://docs.opengeospatial.org/is/14-065/14-065.html section 9.5 and extends it.
 
 The StatusInfo document is used to provide identification and status information about jobs on a WPS server. The operation adds additional fields to the StatusInfo Document reporting also the WPS Process Identifier and other information on estimated execution and expiration time.
 
@@ -267,7 +267,7 @@ Response paging
 
 Response paging is the ability of a client to scroll through a set of response values, N values at-a-time much like one scrolls through the response from a search engine one page at a time.
 
-Similarly to the WFS 2.0.0 response paging mechanism (see See section “7.7.4.4 Response paging” of the specification), the output will show to the client the following attributes as part of the response document.
+Similar to the WFS 2.0.0 response paging mechanism (see section “7.7.4.4 Response paging” of the specification), the output will show to the client the following attributes as part of the response document.
 
 .. figure:: images/getExecutions_006.png
    :align: center

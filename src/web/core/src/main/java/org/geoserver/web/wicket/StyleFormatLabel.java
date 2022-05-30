@@ -17,7 +17,7 @@ public class StyleFormatLabel extends Panel {
     private static final long serialVersionUID = 6348703587354586691L;
     static final Logger LOGGER = Logging.getLogger(StyleFormatLabel.class);
 
-    public StyleFormatLabel(String id, IModel<?> model) {
+    public StyleFormatLabel(String id, IModel<?> model, String versionString) {
 
         super(id, model);
         String formatDisplayName = "";
@@ -25,6 +25,14 @@ public class StyleFormatLabel extends Panel {
         if (model.getObject() != null) {
             String format = (String) model.getObject();
             formatDisplayName = Styles.handler(format).getName();
+
+            if (versionString != null) {
+                formatDisplayName =
+                        new StringBuilder(formatDisplayName)
+                                .append(" ")
+                                .append(versionString)
+                                .toString();
+            }
         }
         Label formatLabel = new Label("styleFormatLabel", formatDisplayName);
         formatLabel.add(new AttributeModifier("title", formatDisplayName));

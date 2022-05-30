@@ -40,6 +40,9 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
 
     static final Property<StyleInfo> FORMAT = new BeanProperty<>("format", "format");
 
+    static final Property<StyleInfo> FORMAT_VERSION =
+            new BeanProperty<>("formatversion", "formatVersion");
+
     static List<Property<StyleInfo>> PROPERTIES = Arrays.asList(NAME, FORMAT, WORKSPACE);
 
     public StyleProvider() {

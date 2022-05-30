@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -2147,6 +2148,21 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
             fail();
         } catch (IllegalArgumentException expected) {
         }
+    }
+
+    @Test
+    public void testAddLayerGroupWithMissingResource() throws Exception {
+        addLayerGroup();
+
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setName("layerGroup2");
+        lg2.getLayers().add(l);
+
+        CatalogFactory factory = catalog.getFactory();
+        LayerInfo l2 = factory.createLayer();
+        lg2.setWorkspace(ws);
+        lg2.getLayers().add(l2);
+        assertThrows(IllegalArgumentException.class, () -> catalog.add(lg2));
     }
 
     @Test

@@ -60,11 +60,6 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>

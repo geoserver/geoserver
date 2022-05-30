@@ -36,11 +36,6 @@
       <version>${gs.version}</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-sample-data</artifactId>
       <scope>test</scope>
@@ -48,16 +43,6 @@
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
@@ -75,11 +60,6 @@
       <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

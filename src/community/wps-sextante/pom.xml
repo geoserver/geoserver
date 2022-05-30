@@ -97,16 +97,6 @@
 
       <!-- test dependencies -->
       <dependency>
-        <groupId>xmlunit</groupId>
-        <artifactId>xmlunit</artifactId>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-test</artifactId>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
          <groupId>org.geoserver</groupId>
          <artifactId>gs-main</artifactId>
          <version>${gs.version}</version>

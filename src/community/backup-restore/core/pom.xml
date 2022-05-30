@@ -84,13 +84,6 @@
       <artifactId>commons-vfs2</artifactId>
     </dependency>
 
-    <!-- Test Dependencies -->
-    <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
 </project>

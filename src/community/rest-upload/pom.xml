@@ -34,11 +34,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-restconfig</artifactId>
             <version>${project.version}</version>
@@ -49,12 +44,6 @@
             <groupId>org.geoserver</groupId>
             <artifactId>gs-main</artifactId>
             <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>xmlunit</groupId>
-            <artifactId>xmlunit</artifactId>
-            <version>1.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

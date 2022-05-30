@@ -25,6 +25,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.geoserver.web.wicket.StyleFormatLabel;
+import org.geotools.util.Version;
 
 /** Page listing all the styles, allows to edit, add, remove styles */
 @SuppressWarnings("serial")
@@ -65,8 +66,16 @@ public class StylePage extends GeoServerSecuredPage {
                                             StyleProvider.CREATED_TIMESTAMP.getModel(itemModel));
                                 }
                                 if (property == StyleProvider.FORMAT) {
+                                    Version formatVersion =
+                                            (Version)
+                                                    StyleProvider.FORMAT_VERSION
+                                                            .getModel(itemModel)
+                                                            .getObject();
+
                                     return new StyleFormatLabel(
-                                            id, StyleProvider.FORMAT.getModel(itemModel));
+                                            id,
+                                            StyleProvider.FORMAT.getModel(itemModel),
+                                            getMajorMinorVersionString(formatVersion));
                                 }
                                 return null;
                             }
@@ -155,5 +164,19 @@ public class StylePage extends GeoServerSecuredPage {
         } else {
             return false;
         }
+    }
+
+    private String getMajorMinorVersionString(Version formatVersion) {
+
+        Comparable<?> major = formatVersion.getMajor();
+        Comparable<?> minor = formatVersion.getMinor();
+
+        if (major == null) {
+            return null;
+        }
+
+        if (minor == null) return major.toString();
+
+        return new StringBuilder(major.toString()).append(".").append(minor.toString()).toString();
     }
 }

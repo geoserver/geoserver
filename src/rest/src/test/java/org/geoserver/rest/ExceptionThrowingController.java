@@ -36,4 +36,10 @@ public class ExceptionThrowingController {
     public void handleNotFound() {
         throw new ResourceNotFoundException("I'm not there");
     }
+
+    @GetMapping
+    @RequestMapping(path = RestBaseController.ROOT_PATH + "/npe")
+    public void handleNPE() {
+        throw new NullPointerException();
+    }
 }

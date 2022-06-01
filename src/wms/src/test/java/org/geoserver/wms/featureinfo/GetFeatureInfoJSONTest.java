@@ -71,6 +71,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     public static final String LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2 =
             "labelInFeatureInfoTazBmMultipleSymbolizers";
 
+    public static final String RASTER_VECTOR = "rasterVector";
+
+    public static final String FOOTPRINT_RASTER = "footprintsRaster";
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -89,6 +93,8 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         testData.addStyle(LABEL_IN_FEATURE_INFO_STYLE_BM, getClass(), getCatalog());
         testData.addStyle(
                 LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2, getClass(), getCatalog());
+        testData.addStyle(RASTER_VECTOR, getClass(), getCatalog());
+        testData.addStyle(FOOTPRINT_RASTER, getClass(), getCatalog());
         Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(SystemTestData.LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
@@ -1108,5 +1114,86 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
                 json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
         assertEquals("13", properties.getString("Label1_RED_BAND"));
         assertEquals("value is 13", properties.getString("Label2_RED_BAND"));
+    }
+
+    /**
+     * Checks that a style that displays the same data as both raster and vector gets identified
+     * twice, once for the raster information, and once for the vector one (with a rendering
+     * transformation in the mix)
+     */
+    @Test
+    public void testRasterAndVectorInfo() throws Exception {
+        String layerId = getLayerId(MockData.TASMANIA_BM);
+        String request =
+                "wms?version=1.1.1"
+                        + "&styles="
+                        + RASTER_VECTOR
+                        + "&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&X=50&Y=50"
+                        + "&SRS=EPSG:4326&WIDTH=100&HEIGHT=100"
+                        + "&BBOX=147.14566041715443,-44.49600223917514,147.42306520231068,-44.21859745401889"
+                        + "&info_format="
+                        + JSONType.json
+                        + "&buffer=1";
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONArray features = json.getJSONArray("features");
+        assertEquals(2, features.size());
+
+        // raster as point collection result. Has a geometry and the band values
+        JSONObject vector = features.getJSONObject(0);
+        assertNotNull(vector.getString("id"));
+        assertNotNull(vector.getJSONObject("geometry"));
+        JSONObject vectorProps = vector.getJSONObject("properties");
+        assertEquals(13, vectorProps.getInt("RED_BAND"));
+        assertEquals(36, vectorProps.getInt("GREEN_BAND"));
+        assertEquals(76, vectorProps.getInt("BLUE_BAND"));
+
+        // direct raster identify. No geometry, empty id, but has band values
+        JSONObject raster = features.getJSONObject(1);
+        assertEquals("", raster.getString("id"));
+        assertTrue(raster.getJSONObject("geometry").isNullObject());
+        JSONObject rasterProps = raster.getJSONObject("properties");
+        assertEquals(13, rasterProps.getInt("RED_BAND"));
+        assertEquals(36, rasterProps.getInt("GREEN_BAND"));
+        assertEquals(76, rasterProps.getInt("BLUE_BAND"));
+    }
+
+    @Test
+    public void testMosaicFootprintRaster() throws Exception {
+        // both footprint extraction and raster identification at the same time
+        String url =
+                "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES="
+                        + FOOTPRINT_RASTER
+                        + "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150"
+                        + "&transparent=false&CQL_FILTER=location like 'green%25' + "
+                        + "&query_layers=sf:mosaic&x=10&y=10"
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(url);
+        JSONArray features = json.getJSONArray("features");
+        assertEquals(2, features.size());
+
+        // footprint extraction,
+        JSONObject vector = features.getJSONObject(0);
+        assertNotNull(vector.getString("id"));
+        assertNotNull(vector.getJSONObject("geometry"));
+        assertEquals("MultiPolygon", vector.getJSONObject("geometry").getString("type"));
+        JSONObject vectorProps = vector.getJSONObject("properties");
+        assertEquals("green_00000002T0000000Z.tiff", vectorProps.getString("location"));
+        assertEquals("0002-12-02T00:00:00Z", vectorProps.getString("ingestion"));
+
+        // direct raster identify. No geometry, empty id, but has band values
+        JSONObject raster = features.getJSONObject(1);
+        assertEquals("", raster.getString("id"));
+        assertTrue(raster.getJSONObject("geometry").isNullObject());
+        JSONObject rasterProps = raster.getJSONObject("properties");
+        assertEquals(0, rasterProps.getInt("RED_BAND"));
+        assertEquals(255, rasterProps.getInt("GREEN_BAND"));
+        assertEquals(0, rasterProps.getInt("BLUE_BAND"));
     }
 }

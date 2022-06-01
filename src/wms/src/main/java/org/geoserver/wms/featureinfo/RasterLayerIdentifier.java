@@ -61,6 +61,7 @@ import org.geotools.ows.ServiceException;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RenderingTransformationHelper;
+import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Style;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
@@ -131,20 +132,30 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 setupReadParameters(requestParams, layer, filter, sort, cinfo, reader, position);
         if (parameters == null) return null;
 
-        Object info = read(requestParams, reader, parameters);
-        if (info instanceof GridCoverage2D) {
-            GridCoverage2D coverage = (GridCoverage2D) info;
-            return toFeatures(cinfo, coverage, position, requestParams);
-        } else if (info instanceof FeatureCollection) {
-            // the read used the whole WMS GetMap area (an RT may need more space than just the
-            // queried pixel to produce correct results), need to filter down the results
-            FeatureCollection fc = (FeatureCollection) info;
-            return Arrays.asList(filterCollection(fc, requestParams));
-        } else {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.fine("Unable to load raster data for this request.");
-            return null;
+        /* identify straight caster rendering once, and each raster to vector tx */
+        List<FeatureCollection> result = new ArrayList<>();
+        boolean plainRenderingIdentified = false;
+        for (FeatureTypeStyle fts : requestParams.getStyle().featureTypeStyles()) {
+            if (fts.getTransformation() == null && plainRenderingIdentified) {
+                continue;
+            }
+            plainRenderingIdentified |= fts.getTransformation() == null;
+            Object info = read(requestParams, reader, parameters, fts);
+            if (info instanceof GridCoverage2D) {
+                GridCoverage2D coverage = (GridCoverage2D) info;
+                result.addAll(toFeatures(cinfo, coverage, position, requestParams));
+            } else if (info instanceof FeatureCollection) {
+                // the read used the whole WMS GetMap area (an RT may need more space than just the
+                // queried pixel to produce correct results), need to filter down the results
+                FeatureCollection fc = (FeatureCollection) info;
+                result.add((filterCollection(fc, requestParams)));
+            } else {
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.fine("Unable to load raster data for this request.");
+            }
         }
+
+        return result;
     }
 
     @SuppressWarnings("unchecked")
@@ -408,12 +419,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     private Object read(
             FeatureInfoRequestParameters params,
             GridCoverage2DReader reader,
-            GeneralParameterValue[] parameters)
+            GeneralParameterValue[] parameters,
+            FeatureTypeStyle fts)
             throws IOException, SchemaException, TransformException, FactoryException {
-        Style style = params.getStyle();
         RasterSymbolizerVisitor visitor =
                 new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
-        style.accept(visitor);
+        fts.accept(visitor);
 
         // we could skip the reading altogether
         CoverageReadingTransformation readingTx = visitor.getCoverageReadingTransformation();
@@ -444,8 +455,10 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                     null,
                     coverage.getCoordinateReferenceSystem2D(),
                     null);
-        }
-        return coverage;
+        } else if (!visitor.getRasterSymbolizers().isEmpty()) return coverage;
+
+        // no transformation and no active raster symbolizers either
+        return null;
     }
 
     private Expression getTransformation(RasterSymbolizerVisitor visitor) {

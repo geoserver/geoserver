@@ -153,18 +153,20 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                         && (fts.featureTypeNames().isEmpty()
                                 || fts.featureTypeNames().stream()
                                         .anyMatch(tn -> FeatureTypes.matches(featureType, tn)))) {
-            Expression tx = fts.getTransformation();
-            if (tx != null && activeRules(fts)) {
-                boolean rasterTransformation = false;
-                if (tx instanceof CoverageReadingTransformation)
-                    this.coverageReadingTransformation = (CoverageReadingTransformation) tx;
-                else if (tx instanceof Function) {
-                    rasterTransformation = isRasterTransformation(tx, rasterTransformation);
+            if (activeRules(fts)) {
+                Expression tx = fts.getTransformation();
+                if (tx != null) {
+                    boolean rasterTransformation = false;
+                    if (tx instanceof CoverageReadingTransformation)
+                        this.coverageReadingTransformation = (CoverageReadingTransformation) tx;
+                    else if (tx instanceof Function) {
+                        rasterTransformation = isRasterTransformation(tx, rasterTransformation);
+                    }
+                    if (!rasterTransformation) otherRenderingTransformations.add(tx);
                 }
-                if (!rasterTransformation) otherRenderingTransformations.add(tx);
-            }
-            for (Rule r : fts.rules()) {
-                r.accept(this);
+                for (Rule r : fts.rules()) {
+                    r.accept(this);
+                }
             }
         }
     }

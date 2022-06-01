@@ -365,7 +365,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
 
                 private void notify(Watch watch, Delta delta) {
                     if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.info(
+                        LOGGER.config(
                                 String.format(
                                         "Notifying %s change on %s. Created: %,d, removed: %,d, modified: %,d",
                                         delta.kind,

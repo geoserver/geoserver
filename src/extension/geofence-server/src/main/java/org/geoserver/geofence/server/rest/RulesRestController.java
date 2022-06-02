@@ -27,6 +27,7 @@ import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.geofence.services.exception.BadRequestServiceEx;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/geofence")
-public class RulesRestController extends RestBaseController {
+public class RulesRestController extends RestBaseController
+        implements SequentialExecutionController {
 
     private RuleAdminService adminService;
 

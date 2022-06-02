@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.AbstractAccessRuleDAO;
@@ -34,7 +35,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 public abstract class AbstractAclController<
-        R extends Comparable<R>, DAO extends AbstractAccessRuleDAO<R>> {
+                R extends Comparable<R>, DAO extends AbstractAccessRuleDAO<R>>
+        implements SequentialExecutionController {
 
     public static final String ANY = "*";
 

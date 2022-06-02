@@ -43,10 +43,12 @@ public class RestConfigurationLockCallback implements DispatcherCallback {
             HttpServletRequest request, HttpServletResponse response, Object handler) {
         Object controller = DispatcherCallback.getControllerBean(handler);
         if (controller instanceof AbstractCatalogController
-                || controller instanceof AbstractGeoServerController) {
+                || controller instanceof AbstractGeoServerController
+                || controller instanceof SequentialExecutionController) {
             if (controller instanceof CatalogReloadController
                     || isWriteMethod(request.getMethod())) {
-                // this requires a full lock, it affects part of GeoTools that are not thread safe
+                // this requires a full lock, it affects part of GeoServer or GeoTools that are not
+                // thread safe
                 locker.lock(LockType.WRITE);
             } else {
                 locker.lock(LockType.READ);

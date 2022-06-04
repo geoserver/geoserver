@@ -5,6 +5,8 @@
  */
 package org.geoserver.monitor;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -36,7 +38,6 @@ public class PipeliningTaskQueueTest {
 
     @Test
     public void test() throws Exception {
-
         ConcurrentLinkedQueue<Worker> completed = new ConcurrentLinkedQueue<>();
         int groups = 5;
         List<List<Worker>> workers = new ArrayList<>();
@@ -55,10 +56,7 @@ public class PipeliningTaskQueueTest {
             }
         }
 
-        while (completed.size() < groups * groups) {
-            Thread.sleep(1000);
-        }
-
+        await().atMost(20, SECONDS).until(() -> completed.size() >= groups * groups);
         int[] status = new int[groups];
         for (Worker w : completed) {
             assertEquals(status[w.group], w.seq.intValue());
@@ -83,7 +81,7 @@ public class PipeliningTaskQueueTest {
             Random r = new Random();
             int x = r.nextInt(10) + 1;
             try {
-                Thread.sleep(x * 100);
+                Thread.sleep(x * 10);
             } catch (InterruptedException e) {
                 LOGGER.log(Level.WARNING, "", e);
             }

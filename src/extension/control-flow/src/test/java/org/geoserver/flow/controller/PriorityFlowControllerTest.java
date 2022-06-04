@@ -93,10 +93,8 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
             // starting the next one
             t1.start();
             waitBlocked(t1, MAX_WAIT);
-            Thread.sleep(10);
             t2.start();
             waitBlocked(t2, MAX_WAIT);
-            Thread.sleep(10);
             t3.start();
             waitBlocked(t3, MAX_WAIT);
 

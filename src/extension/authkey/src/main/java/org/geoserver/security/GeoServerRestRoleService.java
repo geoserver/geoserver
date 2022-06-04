@@ -67,7 +67,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
      * @param timeout an int that specifies the connect timeout value in milliseconds
      * @throws {@link IllegalArgumentException} - if the timeout parameter is negative
      */
-    private static final int CONN_TIMEOUT = 30000;
+    static final int CONN_TIMEOUT = 30000;
 
     /**
      * Sets the read timeout to a specified timeout, in milliseconds. A non-zero value specifies the
@@ -83,7 +83,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
      * @param timeout an int that specifies the timeout value to be used in milliseconds
      * @throws {@link IllegalArgumentException} - if the timeout parameter is negative
      */
-    private static final int READ_TIMEOUT = 30000;
+    static final int READ_TIMEOUT = 30000;
 
     private RestTemplate restTemplate;
 

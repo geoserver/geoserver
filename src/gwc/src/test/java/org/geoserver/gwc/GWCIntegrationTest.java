@@ -5,7 +5,9 @@
  */
 package org.geoserver.gwc;
 
-import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -978,20 +980,10 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
     }
 
-    private void waitTileBreederCompletion() throws InterruptedException {
-        long start = System.currentTimeMillis();
-        final int MAX_WAIT_SECS = 10;
-        while (GWC.get().getRunningAndPendingTasks().hasNext()) {
-            Thread.sleep(10);
-            long now = System.currentTimeMillis();
-            if (now - start > MAX_WAIT_SECS * 1000) {
-                String message =
-                        format(
-                                "Waited for tile breeder to finish its tasks for more than %d seconds",
-                                MAX_WAIT_SECS);
-                fail(message);
-            }
-        }
+    private void waitTileBreederCompletion() {
+        await().atMost(20, SECONDS)
+                .pollDelay(10, MILLISECONDS)
+                .until(() -> !GWC.get().getRunningAndPendingTasks().hasNext());
     }
 
     @Test

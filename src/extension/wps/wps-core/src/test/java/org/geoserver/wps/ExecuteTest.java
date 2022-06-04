@@ -5,6 +5,8 @@
  */
 package org.geoserver.wps;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
@@ -1584,14 +1586,7 @@ public class ExecuteTest extends WPSTestSupport {
         returnFlag.set(true);
 
         // wait until the execution actually ends
-        while (status != null && status.getPhase() == ProcessState.DISMISSING) {
-            Thread.sleep(50);
-            status = statusTracker.getStatus(executionId);
-            if (status != null) {
-                // the status must switch from dismissing to plain gone
-                Assert.assertEquals(ProcessState.DISMISSING, status.getPhase());
-            }
-        }
+        await().atMost(20, SECONDS).until(() -> statusTracker.getStatus(executionId) == null);
 
         // at this point also check there is no resource left
         WPSResourceManager resources =

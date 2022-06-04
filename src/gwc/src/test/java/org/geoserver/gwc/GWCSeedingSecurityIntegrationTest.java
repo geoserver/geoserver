@@ -12,7 +12,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import javax.xml.namespace.QName;
+import org.awaitility.Awaitility;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -266,11 +268,9 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
         return tileObject;
     }
 
-    protected void waitForSeedingToFinish() throws InterruptedException {
-        int abort = 0;
-        do {
-            Thread.sleep(1000);
-            abort++;
-        } while (tileBreeder.getRunningAndPendingTasks().hasNext() && abort < 120);
+    protected void waitForSeedingToFinish() {
+        Awaitility.await()
+                .atMost(2, TimeUnit.MINUTES)
+                .until(() -> !tileBreeder.getRunningAndPendingTasks().hasNext());
     }
 }

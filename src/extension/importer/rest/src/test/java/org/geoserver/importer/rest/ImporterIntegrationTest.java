@@ -4,6 +4,7 @@
  */
 package org.geoserver.importer.rest;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -429,24 +431,18 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                                         contextDefinition,
                                         "application/json"));
         // print(json);
-        String state = null;
-        int importId;
-        if (async) {
-            importId = json.getJSONObject("import").getInt("id");
-            for (int i = 0; i < 60 * 2 * 2; i++) {
-                json = (JSONObject) getAsJSON("/rest/imports/" + importId);
-                // print(json);
-                state = json.getJSONObject("import").getString("state");
-                if ("INIT".equals(state) || "RUNNING".equals(state) || "PENDING".equals(state)) {
-                    Thread.sleep(500);
-                }
-            }
-        } else {
-            state = json.getJSONObject("import").getString("state");
-            importId = json.getJSONObject("import").getInt("id");
-        }
-        Thread.sleep(500);
-        assertEquals("COMPLETE", state);
+        int importId = json.getJSONObject("import").getInt("id");
+        await().pollInSameThread()
+                .atMost(2, TimeUnit.MINUTES)
+                .until(
+                        () -> {
+                            JSONObject pj = (JSONObject) getAsJSON("/rest/imports/" + importId);
+                            String state = pj.getJSONObject("import").getString("state");
+                            return completed(state);
+                        });
+        json = (JSONObject) getAsJSON("/rest/imports/" + importId);
+        assertEquals("COMPLETE", json.getJSONObject("import").getString("state"));
+
         assertThat(invoked[0], is(true));
         checkPoiImport();
 
@@ -523,19 +519,18 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                                         contextDefinition,
                                         "application/json"));
         // print(json);
-        String state = null;
         int importId = json.getJSONObject("import").getInt("id");
 
         // wait until PENDING:
         if (async) {
-            for (int i = 0; i < 60 * 2 * 2; i++) {
-                json = (JSONObject) getAsJSON("/rest/imports/" + importId);
-                // print(json);
-                state = json.getJSONObject("import").getString("state");
-                if ("INIT".equals(state)) {
-                    Thread.sleep(500);
-                }
-            }
+            await().pollInSameThread()
+                    .atMost(2, TimeUnit.MINUTES)
+                    .until(
+                            () -> {
+                                JSONObject pj = (JSONObject) getAsJSON("/rest/imports/" + importId);
+                                String state = pj.getJSONObject("import").getString("state");
+                                return !"INIT".equals(state);
+                            });
         }
 
         assertThat(invoked[0], is(true));
@@ -544,23 +539,16 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // run the import
         postAsServletResponse(
                 "/rest/imports/" + importId + (async ? "?async=true" : ""), "", "application/json");
-
-        if (async) {
-            for (int i = 0; i < 60 * 2 * 2; i++) {
-                json = (JSONObject) getAsJSON("/rest/imports/" + importId);
-                // print(json);
-                state = json.getJSONObject("import").getString("state");
-                if ("INIT".equals(state) || "RUNNING".equals(state) || "PENDING".equals(state)) {
-                    Thread.sleep(500);
-                }
-            }
-        } else {
-            MockHttpServletResponse response = getAsServletResponse("/rest/imports/" + importId);
-            assertEquals("application/json", response.getContentType());
-            json = (JSONObject) json(response);
-            state = json.getJSONObject("import").getString("state");
-        }
-        Thread.sleep(500);
+        await().pollInSameThread()
+                .atMost(2, TimeUnit.MINUTES)
+                .until(
+                        () -> {
+                            JSONObject pj = (JSONObject) getAsJSON("/rest/imports/" + importId);
+                            String state = pj.getJSONObject("import").getString("state");
+                            return completed(state);
+                        });
+        json = (JSONObject) getAsJSON("/rest/imports/" + importId);
+        String state = json.getJSONObject("import").getString("state");
         assertEquals("COMPLETE", state);
         assertThat(invoked[0], is(true));
         checkPoiImport();
@@ -568,6 +556,10 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // test delete
         MockHttpServletResponse resp = deleteAsServletResponse("/rest/imports/" + importId);
         assertEquals(204, resp.getStatus());
+    }
+
+    private boolean completed(String state) {
+        return !"INIT".equals(state) && !"RUNNING".equals(state) && !"PENDING".equals(state);
     }
 
     protected Authentication createAuthentication() {

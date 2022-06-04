@@ -4,6 +4,9 @@
  */
 package org.geoserver.platform.resource;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -33,6 +36,7 @@ import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.Before;
@@ -43,6 +47,12 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
 public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
+
+    /**
+     * On a local machine this is a long wait, but Github action VMs are slow and erratic, let's
+     * give it more time
+     */
+    private static final int MAX_WAIT_SEC = 20;
 
     FileSystemResourceStore store;
 
@@ -100,14 +110,13 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         AwaitResourceListener listener = new AwaitResourceListener();
 
         store.get("DirC/FileD").addListener(listener);
-        ((FileSystemWatcher) store.getResourceNotificationDispatcher())
-                .schedule(30, TimeUnit.MILLISECONDS);
+        ((FileSystemWatcher) store.getResourceNotificationDispatcher()).schedule(30, MILLISECONDS);
 
         long before = fileD.lastModified();
         long after = touch(fileD);
         assertTrue("touched", after > before);
 
-        ResourceNotification n = listener.await(1, TimeUnit.SECONDS);
+        ResourceNotification n = listener.await(MAX_WAIT_SEC, SECONDS);
         assertNotNull("detected event", n);
 
         assertEquals("file modified", Kind.ENTRY_MODIFY, n.getKind());
@@ -115,12 +124,12 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         listener.reset();
         fileD.delete();
-        n = listener.await(5, TimeUnit.SECONDS);
+        n = listener.await(MAX_WAIT_SEC, SECONDS);
         assertEquals("file removed", Kind.ENTRY_DELETE, n.getKind());
 
         listener.reset();
         fileD.createNewFile();
-        n = listener.await(5, TimeUnit.SECONDS);
+        n = listener.await(MAX_WAIT_SEC, SECONDS);
         assertEquals("file created", Kind.ENTRY_CREATE, n.getKind());
         store.get("DirC/FileD").removeListener(listener);
     }
@@ -161,17 +170,15 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
                 new ResourceNotification(".", Kind.ENTRY_CREATE, 1_000_000L);
         CompletableFuture.runAsync(() -> listener.changed(notification));
 
-        ResourceNotification n = listener.await(500, TimeUnit.MILLISECONDS);
+        ResourceNotification n = listener.await(MAX_WAIT_SEC, SECONDS);
         assertSame(notification, n);
 
         listener.reset();
-        // expectedException.expect(ConditionTimeoutException.class);
+        // expect timeout as no events will be sent!
         assertThrows(
                 ConditionTimeoutException.class,
                 () -> {
-                    listener.await(
-                            100,
-                            TimeUnit.MILLISECONDS); // expect timeout as no events will be sent!
+                    listener.await(100, MILLISECONDS); // expect timeout as no events will be sent!
                 });
     }
 
@@ -182,13 +189,12 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         AwaitResourceListener listener = new AwaitResourceListener();
         store.get(Paths.BASE).addListener(listener);
-        ((FileSystemWatcher) store.getResourceNotificationDispatcher())
-                .schedule(100, TimeUnit.MILLISECONDS);
+        ((FileSystemWatcher) store.getResourceNotificationDispatcher()).schedule(100, MILLISECONDS);
 
         long before = fileB.lastModified();
         long after = touch(fileB);
         assertTrue("touched", after > before);
-        ResourceNotification n = listener.await(500, TimeUnit.MILLISECONDS);
+        ResourceNotification n = listener.await(MAX_WAIT_SEC, SECONDS);
 
         assertEquals(Kind.ENTRY_MODIFY, n.getKind());
         assertEquals(Paths.BASE, n.getPath());
@@ -199,7 +205,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         listener.reset();
         fileA.delete();
-        n = listener.await(5, TimeUnit.SECONDS);
+        n = listener.await(MAX_WAIT_SEC, SECONDS);
         assertEquals(Kind.ENTRY_MODIFY, n.getKind());
         assertEquals(Paths.BASE, n.getPath());
         e = n.events().get(0);
@@ -208,7 +214,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         listener.reset();
         fileA.createNewFile();
-        n = listener.await(2, TimeUnit.SECONDS);
+        n = listener.await(MAX_WAIT_SEC, SECONDS);
         assertEquals(Kind.ENTRY_MODIFY, n.getKind());
         assertEquals(Paths.BASE, n.getPath());
         e = n.events().get(0);
@@ -225,7 +231,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         FileSystemWatcher watcher = (FileSystemWatcher) store.getResourceNotificationDispatcher();
         // set a shorter poll delay
-        watcher.schedule(100, TimeUnit.MILLISECONDS);
+        watcher.schedule(100, MILLISECONDS);
 
         AwaitResourceListener listener = new AwaitResourceListener();
 
@@ -234,11 +240,8 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         assertFalse(watchedDir.exists());
         assertTrue(watchedDir.mkdir());
 
-        // empty directory create events are not raised since we're watching for
-        // directory contents
-
-        assertThrows(
-                ConditionTimeoutException.class, () -> listener.await(500, TimeUnit.MILLISECONDS));
+        // empty directory create events are not raised since we're watching for directory contents
+        assertThrows(ConditionTimeoutException.class, () -> listener.await(100, MILLISECONDS));
     }
 
     @Test
@@ -249,7 +252,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         FileSystemWatcher watcher = (FileSystemWatcher) store.getResourceNotificationDispatcher();
         // set a shorter poll delay
-        watcher.schedule(100, TimeUnit.MILLISECONDS);
+        watcher.schedule(100, MILLISECONDS);
 
         AwaitResourceListener listener = new AwaitResourceListener();
 
@@ -260,7 +263,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         touch(fileA);
         assertTrue(fileA.exists());
 
-        ResourceNotification n = listener.await(500, TimeUnit.MILLISECONDS);
+        ResourceNotification n = listener.await(MAX_WAIT_SEC, SECONDS);
         assertEquals(dirName, n.getPath());
         assertEquals(Kind.ENTRY_CREATE, n.getKind());
         assertEquals(1, n.events().size());
@@ -276,7 +279,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         FileSystemWatcher watcher = (FileSystemWatcher) store.getResourceNotificationDispatcher();
         // set a shorter poll delay
-        watcher.schedule(100, TimeUnit.MILLISECONDS);
+        watcher.schedule(100, MILLISECONDS);
         List<ResourceNotification> notifications = new CopyOnWriteArrayList<>();
         watcher.addListener(dirName, notifications::add);
 
@@ -312,16 +315,9 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         }
         // give file watcher a chance to catch up with latest events, allow time for slow platforms
         // while exiting soon for faster ones
-        for (int step = 0; step < 2000; step++) {
-            Thread.sleep(20);
-            if (notifications.stream()
-                            .map(ResourceNotification::events)
-                            .flatMap(List::stream)
-                            .count()
-                    == fileCount) {
-                break;
-            }
-        }
+        await().atMost(40, SECONDS)
+                .pollDelay(20, MILLISECONDS)
+                .until(() -> getEventCounts(notifications), CoreMatchers.equalTo(fileCount));
 
         assertEquals(
                 1, notifications.stream().filter(n -> n.getKind() == Kind.ENTRY_CREATE).count());
@@ -335,6 +331,14 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
                         .flatMap(List::stream)
                         .collect(Collectors.toList());
         assertEquals(files.size(), fileEvents.size());
+    }
+
+    private int getEventCounts(List<ResourceNotification> notifications) {
+        return (int)
+                notifications.stream()
+                        .map(ResourceNotification::events)
+                        .flatMap(List::stream)
+                        .count();
     }
 
     /** ResourceListener that traps the next ResourceNotification for testing */
@@ -356,7 +360,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
          */
         public ResourceNotification await(int timeout, TimeUnit unit) {
             return Awaitility.await()
-                    .pollInterval(5, TimeUnit.MILLISECONDS)
+                    .pollInterval(5, MILLISECONDS)
                     .atMost(timeout, unit)
                     .untilAtomic(this.reference, IsNull.notNullValue());
         }

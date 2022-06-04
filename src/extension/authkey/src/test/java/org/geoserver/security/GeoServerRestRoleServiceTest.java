@@ -7,8 +7,8 @@ package org.geoserver.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -140,6 +140,8 @@ public class GeoServerRestRoleServiceTest extends GeoServerSystemTestSupport {
     public void testGeoServerRestRoleServiceInternalCache()
             throws IOException, InterruptedException {
         GeoServerRestRoleServiceConfig roleServiceconfig = new GeoServerRestRoleServiceConfig();
+        int EXPIRATION = 500;
+        roleServiceconfig.setCacheExpirationTime(EXPIRATION);
         roleServiceconfig.setBaseUrl(uri);
 
         GeoServerRestRoleService roleService = new GeoServerRestRoleService(roleServiceconfig);
@@ -148,12 +150,7 @@ public class GeoServerRestRoleServiceTest extends GeoServerSystemTestSupport {
         roleService.getRoles();
         roleService.getAdminRole();
         roleService.getRolesForUser("test");
-        Thread.sleep(31 * 1000);
-        try {
-            roleService.getRolesForUser("test@geoserver.org");
-            fail("Expecting ExecutionError to be thrown");
-        } catch (ExecutionError e) {
-            // OK
-        }
+        Thread.sleep((long) (EXPIRATION * 1.5));
+        assertThrows(ExecutionError.class, () -> roleService.getRolesForUser("test@geoserver.org"));
     }
 }

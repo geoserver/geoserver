@@ -5,6 +5,8 @@
  */
 package org.geoserver.wps;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
@@ -19,8 +21,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class RawInputOutputTest extends WPSTestSupport {
-
-    private static final int MAX_WAIT_FOR_ASYNCH = 60;
 
     static {
         Processors.addProcessFactory(RawProcess.getFactory());
@@ -213,27 +213,19 @@ public class RawInputOutputTest extends WPSTestSupport {
         String fullStatusLocation = xp.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
         String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
 
-        long start = System.currentTimeMillis();
-        long wait;
-        while ((wait = (System.currentTimeMillis() - start) / 1000) < 60) {
-            dom = getAsDOM(statusLocation);
-            // print(dom);
-            // are we still waiting for termination?
-            if (xp.getMatchingNodes("//wps:Status/wps:ProcessAccepted", dom).getLength() > 0
-                    || xp.getMatchingNodes("//wps:Status/wps:ProcessStarted", dom).getLength() > 0
-                    || xp.getMatchingNodes("//wps:Status/wps:ProcessQueued", dom).getLength() > 0) {
-                Thread.sleep(100);
-            } else {
-                break;
-            }
-        }
-        if (wait > 60) {
-            throw new Exception(
-                    "Waited for the process to complete more than " + MAX_WAIT_FOR_ASYNCH);
-        }
+        await().atMost(60, SECONDS)
+                .until(
+                        () -> {
+                            Document wd = getAsDOM(statusLocation);
+                            // are we still waiting for termination?
+                            return countMatches(wd, "//wps:Status/wps:ProcessAccepted") == 0
+                                    && countMatches(wd, "//wps:Status/wps:ProcessStarted") == 0
+                                    && countMatches(wd, "//wps:Status/wps:ProcessQueued") == 0;
+                        });
 
+        dom = getAsDOM(statusLocation);
         // print(dom);
-        assertEquals(1, xp.getMatchingNodes("//wps:Status/wps:ProcessSucceeded", dom).getLength());
+        assertEquals(1, countMatches(dom, "//wps:Status/wps:ProcessSucceeded"));
         String fullReference =
                 xp.evaluate(
                         "//wps:ProcessOutputs/wps:Output[ows:Identifier='result']/wps:Reference/@href",
@@ -279,7 +271,7 @@ public class RawInputOutputTest extends WPSTestSupport {
         Document dom = postAsDOM("wps", xml);
         // print(dom);
         checkValidationErrors(dom);
-        assertEquals(1, xp.getMatchingNodes("//wps:Status/wps:ProcessSucceeded", dom).getLength());
+        assertEquals(1, countMatches(dom, "//wps:Status/wps:ProcessSucceeded"));
         assertEquals(
                 "1",
                 xp.evaluate(

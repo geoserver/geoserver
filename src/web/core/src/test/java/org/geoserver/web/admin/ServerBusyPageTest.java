@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.awaitility.Awaitility;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.platform.GeoServerExtensions;
@@ -62,11 +63,7 @@ public class ServerBusyPageTest extends GeoServerWicketTestSupport {
                             acquired.set(true);
 
                             try {
-                                while (!release.get()) {
-                                    Thread.sleep(50);
-                                }
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
+                                Awaitility.await().forever().until(() -> release.get());
                             } finally {
                                 locker.unlock();
                             }

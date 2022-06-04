@@ -5,6 +5,8 @@
  */
 package org.geoserver.flow.controller;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.fail;
 
 import java.lang.Thread.State;
@@ -21,7 +23,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
  */
 public abstract class AbstractFlowControllerTest {
 
-    protected static final long MAX_WAIT = 5000;
+    protected static final long MAX_WAIT = 10000;
 
     /**
      * Waits until the thread enters in WAITING or TIMED_WAITING state
@@ -30,16 +32,9 @@ public abstract class AbstractFlowControllerTest {
      * @param maxWait max amount of time we'll wait
      */
     void waitBlocked(Thread t, long maxWait) {
-        try {
-            long start = System.currentTimeMillis();
-            while (t.getState() != State.WAITING && t.getState() != State.TIMED_WAITING) {
-                if (System.currentTimeMillis() > (start + maxWait))
-                    fail("Waited for the thread to be blocked more than maxWait: " + maxWait);
-                Thread.sleep(10);
-            }
-        } catch (InterruptedException e) {
-            fail("Sometime interrupeted our wait: " + e);
-        }
+        await().atMost(maxWait, MILLISECONDS)
+                .pollDelay(10, MILLISECONDS)
+                .until(() -> t.getState() == State.WAITING || t.getState() == State.TIMED_WAITING);
     }
 
     /**
@@ -49,16 +44,9 @@ public abstract class AbstractFlowControllerTest {
      * @param maxWait max amount of time we'll wait
      */
     void waitTerminated(Thread t, long maxWait) {
-        try {
-            long start = System.currentTimeMillis();
-            while (t.getState() != State.TERMINATED) {
-                if (System.currentTimeMillis() > (start + maxWait))
-                    fail("Waited for the thread to be terminated more than maxWait: " + maxWait);
-                Thread.sleep(20);
-            }
-        } catch (Exception e) {
-            // System.out.println("Could not terminate thread " + t);
-        }
+        await().atMost(maxWait, MILLISECONDS)
+                .pollDelay(10, MILLISECONDS)
+                .until(() -> t.getState() == State.TERMINATED);
     }
 
     /** Waits maxWait for the thread to finish by itself, then forcefully kills it */
@@ -112,22 +100,9 @@ public abstract class AbstractFlowControllerTest {
      * Waits for he flow controller testing thread to get into a specified state for a max given
      * amount of time, fail otherwise
      */
-    protected void waitState(ThreadState state, FlowControllerTestingThread tt, long maxWait)
-            throws InterruptedException {
-        long start = System.currentTimeMillis();
-        while (!state.equals(tt.state) && System.currentTimeMillis() - start < maxWait) {
-            Thread.sleep(20);
-        }
-
-        ThreadState finalState = tt.state;
-        if (!state.equals(finalState)) {
-            fail(
-                    "Waited "
-                            + maxWait
-                            + "ms for FlowControllerTestingThread to get into "
-                            + state
-                            + ", but it is still in state "
-                            + finalState);
-        }
+    protected void waitState(ThreadState state, FlowControllerTestingThread tt, long maxWait) {
+        await().atMost(maxWait, MILLISECONDS)
+                .pollDelay(20, MILLISECONDS)
+                .until(() -> state.equals(tt.state));
     }
 }

@@ -49,7 +49,7 @@ public abstract class FreeMarkerTemplateManager {
     /** Config key determining the restrictions for accessing static members */
     static final String KEY_STATIC_MEMBER_ACCESS = "org.geoserver.htmlTemplates.staticMemberAccess";
 
-    enum OutputFormat {
+    public enum OutputFormat {
         JSON("application/json"),
         HTML("text/html");
 
@@ -206,9 +206,13 @@ public abstract class FreeMarkerTemplateManager {
             return true;
 
         } finally {
-            // close any open iterators
-            tfcFactory.purge();
+            cleanup();
         }
+    }
+
+    public void cleanup() {
+        // close any open iterators
+        tfcFactory.purge();
     }
 
     /**
@@ -253,7 +257,8 @@ public abstract class FreeMarkerTemplateManager {
         return content;
     }
 
-    private Template getTemplate(ResourceInfo ri, Charset charset, String name) throws IOException {
+    protected Template getTemplate(ResourceInfo ri, Charset charset, String name)
+            throws IOException {
         String templateName = getTemplateFileName(name);
         return getTemplate(ri, templateName, charset);
     }

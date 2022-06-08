@@ -15,14 +15,11 @@ public class GeneralGrid {
     private String type = "GeneralGridCoverageType";
     private String srsName;
     private List<String> axisLabels;
-    private List<RegularAxis> axis;
+    private List<Axis> axis;
     private GridLimits gridLimits;
 
     public GeneralGrid(
-            String srsName,
-            List<String> axisLabels,
-            List<RegularAxis> axis,
-            GridLimits gridLimits) {
+            String srsName, List<String> axisLabels, List<Axis> axis, GridLimits gridLimits) {
         this.srsName = srsName;
         this.axisLabels = axisLabels;
         this.axis = axis;
@@ -41,7 +38,7 @@ public class GeneralGrid {
         return axisLabels;
     }
 
-    public List<RegularAxis> getAxis() {
+    public List<Axis> getAxis() {
         return axis;
     }
 

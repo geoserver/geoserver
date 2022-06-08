@@ -7,13 +7,17 @@
       <li><b>Description</b>: <span id="${collection.htmlId}_description">${collection.description!}</span><br/></li>
       </#if>
       <#assign spatial = collection.extent.spatial>
-      <li><b>Geographic extents</b>:
+      <li id="${collection.htmlId}_spatial"><b>Geographic extents</b>:
       <ul>
       <#list spatial as se>
       <li>${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
       </#list>
       </ul>
       </li>
+      <#if collection.extent.temporal??>
+      <#assign temporal = collection.extent.temporal>
+      <li id="${collection.htmlId}_temporal"><b>Temporal extent</b>: ${temporal.minValue?datetime?iso_utc}/${temporal.maxValue?datetime?iso_utc}</li>
+      </#if>
   </ul>
 </div>
 <div class="card-footer">

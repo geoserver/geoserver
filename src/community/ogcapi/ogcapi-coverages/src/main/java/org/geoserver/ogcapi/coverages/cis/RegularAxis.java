@@ -6,7 +6,8 @@ package org.geoserver.ogcapi.coverages.cis;
 
 /**
  * A Regular Axis is an axis where all direct coordinates are at a common distance from its
- * immediate neighbors. Upper and lower bounds are strings as they can be ISO times too.
+ * immediate neighbors. Upper and lower bounds are Objects as they can be both numbers and ISO
+ * times.
  */
 public class RegularAxis extends Axis {
 
@@ -21,7 +22,7 @@ public class RegularAxis extends Axis {
             Object upperBound,
             double resolution,
             String uomLabel) {
-        super("RegularAxis", axisLabel);
+        super("RegularAxisType", axisLabel);
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
         this.resolution = resolution;

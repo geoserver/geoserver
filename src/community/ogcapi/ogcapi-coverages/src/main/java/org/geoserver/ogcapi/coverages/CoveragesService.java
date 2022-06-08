@@ -10,7 +10,6 @@ import static org.geoserver.ogcapi.APIException.INVALID_PARAMETER_VALUE;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -38,10 +37,6 @@ import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.coverages.cis.DomainSet;
-import org.geoserver.ogcapi.coverages.cis.GeneralGrid;
-import org.geoserver.ogcapi.coverages.cis.GridLimits;
-import org.geoserver.ogcapi.coverages.cis.IndexAxis;
-import org.geoserver.ogcapi.coverages.cis.RegularAxis;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
@@ -53,12 +48,8 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
-import org.opengis.referencing.cs.CoordinateSystemAxis;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -67,7 +58,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import tech.units.indriya.format.SimpleUnitFormat;
 
 /** Implementation of OGC Coverages API service */
 @APIService(
@@ -249,7 +239,7 @@ public class CoveragesService {
             DateRange range = (DateRange) timeSpec;
             timeTrim.setDimension("time");
             timeTrim.setTrimLow(ISO_INSTANT.format(range.getMinValue().toInstant()));
-            timeTrim.setTrimLow(ISO_INSTANT.format(range.getMaxValue().toInstant()));
+            timeTrim.setTrimHigh(ISO_INSTANT.format(range.getMaxValue().toInstant()));
             request.getDimensionSubset().add(timeTrim);
         }
     }
@@ -322,71 +312,10 @@ public class CoveragesService {
             path = "collections/{collectionId}/coverage/domainset",
             name = "getCoverageDomainSet")
     @DefaultContentType("application/json")
-    public DomainSet items(@PathVariable(name = "collectionId") String collectionId)
+    public DomainSet domainSet(@PathVariable(name = "collectionId") String collectionId)
             throws Exception {
         // side effect, checks existence
         CoverageInfo coverage = getCoverage(collectionId);
-        EnvelopeAxesLabelsMapper mapper = new EnvelopeAxesLabelsMapper();
-        CoordinateReferenceSystem crs = coverage.getCRS();
-        String srsName = CRS_PREFIX + CRS.lookupEpsgCode(crs, false);
-
-        // check coordinate system is supported
-        CoordinateSystem cs = crs.getCoordinateSystem();
-        if (cs.getDimension() > 2)
-            throw new APIException(
-                    APIException.NO_APPLICABLE_CODE,
-                    "Too many dimensions, cannot describe domain",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-
-        // map to axis
-        List<RegularAxis> domainAxes = new ArrayList<>();
-        for (int i = 0; i < cs.getDimension(); i++) {
-            domainAxes.add(toRegularAxis(cs.getAxis(i), mapper, coverage, i));
-        }
-        List<String> domainAxisLabels =
-                domainAxes.stream().map(a -> a.getAxisLabel()).collect(Collectors.toList());
-
-        List<IndexAxis> indexAxes = new ArrayList<>();
-        for (int i = 0; i < cs.getDimension(); i++) {
-            indexAxes.add(toIndexAxis(i, coverage));
-        }
-        List<String> indexAxisLabels =
-                indexAxes.stream().map(a -> a.getAxisLabel()).collect(Collectors.toList());
-        GridLimits limits = new GridLimits(indexAxisLabels, indexAxes);
-        GeneralGrid gg = new GeneralGrid(srsName, domainAxisLabels, domainAxes, limits);
-        return new DomainSet(gg);
-    }
-
-    private RegularAxis toRegularAxis(
-            CoordinateSystemAxis axis,
-            EnvelopeAxesLabelsMapper mapper,
-            CoverageInfo coverage,
-            int axisIndex) {
-        double lowerBound, upperBound, resolution;
-        ReferencedEnvelope envelope = coverage.getNativeBoundingBox();
-        GridGeometry grid = coverage.getGrid();
-        if (axisIndex == 0 || axisIndex == 1) {
-            lowerBound = envelope.getMinimum(axisIndex);
-            upperBound = envelope.getMaximum(axisIndex);
-            resolution = (upperBound - lowerBound) / grid.getGridRange().getSpan(axisIndex);
-        } else {
-            throw new UnsupportedOperationException(
-                    "Cannot describe a coverage with a CRS having "
-                            + (axisIndex + 1)
-                            + " dimensions");
-        }
-
-        return new RegularAxis(
-                mapper.getAxisLabel(axis),
-                lowerBound,
-                upperBound,
-                resolution,
-                SimpleUnitFormat.getInstance().format(axis.getUnit()));
-    }
-
-    private IndexAxis toIndexAxis(int axisIndex, CoverageInfo coverage) {
-        String name = new String(new char[] {(char) ('i' + axisIndex)});
-        GridEnvelope range = coverage.getGrid().getGridRange();
-        return new IndexAxis(name, range.getLow(axisIndex), range.getHigh(axisIndex));
+        return new DomainSetBuilder(coverage).build();
     }
 }

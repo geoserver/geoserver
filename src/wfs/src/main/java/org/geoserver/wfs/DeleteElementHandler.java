@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.geoserver.config.GeoServer;
@@ -79,6 +80,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void execute(
             TransactionElement delete,
@@ -92,7 +94,15 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         String handle = delete.getHandle();
 
         long deleted = response.getTotalDeleted().longValue();
-
+        if (!featureStores.containsKey(elementName)) {
+            if (LOGGER.isLoggable(Level.FINER)) {
+                LOGGER.finer("failed to find " + elementName + " in:");
+                for (QName key : (Set<QName>) featureStores.keySet()) {
+                    LOGGER.finer("\t" + key.toString());
+                }
+            }
+            throw new WFSException("Unable to locate a featureStore for " + elementName);
+        }
         SimpleFeatureStore store =
                 DataUtilities.simple((FeatureStore) featureStores.get(elementName));
 

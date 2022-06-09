@@ -1075,7 +1075,7 @@ public class TransactionTest extends WFSTestSupport {
         try {
             // perform a delete
             String delete =
-                    "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                    "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
                             + "xmlns:cgf=\"Not a URI\" "
                             + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
                             + "xmlns:wfs=\"http://www.opengis.net/wfs\"> "
@@ -1089,8 +1089,9 @@ public class TransactionTest extends WFSTestSupport {
                             + "</wfs:Delete> "
                             + "</wfs:Transaction>";
 
-            Document dom = postAsDOM("wfs", delete);
-            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getLocalName());
+            Document resp = postAsDOM("wfs", delete);
+            checkOws10Exception(resp);
+
         } catch (Exception e) {
             fail("Should not throw an exception");
         }
@@ -1101,7 +1102,7 @@ public class TransactionTest extends WFSTestSupport {
 
         // perform an update
         String update =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
                         + "xmlns:cgf=\"cite\" "
                         + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
                         + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -1120,7 +1121,8 @@ public class TransactionTest extends WFSTestSupport {
                         + "</wfs:Update>"
                         + "</wfs:Transaction>";
         try {
-            postAsDOM("wfs", update);
+            Document resp = postAsDOM("wfs", update);
+            checkOws10Exception(resp);
         } catch (Exception e) {
             fail("Should not throw an exception");
         }

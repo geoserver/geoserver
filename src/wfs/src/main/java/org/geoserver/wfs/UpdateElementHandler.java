@@ -206,16 +206,17 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
         long updated = response.getTotalUpdated().longValue();
 
+        String msg = "Could not locate FeatureStore for '" + elementName + "'";
         if (!featureStores.containsKey(elementName)) {
-            throw new WFSException(
-                    request, "Could not locate FeatureStore for '" + elementName + "'");
+            throw new WFSTransactionException(
+                    msg, ServiceException.INVALID_PARAMETER_VALUE, element.getHandle());
         }
 
         SimpleFeatureStore store = DataUtilities.simple(featureStores.get(elementName));
 
         if (store == null) {
-            throw new WFSException(
-                    request, "Could not locate FeatureStore for '" + elementName + "'");
+            throw new WFSTransactionException(
+                    msg, ServiceException.INVALID_PARAMETER_VALUE, element.getHandle());
         }
 
         LOGGER.finer("Transaction Update:" + update);
@@ -291,8 +292,9 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                             values[j] = gtx.transform(geometry);
                         } catch (Exception e) {
-                            String msg = "Failed to reproject geometry:" + e.getLocalizedMessage();
-                            throw new WFSTransactionException(msg, e);
+                            String message =
+                                    "Failed to reproject geometry:" + e.getLocalizedMessage();
+                            throw new WFSTransactionException(message, e);
                         }
                     }
                 }

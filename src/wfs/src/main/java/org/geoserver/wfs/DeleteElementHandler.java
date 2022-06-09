@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.geoserver.config.GeoServer;
-import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.Delete;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
@@ -95,7 +94,6 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         String handle = delete.getHandle();
 
         long deleted = response.getTotalDeleted().longValue();
-        String msg = "Could not locate FeatureStore for '" + elementName + "'";
         if (!featureStores.containsKey(elementName)) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("failed to find " + elementName + " in:");
@@ -103,15 +101,14 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                     LOGGER.finer("\t" + key.toString());
                 }
             }
-            throw new WFSTransactionException(
-                    msg, ServiceException.INVALID_PARAMETER_VALUE, handle);
+            throw new WFSException("Unable to locate a featureStore for " + elementName);
         }
         SimpleFeatureStore store =
                 DataUtilities.simple((FeatureStore) featureStores.get(elementName));
 
         if (store == null) {
-            throw new WFSTransactionException(
-                    msg, ServiceException.INVALID_PARAMETER_VALUE, handle);
+            throw new WFSException(
+                    request, "Could not locate FeatureStore for '" + elementName + "'");
         }
 
         String typeName = store.getSchema().getTypeName();
@@ -181,7 +178,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 store.removeFeatures(filter);
             }
         } catch (IOException e) {
-            String message = e.getMessage();
+            String msg = e.getMessage();
             String eHandle = delete.getHandle();
             String code = null;
 
@@ -190,7 +187,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
             if (e instanceof FeatureLockException) {
                 code = "MissingParameterValue";
             }
-            throw new WFSTransactionException(message, e, code, eHandle, handle);
+            throw new WFSTransactionException(msg, e, code, eHandle, handle);
         }
 
         // update deletion count

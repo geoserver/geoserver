@@ -1075,7 +1075,7 @@ public class TransactionTest extends WFSTestSupport {
         try {
             // perform a delete
             String delete =
-                    "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+                    "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
                             + "xmlns:cgf=\"Not a URI\" "
                             + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
                             + "xmlns:wfs=\"http://www.opengis.net/wfs\"> "
@@ -1089,40 +1089,8 @@ public class TransactionTest extends WFSTestSupport {
                             + "</wfs:Delete> "
                             + "</wfs:Transaction>";
 
-            Document resp = postAsDOM("wfs", delete);
-            checkOws10Exception(resp);
-
-        } catch (Exception e) {
-            fail("Should not throw an exception");
-        }
-    }
-
-    @Test
-    public void testBrokenUpdate() {
-
-        // perform an update
-        String update =
-                "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
-                        + "xmlns:cgf=\"cite\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:gml=\"http://www.opengis.net/gml\"> "
-                        + "<wfs:Update typeName=\"cgf:Polygons\" > "
-                        + "<wfs:Property>"
-                        + "<wfs:Name>id</wfs:Name>"
-                        + "<wfs:Value>t0003</wfs:Value>"
-                        + "</wfs:Property>"
-                        + "<ogc:Filter>"
-                        + "<ogc:PropertyIsEqualTo>"
-                        + "<ogc:PropertyName>id</ogc:PropertyName>"
-                        + "<ogc:Literal>t0002</ogc:Literal>"
-                        + "</ogc:PropertyIsEqualTo>"
-                        + "</ogc:Filter>"
-                        + "</wfs:Update>"
-                        + "</wfs:Transaction>";
-        try {
-            Document resp = postAsDOM("wfs", update);
-            checkOws10Exception(resp);
+            Document dom = postAsDOM("wfs", delete);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getLocalName());
         } catch (Exception e) {
             fail("Should not throw an exception");
         }

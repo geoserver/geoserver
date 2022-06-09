@@ -206,6 +206,11 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
         long updated = response.getTotalUpdated().longValue();
 
+        if (!featureStores.containsKey(elementName)) {
+            throw new WFSException(
+                    request, "Could not locate FeatureStore for '" + elementName + "'");
+        }
+
         SimpleFeatureStore store = DataUtilities.simple(featureStores.get(elementName));
 
         if (store == null) {

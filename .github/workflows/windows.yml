@@ -6,6 +6,9 @@ on:
       - '**/src/main/resources/GeoServerApplication_*.properties'
       - '!**/src/main/resources/GeoServerApplication_fr.properties'
 
+permissions:
+  contents: read
+
 jobs:
   build:
 

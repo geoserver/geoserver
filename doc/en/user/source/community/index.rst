@@ -27,7 +27,6 @@ officially part of the GeoServer releases. They are however built along with the
    cog/index
    colormap/index
    cov-json/index
-   csw-iso/index
    dds/index
    elasticsearch/index
    features-templating/index

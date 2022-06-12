@@ -332,11 +332,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.csw</groupId>
-      <artifactId>gs-csw-iso</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-importer-jdbc</artifactId>
       <version>${project.version}</version>

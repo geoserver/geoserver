@@ -24,6 +24,7 @@
     <module>core</module>
     <module>simple-store</module>
     <module>web-csw</module>
+    <module>csw-iso</module>
   </modules>
 
   <dependencies>

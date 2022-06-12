@@ -77,7 +77,6 @@
             <descriptor>release/ext-ogr-datastore.xml</descriptor>
             <descriptor>release/ext-ogcapi.xml</descriptor>
             <descriptor>release/ext-geostyler.xml</descriptor>
-            <descriptor>release/ext-csw-iso.xml</descriptor>
             <descriptor>release/ext-importer-jdbc.xml</descriptor>
             <descriptor>release/ext-features-templating.xml</descriptor>
             <descriptor>release/ext-metadata.xml</descriptor>
@@ -241,7 +240,6 @@
         <module>web-ogr</module>
         <module>ogcapi</module>
         <module>metadata</module>
-        <module>csw-iso</module>
         <module>importer-jdbc</module>
         <module>features-templating</module>
         <module>gsr</module>
@@ -614,12 +612,6 @@
       <id>ogcapi</id>
       <modules>
         <module>ogcapi</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>csw-iso</id>
-      <modules>
-        <module>csw-iso</module>
       </modules>
     </profile>
     <profile>

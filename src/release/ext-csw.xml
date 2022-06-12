@@ -24,6 +24,7 @@
             </includes>
             <excludes>
                 <exclude>*-tests.jar</exclude>
+                <exclude>gs-csw-iso*.jar</exclude>
             </excludes>
         </fileSet>
         <fileSet>

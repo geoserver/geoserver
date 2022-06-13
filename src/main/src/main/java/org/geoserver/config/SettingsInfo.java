@@ -18,6 +18,12 @@ import org.geoserver.catalog.WorkspaceInfo;
  */
 public interface SettingsInfo extends Info {
 
+    /** The flag to use request headers for the proxy URL */
+    boolean isUseHeadersProxyURL();
+
+    /** Sets the flag to use request headers for the proxy URL */
+    void setUseHeadersProxyURL(boolean useHeadersProxyURL);
+
     /**
      * The workspace the settings are specific to.
      *

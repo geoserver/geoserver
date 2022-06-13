@@ -263,11 +263,6 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-metadata</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-web-ogr</artifactId>
       <version>${project.version}</version>
     </dependency>

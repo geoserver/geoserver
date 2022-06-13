@@ -305,4 +305,43 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
             xmlFile.delete();
         }
     }
+
+    @Test
+    public void testDisAssociateRoleFromGroup() throws Exception {
+        Files.schedule(200, TimeUnit.MILLISECONDS);
+        File xmlFile = File.createTempFile("roles2", ".xml");
+        try {
+            FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"), xmlFile);
+            GeoServerRoleService service1 =
+                    createRoleService("disassociateRoleFromGroup", xmlFile.getCanonicalPath());
+
+            GeoServerRoleStore store1 = createStore(service1);
+
+            GeoServerRole role_test1 = store1.createRoleObject("ROLE_TEST1");
+            GeoServerRole role_test2 = store1.createRoleObject("ROLE_TEST2");
+
+            checkEmpty(service1);
+
+            store1.addRole(role_test1);
+            store1.addRole(role_test2);
+            store1.store();
+            assertEquals(2, service1.getRoles().size());
+
+            String group = "group1";
+            store1.associateRoleToGroup(role_test1, group);
+            store1.associateRoleToGroup(role_test2, group);
+            store1.store();
+
+            store1.disAssociateRoleFromGroup(role_test1, group);
+            store1.disAssociateRoleFromGroup(role_test2, group);
+            store1.store();
+            String xmlContent = new String(java.nio.file.Files.readAllBytes(xmlFile.toPath()));
+            // check for empty grouplist
+            assertTrue(xmlContent.contains("<groupList/>"));
+
+        } finally {
+            Files.schedule(10, TimeUnit.SECONDS);
+            xmlFile.delete();
+        }
+    }
 }

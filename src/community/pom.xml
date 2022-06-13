@@ -79,7 +79,6 @@
             <descriptor>release/ext-geostyler.xml</descriptor>
             <descriptor>release/ext-importer-jdbc.xml</descriptor>
             <descriptor>release/ext-features-templating.xml</descriptor>
-            <descriptor>release/ext-metadata.xml</descriptor>
             <descriptor>release/ext-gsr.xml</descriptor>
             <descriptor>release/ext-smart-data-loader.xml</descriptor>
             <descriptor>release/ext-cov-json.xml</descriptor>
@@ -239,7 +238,6 @@
         <module>taskmanager</module>
         <module>web-ogr</module>
         <module>ogcapi</module>
-        <module>metadata</module>
         <module>importer-jdbc</module>
         <module>features-templating</module>
         <module>gsr</module>
@@ -575,12 +573,6 @@
       <id>taskmanager-metadata</id>
       <modules>
         <module>taskmanager</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>metadata</id>
-      <modules>
-        <module>metadata</module>
       </modules>
     </profile>
     <profile>

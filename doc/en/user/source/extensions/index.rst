@@ -42,3 +42,4 @@ This section describes most of the extensions available for GeoServer. Other dat
    wps-jdbc/index
    mapml/index
    csw-iso/index
+   metadata/index

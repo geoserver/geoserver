@@ -403,6 +403,12 @@
         <module>geopkg-output</module>
       </modules>
     </profile>
+    <profile>
+      <id>metadata</id>
+      <modules>
+        <module>metadata</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -452,6 +458,7 @@
         <module>wps-download</module>
         <module>mapml</module>
         <module>geopkg-output</module>
+        <module>metadata</module>
       </modules>
     </profile>
 
@@ -505,6 +512,7 @@
         <module>wps-jdbc</module>
         <module>mapml</module>
         <module>geopkg-output</module>
+        <module>metadata</module>
       </modules>
     </profile>
   </profiles>

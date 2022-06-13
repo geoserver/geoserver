@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerInfoImpl;
@@ -37,7 +38,9 @@ public class URLProxifyingTest {
             String host,
             String forwardedHost,
             String forwardedPath,
-            String forwarded) {
+            String forwarded,
+            boolean localWorkspaceSettingsEnabled,
+            boolean useWorkspaceHeadersProxyUrl) {
 
         Map<String, String> headers = new HashMap<>();
         headers.put(
@@ -113,13 +116,19 @@ public class URLProxifyingTest {
                         new GeoServerInfoImpl() {
                             @Override
                             public Boolean isUseHeadersProxyURL() {
-                                return useHeadersProxyURLIn == null ? false : useHeadersProxyURLIn;
+                                return useHeadersProxyURLIn != null && useHeadersProxyURLIn;
                             }
                         })
                 .anyTimes();
 
         SettingsInfo settings = createNiceMock(SettingsInfo.class);
         expect(settings.getProxyBaseUrl()).andReturn(proxyBaseUrl).anyTimes();
+        if (localWorkspaceSettingsEnabled) {
+            expect(settings.getWorkspace()).andReturn(new WorkspaceInfoImpl()).anyTimes();
+            expect(settings.isUseHeadersProxyURL())
+                    .andReturn(useWorkspaceHeadersProxyUrl)
+                    .anyTimes();
+        }
         replay(settings);
 
         expect(geoServer.getSettings()).andReturn(settings).anyTimes();
@@ -143,7 +152,7 @@ public class URLProxifyingTest {
 
     @Test
     public void testNullFlag() throws Exception {
-        createAppContext(null, null, null, null, null, null, null, null);
+        createAppContext(null, null, null, null, null, null, null, null, false, false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -152,7 +161,7 @@ public class URLProxifyingTest {
 
     @Test
     public void testNoProxyBaseURL() throws Exception {
-        createAppContext(null, false, null, null, null, null, null, null);
+        createAppContext(null, false, null, null, null, null, null, null, false, false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -161,7 +170,17 @@ public class URLProxifyingTest {
 
     @Test
     public void testProxyBaseURL() throws Exception {
-        createAppContext("http://foo.org/geoserver", false, null, null, null, null, null, null);
+        createAppContext(
+                "http://foo.org/geoserver",
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -170,7 +189,8 @@ public class URLProxifyingTest {
 
     @Test
     public void testProxyBaseURLFlagSetNoTemplate() throws Exception {
-        createAppContext("http://foo.org/geoserver", true, null, null, null, null, null, null);
+        createAppContext(
+                "http://foo.org/geoserver", true, null, null, null, null, null, null, false, false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -187,7 +207,9 @@ public class URLProxifyingTest {
                 null,
                 null,
                 null,
-                null);
+                null,
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -204,7 +226,9 @@ public class URLProxifyingTest {
                 null,
                 "example.com:8080",
                 null,
-                null);
+                null,
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -213,7 +237,7 @@ public class URLProxifyingTest {
 
     @Test
     public void testProxyBaseURLFlagSetWithTemplateEmptyBaseURL() throws Exception {
-        createAppContext("", true, null, null, null, "example.com:8080", null, null);
+        createAppContext("", true, null, null, null, "example.com:8080", null, null, false, false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -230,11 +254,53 @@ public class URLProxifyingTest {
                 null,
                 "example.com:8080",
                 null,
-                null);
+                null,
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://example.com:8080/geoserver", baseURL.toString());
+    }
+
+    @Test
+    public void testProxyBaseURLFlagSetWithTemplateForLocalWorkspaceWithTemplate()
+            throws Exception {
+        createAppContext(
+                "http://${X-Forwarded-Host}/geoserver",
+                true,
+                null,
+                null,
+                null,
+                "example.com:8080",
+                null,
+                null,
+                true,
+                true);
+        StringBuilder baseURL = new StringBuilder();
+        this.mangler.mangleURL(
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
+        assertEquals("http://example.com:8080/geoserver", baseURL.toString());
+    }
+
+    @Test
+    public void testProxyBaseURLFlagSetWithTemplateForLocalWorkspaceWithoutTemplate()
+            throws Exception {
+        createAppContext(
+                "http://foo.org/geoserver",
+                true,
+                null,
+                null,
+                null,
+                "example.com:8080",
+                null,
+                null,
+                true,
+                false);
+        StringBuilder baseURL = new StringBuilder();
+        this.mangler.mangleURL(
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
+        assertEquals("http://foo.org/geoserver", baseURL.toString());
     }
 
     @Test
@@ -247,7 +313,9 @@ public class URLProxifyingTest {
                 null,
                 "example.com:8080",
                 "public",
-                null);
+                null,
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -264,7 +332,9 @@ public class URLProxifyingTest {
                 "example.com:8080",
                 null,
                 "public",
-                null);
+                null,
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -281,7 +351,9 @@ public class URLProxifyingTest {
                 null,
                 null,
                 null,
-                "for=192.0.2.60; proto=http; by=203.0.113.43; host=example.com:8080");
+                "for=192.0.2.60; proto=http; by=203.0.113.43; host=example.com:8080",
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -298,7 +370,9 @@ public class URLProxifyingTest {
                 null,
                 null,
                 null,
-                "proto=http; host=example.com:8080; path=public");
+                "proto=http; host=example.com:8080; path=public",
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -317,7 +391,9 @@ public class URLProxifyingTest {
                 null,
                 "example.com:8080",
                 "public",
-                null);
+                null,
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -336,7 +412,9 @@ public class URLProxifyingTest {
                 null,
                 null,
                 "public",
-                null);
+                null,
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
@@ -353,7 +431,9 @@ public class URLProxifyingTest {
                 null,
                 "example.com:8080",
                 "public",
-                null);
+                null,
+                false,
+                false);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);

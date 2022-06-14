@@ -9,10 +9,9 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>itextpdf*</include>
+        <include>openpdf*</include>
         <include>metrics-*</include>
         <include>jyaml*</include>
-        <include>mapfish-geo-lib*</include>
         <include>gs-printing-*.jar</include>
         <include>print-lib-*.jar</include>
         <include>xercesImpl-*.jar</include>

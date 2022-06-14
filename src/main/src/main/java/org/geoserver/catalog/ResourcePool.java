@@ -271,7 +271,7 @@ public class ResourcePool {
         this.repository = new CatalogRepository(catalog);
 
         catalog.removeListeners(CacheClearingListener.class);
-        catalog.addListener(new CacheClearingListener());
+        catalog.addListener(new CacheClearingListener(this));
     }
 
     /**
@@ -2495,7 +2495,15 @@ public class ResourcePool {
         }
     }
     /** Listens to catalog events clearing cache entires when resources are modified. */
-    public class CacheClearingListener extends CatalogVisitorAdapter implements CatalogListener {
+    public static class CacheClearingListener extends CatalogVisitorAdapter
+            implements CatalogListener {
+
+        private final ResourcePool pool;
+
+        public CacheClearingListener(ResourcePool pool) {
+            Objects.requireNonNull(pool);
+            this.pool = pool;
+        }
 
         @Override
         public void handleAddEvent(CatalogAddEvent event) {}
@@ -2507,20 +2515,12 @@ public class ResourcePool {
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
             CatalogInfo source = event.getSource();
             source.accept(this);
-
-            if (source instanceof FeatureTypeInfo) {
-                flushDataStore((FeatureTypeInfo) source);
-            }
         }
 
         @Override
         public void handleRemoveEvent(CatalogRemoveEvent event) {
             CatalogInfo source = event.getSource();
             source.accept(this);
-
-            if (source instanceof FeatureTypeInfo) {
-                flushDataStore((FeatureTypeInfo) source);
-            }
         }
 
         @Override
@@ -2528,27 +2528,28 @@ public class ResourcePool {
 
         @Override
         public void visit(DataStoreInfo dataStore) {
-            clear(dataStore);
+            pool.clear(dataStore);
         }
 
         @Override
         public void visit(CoverageStoreInfo coverageStore) {
-            clear(coverageStore);
+            pool.clear(coverageStore);
         }
 
         @Override
         public void visit(FeatureTypeInfo featureType) {
-            clear(featureType);
+            pool.clear(featureType);
+            pool.flushDataStore(featureType);
         }
 
         @Override
         public void visit(WMSStoreInfo wmsStore) {
-            clear(wmsStore);
+            pool.clear(wmsStore);
         }
 
         @Override
         public void visit(StyleInfo style) {
-            clear(style);
+            pool.clear(style);
         }
     }
     /**

@@ -4,6 +4,7 @@
  */
 package org.geoserver.wcs2_0;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -30,6 +31,7 @@ import org.geoserver.wcs2_0.response.MIMETypeMapper;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
@@ -37,6 +39,7 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Testing WCS 2.0 Core {@link GetCoverage}
@@ -184,5 +187,29 @@ public class GetCoverageTest extends WCSTestSupport {
         raw.put("coverageId", "sf__rain");
         raw.put("format", "image/tiff");
         return raw;
+    }
+
+    @Test
+    public void testInvalidTimeSpecification() throws Exception {
+        // day is expressed as a single number instead of 2
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=timeseries&subset=time(\"2018-01-1T00:00:00Z\")");
+        String error = checkOws20Exception(response, 400, "InvalidEncodingSyntax", "subset");
+        assertThat(error, CoreMatchers.containsString("Invalid time subset"));
+        assertThat(error, CoreMatchers.containsString("2018-01-1T00:00:00Z"));
+    }
+
+    @Test
+    public void testInvalidLongSpecification() throws Exception {
+        // longitude expressed as a string
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=timeseries&subset=Long(abc)");
+        String error = checkOws20Exception(response, 400, "InvalidEncodingSyntax", "subset");
+        assertThat(error, CoreMatchers.containsString("Invalid point value"));
+        assertThat(error, CoreMatchers.containsString("abc"));
     }
 }

@@ -182,4 +182,9 @@ public class CatalogFilterAccessManager extends ResourceAccessManagerWrapper {
         }
         return Predicates.and(convertedFilters.toArray(new Filter[convertedFilters.size()]));
     }
+
+    @Override
+    public void buildLayerGroupCache() {
+        delegate.buildLayerGroupCache();
+    }
 }

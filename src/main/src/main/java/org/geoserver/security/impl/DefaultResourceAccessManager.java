@@ -674,4 +674,9 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup) {
         return getAccessLimits(user, layerGroup, Collections.emptyList());
     }
+
+    @Override
+    public void buildLayerGroupCache() {
+        groupsCache.buildLayerGroupCaches();
+    }
 }

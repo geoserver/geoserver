@@ -334,5 +334,7 @@
   <bean id="coverageReaderFileConverter" class="org.geoserver.catalog.CoverageReaderFileConverter">
     <constructor-arg ref="catalog"/>
   </bean>
-    
+
+  <bean id="applicationListenerImpl" class="org.geoserver.security.impl.ApplicationListenerImpl"/>
+
 </beans>

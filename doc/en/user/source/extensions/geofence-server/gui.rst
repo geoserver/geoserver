@@ -63,18 +63,17 @@ Layer groups are also supported. If no workspace has been specified, the layer d
 
 The read and write filters text areas as well as the style palette in the layer details tab are disabled when the layer group is being configured.
 
-If an allowed area WKT is specified it will be applied to all contained layers.
+When a LayerGroup is request the contained resource will be handled in the following way:
 
-When a layer contained in a layer group is directly accessed in the context of a WMS request, the following rules apply:
+* a limit applied to the layer groups (allowed area or grant type) will be applied to all the contained layers.
+* if the access rule a contained layer is denying the access to the layer for the user requesting group, the layer will not be present in the output.
+* if the access rule of the layer has limits on its own, they will be merged in a restrictive way (intersection) with the one of the layer group if both the limits have been defined for the same role.
+* if the access rule of the layer has limits on its own, they will be merged in a permissive way (union) with the one of the layer group if both the limits have been defined for the different roles.
 
-* If the layer group has mode **SINGLE**, the access rule of the layer being requested will be applied.
+When a layer contained in one or more layer group is directly accessed in the context of a WMS request, the following rules apply:
 
-* If the layer group has mode **OPAQUE**, the layer will not be visible.
+* If any of the layer groups containing the requested resource has mode **SINGLE** no limits eventually defined for any of the layer groups will be applied.
 
-* If the layer group has another mode, different from **SINGLE** and **OPAQUE**, the layer group access rule will be applied.
+* If all the layer groups containing the requested resource have mode **OPAQUE**, the layer will not be visible.
 
-When a layer belongs to more then one layer group, the less restrictive rule is applied. If the containing layer groups have all a **LIMIT** grant type:
-
-* If at least one layer group has no allowed area defined, then no geometry filter is applied to the contained layer.
-
-* If all the containing layer group have an allowed area defined, then the spatial filter will apply a geometry that is the result of the union of all the allowed areas.
+* If all the layer groups containing the resource has mode different from **SINGLE** and **OPAQUE**, the layer groups limits will be applied and merged with the one defined for the resource if present. For each layer group, the limits will be merged in a restrictive way with the ones defined for the resource if the rule was defined for the same role. On the contrary the limits will be merged with an enlargement logic, if coming from rules defined for different roles.

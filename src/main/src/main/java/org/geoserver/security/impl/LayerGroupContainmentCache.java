@@ -72,7 +72,7 @@ public class LayerGroupContainmentCache {
         buildLayerGroupCaches();
     }
 
-    private void buildLayerGroupCaches() {
+    public void buildLayerGroupCaches() {
         groupCache.clear();
         resourceContainmentCache.clear();
         List<LayerGroupInfo> groups = catalog.getLayerGroups();

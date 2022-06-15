@@ -71,4 +71,6 @@ public interface ResourceAccessManager {
      */
     public @Nullable Filter getSecurityFilter(
             Authentication user, final Class<? extends CatalogInfo> clazz);
+
+    default void buildLayerGroupCache() {}
 }

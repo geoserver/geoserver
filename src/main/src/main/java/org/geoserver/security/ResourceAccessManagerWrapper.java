@@ -251,4 +251,9 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
     public ResourceAccessManager unwrap() {
         return this.delegate;
     }
+
+    @Override
+    public void buildLayerGroupCache() {
+        delegate.buildLayerGroupCache();
+    }
 }

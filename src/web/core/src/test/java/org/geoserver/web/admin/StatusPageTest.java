@@ -178,14 +178,14 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         // render the page, GeoServer status tab is show
         tester.assertRenderedPage(StatusPage.class);
         // click on the extra tab link
-        tester.clickLink("tabs:tabs-container:tabs:3:link", true);
+        tester.clickLink("tabs:tabs-container:tabs:4:link", true);
         // render extra tab content
         tester.assertRenderedPage(StatusPage.class);
         // check that extra tab content was rendered
         tester.assertContains("extra tab content");
         // check that the tab has the correct title
         Component component =
-                tester.getComponentFromLastRenderedPage("tabs:tabs-container:tabs:3:link:title");
+                tester.getComponentFromLastRenderedPage("tabs:tabs-container:tabs:4:link:title");
         assertThat(component, instanceOf(Label.class));
         Label label = (Label) component;
         assertThat(label.getDefaultModel(), notNullValue());

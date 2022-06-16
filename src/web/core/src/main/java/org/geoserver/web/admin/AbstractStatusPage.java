@@ -21,6 +21,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.system.status.JVMConsolePanel;
 import org.geoserver.web.system.status.SystemStatusMonitorPanel;
 
 public abstract class AbstractStatusPage extends ServerAdminPage {
@@ -68,10 +69,21 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
                                 return new SystemStatusMonitorPanel(id);
                             }
                         });
+        PanelCachingTab jvmConsoleTab =
+                new PanelCachingTab(
+                        new AbstractTab(new StringResourceModel("JVMConsolePanel.title")) {
+                            private static final long serialVersionUID = -542587671248411767L;
+
+                            @Override
+                            public Panel getPanel(String id) {
+                                return new JVMConsolePanel(id);
+                            }
+                        });
 
         tabs.add(statusTab);
         tabs.add(moduleStatusTab);
         tabs.add(systemStatusTab);
+        tabs.add(jvmConsoleTab);
 
         // extension point for adding extra tabs that will be ordered using the extension priority
         GeoServerExtensions.extensions(StatusPage.TabDefinition.class)

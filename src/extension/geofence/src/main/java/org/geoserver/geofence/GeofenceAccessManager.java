@@ -406,7 +406,7 @@ public class GeofenceAccessManager
 
     private boolean allOpaque(Collection<LayerGroupContainmentCache.LayerGroupSummary> summaries) {
         LayerGroupInfo.Mode opaque = LayerGroupInfo.Mode.OPAQUE_CONTAINER;
-        return !summaries.stream().anyMatch(gs -> !gs.getMode().equals(opaque));
+        return summaries.stream().allMatch(gs -> gs.getMode().equals(opaque));
     }
 
     // build the accessLimits for an admin user
@@ -606,7 +606,7 @@ public class GeofenceAccessManager
         Geometry clip = result.getClipArea();
         // areas might be in a srid different from the one of the resource
         // being requested.
-        CoordinateReferenceSystem crs = helper.getCrsFromInfo(resourceInfo);
+        CoordinateReferenceSystem crs = helper.getCRSFromInfo(resourceInfo);
         if (intersect != null) {
             intersect = helper.reprojectGeometry(intersect, crs);
             result.setIntersectArea(intersect);

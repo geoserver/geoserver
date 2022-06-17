@@ -4,6 +4,8 @@
  */
 package org.geoserver.geofence.integration;
 
+import static org.geoserver.catalog.LayerGroupInfo.Mode.NAMED;
+import static org.geoserver.catalog.LayerGroupInfo.Mode.SINGLE;
 import static org.geoserver.geofence.core.model.enums.AdminGrantType.ADMIN;
 import static org.geoserver.geofence.core.model.enums.AdminGrantType.USER;
 import static org.junit.Assert.assertEquals;
@@ -117,20 +119,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
             LayerInfo forests = catalog.getLayerByName(getLayerId(MockData.FORESTS));
 
-            group1 =
-                    createsLayerGroup(
-                            catalog,
-                            "group21",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(places, forests));
-            group2 =
-                    createsLayerGroup(
-                            catalog,
-                            "group22",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(places, forests));
+            group1 = createsLayerGroup("group21", NAMED, null, Arrays.asList(places, forests));
+            group2 = createsLayerGroup("group22", NAMED, null, Arrays.asList(places, forests));
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     support.addRule(
@@ -193,20 +183,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             Catalog catalog = getCatalog();
             LayerInfo bridges = catalog.getLayerByName(getLayerId(MockData.BRIDGES));
             LayerInfo buildings = catalog.getLayerByName(getLayerId(MockData.BUILDINGS));
-            group1 =
-                    createsLayerGroup(
-                            catalog,
-                            "group1",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(bridges, buildings));
-            group2 =
-                    createsLayerGroup(
-                            catalog,
-                            "group2",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(bridges, buildings));
+            group1 = createsLayerGroup("group1", NAMED, null, Arrays.asList(bridges, buildings));
+            group2 = createsLayerGroup("group2", NAMED, null, Arrays.asList(bridges, buildings));
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     support.addRule(
@@ -284,20 +262,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             Catalog catalog = getCatalog();
             LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
             LayerInfo fifteen = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
-            group1 =
-                    createsLayerGroup(
-                            catalog,
-                            "group31",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(lakes, fifteen));
-            group2 =
-                    createsLayerGroup(
-                            catalog,
-                            "group32",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(lakes, fifteen));
+            group1 = createsLayerGroup("group31", NAMED, null, Arrays.asList(lakes, fifteen));
+            group2 = createsLayerGroup("group32", NAMED, null, Arrays.asList(lakes, fifteen));
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     support.addRule(
@@ -341,13 +307,13 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
 
             unionedArea.normalize();
             VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, lakes);
-            Intersects intersects = (Intersects) vl.getReadFilter();
+            Intersects readFilter = (Intersects) vl.getReadFilter();
             MultiPolygon readFilterArea =
-                    intersects.getExpression2().evaluate(null, MultiPolygon.class);
+                    readFilter.getExpression2().evaluate(null, MultiPolygon.class);
             readFilterArea.normalize();
-            Intersects intersects2 = (Intersects) vl.getWriteFilter();
+            Intersects writeFilter = (Intersects) vl.getWriteFilter();
             MultiPolygon writeFilterArea =
-                    intersects2.getExpression2().evaluate(null, MultiPolygon.class);
+                    writeFilter.getExpression2().evaluate(null, MultiPolygon.class);
             writeFilterArea.normalize();
             assertTrue(unionedArea.equalsExact(readFilterArea, 10.0E-15));
             assertTrue(unionedArea.equalsExact(writeFilterArea, 10.0E-15));
@@ -371,11 +337,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             LayerInfo fifteen = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
             group1 =
                     createsLayerGroup(
-                            catalog,
-                            "group41",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(basicPolygons, fifteen));
+                            "group41", NAMED, null, Arrays.asList(basicPolygons, fifteen));
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     support.addRule(
@@ -437,13 +399,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             Catalog catalog = getCatalog();
             LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
             LayerInfo namedPlaces = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
-            group1 =
-                    createsLayerGroup(
-                            catalog,
-                            "group51",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(lakes, namedPlaces));
+            group1 = createsLayerGroup("group51", NAMED, null, Arrays.asList(lakes, namedPlaces));
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     support.addRule(
@@ -456,13 +412,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
                             "group51",
                             8);
 
-            group2 =
-                    createsLayerGroup(
-                            catalog,
-                            "group52",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(lakes, namedPlaces));
+            group2 = createsLayerGroup("group52", NAMED, null, Arrays.asList(lakes, namedPlaces));
             // limit rule for anonymousUser on LayerGroup group1
             idRule2 =
                     support.addRule(
@@ -530,13 +480,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             Catalog catalog = getCatalog();
             LayerInfo droutes = catalog.getLayerByName(getLayerId(MockData.DIVIDED_ROUTES));
             LayerInfo ponds = catalog.getLayerByName(getLayerId(MockData.PONDS));
-            group1 =
-                    createsLayerGroup(
-                            catalog,
-                            "group61",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(droutes, ponds));
+            group1 = createsLayerGroup("group61", NAMED, null, Arrays.asList(droutes, ponds));
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     support.addRule(
@@ -560,13 +504,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
                             "group61",
                             11);
 
-            group2 =
-                    createsLayerGroup(
-                            catalog,
-                            "group62",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(droutes, ponds));
+            group2 = createsLayerGroup("group62", NAMED, null, Arrays.asList(droutes, ponds));
             // limit rule for anonymousUser on LayerGroup group1
             idRule3 =
                     support.addRule(
@@ -746,20 +684,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
             LayerInfo forests = catalog.getLayerByName(getLayerId(MockData.FORESTS));
 
-            group1 =
-                    createsLayerGroup(
-                            catalog,
-                            "group21",
-                            LayerGroupInfo.Mode.SINGLE,
-                            null,
-                            Arrays.asList(places, forests));
-            group2 =
-                    createsLayerGroup(
-                            catalog,
-                            "group22",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(places, forests));
+            group1 = createsLayerGroup("group21", SINGLE, null, Arrays.asList(places, forests));
+            group2 = createsLayerGroup("group22", NAMED, null, Arrays.asList(places, forests));
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     support.addRule(
@@ -808,10 +734,9 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
 
     @Test
     public void testLayerInGroupAreaEnlargement() throws Exception {
-        // tests that when a Layer is directly accessed for WMS request
-        // if it is belonging to a group and both the group and the layer have rule with allowed
-        // area,
-        // if the areas are for different roles, union is applied.
+        // tests that when a Layer is directly accessed in a WMS request if it is belonging to a
+        // group and both groups and layer have rules with allowed areas, if the areas are for
+        // different roles, union is applied.
         Long idRule = null;
         Long idRule2 = null;
 
@@ -822,13 +747,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             Catalog catalog = getCatalog();
             LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
             LayerInfo fifteen = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
-            group1 =
-                    createsLayerGroup(
-                            catalog,
-                            "group31",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(lakes, fifteen));
+            group1 = createsLayerGroup("group31", NAMED, null, Arrays.asList(lakes, fifteen));
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     support.addRule(
@@ -904,13 +823,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             Catalog catalog = getCatalog();
             LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
             LayerInfo fifteen = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
-            group1 =
-                    createsLayerGroup(
-                            catalog,
-                            "group31",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(lakes, fifteen));
+            group1 = createsLayerGroup("group31", NAMED, null, Arrays.asList(lakes, fifteen));
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     support.addRule(
@@ -982,13 +895,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             Catalog catalog = getCatalog();
             LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
             LayerInfo fifteen = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
-            group1 =
-                    createsLayerGroup(
-                            catalog,
-                            "group31",
-                            LayerGroupInfo.Mode.NAMED,
-                            null,
-                            Arrays.asList(lakes, fifteen));
+            group1 = createsLayerGroup("group31", NAMED, null, Arrays.asList(lakes, fifteen));
             // limit rule for anonymousUser on LayerGroup group1
 
             idRule =
@@ -1056,23 +963,19 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
     }
 
     protected LayerGroupInfo createsLayerGroup(
-            Catalog catalog,
-            String name,
-            LayerGroupInfo.Mode mode,
-            LayerInfo rootLayer,
-            List<LayerInfo> layers)
+            String name, LayerGroupInfo.Mode mode, LayerInfo rootLayer, List<LayerInfo> layers)
             throws Exception {
-        return createsLayerGroup(catalog, name, mode, rootLayer, layers, null);
+        return createsLayerGroup(name, mode, rootLayer, layers, null);
     }
 
     protected LayerGroupInfo createsLayerGroup(
-            Catalog catalog,
             String name,
             LayerGroupInfo.Mode mode,
             LayerInfo rootLayer,
             List<LayerInfo> layers,
             CoordinateReferenceSystem groupCRS)
             throws Exception {
+        Catalog catalog = getCatalog();
         LayerGroupInfo group = catalog.getFactory().createLayerGroup();
         group.setName(name);
 

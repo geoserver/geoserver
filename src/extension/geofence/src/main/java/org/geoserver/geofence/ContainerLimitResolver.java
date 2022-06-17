@@ -4,6 +4,8 @@
  */
 package org.geoserver.geofence;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -11,8 +13,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
@@ -50,7 +50,7 @@ class ContainerLimitResolver {
 
     private String instanceName;
 
-    private GeoFenceAreaHelper helper;
+    private GeoFenceAreaHelper areasHelper;
 
     private static final Logger LOGGER = Logging.getLogger(ContainerLimitResolver.class);
 
@@ -105,7 +105,7 @@ class ContainerLimitResolver {
             String workspace,
             String callerIp,
             String instanceName) {
-        this.helper = new GeoFenceAreaHelper();
+        this.areasHelper = new GeoFenceAreaHelper();
         this.ruleService = ruleService;
         this.authentication = authentication;
         this.layer = layer;
@@ -130,27 +130,23 @@ class ContainerLimitResolver {
             if (accessInfo != null) publishedAccessByRole.put(authority.getAuthority(), accessInfo);
         }
         // retrieve the AccessInfo grouped by role
-        MultiMap groupsByRoleAccess = collectContainersAccessInfoByRole(authorities);
+        ListMultimap<String, AccessInfo> groupsByRoleAccess =
+                collectContainersAccessInfoByRole(authorities);
         // first we restrict the access
-        MultiMap restrictionResults = restrictAccess(publishedAccessByRole, groupsByRoleAccess);
+        ListMultimap<RestrictionType, ProcessingResult> restrictionResults =
+                intersectAccesses(publishedAccessByRole, groupsByRoleAccess);
         // enlarge and return the result
-        return enlargeAccess(restrictionResults);
+        return unionAccesses(restrictionResults);
     }
 
-    private ProcessingResult enlargeAccess(MultiMap restrictionResults) {
+    private ProcessingResult unionAccesses(
+            ListMultimap<RestrictionType, ProcessingResult> restrictionResults) {
         // get all the results
-        @SuppressWarnings("unchecked")
-        List<ProcessingResult> both =
-                (List<ProcessingResult>) restrictionResults.get(RestrictionType.GROUP_BOTH);
-        @SuppressWarnings("unchecked")
+        List<ProcessingResult> both = restrictionResults.get(RestrictionType.GROUP_BOTH);
         List<ProcessingResult> intersectsOnly =
-                (List<ProcessingResult>) restrictionResults.get(RestrictionType.GROUP_INTERSECT);
-        @SuppressWarnings("unchecked")
-        List<ProcessingResult> clipOnly =
-                (List<ProcessingResult>) restrictionResults.get(RestrictionType.GROUP_CLIP);
-        @SuppressWarnings("unchecked")
-        List<ProcessingResult> none =
-                (List<ProcessingResult>) restrictionResults.get(RestrictionType.NONE);
+                restrictionResults.get(RestrictionType.GROUP_INTERSECT);
+        List<ProcessingResult> clipOnly = restrictionResults.get(RestrictionType.GROUP_CLIP);
+        List<ProcessingResult> none = restrictionResults.get(RestrictionType.NONE);
 
         // enlarge each result type separately
         ProcessingResult intersectProcess = enlargeGroupProcessingResult(intersectsOnly);
@@ -194,7 +190,8 @@ class ContainerLimitResolver {
 
     private Geometry unionOrReturnIfNull(
             Supplier<Geometry> supplier, Geometry area, boolean lessRestrictive) {
-        if (area != null) area = helper.reprojectAndUnion(supplier.get(), area, lessRestrictive);
+        if (area != null)
+            area = this.areasHelper.reprojectAndUnion(supplier.get(), area, lessRestrictive);
         else area = supplier.get();
         return area;
     }
@@ -216,8 +213,9 @@ class ContainerLimitResolver {
                 clipArea = allowedAreaClip;
             } else {
                 intersectArea =
-                        helper.reprojectAndUnion(intersectArea, allowedArea, lessRestrictive);
-                clipArea = helper.reprojectAndUnion(clipArea, allowedAreaClip, lessRestrictive);
+                        areasHelper.reprojectAndUnion(intersectArea, allowedArea, lessRestrictive);
+                clipArea =
+                        areasHelper.reprojectAndUnion(clipArea, allowedAreaClip, lessRestrictive);
             }
         }
 
@@ -230,15 +228,15 @@ class ContainerLimitResolver {
      *
      * @param resourceAccessInfo the resource access infos by role
      * @param groupAccessInfoByRole groups access infos by role.
-     * @return a MultiMap gathering all the AccessInfo grouped by role.
+     * @return a Multimap<String,AccessInfo> gathering all the AccessInfo grouped by role.
      */
-    private MultiMap restrictAccess(
-            Map<String, AccessInfo> resourceAccessInfo, MultiMap groupAccessInfoByRole) {
-        MultiMap multiMap = new MultiValueMap();
+    private ListMultimap<RestrictionType, ProcessingResult> intersectAccesses(
+            Map<String, AccessInfo> resourceAccessInfo,
+            ListMultimap<String, AccessInfo> groupAccessInfoByRole) {
+        ListMultimap<RestrictionType, ProcessingResult> multiMap = ArrayListMultimap.create();
         for (String key : resourceAccessInfo.keySet()) {
-            @SuppressWarnings("unchecked")
-            List<AccessInfo> infos = (List<AccessInfo>) groupAccessInfoByRole.get(key);
-            restrictAccess(resourceAccessInfo.get(key), infos, multiMap);
+            List<AccessInfo> infos = groupAccessInfoByRole.get(key);
+            intersectAccesses(resourceAccessInfo.get(key), infos, multiMap);
         }
         return multiMap;
     }
@@ -246,14 +244,18 @@ class ContainerLimitResolver {
     /**
      * Restrict the access for all the access info being passed.
      *
-     * @param resAccessInfo the resource accessInfo.
-     * @param groupsAccessInfo the groups access info for the same role.
-     * @param multiMap to fill with the result.
+     * @param resAccessInfo the resource accessInfo. Provide the base point from which resolve the
+     *     container limits.
+     * @param groupsAccessInfo the groups access info for same role. To be resolved on top of the
+     *     resource access info.
+     * @param multiMap to be filled with the result.
      */
-    private void restrictAccess(
-            AccessInfo resAccessInfo, List<AccessInfo> groupsAccessInfo, MultiMap multiMap) {
-        Geometry resIntersectArea = helper.parseAllowedArea(resAccessInfo.getAreaWkt());
-        Geometry resClipArea = helper.parseAllowedArea(resAccessInfo.getClipAreaWkt());
+    private void intersectAccesses(
+            AccessInfo resAccessInfo,
+            List<AccessInfo> groupsAccessInfo,
+            ListMultimap<RestrictionType, ProcessingResult> multiMap) {
+        Geometry resIntersectArea = areasHelper.parseAllowedArea(resAccessInfo.getAreaWkt());
+        Geometry resClipArea = areasHelper.parseAllowedArea(resAccessInfo.getClipAreaWkt());
         CatalogModeDTO catalogMode = resAccessInfo.getCatalogMode();
         boolean groupOnIntersect = false;
         boolean groupOnClip = false;
@@ -266,27 +268,28 @@ class ContainerLimitResolver {
                 String clipAllowedArea = accessInfo.getClipAreaWkt();
                 if (!groupOnIntersect) groupOnIntersect = allowedArea != null;
                 if (!groupOnClip) groupOnClip = clipAllowedArea != null;
+                Geometry area = areasHelper.parseAllowedArea(allowedArea);
+                Geometry clipArea = areasHelper.parseAllowedArea(clipAllowedArea);
 
                 if (i == 0) {
                     // be sure we have an initial value.
-                    if (resIntersectArea == null)
-                        resIntersectArea = helper.parseAllowedArea(allowedArea);
+                    if (resIntersectArea == null) resIntersectArea = area;
                     else
                         resIntersectArea =
-                                helper.reprojectAndIntersect(
-                                        resIntersectArea, allowedArea, lessRestrictive);
-                    if (resClipArea == null) resClipArea = helper.parseAllowedArea(clipAllowedArea);
+                                areasHelper.reprojectAndIntersect(
+                                        resIntersectArea, area, lessRestrictive);
+                    if (resClipArea == null) resClipArea = clipArea;
                     else
                         resClipArea =
-                                helper.reprojectAndIntersect(
-                                        resClipArea, clipAllowedArea, lessRestrictive);
+                                areasHelper.reprojectAndIntersect(
+                                        resClipArea, clipArea, lessRestrictive);
                 } else {
                     resIntersectArea =
-                            helper.reprojectAndIntersect(
-                                    resIntersectArea, allowedArea, lessRestrictive);
+                            areasHelper.reprojectAndIntersect(
+                                    resIntersectArea, area, lessRestrictive);
                     resClipArea =
-                            helper.reprojectAndIntersect(
-                                    resClipArea, clipAllowedArea, lessRestrictive);
+                            areasHelper.reprojectAndIntersect(
+                                    resClipArea, clipArea, lessRestrictive);
                 }
             }
         }
@@ -301,9 +304,9 @@ class ContainerLimitResolver {
     }
 
     // collect the containers area by role.
-    private MultiMap collectContainersAccessInfoByRole(
+    private ListMultimap<String, AccessInfo> collectContainersAccessInfoByRole(
             Collection<? extends GrantedAuthority> authorities) {
-        MultiMap groupAccessInfoByRole = new MultiValueMap();
+        ListMultimap<String, AccessInfo> groupAccessInfoByRole = ArrayListMultimap.create();
         if (groupSummaries == null)
             collectGroupAccessInfoByRole(groupList, authorities, groupAccessInfoByRole);
         else
@@ -317,7 +320,7 @@ class ContainerLimitResolver {
     private void collectGroupSummaryAccessInfoByRole(
             Collection<LayerGroupContainmentCache.LayerGroupSummary> summaries,
             Collection<? extends GrantedAuthority> authorities,
-            MultiMap groupAccessInfoByRole) {
+            ListMultimap<String, AccessInfo> groupAccessInfoByRole) {
         for (LayerGroupContainmentCache.LayerGroupSummary summary : summaries) {
             LayerGroupInfo.Mode mode = summary.getMode();
             if (!mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER)) {
@@ -350,7 +353,7 @@ class ContainerLimitResolver {
     private void collectGroupAccessInfoByRole(
             List<LayerGroupInfo> groupList,
             Collection<? extends GrantedAuthority> authorities,
-            MultiMap groupAccessInfoByRole) {
+            ListMultimap<String, AccessInfo> groupAccessInfoByRole) {
         for (LayerGroupInfo group : groupList) {
             String[] nameParts = group.prefixedName().split(":");
             String layer = null;

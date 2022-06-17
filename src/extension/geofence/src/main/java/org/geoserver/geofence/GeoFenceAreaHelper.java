@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence;
 
+import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CatalogInfo;
@@ -25,9 +26,9 @@ import org.opengis.referencing.operation.TransformException;
  * Class grouping methods to handle areas union and intersection needed to merge limit together when
  * dealing with layer groups.
  */
-public class GeoFenceAreaHelper {
+class GeoFenceAreaHelper {
 
-    private static final Logger LOGGER = Logging.getLogger(ContainerLimitResolver.class);
+    private static final Logger LOGGER = Logging.getLogger(GeoFenceAreaHelper.class);
 
     /**
      * Parse a wkt string to a Geometry object.
@@ -57,94 +58,18 @@ public class GeoFenceAreaHelper {
     }
 
     /**
-     * Reproject if needed and perform union of two geometries.
+     * Reproject and intersects two geometries.
      *
      * @param first the first geometry to merge.
-     * @param second the other geometry to merge.
-     * @param lessRestrictive if set to true if one of the two geometries is null, null will be
-     *     returned. If false the other geometry will be returned.
-     * @return the result of union.
+     * @param second the other geometry as a WKT.
+     * @param lessRestrictive if true when one of the geometry is null, null will be returned.
+     *     Otherwise the other geometry will be returned.
+     * @return the result of intersection.
      */
     Geometry reprojectAndUnion(Geometry first, Geometry second, boolean lessRestrictive) {
-        if (lessRestrictive) return reprojectAndUnionLessRestrictive(first, second);
-        else return reprojectAndUnion(first, second);
-    }
-
-    /**
-     * Reproject and union two geometries. If one of the geometries is null returns null.
-     *
-     * @param first the first geometry to merge.
-     * @param second the other geometry to merge.
-     * @return the result of union.
-     */
-    Geometry reprojectAndUnionLessRestrictive(Geometry first, Geometry second) {
-        if (first == null || second == null) return null;
-
-        Geometry result = reprojectAndUnion(first, second);
-        return result;
-    }
-
-    /**
-     * Reproject and union two geometries. If one of the two geometries is null, returns the other
-     * one.
-     *
-     * @param first the first geometry to merge.
-     * @param second the other geometry to merge.
-     * @return the result of union.
-     */
-    Geometry reprojectAndUnion(Geometry first, Geometry second) {
-        if (first == null) return second;
-        if (second == null) return first;
-        if (first.getSRID() != second.getSRID()) {
-            try {
-                CoordinateReferenceSystem target = CRS.decode("EPSG:" + first.getSRID());
-                CoordinateReferenceSystem source = CRS.decode("EPSG:" + second.getSRID());
-                MathTransform transformation = CRS.findMathTransform(source, target);
-                second = JTS.transform(second, transformation);
-                second.setSRID(first.getSRID());
-            } catch (FactoryException e) {
-                throw new RuntimeException(
-                        "Unable to merge allowed areas: can't reproject from "
-                                + second.getSRID()
-                                + " to "
-                                + first.getSRID());
-            } catch (TransformException e) {
-                throw new RuntimeException(
-                        "Unable to merge allowed areas: error during transformation from "
-                                + second.getSRID()
-                                + " to "
-                                + first.getSRID());
-            }
-        }
-        Geometry result = first.union(second);
-        result.setSRID(first.getSRID());
-        return result;
-    }
-
-    /**
-     * Reproject and intersects two geometries. If one of the two parameters is null returns null.
-     *
-     * @param first the first geometry to merge.
-     * @param secondWKT the other geometry as a WKT.
-     * @return the result of intersection.
-     */
-    Geometry reprojectAndIntersectLessRestrictive(Geometry first, String secondWKT) {
-        if (first == null || secondWKT == null) return null;
-        Geometry second = parseAllowedArea(secondWKT);
-        return reprojectAndIntersect(first, second);
-    }
-
-    /**
-     * Reproject and intersects two geometries. If one of the two parameters is null returns the
-     * other.
-     *
-     * @param first the first geometry to merge.
-     * @param secondWKT the other geometry as a WKT.
-     * @return the result of intersection.
-     */
-    Geometry reprojectAndIntersect(Geometry first, String secondWKT) {
-        Geometry second = parseAllowedArea(secondWKT);
-        return reprojectAndIntersect(first, second);
+        BiFunction<Geometry, Geometry, Geometry> union = (g1, g2) -> g1.union(g2);
+        if (lessRestrictive) return reprojectAndApplyOpLessRestrictive(first, second, union);
+        else return reprojectAndApplyOperation(first, second, union);
     }
 
     /**
@@ -156,9 +81,24 @@ public class GeoFenceAreaHelper {
      *     Otherwise the other geometry will be returned.
      * @return the result of intersection.
      */
-    Geometry reprojectAndIntersect(Geometry first, String second, boolean lessRestrictive) {
-        if (lessRestrictive) return reprojectAndIntersectLessRestrictive(first, second);
-        else return reprojectAndIntersect(first, second);
+    Geometry reprojectAndIntersect(Geometry first, Geometry second, boolean lessRestrictive) {
+        BiFunction<Geometry, Geometry, Geometry> intersection = (g1, g2) -> g1.intersection(g2);
+        if (lessRestrictive) return reprojectAndApplyOpLessRestrictive(first, second, intersection);
+        else return reprojectAndApplyOperation(first, second, intersection);
+    }
+
+    /**
+     * Reproject and intersects two geometries. If one of the two parameters is null returns null.
+     *
+     * @param first the first geometry to merge.
+     * @param second the other geometry.
+     * @param operation a bifunction with the operation to apply to the geometries.
+     * @return the result of intersection.
+     */
+    Geometry reprojectAndApplyOpLessRestrictive(
+            Geometry first, Geometry second, BiFunction<Geometry, Geometry, Geometry> operation) {
+        if (first == null || second == null) return null;
+        return reprojectAndApplyOperation(first, second, operation);
     }
 
     /**
@@ -166,25 +106,21 @@ public class GeoFenceAreaHelper {
      *
      * @param first the first geometry to merge.
      * @param second the other geometry as a WKT.
+     * @param operation a BiFunction accepting Geometry parameters and returning a Geometry.
      * @return the result of intersection.
      */
-    Geometry reprojectAndIntersect(Geometry first, Geometry second) {
+    Geometry reprojectAndApplyOperation(
+            Geometry first, Geometry second, BiFunction<Geometry, Geometry, Geometry> operation) {
         if (first == null) return second;
         if (second == null) return first;
         if (first.getSRID() != second.getSRID()) {
             try {
-                CoordinateReferenceSystem target = CRS.decode("EPSG:" + first.getSRID());
-                CoordinateReferenceSystem source = CRS.decode("EPSG:" + second.getSRID());
+                CoordinateReferenceSystem target = CRS.decode("EPSG:" + first.getSRID(), true);
+                CoordinateReferenceSystem source = CRS.decode("EPSG:" + second.getSRID(), true);
                 MathTransform transformation = CRS.findMathTransform(source, target);
                 second = JTS.transform(second, transformation);
                 second.setSRID(first.getSRID());
-            } catch (FactoryException e) {
-                throw new RuntimeException(
-                        "Unable to interserct allowed areas: can't reproject from "
-                                + second.getSRID()
-                                + " to "
-                                + first.getSRID());
-            } catch (TransformException e) {
+            } catch (FactoryException | TransformException e) {
                 throw new RuntimeException(
                         "Unable to intersect allowed areas: error during transformation from "
                                 + second.getSRID()
@@ -192,7 +128,7 @@ public class GeoFenceAreaHelper {
                                 + first.getSRID());
             }
         }
-        Geometry result = first.intersection(second);
+        Geometry result = operation.apply(first, second);
         result.setSRID(first.getSRID());
         return result;
     }
@@ -206,7 +142,7 @@ public class GeoFenceAreaHelper {
      */
     Geometry reprojectGeometry(Geometry geometry, CoordinateReferenceSystem targetCRS) {
         try {
-            CoordinateReferenceSystem geomCrs = CRS.decode("EPSG:" + geometry.getSRID());
+            CoordinateReferenceSystem geomCrs = CRS.decode("EPSG:" + geometry.getSRID(), true);
             if ((targetCRS != null) && !CRS.equalsIgnoreMetadata(geomCrs, targetCRS)) {
                 MathTransform mt = CRS.findMathTransform(geomCrs, targetCRS, true);
                 geometry = JTS.transform(geometry, mt);
@@ -226,7 +162,7 @@ public class GeoFenceAreaHelper {
      * @param info from which retrieve the crs.
      * @return the crs or null.
      */
-    CoordinateReferenceSystem getCrsFromInfo(CatalogInfo info) {
+    CoordinateReferenceSystem getCRSFromInfo(CatalogInfo info) {
         CoordinateReferenceSystem crs = null;
         if (info instanceof LayerInfo) {
             crs = ((LayerInfo) info).getResource().getCRS();

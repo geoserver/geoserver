@@ -43,6 +43,8 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
             new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
     protected QName V_TIME_ELEVATION_STACKED =
             new QName(MockData.SF_URI, "TimeElevationStacked", MockData.SF_PREFIX);
+    protected QName V_TIME_ELEVATION_WITH_START_END =
+            new QName(MockData.SF_URI, "TimeElevationWithStartEnd", MockData.SF_PREFIX);
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName TIMERANGES =
             new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
@@ -170,6 +172,27 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
             String unitSymbol) {
         setupVectorDimension(
                 "TimeElevation", metadata, attribute, presentation, resolution, units, unitSymbol);
+    }
+
+    protected void setupVectorDimensionWithEnd(
+            String metadata,
+            String attribute,
+            String endAttribute,
+            DimensionPresentation presentation,
+            Double resolution,
+            String units,
+            String unitSymbol) {
+        setupVectorDimension(
+                "TimeElevationWithStartEnd",
+                metadata,
+                attribute,
+                presentation,
+                resolution,
+                units,
+                unitSymbol);
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName("TimeElevationWithStartEnd");
+        info.getMetadata().get(metadata, DimensionInfo.class).setEndAttribute(endAttribute);
+        getCatalog().save(info);
     }
 
     protected void setupResourceDimensionDefaultValue(

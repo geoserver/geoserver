@@ -72,6 +72,8 @@ Configuring PostgreSQL as the datasource to use for the persistence of the messa
   </bean>
   ...
 
+In addition, you need to make sure that the jar containing the driver for PostgreSQL is correctly deployed inside the WEB-INF/lib for the activemq war file. At the same time the database referred in provided instructions as well as the user must be already present.
+
 .. note::
   The above ApplicationContext.xml file contains some unused sections which are intentionally commented out to show different types of configurations [Ref. ActiveMQ].
 

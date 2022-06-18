@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Styles;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
 public class StyleFormatLabel extends Panel {
@@ -17,25 +18,61 @@ public class StyleFormatLabel extends Panel {
     private static final long serialVersionUID = 6348703587354586691L;
     static final Logger LOGGER = Logging.getLogger(StyleFormatLabel.class);
 
-    public StyleFormatLabel(String id, IModel<?> model, String versionString) {
+    public StyleFormatLabel(String id, IModel<?> formatModel, IModel<?> versionModel) {
 
-        super(id, model);
-        String formatDisplayName = "";
+        super(id, formatModel);
+        String formatDisplayName = getFormatDisplayName(formatModel);
+        String majorMinorVersion = getMajorMinorVersionString(versionModel);
 
-        if (model.getObject() != null) {
-            String format = (String) model.getObject();
-            formatDisplayName = Styles.handler(format).getName();
+        String formatNameAndVersion =
+                concateFormatNameAndVersion(formatDisplayName, majorMinorVersion);
 
-            if (versionString != null) {
-                formatDisplayName =
-                        new StringBuilder(formatDisplayName)
-                                .append(" ")
-                                .append(versionString)
-                                .toString();
-            }
-        }
-        Label formatLabel = new Label("styleFormatLabel", formatDisplayName);
-        formatLabel.add(new AttributeModifier("title", formatDisplayName));
+        Label formatLabel = new Label("styleFormatLabel", formatNameAndVersion);
+        formatLabel.add(new AttributeModifier("title", formatNameAndVersion));
         add(formatLabel);
+    }
+
+    private String concateFormatNameAndVersion(String formatName, String formatVersion) {
+        if (formatName == null || formatName.isBlank()) {
+            return "";
+        }
+
+        if (formatVersion == null || formatVersion.isBlank()) {
+            return formatName;
+        }
+
+        return (formatName + " " + formatVersion);
+    }
+
+    private String getFormatDisplayName(IModel<?> formatModel) {
+
+        if (formatModel == null || formatModel.getObject() == null) {
+            return null;
+        }
+
+        String format = (String) formatModel.getObject();
+        return Styles.handler(format).getName();
+    }
+
+    private String getMajorMinorVersionString(IModel<?> versionModel) {
+
+        if (versionModel == null || versionModel.getObject() == null) {
+            return null;
+        }
+
+        Version formatVersion = (Version) versionModel.getObject();
+
+        Comparable<?> major = formatVersion.getMajor();
+        Comparable<?> minor = formatVersion.getMinor();
+
+        if (major == null) {
+            return null;
+        }
+
+        if (minor == null) {
+            return major.toString();
+        }
+
+        return major.toString() + "." + minor.toString();
     }
 }

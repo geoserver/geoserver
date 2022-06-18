@@ -5,6 +5,7 @@
 package org.geoserver.logging;
 
 import java.io.File;
+import java.util.Map;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
@@ -29,7 +30,7 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     /** Console node attribute name to supress for {@link #suppressStdOutLogging} */
     protected static final String STDOUT = "stdout";
 
-    /** File output node attribute name to supress for {@link #suppressFileLogging} */
+    /** File output node attribute name to suppress for {@link #suppressFileLogging} */
     protected static final String GEOSERVERLOGFILE = "geoserverlogfile";
 
     /** Node name for appender references */
@@ -120,61 +121,113 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
         }
     }
 
+    /**
+     * Check node name (xml element and attribute names are not case sensitive, and have not been
+     * corrected yet).
+     *
+     * @param node config node
+     * @param type node type
+     * @return node name matches type
+     */
     protected boolean isType(Node node, String type) {
-        return node != null && node.getName() != null && node.getName().equals(type);
+        return node != null && node.getName() != null && node.getName().equalsIgnoreCase(type);
     }
 
-    protected boolean isAppenderRef(Node node, String refName) {
-        return node != null
-                && node.getName() != null
-                && node.getName().equals(APPENDER_REF_NODE)
-                && node.getAttributes().containsKey(REF_NODE)
-                && node.getAttributes().get(REF_NODE).equals(refName);
+    /**
+     * Get value for named attribute (xml element and attribute names are not case sensitive, and
+     * have not been corrected yet).
+     *
+     * @param node Config node
+     * @param name Attribute name
+     * @return attribute value, or {@code null} if not available
+     */
+    static final String attributeGet(Node node, String name) {
+        if (node != null && name != null) {
+            for (Map.Entry<String, String> attribute : node.getAttributes().entrySet()) {
+                if (attribute.getKey().equalsIgnoreCase(name)) {
+                    return attribute.getValue();
+                }
+            }
+        }
+        return null;
     }
 
-    protected boolean isConsoleStout(Node node) {
-        return node != null
-                && node.getName() != null
-                && node.getName().equals(CONSOLE_NODE)
-                && node.getAttributes().containsKey(NAME_ATTRIBUTE)
-                && node.getAttributes().get(NAME_ATTRIBUTE).equals(STDOUT);
+    /**
+     * Put value for named attribute (xml element and attribute names are not case sensitive, and
+     * have not been corrected yet).
+     *
+     * @param node Config node
+     * @param name Attribute name
+     * @param value Attribute value
+     * @return old attribute value
+     */
+    static final String attributePut(Node node, String name, String value) {
+        if (node != null && name != null) {
+            for (Map.Entry<String, String> attribute : node.getAttributes().entrySet()) {
+                if (attribute.getKey().equalsIgnoreCase(name)) {
+                    return attribute.setValue(value);
+                }
+            }
+            return node.getAttributes().put(name, value);
+        }
+        return null;
     }
 
-    protected boolean isGeoServerLogFile(Node node, String type) {
+    static boolean isAppenderRef(Node node, String refName) {
+        return refName != null
+                && node != null
+                && node.getName() != null
+                && node.getName().equalsIgnoreCase(APPENDER_REF_NODE)
+                && refName.equalsIgnoreCase(attributeGet(node, REF_NODE));
+    }
+
+    static boolean isConsoleStout(Node node) {
         return node != null
                 && node.getName() != null
-                && node.getName().equals(type)
-                && node.getAttributes().containsKey(NAME_ATTRIBUTE)
-                && node.getAttributes().get(NAME_ATTRIBUTE).equals(GEOSERVERLOGFILE);
+                && node.getName().equalsIgnoreCase(CONSOLE_NODE)
+                && STDOUT.equalsIgnoreCase(attributeGet(node, NAME_ATTRIBUTE));
+    }
+
+    static boolean isGeoServerLogFile(Node node, String type) {
+        return type != null
+                && node != null
+                && node.getName() != null
+                && node.getName().equalsIgnoreCase(type)
+                && GEOSERVERLOGFILE.equalsIgnoreCase(attributeGet(node, NAME_ATTRIBUTE));
     }
 
     protected void fixFileAppender(Node node) {
         String fileName = fileName();
 
-        String fileNameTemplate = node.getAttributes().get("filename");
+        String fileNameTemplate = attributeGet(node, "fileName");
         LOGGER.debug("Preconfiguration geoserverlogfile.FileAppender.filename=", fileNameTemplate);
 
         String path = applyPathTemplate(fileName, fileNameTemplate);
-        node.getAttributes().put("filename", path);
+        attributePut(node, "filename", path);
         LOGGER.debug("                 geoserverlogfile.FileAppender.filename=", path);
     }
 
     protected void fixRollingFileAppender(Node node) {
         String fileName = fileName();
-        String fileNameTemplate = node.getAttributes().get("filename");
-        LOGGER.debug("Preconfiguration geoserverlogfile.RollingFile.filename=", fileNameTemplate);
+        String fileNameTemplate = attributeGet(node, "fileName");
+        if (fileNameTemplate != null) {
+            LOGGER.debug(
+                    "Preconfiguration geoserverlogfile.RollingFile.filename=", fileNameTemplate);
 
-        String path = applyPathTemplate(fileName, fileNameTemplate);
-        node.getAttributes().put("filename", path);
-        LOGGER.debug("                 geoserverlogfile.RollingFile.filename=", path);
+            String path = applyPathTemplate(fileName, fileNameTemplate);
+            attributePut(node, "fileName", path);
+            LOGGER.debug("                 geoserverlogfile.RollingFile.filename=", path);
+        }
+        String filePatternTemplate = attributeGet(node, "filePattern");
+        if (filePatternTemplate != null) {
+            LOGGER.debug(
+                    "Preconfiguration geoserverlogfile.RollingFile.filePattern=",
+                    filePatternTemplate);
 
-        String filePatternTemplate = node.getAttributes().get("filePattern");
-        LOGGER.debug(
-                "Preconfiguration geoserverlogfile.RollingFile.filePattern=", filePatternTemplate);
-
-        String pattern = applyPathTemplate(fileName, filePatternTemplate);
-        node.getAttributes().put("filePattern", pattern);
-        LOGGER.debug("                 geoserverlogfile.RollingFile.filePattern=", pattern);
+            String pattern = applyPathTemplate(fileName, filePatternTemplate);
+            attributePut(node, "filePattern", pattern);
+            LOGGER.debug("                 geoserverlogfile.RollingFile.filePattern=", pattern);
+        }
     }
 
     /**

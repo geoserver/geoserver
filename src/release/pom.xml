@@ -253,6 +253,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.geoserver.csw</groupId>
+      <artifactId>gs-csw-iso</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-dxf-core</artifactId>
       <version>${project.version}</version>
@@ -385,6 +390,11 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wps-kml-ppio</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-metadata</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

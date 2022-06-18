@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.coverages;
 
+import static org.geoserver.catalog.ResourceInfo.TIME;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
@@ -13,6 +14,7 @@ import com.jayway.jsonpath.DocumentContext;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.junit.Test;
@@ -86,7 +88,7 @@ public class CollectionTest extends CoveragesTestSupport {
     }
 
     @Test
-    public void testCollectionsHTML() throws Exception {
+    public void testCollectionHTML() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/coverages/collections/rs:DEM?f=html");
 
         String tazDemName = "rs:DEM";
@@ -102,5 +104,28 @@ public class CollectionTest extends CoveragesTestSupport {
                 "http://localhost:8080/geoserver/ogc/coverages/collections/rs:DEM"
                         + "/coverage?f=image%2Fgeotiff",
                 document.select("#html_" + tazDemHtmlId + "_link").attr("href"));
+
+        // check temporal and spatial extent (time should not be there)
+        assertEquals(
+                "Geographic extents: 145, -43, 146, -41.",
+                document.select("#" + tazDemHtmlId + "_spatial").text());
+        assertEquals("", document.select("#" + tazDemHtmlId + "_temporal").text());
+    }
+
+    @Test
+    public void testTemporalCollectionHTML() throws Exception {
+        setupRasterDimension(TIMESERIES, TIME, DimensionPresentation.LIST, null, null, null);
+        org.jsoup.nodes.Document document =
+                getAsJSoup("ogc/coverages/collections/sf:timeseries?f=html");
+
+        String id = getLayerId(TIMESERIES).replace(":", "__");
+
+        // check temporal and spatial extent
+        assertEquals(
+                "Geographic extents: 0.237, 40.562, 14.593, 44.558.",
+                document.select("#" + id + "_spatial").text());
+        assertEquals(
+                "Temporal extent: 2014-01-01T00:00:00Z/2019-01-01T00:00:00Z",
+                document.select("#" + id + "_temporal").text());
     }
 }

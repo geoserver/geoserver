@@ -101,8 +101,7 @@ These operators test topological spatial relationships using the standard OGC Si
    * ``<Touches>``
    * ``<Within>``
    * ``<Overlaps>``
-   * ``<Crosses>``
-   * ``<Intersects>``
+   * ``<Crosses>``   
    * ``<Contains>``
    
 The content for these operators is a ``<PropertyName>`` element 

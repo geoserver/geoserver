@@ -11,7 +11,7 @@ public class IndexAxis extends Axis {
     Integer upperBound;
 
     public IndexAxis(String axisLabel, Integer lowerBound, Integer upperBound) {
-        super("IndexAxis", axisLabel);
+        super("IndexAxisType", axisLabel);
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
     }

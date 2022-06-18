@@ -5,7 +5,8 @@
  */
 package org.geoserver.security.auth;
 
-import static org.junit.Assert.assertTrue;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 
 import org.junit.Test;
 
@@ -24,7 +25,7 @@ public class GuavaAuthenticationCacheTest extends BaseAuthenticationCacheTest {
     @Test
     public void testCleanUp() throws InterruptedException {
         putAuthenticationInCache();
-        Thread.sleep((TIME_CLEANUP + 1) * 1000);
-        assertTrue(((GuavaAuthenticationCacheImpl) cache).isEmpty());
+        await().atMost(TIME_CLEANUP + 1, SECONDS)
+                .until(() -> ((GuavaAuthenticationCacheImpl) cache).isEmpty());
     }
 }

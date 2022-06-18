@@ -27,7 +27,6 @@ officially part of the GeoServer releases. They are however built along with the
    cog/index
    colormap/index
    cov-json/index
-   csw-iso/index
    dds/index
    elasticsearch/index
    features-templating/index
@@ -48,7 +47,6 @@ officially part of the GeoServer releases. They are however built along with the
    jms-cluster/index
    keycloak/index
    mbtiles/index
-   metadata/index
    monitor-hibernate/index
    ncwms/index
    netcdf-ghrsst/index

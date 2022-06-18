@@ -91,7 +91,7 @@
     <gt.version>28-SNAPSHOT</gt.version>
     <gwc.version>1.22-SNAPSHOT</gwc.version>
     <jts.version>1.18.2</jts.version>
-    <spring.version>5.2.20.RELEASE</spring.version>
+    <spring.version>5.2.22.RELEASE</spring.version>
     <spring.security.version>5.1.13.RELEASE</spring.security.version>
     <servlet-api.version>3.0.1</servlet-api.version>
     <jetty.version>9.4.44.v20210927</jetty.version>
@@ -688,7 +688,7 @@
       <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
-        <version>4.0.1</version>
+        <version>4.2.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -1440,10 +1440,46 @@
     </dependencies>
   </dependencyManagement>
 
+  <!-- common test dependencies -->
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-integration</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -1682,6 +1718,7 @@
             <descriptor>release/ext-inspire.xml</descriptor>
             <descriptor>release/ext-css.xml</descriptor>
             <descriptor>release/ext-csw.xml</descriptor>
+            <descriptor>release/ext-csw-iso.xml</descriptor>
             <descriptor>release/ext-dxf.xml</descriptor>
             <descriptor>release/ext-printing.xml</descriptor>
             <descriptor>release/ext-wcs2_0-eo.xml</descriptor>
@@ -1705,6 +1742,7 @@
             <descriptor>release/ext-wps-download.xml</descriptor>
             <descriptor>release/ext-wps-jdbc.xml</descriptor>
             <descriptor>release/ext-mapml.xml</descriptor>
+            <descriptor>release/ext-metadata.xml</descriptor>
           </descriptors>
           <finalName>geoserver-${project.version}</finalName>
           <outputDirectory>${project.build.directory}/release</outputDirectory>

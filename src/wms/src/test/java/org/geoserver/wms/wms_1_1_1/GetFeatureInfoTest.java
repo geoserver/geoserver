@@ -103,6 +103,11 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     private static final String FOOTPRINTS_STYLE = "footprints";
 
     @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
+    }
+
+    @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);

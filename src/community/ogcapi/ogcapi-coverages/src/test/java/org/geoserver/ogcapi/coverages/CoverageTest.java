@@ -4,13 +4,16 @@
  */
 package org.geoserver.ogcapi.coverages;
 
+import static org.geoserver.catalog.ResourceInfo.TIME;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -66,6 +69,33 @@ public class CoverageTest extends CoveragesTestSupport {
         assertEquals("application/json", response.getContentType());
         DocumentContext error = getAsJSONPath(response);
         assertEquals("Invalid axis label provided: CutIt", error.read("title"));
+    }
+
+    @Test
+    public void testDatetime() throws Exception {
+        setupRasterDimension(TIMESERIES, TIME, DimensionPresentation.LIST, null, null, null);
+
+        // expected values for the various time slices
+        double[] values = {20.53, 14.77, 14.60, 20.66, 20.53, 14.77};
+        // work with different time resolutions
+        String[] suffixes = {"", "-01", "-01-01", "-01-01T00:00:00Z", "-01-01T00:00:00.000Z"};
+        for (String suffix : suffixes) {
+            for (int i = 0; i < 6; i++) {
+                String date = (2014 + i) + suffix;
+                MockHttpServletResponse response =
+                        getAsServletResponse(
+                                "ogc/coverages/collections/sf:timeseries/coverage?datetime="
+                                        + date);
+                assertEquals(200, response.getStatus());
+                assertEquals(CoveragesService.GEOTIFF_MIME, response.getContentType());
+
+                GridCoverage2D targetCoverage = getCoverage(response);
+                double[] pixel = new double[1];
+                targetCoverage.evaluate(new Point2D.Double(14.32, 40.66), pixel);
+                assertEquals(values[i], pixel[0], 0.01d);
+                targetCoverage.dispose(true);
+            }
+        }
     }
 
     private void assertBBOXDEM(

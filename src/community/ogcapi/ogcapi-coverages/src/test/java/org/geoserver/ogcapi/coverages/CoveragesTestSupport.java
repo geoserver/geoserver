@@ -5,9 +5,11 @@
 package org.geoserver.ogcapi.coverages;
 
 import java.util.Arrays;
+import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 
@@ -15,6 +17,8 @@ public class CoveragesTestSupport extends OGCApiTestSupport {
 
     protected static final String TAZDEM_TITLE = "Down under digital elevation model";
     protected static final String TAZDEM_DESCRIPTION = "So that you know where up and down are";
+    protected static final QName TIMESERIES =
+            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -39,5 +43,8 @@ public class CoveragesTestSupport extends OGCApiTestSupport {
         tazDem.setAbstract(TAZDEM_DESCRIPTION);
         tazDem.getResponseSRS().addAll(Arrays.asList("3857", "3003"));
         getCatalog().save(tazDem);
+
+        // add temporal layer
+        testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, getCatalog());
     }
 }

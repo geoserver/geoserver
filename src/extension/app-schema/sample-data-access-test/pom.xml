@@ -37,18 +37,6 @@
       <artifactId>gs-wfs</artifactId>
     </dependency>
     <dependency>
-      <!-- text-feature-list runtime dependency -->
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- text-feature-list runtime dependency -->
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-sample-data-access</artifactId>
       <version>${gt.version}</version>

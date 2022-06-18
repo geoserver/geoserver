@@ -9,12 +9,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
+import org.awaitility.Awaitility;
 import org.geoserver.csw.CSWTestSupport;
+import org.geoserver.security.PropertyFileWatcher;
 import org.junit.Test;
 
 public class InternalCatalogStoreTest extends CSWTestSupport {
@@ -45,21 +47,20 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
 
         assertNull(store.getMapping("Record").getElement("format.value"));
 
-        // modify mapping file
+        // On Linux and older versions of JDK last modification resolution is one second,
+        // and we need the watcher to see the file as changed. Account for slow build servers too.
+        PropertyFileWatcher watcher = store.watchers.get("Record");
+        Awaitility.await()
+                .atMost(5, TimeUnit.SECONDS)
+                .until(
+                        () -> {
+                            try (PrintWriter out = new PrintWriter(new FileWriter(record, true))) {
+                                out.println("\nformat.value='img/jpeg'");
+                            }
+                            return watcher.isStale();
+                        });
 
-        // wait one second, so the modification time will change and change is detected (on linux
-        // the resolution is 1s instead of 1ms)
-        Thread.sleep(1001);
-
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(record, true)))) {
-            out.println("\nformat.value='img/jpeg'");
-        }
-
-        // wait one second, that is exactly what it takes FileWatcher to update
-        Thread.sleep(1001);
-
-        // mapping should be automatically reloaded
-
+        // mapping should be automatically reloaded now
         assertEquals(
                 "img/jpeg",
                 store.getMapping("Record").getElement("format.value").getContent().toString());

@@ -210,6 +210,9 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
             roles.remove(role);
             setModified(true);
         }
+        if (helper.group_roleMap.get(groupname) != null && roles != null && roles.isEmpty()) {
+            helper.group_roleMap.remove(groupname);
+        }
     }
 
     /* (non-Javadoc)

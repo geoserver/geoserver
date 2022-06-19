@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -19,14 +18,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class StylePageFormatColumnTest extends StylePageTest {
-    
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        
-        Map<StyleProperty, Object> propertiesSld10 = new HashMap<StyleProperty, Object>();
+
+        Map<StyleProperty, Object> propertiesSld10 = new HashMap<>();
         propertiesSld10.put(StyleProperty.FORMAT_VERSION, SLDHandler.VERSION_10);
-        
+
         testData.addStyle(
                 null,
                 "testStyleFormatLabelSld10",
@@ -34,10 +33,10 @@ public class StylePageFormatColumnTest extends StylePageTest {
                 StylePageTest.class,
                 getCatalog(),
                 propertiesSld10);
-        
-        Map<StyleProperty, Object> propertiesSld11 = new HashMap<StyleProperty, Object>();
+
+        Map<StyleProperty, Object> propertiesSld11 = new HashMap<>();
         propertiesSld11.put(StyleProperty.FORMAT_VERSION, SLDHandler.VERSION_11);
-        
+
         testData.addStyle(
                 null,
                 "testStyleFormatLabelSld11",
@@ -46,23 +45,23 @@ public class StylePageFormatColumnTest extends StylePageTest {
                 getCatalog(),
                 propertiesSld11);
     }
-    
+
     @Before
     public void loadStylePage() {
         login();
-        
+
         tester.startPage(StylePage.class);
         tester.assertRenderedPage(StylePage.class);
     }
-    
+
     private int findFormatColumnIndex(DataView dv) {
         IDataProvider dataProvider = dv.getDataProvider();
         assertTrue(dataProvider instanceof StyleProvider);
         StyleProvider provider = (StyleProvider) dataProvider;
         return provider.getProperties().indexOf(StyleProvider.FORMAT);
     }
-    
-    private String findFormatLabelText(DataView dv, int formatColumnIndex){
+
+    private String findFormatLabelText(DataView dv, int formatColumnIndex) {
         Item i = (Item) dv.getItems().next();
         Label label =
                 (Label)
@@ -76,7 +75,7 @@ public class StylePageFormatColumnTest extends StylePageTest {
 
     @Test
     public void formatColumnPresenceTest() {
-        
+
         Catalog catalog = getCatalog();
         DataView dv =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
@@ -96,24 +95,26 @@ public class StylePageFormatColumnTest extends StylePageTest {
         ft.setValue("filter", "testStyleFormatLabelSld11");
         ft.submit("submit");
 
-        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(dv.size(), 1);
 
         int formatColumnIndex = findFormatColumnIndex(dv);
         assertTrue(formatColumnIndex > -1);
-        
+
         String formatLabelText = findFormatLabelText(dv, formatColumnIndex);
         assertEqualsIgnoreNewLineStyle(formatLabelText, "SLD 1.1");
     }
-    
+
     @Test
     public void testSLD10Label() {
-        
+
         FormTester ft = tester.newFormTester("table:filterForm");
         ft.setValue("filter", "testStyleFormatLabelSld10");
         ft.submit("submit");
 
-        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(dv.size(), 1);
 
         int formatColumnIndex = findFormatColumnIndex(dv);

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:sec="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.0.4.xsd">
+
+  <!--  needed for CAS proxy granting tickets -->   
+  <bean id="pgtStorage" class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>   
+  <bean id="pgtCallback" class="org.geoserver.security.cas.ProxyGrantingTicketCallbackFilter">
+    <constructor-arg ref="pgtStorage"/>
+  </bean>
+  
+
+     
+  <bean id="casFilterProvider" class="org.geoserver.security.cas.GeoServerCasAuthenticationProvider">
+    <constructor-arg ref="pgtCallback"/>
+    <constructor-arg ref="pgtStorage"/>
+  </bean>
+
+    <!--  CAS single sign out session listener -->
+  <bean id="casSingleSignOutHttpSessionListener" class="org.geoserver.security.cas.SingleSignOutHttpSessionListener">
+  </bean>
+
+    <!--  CAS single sign out handler -->
+  <bean id="casSingleSignOutHandler" class="org.jasig.cas.client.session.SingleSignOutHandler" />
+
+</beans>

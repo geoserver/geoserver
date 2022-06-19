@@ -91,12 +91,14 @@ public class StylePageFormatColumnTest extends StylePageTest {
 
     @Test
     public void testSLD11Label() {
+
         FormTester ft = tester.newFormTester("table:filterForm");
         ft.setValue("filter", "testStyleFormatLabelSld11");
         ft.submit("submit");
 
         DataView dv =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
         assertEquals(dv.size(), 1);
 
         int formatColumnIndex = findFormatColumnIndex(dv);
@@ -115,6 +117,7 @@ public class StylePageFormatColumnTest extends StylePageTest {
 
         DataView dv =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
         assertEquals(dv.size(), 1);
 
         int formatColumnIndex = findFormatColumnIndex(dv);

@@ -33,11 +33,11 @@ public class StyleFormatLabel extends Panel {
     }
 
     private String concateFormatNameAndVersion(String formatName, String formatVersion) {
-        if (formatName == null || formatName.isBlank()) {
+        if (formatName == null || formatName.trim().isEmpty()) {
             return "";
         }
 
-        if (formatVersion == null || formatVersion.isBlank()) {
+        if (formatVersion == null || formatVersion.trim().isEmpty()) {
             return formatName;
         }
 

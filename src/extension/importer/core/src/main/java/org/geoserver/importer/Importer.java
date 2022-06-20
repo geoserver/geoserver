@@ -86,7 +86,9 @@ import org.geotools.data.ServiceInfo;
 import org.geotools.data.Transaction;
 import org.geotools.data.directory.DirectoryDataStore;
 import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -1414,6 +1416,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             featureType = featureDataConverter.convertType(featureType, format, data, task);
             UpdateMode updateMode = task.getUpdateMode();
             final String uniquifiedFeatureTypeName;
+
             if (updateMode == UpdateMode.CREATE) {
                 // find a unique type name in the target store
                 uniquifiedFeatureTypeName = findUniqueNativeFeatureTypeName(featureType, store);
@@ -1429,7 +1432,22 @@ public class Importer implements DisposableBean, ApplicationListener {
                     typeBuilder.addAll(featureType.getAttributeDescriptors());
                     featureType = typeBuilder.buildFeatureType();
                 }
+            }
+            else {
+                // @todo what to do if featureType transform is present?
 
+                // @todo implement me - need to specify attribute used for id
+                if (updateMode == UpdateMode.UPDATE) {
+                    FeatureStore fs = (FeatureStore) dataStore.getFeatureSource(featureTypeName);
+                    fs.setTransaction(transaction);
+
+                    throw new UnsupportedOperationException(
+                            "updateMode UPDATE is not supported yet");
+                }
+                uniquifiedFeatureTypeName = featureTypeName;
+            }
+
+            if (updateMode == UpdateMode.CREATE || updateMode == UpdateMode.REPLACE) {
                 // @todo HACK remove this at some point when timezone issues are fixed
                 // this will force postgis to create timezone w/ timestamp fields
                 if (dataStore instanceof JDBCDataStore) {
@@ -1445,22 +1463,26 @@ public class Importer implements DisposableBean, ApplicationListener {
                 featureType = tx.inline(task, dataStore, featureType);
 
                 dataStore.createSchema(featureType);
-            } else {
-                // @todo what to do if featureType transform is present?
-
-                // @todo implement me - need to specify attribute used for id
-                if (updateMode == UpdateMode.UPDATE) {
-                    throw new UnsupportedOperationException(
-                            "updateMode UPDATE is not supported yet");
-                }
-                uniquifiedFeatureTypeName = featureTypeName;
             }
 
             if (updateMode == UpdateMode.REPLACE) {
+                SimpleFeatureStore fs = (SimpleFeatureStore) dataStore.getFeatureSource(featureTypeName);
 
-                FeatureStore fs = (FeatureStore) dataStore.getFeatureSource(featureTypeName);
-                fs.setTransaction(transaction);
-                fs.removeFeatures(Filter.INCLUDE);
+                if(FeatureTypes.equals(fs.getSchema(),featureType)) {
+                    fs.setTransaction(transaction);
+                    fs.removeFeatures(Filter.INCLUDE);
+                }
+                else if (dataStore instanceof JDBCDataStore) {
+                    // alter schema in place
+                    fs.setTransaction(transaction);
+                    fs.removeFeatures(Filter.INCLUDE);
+
+                    dataStore.updateSchema(fs.getName(), featureType);
+                }
+                else {
+                    dataStore.removeSchema(featureTypeName);
+                    dataStore.createSchema(featureType);
+                }
             }
 
             // Move features

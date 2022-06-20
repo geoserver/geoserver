@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 import org.springframework.security.oauth2.client.token.AccessTokenProviderChain;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
+import org.springframework.security.oauth2.client.token.DefaultRequestEnhancer;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
@@ -82,8 +83,7 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
         OAuth2RestTemplate oAuth2RestTemplate = getOAuth2RestTemplate();
 
         AuthorizationCodeAccessTokenProvider authorizationCodeAccessTokenProvider =
-                new AuthorizationCodeAccessTokenProvider();
-        authorizationCodeAccessTokenProvider.setStateMandatory(false);
+                authorizationAccessTokenProvider();
 
         AccessTokenProvider accessTokenProviderChain =
                 new AccessTokenProviderChain(
@@ -96,6 +96,14 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
         oAuth2RestTemplate.setAccessTokenProvider(accessTokenProviderChain);
 
         return oAuth2RestTemplate;
+    }
+
+    protected AuthorizationCodeAccessTokenProvider authorizationAccessTokenProvider() {
+        AuthorizationCodeAccessTokenProvider authorizationCodeAccessTokenProvider =
+                new AuthorizationCodeAccessTokenProvider();
+        authorizationCodeAccessTokenProvider.setStateMandatory(false);
+        authorizationCodeAccessTokenProvider.setTokenRequestEnhancer(new DefaultRequestEnhancer());
+        return authorizationCodeAccessTokenProvider;
     }
 
     /**

@@ -5,6 +5,9 @@
 
 package org.geoserver.geofence.integration;
 
+import static org.geoserver.catalog.LayerGroupInfo.Mode.NAMED;
+import static org.geoserver.catalog.LayerGroupInfo.Mode.OPAQUE_CONTAINER;
+import static org.geoserver.catalog.LayerGroupInfo.Mode.SINGLE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -61,7 +64,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
                     "MULTIPOLYGON (((0.0006 -0.0018, 0.001 -0.0006, 0.0024 -0.0001, 0.0031 -0.0015, 0.0006 -0.0018), (0.0017 -0.0011, 0.0025 -0.0011, 0.0025 -0.0006, 0.0017 -0.0006, 0.0017 -0.0011)))";
             addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326, ruleService);
             // check the group works without workspace qualification;
-            group = addLakesPlacesLayerGroup(LayerGroupInfo.Mode.SINGLE, "lakes_and_places");
+            group = addLakesPlacesLayerGroup(SINGLE, "lakes_and_places");
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             String url =
@@ -96,8 +99,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
         config.setUseRolesToFilter(true);
         config.getRoles().add("ROLE_USER");
 
-        LayerGroupInfo group =
-                addLakesPlacesLayerGroup(LayerGroupInfo.Mode.NAMED, "lakes_and_places");
+        LayerGroupInfo group = addLakesPlacesLayerGroup(NAMED, "lakes_and_places");
 
         Long ruleId1 = null;
         Long ruleId2 = null;
@@ -139,8 +141,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
         GeoFenceConfiguration config = configurationManager.getConfiguration();
         config.setUseRolesToFilter(true);
 
-        LayerGroupInfo group =
-                addLakesPlacesLayerGroup(LayerGroupInfo.Mode.NAMED, "lakes_and_places");
+        LayerGroupInfo group = addLakesPlacesLayerGroup(NAMED, "lakes_and_places");
 
         Long ruleId1 = null;
         try {
@@ -250,7 +251,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
                     "MULTIPOLYGON (((0.0006 -0.0018, 0.001 -0.0006, 0.0024 -0.0001, 0.0031 -0.0015, 0.0006 -0.0018), (0.0017 -0.0011, 0.0025 -0.0011, 0.0025 -0.0006, 0.0017 -0.0006, 0.0017 -0.0011)))";
             addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326, ruleService);
             // check the group works without workspace qualification;
-            group = addLakesPlacesLayerGroup(LayerGroupInfo.Mode.NAMED, "lakes_and_places");
+            group = addLakesPlacesLayerGroup(NAMED, "lakes_and_places");
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             String url =
@@ -359,9 +360,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
             addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326, ruleService);
             // check the group works without workspace qualification;
             WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.CITE_PREFIX);
-            group =
-                    createLakesPlacesLayerGroup(
-                            getCatalog(), "lakes_and_places", ws, LayerGroupInfo.Mode.NAMED, null);
+            group = createLakesPlacesLayerGroup(getCatalog(), "lakes_and_places", ws, NAMED, null);
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             String url =
@@ -389,9 +388,9 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
         try {
             ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
 
-            addLakesPlacesLayerGroup(LayerGroupInfo.Mode.SINGLE, "nested");
+            addLakesPlacesLayerGroup(SINGLE, "nested");
 
-            addLakesPlacesLayerGroup(LayerGroupInfo.Mode.OPAQUE_CONTAINER, "container");
+            addLakesPlacesLayerGroup(OPAQUE_CONTAINER, "container");
 
             login("admin", "geoserver", "ROLE_ADMINISTRATOR");
             group = getCatalog().getLayerGroupByName("container");
@@ -453,7 +452,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
                     null,
                     LayerType.VECTOR);
 
-            addLakesPlacesLayerGroup(LayerGroupInfo.Mode.SINGLE, layerGroupName);
+            addLakesPlacesLayerGroup(SINGLE, layerGroupName);
 
             login("admin", "geoserver", "ROLE_ADMINISTRATOR");
             group = getCatalog().getLayerGroupByName(layerGroupName);

@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -59,6 +60,8 @@ public class OpenIdConnectAuthProviderPanel
 
         add(new HelpLink("responseModeHelp", this).setDialog(dialog));
         add(new TextField<String>("responseMode"));
+        add(new HelpLink("sendClientSecretHelp", this).setDialog(dialog));
+        add(new CheckBox("sendClientSecret"));
     }
 
     @Override

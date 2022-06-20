@@ -16,6 +16,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 
 /** OpenId connect specific REST templates for OAuth2 protocol. */
@@ -62,5 +63,12 @@ class OpenIdConnectSecurityConfiguration extends GeoServerOAuth2SecurityConfigur
                     jwkUri);
         }
         return super.getOAuth2RestTemplate();
+    }
+
+    @Override
+    @Bean(name = "authorizationAccessTokenProvider")
+    @Scope(value = "prototype")
+    public AuthorizationCodeAccessTokenProvider authorizationAccessTokenProvider() {
+        return super.authorizationAccessTokenProvider();
     }
 }

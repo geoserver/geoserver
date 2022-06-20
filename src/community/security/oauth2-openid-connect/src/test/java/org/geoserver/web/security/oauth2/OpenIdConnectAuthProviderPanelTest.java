@@ -48,6 +48,28 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
         tester.assertModelValue("panel:panel:form:panel:responseMode", "query");
     }
 
+    @Test
+    public void testSendClientSecret() throws Exception {
+        String baseUrl = "https://localhost:8080";
+        navigateToOpenIdPanel("OpenIdFilter");
+        formTester.setValue("panel:content:name", "OpenIdFilter");
+        formTester.setValue("panel:content:userAuthorizationUri", baseUrl + "/authorize");
+        formTester.setValue("panel:content:accessTokenUri", baseUrl + "/token");
+        formTester.setValue("panel:content:checkTokenEndpointUrl", baseUrl + "/checkToken");
+        formTester.setValue("panel:content:logoutUri", baseUrl + "/logout");
+        formTester.setValue("panel:content:scopes", "open_id");
+        formTester.setValue("panel:content:cliendId", "fnruurnu4unu4");
+        formTester.setValue("panel:content:clientSecret", "fnruurnu4unu4");
+        formTester.setValue("panel:content:jwkURI", baseUrl + "/jwk");
+
+        formTester.setValue("panel:content:sendClientSecret", true);
+
+        clickSave();
+        tester.assertNoErrorMessage();
+        clickNamedServiceConfig("OpenIdFilter");
+        tester.assertModelValue("panel:panel:form:panel:sendClientSecret", true);
+    }
+
     @Override
     protected AbstractSecurityPage getBasePage() {
         return new AuthenticationPage();

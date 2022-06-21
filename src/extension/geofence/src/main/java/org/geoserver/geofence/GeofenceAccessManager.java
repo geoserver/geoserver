@@ -130,8 +130,11 @@ public class GeofenceAccessManager
         this.rules = rules;
         this.catalog = new LocalWorkspaceCatalog(catalog);
         this.configurationManager = configurationManager;
-        this.groupsCache = new LayerGroupContainmentCache(catalog);
         this.helper = new GeoFenceAreaHelper();
+    }
+
+    public void setGroupsCache(LayerGroupContainmentCache groupsCache) {
+        this.groupsCache = groupsCache;
     }
 
     boolean isAdmin(Authentication user) {

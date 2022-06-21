@@ -494,8 +494,11 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
             throws Exception {
         Properties props = new Properties();
         props.load(getClass().getResourceAsStream(propertyFile));
-        return new DefaultResourceAccessManager(
-                new MemoryDataAccessRuleDAO(catalog, props), catalog);
+        DefaultResourceAccessManager defaultResourceAccessManager =
+                new DefaultResourceAccessManager(
+                        new MemoryDataAccessRuleDAO(catalog, props), catalog);
+        defaultResourceAccessManager.setGroupsCache(new LayerGroupContainmentCache(catalog));
+        return defaultResourceAccessManager;
     }
 
     /** Sets up a mock catalog. */

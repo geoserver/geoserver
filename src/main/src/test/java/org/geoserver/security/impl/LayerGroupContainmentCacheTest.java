@@ -10,6 +10,11 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.URL;
@@ -35,8 +40,11 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.impl.LayerGroupContainmentCache.LayerGroupSummary;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.util.URLs;
@@ -44,7 +52,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
 import org.opengis.feature.type.Name;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 /** Tests {@link LayerGroupContainmentCache} udpates in face of catalog setup and changes */
 public class LayerGroupContainmentCacheTest {
@@ -183,6 +194,26 @@ public class LayerGroupContainmentCacheTest {
 
     private String getLayerId(QName name) {
         return "ws:" + name.getLocalPart();
+    }
+
+    @Test
+    public void buildLayerGroupCache() {
+        Catalog catalog = mock(Catalog.class);
+        LayerGroupContainmentCache layerGroupContainmentCache =
+                new LayerGroupContainmentCache(catalog);
+        ContextRefreshedEvent contextRefreshedEvent = mock(ContextRefreshedEvent.class);
+
+        SecureCatalogImpl secureCatalog = mock(SecureCatalogImpl.class);
+        ResourceAccessManager resourceAccessManager = mock(ResourceAccessManager.class);
+        try (MockedStatic<GeoServerExtensions> mocked = mockStatic(GeoServerExtensions.class)) {
+            mocked.when(() -> GeoServerExtensions.bean(ArgumentMatchers.<Class<Object>>any()))
+                    .thenReturn(secureCatalog);
+            when(secureCatalog.getResourceAccessManager()).thenReturn(resourceAccessManager);
+
+            layerGroupContainmentCache.onApplicationEvent(contextRefreshedEvent);
+
+            verify(resourceAccessManager, times(1)).buildLayerGroupCache();
+        }
     }
 
     @Test

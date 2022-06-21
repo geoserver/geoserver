@@ -567,6 +567,33 @@ public class ImporterDataTest extends ImporterTestSupport {
     }
 
     @Test
+    public void testImportIntoDatabaseReplaceSchema() throws Exception {
+        testImportIntoDatabase();
+
+        DataStoreInfo ds = getCatalog().getDataStoreByName("spearfish");
+        assertNotNull(ds);
+
+        File dir = tmpDir();
+        unpack("shape/archsites_extra.zip", dir);
+
+        FeatureSource<? extends FeatureType, ? extends Feature> fs =
+                getCatalog().getFeatureTypeByName("archsites").getFeatureSource(null, null);
+        int archsitesCount = fs.getCount(Query.ALL);
+
+        ImportContext context = importer.createContext(new Directory(dir), ds);
+        context.getTasks().get(0).setUpdateMode(UpdateMode.REPLACE);
+        context.getTasks().get(0).getLayer().getResource().setNativeName("archsites");
+
+        importer.run(context);
+
+        fs = getCatalog().getFeatureTypeByName("archsites").getFeatureSource(null, null);
+        int archsitesCount2 = fs.getCount(Query.ALL);
+
+        assertEquals(archsitesCount, archsitesCount2);
+        assertEquals(4, fs.getSchema().getDescriptors().size());
+    }
+
+    @Test
     public void testImportIntoDatabaseDuplicateKey() throws Exception {
         Catalog cat = getCatalog();
 

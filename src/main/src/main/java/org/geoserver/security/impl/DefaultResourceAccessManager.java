@@ -32,6 +32,7 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.security.CatalogMode;
@@ -119,7 +120,10 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         this.dao = dao;
         this.rawCatalog = rawCatalog;
         this.root = buildAuthorizationTree(dao);
-        this.groupsCache = new LayerGroupContainmentCache(rawCatalog);
+    }
+
+    public void setGroupsCache(LayerGroupContainmentCache groupsCache) {
+        this.groupsCache = groupsCache;
     }
 
     public CatalogMode getMode() {
@@ -206,7 +210,8 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
         // grab the groups containing the resource, if any. If none, there is no group related logic
         // to apply
-        Collection<LayerGroupSummary> containers = groupsCache.getContainerGroupsFor(resource);
+        Collection<LayerGroupSummary> containers =
+                getLayerGroupsCache().getContainerGroupsFor(resource);
         if (containers.isEmpty()) {
             return rulesAllowAccess;
         }
@@ -470,7 +475,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
             // grab the groups containing the group, if any. If none, there is no group related
             // logic to apply
             Collection<LayerGroupSummary> directContainers =
-                    groupsCache.getContainerGroupsFor(layerGroup);
+                    getLayerGroupsCache().getContainerGroupsFor(layerGroup);
             if (directContainers.isEmpty()) {
                 allowAccess = true;
             } else {
@@ -678,5 +683,12 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
     @Override
     public void buildLayerGroupCache() {
         groupsCache.buildLayerGroupCaches();
+    }
+
+    protected LayerGroupContainmentCache getLayerGroupsCache() {
+        if (groupsCache == null) {
+            groupsCache = GeoServerExtensions.bean(LayerGroupContainmentCache.class);
+        }
+        return groupsCache;
     }
 }

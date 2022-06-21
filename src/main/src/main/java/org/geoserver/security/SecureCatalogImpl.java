@@ -102,10 +102,20 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     static ResourceAccessManager lookupResourceAccessManager() throws Exception {
-        ResourceAccessManager manager = GeoServerExtensions.bean(ResourceAccessManager.class);
-        if (manager == null) {
-            manager = buildDefaultResourceAccessManager();
+        List<ResourceAccessManager> managers =
+                GeoServerExtensions.extensions(ResourceAccessManager.class);
+        ResourceAccessManager manager = null;
+        if (managers.size() == 1) {
+            manager = managers.get(0);
+        } else {
+            for (ResourceAccessManager resourceAccessManager : managers) {
+                if (!(resourceAccessManager instanceof DefaultResourceAccessManager)) {
+                    manager = resourceAccessManager;
+                    break;
+                }
+            }
         }
+
         CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);
         return lwManager;

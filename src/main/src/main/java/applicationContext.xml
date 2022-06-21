@@ -335,6 +335,14 @@
     <constructor-arg ref="catalog"/>
   </bean>
 
-  <bean id="applicationListenerImpl" class="org.geoserver.security.impl.ApplicationListenerImpl"/>
+  <bean id="defaultResourceAccessManager" class="org.geoserver.security.impl.DefaultResourceAccessManager">
+    <constructor-arg ref="accessRulesDao"/>
+    <constructor-arg ref="rawCatalog"/>
+    <property name="groupsCache" ref="layerGroupContainmentCache"/>
+  </bean>
+
+  <bean id="layerGroupContainmentCache" class="org.geoserver.security.impl.LayerGroupContainmentCache">
+    <constructor-arg ref="rawCatalog"/>
+  </bean>
 
 </beans>

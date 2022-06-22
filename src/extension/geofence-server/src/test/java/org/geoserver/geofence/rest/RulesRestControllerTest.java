@@ -17,6 +17,8 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -56,6 +58,37 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     public void initGeoFenceControllers() {
         controller = (RulesRestController) applicationContext.getBean("rulesRestController");
         adminService = (RuleAdminService) applicationContext.getBean("ruleAdminService");
+    }
+
+    @Test
+    public void testInsertAll() {
+        // Given
+        Rule rule1 = new Rule();
+        rule1.setUsername("user1");
+        rule1.setRolename("role1");
+        rule1.setService("wfs");
+        rule1.setRequest("getFeature1");
+        rule1.setWorkspace("workspace1");
+        rule1.setLayer("layer1");
+        rule1.setAccess(GrantType.ALLOW);
+        Rule rule2 = new Rule();
+        rule2.setUsername("user2");
+        rule2.setRolename("role2");
+        rule2.setService("wfs");
+        rule2.setRequest("getFeature2");
+        rule2.setWorkspace("workspace2");
+        rule2.setLayer("layer2");
+        rule2.setAccess(GrantType.ALLOW);
+        List<Rule> ruleList = new ArrayList<>();
+        ruleList.add(rule1);
+        ruleList.add(rule2);
+        JaxbRuleList jaxbRuleList = new JaxbRuleList(ruleList);
+
+        // When
+        String[] ruleIds = controller.insertAll(jaxbRuleList);
+
+        // Then
+        assertEquals(2, ruleIds.length);
     }
 
     @Test

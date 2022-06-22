@@ -8,7 +8,9 @@ import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -230,6 +232,47 @@ public class RulesRestController extends RestBaseController
         }
 
         return String.valueOf(id);
+    }
+
+    @RequestMapping(
+            value = "/rules/all",
+            method = RequestMethod.POST,
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            },
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public String[] insertAll(@RequestBody(required = true) JaxbRuleList ruleList) {
+
+        for (JaxbRule rule : ruleList.getRules()) {
+            long priority = rule.getPriority() == null ? 0 : rule.getPriority();
+            if (adminService.getRuleByPriority(priority) != null) {
+                adminService.shift(priority, 1);
+            }
+        }
+
+        Map<Rule, JaxbRule> rulesToJaxbRules = new HashMap<>();
+        ruleList.getRules().forEach(jaxbRule -> rulesToJaxbRules.put(jaxbRule.toRule(), jaxbRule));
+
+        Map<Long, Rule> insertedRules = adminService.insert(rulesToJaxbRules.keySet());
+
+        insertedRules.forEach(
+                (id, rule) -> {
+                    JaxbRule jaxbRule = rulesToJaxbRules.get(rule);
+                    if (jaxbRule.getLimits() != null && jaxbRule.getAccess().equals("LIMIT")) {
+                        adminService.setLimits(id, jaxbRule.getLimits().toRuleLimits(null));
+                    }
+                    if (rule.getLayerDetails() != null
+                            && !rulesToJaxbRules.get(rule).getAccess().equals("LIMIT")) {
+                        adminService.setDetails(
+                                id, jaxbRule.getLayerDetails().toLayerDetails(null));
+                    }
+                });
+
+        return insertedRules.keySet().stream().map(String::valueOf).toArray(String[]::new);
     }
 
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.POST)

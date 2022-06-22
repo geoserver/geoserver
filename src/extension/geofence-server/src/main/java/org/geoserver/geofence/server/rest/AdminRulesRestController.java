@@ -5,6 +5,7 @@
 package org.geoserver.geofence.server.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -118,6 +119,23 @@ public class AdminRulesRestController extends RestBaseController {
         }
 
         return new ResponseEntity<>(adminService.insert(rule.toRule()), HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/adminrules/all", method = RequestMethod.POST)
+    public ResponseEntity<Long> insertAll(@RequestBody JaxbAdminRuleList ruleList) {
+
+        for (JaxbAdminRule rule : ruleList.getRules()) {
+            long priority = rule.getPriority() == null ? 0 : rule.getPriority();
+            if (adminService.getRuleByPriority(priority) != null) {
+                adminService.shift(priority, 1);
+            }
+        }
+
+        List<AdminRule> adminRuleList = new ArrayList<>();
+        ruleList.getRules().forEach(jaxbAdminRule -> adminRuleList.add(jaxbAdminRule.toRule()));
+        adminService.insert(adminRuleList);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @RequestMapping(

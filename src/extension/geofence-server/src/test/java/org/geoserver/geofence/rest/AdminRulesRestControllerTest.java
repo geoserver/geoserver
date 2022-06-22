@@ -11,6 +11,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.geoserver.geofence.GeofenceBaseTest;
 import org.geoserver.geofence.core.dao.DuplicateKeyException;
@@ -37,6 +39,36 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
         controller =
                 (AdminRulesRestController) applicationContext.getBean("adminRulesRestController");
         adminService = (AdminRuleAdminService) applicationContext.getBean("adminRuleAdminService");
+    }
+
+    @Test
+    public void testInsertAll() {
+        // Given
+        AdminRule rule1 = new AdminRule();
+        rule1.setPriority(5L);
+        rule1.setUsername("test_user1");
+        rule1.setRolename("test_role1");
+        rule1.setWorkspace("workspace1");
+        rule1.setAccess(AdminGrantType.ADMIN);
+
+        AdminRule rule2 = new AdminRule();
+        rule2.setPriority(6L);
+        rule2.setUsername("test_user2");
+        rule2.setRolename("test_role2");
+        rule2.setWorkspace("workspace2");
+        rule2.setAccess(AdminGrantType.ADMIN);
+
+        List<AdminRule> adminRuleList = new ArrayList<>();
+        adminRuleList.add(rule1);
+        adminRuleList.add(rule2);
+
+        JaxbAdminRuleList jaxbAdminRuleList = new JaxbAdminRuleList(adminRuleList);
+
+        // When
+        ResponseEntity responseEntity = controller.insertAll(jaxbAdminRuleList);
+
+        // Then
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
     }
 
     @Test

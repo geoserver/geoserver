@@ -210,10 +210,12 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
                     final String formattedFilter =
                             MessageFormat.format(groupSearchFilter, userDn, username);
+                    // Replace "\" with "\5C" for search.
+                    String formattedFilterNew = formattedFilter.replace("\\", "\\5C"); 
                     userRolesNameDn.addAll(
                             authTemplate.search(
                                     getGroupSearchBase(),
-                                    formattedFilter,
+                                    formattedFilterNew,
                                     new AbstractContextMapper<Pair<String, String>>() {
                                         @Override
                                         protected Pair<String, String> doMapFromContext(
@@ -279,10 +281,12 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
                     final String formattedFilter =
                             MessageFormat.format(nestedGroupSearchFilter, groupDn, groupName);
+                    // Replace "\" with "\5C" for search.
+                    String formattedFilterNew = formattedFilter.replace("\\", "\\5C"); 
                     groupRolesNameDn.addAll(
                             authTemplate.search(
                                     getGroupSearchBase(),
-                                    formattedFilter,
+                                    formattedFilterNew,
                                     new AbstractContextMapper<Pair<String, String>>() {
                                         @Override
                                         protected Pair<String, String> doMapFromContext(

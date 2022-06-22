@@ -170,10 +170,13 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public SortedSet<GeoServerUser> getUsers() {
         final SortedSet<GeoServerUser> users = new TreeSet<>();
 
+        // Replace "\" with "\5C" for search.
+        String allUsersSearchFilterNew = allUsersSearchFilter.replace("\\", "\\5C");
+        
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(userSearchBase, allUsersSearchFilter, addToUsers(users)));
+                                .search(userSearchBase, allUsersSearchFilterNew, addToUsers(users)));
 
         return Collections.unmodifiableSortedSet(users);
     }
@@ -430,10 +433,14 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     @Override
     public int getUserCount() {
         AtomicInteger size = new AtomicInteger(0);
+
+        // Replace "\" with "\5C" for search.
+        String allUsersSearchFilterNew = allUsersSearchFilter.replace("\\", "\\5C");
+                
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(userSearchBase, allUsersSearchFilter, counter(size)));
+                                .search(userSearchBase, allUsersSearchFilterNew, counter(size)));
 
         return size.get();
     }
@@ -441,10 +448,14 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     @Override
     public int getGroupCount() {
         AtomicInteger size = new AtomicInteger(0);
+
+        // Replace "\" with "\5C" for search.
+        String allGroupsSearchFilterNew = allGroupsSearchFilter.replace("\\", "\\5C");
+
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(groupSearchBase, allGroupsSearchFilter, counter(size)));
+                                .search(groupSearchBase, allGroupsSearchFilterNew, counter(size)));
         return size.get();
     }
 
@@ -474,12 +485,15 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) {
         final SortedSet<GeoServerUser> users = new TreeSet<>();
 
+        // Replace "\" with "\5C" for search.
+        String allUsersSearchFilterNew = allUsersSearchFilter.replace("\\", "\\5C");
+
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
                                 .search(
                                         userSearchBase,
-                                        "(&(!(" + propname + "=*))(" + allUsersSearchFilter + "))",
+                                        "(&(!(" + propname + "=*))(" + allUsersSearchFilterNew + "))",
                                         addToUsers(users)));
 
         return users;
@@ -488,12 +502,16 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     @Override
     public int getUserCountNotHavingProperty(String propname) {
         AtomicInteger size = new AtomicInteger(0);
+
+        // Replace "\" with "\5C" for search.
+        String allUsersSearchFilterNew = allUsersSearchFilter.replace("\\", "\\5C");
+
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
                                 .search(
                                         userSearchBase,
-                                        "(&(!(" + propname + "=*))(" + allUsersSearchFilter + "))",
+                                        "(&(!(" + propname + "=*))(" + allUsersSearchFilterNew + "))",
                                         counter(size)));
         return size.get();
     }
@@ -503,12 +521,15 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
             throws IOException {
         final SortedSet<GeoServerUser> users = new TreeSet<>();
 
+        // Replace "\" with "\5C" for search.
+        String propvalueNew = propvalue.replace("\\", "\\5C");
+
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
                                 .search(
                                         userSearchBase,
-                                        propname + "=" + propvalue,
+                                        propname + "=" + propvalueNew,
                                         addToUsers(users)));
 
         return users;
@@ -518,10 +539,14 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public int getUserCountHavingPropertyValue(String propname, String propvalue)
             throws IOException {
         AtomicInteger size = new AtomicInteger(0);
+
+        // Replace "\" with "\5C" for search.
+        String propvalueNew = propvalue.replace("\\", "\\5C");
+
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(userSearchBase, propname + "=" + propvalue, counter(size)));
+                                .search(userSearchBase, propname + "=" + propvalueNew, counter(size)));
         return size.get();
     }
 }

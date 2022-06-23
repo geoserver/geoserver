@@ -41,3 +41,11 @@ The configuration page looks as follows:
        running are ignored, while completed, errored, or imports that were created, but never started,
        are going to be considered for cleanup. Value is in minutes, set to zero or negative to never
        remove values. Defaults to 1440 minutes, one day.
+
+Importer Logging
+----------------
+
+The importer extension includes a new :file:`IMPORTER_LOGGING` profile which may be selected in global settings.
+
+* This profile is quiet during normal operation (similar to :file:`PRODUCTION_LOOGGING`)
+* Provides configuration and information logs on importer activity

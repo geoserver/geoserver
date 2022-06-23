@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -103,7 +102,6 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
@@ -276,6 +274,15 @@ public class Importer implements DisposableBean, ApplicationListener {
         if (event instanceof ContextLoadedEvent) {
             contextStore = createContextStore();
             contextStore.init();
+        }
+        // provide a helpful logging config for this extension
+        if (event instanceof ContextLoadedEvent) {
+            GeoServerResourceLoader loader = getCatalog().getResourceLoader();
+            try {
+                loader.copyFromClassPath("/IMPORTER_LOGGING.xml", "logs/IMPORTER_LOGGING.xml");
+            } catch (IOException e) {
+                LOGGER.fine("Unable to configure with IMPORTER_LOGGING");
+            }
         }
     }
 
@@ -1243,20 +1250,26 @@ public class Importer implements DisposableBean, ApplicationListener {
                 featureType.getAttributes().clear();
 
                 if (!canceled) {
-                    if (task.getUpdateMode() == UpdateMode.CREATE) {
-                        addToCatalog(task);
-                    }
+                    // check if resource is already present
                     FeatureTypeInfo resource =
                             getCatalog()
                                     .getResourceByName(
                                             featureType.getQualifiedName(), FeatureTypeInfo.class);
+
+                    if (resource == null
+                            && (task.getUpdateMode() == UpdateMode.CREATE
+                                    || task.getUpdateMode() == UpdateMode.REPLACE)) {
+                        // Create if needed (for create or replace mode)
+                        addToCatalog(task);
+                        resource =
+                                getCatalog()
+                                        .getResourceByName(
+                                                featureType.getQualifiedName(),
+                                                FeatureTypeInfo.class);
+                    }
+
                     if (resource != null) {
                         calculateBounds(resource);
-                        if (task.getUpdateMode() == UpdateMode.REPLACE) {
-                            FeatureType schema = resource.getFeatureType();
-
-                            Collection<PropertyDescriptor> attributes = schema.getDescriptors();
-                        }
                     }
                 }
             } catch (Throwable th) {
@@ -1420,17 +1433,17 @@ public class Importer implements DisposableBean, ApplicationListener {
                 LOGGER.log(
                         Level.INFO,
                         "Feature Type name has been changed from "
-                                + nativeName
-                                + " to "
                                 + (featureType.getTypeName() != null
-                                        ? featureType.getTypeName()
-                                        : "null name"));
+                                        ? "'" + featureType.getTypeName() + "'"
+                                        : "null name")
+                                + " to '"
+                                + nativeName
+                                + "'");
                 SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
                 tb.init(featureType);
                 tb.setName(nativeName);
                 featureType = tb.buildFeatureType();
             }
-            // final String featureTypeName = featureType.getName().getLocalPart();
 
             DataStore dataStore = (DataStore) store.getDataStore(null);
 
@@ -1451,7 +1464,6 @@ public class Importer implements DisposableBean, ApplicationListener {
             // created native type name in target datastore, will be dropped if import fails
             String createdNativeTypeName = null;
 
-            // final String uniquifiedFeatureTypeName;
             if (updateMode == UpdateMode.CREATE) {
                 // find a unique native name in the target store (to avoid replacing existing
                 // content)
@@ -2177,8 +2189,11 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     /*
-     * computes the lat/lon bounding box from the native bounding box and srs, optionally overriding
+     * Computes the lat/lon bounding box from the native bounding box and srs, optionally overriding
      * the value already set.
+     *
+     * If the does not contain a geometry (such as a csv file processing lat/long into a point)
+     * this activity may not have required information to work with.
      */
     boolean computeLatLonBoundingBox(ImportTask task, boolean force) throws Exception {
         ResourceInfo r = task.getLayer().getResource();
@@ -2186,8 +2201,12 @@ public class Importer implements DisposableBean, ApplicationListener {
             CoordinateReferenceSystem nativeCRS = CRS.decode(r.getSRS());
             ReferencedEnvelope nativeBbox =
                     new ReferencedEnvelope(r.getNativeBoundingBox(), nativeCRS);
-            r.setLatLonBoundingBox(nativeBbox.transform(CRS.decode("EPSG:4326"), true));
-            return true;
+
+            if (!nativeBbox.isEmpty()) {
+                r.setLatLonBoundingBox(nativeBbox.transform(CRS.decode("EPSG:4326"), true));
+                return true;
+            }
+            LOGGER.fine("Import '" + r.getName() + "' native bounding box is empty");
         }
         return false;
     }

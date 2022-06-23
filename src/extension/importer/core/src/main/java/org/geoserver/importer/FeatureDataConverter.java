@@ -228,6 +228,7 @@ public class FeatureDataConverter {
                  * @param attName
                  * @return attribute name truncated to 10 char limit
                  */
+                @Override
                 protected String convertAttributeName(String attName) {
                     String name = super.convertAttributeName(attName);
                     return name.length() > 10 ? name.substring(0, 10) : name;
@@ -260,6 +261,7 @@ public class FeatureDataConverter {
                  * @param typeName Proposed feature type name
                  * @return type name, ensuring this is a valid table name for PostGIS
                  */
+                @Override
                 protected String convertTypeName(String typeName) {
                     typeName = super.convertTypeName(typeName);
 
@@ -298,6 +300,7 @@ public class FeatureDataConverter {
                  * @param typeName
                  * @return type name, ensuring this is a valid table name for oracle
                  */
+                @Override
                 protected String convertTypeName(String typeName) {
                     typeName = super.convertTypeName(typeName);
                     return ensureOracleSafe(typeName);
@@ -309,6 +312,7 @@ public class FeatureDataConverter {
                  * @param attName proposed attribute name
                  * @return attribtue name, ensuring this is a valid column name for oracle
                  */
+                @Override
                 protected String convertAttributeName(String attName) {
                     attName = super.convertAttributeName(attName);
 

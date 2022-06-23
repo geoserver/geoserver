@@ -56,7 +56,6 @@ import org.geoserver.security.decorators.SecuredWMSLayerInfo;
 import org.geoserver.security.decorators.SecuredWMSStoreInfo;
 import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
 import org.geoserver.security.decorators.SecuredWMTSStoreInfo;
-import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.DefaultResourceAccessManager;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.type.Name;
@@ -119,12 +118,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);
         return lwManager;
-    }
-
-    private static DefaultResourceAccessManager buildDefaultResourceAccessManager() {
-        return new DefaultResourceAccessManager(
-                GeoServerExtensions.bean(DataAccessRuleDAO.class),
-                (Catalog) GeoServerExtensions.bean("rawCatalog"));
     }
 
     public SecureCatalogImpl(Catalog catalog, ResourceAccessManager manager) {

@@ -122,6 +122,11 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         this.root = buildAuthorizationTree(dao);
     }
 
+    /**
+     * Sets the layer group cache
+     *
+     * @param groupsCache
+     */
     public void setGroupsCache(LayerGroupContainmentCache groupsCache) {
         this.groupsCache = groupsCache;
     }
@@ -680,11 +685,11 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         return getAccessLimits(user, layerGroup, Collections.emptyList());
     }
 
-    @Override
-    public void buildLayerGroupCache() {
-        groupsCache.buildLayerGroupCaches();
-    }
-
+    /**
+     * Retrieves the layer group containment cache. If empty, it will fetch it from the context
+     *
+     * @return The layer group cantainment cache
+     */
     protected LayerGroupContainmentCache getLayerGroupsCache() {
         if (groupsCache == null) {
             groupsCache = GeoServerExtensions.bean(LayerGroupContainmentCache.class);

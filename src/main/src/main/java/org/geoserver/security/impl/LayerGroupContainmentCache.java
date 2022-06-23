@@ -29,11 +29,8 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.LayerGroupStyleListener;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.SecureCatalogImpl;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
  * A cache for layer group containment, it speeds up looking up layer groups containing a particular
@@ -77,7 +74,7 @@ public class LayerGroupContainmentCache implements ApplicationListener {
         buildLayerGroupCaches();
     }
 
-    public void buildLayerGroupCaches() {
+    private void buildLayerGroupCaches() {
         groupCache.clear();
         resourceContainmentCache.clear();
         List<LayerGroupInfo> groups = catalog.getLayerGroups();
@@ -197,10 +194,7 @@ public class LayerGroupContainmentCache implements ApplicationListener {
 
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
-        if (applicationEvent instanceof ContextRefreshedEvent) {
-            SecureCatalogImpl secureCatalog = GeoServerExtensions.bean(SecureCatalogImpl.class);
-            secureCatalog.getResourceAccessManager().buildLayerGroupCache();
-        }
+        buildLayerGroupCaches();
     }
 
     /**

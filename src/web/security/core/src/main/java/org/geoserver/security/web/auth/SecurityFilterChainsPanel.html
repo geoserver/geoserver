@@ -3,17 +3,17 @@
 <wicket:panel>
   <div wicket:id="feedback">
   </div>
-  <ul>
-    <li>
-     <ul class="action-group">
-        <li><a class="add-link" wicket:id="addServiceChain"><wicket:message key="addServiceChain"></wicket:message></a></li>
-        <li><a class="add-link" wicket:id="addHtmlChain"><wicket:message key="addHtmlChain"></wicket:message></a></li>        
-     </ul>
-    </li>
-    <li>
-     <div wicket:id="table"></div>
-    </li>
+  <ul class="action-group">
+    <li><a class="add-link" wicket:id="addServiceChain">
+      <wicket:message key="addServiceChain"></wicket:message>
+    </a></li>
+    <li><a class="add-link" wicket:id="addHtmlChain">
+      <wicket:message key="addHtmlChain"></wicket:message>
+    </a></li>
   </ul>
+
+  <div wicket:id="table"></div>
+
   <div wicket:id="dialog"></div>
 </wicket:panel>
 </body>

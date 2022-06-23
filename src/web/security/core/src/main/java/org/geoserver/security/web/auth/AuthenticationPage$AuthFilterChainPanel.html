@@ -4,27 +4,31 @@
 	xmlns:wicket="http://wicket.apache.org/">
 <body>
 	<wicket:panel>
-		<ul>
-			<li><label><wicket:message key="httpMethod"></wicket:message></label>
-				<select wicket:id="httpMethod"></select></li>
-			<li>
-				<label for="urlPath" ><wicket:message
-						key="urlPath"></wicket:message>
-			    </label>			
-				<input id="urlPath" class="text" type="text" wicket:id="urlPath" />
-			</li>
-			<li>
-              <div class="button-group selfclear">
-                <a wicket:id="chainTest"><span><wicket:message key="chainTest"></wicket:message></span></a>
-            </div>
-            </li>
-            <li>
-                <label for="chainTestResult" ><wicket:message
-                        key="chainTestResult"></wicket:message>
-                </label>            
-                <input id="chainTestResult" class="text" type="text" wicket:id="chainTestResult" />
-            </li>								
-		</ul>
+
+		<div class="py-1">
+			<label>
+				<wicket:message key="httpMethod"></wicket:message>
+			</label>
+			<select wicket:id="httpMethod"></select>
+		</div>
+		<div class="py-1">
+			<label for="urlPath">
+				<wicket:message key="urlPath"></wicket:message>
+			</label>
+			<input id="urlPath" class="text" type="text" wicket:id="urlPath"/>
+		</div>
+
+		<div class="button-group selfclear">
+			<a wicket:id="chainTest"><span><wicket:message key="chainTest"></wicket:message></span></a>
+		</div>
+
+		<div class="py-1">
+			<label for="chainTestResult">
+				<wicket:message key="chainTestResult"></wicket:message>
+			</label>
+			<input id="chainTestResult" class="text" type="text" wicket:id="chainTestResult"/>
+		</div>
+
 	</wicket:panel>
 </body>
 </html>

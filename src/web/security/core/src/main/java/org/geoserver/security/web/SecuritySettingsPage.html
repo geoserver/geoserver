@@ -7,27 +7,32 @@
 <body>
 <wicket:extend>
   <form id="form" wicket:id="form">
-    <ul>
-     <li>
-       <fieldset class="noTitle">
-         <label for="activeRoleService"><wicket:message key="activeRoleService"></wicket:message></label>
-         <select wicket:id="roleServiceName"></select>
-       </fieldset>
-     </li>
-     <li>
-       <fieldset>
-        <legend>
-          <span><wicket:message key="encryption"></wicket:message></span>
-          <a href="#" wicket:id="encryptionHelp" class="help-link"></a>
-        </legend>
-        <div id="encryption" wicket:id="encryption">
-        </div> 
-      </fieldset>
-     </li>
-    </ul>
+
+    <fieldset class="border-0">
+      <div class="py-1">
+        <label for="activeRoleService">
+          <wicket:message key="activeRoleService"></wicket:message>
+        </label>
+        <select wicket:id="roleServiceName"></select>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>
+        <span><wicket:message key="encryption"></wicket:message></span>
+        <a href="#" wicket:id="encryptionHelp" class="help-link"></a>
+      </legend>
+      <div id="encryption" wicket:id="encryption">
+      </div>
+    </fieldset>
+
     <div class="button-group toolbar-sticky selfclear">
-      <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a> 
-      <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+      <a href="#" class="form-button-save" wicket:id="save">
+        <wicket:message key="save">Save</wicket:message>
+      </a>
+      <a href="#" class="form-button-cancel" wicket:id="cancel">
+        <wicket:message key="cancel">Cancel</wicket:message>
+      </a>
     </div>
   </form>
 </wicket:extend>

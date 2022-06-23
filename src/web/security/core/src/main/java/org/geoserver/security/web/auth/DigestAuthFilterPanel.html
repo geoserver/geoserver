@@ -4,16 +4,16 @@
     xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
-    <ul>
-      <li>
-        <label ><wicket:message key="userGroupService"></wicket:message></label>
-        <select wicket:id="userGroupServiceName"></select>
-      </li>
-      <li>
-        <label><wicket:message key="nonceValidityDuration"></wicket:message></label>
-        <input wicket:id="nonceValiditySeconds" class="field text"/>
-      </li>
-    </ul>
+
+  <div class="py-1">
+    <label ><wicket:message key="userGroupService"></wicket:message></label>
+    <select wicket:id="userGroupServiceName"></select>
+  </div>
+  <div class="py-1">
+    <label><wicket:message key="nonceValidityDuration"></wicket:message></label>
+    <input wicket:id="nonceValiditySeconds" class="field text"/>
+  </div>
+
 </wicket:extend>
 </body>
 </html>

@@ -3,22 +3,24 @@
 <wicket:panel>
   <div wicket:id="feedback">
   </div>
-  <ul>
+
+  <ul class="action-group">
     <li>
-     <ul class="action-group">
-        <li>
-          <a class="add-link" wicket:id="add"><wicket:message key="addNew"></wicket:message></a>
-        </li>
-        <li>
-          <a class="remove-link" wicket:id="remove"><wicket:message key="removeSelected"></wicket:message></a>
-        </li>
-     </ul>
+      <a class="add-link" wicket:id="add">
+        <wicket:message key="addNew"></wicket:message>
+      </a>
     </li>
     <li>
-     <div wicket:id="table"></div>
+      <a class="remove-link" wicket:id="remove">
+        <wicket:message key="removeSelected"></wicket:message>
+      </a>
     </li>
   </ul>
+
+  <div wicket:id="table"></div>
+
   <div wicket:id="dialog"></div>
+
 </wicket:panel>
 </body>
 </html>

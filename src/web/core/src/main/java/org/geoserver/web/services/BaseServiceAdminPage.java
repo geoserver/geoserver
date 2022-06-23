@@ -123,8 +123,14 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         }
 
         form.add(onlineResource);
-        form.add(new CheckBox("enabled"));
-        form.add(new CheckBox("citeCompliant"));
+        CheckBox enabled = new CheckBox("enabled");
+        enabled.setOutputMarkupId(true);
+        enabled.setMarkupId("enabled");
+        form.add(enabled);
+        CheckBox citeCompliant = new CheckBox("citeCompliant");
+        citeCompliant.setOutputMarkupId(true);
+        citeCompliant.setMarkupId("citeCompliant");
+        form.add(citeCompliant);
         form.add(getInternationalContentFragment(infoModel, "serviceTitleAndAbstract"));
         form.add(
                 new KeywordsEditor(

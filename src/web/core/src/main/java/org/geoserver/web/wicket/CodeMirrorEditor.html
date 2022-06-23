@@ -54,10 +54,10 @@
   </wicket:head>
 <body>
 <wicket:panel>
-  <div wicket:id="editorContainer" style="background-color: white">
-    <div wicket:id="toolbar" style="padding-top: 3px; padding-bottom: 3px">
+  <div wicket:id="editorContainer">
+    <div wicket:id="toolbar" class="py-1">
       <wicket:link>
-        <div class="button-group button-toolbar selfclear">
+        <div class="button-group button-toolbar clearfix">
               <a class="button-undo icon" href="#a" title="Undo" id="cm_undo">
                 <span></span>
               </a>
@@ -80,7 +80,7 @@
                  <span></span>
               </a>
               <wicket:message key="font"/>
-              <select style="margin:0; position: " id="cm_font_size">
+              <select class="m-0" id="cm_font_size">
                 <option value="8">8pt</option>
                 <option value="10">10pt</option>
                 <option value="12" selected="selected">12pt</option>
@@ -90,7 +90,7 @@
                 <option value="20">20pt</option>
               </select>
               <wicket:message key="height"/>
-              <select style="margin:0; position: " id="cm_editor_heigth">
+              <select class="m-0" id="cm_editor_heigth">
                 <option value="200">200px</option>
                 <option value="250">250px</option>
                 <option value="300" selected="selected">300px</option>

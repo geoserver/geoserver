@@ -7,25 +7,16 @@
 
     <form wicket:id="form">
 
-    <ul>
-        <li><label for="name"><wicket:message key="name">name</wicket:message></label>
-          <input type="text" wicket:id="name"/>
-        </li>
-        <li>
-          <ul>
-              <li>
-             <div wicket:id="coverages"></div>
-             </li>
-          </ul>
-       </li>
-       
-    </ul>
+    <div class="mb-3">
+      <label for="name"><wicket:message key="name">name</wicket:message></label>
+      <input type="text" wicket:id="name"/>
+    </div>
+    <div wicket:id="coverages"></div>
 
     <div class="button-group toolbar-sticky selfclear"><a href="#" class="form-button-save" wicket:id="save"><wicket:message
         key="save">Save</wicket:message></a> <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message
         key="cancel">Cancel</wicket:message></a></div>
     </form>
-    
 
 </wicket:extend>
 

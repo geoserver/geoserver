@@ -12,7 +12,8 @@
       <wicket:link>
       <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print" />
       </wicket:link>
-      <wicket:link> 
+      <wicket:link>
+        <link rel="stylesheet" href="css/bootstrap-utilities.min.css" type="text/css" media="all" />
 	  <link rel="stylesheet" href="css/geoserver.css" type="text/css" media="screen, projection" />
 	  </wicket:link>
       <!--[if IE]>
@@ -33,7 +34,7 @@
       <h2><a wicket:id="home" class="pngfix" href="#"><span wicket:id="label">GeoServer</span></a></h2>
       <div class="button-group selfclear">
 	      <span wicket:id="loginforms">
-	      	<form style="display: inline-block;" wicket:id="loginform" method="post" action="../j_spring_security_check">
+	      	<form class="d-inline-block" wicket:id="loginform" method="post" action="../j_spring_security_check">
 	      		<span wicket:id="login.include"></span>
 	      		<button class="positive icon" type="submit">
 	      			<div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
@@ -45,7 +46,7 @@
 	      </span>
 	      
 	      <span wicket:id="loggedinasform" class="username"><wicket:message key="loggedInAs">Logged in as</wicket:message> <span wicket:id="loggedInUsername">User von Testenheimer</span>.</span>
-            <form style="display: inline-block;" wicket:id="logoutform" method="post" action="j_spring_security_logout">
+            <form class="d-inline-block" wicket:id="logoutform" method="post" action="j_spring_security_logout">
                 <button class="positive icon" type="submit">
                     <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
                 </button>
@@ -96,7 +97,7 @@
     </div><!-- /#page -->
     </div><!-- /.wrap> -->
   </div><!-- /#main -->
-  <div id="ajaxFeedback" style="display: none">
+  <div id="ajaxFeedback" class="d-none">
     <img alt="Loading..." wicket:id="ajaxFeedbackImage"/>
   </div>
 </body>

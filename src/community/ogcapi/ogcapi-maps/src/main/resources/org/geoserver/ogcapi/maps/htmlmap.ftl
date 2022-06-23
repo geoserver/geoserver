@@ -132,7 +132,7 @@
     <title>OpenLayers map preview</title>
   </head>
   <body>
-    <div id="toolbar" style="display: none;">
+    <div id="toolbar" class="d-none">
       <ul>
         <li>
           <a>Tiling:</a>

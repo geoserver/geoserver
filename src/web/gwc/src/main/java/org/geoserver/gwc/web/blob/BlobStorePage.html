@@ -15,17 +15,20 @@
 		  	  <wicket:message key="blobConfig"/>
 		  	  
 		  	  <fieldset>
-		  	  
+		  	  	<div class="choiceItem">
 			  	    <label for="name"><wicket:message key="name"/></label>
-	            	<input id="name" wicket:id="name" type="text" class="text" />
-	            		  			            	
+							<input id="name" wicket:id="name" type="text" class="text" />
+						</div>
+						<div class="choiceItem">
 			  	    <label for="enabled"><wicket:message key="enabled"/></label>
-	            	<input id="enabled" wicket:id="enabled" type="checkbox" />
-			  		
-			  		<label for="default"><wicket:message key="default"/></label>
+							<input id="enabled" wicket:id="enabled" type="checkbox" />
+						</div>
+						<div class="choiceItem">
+			  			<label for="default"><wicket:message key="default"/></label>
 			  	    <input id="default" wicket:id="default" type="checkbox" />
-			  	    
-			  	    <span wicket:id="blobSpecificPanel"></span>
+						</div>
+
+			  	  <span wicket:id="blobSpecificPanel"></span>
 	            	
 				  	<div class="button-group toolbar-sticky selfclear">
 				    	<a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save"/></a>

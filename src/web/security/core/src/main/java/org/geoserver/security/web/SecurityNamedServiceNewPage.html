@@ -6,28 +6,32 @@
 </wicket:head>
 <body>
 <wicket:extend>
-  <h1><wicket:message key="new"><span wicket:id="title1"></span></wicket:message></h1>
-  <p><wicket:message key="create"><span wicket:id="title2"></span></wicket:message></p>
+  <h1>
+    <wicket:message key="new"><span wicket:id="title1"></span></wicket:message>
+  </h1>
+  <p>
+    <wicket:message key="create"><span wicket:id="title2"></span></wicket:message>
+  </p>
   <form>
-  <div wicket:id="servicesContainer">
-  <ul>
-    <li wicket:id="services" style="padding: 0;">
-      <a wicket:id="link"><span wicket:id="title"></span></a> - <span wicket:id="description"></span>
-    </li>
-  </ul>
-  </div>
+    <div wicket:id="servicesContainer">
+      <div wicket:id="services" class="p-0">
+        <a wicket:id="link"><span wicket:id="title"></span></a> - <span wicket:id="description"></span>
+      </div>
+    </div>
   </form>
   <form id="form" wicket:id="form">
-    <ul>
-     <li>
-      <div wicket:id="panel">
-        <div wicket:id="content"></div>
-      </div>
-     </li>
-    </ul>
-    <div class="button-group toolbar-sticky clearBoth">
-      <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a> 
-      <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+
+    <div wicket:id="panel">
+      <div wicket:id="content"></div>
+    </div>
+
+    <div class="button-group toolbar-sticky clearfix">
+      <a href="#" class="form-button-save" wicket:id="save">
+        <wicket:message key="save">Save</wicket:message>
+      </a>
+      <a href="#" class="form-button-cancel" wicket:id="cancel">
+        <wicket:message key="cancel">Cancel</wicket:message>
+      </a>
     </div>
   </form>
 </wicket:extend>

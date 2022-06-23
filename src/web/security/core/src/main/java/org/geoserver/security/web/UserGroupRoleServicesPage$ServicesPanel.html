@@ -1,27 +1,24 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-  <form style="padding-top: 2em;">
-    <ul>
-     <li>
-       <fieldset>
-        <legend>
-          <span><wicket:message key="userGroupServices"></wicket:message></span>
-          <a href="#" wicket:id="userGroupServicesHelp" class="help-link"></a>
-        </legend>
-        <div wicket:id="userGroupServices"></div>
-       </fieldset>
-     </li>
-     <li>
-       <fieldset>
-        <legend>
-          <span><wicket:message key="roleServices"></wicket:message></span>
-          <a href="#" wicket:id="roleServicesHelp" class="help-link"></a>
-        </legend>
-        <div wicket:id="roleServices"></div>
-      </fieldset>
-     </li>
-    </ul>
+  <form class="pt-4">
+
+    <fieldset>
+      <legend>
+        <span><wicket:message key="userGroupServices"></wicket:message></span>
+        <a href="#" wicket:id="userGroupServicesHelp" class="help-link"></a>
+      </legend>
+      <div wicket:id="userGroupServices"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>
+        <span><wicket:message key="roleServices"></wicket:message></span>
+        <a href="#" wicket:id="roleServicesHelp" class="help-link"></a>
+      </legend>
+      <div wicket:id="roleServices"></div>
+    </fieldset>
+
   </form>
 </wicket:panel>
 </body>

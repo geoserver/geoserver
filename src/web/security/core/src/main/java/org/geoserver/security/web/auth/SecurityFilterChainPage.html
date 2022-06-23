@@ -7,93 +7,107 @@
 <body>
 <wicket:extend>
   <form id="form" wicket:id="form">
-  <ul>
-    <li>
-      <fieldset>
-        <legend>
-          <span><wicket:message key="chainConfig"></wicket:message></span>
-          <a href="#" wicket:id="chainConfigHelp" class="help-link"></a>
-        </legend>
-        <ul>
-          <li>
-            <span wicket:id="message"></span>
-          </li>
-          <li>
-            <label for="name"><wicket:message key="name"></wicket:message></label>
-            <input type="text" wicket:id="name" class="text"/>
-          </li>
-          <li>
-            <label for="patternString"><wicket:message key="patternString"></wicket:message></label>
-            <input type="text" wicket:id="patternString" class="text"/>
-          </li>
 
-          <li class="choiceItem">
-            <input id="disabled" wicket:id="disabled" type="checkbox"/>
-            <label for="disabled"><wicket:message key="disabled"></wicket:message></label>
-          </li>
-          <li class="choiceItem">
-            <input id="allowSessionCreation" wicket:id="allowSessionCreation" type="checkbox"/>
-            <label for="allowSessionCreation"><wicket:message key="allowSessionCreation"></wicket:message></label>
-          </li>
-          <li class="choiceItem">
-            <input id="requireSSL" wicket:id="requireSSL" type="checkbox"/>
-            <label for="requireSSL"><wicket:message key="requireSSL"></wicket:message></label>
-          </li>
-          <li>
-             <label for="roleFilterName"><wicket:message key="roleFilterName"></wicket:message></label>
-             <select wicket:id="roleFilterName"></select>
-          </li>
-         </ul>
-       </fieldset>
-       <fieldset>
-         <legend>
-          <span><wicket:message key="chainConfigMethod"></wicket:message></span>
-          <a href="#" wicket:id="chainConfigMethodHelp" class="help-link"></a>
-         </legend>
-         <ul class="choiceList">
-          <li style="margin-bottom: 0.5em;">
-            <input id="matchHTTPMethod" wicket:id="matchHTTPMethod" type="checkbox"/>
-            <label for="matchHTTPMethod"><wicket:message key="matchHTTPMethod"></wicket:message></label>
-          </li>
-          <li>
-	         <input id="GET" wicket:id="GET" type="checkbox"/>
-	         <label for="GET">GET</label>
-         </li>
-         <li>
-	         <input id="POST" wicket:id="POST" type="checkbox"/>
-	         <label for="POST">POST</label>
-         </li>
-         <li>
-             <input id="PUT" wicket:id="PUT" type="checkbox"/>
-             <label for="PUT">PUT</label>
-         </li>
-         <li>
-             <input id="DELETE" wicket:id="DELETE" type="checkbox"/>
-             <label for="DELETE">DELETE</label>
-         </li>
-         <li>
-             <input id="OPTIONS" wicket:id="OPTIONS" type="checkbox"/>
-             <label for="OPTIONS">OPTIONS</label>
-         </li>
-         <li>
-            <input id="HEAD" wicket:id="HEAD" type="checkbox"/>
-            <label for="HEAD">HEAD</label>
-         </li>
-         <li>
-            <input id="TRACE" wicket:id="TRACE" type="checkbox"/>
-            <label for="TRACE">TRACE</label>
-         </li>
-         </ul>
-      </fieldset>
-      <wicket:child/>
-    </li>
-  </ul>
+    <fieldset>
+      <legend>
+        <span><wicket:message key="chainConfig"></wicket:message></span>
+        <a href="#" wicket:id="chainConfigHelp" class="help-link"></a>
+      </legend>
 
-  <div class="button-group toolbar-sticky selfclear">
-      <a href="#" class="form-button-save" wicket:id="close"><wicket:message key="close">Save</wicket:message></a>
-      <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
-  </div>
-      <dir wicket:id="dialog"/>
+      <div class="py-1">
+        <span wicket:id="message"></span>
+      </div>
+      <div class="py-1">
+        <label for="name">
+          <wicket:message key="name"></wicket:message>
+        </label>
+        <input type="text" wicket:id="name" class="text"/>
+      </div>
+      <div class="py-1">
+        <label for="patternString">
+          <wicket:message key="patternString"></wicket:message>
+        </label>
+        <input type="text" wicket:id="patternString" class="text"/>
+      </div>
+      <div class="choiceItem py-1">
+        <input id="disabled" wicket:id="disabled" type="checkbox"/>
+        <label for="disabled">
+          <wicket:message key="disabled"></wicket:message>
+        </label>
+      </div>
+      <div class="choiceItem py-1">
+        <input id="allowSessionCreation" wicket:id="allowSessionCreation" type="checkbox"/>
+        <label for="allowSessionCreation">
+          <wicket:message key="allowSessionCreation"></wicket:message>
+        </label>
+      </div>
+      <div class="choiceItem py-1">
+        <input id="requireSSL" wicket:id="requireSSL" type="checkbox"/>
+        <label for="requireSSL">
+          <wicket:message key="requireSSL"></wicket:message>
+        </label>
+      </div>
+      <div class="py-1">
+        <label for="roleFilterName">
+          <wicket:message key="roleFilterName"></wicket:message>
+        </label>
+        <select wicket:id="roleFilterName"></select>
+      </div>
+
+    </fieldset>
+    <fieldset>
+      <legend>
+        <span><wicket:message key="chainConfigMethod"></wicket:message></span>
+        <a href="#" wicket:id="chainConfigMethodHelp" class="help-link"></a>
+      </legend>
+
+      <div class="py-1">
+        <input id="matchHTTPMethod" wicket:id="matchHTTPMethod" type="checkbox"/>
+        <label for="matchHTTPMethod">
+          <wicket:message key="matchHTTPMethod"></wicket:message>
+        </label>
+      </div>
+      <div class="py-1">
+        <input id="GET" wicket:id="GET" type="checkbox"/>
+        <label for="GET">GET</label>
+      </div>
+      <div class="py-1">
+        <input id="POST" wicket:id="POST" type="checkbox"/>
+        <label for="POST">POST</label>
+      </div>
+      <div class="py-1">
+        <input id="PUT" wicket:id="PUT" type="checkbox"/>
+        <label for="PUT">PUT</label>
+      </div>
+      <div class="py-1">
+        <input id="DELETE" wicket:id="DELETE" type="checkbox"/>
+        <label for="DELETE">DELETE</label>
+      </div>
+      <div class="py-1">
+        <input id="OPTIONS" wicket:id="OPTIONS" type="checkbox"/>
+        <label for="OPTIONS">OPTIONS</label>
+      </div>
+      <div class="py-1">
+        <input id="HEAD" wicket:id="HEAD" type="checkbox"/>
+        <label for="HEAD">HEAD</label>
+      </div>
+      <div class="py-1">
+        <input id="TRACE" wicket:id="TRACE" type="checkbox"/>
+        <label for="TRACE">TRACE</label>
+      </div>
+    </fieldset>
+    <wicket:child/>
+
+
+    <div class="button-group toolbar-sticky selfclear">
+      <a href="#" class="form-button-save" wicket:id="close">
+        <wicket:message key="close">Save</wicket:message>
+      </a>
+      <a href="#" class="form-button-cancel" wicket:id="cancel">
+        <wicket:message key="cancel">Cancel</wicket:message>
+      </a>
+    </div>
+    <dir wicket:id="dialog"/>
   </form>
 </wicket:extend>
 </body>

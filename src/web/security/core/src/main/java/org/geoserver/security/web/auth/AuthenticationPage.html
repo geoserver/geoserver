@@ -7,108 +7,114 @@
 <body>
 <wicket:extend>
   <form wicket:id="form">
-    <ul style="padding-top: 1em;">
-     <li>
-          <fieldset>
-          <legend><span><wicket:message key="logoutSettings"></wicket:message></span></legend>
-          <ul>
-            <li>
-                <label for="redirectURL" ><wicket:message key="redirectURL"></wicket:message></label>
-                <input id="redirectURL" wicket:id="redirectURL" type="text" class="text"/>
-            </li>
-          </ul>
-        </fieldset>
-     </li>
-     <li>
-        <fieldset>
-        <legend><span><wicket:message key="sslSettings"></wicket:message></span></legend>
-         <ul>
-            <li>
-                <label for="sslPort" ><wicket:message key="sslPort"></wicket:message></label>
-                <input id="sslPort" wicket:id="sslPort" type="text" class="text"/>
-            </li>
-          </ul>
-         </fieldset>
-     </li>
-     <li>
-        <fieldset>
-        <legend><span><wicket:message key="bruteForceSettings"></wicket:message></span></legend>
-         <ul>
-            <li>
-                <label for="bfEnabled"><wicket:message key="bfEnabled"></wicket:message></label>
-                <input id="bfEnabled" wicket:id="bfEnabled" type="checkbox" class="field checkbox"/>
-            </li>
-            <li>
-                <label for="bfMinDelaySeconds"><wicket:message key="bfMinDelaySeconds"></wicket:message></label>
-                <input id="bfMinDelaySeconds" wicket:id="bfMinDelaySeconds" type="text" class="text"/>
-            </li>
-            <li>
-                <label for="bfMaxDelaySeconds"><wicket:message key="bfMaxDelaySeconds"></wicket:message></label>
-                <input id="bfMaxDelaySeconds" wicket:id="bfMaxDelaySeconds" type="text" class="text"/>
-            </li>
-            <li>
-                <label for="bfWhitelistedNetmasks"><wicket:message key="bfWhitelistedNetmasks"></wicket:message></label>
-                <input id="bfWhitelistedNetmasks" wicket:id="bfWhitelistedNetmasks" type="text" class="text"/>
-            </li>
-            <li>
-                <label for="bfMaxBlockedThreads"><wicket:message key="bfMaxBlockedThreads"></wicket:message></label>
-                <input id="bfMaxBlockedThreads" wicket:id="bfMaxBlockedThreads" type="text" class="text"/>
-            </li>
-          </ul>
-         </fieldset>
-     </li>
-     <li>
-       <fieldset>
-        <legend>
-          <span><wicket:message key="authFilters"></wicket:message></span>
-          <a href="#" wicket:id="authFiltersHelp" class="help-link"></a>
-        </legend>
-        <div wicket:id="authFilters"></div>
-      </fieldset>
-     </li>
-     <li>
-       <fieldset>
-         <legend>
-          <span><wicket:message key="authChains"></wicket:message></span>
-          <a href="#" wicket:id="authChainsHelp" class="help-link"></a>
-         </legend>
-         <div wicket:id="authChains"></div>
-       </fieldset>
-     </li>
-     
-     <li>
-       <fieldset>
-         <legend>
-          <span><wicket:message key="filterChain"></wicket:message></span>
-          <a href="#" wicket:id="filterChainHelp" class="help-link"></a>
-         </legend>
-         <div wicket:id="filterChain"></div>
-       </fieldset>
-     </li>
-     
-     <li>
-       <fieldset>
-        <legend>
-          <span><wicket:message key="authProviders"></wicket:message></span>
-          <a href="#" wicket:id="authProvidersHelp" class="help-link"></a>
-        </legend>
-        <div wicket:id="authProviders"></div>
-      </fieldset>
-     </li>
-     <li>
-       <fieldset>
-         <legend>
-          <span><wicket:message key="providerChain"></wicket:message></span>
-          <a href="#" wicket:id="providerChainHelp" class="help-link"></a>
-         </legend>
-         <div wicket:id="providerChain"></div>
-      </fieldset>
-     </li>
-    </ul>
-    <div class="button-group toolbar-sticky selfclear">
-      <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save"></wicket:message></a>
-      <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel"></wicket:message></a>
 
+    <fieldset class="pt-3">
+      <legend><span><wicket:message key="logoutSettings"></wicket:message></span></legend>
+
+      <div class="py-1">
+        <label for="redirectURL">
+          <wicket:message key="redirectURL"></wicket:message>
+        </label>
+        <input id="redirectURL" wicket:id="redirectURL" type="text" class="text"/>
+      </div>
+
+    </fieldset>
+
+    <fieldset>
+      <legend><span><wicket:message key="sslSettings"></wicket:message></span></legend>
+
+      <div class="py-1">
+        <label for="sslPort">
+          <wicket:message key="sslPort"></wicket:message>
+        </label>
+        <input id="sslPort" wicket:id="sslPort" type="text" class="text"/>
+      </div>
+
+    </fieldset>
+
+    <fieldset>
+      <legend><span><wicket:message key="bruteForceSettings"></wicket:message></span></legend>
+
+      <div class="choiceItem py-1">
+        <input id="bfEnabled" wicket:id="bfEnabled" type="checkbox" class="field checkbox"/>
+        <label for="bfEnabled">
+          <wicket:message key="bfEnabled"></wicket:message>
+        </label>
+      </div>
+      <div class="py-1">
+        <label for="bfMinDelaySeconds">
+          <wicket:message key="bfMinDelaySeconds"></wicket:message>
+        </label>
+        <input id="bfMinDelaySeconds" wicket:id="bfMinDelaySeconds" type="text" class="text"/>
+      </div>
+      <div class="py-1">
+        <label for="bfMaxDelaySeconds">
+          <wicket:message key="bfMaxDelaySeconds"></wicket:message>
+        </label>
+        <input id="bfMaxDelaySeconds" wicket:id="bfMaxDelaySeconds" type="text" class="text"/>
+      </div>
+      <div class="py-1">
+        <label for="bfWhitelistedNetmasks">
+          <wicket:message key="bfWhitelistedNetmasks"></wicket:message>
+        </label>
+        <input id="bfWhitelistedNetmasks" wicket:id="bfWhitelistedNetmasks" type="text" class="text"/>
+      </div>
+      <div class="py-1">
+        <label for="bfMaxBlockedThreads">
+          <wicket:message key="bfMaxBlockedThreads"></wicket:message>
+        </label>
+        <input id="bfMaxBlockedThreads" wicket:id="bfMaxBlockedThreads" type="text" class="text"/>
+      </div>
+
+    </fieldset>
+
+    <fieldset>
+      <legend>
+        <span><wicket:message key="authFilters"></wicket:message></span>
+        <a href="#" wicket:id="authFiltersHelp" class="help-link"></a>
+      </legend>
+      <div wicket:id="authFilters"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>
+        <span><wicket:message key="authChains"></wicket:message></span>
+        <a href="#" wicket:id="authChainsHelp" class="help-link"></a>
+      </legend>
+      <div wicket:id="authChains"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>
+        <span><wicket:message key="filterChain"></wicket:message></span>
+        <a href="#" wicket:id="filterChainHelp" class="help-link"></a>
+      </legend>
+      <div wicket:id="filterChain"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>
+        <span><wicket:message key="authProviders"></wicket:message></span>
+        <a href="#" wicket:id="authProvidersHelp" class="help-link"></a>
+      </legend>
+      <div wicket:id="authProviders"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>
+        <span><wicket:message key="providerChain"></wicket:message></span>
+        <a href="#" wicket:id="providerChainHelp" class="help-link"></a>
+      </legend>
+      <div wicket:id="providerChain"></div>
+    </fieldset>
+
+    <div class="button-group toolbar-sticky selfclear">
+      <a href="#" class="form-button-save" wicket:id="save">
+        <wicket:message key="save"></wicket:message>
+      </a>
+      <a href="#" class="form-button-cancel" wicket:id="cancel">
+        <wicket:message key="cancel"></wicket:message>
+      </a>
     </div>
   </form>
 </wicket:extend>

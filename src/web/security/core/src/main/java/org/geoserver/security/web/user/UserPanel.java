@@ -86,7 +86,7 @@ public class UserPanel extends Panel {
         } else {
             h.add(
                     new Label("message", new Model())
-                            .add(new AttributeAppender("class", new Model<>("displayNone"), " ")));
+                            .add(new AttributeAppender("class", new Model<>("d-none"), " ")));
         }
 
         // the add button

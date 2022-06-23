@@ -7,20 +7,19 @@
 
     <form wicket:id="form">
 
-    <ul>
-        <li><label for="name"><wicket:message key="name">Name</wicket:message></label> <input
-            id="name" class="text" type="text" wicket:id="name"/></li>
-        <li>
-            <label for="attributes"><wicket:message key="attributes">atts</wicket:message></label>
-            <div wicket:id="attributes"></div>
-        </li>
-    </ul>
+    <div class="mb-3">
+      <label for="name"><wicket:message key="name">Name</wicket:message></label>
+      <input id="name" class="text" type="text" wicket:id="name"/>
+    </div>
+    <div class="mb-3">
+        <label for="attributes"><wicket:message key="attributes">atts</wicket:message></label>
+        <div wicket:id="attributes"></div>
+    </div>
 
     <div class="button-group toolbar-sticky selfclear"><a href="#" class="form-button-save" wicket:id="save"><wicket:message
         key="save">Save</wicket:message></a> <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message
         key="cancel">Cancel</wicket:message></a></div>
     </form>
-
 
     <!-- Fragments used to build the page -->
 	

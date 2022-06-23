@@ -27,34 +27,40 @@
 <body>
 <wicket:extend>
 
-     <wicket:fragment wicket:id="header">
-      <ul>
-        <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
-        <li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
-      </ul>
-    </wicket:fragment>
-    
-    <div wicket:id="table"></div>
+  <wicket:fragment wicket:id="header">
+    <ul>
+      <li><a class="add-link" href="#" wicket:id="addNew">
+        <wicket:message key="addNew"/>
+      </a></li>
+      <li><a class="remove-link" href="#" wicket:id="removeSelected">
+        <wicket:message key="removeSelected"/>
+      </a></li>
+    </ul>
+  </wicket:fragment>
 
-    <form wicket:id="catalogModeForm" style="padding-top: 3em;">
-        <ul>
-          <li>
-            <fieldset>
-              <legend>
-                <span><wicket:message key="catalogMode">Catalog Mode</wicket:message></span>
-                <a href="#" wicket:id="catalogModeHelp" class="help-link"></a>
-              </legend>
-              <span id="catalogMode" wicket:id="catalogMode">
+  <div wicket:id="table"></div>
+
+  <form wicket:id="catalogModeForm" class="pt-5">
+
+    <fieldset>
+      <legend>
+        <span><wicket:message key="catalogMode">Catalog Mode</wicket:message></span>
+        <a href="#" wicket:id="catalogModeHelp" class="help-link"></a>
+      </legend>
+      <span id="catalogMode" wicket:id="catalogMode">
                 <input type="radio">mode 1</input>
               </span>
-            </fieldset>
-          </li>
-        </ul>
-        <div class="button-group toolbar-sticky selfclear">
-          <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a> 
-          <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
-        </div>
-	</form>
+    </fieldset>
+
+    <div class="button-group toolbar-sticky selfclear">
+      <a href="#" class="form-button-save" wicket:id="save">
+        <wicket:message key="save">Save</wicket:message>
+      </a>
+      <a href="#" class="form-button-cancel" wicket:id="cancel">
+        <wicket:message key="cancel">Cancel</wicket:message>
+      </a>
+    </div>
+  </form>
 	
 </wicket:extend>
 </body>

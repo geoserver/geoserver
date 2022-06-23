@@ -1,32 +1,35 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <head>
-<title><wicket:message key="layerList">Layer list</wicket:message></title>
+  <title><wicket:message key="layerList">Layer list</wicket:message></title>
 </head>
 <body>
 <wicket:extend>
-
-    <form wicket:id="form">
-
-    <ul>
-        <li><label for="name"><wicket:message key="name">name</wicket:message></label> <input
-            id="name" class="text" type="text" wicket:id="name"/></li>
-        <li><label for="binding"><wicket:message key="type">type</wicket:message></label> <select
-            id="binding" wicket:id="binding"></select></li>
-        <li class="choiceItem">
-	  <input type="checkbox" id="nullable" wicket:id="nullable"/>
-	  <label for="nullable"><wicket:message key="nullable">nullable</wicket:message></label>
-	</li>
-        <li wicket:id="sizeContainer"><label for="size"><wicket:message key="size">size</wicket:message></label>
-        <input id="size" class="text" type="text" wicket:id="size"/></li>
-        <li wicket:id="crsContainer"><label for="crs"><wicket:message key="crs">cRS</wicket:message></label>
-        <span wicket:id="crs"></span></li>
-    </ul>
+  <form wicket:id="form">
+    <div class="mb-3">
+      <label for="name"><wicket:message key="name">name</wicket:message></label>
+      <input id="name" class="text" type="text" wicket:id="name"/>
+    </div>
+    <div class="mb-3">
+      <label for="binding"><wicket:message key="type">type</wicket:message></label>
+      <select id="binding" wicket:id="binding"></select>
+    </div>
+    <div class="choiceItem mb-3">
+        <input type="checkbox" id="nullable" wicket:id="nullable"/>
+        <label for="nullable"><wicket:message key="nullable">nullable</wicket:message></label>
+    </div>
+    <div wicket:id="sizeContainer" class="mb-3">
+      <label for="size"><wicket:message key="size">size</wicket:message></label>
+      <input id="size" class="text" type="text" wicket:id="size"/></div>
+    <div wicket:id="crsContainer" class="mb-3">
+      <label for="crs"><wicket:message key="crs">cRS</wicket:message></label>
+      <span wicket:id="crs"></span></div>
+    </div>
 
     <div class="button-group toolbar-sticky selfclear">
-        <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-        <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+      <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+      <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
     </div>
-    </form>
+  </form>
 </wicket:extend>
 </body>
 </html>

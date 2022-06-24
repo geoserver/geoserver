@@ -53,6 +53,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -574,6 +575,7 @@ public class XStreamPersister {
         xs.registerConverter(new VirtualTableConverter());
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
+        xs.registerConverter(new GeoServerInfoConverter());
         xs.registerConverter(new WMSLayerInfoConverter());
         xs.registerConverter(new GrowableInternationalStringConverter());
         xs.registerConverter(new LayerGroupStyleConverter());
@@ -2553,7 +2555,30 @@ public class XStreamPersister {
             if (obj.getClientProperties() == null) {
                 obj.setClientProperties(new HashMap<>());
             }
+            if (obj.isUseHeadersProxyURL() == null) {
+                Boolean useHeadersProxyURL = geoserver.getGlobal().isUseHeadersProxyURL();
+                obj.setUseHeadersProxyURL(Optional.of(useHeadersProxyURL));
+            }
             return obj;
+        }
+    }
+
+    /** Converter for GeoServerInfo class */
+    class GeoServerInfoConverter extends AbstractReflectionConverter {
+
+        public GeoServerInfoConverter() {
+            super(GeoServerInfo.class);
+        }
+
+        @Override
+        protected void doMarshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            GeoServerInfo geoServerInfo = (GeoServerInfo) source;
+            SettingsInfo settings = geoServerInfo.getSettings();
+            if (settings.isUseHeadersProxyURL() == null) {
+                settings.setUseHeadersProxyURL(Optional.ofNullable(geoServerInfo.isUseHeadersProxyURL()));
+            }
+            super.doMarshal(source, writer, context);
         }
     }
 

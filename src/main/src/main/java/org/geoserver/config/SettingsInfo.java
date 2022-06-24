@@ -7,6 +7,7 @@ package org.geoserver.config;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -19,10 +20,10 @@ import org.geoserver.catalog.WorkspaceInfo;
 public interface SettingsInfo extends Info {
 
     /** The flag to use request headers for the proxy URL */
-    boolean isUseHeadersProxyURL();
+    Boolean isUseHeadersProxyURL();
 
     /** Sets the flag to use request headers for the proxy URL */
-    void setUseHeadersProxyURL(boolean useHeadersProxyURL);
+    void setUseHeadersProxyURL(Optional<Boolean> useHeadersProxyURL);
 
     /**
      * The workspace the settings are specific to.

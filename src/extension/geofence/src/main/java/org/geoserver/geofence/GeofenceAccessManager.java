@@ -134,6 +134,15 @@ public class GeofenceAccessManager
         this.helper = new GeoFenceAreaHelper();
     }
 
+    /**
+     * sets the layer group cache
+     *
+     * @param groupsCache
+     */
+    public void setGroupsCache(LayerGroupContainmentCache groupsCache) {
+        this.groupsCache = groupsCache;
+    }
+
     boolean isAdmin(Authentication user) {
         if (user.getAuthorities() != null) {
             for (GrantedAuthority authority : user.getAuthorities()) {

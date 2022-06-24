@@ -58,6 +58,7 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         DefaultResourceAccessManager manager =
                 new DefaultResourceAccessManager(
                         new MemoryDataAccessRuleDAO(catalog, props), catalog);
+        manager.setGroupsCache(new LayerGroupContainmentCache(catalog));
 
         sc =
                 new SecureCatalogImpl(catalog, manager) {

@@ -88,6 +88,7 @@
             <descriptor>release/ext-vsi.xml</descriptor>
             <descriptor>release/ext-teradata.xml</descriptor>
             <descriptor>release/ext-libdeflate.xml</descriptor>
+            <descriptor>release/ext-template-editor.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -252,6 +253,7 @@
         <module>vsi</module>
         <module>teradata</module>
         <module>libdeflate</module>
+        <module>template-editor</module>
       </modules>
     </profile>
     <profile>
@@ -675,6 +677,12 @@
       <id>libdeflate</id>
       <modules>
         <module>libdeflate</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>template-editor</id>
+      <modules>
+        <module>template-editor</module>
       </modules>
     </profile>
   </profiles>

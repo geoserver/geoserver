@@ -1,0 +1,57 @@
+textarea {
+    width : 90%;
+}
+
+#templates_editor td {
+    vertical-align : top;
+}
+
+#templates_editor td {
+    background-color : #F9F9F9;
+}
+
+#templates_editor #template_header textarea{
+    height : 200px;
+}
+#templates_editor  #template_content textarea{
+}
+#templates_editor #template_footer textarea{
+    height : 100px;
+}
+
+#templates_editor .path span.active,
+#templates_editor p.path span.active+span {
+    font-weight : bold;
+    color : black;
+}
+#templates_editor .path span{
+    font-weight : normal;
+    color : grey;
+}
+#templates_editor p.srcpath {
+    margin-bottom : 0;
+}
+#templates_editor h3 {
+    margin-bottom : 0.5em;
+}
+#templates_editor .align-left {
+    float : left;
+}
+#templates_editor .align-right {
+    float : right;
+}
+#templates_editor ul {
+    list-style-type: none;
+}
+#templates_editor .attributes ul {
+    list-style-type: circle;
+}
+#templates_editor li {
+    clear : both;
+}
+
+#templates_editor button[disabled] {
+    opacity:.5;
+}
+
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2015 - 2016 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans >
+
+    <bean id="TemplateEditorModuleStatus" class="main.java.org.geoserver.template.editor.web.TemplateEditorModuleStatus">
+    </bean>
+    <bean id="templateMenuPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="templates" />
+        <property name="titleKey" value="TemplatePage.title" />
+        <property name="descriptionKey" value="TemplatePage.description" />
+        <property name="componentClass" value="org.geoserver.template.editor.web.TemplatePage" />
+        <property name="category" ref="dataCategory" />
+        <property name="icon" value="../img/icons/template.png" />
+        <property name="order" value="60" />
+        <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    </bean>
+
+    <bean id="AbstractTemplateEditorPage" class="org.geoserver.template.editor.web.TemplateEditorPageInfo">
+        <property name="id" value="AbstractTemplateEditorPage" />
+        <property name="titleKey" value="AbstractTemplateEditorPage.title" />
+        <property name="descriptionKey" value="AbstractTemplateEditorPage.description" />
+        <property name="componentClass" value="org.geoserver.template.editor.web.AbstractTemplateEditorPage" />
+    </bean>
+</beans>

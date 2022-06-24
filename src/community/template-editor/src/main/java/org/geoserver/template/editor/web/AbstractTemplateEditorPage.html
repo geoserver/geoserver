@@ -1,0 +1,43 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:head>
+  <wicket:link>
+    <link rel="stylesheet" type="text/css" href="../css/TemplateEditorStyle.css"/>
+    <!--<script type="text/javascript" src="../js/fmte.js" />-->
+  </wicket:link>
+</wicket:head>
+
+<wicket:extend>
+    <h2>
+        <span wicket:id="name"></span> (<span wicket:id="type"></span>)
+    </h2>
+    <table id="templates_editor">
+        <tr>
+            <td id="templates_cell"> 
+                <ul>
+                    <li id="template_header">
+                        <h3 class="name"><wicket:message key="tpl_header_name">Header: </wicket:message></h3>
+                        <div wicket:id="headerTplPanel">
+                        </div>
+                    </li>
+                    <li id="template_content">
+                        <h3 class="name"><wicket:message key="tpl_content_name">Content: </wicket:message></h3>
+                        <div wicket:id="contentTplPanel">
+                        </div>
+                    </li>
+                    <li  id="template_footer">
+                        <h3 class="name"><wicket:message key="tpl_footer_name">Footer: </wicket:message></h3>
+                        <div wicket:id="footerTplPanel">
+                        </div>
+                    </li>
+                </ul>
+            </td>
+            <td class="attributes"> 
+                    <wicket:child/>
+            </td>
+        </tr>
+    </table>
+       
+</wicket:extend>
+</body>
+</html>

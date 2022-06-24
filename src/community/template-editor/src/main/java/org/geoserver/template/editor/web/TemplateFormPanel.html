@@ -1,0 +1,20 @@
+<wicket:panel>
+    <textarea wicket:id="content"></textarea>
+    <div class="align-left">
+        <p class="path srcpath">
+            <wicket:message key="srcpath">Source: </wicket:message>
+            <span wicket:id="srcpath" class="active"></span>/<span wicket:id="filename"></span>
+        </p>
+        <p class="path destpath">
+            <wicket:message key="destpath">Destination path: </wicket:message>
+            <span wicket:id="destpath"></span>/<span wicket:id="filename"></span>
+            <span wicket:id="dirty"></span>
+        </p>
+    </div>
+    <div class="button-group align-right">
+        <button wicket:id="delete_btn"> <wicket:message key="delete">Delete</wicket:message></button>
+        <button wicket:id="reload_btn"> <wicket:message key="reload">Reset</wicket:message></button>
+        <button wicket:id="save_btn"> <wicket:message key="save">Save</wicket:message></button>
+    </div>
+    <wicket:child/>
+</wicket:panel>

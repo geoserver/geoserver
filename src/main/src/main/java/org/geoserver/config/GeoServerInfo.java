@@ -33,9 +33,11 @@ public interface GeoServerInfo extends Info {
     void setSettings(SettingsInfo settings);
 
     /** The flag to use request headers for the proxy URL */
+    @Deprecated
     Boolean isUseHeadersProxyURL();
 
     /** Sets the flag to use request headers for the proxy URL */
+    @Deprecated
     void setUseHeadersProxyURL(Boolean useHeadersProxyURL);
 
     /** The Java Advanced Imaging configuration. */

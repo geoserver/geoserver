@@ -8,6 +8,7 @@ package org.geoserver.config.impl;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
@@ -49,7 +50,7 @@ public class SettingsInfoImpl implements SettingsInfo {
 
     protected Locale defaultLocale;
 
-    protected boolean useHeadersProxyURL = false;
+    protected Boolean useHeadersProxyURL;
 
     @Override
     public String getId() {
@@ -61,13 +62,17 @@ public class SettingsInfoImpl implements SettingsInfo {
     }
 
     @Override
-    public boolean isUseHeadersProxyURL() {
+    public Boolean isUseHeadersProxyURL() {
         return useHeadersProxyURL;
     }
 
     @Override
-    public void setUseHeadersProxyURL(boolean useHeadersProxyURL) {
-        this.useHeadersProxyURL = useHeadersProxyURL;
+    public void setUseHeadersProxyURL(Optional<Boolean> useHeadersProxyURL) {
+        if (useHeadersProxyURL != null && useHeadersProxyURL.isPresent()) {
+            this.useHeadersProxyURL = useHeadersProxyURL.get();
+        } else {
+            this.useHeadersProxyURL = null;
+        }
     }
 
     @Override

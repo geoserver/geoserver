@@ -97,11 +97,7 @@ public class ProxifyingURLMangler implements URLMangler {
         // (for two reasons: a) speed; b) to make the admin aware of
         // possible security liabilities)
 
-        boolean workspaceEnabled = this.geoServer.getSettings().getWorkspace() != null;
-        boolean doMangleHeaders =
-                workspaceEnabled
-                        ? this.geoServer.getSettings().isUseHeadersProxyURL()
-                        : this.geoServer.getGlobal().isUseHeadersProxyURL();
+        boolean doMangleHeaders = geoServer.getSettings().isUseHeadersProxyURL();
 
         if (proxyBase != null && doMangleHeaders) {
             this.mangleURLHeaders(baseURL, proxyBase);

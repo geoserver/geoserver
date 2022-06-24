@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerInfoImpl;
@@ -124,10 +123,11 @@ public class URLProxifyingTest {
         SettingsInfo settings = createNiceMock(SettingsInfo.class);
         expect(settings.getProxyBaseUrl()).andReturn(proxyBaseUrl).anyTimes();
         if (localWorkspaceSettingsEnabled) {
-            expect(settings.getWorkspace()).andReturn(new WorkspaceInfoImpl()).anyTimes();
             expect(settings.isUseHeadersProxyURL())
                     .andReturn(useWorkspaceHeadersProxyUrl)
                     .anyTimes();
+        } else {
+            expect(settings.isUseHeadersProxyURL()).andReturn(useHeadersProxyURLIn).anyTimes();
         }
         replay(settings);
 

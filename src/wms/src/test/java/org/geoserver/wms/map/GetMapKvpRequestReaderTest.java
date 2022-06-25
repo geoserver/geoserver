@@ -174,7 +174,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
             // test no custom entity resolver will be used
             GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
-            assertNull(reader.entityResolverProvider.getEntityResolver());
+            assertNull(reader.getEntityResolverProvider().getEntityResolver());
 
             // disable entities
             geoserverInfo.setXmlExternalEntitiesEnabled(false);
@@ -183,14 +183,14 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             // since XML entities are disabled for external SLD files
             // I need an entity resolver which enforce this
             reader = new GetMapKvpRequestReader(wms);
-            assertNotNull(reader.entityResolverProvider.getEntityResolver());
+            assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
 
             // try default value: entities should be disabled
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
             getGeoServer().save(geoserverInfo);
 
             reader = new GetMapKvpRequestReader(wms);
-            assertNotNull(reader.entityResolverProvider.getEntityResolver());
+            assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
         } finally {
             // reset to default
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
@@ -802,7 +802,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                             return response;
                         }
                     };
-
             reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
         }
     }

@@ -6,12 +6,14 @@
 package org.geoserver.catalog.impl;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.String.format;
 import static org.geoserver.catalog.Predicates.acceptAll;
 import static org.geoserver.catalog.Predicates.asc;
 import static org.geoserver.catalog.Predicates.contains;
 import static org.geoserver.catalog.Predicates.desc;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.or;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -24,6 +26,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -90,6 +95,7 @@ import org.geotools.util.logging.Logging;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
@@ -244,8 +250,26 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         catalog.add(ws);
     }
 
+    protected WorkspaceInfo addWorkspace(String name) {
+        WorkspaceInfo ws2 = catalog.getFactory().createWorkspace();
+        ws2.setName(name);
+        catalog.add(ws2);
+        ws2 = catalog.getWorkspaceByName(ws2.getName());
+        return ws2;
+    }
+
     protected void addNamespace() {
         catalog.add(ns);
+    }
+
+    private NamespaceInfo addNamespace(String prefix) {
+        NamespaceInfo ns2 = catalog.getFactory().createNamespace();
+        ns2.setPrefix(prefix);
+        ns2.setURI(prefix + "_URI");
+        catalog.add(ns2);
+        NamespaceInfo newns = catalog.getNamespaceByPrefix(ns2.getPrefix());
+        assertNotNull(newns);
+        return newns;
     }
 
     protected void addDataStore() {
@@ -922,20 +946,167 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testChangeDataStoreWorkspace() throws Exception {
+    public void testChangeDataStoreWorkspace_no_resources() throws Exception {
+        addDataStore();
+        testChangeStoreWorkspace(ds);
+    }
+
+    @Test
+    public void testChangeDataStoreWorkspaceUpdatesResourcesNamespace() throws Exception {
+        addFeatureType();
+        StoreInfo updated = testChangeStoreWorkspace(ds);
+        verifyNamespaceOfStoreResources(updated);
+    }
+
+    @Test
+    public void testChangeCoverageStoreWorkspaceUpdatesResourcesNamespace() throws Exception {
+        addCoverage();
+        StoreInfo updated = testChangeStoreWorkspace(cs);
+        verifyNamespaceOfStoreResources(updated);
+    }
+
+    @Test
+    public void testChangeWMSStoreWorkspaceUpdatesResourcesNamespace() throws Exception {
+        addWMSLayer();
+        StoreInfo updated = testChangeStoreWorkspace(wms);
+        verifyNamespaceOfStoreResources(updated);
+    }
+
+    @Test
+    public void testChangeWTMSStoreWorkspaceUpdatesResourcesNamespace() throws Exception {
+        addWMTSLayer();
+        StoreInfo updated = testChangeStoreWorkspace(wmtss);
+        verifyNamespaceOfStoreResources(updated);
+    }
+
+    @Test
+    public void testChangeDataStoreWorkspace_fails_on_no_matching_namespace() throws Exception {
         addDataStore();
 
-        WorkspaceInfo ws2 = catalog.getFactory().createWorkspace();
-        ws2.setName("newWorkspace");
-        catalog.add(ws2);
-        ws2 = catalog.getWorkspaceByName(ws2.getName());
+        WorkspaceInfo ws2 = addWorkspace("newWorkspace");
 
         DataStoreInfo ds2 = catalog.getDataStoreByName(ds.getName());
         ds2.setWorkspace(ws2);
-        catalog.save(ds2);
 
-        assertNull(catalog.getDataStoreByName(ws, ds2.getName()));
-        assertNotNull(catalog.getDataStoreByName(ws2, ds2.getName()));
+        IllegalArgumentException expected =
+                assertThrows(IllegalArgumentException.class, () -> catalog.save(ds2));
+        assertThat(
+                expected.getMessage(),
+                containsString(
+                        "Store dsName changed from workspace wsName to newWorkspace, but namespace newWorkspace does not exist"));
+    }
+
+    @Test
+    public void testSaveDataStoreRollbacksStoreWhenFailsToUpdateResourcesNamespace()
+            throws Exception {
+        addFeatureType();
+
+        final StoreInfo store = catalog.getDataStore(this.ds.getId());
+
+        final WorkspaceInfo oldWorkspace = store.getWorkspace();
+        final NamespaceInfo oldNamespace = catalog.getNamespaceByPrefix(oldWorkspace.getName());
+
+        final WorkspaceInfo newWorkspace = addWorkspace("newWorkspace");
+        addNamespace(newWorkspace.getName());
+
+        CatalogImpl catalog = Mockito.spy((CatalogImpl) this.catalog);
+        // throw once the store's been saved and its resources are about to have the new namespace
+        // set
+        doThrow(IllegalStateException.class).when(catalog).updateNamespace(any(), any());
+
+        final String oldName = store.getName();
+        store.setName("newName");
+        store.setWorkspace(newWorkspace);
+
+        assertThrows(IllegalStateException.class, () -> catalog.save(store));
+
+        DataStoreInfo store2 = catalog.getDataStore(this.ds.getId());
+        assertEquals(oldName, store2.getName());
+        assertEquals(oldWorkspace, store2.getWorkspace());
+
+        List<ResourceInfo> resources = catalog.getResourcesByStore(store2, ResourceInfo.class);
+        assertFalse(resources.isEmpty());
+        for (ResourceInfo resource : resources) {
+            assertEquals(oldNamespace, resource.getNamespace());
+        }
+    }
+
+    @Test
+    public void testSaveDataStoreRollbacksBothStoreAndResources() throws Exception {
+        addFeatureType();
+
+        FeatureTypeInfo ft2 = catalog.getFactory().createFeatureType();
+        ft2.setName("ft2Name");
+        ft2.setStore(ds);
+        ft2.setNamespace(ns);
+        catalog.add(ft2);
+        ft = catalog.getFeatureType(ft2.getId());
+
+        final StoreInfo store = catalog.getDataStore(this.ds.getId());
+
+        final WorkspaceInfo oldWorkspace = store.getWorkspace();
+        final NamespaceInfo oldNamespace = catalog.getNamespaceByPrefix(oldWorkspace.getName());
+
+        final WorkspaceInfo newWorkspace = addWorkspace("newWorkspace");
+        addNamespace(newWorkspace.getName());
+
+        CatalogImpl catalog = Mockito.spy((CatalogImpl) this.catalog);
+        // make sure catalog returns resources in the expected order
+        //        doReturn(Arrays.asList(ft, ft2)).when(catalog).getResourcesByStore(any(), any());
+
+        // let the first ft's namespace be updated, fail on the second
+        doThrow(IllegalStateException.class).when(catalog).updateNamespace(eq(ft2), any());
+
+        final String oldName = store.getName();
+        store.setName("newName");
+        store.setWorkspace(newWorkspace);
+
+        assertThrows(IllegalStateException.class, () -> catalog.save(store));
+
+        DataStoreInfo store2 = catalog.getDataStore(this.ds.getId());
+        assertEquals("store's not rolled back before throwing", oldName, store2.getName());
+        assertEquals(
+                "store's not rolled back before throwing", oldWorkspace, store2.getWorkspace());
+
+        List<ResourceInfo> resources = catalog.getResourcesByStore(store2, ResourceInfo.class);
+        assertFalse(resources.isEmpty());
+        for (ResourceInfo resource : resources) {
+            assertEquals(
+                    "ft's not rolled back before throwing", oldNamespace, resource.getNamespace());
+        }
+    }
+
+    private StoreInfo testChangeStoreWorkspace(StoreInfo store) throws Exception {
+        WorkspaceInfo ws2 = addWorkspace("newWorkspace");
+        addNamespace(ws2.getName());
+
+        StoreInfo store2 = catalog.getStore(store.getId(), StoreInfo.class);
+        store2.setWorkspace(ws2);
+        catalog.save(store2);
+
+        assertNull(catalog.getStoreByName(ws, store2.getName(), StoreInfo.class));
+        StoreInfo updated = catalog.getStoreByName(ws2, store2.getName(), StoreInfo.class);
+        assertNotNull(updated);
+        return updated;
+    }
+
+    private void verifyNamespaceOfStoreResources(StoreInfo store) {
+        final String wsName = store.getWorkspace().getName();
+        final NamespaceInfo expected = catalog.getNamespaceByPrefix(wsName);
+        assertNotNull("namespace '" + wsName + "' does not exist", expected);
+
+        List<ResourceInfo> resources = catalog.getResourcesByStore(store, ResourceInfo.class);
+        assertFalse("prepare test scenario so the store has resources", resources.isEmpty());
+
+        for (ResourceInfo resource : resources) {
+            NamespaceInfo actual = resource.getNamespace();
+            assertNotNull(actual);
+            String msg =
+                    format(
+                            "resource %s of store %s did not get its namespace updated",
+                            resource.getName(), store.getName());
+            assertEquals(msg, expected, actual);
+        }
     }
 
     @Test

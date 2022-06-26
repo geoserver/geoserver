@@ -5,6 +5,8 @@
  */
 package org.geoserver.catalog.impl;
 
+import static java.lang.String.format;
+
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -13,6 +15,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -249,8 +253,107 @@ public class CatalogImpl implements Catalog {
             add(store);
             return;
         }
+
         validate(store, false);
+
+        final StoreInfo oldState = getStore(store.getId(), StoreInfo.class);
+        final WorkspaceInfo oldWorkspace = oldState.getWorkspace();
+
+        // figure out if the store's workspace changed before saving it and get the namespace to
+        // update its ResourceInfos
+        final Optional<NamespaceInfo> namespaceChange = findNamespaceChange(store, oldWorkspace);
+        // save a copy of the store's state before saving in case it has to be rolled back
+        final StoreInfo rollbackCopy =
+                namespaceChange.map(ns -> cloneForRollback(oldState)).orElse(null);
+
+        // save the store before updating the resources namespace, don't risk a listener getting an
+        // inconsistent state while saving a ResourceInfo if the workspace changed
         facade.save(store);
+
+        // if updateResourcesNamespace returns, all its resources have been updated, if it fails
+        // they've been rolled back
+        try {
+            namespaceChange.ifPresent(
+                    newNamespace ->
+                            updateResourcesNamespace(store, oldWorkspace.getName(), newNamespace));
+        } catch (RuntimeException e) {
+            rollback(store, rollbackCopy);
+            throw e;
+        }
+    }
+
+    protected StoreInfo cloneForRollback(StoreInfo store) {
+        final StoreInfo rollbackCopy;
+        final boolean resolveEnvParameters = false;
+        rollbackCopy = getResourcePool().clone(store, resolveEnvParameters);
+        return rollbackCopy;
+    }
+
+    protected void rollback(StoreInfo store, StoreInfo rollbackTo) {
+        // apply the rollback object properties to the real store
+        OwsUtils.copy(rollbackTo, store, infoInterfaceOf(rollbackTo));
+        facade.save(store);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Class<? extends CatalogInfo> infoInterfaceOf(CatalogInfo info) {
+        info = ModificationProxy.unwrap(info);
+        return (Class<? extends CatalogInfo>)
+                ClassMappings.fromImpl(info.getClass()).getInterface();
+    }
+
+    protected void updateResourcesNamespace(
+            StoreInfo store, String oldNamespacePrefix, NamespaceInfo newNamespace) {
+        List<ResourceInfo> storeResources = getResourcesByStore(store, ResourceInfo.class);
+        try {
+            storeResources.stream().forEach(resource -> updateNamespace(resource, newNamespace));
+        } catch (RuntimeException e) {
+            rollbackNamespaces(storeResources, oldNamespacePrefix, newNamespace);
+            throw e;
+        }
+    }
+
+    protected void rollbackNamespaces(
+            List<ResourceInfo> storeResources,
+            String oldNamespacePrefix,
+            NamespaceInfo newNamespace) {
+        // rolback the namespace on all the resources that got it changed
+        final NamespaceInfo rolbackNamespace = getNamespaceByPrefix(oldNamespacePrefix);
+        Objects.requireNonNull(rolbackNamespace);
+
+        final String newNsId = newNamespace.getId();
+        storeResources.stream()
+                .filter(r -> newNsId.equals(r.getNamespace().getId()))
+                .forEach(
+                        resource -> {
+                            updateNamespace(resource, rolbackNamespace);
+                        });
+    }
+
+    protected void updateNamespace(ResourceInfo resource, NamespaceInfo newNamespace) {
+        resource.setNamespace(newNamespace);
+        // skip validation and save it directly
+        facade.save(resource);
+    }
+
+    protected Optional<NamespaceInfo> findNamespaceChange(
+            StoreInfo store, WorkspaceInfo oldWorkspace) {
+        final WorkspaceInfo newWorkspace = store.getWorkspace();
+        NamespaceInfo newNamespace = null;
+        if (!Objects.equals(oldWorkspace.getId(), newWorkspace.getId())) {
+            newNamespace = getNamespaceByPrefix(newWorkspace.getName());
+            if (null == newNamespace) {
+                String msg =
+                        format(
+                                "Store %s changed from workspace %s to %s, but namespace %s does not exist",
+                                store.getName(),
+                                oldWorkspace.getName(),
+                                newWorkspace.getName(),
+                                newWorkspace.getName());
+                throw new IllegalArgumentException(msg);
+            }
+        }
+        return Optional.ofNullable(newNamespace);
     }
 
     @Override

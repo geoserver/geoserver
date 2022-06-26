@@ -2849,6 +2849,20 @@ public class ResourcePool {
         return target;
     }
 
+    @SuppressWarnings("unchecked")
+    public <S extends StoreInfo> S clone(S store, boolean allowEnvParametrization) {
+        Objects.requireNonNull(store);
+        if (store instanceof DataStoreInfo)
+            return (S) clone((DataStoreInfo) store, allowEnvParametrization);
+        if (store instanceof CoverageStoreInfo)
+            return (S) clone((CoverageStoreInfo) store, allowEnvParametrization);
+        if (store instanceof WMSStoreInfo)
+            return (S) clone((WMSStoreInfo) store, allowEnvParametrization);
+        if (store instanceof WMTSStoreInfo)
+            return (S) clone((WMTSStoreInfo) store, allowEnvParametrization);
+        throw new IllegalArgumentException("Unknown store type: " + store);
+    }
+
     /** */
     private void setConnectionParameters(final WMSStoreInfo source, WMSStoreInfo target) {
         target.setCapabilitiesURL(source.getCapabilitiesURL());

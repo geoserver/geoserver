@@ -153,6 +153,11 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         nws.setName("topp");
         catalog.add(nws);
 
+        NamespaceInfo nns = catalog.getFactory().createNamespace();
+        nns.setPrefix(nws.getName());
+        nns.setURI(nws.getName() + "_uri");
+        catalog.add(nns);
+
         DataStoreInfo ds = catalog.getDataStoreByName("acme", "foostore");
         ds.setWorkspace(nws);
         catalog.save(ds);

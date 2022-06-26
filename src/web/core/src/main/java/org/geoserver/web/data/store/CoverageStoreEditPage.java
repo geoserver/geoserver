@@ -6,15 +6,12 @@
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -104,8 +101,6 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
         final ResourcePool resourcePool = catalog.getResourcePool();
         resourcePool.clear(info);
 
-        // Map<String, Serializable> connectionParameters = info.getConnectionParameters();
-
         if (info.isEnabled()) {
             // store's enabled, make sure it works
             LOGGER.finer(
@@ -189,21 +184,11 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
     /**
      * Performs the save of the store.
      *
-     * <p>This method may be subclasses to provide custom save functionality.
+     * <p>This method may be subclassed to provide custom save functionality.
      */
     protected void doSaveStore(final CoverageStoreInfo info) {
         try {
             Catalog catalog = getCatalog();
-
-            final String prefix = info.getWorkspace().getName();
-            final NamespaceInfo namespace = catalog.getNamespaceByPrefix(prefix);
-
-            List<CoverageInfo> alreadyConfigured =
-                    catalog.getResourcesByStore(info, CoverageInfo.class);
-
-            for (CoverageInfo coverage : alreadyConfigured) {
-                coverage.setNamespace(namespace);
-            }
 
             ResourcePool resourcePool = catalog.getResourcePool();
             resourcePool.clear(info);
@@ -213,10 +198,6 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
             catalog.validate(expandedStore, false).throwIfInvalid();
 
             catalog.save(info);
-
-            for (CoverageInfo coverage : alreadyConfigured) {
-                catalog.save(coverage);
-            }
             LOGGER.finer("Saved store " + info.getName());
         } catch (RuntimeException e) {
             LOGGER.log(Level.WARNING, "Saving the store for " + info.getURL(), e);

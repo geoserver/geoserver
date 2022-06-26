@@ -167,7 +167,17 @@ public interface Catalog extends CatalogInfo {
     /** Removes an existing store. */
     void remove(StoreInfo store);
 
-    /** Saves a store that has been modified. */
+    /**
+     * Saves a store that has been modified.
+     *
+     * <p>If the store has been moved to another {@link StoreInfo#getWorkspace() workspace}, then
+     * when this method returns it is guaranteed that all its {@link ResourceInfo}s have been
+     * "moved" to the namespace whose {@link NamespaceInfo#getPrefix() prefix} matches the store's
+     * workspace name.
+     *
+     * <p>If anything fails while saving the store or while moving its resources to the new
+     * namespace, any change applied is rolled back and a {@link RuntimeException} is thrown.
+     */
     void save(StoreInfo store);
 
     /**

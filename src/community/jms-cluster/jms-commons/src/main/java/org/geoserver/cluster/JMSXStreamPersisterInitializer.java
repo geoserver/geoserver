@@ -8,7 +8,7 @@ package org.geoserver.cluster;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
 
-/** Extension point to enable emsa package name in the SecureXStream. */
+/** Extension point to enable JSM packages name in the SecureXStream. */
 public class JMSXStreamPersisterInitializer implements XStreamPersisterInitializer {
 
     @Override

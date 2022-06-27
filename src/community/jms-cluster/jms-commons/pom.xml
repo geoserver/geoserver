@@ -24,6 +24,12 @@
       <artifactId>gs-platform</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- http://x-stream.github.io/jira/571/ -->
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>

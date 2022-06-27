@@ -36,6 +36,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Or;
@@ -99,9 +100,9 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         FilterFactory2 ff = params.getFilterFactory();
         try {
             GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
-            String localName = geometryDescriptor.getLocalName();
+            Name name = geometryDescriptor.getName();
             Polygon queryPolygon = JTS.toGeometry(queryEnvelope);
-            getFInfoFilter = ff.intersects(ff.property(localName), ff.literal(queryPolygon));
+            getFInfoFilter = ff.intersects(ff.property(name), ff.literal(queryPolygon));
         } catch (IllegalFilterException e) {
             LOGGER.log(Level.FINE, "", e);
             throw new ServiceException("Internal error : " + e.getMessage(), e);

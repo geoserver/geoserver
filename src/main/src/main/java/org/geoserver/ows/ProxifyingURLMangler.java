@@ -96,14 +96,22 @@ public class ProxifyingURLMangler implements URLMangler {
         // Mangles the URL base in different ways based on a flag
         // (for two reasons: a) speed; b) to make the admin aware of
         // possible security liabilities)
-
-        boolean doMangleHeaders = geoServer.getSettings().isUseHeadersProxyURL();
-
+        boolean doMangleHeaders = resolveDoMangleHeaders();
         if (proxyBase != null && doMangleHeaders) {
             this.mangleURLHeaders(baseURL, proxyBase);
         } else {
             this.mangleURLFixedURL(baseURL, proxyBase);
         }
+    }
+
+    private boolean resolveDoMangleHeaders() {
+        Boolean wsAwareFlag = geoServer.getSettings().isUseHeadersProxyURL();
+        Boolean resultFlag =
+                wsAwareFlag != null
+                        ? wsAwareFlag
+                        : geoServer.getGlobal().getSettings().isUseHeadersProxyURL();
+        if (resultFlag != null) return resultFlag;
+        return false;
     }
 
     /**

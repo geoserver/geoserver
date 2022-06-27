@@ -110,15 +110,7 @@ public class URLProxifyingTest {
         HTTPHeadersCollector filter = new HTTPHeadersCollector();
         filter.collectHeaders(servletRequest);
         GeoServer geoServer = createNiceMock(GeoServer.class);
-        expect(geoServer.getGlobal())
-                .andReturn(
-                        new GeoServerInfoImpl() {
-                            @Override
-                            public Boolean isUseHeadersProxyURL() {
-                                return useHeadersProxyURLIn != null && useHeadersProxyURLIn;
-                            }
-                        })
-                .anyTimes();
+        expect(geoServer.getGlobal()).andReturn(new GeoServerInfoImpl()).anyTimes();
 
         SettingsInfo settings = createNiceMock(SettingsInfo.class);
         expect(settings.getProxyBaseUrl()).andReturn(proxyBaseUrl).anyTimes();

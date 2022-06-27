@@ -29,7 +29,7 @@ public class ResponseUtilsTest {
     void createAppContext(String proxyBaseUrl) {
         SettingsInfo settings = createNiceMock(SettingsInfo.class);
         expect(settings.getProxyBaseUrl()).andReturn(proxyBaseUrl).anyTimes();
-        expect(settings.isUseHeadersProxyURL()).andReturn(false).anyTimes();
+        expect(settings.isUseHeadersProxyURL()).andReturn(null).anyTimes();
         replay(settings);
 
         GeoServer geoServer = createNiceMock(GeoServer.class);

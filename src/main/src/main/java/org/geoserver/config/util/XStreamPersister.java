@@ -53,7 +53,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -2549,10 +2548,6 @@ public class XStreamPersister {
             if (obj.getClientProperties() == null) {
                 obj.setClientProperties(new HashMap<>());
             }
-            if (obj.isUseHeadersProxyURL() == null) {
-                Boolean useHeadersProxyURL = geoserver.getGlobal().isUseHeadersProxyURL();
-                obj.setUseHeadersProxyURL(Optional.of(useHeadersProxyURL));
-            }
             return obj;
         }
     }
@@ -2565,12 +2560,13 @@ public class XStreamPersister {
         }
 
         @Override
+        @SuppressWarnings("deprecation")
         protected void doMarshal(
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             GeoServerInfo geoServerInfo = (GeoServerInfo) source;
             SettingsInfo settings = geoServerInfo.getSettings();
             if (settings.isUseHeadersProxyURL() == null) {
-                settings.setUseHeadersProxyURL(Optional.ofNullable(geoServerInfo.isUseHeadersProxyURL()));
+                settings.setUseHeadersProxyURL(geoServerInfo.isUseHeadersProxyURL());
             }
             super.doMarshal(source, writer, context);
         }

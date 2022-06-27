@@ -7,7 +7,6 @@ package org.geoserver.config;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -18,12 +17,6 @@ import org.geoserver.catalog.WorkspaceInfo;
  * @author Justin Deoliveira, OpenGeo
  */
 public interface SettingsInfo extends Info {
-
-    /** The flag to use request headers for the proxy URL */
-    Boolean isUseHeadersProxyURL();
-
-    /** Sets the flag to use request headers for the proxy URL */
-    void setUseHeadersProxyURL(Optional<Boolean> useHeadersProxyURL);
 
     /**
      * The workspace the settings are specific to.
@@ -163,4 +156,10 @@ public interface SettingsInfo extends Info {
      * @param locale the locale to set as default
      */
     void setDefaultLocale(Locale locale);
+
+    /** The flag to use request headers for the proxy URL */
+    Boolean isUseHeadersProxyURL();
+
+    /** Sets the flag to use request headers for the proxy URL */
+    void setUseHeadersProxyURL(Boolean useHeadersProxyURL);
 }

@@ -1061,7 +1061,7 @@
       <dependency>
         <groupId>org.mapfish.print</groupId>
         <artifactId>print-lib</artifactId>
-        <version>2.2.0</version>
+        <version>3.28.2</version>
       </dependency>
       <dependency>
         <groupId>com.github.librepdf</groupId>

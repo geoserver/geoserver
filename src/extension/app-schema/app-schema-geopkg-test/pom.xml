@@ -226,9 +226,7 @@
             <exclude>**/PropertyEncodingOrderTest</exclude>
             <exclude>**/MultiGeometryTest</exclude>
             <exclude>**/XlinkGeometryTest</exclude>
-            <exlclude>**/WmsGetFeatureInfoTest</exlclude>
             <exclude>**/NestedGeometryFilterEncodingTest</exclude>
-            <exclude>**/WmsGetMapTest</exclude>
             <exclude>**/RestConfigWfsTest</exclude>
             <exclude>**/ReprojectionAxisFlipTest</exclude>
             <exclude>${test.exclude.pattern}</exclude>

@@ -574,6 +574,7 @@ public class XStreamPersister {
         xs.registerConverter(new VirtualTableConverter());
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
+        xs.registerConverter(new GeoServerInfoConverter());
         xs.registerConverter(new WMSLayerInfoConverter());
         xs.registerConverter(new GrowableInternationalStringConverter());
         xs.registerConverter(new LayerGroupStyleConverter());
@@ -2554,6 +2555,26 @@ public class XStreamPersister {
                 obj.setClientProperties(new HashMap<>());
             }
             return obj;
+        }
+    }
+
+    /** Converter for GeoServerInfo class */
+    class GeoServerInfoConverter extends AbstractReflectionConverter {
+
+        public GeoServerInfoConverter() {
+            super(GeoServerInfo.class);
+        }
+
+        @Override
+        @SuppressWarnings("deprecation")
+        protected void doMarshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            GeoServerInfo geoServerInfo = (GeoServerInfo) source;
+            SettingsInfo settings = geoServerInfo.getSettings();
+            if (settings.isUseHeadersProxyURL() == null) {
+                settings.setUseHeadersProxyURL(geoServerInfo.isUseHeadersProxyURL());
+            }
+            super.doMarshal(source, writer, context);
         }
     }
 

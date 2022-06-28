@@ -156,4 +156,10 @@ public interface SettingsInfo extends Info {
      * @param locale the locale to set as default
      */
     void setDefaultLocale(Locale locale);
+
+    /** The flag to use request headers for the proxy URL */
+    Boolean isUseHeadersProxyURL();
+
+    /** Sets the flag to use request headers for the proxy URL */
+    void setUseHeadersProxyURL(Boolean useHeadersProxyURL);
 }

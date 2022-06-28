@@ -240,13 +240,15 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     }
 
     @Override
+    @Deprecated
     public Boolean isUseHeadersProxyURL() {
-        return useHeadersProxyURL == null ? false : useHeadersProxyURL;
+        return getSettings().isUseHeadersProxyURL();
     }
 
     @Override
+    @Deprecated
     public void setUseHeadersProxyURL(Boolean useHeadersProxyURL) {
-        this.useHeadersProxyURL = useHeadersProxyURL;
+        getSettings().setUseHeadersProxyURL(useHeadersProxyURL);
     }
 
     @Override

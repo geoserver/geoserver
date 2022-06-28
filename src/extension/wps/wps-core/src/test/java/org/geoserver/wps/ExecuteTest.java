@@ -2274,8 +2274,8 @@ public class ExecuteTest extends WPSTestSupport {
     public void testBacklinksProxyHeaders() throws Exception {
         GeoServer gs = getGeoServer();
         GeoServerInfo gsInfo = gs.getGlobal();
-        gsInfo.setUseHeadersProxyURL(true);
         SettingsInfo settings = gsInfo.getSettings();
+        settings.setUseHeadersProxyURL(true);
         settings.setProxyBaseUrl("${X-Forwarded-Proto}://${X-Forwarded-Host}/geoserver");
         gs.save(gsInfo);
 

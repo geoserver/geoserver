@@ -170,6 +170,23 @@ public class LoggingUtils {
     }
 
     /**
+     * Used by modules to register additional built-in logging profiles during startup, confirming
+     * logConfigFile is available (and updating if needed).
+     *
+     * <p>This method will check resource loader logConfigFile profile against the internal
+     * templates and only update the xml file if needed. If the file is updated the previous
+     * definition is available as a {@code xml.bak} file allowing.
+     *
+     * @param resourceLoader GeoServer resource access
+     * @param logConfigFile Logging profile matching a built-in template on the classpath
+     */
+    public static void checkBuiltInLoggingConfiguration(
+            GeoServerResourceLoader resourceLoader, String logConfigFile) {
+        if (!relinquishLog4jControl) {
+            LoggingUtilsDelegate.checkBuiltInLoggingConfiguration(resourceLoader, logConfigFile);
+        }
+    }
+    /**
      * Finds the log location in the "context" (system variable, env variable, servlet context) or
      * uses the provided base location otherwise
      */

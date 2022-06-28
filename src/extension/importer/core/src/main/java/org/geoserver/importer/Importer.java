@@ -61,6 +61,7 @@ import org.geoserver.importer.transform.RasterTransformChain;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
+import org.geoserver.logging.LoggingUtils;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
@@ -264,7 +265,9 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     /**
-     * Used to setup importer with {@link #createContext(Long)} on startup.
+     * Used to setup importer with {@link #createContextStore()} on startup.
+     *
+     * <p>Also sets up {@code IMPORTER_LOGGING} logging profile, updating if required.
      *
      * @param event
      */
@@ -272,17 +275,12 @@ public class Importer implements DisposableBean, ApplicationListener {
     public void onApplicationEvent(ApplicationEvent event) {
         // load the context store here to avoid circular dependency on creation of the importer
         if (event instanceof ContextLoadedEvent) {
+            // provide a helpful logging config for this extension
+            GeoServerResourceLoader loader = getCatalog().getResourceLoader();
+            LoggingUtils.checkBuiltInLoggingConfiguration(loader, "IMPORTER_LOGGING.xml");
+
             contextStore = createContextStore();
             contextStore.init();
-        }
-        // provide a helpful logging config for this extension
-        if (event instanceof ContextLoadedEvent) {
-            GeoServerResourceLoader loader = getCatalog().getResourceLoader();
-            try {
-                loader.copyFromClassPath("/IMPORTER_LOGGING.xml", "logs/IMPORTER_LOGGING.xml");
-            } catch (IOException e) {
-                LOGGER.fine("Unable to configure with IMPORTER_LOGGING");
-            }
         }
     }
 
@@ -1260,6 +1258,8 @@ public class Importer implements DisposableBean, ApplicationListener {
                             && (task.getUpdateMode() == UpdateMode.CREATE
                                     || task.getUpdateMode() == UpdateMode.REPLACE)) {
                         // Create if needed (for create or replace mode)
+                        // Replace mode can be used to update table contents in place
+                        // and publish the results as a new layer
                         addToCatalog(task);
                         resource =
                                 getCatalog()
@@ -1455,8 +1455,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             } else if (isPostGISDataStore(dataStore)) {
                 featureDataConverter = FeatureDataConverter.TO_POSTGIS;
             }
-            // the following conversion may adjust feature type name and attribute names and data
-            // types
+            // conversion may adjust feature type name and attribute names and data types
             // to match the abilities of the data store format being used
             featureType = featureDataConverter.convertType(featureType, format, data, task);
             UpdateMode updateMode = task.getUpdateMode();
@@ -1956,55 +1955,63 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         try {
             task.clearMessages();
-            task.setTotalToProcess(format.getFeatureCount(task.getData(), task));
+            int numberOfFeatures = format.getFeatureCount(task.getData(), task);
+            task.setTotalToProcess(numberOfFeatures);
         } catch (IOException noCountAvailable) {
-            LOGGER.fine("Unable to determine number of features to import: " + noCountAvailable);
+            LOGGER.log(
+                    Level.FINE,
+                    "Unable to determine number of features to import: " + noCountAvailable,
+                    noCountAvailable);
+            error = noCountAvailable;
         }
 
-        try (FeatureWriter writer =
-                dataStoreDestination.getFeatureWriterAppend(nativeFeatureTypeName, transaction)) {
+        if (error == null) {
+            try (FeatureWriter writer =
+                    dataStoreDestination.getFeatureWriterAppend(
+                            nativeFeatureTypeName, transaction)) {
 
-            while (reader.hasNext()) {
-                if (monitor.isCanceled()) {
-                    break;
+                while (reader.hasNext()) {
+                    if (monitor.isCanceled()) {
+                        break;
+                    }
+                    SimpleFeature feature = (SimpleFeature) reader.next();
+                    SimpleFeature next = (SimpleFeature) writer.next();
+
+                    // (JD) TODO: some formats will rearrange the geometry type (like shapefile)
+                    // which
+                    // makes the geometry the first attribute regardless, so blindly copying over
+                    // attributes won't work unless the source type also has the geometry as the
+                    // first attribute in the schema
+                    featureDataConverter.convert(feature, next);
+
+                    // @hack #45678 - mask empty geometry or postgis will complain
+                    Geometry geom = (Geometry) next.getDefaultGeometry();
+                    if (geom != null && geom.isEmpty()) {
+                        next.setDefaultGeometry(null);
+                    }
+
+                    // apply the feature transform
+                    next = tx.inline(task, dataStoreDestination, feature, next);
+
+                    if (next == null) {
+                        skipped++;
+                    } else {
+                        writer.write();
+                    }
+                    task.setNumberProcessed(++cnt);
                 }
-                SimpleFeature feature = (SimpleFeature) reader.next();
-                SimpleFeature next = (SimpleFeature) writer.next();
-
-                // (JD) TODO: some formats will rearrange the geometry type (like shapefile) which
-                // makes the geometry the first attribute regardless, so blindly copying over
-                // attributes won't work unless the source type also has the geometry as the
-                // first attribute in the schema
-                featureDataConverter.convert(feature, next);
-
-                // @hack #45678 - mask empty geometry or postgis will complain
-                Geometry geom = (Geometry) next.getDefaultGeometry();
-                if (geom != null && geom.isEmpty()) {
-                    next.setDefaultGeometry(null);
+                if (skipped > 0) {
+                    task.addMessage(Level.WARNING, skipped + " features were skipped.");
                 }
-
-                // apply the feature transform
-                next = tx.inline(task, dataStoreDestination, feature, next);
-
-                if (next == null) {
-                    skipped++;
-                } else {
-                    writer.write();
-                }
-                task.setNumberProcessed(++cnt);
+                LOGGER.info(
+                        "Load from reader in to target took "
+                                + (System.currentTimeMillis() - startTime));
+            } catch (Throwable e) {
+                error = e;
+                LOGGER.fine("Load from reader in to target error:" + error);
             }
-            if (skipped > 0) {
-                task.addMessage(Level.WARNING, skipped + " features were skipped.");
-            }
-            LOGGER.info(
-                    "Load from reader in to target took "
-                            + (System.currentTimeMillis() - startTime));
-        } catch (Throwable e) {
-            error = e;
-            LOGGER.fine("Load from reader in to target error:" + error);
         }
         // no finally block, there is too much to do
-
         if (error != null || monitor.isCanceled()) {
             // all sub exceptions in this catch block should be logged, not thrown
             // as the triggering exception will be thrown
@@ -2202,11 +2209,14 @@ public class Importer implements DisposableBean, ApplicationListener {
             ReferencedEnvelope nativeBbox =
                     new ReferencedEnvelope(r.getNativeBoundingBox(), nativeCRS);
 
-            if (!nativeBbox.isEmpty()) {
+            if (nativeBbox.isEmpty()) {
+                LOGGER.fine("Import '" + r.getName() + "' native bounding box is empty");
+                r.setLatLonBoundingBox(ReferencedEnvelope.create(CRS.decode("EPSG:4326")));
+                return true;
+            } else {
                 r.setLatLonBoundingBox(nativeBbox.transform(CRS.decode("EPSG:4326"), true));
                 return true;
             }
-            LOGGER.fine("Import '" + r.getName() + "' native bounding box is empty");
         }
         return false;
     }

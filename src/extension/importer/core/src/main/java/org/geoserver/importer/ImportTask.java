@@ -249,6 +249,11 @@ public class ImportTask implements Serializable {
         return totalToProcess;
     }
 
+    /**
+     * Indication of number of items to process, or {@code -1} for the entire file.
+     *
+     * @param totalToProcess
+     */
     public void setTotalToProcess(int totalToProcess) {
         this.totalToProcess = totalToProcess;
     }

@@ -6,6 +6,7 @@ package org.geoserver.ogcapi;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -18,6 +19,7 @@ import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.util.DateRange;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
@@ -27,18 +29,31 @@ import org.opengis.feature.type.FeatureType;
  */
 public class TimeExtentCalculator {
 
-    private TimeExtentCalculator() {};
+    static final Logger LOGGER = Logging.getLogger(TimeExtentCalculator.class);
 
+    private TimeExtentCalculator() {}
+
+    /**
+     * Computes the time extend for a give resource
+     *
+     * @param ri
+     * @return The time extent, of null if the time dimension was missing, not enabled, or there is
+     *     no support yet to calculate a time extent for the type of resource
+     * @throws IOException
+     */
     public static DateRange getTimeExtent(ResourceInfo ri) throws IOException {
         // does it have a time dimension enabled?
         DimensionInfo time = ri.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-        if (time == null) return null;
+        if (time == null || !time.isEnabled()) return null;
 
         if (ri instanceof FeatureTypeInfo) {
             return getTimeExtent((FeatureTypeInfo) ri, time);
-        } else {
-            return getTimeExtent((CoverageInfo) ri, time);
+        } else if (ri instanceof CoverageInfo) {
+            return getTimeExtent((CoverageInfo) ri);
         }
+
+        LOGGER.fine("Time extent calculation support not yet available for " + ri);
+        return null;
     }
 
     private static DateRange getTimeExtent(FeatureTypeInfo ft, DimensionInfo time)
@@ -64,12 +79,14 @@ public class TimeExtentCalculator {
         return null;
     }
 
-    private static DateRange getTimeExtent(CoverageInfo ci, DimensionInfo time) throws IOException {
+    private static DateRange getTimeExtent(CoverageInfo ci) throws IOException {
         ReaderDimensionsAccessor accessor =
                 new ReaderDimensionsAccessor(
                         (GridCoverage2DReader) ci.getGridCoverageReader(null, null));
         Date minTime = accessor.getMinTime();
         Date maxTime = accessor.getMaxTime();
-        return new DateRange(minTime, maxTime);
+
+        if (minTime != null && maxTime != null) return new DateRange(minTime, maxTime);
+        return null;
     }
 }

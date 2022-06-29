@@ -28,8 +28,8 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
     @Test
     public void testResponseModeParam() throws Exception {
         String baseUrl = "https://localhost:8080";
-        navigateToOpenIdPanel("OpenIdFilter");
-        formTester.setValue("panel:content:name", "OpenIdFilter");
+        navigateToOpenIdPanel("OpenIdFilter1");
+        formTester.setValue("panel:content:name", "OpenIdFilter1");
         formTester.setValue("panel:content:userAuthorizationUri", baseUrl + "/authorize");
         formTester.setValue("panel:content:accessTokenUri", baseUrl + "/token");
         formTester.setValue("panel:content:checkTokenEndpointUrl", baseUrl + "/checkToken");
@@ -44,15 +44,15 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
 
         clickSave();
         tester.assertNoErrorMessage();
-        clickNamedServiceConfig("OpenIdFilter");
+        clickNamedServiceConfig("OpenIdFilter1");
         tester.assertModelValue("panel:panel:form:panel:responseMode", "query");
     }
 
     @Test
     public void testSendClientSecret() throws Exception {
         String baseUrl = "https://localhost:8080";
-        navigateToOpenIdPanel("OpenIdFilter");
-        formTester.setValue("panel:content:name", "OpenIdFilter");
+        navigateToOpenIdPanel("OpenIdFilter2");
+        formTester.setValue("panel:content:name", "OpenIdFilter2");
         formTester.setValue("panel:content:userAuthorizationUri", baseUrl + "/authorize");
         formTester.setValue("panel:content:accessTokenUri", baseUrl + "/token");
         formTester.setValue("panel:content:checkTokenEndpointUrl", baseUrl + "/checkToken");
@@ -66,7 +66,7 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
 
         clickSave();
         tester.assertNoErrorMessage();
-        clickNamedServiceConfig("OpenIdFilter");
+        clickNamedServiceConfig("OpenIdFilter2");
         tester.assertModelValue("panel:panel:form:panel:sendClientSecret", true);
     }
 

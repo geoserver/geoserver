@@ -18,24 +18,6 @@
           http://www.springframework.org/schema/security/oauth2
           http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd">
 
-	<bean class="org.geoserver.platform.ModuleStatusImpl">
-		<constructor-arg index="0" value="gs-sec-oauth2-openid-connect" />
-		<constructor-arg index="1" value="GeoServer Security OpenId Connect" />
-	</bean>
-
-	<!-- OAuth2 Security Extension -->
-	<bean id="openIdConnectTokenServices"
-		class="org.geoserver.security.oauth2.services.OpenIdConnectTokenServices">
-	</bean>
-
-	<bean id="openidConnectAuthenticationProvider"
-		class="org.geoserver.security.oauth2.OpenIdConnectAuthenticationProvider">
-		<constructor-arg ref="authenticationManager" />
-		<constructor-arg value="openIdConnectTokenServices" />
-		<constructor-arg value="openIdConnectSecurityConfiguration" />
-		<constructor-arg value="openIdConnectRestTemplate" />
-	</bean>
-
 	<!-- ui auth provider panel info -->
 	<bean id="openIdConnectAuthPanelInfo"
 		class="org.geoserver.web.security.oauth2.OpenIdConnectAuthProviderPanelInfo">

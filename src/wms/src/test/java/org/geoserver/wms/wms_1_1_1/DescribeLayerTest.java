@@ -74,5 +74,80 @@ public class DescribeLayerTest extends WMSTestSupport {
         Element e = (Element) dom.getElementsByTagName("LayerDescription").item(0);
         String attribute = e.getAttribute("owsURL");
         assertTrue(attribute.contains("sf/wfs"));
+
+        attribute = e.getAttribute("owsType");
+        assertEquals("WFS", attribute);
+
+        e = (Element) dom.getElementsByTagName("Query").item(0);
+        String typeName = e.getAttribute("typeName");
+        assertEquals("unexpected fully qualified typename", "sf:PrimitiveGeoFeature", typeName);
+    }
+
+    @Test
+    public void testWorkspaceNonQualifiedUrl() throws Exception {
+        Document dom =
+                getAsDOM(
+                        "wms?service=wms&version=1.1.1&request=DescribeLayer"
+                                + "&layers=PrimitiveGeoFeature",
+                        true);
+        // print(dom);
+        assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
+
+        Element e = (Element) dom.getElementsByTagName("LayerDescription").item(0);
+        String attribute = e.getAttribute("owsURL");
+        assertTrue(attribute.contains("wfs"));
+
+        attribute = e.getAttribute("owsType");
+        assertEquals("WFS", attribute);
+
+        e = (Element) dom.getElementsByTagName("Query").item(0);
+        String typeName = e.getAttribute("typeName");
+        assertEquals("unexpected fully qualified typename", "sf:PrimitiveGeoFeature", typeName);
+    }
+
+    @Test
+    public void testImageWMSLayer() throws Exception {
+        Document dom =
+                getAsDOM(
+                        "wms?service=wms&version=1.1.1&request=DescribeLayer&layers=wcs:World",
+                        true);
+        // print(dom);
+        assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
+
+        Element e = (Element) dom.getElementsByTagName("LayerDescription").item(0);
+        String attribute = e.getAttribute("owsURL");
+        assertTrue(attribute.contains("wcs"));
+        attribute = e.getAttribute("owsType");
+        assertEquals("WCS", attribute);
+
+        e = (Element) dom.getElementsByTagName("Query").item(0);
+        String typeName = e.getAttribute("typeName");
+        assertEquals("unexpected typename", "wcs:World", typeName);
+    }
+
+    @Test
+    public void testImageWMSLayerWorkspaceQualified() throws Exception {
+        Document dom =
+                getAsDOM(
+                        "wcs/wms?service=wms&version=1.1.1&request=DescribeLayer&layers=World",
+                        true);
+        // print(dom);
+        assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
+
+        Element e = (Element) dom.getElementsByTagName("LayerDescription").item(0);
+        String attribute = e.getAttribute("owsURL");
+        assertTrue(attribute.contains("wcs"));
+        attribute = e.getAttribute("owsType");
+        assertEquals("WCS", attribute);
+
+        e = (Element) dom.getElementsByTagName("Query").item(0);
+        String typeName = e.getAttribute("typeName");
+        // NOTE / TODO
+        //  we would have expected a simple name instead, but the WCS capabilities documents, even
+        // when workspace qualified,
+        //  are using fully qualified names (weird and incorrect I believe, should eventually be
+        // fixed).
+        //  see: https://github.com/geoserver/geoserver/pull/6015#discussion_r912808282
+        assertEquals("unexpected typename", "wcs:World", typeName);
     }
 }

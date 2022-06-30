@@ -22,8 +22,6 @@ import org.geoserver.openapi.model.catalog.StyleInfo;
 import org.geoserver.openapi.model.catalog.StyleInfo.FormatEnum;
 import org.geoserver.openapi.model.catalog.Version;
 import org.geoserver.openapi.model.catalog.WorkspaceInfo;
-import org.geoserver.openapi.v1.model.NamedLink;
-import org.geoserver.openapi.v1.model.StyleList;
 import org.geoserver.openapi.v1.model.WorkspaceSummary;
 import org.geoserver.restconfig.client.StylesClient.StyleFormat;
 import org.hamcrest.core.StringContains;
@@ -109,16 +107,15 @@ public class StylesClientSldIT {
     }
 
     public @Test void getStyleList() throws IOException {
-        StyleList globalStyles = stylesClient.getStyles();
+        List<Link> globalStyles = stylesClient.getStyles();
         assertNotNull(globalStyles);
-        List<NamedLink> links = globalStyles.getStyle();
-        assertFalse(links.isEmpty());
-        links.forEach(
+        assertFalse(globalStyles.isEmpty());
+        globalStyles.forEach(
                 l -> {
                     assertNotNull(l.getName());
-                    assertNotNull(l.getHref());
+                    assertNotNull(l.getLink());
                 });
-        Set<String> names = links.stream().map(NamedLink::getName).collect(Collectors.toSet());
+        Set<String> names = globalStyles.stream().map(Link::getName).collect(Collectors.toSet());
         // test only default styles
         assertTrue(names.contains("line"));
         assertTrue(names.contains("point"));
@@ -135,10 +132,10 @@ public class StylesClientSldIT {
 
     public @Test void getStyleListByWorkspace() throws IOException {
         setUpDefaultWorkspaceStyles();
-        List<NamedLink> styles = stylesClient.getStyles(ws1.getName()).getStyle();
+        List<Link> styles = stylesClient.getStyles(ws1.getName());
         assertEquals(2, styles.size());
 
-        styles = stylesClient.getStyles(ws2.getName()).getStyle();
+        styles = stylesClient.getStyles(ws2.getName());
         assertEquals(3, styles.size());
     }
 
@@ -151,10 +148,10 @@ public class StylesClientSldIT {
         String pointBody = stylesClient.getBody(point);
         String polygonBody = stylesClient.getBody(polygon);
 
-        StyleList styles1 = stylesClient.getStyles(ws1.getName());
-        assertTrue(styles1.getStyle() == null || styles1.getStyle().isEmpty());
-        StyleList styles2 = stylesClient.getStyles(ws2.getName());
-        assertTrue(styles2.getStyle() == null || styles2.getStyle().isEmpty());
+        List<Link> styles1 = stylesClient.getStyles(ws1.getName());
+        assertTrue(styles1.isEmpty());
+        List<Link> styles2 = stylesClient.getStyles(ws2.getName());
+        assertTrue(styles2.isEmpty());
 
         { // ws1
             WorkspaceInfo ws = new WorkspaceInfo().name(this.ws1.getName());

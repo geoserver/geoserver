@@ -21,9 +21,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.codec.Charsets;
-import org.geoserver.openapi.client.internal.ApiClient;
 import org.geoserver.openapi.model.catalog.EnvelopeInfo;
 import org.geoserver.openapi.v1.model.EnvelopeResponse;
+import org.geoserver.restconfig.client.GeoServerClient;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.Before;
 
@@ -35,7 +35,7 @@ public abstract class SerializationTest {
 
     public final @Before void setUpDecoder() {
         // mimic ApiClient's initialization of feign encoder/decoder
-        objectMapper = new ApiClient().getObjectMapper();
+        objectMapper = GeoServerClient.newApiClient().getObjectMapper();
         encoder = new FormEncoder(new JacksonEncoder(objectMapper));
         decoder = new JacksonDecoder(objectMapper);
     }

@@ -1,6 +1,7 @@
 package org.geoserver.restconfig.client;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -96,11 +97,11 @@ public class DataStoresClient {
     }
 
     public List<Link> findByWorkspace(@NonNull String workspace) {
-        DataStoresListResponse wrapper =
-                this.client.collectionCall(
-                        () -> this.api().getDatastores(workspace),
-                        () -> new DataStoresListResponse().dataStores(new DataStoreListWrapper()));
-        return Link.map(wrapper.getDataStores().getDataStore());
+        return Optional.ofNullable(this.api().getDatastores(workspace))
+                .map(DataStoresListResponse::getDataStores)
+                .map(DataStoreListWrapper::getDataStore)
+                .map(Link::map)
+                .orElse(Collections.emptyList());
     }
 
     public Optional<DataStoreResponse> findByWorkspaceAndName(

@@ -1102,6 +1102,28 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testRemoveStyleWithBadFilename() throws Exception {
+        // test that a malformed style does not move the entire styles directory
+        testAddStyle();
+        StyleInfo s = catalog.getStyleByName("foostyle");
+        s.setFilename("/");
+        catalog.remove(s);
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles"), fileExists());
+    }
+
+    @Test
+    public void testRemoveStyleWithNullFilename() throws Exception {
+        // org.geoserver.catalog.impl.CatalogImpl.validate(StyleInfo, boolean)
+        // normally makes a null filename impossible but a similar situation can
+        // occur when using the Hazelcast clustering module.
+        testAddStyle();
+        StyleInfo s = catalog.getStyleByName("foostyle");
+        s.setFilename(null);
+        catalog.remove(s);
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles"), fileExists());
+    }
+
+    @Test
     public void testAddLayerGroup() throws Exception {
         testAddLayer();
         // testAddStyle();

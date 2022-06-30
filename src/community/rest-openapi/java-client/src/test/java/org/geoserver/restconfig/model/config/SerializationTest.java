@@ -12,7 +12,6 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.codec.Charsets;
-import org.geoserver.openapi.client.internal.ApiClient;
 import org.geoserver.openapi.model.config.GmlInfo;
 import org.geoserver.openapi.model.config.GmlSettings;
 import org.geoserver.openapi.model.config.SrsNameStyle;
@@ -21,6 +20,7 @@ import org.geoserver.openapi.model.config.WFSInfoGmlSettings;
 import org.geoserver.openapi.model.config.WMSInfo;
 import org.geoserver.openapi.v1.model.WFSInfoWrapper;
 import org.geoserver.openapi.v1.model.WMSInfoWrapper;
+import org.geoserver.restconfig.client.GeoServerClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -89,7 +89,7 @@ public class SerializationTest {
 
     public @Before void before() {
         // mimic ApiClient's initialization of feign encoder/decoder
-        objectMapper = new ApiClient().getObjectMapper();
+        objectMapper = GeoServerClient.newApiClient().getObjectMapper();
         decoder = new JacksonDecoder(objectMapper);
     }
 

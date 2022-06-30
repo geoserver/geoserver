@@ -7,7 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -20,6 +23,7 @@ import org.geoserver.openapi.v1.client.StylesApi;
 import org.geoserver.openapi.v1.model.NamedLink;
 import org.geoserver.openapi.v1.model.StyleInfoWrapper;
 import org.geoserver.openapi.v1.model.StyleList;
+import org.geoserver.openapi.v1.model.StyleListWrapper;
 import org.geoserver.restconfig.api.client.ExtendedStylesApi;
 
 @Slf4j
@@ -48,14 +52,21 @@ public class StylesClient {
     }
 
     /** @return the global styles {@link NamedLink}s */
-    public StyleList getStyles() {
-        return client.collectionCall(() -> api().getStyles().getStyles(), StyleList::new);
+    public List<Link> getStyles() {
+        return Optional.ofNullable(api().getStyles())
+                .map(StyleListWrapper::getStyles)
+                .map(StyleList::getStyle)
+                .map(Link::map)
+                .orElse(Collections.emptyList());
     }
 
     /** @return the requested workspace styles {@link NamedLink}s */
-    public StyleList getStyles(@NonNull String workspaceName) {
-        return client.collectionCall(
-                () -> api().getStylesByWorkspace(workspaceName).getStyles(), StyleList::new);
+    public List<Link> getStyles(@NonNull String workspaceName) {
+        return Optional.ofNullable(api().getStylesByWorkspace(workspaceName))
+                .map(StyleListWrapper::getStyles)
+                .map(StyleList::getStyle)
+                .map(Link::map)
+                .orElse(Collections.emptyList());
     }
 
     /** @return the requested global style info */

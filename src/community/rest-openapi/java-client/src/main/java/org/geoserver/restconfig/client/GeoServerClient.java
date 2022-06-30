@@ -3,6 +3,7 @@ package org.geoserver.restconfig.client;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Feign.Builder;
 import feign.FeignException;
@@ -30,10 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.geoserver.openapi.client.internal.ApiClient;
 import org.geoserver.openapi.client.internal.ApiClient.Api;
 import org.geoserver.openapi.client.internal.auth.HttpBasicAuth;
@@ -111,30 +110,24 @@ public class GeoServerClient {
                 delegate.encode(object, bodyType, template);
             }
         }
-
-        private String getContentTypeValue(Map<String, Collection<String>> headers) {
-            for (val entry : headers.entrySet()) {
-                if (!entry.getKey().equalsIgnoreCase("Content-Type")) {
-                    continue;
-                }
-                for (val contentTypeValue : entry.getValue()) {
-                    if (contentTypeValue == null) {
-                        continue;
-                    }
-                    return contentTypeValue;
-                }
-            }
-            return null;
-        }
     }
 
-    public GeoServerClient(@NonNull String restApiEntryPoint) {
-        apiClient = new ApiClient();
-        setBasePath(restApiEntryPoint);
-        final ObjectMapper objectMapper = apiClient.getObjectMapper();
+    public static ApiClient newApiClient() {
+        ApiClient client = new ApiClient();
+        final ObjectMapper objectMapper = client.getObjectMapper();
         // do not serialize null or empty collections. This is important for GeoServer
         // not trying to override/parse *Info attributes when not needed
         objectMapper.setSerializationInclusion(Include.NON_EMPTY);
+        objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        return client;
+    }
+
+    public GeoServerClient(@NonNull String restApiEntryPoint) {
+        apiClient = newApiClient();
+        setBasePath(restApiEntryPoint);
+        final ObjectMapper objectMapper = apiClient.getObjectMapper();
         Builder feignBuilder = apiClient.getFeignBuilder();
         feignBuilder.errorDecoder(new GeoServerFeignErrorDecoder());
         // use okhttp client, the default one doesn't send request headers correctly
@@ -200,7 +193,7 @@ public class GeoServerClient {
         }
     }
 
-    <API extends Api> API api(@NonNull Class<API> apiClass) {
+    public <API extends Api> API api(@NonNull Class<API> apiClass) {
         return api().buildClient(apiClass);
     }
 
@@ -281,29 +274,5 @@ public class GeoServerClient {
 
     public StylesClient styles() {
         return new StylesClient(this);
-    }
-
-    /**
-     * When an API call results in an empty list, GeoServer returns @code{ "" } instead of @{code
-     * []}; this method makes the call and captures the JSON parsing error, defaulting to the value
-     * given by {@code defaultValue}.
-     *
-     * @param <T>
-     * @param call
-     * @param defaultValue
-     * @return
-     */
-    public <T> T collectionCall(@NonNull Supplier<T> call, @NonNull Supplier<T> defaultValue) {
-        try {
-            return call.get();
-        } catch (FeignException e) {
-            String message = e.getMessage();
-            if (message != null
-                    && message.contains(
-                            "no String-argument constructor/factory method to deserialize from String value ('')")) {
-                return defaultValue.get();
-            }
-            throw e;
-        }
     }
 }

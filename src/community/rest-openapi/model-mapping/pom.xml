@@ -6,19 +6,13 @@
     <artifactId>gs-rest-openapi</artifactId>
     <version>2.22-SNAPSHOT</version>
   </parent>
-  <artifactId>gs-rest-openapi-java-client</artifactId>
+  <artifactId>gs-rest-openapi-model-mapping</artifactId>
   <packaging>jar</packaging>
-  <name>OpenAPI based GeoServer REST Java Client Library</name>
-  <description>Java client based on OpenAPI code generated client</description>
+  <description>Library to map the catalog/config object models between GeoServer's internal model and the open-api object model</description>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-rest-openapi-generated-model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-rest-openapi-generated-feign-client</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -37,12 +31,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- test dependencies -->
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -108,76 +96,4 @@
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>docker</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <skipITs>false</skipITs>
-              <systemProperties>
-                <geoserver_api_url>http://localhost:${geoserver.port}/geoserver/rest</geoserver_api_url>
-                <geoserver_admin_user>admin</geoserver_admin_user>
-                <geoserver_admin_password>geoserver</geoserver_admin_password>
-              </systemProperties>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>com.dkanejs.maven.plugins</groupId>
-            <artifactId>docker-compose-maven-plugin</artifactId>
-            <version>4.0.0</version>
-            <executions>
-              <execution>
-                <id>up</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>up</goal>
-                </goals>
-                <configuration>
-                  <awaitCmd>curl</awaitCmd>
-                  <awaitCmdArgs>http://localhost:${geoserver.port}/geoserver/web</awaitCmdArgs>
-                  <awaitTimeout>60</awaitTimeout>
-                </configuration>
-              </execution>
-              <execution>
-                <id>down</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>down</goal>
-                </goals>
-                <inherited>true</inherited>
-              </execution>
-            </executions>
-            <configuration>
-              <skip>${docker-compose.skip}</skip>
-              <composeFile>${project.basedir}/docker-compose.yml</composeFile>
-              <envVars>
-                <GEOSERVER_PORT>${geoserver.port}</GEOSERVER_PORT>
-              </envVars>
-              <detachedMode>true</detachedMode>
-              <verbose>false</verbose>
-              <removeVolumes>true</removeVolumes>
-              <removeImages>true</removeImages>
-              <removeImagesType>local</removeImagesType>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-      <properties>
-        <geoserver.port>18080</geoserver.port>
-        <docker-compose.skip>false</docker-compose.skip>
-      </properties>
-    </profile>
-  </profiles>
 </project>

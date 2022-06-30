@@ -20,7 +20,6 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 
 /** Integration test suite for {@link CoverageStoresClient} */
@@ -32,7 +31,6 @@ public class CoverageStoresClientIT {
     private CoverageStoresClient coverages;
 
     public @Rule TestName testName = new TestName();
-    public @Rule ExpectedException ex = ExpectedException.none();
 
     private SecureRandom rnd = new SecureRandom();
 
@@ -65,6 +63,12 @@ public class CoverageStoresClientIT {
                 this.workspaces.deleteRecursively(this.workspace2.getName());
             }
         }
+    }
+
+    public @Test void testFindByWorkspace_empty() {
+        List<Link> stores = this.coverages.findByWorkspace("tiger");
+        assertNotNull(stores);
+        assertTrue(stores.isEmpty());
     }
 
     public @Test void testFindByWorkspace() {

@@ -1312,8 +1312,13 @@
       <id>oauth2-google</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.community.security</groupId>
           <artifactId>gs-sec-oauth2-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community.security</groupId>
+          <artifactId>gs-sec-oauth2-web</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1327,8 +1332,13 @@
       <id>oauth2-github</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.community.security</groupId>
           <artifactId>gs-sec-oauth2-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community.security</groupId>
+          <artifactId>gs-sec-oauth2-web</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1342,8 +1352,13 @@
       <id>oauth2-geonode</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.community.security</groupId>
           <artifactId>gs-sec-oauth2-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community.security</groupId>
+          <artifactId>gs-sec-oauth2-web</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1357,8 +1372,13 @@
       <id>oauth2-openid-connect</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.community.security</groupId>
           <artifactId>gs-sec-oauth2-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community.security</groupId>
+          <artifactId>gs-sec-oauth2-web</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>

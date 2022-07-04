@@ -598,22 +598,80 @@ class LoggingUtilsDelegate {
     }
 
     /**
+     * Used by modules to register additional built-in logging profiles during startup, confirming
+     * logConfigFile is available (and updating if needed).
+     *
+     * <p>This method will check resource loader logConfigFile profile against the internal
+     * templates and only update the xml file if needed. If the file is updated the previous
+     * definition is available as a {@code xml.bak} file allowing.
+     *
+     * @param resourceLoader GeoServer resource access
+     * @param logConfigFile Logging profile matching a built-in template on the classpath
+     */
+    static void checkBuiltInLoggingConfiguration(
+            GeoServerResourceLoader resourceLoader, String logConfigFile) {
+        Resource logs = resourceLoader.get("logs");
+        File logsDirectory = logs.dir();
+        String logConfigXml = logConfigFile + ".xml";
+
+        File target = new File(logsDirectory.getAbsolutePath(), logConfigXml);
+        if (target.exists()) {
+            try (FileInputStream targetContents = new FileInputStream(target);
+                    InputStream template = getStreamFromResource(logConfigXml)) {
+                if (!IOUtils.contentEquals(targetContents, template)) {
+                    String logConfigBackup = logConfigFile + ".xml.bak";
+                    File backup = new File(logsDirectory.getAbsolutePath(), logConfigBackup);
+                    boolean renamed = target.renameTo(backup);
+                    if (renamed) {
+                        LoggingStartupContextListener.getLogger()
+                                .finer(
+                                        "Check '"
+                                                + logConfigXml
+                                                + "' logging configuration - outdated and renamed to '"
+                                                + logConfigBackup
+                                                + "'");
+                    }
+                    LoggingStartupContextListener.getLogger()
+                            .finer("Check '" + logConfigXml + "' logging configuration, outdated");
+                    resourceLoader.copyFromClassPath(logConfigXml, target);
+                }
+            } catch (IOException e) {
+                LoggingStartupContextListener.getLogger()
+                        .log(
+                                Level.WARNING,
+                                "Check '"
+                                        + logConfigXml
+                                        + "' logging configuration - unable to check against template",
+                                e);
+            }
+        } else {
+            try {
+                resourceLoader.copyFromClassPath(logConfigXml, target);
+            } catch (IOException e) {
+                LoggingStartupContextListener.getLogger()
+                        .config(
+                                "Check '"
+                                        + logConfigXml
+                                        + "' logging configuration - unable to create. Is your data dir writeable?");
+            }
+        }
+    }
+    /**
      * Upgrade standard logging configurations to match built-in class resources.
      *
      * <p>This method will check each LOGGING profile against the internal templates and unpack any
      * xml configurations that are missing, and remove any log4j properties configurations.
+     *
+     * @param resourceLoader GeoServer resource access
      */
     private static void checkStandardLoggingConfiguration(GeoServerResourceLoader resourceLoader) {
         Resource logs = resourceLoader.get("logs");
         File logsDirectory = logs.dir();
 
         for (String logConfigFile : LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS) {
-            String logConfigXml = logConfigFile + ".xml";
             String logConfigProperties = logConfigFile + ".properties";
 
-            File target = new File(logsDirectory.getAbsolutePath(), logConfigXml);
             File properties = new File(logsDirectory.getAbsolutePath(), logConfigProperties);
-
             if (properties.exists()) {
                 String logConfigBackup = logConfigFile + ".properties.bak";
                 File backup = new File(logsDirectory.getAbsolutePath(), logConfigBackup);
@@ -635,49 +693,7 @@ class LoggingUtilsDelegate {
                                             + "' logging configuration - outdated and unable to rename. Is your data dir writeable?");
                 }
             }
-            if (target.exists()) {
-                try (FileInputStream targetContents = new FileInputStream(target);
-                        InputStream template = getStreamFromResource(logConfigXml)) {
-                    if (!IOUtils.contentEquals(targetContents, template)) {
-                        String logConfigBackup = logConfigFile + ".xml.bak";
-                        File backup = new File(logsDirectory.getAbsolutePath(), logConfigBackup);
-                        boolean renamed = target.renameTo(backup);
-                        if (renamed) {
-                            LoggingStartupContextListener.getLogger()
-                                    .finer(
-                                            "Check '"
-                                                    + logConfigXml
-                                                    + "' logging configuration - outdated and renamed to '"
-                                                    + logConfigBackup
-                                                    + "'");
-                        }
-                        LoggingStartupContextListener.getLogger()
-                                .finer(
-                                        "Check '"
-                                                + logConfigXml
-                                                + "' logging configuration, outdated");
-                        resourceLoader.copyFromClassPath(logConfigXml, target);
-                    }
-                } catch (IOException e) {
-                    LoggingStartupContextListener.getLogger()
-                            .log(
-                                    Level.WARNING,
-                                    "Check '"
-                                            + logConfigXml
-                                            + "' logging configuration - unable to check against template",
-                                    e);
-                }
-            } else {
-                try {
-                    resourceLoader.copyFromClassPath(logConfigXml, target);
-                } catch (IOException e) {
-                    LoggingStartupContextListener.getLogger()
-                            .config(
-                                    "Check '"
-                                            + logConfigXml
-                                            + "' logging configuration - unable to create. Is your data dir writeable?");
-                }
-            }
+            checkBuiltInLoggingConfiguration(resourceLoader, logConfigFile);
         }
     }
 

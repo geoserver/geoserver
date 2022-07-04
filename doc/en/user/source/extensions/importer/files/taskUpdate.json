@@ -1,0 +1,11 @@
+{
+   "task": {
+       "updateMode": "REPLACE",
+       "layer" : {
+          "name": "values",
+          "title": "values",
+          "nativeName": "values",
+          "srs": "EPSG:4326"
+       }
+   }
+}

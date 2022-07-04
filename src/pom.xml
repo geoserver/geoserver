@@ -39,6 +39,7 @@
     <module>kml</module>
     <module>ows</module>
     <module>gwc</module>
+    <module>gwc-rest</module>
     <module>rest</module>
     <module>restconfig</module>
     <module>restconfig-wcs</module>
@@ -239,6 +240,11 @@
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-gwc</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-gwc-rest</artifactId>
         <version>${gs.version}</version>
       </dependency>
       <dependency>

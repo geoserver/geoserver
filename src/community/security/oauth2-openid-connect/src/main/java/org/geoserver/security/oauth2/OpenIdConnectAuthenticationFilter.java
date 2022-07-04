@@ -24,6 +24,8 @@ import org.geoserver.security.oauth2.services.OpenIdConnectTokenServices;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
+import org.springframework.security.oauth2.client.token.DefaultRequestEnhancer;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
@@ -43,6 +45,12 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
                 && config instanceof OpenIdConnectFilterConfig) {
             ((OpenIdConnectTokenServices) tokenServices)
                     .setConfiguration((OpenIdConnectFilterConfig) config);
+            AuthorizationCodeAccessTokenProvider provider =
+                    (AuthorizationCodeAccessTokenProvider)
+                            GeoServerExtensions.bean("authorizationAccessTokenProvider");
+            if (((OpenIdConnectFilterConfig) config).isSendClientSecret())
+                provider.setTokenRequestEnhancer(new ClientSecretRequestEnhancer());
+            else provider.setTokenRequestEnhancer(new DefaultRequestEnhancer());
         }
         // reconfigure the configuration, allow building a useful rest template
         if (oauth2SecurityConfiguration instanceof OpenIdConnectSecurityConfiguration

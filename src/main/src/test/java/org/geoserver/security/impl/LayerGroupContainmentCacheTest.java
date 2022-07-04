@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.net.URL;
@@ -45,6 +46,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.type.Name;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 /** Tests {@link LayerGroupContainmentCache} udpates in face of catalog setup and changes */
 public class LayerGroupContainmentCacheTest {
@@ -183,6 +185,17 @@ public class LayerGroupContainmentCacheTest {
 
     private String getLayerId(QName name) {
         return "ws:" + name.getLocalPart();
+    }
+
+    @Test
+    public void buildLayerGroupCaches() {
+        LayerGroupContainmentCache layerGroupContainmentCache =
+                new LayerGroupContainmentCache(catalog);
+        ContextRefreshedEvent contextRefreshedEvent = mock(ContextRefreshedEvent.class);
+
+        layerGroupContainmentCache.onApplicationEvent(contextRefreshedEvent);
+
+        assertEquals(2, layerGroupContainmentCache.groupCache.size());
     }
 
     @Test

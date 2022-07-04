@@ -7,6 +7,7 @@ package org.geoserver.rest.security;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.security.xml.JaxbRoleList;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController(value = "rolesRestController")
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/roles")
-public class RolesRestController {
+public class RolesRestController implements SequentialExecutionController {
 
     protected GeoServerSecurityManager securityManager;
 

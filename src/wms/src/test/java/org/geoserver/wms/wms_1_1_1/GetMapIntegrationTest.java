@@ -53,6 +53,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -1824,16 +1825,19 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         getCatalog().add(ftInfo);
 
         // setting mock feature type as resource of Layer from Test Data
-        LayerInfo layerInfo = getCatalog().getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart());
+        LayerInfo layerInfo = new LayerInfoImpl();
         layerInfo.setResource(ftInfo);
+        layerInfo.setName(ftInfo.getName());
+        layerInfo.setTitle(ftInfo.getTitle());
         layerInfo.setDefaultStyle(getCatalog().getStyleByName("line"));
+
+        getCatalog().add(layerInfo);
+
         // Injecting Mock Http client in WFS Data Store to read mock respones from XML
         DataAccess dac = ftInfo.getStore().getDataStore(null);
         RetypingDataStore retypingDS = (RetypingDataStore) dac;
         WFSDataStore wfsDS = (WFSDataStore) retypingDS.getWrapped();
         wfsDS.getWfsClient().setHttpClient(client);
-
-        getCatalog().save(layerInfo);
 
         // test starts now
         // a WMS request with EPSG:4326 should result in a remote WFS call with EPSG:4326 filter and

@@ -6,451 +6,791 @@ Importer REST API examples
 Mass configuring a directory of shapefiles
 ------------------------------------------
 
-In order to initiate an import of the ``c:\data\tasmania`` directory into the existing ``tasmania`` workspace the following JSON will be POSTed to GeoServer::
+In order to initiate an import of the ``c:\data\tasmania`` directory into the existing ``tasmania`` workspace:
 
-	{
-	   "import": {
-	      "targetWorkspace": {
-	         "workspace": {
-	            "name": "tasmania"
-	         }
-	      },
-	      "data": {
-	        "type": "directory",
-	        "location": "C:/data/tasmania"
-	      }
-	   }
-	}
+1. The following JSON will be POSTed to GeoServer.
+   
+   .. code-block:: json
+      :caption: import.json
+      
+        {
+           "import": {
+              "targetWorkspace": {
+                 "workspace": {
+                    "name": "tasmania"
+                 }
+              },
+              "data": {
+                "type": "directory",
+                "location": "C:/data/tasmania"
+              }
+           }
+        }
 
-This curl command can be used for the purpose::
+2. This curl command can be used for the purpose:
+
+  .. code-block:: bash
   
-  curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
+     curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
+       -d @import.json \
+       "http://localhost:8080/geoserver/rest/imports"
+
+  The importer will locate the files to be imported, and automatically prepare the tasks, returning the following response:
+
+   .. code-block:: json
+
+       {
+         "import": {
+           "id": 9,
+           "href": "http://localhost:8080/geoserver/rest/imports/9",
+           "state": "PENDING",
+           "archive": false,
+           "targetWorkspace": {
+             "workspace": {
+               "name": "tasmania"
+             }
+           },
+           "data": {
+             "type": "directory",
+             "format": "Shapefile",
+             "location": "C:\\data\\tasmania",
+             "href": "http://localhost:8080/geoserver/rest/imports/9/data"
+           },
+           "tasks": [
+             {
+               "id": 0,
+               "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/0",
+               "state": "READY"
+             },
+             {
+               "id": 1,
+               "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/1",
+               "state": "READY"
+             },
+             {
+               "id": 2,
+               "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/2",
+               "state": "READY"
+             },
+             {
+               "id": 3,
+               "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/3",
+               "state": "READY"
+             }
+           ]
+         }
+       }
+
+3. After checking every task is ready, the import can be initiated by executing a POST on the import resource:
+   
+   .. code-block:: bash
+
+      curl -u admin:geoserver -XPOST \
+         "http://localhost:8080/geoserver/rest/imports/9"
   
-The importer will locate the files to be imported, and automatically prepare the tasks, returning the following response::
+4. The resource can then be monitored for progress, and eventually final results:
 
-	{
-	  "import": {
-	    "id": 9,
-	    "href": "http://localhost:8080/geoserver/rest/imports/9",
-	    "state": "PENDING",
-	    "archive": false,
-	    "targetWorkspace": {
-	      "workspace": {
-	        "name": "tasmania"
-	      }
-	    },
-	    "data": {
-	      "type": "directory",
-	      "format": "Shapefile",
-	      "location": "C:\\data\\tasmania",
-	      "href": "http://localhost:8080/geoserver/rest/imports/9/data"
-	    },
-	    "tasks": [
-	      {
-	        "id": 0,
-	        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/0",
-	        "state": "READY"
-	      },
-	      {
-	        "id": 1,
-	        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/1",
-	        "state": "READY"
-	      },
-	      {
-	        "id": 2,
-	        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/2",
-	        "state": "READY"
-	      },
-	      {
-	        "id": 3,
-	        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/3",
-	        "state": "READY"
-	      }
-	    ]
-	  }
-	}
+   .. code-block:: bash  
+   
+      curl -u admin:geoserver -XGET \
+         "http://localhost:8080/geoserver/rest/imports/9"
 
-After checking every task is ready, the import can be initiated by executing a POST on the import resource::
+   Which in case of successful import will look like:
 
-  curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/9"
-  
-The resource can then be monitored for progress, and eventually final results::
+   .. code-block:: json
 
-  curl -u admin:geoserver -XGET "http://localhost:8080/geoserver/rest/imports/9"
-
-Which in case of successful import will look like::
-
-	{
-	  "import": {
-	    "id": 9,
-	    "href": "http://localhost:8080/geoserver/rest/imports/9",
-	    "state": "COMPLETE",
-	    "archive": false,
-	    "targetWorkspace": {
-	      "workspace": {
-	        "name": "tasmania"
-	      }
-	    },
-	    "data": {
-	      "type": "directory",
-	      "format": "Shapefile",
-	      "location": "C:\\data\\tasmania",
-	      "href": "http://localhost:8080/geoserver/rest/imports/9/data"
-	    },
-	    "tasks": [
-	      {
-	        "id": 0,
-	        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/0",
-	        "state": "COMPLETE"
-	      },
-	      {
-	        "id": 1,
-	        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/1",
-	        "state": "COMPLETE"
-	      },
-	      {
-	        "id": 2,
-	        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/2",
-	        "state": "COMPLETE"
-	      },
-	      {
-	        "id": 3,
-	        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/3",
-	        "state": "COMPLETE"
-	      }
-	    ]
-	  }
-	} 
+      {
+        "import": {
+          "id": 9,
+          "href": "http://localhost:8080/geoserver/rest/imports/9",
+          "state": "COMPLETE",
+          "archive": false,
+          "targetWorkspace": {
+            "workspace": {
+              "name": "tasmania"
+            }
+          },
+          "data": {
+            "type": "directory",
+            "format": "Shapefile",
+            "location": "C:\\data\\tasmania",
+            "href": "http://localhost:8080/geoserver/rest/imports/9/data"
+          },
+          "tasks": [
+            {
+              "id": 0,
+              "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/0",
+              "state": "COMPLETE"
+            },
+            {
+              "id": 1,
+              "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/1",
+              "state": "COMPLETE"
+            },
+            {
+              "id": 2,
+              "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/2",
+              "state": "COMPLETE"
+            },
+            {
+              "id": 3,
+              "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/3",
+              "state": "COMPLETE"
+            }
+          ]
+        }
+      } 
 	
 Configuring a shapefile with no projection information
 ------------------------------------------------------
 
-In this case, let's assume we have a single shapefile, tasmania_cities.shp, that does not have the .prj anciliary file 
-(the example is equally good for any case where the prj file contents cannot be matched to an official EPSG code).
+In this case, let's assume we have a single shapefile, :file:`tasmania_cities.shp``, that does not have the :file:`.prj` sidecar file 
+(the example is equally good for any case where the :file:`prj` file contents cannot be matched to an official EPSG code).
 
-We are going to post the following import definition::
+1. We are going to post the following import definition:
+   
+   .. code-block:: json
+      :caption: import.json
 
-	{
-	   "import": {
-	      "targetWorkspace": {
-	         "workspace": {
-	            "name": "tasmania"
-	         }
-	      },
-	      "data": {
-	        "type": "file",
-	        "file": "C:/data/tasmania/tasmania_cities.shp"
-	      }
-	   }
-	}
-	
-With the usual curl command::
+      {
+         "import": {
+            "targetWorkspace": {
+               "workspace": {
+                  "name": "tasmania"
+               }
+            },
+            "data": {
+              "type": "file",
+              "file": "C:/data/tasmania/tasmania_cities.shp"
+            }
+         }
+      }
 
- curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
+2. With the cURL POST command:
+   
+   .. code-block:: bash
 
-The response in case the CRS is missing will be::
+      curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
+         -d @import.json \
+         "http://localhost:8080/geoserver/rest/imports"
 
-	{
-	  "import": {
-	    "id": 13,
-	    "href": "http://localhost:8080/geoserver/rest/imports/13",
-	    "state": "PENDING",
-	    "archive": false,
-	    "targetWorkspace": {
-	      "workspace": {
-	        "name": "tasmania"
-	      }
-	    },
-	    "data": {
-	      "type": "file",
-	      "format": "Shapefile",
-	      "file": "tasmania_cities.shp"
-	    },
-	    "tasks": [
-	      {
-	        "id": 0,
-	        "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0",
-	        "state": "NO_CRS"
-	      }
-	    ]
-	  }
-	}
+   The response in case the CRS is missing will be:
 
-Drilling into the task layer we can see the srs information is missing::
+   .. code-block:: json
 
-	{
-	  "layer": {
-	    "name": "tasmania_cities",
-	    "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer",
-	    "title": "tasmania_cities",
-	    "originalName": "tasmania_cities",
-	    "nativeName": "tasmania_cities",
-	    "bbox": {
-	      "minx": 146.2910004483,
-	      "miny": -43.85100181689,
-	      "maxx": 148.2910004483,
-	      "maxy": -41.85100181689
-	    },
-	    "attributes": [
-	      {
-	        "name": "the_geom",
-	        "binding": "org.locationtech.jts.geom.MultiPoint"
-	      },
-	      {
-	        "name": "CITY_NAME",
-	        "binding": "java.lang.String"
-	      },
-	      {
-	        "name": "ADMIN_NAME",
-	        "binding": "java.lang.String"
-	      },
-	      {
-	        "name": "CNTRY_NAME",
-	        "binding": "java.lang.String"
-	      },
-	      {
-	        "name": "STATUS",
-	        "binding": "java.lang.String"
-	      },
-	      {
-	        "name": "POP_CLASS",
-	        "binding": "java.lang.String"
-	      }
-	    ],
-	    "style": {
-	      "name": "tasmania_tasmania_cities2",
-	      "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer/style"
-	    }
-	  }
-	}
-	
-The following PUT request will update the SRS::	
+      {
+        "import": {
+          "id": 13,
+          "href": "http://localhost:8080/geoserver/rest/imports/13",
+          "state": "PENDING",
+          "archive": false,
+          "targetWorkspace": {
+            "workspace": {
+              "name": "tasmania"
+            }
+          },
+          "data": {
+            "type": "file",
+            "format": "Shapefile",
+            "file": "tasmania_cities.shp"
+          },
+          "tasks": [
+            {
+              "id": 0,
+              "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0",
+              "state": "NO_CRS"
+            }
+          ]
+        }
+      }
 
-    curl -u admin:geoserver -XPUT -H "Content-type: application/json" -d @layerUpdate.json "http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer/"
-	
-Where ``layerUpdate.json`` is::
+3. Drilling into the task layer:
 
-	{
-	   layer : {
-	      srs: "EPSG:4326"
-	   }
-	}  
-	
-Getting the import definition again, we'll find it ready to execute::
+   .. code-block:: bash
+      
+      curl -u admin:geoserver -XGET -H "Content-type: application/json" \
+           http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer
+   
+   We can see the srs information is missing:
+   
+   .. code-block:: json
 
-	{
-	  "import": {
-	    "id": 13,
-	    "href": "http://localhost:8080/geoserver/rest/imports/13",
-	    "state": "PENDING",
-	    "archive": false,
-	    "targetWorkspace": {
-	      "workspace": {
-	        "name": "tasmania"
-	      }
-	    },
-	    "data": {
-	      "type": "file",
-	      "format": "Shapefile",
-	      "file": "tasmania_cities.shp"
-	    },
-	    "tasks": [
-	      {
-	        "id": 0,
-	        "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0",
-	        "state": "READY"
-	      }
-	    ]
-	  }
-	}
+      {
+        "layer": {
+          "name": "tasmania_cities",
+          "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer",
+          "title": "tasmania_cities",
+          "originalName": "tasmania_cities",
+          "nativeName": "tasmania_cities",
+          "bbox": {
+            "minx": 146.2910004483,
+            "miny": -43.85100181689,
+            "maxx": 148.2910004483,
+            "maxy": -41.85100181689
+          },
+          "attributes": [
+            {
+              "name": "the_geom",
+              "binding": "org.locationtech.jts.geom.MultiPoint"
+            },
+            {
+              "name": "CITY_NAME",
+              "binding": "java.lang.String"
+            },
+            {
+              "name": "ADMIN_NAME",
+              "binding": "java.lang.String"
+            },
+            {
+              "name": "CNTRY_NAME",
+              "binding": "java.lang.String"
+            },
+            {
+              "name": "STATUS",
+              "binding": "java.lang.String"
+            },
+            {
+              "name": "POP_CLASS",
+              "binding": "java.lang.String"
+            }
+          ],
+          "style": {
+            "name": "tasmania_tasmania_cities2",
+            "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer/style"
+          }
+        }
+      }
 
-A POST request will make it execute::
+4. Use the following json snippet to update the SRS:
 
-  curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/13"
+   .. code-block:: bash
+      :caption: layerUpdate.json
+      
+       {
+          layer : {
+             srs: "EPSG:4326"
+          }
+       }  
+   
+   Using cURL PUT command:
+   
+   .. code-block:: bash
 
-And eventually succeed::
+      curl -u admin:geoserver -XPUT -H "Content-type: application/json" \
+        -d @layerUpdate.json \
+        "http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer/"
 
-	{
-	  "import": {
-	    "id": 13,
-	    "href": "http://localhost:8080/geoserver/rest/imports/13",
-	    "state": "COMPLETE",
-	    "archive": false,
-	    "targetWorkspace": {
-	      "workspace": {
-	        "name": "tasmania"
-	      }
-	    },
-	    "data": {
-	      "type": "file",
-	      "format": "Shapefile",
-	      "file": "tasmania_cities.shp"
-	    },
-	    "tasks": [
-	      {
-	        "id": 0,
-	        "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0",
-	        "state": "COMPLETE"
-	      }
-	    ]
-	  }
-	}
+
+5. Getting the import definition again:
+
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XGET -H "Content-type: application/json" \
+           http://localhost:8080/geoserver/rest/imports/13/tasks/0
+   
+   The import is now ready ready to execute:
+
+   .. code-block:: json
+   
+      {
+        "import": {
+          "id": 13,
+          "href": "http://localhost:8080/geoserver/rest/imports/13",
+          "state": "PENDING",
+          "archive": false,
+          "targetWorkspace": {
+            "workspace": {
+              "name": "tasmania"
+            }
+          },
+          "data": {
+            "type": "file",
+            "format": "Shapefile",
+            "file": "tasmania_cities.shp"
+          },
+          "tasks": [
+            {
+              "id": 0,
+              "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0",
+              "state": "READY"
+            }
+          ]
+        }
+      }
+
+6. A POST request will execute the import:
+
+   .. code-block:: bash
+
+      curl -u admin:geoserver -XPOST \
+        "http://localhost:8080/geoserver/rest/imports/13"
+
+   With a sucessful import marking the task as ``COMPLETE``:
+
+   .. code-block:: json
+   
+      {
+        "import": {
+          "id": 13,
+          "href": "http://localhost:8080/geoserver/rest/imports/13",
+          "state": "COMPLETE",
+          "archive": false,
+          "targetWorkspace": {
+            "workspace": {
+              "name": "tasmania"
+            }
+          },
+          "data": {
+            "type": "file",
+            "format": "Shapefile",
+            "file": "tasmania_cities.shp"
+          },
+          "tasks": [
+            {
+              "id": 0,
+              "href": "http://localhost:8080/geoserver/rest/imports/13/tasks/0",
+              "state": "COMPLETE"
+            }
+          ]
+        }
+      }
 
 Uploading a Shapefile to PostGIS
 --------------------------------
 
 This example shows the process for uploading a Shapefile (in a zip file) to an existing PostGIS datastore (cite:postgis).
 
-Create the import definition::
+1. Setup ``cite:postgis`` datastore:
+   
+   .. literalinclude:: files/postgis.json
+      :language: json
+      :caption:  postgis.json
+   
+   Using curl POST:
+   
+   .. code-block:: bash
+   
+      curl  -u admin:geoserver -XPOST -H "Content-type: application/json" \
+        -d @postgis.json \
+        "http://localhost:8080/geoserver/rest/workspaces/cite/datastores.json"
 
-  {
-    "import": {
-      "targetStore": {
+2. Create the import definition:
+
+   .. literalinclude:: files/import.json
+      :language: json
+      :caption:  import.json
+
+   POST this definition to /geoserver/rest/imports:
+   
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
+        -d @import.json \
+        "http://localhost:8080/geoserver/rest/imports"
+
+   The response will contain the import ID.
+
+3. We now have an empty import with no tasks. To add a task, POST the shapefile to the list of tasks:
+
+   .. code-block:: bash   
+
+      curl -u admin:geoserver \
+        -F name=myshapefile.zip -F filedata=@myshapefile.zip \
+        "http://localhost:8080/geoserver/rest/imports/14/tasks"
+
+4. Since we sent a shapefile, importer assumes the target will be a shapefile store. To import to PostGIS, we will need to reset it.
+   
+   Create the following JSON file:
+   
+   .. code-block:: json
+      :caption: target.json
+
+      {
         "dataStore": {
-          "name": "postgis"
-        }
-      },
-      "targetWorkspace": {
-        "workspace": {
-          "name": "cite"
+          "name":"postgis"
         }
       }
-    }
-  }
 
-POST this definition to /geoserver/rest/imports::
+   PUT this file to /geoserver/rest/imports/14/tasks/0/target:
 
-    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
+   .. code-block:: bash  
+      
+      curl -u admin:geoserver -XPUT -H "Content-type: application/json" \
+        -d @target.json \
+        "http://localhost:8080/geoserver/rest/imports/14/tasks/0/target"
 
-The response will contain the import ID.
+5. Finally, we execute the import by sending a POST to /geoserver/rest/imports/14:
 
-We now have an empty import with no tasks. To add a task, POST the shapefile to the list of tasks::
-
-  curl -u admin:geoserver -F name=myshapefile.zip -F filedata=@myshapefile.zip "http://localhost:8080/geoserver/rest/imports/14/tasks"
-
-Since we sent a shapefile, importer assumes the target will be a shapefile store. To import to PostGIS, we will need to reset it.
-Create the following JSON file::
-
-  {
-    "dataStore": {
-      "name":"postgis"
-    }
-  }
-
-PUT this file to /geoserver/rest/imports/14/tasks/0/target::
-
-  curl -u admin:geoserver -XPUT -H "Content-type: application/json" -d @target.json "http://localhost:8080/geoserver/rest/imports/14/tasks/0/target"
-
-Finally, we execute the import by sending a POST to /geoserver/rest/imports/14::
-
-  curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/14"
+   .. code-block:: bash  
+   
+      curl -u admin:geoserver -XPOST \
+        "http://localhost:8080/geoserver/rest/imports/14"
 	
 Uploading a CSV file to PostGIS while transforming it
 -----------------------------------------------------
 
 A remote sensing tool is generating CSV files with some locations and measurements, that we want to upload
-into PostGIS as a new spatial table. The CSV file looks as follows::
+into PostGIS as a new spatial table.
 
-	AssetID, SampleTime, Lat, Lon, Value
-	1, 2015-01-01T10:00:00, 10.00, 62.00, 15.2
-	1, 2015-01-01T11:00:00, 10.10, 62.11, 30.25
-	1, 2015-01-01T12:00:00, 10.20, 62.22, 41.2
-	1, 2015-01-01T13:00:00, 10.31, 62.33, 27.6
-	1, 2015-01-01T14:00:00, 10.41, 62.45, 12
+1. First, we are going to create a empty import with an existing postgis store as the target:
 
+   .. code-block:: bash
 
-First, we are going to create a empty import with an existing postgis store as the target::
+      curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
+        -d @import.json \
+        "http://localhost:8080/geoserver/rest/imports"
+   
+   Where :file:`import.json` is:
 
-	curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
+   .. literalinclude:: files/import.json
+      :language: json
+      :caption:  import.json
 
-Where import.json is::
+2. Then, we are going to POST the csv file to the tasks list.
 
-	{
-	   "import": {
-	      "targetWorkspace": {
-	         "workspace": {
-	            "name": "topp"
-	         }
-	      },
-	      "targetStore": {
-	         "dataStore": {
-	            "name": "gttest"
-	         }
-	      }
-	   }
-	}
+   .. literalinclude:: files/values.csv
+      :language: text
+      :caption:  values.csv
 
-Then, we are going to POST the csv file to the tasks list, in order to create an import task for it::
+   In order to create an import task for it:
 
-	curl -u admin:geoserver -F name=test -F filedata=@values.csv "http://localhost:8080/geoserver/rest/imports/0/tasks"
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -F name=test -F filedata=@values.csv \
+        "http://localhost:8080/geoserver/rest/imports/0/tasks"
 
-And we are going to get back a new task definition, with a notification that the CRS is missing::	
-	
-	{
-	  "task": {
-	    "id": 0,
-	    "href": "http://localhost:8080/geoserver/rest/imports/16/tasks/0",
-	    "state": "NO_CRS",
-	    "updateMode": "CREATE",
-	    "data": {
-	      "type": "file",
-	      "format": "CSV",
-	      "file": "values.csv"
-	    },
-	    "target": {
-	      "href": "http://localhost:8080/geoserver/rest/imports/16/tasks/0/target",
-	      "dataStore": {
-	        "name": "values",
-	        "type": "CSV"
-	      }
-	    },
-	    "progress": "http://localhost:8080/geoserver/rest/imports/16/tasks/0/progress",
-	    "layer": {
-	      "name": "values",
-	      "href": "http://localhost:8080/geoserver/rest/imports/16/tasks/0/layer"
-	    },
-	    "transformChain": {
-	      "type": "vector",
-	      "transforms": [
-	        
-	      ]
-	    }
-	  }
-	}
+   And we are going to get back a new task definition, with a notification that the CRS is missing:
 
-As before, we are going to force the CRS by updating the layer::
+   .. code-block:: json
 
-    curl -u admin:geoserver -XPUT -H "Content-type: application/json" -d @layerUpdate.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer/"
-	
-Where ``layerUpdate.json`` is::
+      {
+        "task": {
+          "id": 0,
+          "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/0",
+          "state": "NO_CRS",
+          "updateMode": "CREATE",
+          "data": {
+            "type": "file",
+            "format": "CSV",
+            "file": "values.csv"
+          },
+          "target": {
+            "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/0/target",
+            "dataStore": {
+              "name": "postgis",
+              "type": "PostGIS"
+            }
+          },
+          "progress": "http://localhost:8080/geoserver/rest/imports/0/tasks/0/progress",
+          "layer": {
+            "name": "values",
+            "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer"
+          },
+          "transformChain": {
+            "type": "vector",
+            "transforms": []
+          }
+        }
+      }
 
-	{
-	   layer : {
-	      srs: "EPSG:4326"
-	   }
-	}  
+3. Force the CRS by updating the layer:
 
-Then, we are going to create a transformation mapping the Lat/Lon columns to a point::
+   .. literalinclude:: files/layerUpdate.json
+      :language: json
+      :caption:  layerUpdate.json
+   
+   Using PUT to update task layer:
+   
+   .. code-block:: bash
 
-	{
-	  "type": "AttributesToPointGeometryTransform",
-	  "latField": "Lat",
-	  "lngField": "Lon"
-	}
+      curl -u admin:geoserver -XPUT -H "Content-type: application/json" \
+        -d @layerUpdate.json \
+        "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer/"
+   
+   Updating the srs:
+   
+   .. code-block:: json
+   
+      {
+        "layer": {
+          "name": "values",
+          "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer",
+          "title": "values",
+          "originalName": "values",
+          "nativeName": "values",
+          "srs": "EPSG:4326",
+          "bbox": {
+            "minx": 0,
+            "miny": 0,
+            "maxx": -1,
+            "maxy": -1
+          },
+          "attributes": [
+            {
+              "name": "AssetID",
+              "binding": "java.lang.Integer"
+            },
+            {
+              "name": "SampleTime",
+              "binding": "java.lang.String"
+            },
+            {
+              "name": "Lat",
+              "binding": "java.lang.Double"
+            },
+            {
+              "name": "Lon",
+              "binding": "java.lang.Double"
+            },
+            {
+              "name": "Value",
+              "binding": "java.lang.Double"
+            }
+          ],
+          "style": {
+            "name": "point",
+            "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer/style"
+          }
+        }
+      }
 
-The above will be uploaded to GeoServer as follows::
+4. Then, we are going to create a transformation mapping the Lat/Lon columns to a point:
 
-    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @toPoint.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
+   .. literalinclude:: files/toPoint.json
+      :language: json
+      :caption:  toPoint.json
+         
+   The above will be uploaded task transforms:
+   
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
+        -d @toPoint.json \
+        "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
 
-Now the import is ready to run, and we'll execute it using::
+5. Now the import is ready to run, and we'll execute it using:
 
-    curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0"
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XPOST \
+        "http://localhost:8080/geoserver/rest/imports/0"
 
-If all goes well the new layer is created in PostGIS and registered in GeoServer as a new layer.
+6. The new layer is created in PostGIS and registered in GeoServer as a new layer.
 
-In case the features in the CSV need to be appended to an existing layer a PUT request against the task might be performed, changing its
-updateMode from "CREATE" to "APPEND". Changing it to "REPLACE" instead will preserve the layer, but remove the old conents and replace
-them with the newly uploaded ones.
+   In case the features in the CSV need to be appended to an existing layer a PUT request against the task might be performed, changing its
+   updateMode from "CREATE" to "APPEND". Changing it to "REPLACE" instead will preserve the layer, but remove the old conents and replace
+   them with the newly uploaded ones.
+
+Replacing PostGIS table using the contents of a CSV file
+--------------------------------------------------------
+
+To update the ``values`` layer with new content:
+      
+#. Create a new import into ``cite:postgis``:
+
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
+        -d @import.json "http://localhost:8080/geoserver/rest/imports"
+        
+   Using:
+   
+   .. literalinclude:: files/import.json
+      :language: json
+      :caption:  import.json
+        
+#. Use :file:`replace.csv` to create a new task:
+
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XPOST \
+        -F filedata=@replace.csv \
+        "http://localhost:8080/geoserver/rest/imports/1/tasks"
+        
+   The csv file has an additional column:
+        
+   .. literalinclude:: files/replace.csv
+      :language: text
+      :caption:  replace.csv
+
+#. Update task with as a "REPLACE" and supply srs information:
+
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XPUT -H "Content-type: application/json" \
+        -d @taskUpdate.json \
+        "http://localhost:8080/geoserver/rest/imports/1/tasks/0"
+   
+   Using:
+   
+   .. literalinclude:: files/taskUpdate.json
+      :language: json
+      :caption:  taskUpdate.json
+
+#. Update transform to supply a geometry column:
+
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
+        -d @toPoint.json \
+        "http://localhost:8080/geoserver/rest/imports/1/tasks/0/transforms"
+        
+   Using:
+   
+   .. literalinclude:: files/toPoint.json
+      :language: json
+      :caption:  toPoint.json
+
+#. Double check import:
+
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XGET \
+        http://localhost:8080/geoserver/rest/imports/1.json
+   
+   .. code-block:: json
+      :emphasize-lines: 15
+   
+      {
+        "import": {
+          "id": 2,
+          "href": "http://localhost:8080/geoserver/rest/imports/1",
+          "state": "PENDING",
+          "archive": false,
+          "targetWorkspace": {
+            "workspace": {
+              "name": "cite",
+              "isolated": false
+            }
+          },
+          "targetStore": {
+            "dataStore": {
+              "name": "postgis",
+              "type": "PostGIS"
+            }
+          },
+          "tasks": [
+            {
+              "id": 0,
+              "href": "http://localhost:8080/geoserver/rest/imports/1/tasks/0",
+              "state": "READY"
+            }
+          ]
+        }
+      }
+   
+   Task:
+
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XGET \
+        http://localhost:8080/geoserver/rest/imports/1/tasks/0.json
+        
+   .. code-block:: json
+      :emphasize-lines: 5
+   
+      {
+        "task": {
+          "id": 0,
+          "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0",
+          "state": "READY",
+          "updateMode": "REPLACE",
+          "data": {
+            "type": "file",
+            "format": "CSV",
+            "file": "replace.csv"
+          },
+          "target": {
+            "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0/target",
+            "dataStore": {
+              "name": "postgis",
+              "type": "PostGIS"
+            }
+          },
+          "progress": "http://localhost:8080/geoserver/rest/imports/2/tasks/0/progress",
+          "layer": {
+            "name": "replace",
+            "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0/layer"
+          },
+          "transformChain": {
+            "type": "vector",
+            "transforms": [
+              {
+                "type": "AttributesToPointGeometryTransform",
+                "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0/transforms/0"
+              }
+            ]
+          }
+        }
+      }
+   
+   Check layer to ensure ``name`` indicates layer to replace, and ``nativeName`` indicates
+   the table contents to replace:
+   
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XGET \
+        http://localhost:8080/geoserver/rest/imports/1/tasks/0/layer.json
+        
+   .. code-block:: json
+      :emphasize-lines: 3,5,6,7
+   
+      {
+        "layer": {
+          "name": "values",
+          "href": "http://localhost:8080/geoserver/rest/imports/1/tasks/0/layer",
+          "title": "values",
+          "originalName": "replace",
+          "nativeName": "replace",
+          "srs": "EPSG:4326",
+          "bbox": {
+            "minx": 0,
+            "miny": 0,
+            "maxx": -1,
+            "maxy": -1
+          },
+          "attributes": [
+            {
+              "name": "AssetID",
+              "binding": "java.lang.Integer"
+            },
+            {
+              "name": "SampleTime",
+              "binding": "java.lang.String"
+            },
+            {
+              "name": "Lat",
+              "binding": "java.lang.Double"
+            },
+            {
+              "name": "Lon",
+              "binding": "java.lang.Double"
+            },
+            {
+              "name": "Value",
+              "binding": "java.lang.Integer"
+            }
+          ],
+          "style": {
+            "name": "point",
+            "href": "http://localhost:8080/geoserver/rest/imports/1/tasks/0/layer/style"
+          }
+        }
+      }
+      
+   Transform:
+   
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XGET \
+        http://localhost:8080/geoserver/rest/imports/1/tasks/0/transforms/0.json
+   
+#. To run the import:
+
+   .. code-block:: bash
+   
+      curl -u admin:geoserver -XPOST \
+        "http://localhost:8080/geoserver/rest/imports/1"
 
 Uploading and optimizing a GeoTiff with ground control points 
 -------------------------------------------------------------

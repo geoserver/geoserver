@@ -1,0 +1,14 @@
+{
+   "import": {
+      "targetWorkspace": {
+         "workspace": {
+            "name": "cite"
+         }
+      },
+      "targetStore": {
+         "dataStore": {
+            "name": "postgis"
+         }
+      }
+   }
+}

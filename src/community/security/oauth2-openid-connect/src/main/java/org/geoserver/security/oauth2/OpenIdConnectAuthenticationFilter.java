@@ -9,14 +9,13 @@ package org.geoserver.security.oauth2;
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.AccessToken;
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.IdToken;
 
+import com.jayway.jsonpath.JsonPath;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -78,6 +77,15 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         return super.getRoles(request, principal);
     }
 
+    static Object extractFromJSON(String json, String path) {
+        try {
+            return JsonPath.read(json, path);
+        } catch (Exception e) {
+            // do nothing - the ID Token doesn't have that attribute - handled later with o=null
+            return null;
+        }
+    }
+
     private Collection<GeoServerRole> getRolesFromToken(String token) throws IOException {
         if (token == null) {
             LOGGER.warning("Token not found, cannot perform role extraction");
@@ -85,10 +93,9 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         }
         Jwt decoded = JwtHelper.decode(token);
         String claims = decoded.getClaims();
-        JSONObject json = (JSONObject) JSONSerializer.toJSON(claims);
-        String rolesAttribute =
+        String rolesAttributePath =
                 ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
-        Object o = json.get(rolesAttribute);
+        Object o = extractFromJSON(claims, rolesAttributePath);
         List<GeoServerRole> result = new ArrayList<>();
         if (o instanceof String) {
             result.add(new GeoServerRole((String) o));
@@ -98,14 +105,14 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             LOGGER.log(
                     Level.WARNING,
                     "Was expecting to find a list of strings or a single value in "
-                            + rolesAttribute
+                            + rolesAttributePath
                             + ", but it was something else: "
                             + o);
         } else {
             LOGGER.log(
                     Level.FINE,
                     "Did not find "
-                            + rolesAttribute
+                            + rolesAttributePath
                             + "in the token, returning an empty role list");
         }
 

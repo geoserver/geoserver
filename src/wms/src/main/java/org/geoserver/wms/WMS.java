@@ -1294,7 +1294,11 @@ public class WMS implements ApplicationContextAware {
             // collection
             if (minResult != CalcResult.NULL_RESULT) {
                 result.add((Date) min.getMin());
-                final MaxVisitor max = new MaxVisitor(time.getAttribute());
+                final MaxVisitor max =
+                        new MaxVisitor(
+                                time.getEndAttribute() != null
+                                        ? time.getEndAttribute()
+                                        : time.getAttribute());
                 collection.accepts(max, null);
                 result.add((Date) max.getMax());
             }
@@ -1373,7 +1377,11 @@ public class WMS implements ApplicationContextAware {
             CalcResult calcResult = min.getResult();
             if (calcResult != CalcResult.NULL_RESULT) {
                 result.add(((Number) min.getMin()).doubleValue());
-                final MaxVisitor max = new MaxVisitor(elevation.getAttribute());
+                final MaxVisitor max =
+                        new MaxVisitor(
+                                elevation.getEndAttribute() != null
+                                        ? elevation.getEndAttribute()
+                                        : elevation.getAttribute());
                 collection.accepts(max, null);
                 result.add(((Number) max.getMax()).doubleValue());
             }
@@ -1520,7 +1528,13 @@ public class WMS implements ApplicationContextAware {
 
         // build query to grab the dimension values
         final Query dimQuery = new Query(source.getSchema().getName().getLocalPart());
-        dimQuery.setPropertyNames(Arrays.asList(dimension.getAttribute()));
+        List<String> propertyNames = new ArrayList<>();
+        propertyNames.add(dimension.getAttribute());
+        if (dimension.getEndAttribute() != null
+                && dimension.getPresentation() != DimensionPresentation.LIST) {
+            propertyNames.add(dimension.getEndAttribute());
+        }
+        dimQuery.setPropertyNames(propertyNames);
         return source.getFeatures(dimQuery);
     }
 
@@ -1787,7 +1801,11 @@ public class WMS implements ApplicationContextAware {
             final CalcResult minResult = minVisitor.getResult();
             if (minResult != CalcResult.NULL_RESULT) {
                 result.add(minResult.getValue());
-                final MaxVisitor maxVisitor = new MaxVisitor(dimensionInfo.getAttribute());
+                final MaxVisitor maxVisitor =
+                        new MaxVisitor(
+                                dimensionInfo.getEndAttribute() != null
+                                        ? dimensionInfo.getEndAttribute()
+                                        : dimensionInfo.getAttribute());
                 fcollection.accepts(maxVisitor, null);
                 result.add(maxVisitor.getMax());
             }

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
@@ -54,6 +55,7 @@ import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.ConfigurationListenerAdapter;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpRequestReader;
@@ -92,6 +94,7 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.lang.Nullable;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
 import org.xml.sax.EntityResolver;
@@ -117,19 +120,53 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     /** The WMS configuration facade, that we use to pick up base layer definitions */
     private WMS wms;
 
-    /** EntityResolver provider, used in SLD parsing */
-    EntityResolverProvider entityResolverProvider;
+    /**
+     * EntityResolver provider, used in SLD parsing. Lazily created, only to be accessed through
+     * {@link #getEntityResolverProvider()}
+     */
+    private EntityResolverProvider _entityResolverProvider;
 
-    /** HTTP client used to fetch remote styles * */
-    CloseableHttpClient httpClient;
+    /**
+     * HTTP client used to fetch remote styles. Lazily created, only to be accessed through {@link
+     * #getHttpClient} and {@link #closeHttpClient}
+     */
+    private volatile CloseableHttpClient _httpClient;
 
-    /** Current cache configuration. */
+    /**
+     * Current WMS remote styles cache configuration. State managed by {@link
+     * #wmsCacheConfigListener} and {@link #getCacheConfig()}
+     */
     private CacheConfiguration cacheCfg;
     /**
      * This flags allows the kvp reader to go beyond the SLD library mode specification and match
      * the first style that can be applied to a given layer. This is for backwards compatibility
      */
     private boolean laxStyleMatchAllowed = true;
+
+    private @Nullable HttpClientConnectionManager httpClientConnectionManager;
+
+    private final ConfigurationListenerAdapter wmsCacheConfigListener =
+            new ConfigurationListenerAdapter() {
+                @Override
+                public void handleServiceChange(
+                        ServiceInfo service,
+                        List<String> propertyNames,
+                        List<Object> oldValues,
+                        List<Object> newValues) {
+                    if (service instanceof WMSInfo) {
+                        WMSInfo info = (WMSInfo) service;
+                        CacheConfiguration newCacheCfg = info.getCacheConfiguration();
+                        if (cacheCfg != null && !newCacheCfg.equals(cacheCfg)) {
+                            // close the client, wait for the next time it's needed to re-create it
+                            try {
+                                closeHttpClient();
+                            } catch (IOException e) {
+                                LOGGER.log(Level.SEVERE, "Error closing HTTPClient", e);
+                            }
+                        }
+                    }
+                }
+            };
 
     public GetMapKvpRequestReader(WMS wms) {
         this(wms, null);
@@ -139,78 +176,97 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     public GetMapKvpRequestReader(WMS wms, HttpClientConnectionManager manager) {
         super(GetMapRequest.class);
         this.wms = wms;
+        this.httpClientConnectionManager = manager;
+    }
+
+    private void addWmsCacheConfigListener() {
+        GeoServer geoServer = wms.getGeoServer();
+        geoServer.addListener(wmsCacheConfigListener);
+    }
+
+    private void removeWmsCacheConfigListener() {
+        GeoServer geoServer = wms.getGeoServer();
+        if (null != geoServer) {
+            geoServer.removeListener(wmsCacheConfigListener);
+        }
+    }
+
+    private CloseableHttpClient getHttpClient() {
+        CloseableHttpClient client = this._httpClient;
+        if (null == client) {
+            synchronized (this) {
+                if (null == this._httpClient) {
+                    CacheConfiguration wmsCacheConfig = getCacheConfig();
+                    RequestConfig requestConfig = createHttpRequestConfig();
+                    this._httpClient = createHttpClient(requestConfig, wmsCacheConfig);
+                    addWmsCacheConfigListener();
+                    return this._httpClient;
+                }
+            }
+        }
+        return client;
+    }
+
+    private RequestConfig createHttpRequestConfig() {
         // configure the http client used to fetch remote styles
         Builder builder = RequestConfig.copy(RequestConfig.DEFAULT);
         int timeoutMillis = getTimeoutMillis();
         builder.setConnectTimeout(timeoutMillis);
         builder.setSocketTimeout(timeoutMillis);
-        RequestConfig requestConfig = builder.build();
+        return builder.build();
+    }
 
-        wms.getGeoServer()
-                .addListener(
-                        new ConfigurationListenerAdapter() {
+    private CacheConfiguration getCacheConfig() {
+        if (null == this.cacheCfg) this.cacheCfg = wms.getRemoteResourcesCacheConfiguration();
+        return this.cacheCfg;
+    }
 
-                            @Override
-                            public void handleServiceChange(
-                                    ServiceInfo service,
-                                    List<String> propertyNames,
-                                    List<Object> oldValues,
-                                    List<Object> newValues) {
-                                if (service instanceof WMSInfo) {
-                                    WMSInfo info = (WMSInfo) service;
-                                    CacheConfiguration newCacheCfg = info.getCacheConfiguration();
-                                    if (!newCacheCfg.equals(cacheCfg)) {
-                                        createHttpClient(
-                                                wms,
-                                                manager,
-                                                requestConfig,
-                                                (CacheConfiguration) newCacheCfg.clone());
-                                    }
-                                }
-                            }
-                        });
-        this.entityResolverProvider = new EntityResolverProvider(wms.getGeoServer());
-        createHttpClient(
-                wms,
-                manager,
-                requestConfig,
-                (CacheConfiguration) wms.getRemoteResourcesCacheConfiguration().clone());
+    EntityResolverProvider getEntityResolverProvider() {
+        if (null == _entityResolverProvider)
+            this._entityResolverProvider = new EntityResolverProvider(wms.getGeoServer());
+        return this._entityResolverProvider;
     }
 
     private int getTimeoutMillis() {
         return wms.getServiceInfo().getRemoteStyleTimeout();
     }
 
-    private synchronized void createHttpClient(
-            WMS wms,
-            HttpClientConnectionManager manager,
-            RequestConfig requestConfig,
-            CacheConfiguration cfg) {
-        this.cacheCfg = cfg;
-        if (cfg != null && cfg.isEnabled()) {
+    private synchronized CloseableHttpClient createHttpClient(
+            RequestConfig requestConfig, CacheConfiguration wmsCacheConfig) {
+        Objects.requireNonNull(requestConfig);
+        Objects.requireNonNull(wmsCacheConfig);
+
+        HttpClientBuilder builder;
+        if (wmsCacheConfig.isEnabled()) {
             CacheConfig cacheConfig =
                     CacheConfig.custom()
-                            .setMaxCacheEntries(cacheCfg.getMaxEntries())
-                            .setMaxObjectSize(cacheCfg.getMaxEntrySize())
+                            .setMaxCacheEntries(wmsCacheConfig.getMaxEntries())
+                            .setMaxObjectSize(wmsCacheConfig.getMaxEntrySize())
                             .build();
-            if (httpClient != null) {
-                try {
-                    httpClient.close();
-                } catch (IOException e) {
-                    if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.log(Level.SEVERE, "Error closing HTTPClient", e);
-                    }
-                }
-            }
-            this.httpClient =
+
+            builder =
                     CachingHttpClientBuilder.create()
                             .setCacheConfig(cacheConfig)
-                            .setConnectionManager(manager)
-                            .setDefaultRequestConfig(requestConfig)
-                            .build();
+                            .setConnectionManager(httpClientConnectionManager)
+                            .setDefaultRequestConfig(requestConfig);
         } else {
-            this.httpClient =
-                    HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+            builder = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig);
+        }
+        return builder.build();
+    }
+
+    private void closeHttpClient() throws IOException {
+        synchronized (this) {
+            if (this._httpClient != null) {
+                // assign to a local variable, don't risk not being able to null-ify the instance
+                // variable if close() fails
+                @SuppressWarnings("PMD.CloseResource")
+                CloseableHttpClient client = this._httpClient;
+                this._httpClient = null;
+                this.cacheCfg = null;
+                removeWmsCacheConfigListener();
+                client.close();
+            }
         }
     }
 
@@ -907,7 +963,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     }
                 };
         new Timer(true).schedule(task, hardTimeout);
-        return httpClient.execute(httpget, cacheContext);
+        return getHttpClient().execute(httpget, cacheContext);
     }
 
     private List<Interpolation> parseInterpolations(
@@ -1032,6 +1088,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     private List<Exception> validateStyle(Object input, GetMapRequest getMap) {
         try {
             String language = getStyleFormat(getMap);
+            EntityResolverProvider entityResolverProvider = getEntityResolverProvider();
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
 
             return Styles.handler(language).validate(input, getMap.styleVersion(), entityResolver);
@@ -1044,6 +1101,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     private StyledLayerDescriptor parseStyle(GetMapRequest getMap, Reader reader) {
         try {
             String format = getStyleFormat(getMap);
+            EntityResolverProvider entityResolverProvider = getEntityResolverProvider();
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
 
             return Styles.handler(format)
@@ -1647,9 +1705,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     @Override
     public void destroy() throws Exception {
-        if (httpClient != null) {
-            httpClient.close();
-        }
+        closeHttpClient();
     }
 
     // check if this requested layer is a cascaded WMS Layer

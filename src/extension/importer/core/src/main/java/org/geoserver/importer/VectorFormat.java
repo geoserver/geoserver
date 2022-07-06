@@ -34,7 +34,11 @@ public abstract class VectorFormat extends DataFormat {
     /** Disposes the reader for the specified import item. */
     public abstract void dispose(FeatureReader reader, ImportTask item) throws IOException;
 
-    /** Get the number of features from the data for the specified import item. */
+    /**
+     * Get the number of features from the data for the specified import item.
+     *
+     * @return number of features if known, or {@code -1} if unknown.
+     */
     public abstract int getFeatureCount(ImportData data, ImportTask item) throws IOException;
 
     /**

@@ -41,7 +41,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -162,7 +161,7 @@
             </executions>
             <configuration>
               <skip>${docker-compose.skip}</skip>
-              <composeFile>${maven.multiModuleProjectDirectory}/docker-compose-it.yml</composeFile>
+              <composeFile>${project.basedir}/docker-compose.yml</composeFile>
               <envVars>
                 <GEOSERVER_PORT>${geoserver.port}</GEOSERVER_PORT>
               </envVars>

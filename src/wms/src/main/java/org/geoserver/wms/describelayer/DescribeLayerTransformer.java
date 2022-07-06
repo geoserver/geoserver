@@ -13,6 +13,7 @@ import java.util.List;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wms.DescribeLayerRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -121,21 +122,23 @@ public class DescribeLayerTransformer extends TransformerBase {
          * <code>LayerDescription</code> element for each featuretype requested.
          */
         private void handleLayers(DescribeLayerRequest req) {
-            MapLayerInfo layer;
-
-            final List layers = req.getLayers();
+            final List<MapLayerInfo> layers = req.getLayers();
 
             AttributesImpl queryAtts = new AttributesImpl();
             queryAtts.addAttribute("", "typeName", "typeName", "", "");
 
-            for (Object o : layers) {
-                layer = (MapLayerInfo) o;
+            for (MapLayerInfo layer : layers) {
 
                 AttributesImpl layerAtts = new AttributesImpl();
                 layerAtts.addAttribute("", "name", "name", "", "");
                 String owsUrl;
                 String owsType;
+                String workspaceName = "";
                 if (MapLayerInfo.TYPE_VECTOR == layer.getType()) {
+                    if (layer.getResource() instanceof FeatureTypeInfo) {
+                        FeatureTypeInfo typeInfo = (FeatureTypeInfo) (layer.getResource());
+                        workspaceName = typeInfo.getStore().getWorkspace().getName();
+                    }
                     owsUrl = buildURL(baseURL, "wfs", null, URLType.SERVICE);
                     owsUrl = appendQueryString(owsUrl, "");
                     owsType = "WFS";
@@ -162,7 +165,13 @@ public class DescribeLayerTransformer extends TransformerBase {
                         0, "", "name", "name", "", layer.getLayerInfo().prefixedName());
                 start("LayerDescription", layerAtts);
 
-                queryAtts.setAttribute(0, "", "typeName", "typeName", "", layer.getName());
+                // add workspace name to typename when not already present and not empty
+                String qAttsLyrName = layer.getName();
+                if (workspaceName.length() > 0
+                        && !layer.getName().startsWith(workspaceName + ":")) {
+                    qAttsLyrName = workspaceName + ":" + layer.getName();
+                }
+                queryAtts.setAttribute(0, "", "typeName", "typeName", "", qAttsLyrName);
                 element("Query", null, queryAtts);
 
                 end("LayerDescription");

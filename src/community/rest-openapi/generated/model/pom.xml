@@ -79,6 +79,7 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
+            <id>add-source-generated</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>add-source</goal>

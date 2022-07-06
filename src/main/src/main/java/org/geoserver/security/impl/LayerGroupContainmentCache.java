@@ -29,6 +29,8 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.LayerGroupStyleListener;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 
 /**
  * A cache for layer group containment, it speeds up looking up layer groups containing a particular
@@ -36,7 +38,7 @@ import org.geoserver.catalog.impl.LayerGroupStyleListener;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class LayerGroupContainmentCache {
+public class LayerGroupContainmentCache implements ApplicationListener {
 
     /** Builds a concurrent set wrapping a {@link ConcurrentHashMap} */
     static final Function<? super String, ? extends Set<LayerGroupSummary>> CONCURRENT_SET_BUILDER =
@@ -188,6 +190,11 @@ public class LayerGroupContainmentCache {
                 collectContainers(container, groups);
             }
         }
+    }
+
+    @Override
+    public void onApplicationEvent(ApplicationEvent applicationEvent) {
+        buildLayerGroupCaches();
     }
 
     /**

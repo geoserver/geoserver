@@ -79,7 +79,7 @@ docker run -it --rm --name gstests -p18080:8080 oscarfonts/geoserver:latest
 Or rather
 
 ```
-docker-compose -f docker-compose-it.yml up -d
+docker-compose -f docker-compose.yml up -d
 ```
 
 The integration tests will look for an environment variable named `geoserver_api_url` to connect to, defaulting to `http://localhost:18080/geoserver/rest`.

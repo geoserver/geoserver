@@ -1,5 +1,6 @@
 package org.geoserver.restconfig.client;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.AccessLevel;
@@ -99,13 +100,11 @@ public class CoverageStoresClient {
     }
 
     public List<Link> findByWorkspace(@NonNull String workspace) {
-        CoverageStoresResponse wrapper =
-                this.client.collectionCall(
-                        () -> this.api().getCoverageStores(workspace),
-                        () ->
-                                new CoverageStoresResponse()
-                                        .coverageStores(new CoverageStoreListWrapper()));
-        return Link.map(wrapper.getCoverageStores().getCoverageStore());
+        return Optional.ofNullable(this.api().getCoverageStores(workspace))
+                .map(CoverageStoresResponse::getCoverageStores)
+                .map(CoverageStoreListWrapper::getCoverageStore)
+                .map(Link::map)
+                .orElse(Collections.emptyList());
     }
 
     /** @throws NotFound */

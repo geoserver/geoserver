@@ -8,16 +8,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.filter.expression.Expression;
 
 public class FeatureTypeInfoImplTest {
 
@@ -119,5 +124,40 @@ public class FeatureTypeInfoImplTest {
         initer.accept(f2);
 
         assertEquals(f1, f2);
+    }
+
+    @Test
+    public void testWeirdAttributeNames() throws CQLException {
+        List<String> weirdNames = Arrays.asList(
+                "a nice attribute",
+                "this attribute (looks like a function)",
+                "Attribute (looks like a function) and contains a double quote \" ",
+                "Attribute (looks like a function) and contains a single quote ' ",
+                "Attribute (looks like a function) 'and contains several quotes' ",
+                "Attribute (looks like a function) 'and '' contains ''' multiple quotes' "
+                );
+
+        for (String weirdName : weirdNames) {
+            testWeirdAttributeName(weirdName);
+        }
+    }
+
+    private void testWeirdAttributeName(String weirdName) throws CQLException {
+        CatalogFactory factory = catalog.getFactory();
+
+        FeatureTypeInfoImpl ft = (FeatureTypeInfoImpl) factory.createFeatureType();
+
+        ft.setName("featureType");
+
+        AttributeTypeInfo at = factory.createAttribute();
+
+        at.setName(weirdName);
+        at.setFeatureType(ft);
+
+        ft.setAttributes(Collections.singletonList(at));
+
+        // try to turn the attribute into a valid expression
+        String source = at.getSource();
+        Expression expr = ECQL.toExpression(source);
     }
 }

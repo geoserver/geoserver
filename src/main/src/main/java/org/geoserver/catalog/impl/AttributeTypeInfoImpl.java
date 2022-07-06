@@ -141,7 +141,7 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
                 return name;
             } catch (CQLException e) {
                 // quoting to avoid reserved keyword issues
-                return "'" + name + "'";
+                return "'" + name.replace("'", "''") + "'";
             }
         }
         return source;

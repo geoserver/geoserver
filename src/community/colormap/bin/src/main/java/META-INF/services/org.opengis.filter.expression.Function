@@ -1,4 +1,0 @@
-org.geotools.process.raster.FilterFunction_svgColorMap
-org.geotools.process.raster.FilterFunction_gridCoverageProperty
-org.geotools.process.raster.FilterFunction_gridCoverageStats
-org.geotools.process.raster.FilterFunction_bandStats

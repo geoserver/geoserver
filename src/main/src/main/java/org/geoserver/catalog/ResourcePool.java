@@ -2241,6 +2241,7 @@ public class ResourcePool {
         hintCoverageReaderCache.clear();
         wmsCache.clear();
         wmtsCache.clear();
+        sldCache.clear();
         styleCache.clear();
         listeners.clear();
 

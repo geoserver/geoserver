@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.Component;
@@ -53,6 +54,10 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StatusPage.class);
         tester.assertLabel("tabs:panel:locks", "0");
         tester.assertLabel("tabs:panel:jai.memory.used", "0 KB");
+
+        Label resourceCache =
+                (Label) tester.getComponentFromLastRenderedPage("tabs:panel:resourceCache");
+        assertNotEquals("0", resourceCache.getDefaultModelObjectAsString());
     }
 
     @Test
@@ -77,10 +82,26 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testClearCache() {
+    public void testClearCache() throws IOException {
         tester.assertRenderedPage(StatusPage.class);
+
+        // Use the cache prior to testing clear
+        // and trigger a model reload with unrelated action
+        getCatalog().getResourcePool().getCRS("EPSG:900913");
+        tester.clickLink("tabs:panel:free.memory.jai", false);
+
+        tester.assertRenderedPage(StatusPage.class);
+        Label resourceCache =
+                (Label) tester.getComponentFromLastRenderedPage("tabs:panel:resourceCache");
+        int before = Integer.valueOf(resourceCache.getDefaultModelObjectAsString());
+
         tester.clickLink("tabs:panel:clear.resourceCache", true);
         tester.assertRenderedPage(StatusPage.class);
+
+        resourceCache = (Label) tester.getComponentFromLastRenderedPage("tabs:panel:resourceCache");
+        int after = Integer.valueOf(resourceCache.getDefaultModelObjectAsString());
+
+        assertTrue("cleared", before > after);
     }
 
     @Test

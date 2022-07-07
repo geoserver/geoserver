@@ -28,6 +28,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamServiceLoader;
@@ -494,6 +496,26 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                                 }
                             }
                         }
+                    }
+                }
+
+                for (WMSStoreInfo wms :
+                        getCatalog().getStoresByWorkspace(ws.getName(), WMSStoreInfo.class)) {
+                    if (!filteredResource(wms, ws, true, StoreInfo.class)) {
+                        Element store = new Element("Store");
+                        store.setAttribute("type", "WMSStoreInfo");
+                        store.addContent(new Element("Name").addContent(wms.getName()));
+                        workspace.addContent(store);
+                    }
+                }
+
+                for (WMTSStoreInfo wmts :
+                        getCatalog().getStoresByWorkspace(ws.getName(), WMTSStoreInfo.class)) {
+                    if (!filteredResource(wmts, ws, true, StoreInfo.class)) {
+                        Element store = new Element("Store");
+                        store.setAttribute("type", "WMSStoreInfo");
+                        store.addContent(new Element("Name").addContent(wmts.getName()));
+                        workspace.addContent(store);
                     }
                 }
 

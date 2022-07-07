@@ -32,6 +32,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
@@ -50,7 +52,9 @@ import org.junit.Before;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-/** @author Alessio Fabiani, GeoSolutions */
+/**
+ * @author Alessio Fabiani, GeoSolutions
+ */
 public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
     protected static Catalog catalog;
@@ -169,6 +173,16 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         root = File.createTempFile("template", "tmp", new File("target"));
         root.delete();
         root.mkdir();
+
+        WMSStoreInfo wms = catalog.getFactory().createWebMapServer();
+        wms.setName("some-wms-store");
+        wms.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.add(wms);
+
+        WMTSStoreInfo wmts = catalog.getFactory().createWebMapTileServer();
+        wmts.setName("some-wmts-store");
+        wmts.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.add(wmts);
 
         // setup an H2 datastore for the purpose of doing joins
         // run all the tests against a store that can do native paging (h2) and one that
@@ -399,7 +413,9 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         catalog.dispose();
     }
 
-    /** @throws InterruptedException */
+    /**
+     * @throws InterruptedException
+     */
     protected void ensureCleanedQueues() throws InterruptedException {
         int cnt = 0;
         while (!(backupFacade.getRestoreRunningExecutions().isEmpty()

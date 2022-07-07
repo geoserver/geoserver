@@ -96,22 +96,31 @@ public class ResourceFilePanel extends Panel {
         form.add(chooserButton(form));
     }
 
-    /** @return the archive file resource */
+    /**
+     * @return the archive file resource
+     */
     public Resource getResource() {
         return Files.asResource(new File(this.file));
-    };
+    }
+    ;
 
-    /** @return the workspaces */
+    /**
+     * @return the workspaces
+     */
     public List<WorkspaceInfo> getWorkspaces() {
         return workspaces;
     }
 
-    /** @return the stores */
+    /**
+     * @return the stores
+     */
     public Map<String, List<StoreInfo>> getStores() {
         return stores;
     }
 
-    /** @return the layers */
+    /**
+     * @return the layers
+     */
     public Map<String, List<LayerInfo>> getLayers() {
         return layers;
     }
@@ -204,7 +213,9 @@ public class ResourceFilePanel extends Panel {
         fileChooser.setFilter(new Model(new ExtensionFileFilter(FILE_EXTENSIONS)));
     }
 
-    /** @param target */
+    /**
+     * @param target
+     */
     private void doUpdate(final AjaxRequestTarget target, final String valueAsString) {
         Catalog catalog = GeoServerApplication.get().getCatalog();
 
@@ -263,6 +274,20 @@ public class ResourceFilePanel extends Panel {
 
                                         if (store == null) {
                                             store = catalog.getFactory().createDataStore();
+                                            store.setName(stName);
+                                        }
+                                    } else if ("WMSStoreInfo".equals(type)) {
+                                        store = catalog.getWMSStoreByName(stName);
+
+                                        if (store == null) {
+                                            store = catalog.getFactory().createWebMapServer();
+                                            store.setName(stName);
+                                        }
+                                    } else if ("WMTSStoreInfo".equals(type)) {
+                                        store = catalog.getWMTSStoreByName(stName);
+
+                                        if (store == null) {
+                                            store = catalog.getFactory().createWebMapTileServer();
                                             store.setName(stName);
                                         }
                                     } else if ("CoverageStoreInfo".equals(type)) {

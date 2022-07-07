@@ -36,6 +36,8 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
@@ -45,6 +47,8 @@ import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.ProxyUtils;
 import org.geoserver.catalog.impl.StoreInfoImpl;
+import org.geoserver.catalog.impl.WMSStoreInfoImpl;
+import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
@@ -66,7 +70,9 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.util.Assert;
 
-/** @author Alessio Fabiani, GeoSolutions S.A.S. */
+/**
+ * @author Alessio Fabiani, GeoSolutions S.A.S.
+ */
 public abstract class BackupRestoreItem<T> {
 
     /** logger */
@@ -100,22 +106,30 @@ public abstract class BackupRestoreItem<T> {
         ;
     }
 
-    /** @return the xStreamPersisterFactory */
+    /**
+     * @return the xStreamPersisterFactory
+     */
     public XStreamPersisterFactory getxStreamPersisterFactory() {
         return xStreamPersisterFactory;
     }
 
-    /** @return the xp */
+    /**
+     * @return the xp
+     */
     public XStream getXp() {
         return xp;
     }
 
-    /** @param xp the xp to set */
+    /**
+     * @param xp the xp to set
+     */
     public void setXp(XStream xp) {
         this.xp = xp;
     }
 
-    /** @return the catalog */
+    /**
+     * @return the catalog
+     */
     public Catalog getCatalog() {
         authenticate();
         return catalog;
@@ -126,37 +140,51 @@ public abstract class BackupRestoreItem<T> {
         backupFacade.authenticate();
     }
 
-    /** @return the isNew */
+    /**
+     * @return the isNew
+     */
     public boolean isNew() {
         return isNew;
     }
 
-    /** @return the currentJobExecution */
+    /**
+     * @return the currentJobExecution
+     */
     public AbstractExecutionAdapter getCurrentJobExecution() {
         return currentJobExecution;
     }
 
-    /** @return the dryRun */
+    /**
+     * @return the dryRun
+     */
     public boolean isDryRun() {
         return dryRun;
     }
 
-    /** @return the bestEffort */
+    /**
+     * @return the bestEffort
+     */
     public boolean isBestEffort() {
         return bestEffort;
     }
 
-    /** @return the filter */
+    /**
+     * @return the filter
+     */
     public Filter[] getFilters() {
         return filters;
     }
 
-    /** @param filter the filter to set */
+    /**
+     * @param filter the filter to set
+     */
     public void setFilters(Filter[] filters) {
         this.filters = filters;
     }
 
-    /** @return a boolean indicating that at least one filter has been defined */
+    /**
+     * @return a boolean indicating that at least one filter has been defined
+     */
     public boolean filterIsValid() {
         return (this.filters != null
                 && this.filters.length == 3
@@ -302,7 +330,9 @@ public abstract class BackupRestoreItem<T> {
         return false;
     }
 
-    /** @param resource */
+    /**
+     * @param resource
+     */
     public boolean logValidationExceptions(T resource, Throwable e) {
         CatalogException validationException =
                 e != null
@@ -495,12 +525,18 @@ public abstract class BackupRestoreItem<T> {
     private StoreInfo unwrapSecured(StoreInfo info) {
         if (info instanceof SecuredDataStoreInfo)
             return ((SecuredDataStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMSLayerInfo)
+            return ((SecuredWMSLayerInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMTSLayerInfo)
+            return ((SecuredWMTSLayerInfo) info).unwrap(StoreInfo.class);
         if (info instanceof SecuredCoverageStoreInfo)
             return ((SecuredCoverageStoreInfo) info).unwrap(StoreInfo.class);
         return info;
     }
 
-    /** @param catalog */
+    /**
+     * @param catalog
+     */
     protected void syncTo(Catalog srcCatalog) {
         // do a manual import
 
@@ -562,6 +598,48 @@ public abstract class BackupRestoreItem<T> {
                     catalog.add(targetResource);
                     catalog.save(
                             catalog.getResource(targetResource.getId(), FeatureTypeInfo.class));
+                }
+            }
+        }
+
+        // WMSStores
+        for (StoreInfo store : srcCatalog.getFacade().getStores(WMSStoreInfo.class)) {
+            WMSStoreInfo targetWMSStore = catalog.getWMSStoreByName(store.getName());
+            if (store != null && targetWMSStore == null) {
+                WorkspaceInfo targetWorkspace =
+                        store.getWorkspace() != null
+                                ? catalog.getWorkspaceByName(store.getWorkspace().getName())
+                                : null;
+                targetWMSStore =
+                        (WMSStoreInfo)
+                                clone(
+                                        (WMSStoreInfo) unwrap(unwrapSecured(store)),
+                                        targetWorkspace,
+                                        WMSStoreInfo.class);
+                if (targetWMSStore != null) {
+                    catalog.add(targetWMSStore);
+                    catalog.save(catalog.getStore(targetWMSStore.getId(), WMSStoreInfo.class));
+                }
+            }
+        }
+
+        // WMTSStores
+        for (StoreInfo store : srcCatalog.getFacade().getStores(WMTSStoreInfo.class)) {
+            WMTSStoreInfo targetWMTSStore = catalog.getWMTSStoreByName(store.getName());
+            if (store != null && targetWMTSStore == null) {
+                WorkspaceInfo targetWorkspace =
+                        store.getWorkspace() != null
+                                ? catalog.getWorkspaceByName(store.getWorkspace().getName())
+                                : null;
+                targetWMTSStore =
+                        (WMTSStoreInfo)
+                                clone(
+                                        (WMTSStoreInfo) unwrap(unwrapSecured(store)),
+                                        targetWorkspace,
+                                        WMTSStoreInfo.class);
+                if (targetWMTSStore != null) {
+                    catalog.add(targetWMTSStore);
+                    catalog.save(catalog.getStore(targetWMTSStore.getId(), WMTSStoreInfo.class));
                 }
             }
         }
@@ -711,6 +789,10 @@ public abstract class BackupRestoreItem<T> {
             target = catalog.getFactory().createDataStore();
         } else if (type == CoverageStoreInfo.class) {
             target = catalog.getFactory().createCoverageStore();
+        } else if (type == WMSStoreInfo.class) {
+            target = catalog.getFactory().createWebMapServer();
+        } else if (type == WMTSStoreInfo.class) {
+            target = catalog.getFactory().createWebMapTileServer();
         }
 
         if (target != null) {
@@ -730,6 +812,40 @@ public abstract class BackupRestoreItem<T> {
 
             if (source instanceof CoverageStoreInfoImpl) {
                 ((CoverageStoreInfoImpl) target).setURL(((CoverageStoreInfoImpl) source).getURL());
+            }
+
+            if (source instanceof WMSStoreInfoImpl) {
+                ((WMSStoreInfoImpl) target)
+                        .setCapabilitiesURL(((WMSStoreInfoImpl) source).getCapabilitiesURL());
+                ((WMSStoreInfoImpl) target).setUsername(((WMSStoreInfoImpl) source).getUsername());
+                ((WMSStoreInfoImpl) target).setPassword(((WMSStoreInfoImpl) source).getPassword());
+                ((WMSStoreInfoImpl) target)
+                        .setConnectTimeout(((WMSStoreInfoImpl) source).getConnectTimeout());
+                ((WMSStoreInfoImpl) target)
+                        .setMaxConnections(((WMSStoreInfoImpl) source).getMaxConnections());
+                ((WMSStoreInfoImpl) target)
+                        .setReadTimeout(((WMSStoreInfoImpl) source).getReadTimeout());
+                ((WMSStoreInfoImpl) target)
+                        .setUseConnectionPooling(
+                                ((WMSStoreInfoImpl) source).isUseConnectionPooling());
+            }
+
+            if (source instanceof WMTSStoreInfoImpl) {
+                ((WMTSStoreInfoImpl) target)
+                        .setCapabilitiesURL(((WMTSStoreInfoImpl) source).getCapabilitiesURL());
+                ((WMTSStoreInfoImpl) target)
+                        .setUsername(((WMTSStoreInfoImpl) source).getUsername());
+                ((WMTSStoreInfoImpl) target)
+                        .setPassword(((WMTSStoreInfoImpl) source).getPassword());
+                ((WMTSStoreInfoImpl) target)
+                        .setConnectTimeout(((WMTSStoreInfoImpl) source).getConnectTimeout());
+                ((WMTSStoreInfoImpl) target)
+                        .setMaxConnections(((WMTSStoreInfoImpl) source).getMaxConnections());
+                ((WMTSStoreInfoImpl) target)
+                        .setReadTimeout(((WMTSStoreInfoImpl) source).getReadTimeout());
+                ((WMTSStoreInfoImpl) target)
+                        .setUseConnectionPooling(
+                                ((WMTSStoreInfoImpl) source).isUseConnectionPooling());
             }
         }
 

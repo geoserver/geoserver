@@ -26,6 +26,8 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -968,6 +970,30 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                                 }
                             }
                         }
+                    }
+                }
+
+                for (WMSStoreInfo wms :
+                        getCatalog().getStoresByWorkspace(ws.getName(), WMSStoreInfo.class)) {
+                    if (!filteredResource(wms, ws, true, StoreInfo.class)) {
+                        // - Prepare Folder
+                        Resource wmsFolder = BackupUtils.dir(wsFolder, wms.getName());
+
+                        wms.setWorkspace(ws);
+
+                        doWrite(wms, wmsFolder, "wmsstore.xml");
+                    }
+                }
+
+                for (WMTSStoreInfo wmts :
+                        getCatalog().getStoresByWorkspace(ws.getName(), WMTSStoreInfo.class)) {
+                    if (!filteredResource(wmts, ws, true, StoreInfo.class)) {
+                        // - Prepare Folder
+                        Resource wmtsFolder = BackupUtils.dir(wsFolder, wmts.getName());
+
+                        wmts.setWorkspace(ws);
+
+                        doWrite(wmts, wmtsFolder, "wmtsstore.xml");
                     }
                 }
             }

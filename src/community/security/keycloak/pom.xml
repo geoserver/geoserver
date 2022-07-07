@@ -75,12 +75,21 @@
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver.community</groupId>
+      <groupId>org.geoserver.community.security</groupId>
       <artifactId>gs-sec-oauth2-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.community.security</groupId>
+      <artifactId>gs-sec-oauth2-web</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>

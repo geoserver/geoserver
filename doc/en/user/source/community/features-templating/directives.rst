@@ -1133,6 +1133,42 @@ result:
 
 The ``${property}`` directive evaluates to a JSON that will be merged with the including one. In case the including JSON as an attribute with the name equal to one of the attributes in the included JSON, the included will override the property with the same name in the including one.
 
+In case an includeFlat directive is specified inside a JSON Array with a Feature property and the property evaluate to a JSON Array, the container array will be stripped and its values included directly inside the container Array:
+
+
+.. code-block:: json
+   :linenos: 
+
+    [
+       "value1",
+       "value2",
+       "value3",
+       "$includeFlat{${property}}"
+    ]
+
+${property} value:
+
+.. code-block:: json
+   :linenos: 
+
+    [
+       "value4", 
+       "value5"
+    ]
+
+result:
+
+.. code-block:: json
+   :linenos: 
+
+    [
+       "value1",
+       "value2",
+       "value3",
+       "value4",
+       "value5"
+    ]
+
 
 XML based templates (GML)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

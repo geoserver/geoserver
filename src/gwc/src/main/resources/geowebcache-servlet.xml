@@ -15,7 +15,6 @@
   <import resource="geowebcache-georss-context.xml"/>
   <import resource="geowebcache-gmaps-context.xml"/>
   <import resource="geowebcache-kmlservice-context.xml"/>
-  <import resource="geowebcache-rest-context.xml"/>
   <import resource="geowebcache-tmsservice-context.xml"/>
   <import resource="geowebcache-virtualearth-context.xml"/>
   <import resource="geowebcache-wmsservice-context.xml"/>

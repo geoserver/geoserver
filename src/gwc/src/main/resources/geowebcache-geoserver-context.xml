@@ -71,12 +71,6 @@
       XmlConfiguration contributor to set up XStream with GeoServer provided configuration objects for GWC configuration storage
     </description>
   </bean>
-  <bean id="GWCGeoServerRESTConfigurationProvider" class="org.geoserver.gwc.layer.GWCGeoServerRESTConfigurationProvider">
-    <description>
-      XmlConfiguration contributor to set up XStream with GeoServer provided configuration objects for GWC's REST API
-    </description>
-    <constructor-arg ref="catalog"/>
-  </bean>
 
   <bean id="gwcCatalogConfiguration" class="org.geoserver.gwc.layer.CatalogConfiguration">
     <constructor-arg ref="rawCatalog" />

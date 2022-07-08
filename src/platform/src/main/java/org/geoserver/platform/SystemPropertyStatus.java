@@ -17,17 +17,17 @@ public class SystemPropertyStatus implements ModuleStatus {
 
     @Override
     public Optional<String> getComponent() {
-        return Optional.ofNullable("system-properties");
+        return Optional.ofNullable(System.getProperty("java.runtime.name"));
     }
 
     @Override
     public String getName() {
-        return "system-properties";
+        return "System Properties";
     }
 
     @Override
     public Optional<String> getVersion() {
-        return Optional.ofNullable(null);
+        return Optional.ofNullable(System.getProperty("java.runtime.version"));
     }
 
     @Override

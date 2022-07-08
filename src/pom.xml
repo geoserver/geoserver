@@ -100,7 +100,7 @@
     <wicket.version>7.18.0</wicket.version>
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.13</httpclient.version>
-    <imageio-ext.version>1.4.5</imageio-ext.version>
+    <imageio-ext.version>1.4.6</imageio-ext.version>
     <jaiext.version>1.1.23</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>

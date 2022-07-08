@@ -149,6 +149,9 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     static final QName TIFF_3035 = new QName(MockData.SF_URI, "3035", MockData.SF_PREFIX);
 
+    public static final QName MULTIBAND_WORLD =
+            new QName(MockData.WCS_URI, "multiband_world", MockData.WCS_PREFIX);
+
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(
                     RenderedImageMapOutputFormatTest.class.getPackage().getName());
@@ -214,6 +217,12 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         this.rasterMapProducer = getProducerInstance();
 
         getTestData().addDefaultRasterLayer(SystemTestData.MULTIBAND, getCatalog());
+
+        // add a world image format, the reader cannot do native band selection
+        getTestData().addRasterLayer(MULTIBAND_WORLD, "multiband_world.zip", "tif", getCatalog());
+        CoverageStoreInfo csi = getCatalog().getCoverageStoreByName(MULTIBAND_WORLD.getLocalPart());
+        csi.setType("WorldImage");
+        getCatalog().save(csi);
     }
 
     protected RenderedImageMapOutputFormat getProducerInstance() {
@@ -1445,7 +1454,6 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
      */
     @Test
     public void testBandSelectionToNormalCoverage() throws Exception {
-
         GetMapRequest request = new GetMapRequest();
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         ReferencedEnvelope bbox =
@@ -1470,10 +1478,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         StyleBuilder styleBuilder = new StyleBuilder();
         Catalog catalog = getCatalog();
 
-        CoverageInfo ci =
-                catalog.getCoverageByName(
-                        SystemTestData.MULTIBAND.getPrefix(),
-                        SystemTestData.MULTIBAND.getLocalPart());
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(MULTIBAND_WORLD));
 
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
         reader.getCoordinateReferenceSystem();

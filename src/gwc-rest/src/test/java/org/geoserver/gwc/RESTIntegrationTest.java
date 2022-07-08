@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2022 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -66,6 +66,15 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testReloadConfiguration() throws Exception {
+        String path = "/gwc/rest/reload";
+        String content = "reload_configuration=1";
+        String contentType = "application/x-www-form-urlencoded";
+        MockHttpServletResponse response = postAsServletResponse(path, content, contentType);
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
     public void testGetLayersList() throws Exception {
         final String url = "gwc/rest/layers.xml";
         MockHttpServletResponse sr = getAsServletResponse(url);
@@ -73,7 +82,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertTrue(sr.getContentType(), sr.getContentType().startsWith("application/xml"));
 
         Document dom = getAsDOM(url);
-        // print(dom);
 
         ArrayList<String> tileLayerNames = Lists.newArrayList(GWC.get().getTileLayerNames());
         Collections.sort(tileLayerNames);

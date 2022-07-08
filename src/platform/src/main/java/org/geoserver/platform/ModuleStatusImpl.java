@@ -7,8 +7,8 @@ package org.geoserver.platform;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -22,10 +22,6 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  *
  * <p>Bean completely defined by applicationContext.xml - no dynamic content.
  *
- * <pre>
- * &lt!-- code example needed --&gt;>
- * </pre>
- *
  * @author Morgan Thompson - Boundless
  */
 public class ModuleStatusImpl implements ModuleStatus, Serializable {
@@ -35,20 +31,30 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     /** serialVersionUID */
     private static final long serialVersionUID = -5759469520194940051L;
 
+    /**
+     * The internal machine-readable module name, often a maven module or jar name (example gs-main)
+     */
     private String module;
 
+    /** Module human-readable name, should agree with user manual (example GeoServer Main) */
     private String name;
 
+    /** Functional component, example Java2D */
     private String component;
 
+    /** Version, may be determined by jar manifest or maven */
     private String version;
 
+    /** Documentation link to user guide */
     private String documentation;
 
+    /** Status message */
     private String message;
 
+    /** True if module is enabled */
     private boolean isEnabled;
 
+    /** True if module is available for use */
     private boolean isAvailable;
 
     public ModuleStatusImpl() {}
@@ -80,6 +86,18 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         this.name = name;
         this.isAvailable = true;
         this.isEnabled = true;
+        this.version = getVersionInternal();
+    }
+    /**
+     * Bean constructor used in applicationContext.xml
+     *
+     * @param module The module identifier, e.g. "gs-main"
+     * @param name The module name.
+     * @param component Functional component
+     */
+    public ModuleStatusImpl(String module, String name, String component) {
+        this(module, name);
+        this.component = component;
     }
 
     /** @return the machine readable name */
@@ -173,49 +191,44 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     }
 
     /**
-     * Reads the version for the module from the pom.properties.
+     * Obtain the version for the module from the pom.properties.
      *
      * <p>WARNING: This method reads every pom.properties on the classpath. It should only be used
      * if absolutely necessary
      */
     protected String getVersionInternal() {
-        List<Properties> matches = new ArrayList<>();
-        try {
-            Resource[] resources =
-                    new PathMatchingResourcePatternResolver()
-                            .getResources("classpath*:META-INF/maven/*/*/pom.properties");
-            for (Resource resource : resources) {
-                try (InputStream in = resource.getInputStream()) {
-                    Properties properties = new Properties();
-                    properties.load(in);
-                    if (module != null) {
-                        if (module.equals(properties.getProperty("artifactId"))) {
-                            matches.add(properties);
+        return listVersionsInternal().get(module);
+    }
+
+    private static Map<String, String> MAVEN_VERSIONS = new HashMap<>();
+
+    private static Map<String, String> listVersionsInternal() {
+        synchronized (MAVEN_VERSIONS) {
+            if (MAVEN_VERSIONS.isEmpty()) {
+                try {
+                    Resource[] resources =
+                            new PathMatchingResourcePatternResolver()
+                                    .getResources("classpath*:META-INF/maven/*/*/pom.properties");
+                    for (Resource resource : resources) {
+                        try (InputStream in = resource.getInputStream()) {
+                            Properties properties = new Properties();
+                            properties.load(in);
+
+                            String artifactId = properties.getProperty("artifactId");
+                            String version = properties.getProperty("version");
+                            MAVEN_VERSIONS.put(artifactId, version);
+                        } catch (IOException e) {
+                            LOGGER.log(
+                                    Level.FINE,
+                                    "Error reading pom.properties: " + resource.getFilename(),
+                                    e);
                         }
                     }
                 } catch (IOException e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Error reading pom.properties: " + resource.getFilename(),
-                            e);
+                    LOGGER.log(Level.WARNING, "Error listing pom.properties", e);
                 }
             }
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error listing pom.properties", e);
         }
-        if (matches.isEmpty()) {
-            return null;
-        } else {
-            if (matches.size() > 1) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Found "
-                                + matches.size()
-                                + " matching pom.properties for module \""
-                                + name
-                                + "\", using the first one. This may mean you have duplicate jars on your classpath");
-            }
-            return matches.get(0).getProperty("version");
-        }
+        return MAVEN_VERSIONS;
     }
 }

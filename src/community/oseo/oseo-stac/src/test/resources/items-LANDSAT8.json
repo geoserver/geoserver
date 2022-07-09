@@ -26,6 +26,15 @@
         "thumbnail2":"thumbnail2",
         "$includeFlat":"${assets}"
       },
+      "includeFlatArray": [
+        "staticValue",
+        "$includeFlat{$${jsonPointer(assets,'/thumbnail/roles')}}",
+        "staticValue2",
+        {
+          "title": "title",
+          "titleMTL": "$${jsonPointer(assets, '/MTL/title')}"
+        }
+      ],
       "links": [ // custom link here
         "$includeFlat{mandatoryLinks.json}",
         "$${jsonPointer(assets, '/MTL')}",

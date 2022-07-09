@@ -11,6 +11,7 @@ import org.geoserver.featurestemplating.builders.flat.FlatCompositeBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatDynamicBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatIteratingBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatStaticBuilder;
+import org.geoserver.featurestemplating.builders.impl.ArrayIncludeFlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicMergeBuilder;
@@ -415,6 +416,15 @@ public class TemplateBuilderMaker {
         return dynamicIncludeFlatBuilder;
     }
 
+    private ArrayIncludeFlatBuilder buildArrayIncludeFlatBuilder() {
+        ArrayIncludeFlatBuilder arrayIncludeFlatBuilder =
+                new ArrayIncludeFlatBuilder(name, textContent, namespaces, baseNode);
+        if (filter != null) arrayIncludeFlatBuilder.setFilter(filter);
+        if (!encondingHints.isEmpty())
+            arrayIncludeFlatBuilder.getEncodingHints().putAll(encondingHints);
+        return arrayIncludeFlatBuilder;
+    }
+
     private StaticBuilder buildStaticBuilder() {
         StaticBuilder staticBuilder;
         boolean hasJsonNode = jsonNode != null;
@@ -447,11 +457,12 @@ public class TemplateBuilderMaker {
         if (rootBuilder) result = buildRootBuilder();
         else if (baseNode != null && overlayNode != null) {
             result = buildDynamicMergeBuilder();
+        } else if (dynamicIncludeFlatBuilder) {
+            if (isCollection) result = buildArrayIncludeFlatBuilder();
+            else result = buildDynamicIncludeFlatBuilder();
         } else if (textContent == null && jsonNode == null) {
             if (isCollection) result = buildIteratingBuilder();
             else result = buildCompositeBuilder();
-        } else if (dynamicIncludeFlatBuilder) {
-            result = buildDynamicIncludeFlatBuilder();
         } else {
             if (textContent != null && textContent.contains(TemplateReader.EXPRSTART))
                 result = buildDynamicBuilder();

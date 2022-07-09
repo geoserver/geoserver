@@ -227,7 +227,6 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
             JsonNode node = array.get(i);
             if (node.isTextual()) {
                 String txt = node.asText();
-
                 // simple inclusion
                 JsonNode processed = processInlineDirective(txt, INCLUDE_KEY);
                 if (processed != null) {
@@ -236,15 +235,19 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
                 }
 
                 // flat inclusion
-                processed = processInlineDirective(txt, INCLUDE_FLAT_KEY);
+                processed = processInlineDirective(node, INCLUDE_FLAT_KEY);
                 if (processed != null) {
-                    if (!processed.isArray())
+                    if (processed.isArray()) {
+                        for (JsonNode child : processed) {
+                            result.add(child);
+                        }
+                    } else if (processed.isValueNode()) {
+                        result.add(processed);
+                    } else {
                         throw new IllegalArgumentException(
                                 "This include flat is in an array, "
-                                        + "the included object can only be another array, but it's not: "
+                                        + "the included object can only be another array or a value, but it's not: "
                                         + txt);
-                    for (JsonNode child : processed) {
-                        result.add(child);
                     }
                     continue;
                 }
@@ -254,6 +257,23 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
             result.add(expandIncludes(node));
         }
         return result;
+    }
+
+    /**
+     * Check is the provided text is an inclusion directive if so, extracts the inclusion, parses
+     * it, and provides the result to the consumer
+     *
+     * @param value The JsonNode value that might contain the directive
+     * @param directive The directive (INCLUDE_KEY or INCLUDE_FLAT_KEY)
+     * @return
+     * @throws java.io.IOException
+     */
+    private JsonNode processInlineDirective(JsonNode value, String directive) throws IOException {
+        // if it is an expression or property interpolation we return the value as it is and will
+        // process later.
+        if (isDynamicIncludeFlat(value)) return value;
+        // it is a static inclusion, process it now.
+        else return processInlineDirective(value.textValue(), directive);
     }
 
     /**
@@ -281,6 +301,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
     }
 
     private boolean isDynamicIncludeFlat(JsonNode node) {
-        return (node.asText().startsWith("${") || node.asText().startsWith("$${"));
+        String text = node.asText();
+        return text.contains(INCLUDE_FLAT_KEY.concat("{$")) || text.startsWith("${");
     }
 }

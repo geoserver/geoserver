@@ -47,10 +47,6 @@ public abstract class AbstractTemplateEditorPage extends GeoServerSecuredPage {
         this.loadData();
 
         this.initComponents();
-
-        /*
-         * ResourceInfo resource = getResource(name, workspaceName); this.initComponents(resource);
-         */
     }
 
     private void loadData() {

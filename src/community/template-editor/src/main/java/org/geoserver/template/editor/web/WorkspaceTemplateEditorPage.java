@@ -17,7 +17,6 @@ public class WorkspaceTemplateEditorPage extends AbstractTemplateEditorPage {
 
     public WorkspaceTemplateEditorPage() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public WorkspaceTemplateEditorPage(PageParameters parameters) {

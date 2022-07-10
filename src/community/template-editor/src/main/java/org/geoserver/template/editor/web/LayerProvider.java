@@ -148,8 +148,6 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     public Iterator<LayerInfo> iterator(final long first, final long count) {
         Iterator<LayerInfo> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {
-            // don't know how to force wicket to close the iterator, lets return
-            // a copy. Shouldn't be much overhead as we're paging
             try {
                 return Lists.newArrayList(iterator).iterator();
             } finally {

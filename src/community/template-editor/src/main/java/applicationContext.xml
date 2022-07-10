@@ -7,9 +7,9 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans >
-
     <bean id="TemplateEditorModuleStatus" class="main.java.org.geoserver.template.editor.web.TemplateEditorModuleStatus">
     </bean>
+
     <bean id="templateMenuPage" class="org.geoserver.web.MenuPageInfo">
         <property name="id" value="templates" />
         <property name="titleKey" value="TemplatePage.title" />

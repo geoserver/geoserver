@@ -225,9 +225,6 @@ public class TemplateManager implements Serializable {
     private static String loadTemplateFromClassLoader(Class caller, String tplName, String charset)
             throws IOException {
         ClassTemplateLoader classTemplateLoader = new ClassTemplateLoader(caller, "");
-        // ClassTemplateLoader classTemplateLoader = new ClassTemplateLoader(caller,
-        // "/org/geoserver/wms/featureinfo");
-        // final effort to use a class resource
         if (classTemplateLoader != null) {
             Object source = classTemplateLoader.findTemplateSource(tplName);
             String tplstring = "";

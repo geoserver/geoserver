@@ -20,7 +20,6 @@ public class StoreTemplateEditorPage extends AbstractTemplateEditorPage {
 
     public StoreTemplateEditorPage() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public StoreTemplateEditorPage(PageParameters parameters) {

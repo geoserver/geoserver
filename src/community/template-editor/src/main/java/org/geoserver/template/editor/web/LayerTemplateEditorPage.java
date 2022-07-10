@@ -35,7 +35,6 @@ public class LayerTemplateEditorPage extends AbstractTemplateEditorPage {
 
     public LayerTemplateEditorPage() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public LayerTemplateEditorPage(PageParameters parameters) {

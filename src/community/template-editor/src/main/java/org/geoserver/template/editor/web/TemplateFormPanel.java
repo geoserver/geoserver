@@ -76,7 +76,6 @@ public class TemplateFormPanel extends Panel {
         save_btn.setEnabled(false);
         save_btn.setOutputMarkupId(true);
         add(save_btn);
-        //        save_btn.setEnabled(true);
 
         reload_btn =
                 new AjaxLink<String>("reload_btn", Model.of("Reload")) {

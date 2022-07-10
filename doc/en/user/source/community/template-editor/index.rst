@@ -11,7 +11,7 @@ The Template Editor extension offers a basic web interface to edit and manage Fr
 
 
 Installing the Template Editor extension
------------------------------------
+----------------------------------------
 
 #. Download the Template Editor extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/main/community-latest/geoserver-2.22-SNAPSHOT-template-editor-plugin.zip/>`_.
 
@@ -23,7 +23,7 @@ Installing the Template Editor extension
 
 
 Accessing the Template Editor
-----------------------------
+-----------------------------
 
 Log in your GeoServer web UI. If the extension has been properly installed, a *Template Edition* entry should appear on the left menu, Data section, below *Styles*. You can also check in the list of Modules, in the *Server Status* menu entry.
 

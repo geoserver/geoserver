@@ -63,6 +63,7 @@ officially part of the GeoServer releases. They are however built along with the
    smart-data-loader/index
    solr/index
    taskmanager/index
+   template-editor/index
    teradata/index
    vsi/index
    web-service-auth/index

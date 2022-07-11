@@ -29,4 +29,4 @@ Duplicating Configuration
    * Recursively copying a workspace will duplicate all stores and layers contained in the workspace
    * Recursively copying a store will copy all layers published by the store
    
-6. Press :guilabel:`Start` to being duplicating
+6. Press :guilabel:`Start` to begin duplicating

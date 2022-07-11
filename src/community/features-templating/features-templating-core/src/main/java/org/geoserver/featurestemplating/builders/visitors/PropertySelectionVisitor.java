@@ -17,6 +17,7 @@ import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.impl.ArrayIncludeFlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicJsonBuilder;
@@ -26,6 +27,7 @@ import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geoserver.featurestemplating.builders.selectionwrappers.CompositePropertySelection;
 import org.geoserver.featurestemplating.builders.selectionwrappers.DynamicPropertySelection;
+import org.geoserver.featurestemplating.builders.selectionwrappers.IncludeArrayPropertySelection;
 import org.geoserver.featurestemplating.builders.selectionwrappers.IncludeFlatPropertySelection;
 import org.geoserver.featurestemplating.builders.selectionwrappers.IteratingPropertySelection;
 import org.geoserver.featurestemplating.builders.selectionwrappers.MergePropertySelection;
@@ -145,6 +147,10 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
             result =
                     new IncludeFlatPropertySelection(
                             (DynamicIncludeFlatBuilder) builder, selectionHandler);
+        } else if (builder instanceof ArrayIncludeFlatBuilder) {
+            result =
+                    new IncludeArrayPropertySelection(
+                            (ArrayIncludeFlatBuilder) builder, selectionHandler);
         } else {
             boolean wrap = hasDynamicKey(builder);
             if (builder instanceof DynamicValueBuilder && wrap) {

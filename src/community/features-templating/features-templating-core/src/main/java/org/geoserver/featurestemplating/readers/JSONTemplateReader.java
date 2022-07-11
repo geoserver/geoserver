@@ -15,7 +15,10 @@ import static org.geoserver.featurestemplating.readers.RecursiveJSONParser.INCLU
 import static org.geoserver.featurestemplating.readers.RecursiveJSONParser.INCLUDING_NODE;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +41,6 @@ public class JSONTemplateReader implements TemplateReader {
     public static final String CONTEXTKEY = "@context";
 
     public static final String FILTERKEY = "$filter";
-
-    public static final String INCLUDEKEY = "$include";
 
     public static final String EXPRSTART = "${";
 
@@ -197,47 +198,100 @@ public class JSONTemplateReader implements TemplateReader {
             JsonNode node,
             TemplateBuilder currentBuilder,
             TemplateBuilderMaker maker) {
-        TemplateBuilder iteratingBuilder =
-                maker.name(nodeName)
-                        .collection(true)
-                        // if the parent of the template builder being created
-                        // is a root one, in case of simplified template support,
-                        // or hasNotOwnOutput is flagged the CompositeBuilder being produced
-                        // maps the topLevelFeature source.
-                        .topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
-                        .build();
-        currentBuilder.addChild(iteratingBuilder);
         if (!node.toString().contains(EXPRSTART) && !node.toString().contains(FILTERKEY)) {
             maker.name(nodeName).jsonNode(node);
             currentBuilder.addChild(maker.build());
         } else {
-            Iterator<JsonNode> arrayIterator = node.elements();
-            while (arrayIterator.hasNext()) {
-                JsonNode childNode = arrayIterator.next();
-                if (childNode.isObject()) {
-                    String childJSON = childNode.toString();
-                    if (isArrayControlNode(childNode)) {
-                        // special object controlling array contents
-                        getBuilderFromJsonObject(childNode, iteratingBuilder, maker);
-                    } else if (childJSON.contains(EXPRSTART) || childJSON.contains(FILTERKEY)) {
-                        // regular dynamic object/filtered object
-                        TemplateBuilder compositeBuilder =
-                                maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
-                                        .build();
-                        iteratingBuilder.addChild(compositeBuilder);
-                        getBuilderFromJsonObject(childNode, compositeBuilder, maker);
-                    } else {
-                        // static node
-                        maker.jsonNode(childNode);
-                        iteratingBuilder.addChild(maker.build());
-                    }
-                } else if (childNode.isArray()) {
-                    getBuilderFromJsonArray(null, childNode, iteratingBuilder, maker);
+            List<JsonNode> expressionNodes = new ArrayList<>();
+            ArrayNode arrayNode = cleanFromExpressionNodes((ArrayNode) node, expressionNodes);
+            if (!expressionNodes.isEmpty()) {
+                addArrayIncludeFlat(currentBuilder, maker, arrayNode, nodeName, expressionNodes);
+            } else {
+                buildIteratingBuilder(nodeName, currentBuilder, (ArrayNode) node, maker);
+            }
+        }
+    }
+
+    private void buildIteratingBuilder(
+            String nodeName,
+            TemplateBuilder currentBuilder,
+            ArrayNode node,
+            TemplateBuilderMaker maker) {
+        TemplateBuilder iteratingBuilder =
+                maker.name(nodeName)
+                        .collection(true)
+                        .topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
+                        .build();
+        currentBuilder.addChild(iteratingBuilder);
+        Iterator<JsonNode> arrayIterator = node.elements();
+        while (arrayIterator.hasNext()) {
+            JsonNode childNode = arrayIterator.next();
+            if (childNode.isObject()) {
+                String childJSON = childNode.toString();
+                if (isArrayControlNode(childNode)) {
+                    // special object controlling array contents
+                    getBuilderFromJsonObject(childNode, iteratingBuilder, maker);
+                } else if (childJSON.contains(EXPRSTART) || childJSON.contains(FILTERKEY)) {
+                    // regular dynamic object/filtered object
+                    TemplateBuilder compositeBuilder =
+                            maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder)).build();
+                    iteratingBuilder.addChild(compositeBuilder);
+                    getBuilderFromJsonObject(childNode, compositeBuilder, maker);
                 } else {
-                    getBuilderFromJsonAttribute(null, childNode, iteratingBuilder, maker);
+                    // static node
+                    maker.jsonNode(childNode);
+                    iteratingBuilder.addChild(maker.build());
+                }
+            } else if (childNode.isArray()) {
+                getBuilderFromJsonArray(null, childNode, iteratingBuilder, maker);
+            } else {
+                getBuilderFromJsonAttribute(null, childNode, iteratingBuilder, maker);
+            }
+        }
+    }
+
+    private void addArrayIncludeFlat(
+            TemplateBuilder currentBuilder,
+            TemplateBuilderMaker maker,
+            ArrayNode node,
+            String nodeName,
+            List<JsonNode> expressionNodes) {
+        // the array include flat is a container
+        // since might have multiple includeFlat directive.
+        TemplateBuilder arrayIncludeFlat =
+                maker.dynamicIncludeFlatBuilder(true)
+                        .baseNode(node)
+                        .name(nodeName)
+                        .textContent("${.}")
+                        .collection(true)
+                        .build();
+
+        currentBuilder.addChild(arrayIncludeFlat);
+        // here we add the actual expression of the includeFlat directive as children.
+        for (JsonNode jsonNode : expressionNodes) {
+            if (jsonNode.isValueNode()) {
+                String text = jsonNode.asText();
+                if (text.startsWith(INCLUDE_FLAT_KEY + "{") && text.endsWith("}")) {
+                    text = text.substring(INCLUDE_FLAT_KEY.length() + 1, text.length() - 1);
+                    arrayIncludeFlat.addChild(maker.textContent(text).build());
                 }
             }
         }
+    }
+
+    private ArrayNode cleanFromExpressionNodes(ArrayNode arrNode, List<JsonNode> nodes) {
+        Iterator<JsonNode> elements = arrNode.elements();
+        ArrayNode arrayNode = null;
+        while (elements.hasNext()) {
+            JsonNode next = elements.next();
+            if (next.isValueNode() && next.asText().startsWith(INCLUDE_FLAT_KEY)) {
+                nodes.add(next);
+            } else {
+                if (arrayNode == null) arrayNode = JsonNodeFactory.instance.arrayNode();
+                arrayNode.add(next);
+            }
+        }
+        return arrayNode;
     }
 
     private boolean isArrayControlNode(JsonNode node) {

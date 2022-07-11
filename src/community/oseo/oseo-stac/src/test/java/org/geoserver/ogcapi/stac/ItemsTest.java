@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -639,5 +640,73 @@ public class ItemsTest extends STACTestSupport {
         service.getGlobalQueryables().clear();
         service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
         gs.save(service);
+    }
+
+    @Test
+    public void testTopLevelArrayProperty() throws Exception {
+        // query with an existing keyword
+        DocumentContext doc =
+                getAsJSONPath("ogc/stac/collections/SENTINEL2/items?filter=keywords = 'k1'", 200);
+        assertEquals(new Integer(1), doc.read("numberMatched", Integer.class));
+        assertEquals(
+                "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
+                readSingleContext(doc, "features").read("id"));
+
+        // query with an existing keyword (
+        doc = getAsJSONPath("ogc/stac/collections/SENTINEL2/items?filter=keywords = 'k2'", 200);
+        assertEquals(new Integer(1), doc.read("numberMatched", Integer.class));
+        assertEquals(
+                "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
+                readSingleContext(doc, "features").read("id"));
+
+        // query with a missing keyword
+        doc =
+                getAsJSONPath(
+                        "ogc/stac/collections/SENTINEL2/items?filter=keywords = 'notAKeyword'",
+                        200);
+        assertEquals(new Integer(0), doc.read("numberMatched", Integer.class));
+    }
+
+    @Test
+    public void dynamicIncludeFlatArrayTest() throws Exception {
+        DocumentContext result = getAsJSONPath("ogc/stac/collections/LANDSAT8/items", 200);
+
+        JSONArray array = result.read("features[0].includeFlatArray");
+        String title = result.read("features[0].includeFlatArray[4].title");
+        String titleMTL = result.read("features[0].includeFlatArray[4].titleMTL");
+        assertEquals(5, array.size());
+        assertTrue(array.contains("thumbnail"));
+        assertTrue(array.contains("thumbnail2"));
+        assertTrue(array.contains("staticValue"));
+        assertTrue(array.contains("staticValue2"));
+        assertEquals("title", title);
+        assertEquals("MTL Metadata", titleMTL);
+    }
+
+    @Test
+    public void dynamicIncludeFlatArrayFieldSelectionTest() throws Exception {
+        DocumentContext result =
+                getAsJSONPath(
+                        "ogc/stac/collections/LANDSAT8/items?fields=includeFlatArray,-includeFlatArray.titleMTL",
+                        200);
+
+        JSONArray array = result.read("features[0].includeFlatArray");
+        assertEquals(5, array.size());
+        int i = array.indexOf("thumbnail");
+        assertNotEquals(-1, i);
+        array.remove(i);
+        i = array.indexOf("thumbnail2");
+        assertNotEquals(-1, i);
+        array.remove(i);
+        i = array.indexOf("staticValue");
+        assertNotEquals(-1, i);
+        array.remove(i);
+        i = array.indexOf("staticValue2");
+        assertNotEquals(-1, i);
+        array.remove(i);
+
+        Map<String, Object> map = (Map<String, Object>) array.get(0);
+        assertEquals(1, map.size());
+        assertFalse(map.containsKey("titleMTL"));
     }
 }

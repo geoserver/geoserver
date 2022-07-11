@@ -55,9 +55,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         this.clazz = clazz;
     }
 
-    /**
-     * @return the clazz
-     */
+    /** @return the clazz */
     public Class<T> getClazz() {
         return clazz;
     }

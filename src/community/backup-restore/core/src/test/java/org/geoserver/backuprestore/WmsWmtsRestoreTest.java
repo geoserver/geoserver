@@ -8,10 +8,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 import java.util.logging.Level;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.*;
 import org.geotools.util.factory.Hints;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,16 +37,29 @@ public class WmsWmtsRestoreTest extends BackupRestoreTestSupport {
 
         // When
         RestoreExecutionAdapter restoreExecution =
-                backupFacade.runRestoreAsync(file("testWmsWmts.zip"), null, null, null, hints);
+                backupFacade.runRestoreAsync(
+                        file("testWmsWmtsLayers.zip"), null, null, null, hints);
         waitForExecution(restoreExecution);
 
         // Then
         final Catalog restoreCatalog = restoreExecution.getRestoreCatalog();
 
-        assertNotNull(
-                restoreCatalog.getStoreByName("topp", "test-geotiff", CoverageStoreInfo.class));
-        assertNotNull(restoreCatalog.getStoreByName("topp", "test-wms", WMSStoreInfo.class));
-        assertNotNull(restoreCatalog.getStoreByName("topp", "test-wmts", WMTSStoreInfo.class));
+        WMSStoreInfo wmsStoreInfo =
+                restoreCatalog.getStoreByName("gs", "some-wms-store", WMSStoreInfo.class);
+        assertNotNull(wmsStoreInfo);
+        WMTSStoreInfo wmtsStoreInfo =
+                restoreCatalog.getStoreByName("gs", "some-wmts-store", WMTSStoreInfo.class);
+        assertNotNull(wmtsStoreInfo);
+        WMSLayerInfo wmsLayerInfo =
+                restoreCatalog.getResourceByStore(wmsStoreInfo, "wmsLayer", WMSLayerInfo.class);
+        assertNotNull(wmsLayerInfo);
+        WMTSLayerInfo wmtsLayerInfo =
+                restoreCatalog.getResourceByStore(wmtsStoreInfo, "wmtsLayer", WMTSLayerInfo.class);
+        assertNotNull(wmtsLayerInfo);
+        LayerInfo wmsLayer = restoreCatalog.getLayerByName("gs:wmsLayer");
+        assertNotNull(wmsLayer);
+        LayerInfo wmtsLayer = restoreCatalog.getLayerByName("gs:wmtsLayer");
+        assertNotNull(wmtsLayer);
     }
 
     private void cleanCatalogInternal() {

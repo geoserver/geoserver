@@ -25,15 +25,7 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.backuprestore.utils.BackupUtils;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
@@ -51,10 +43,9 @@ import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.FactoryException;
 
-/**
- * @author Alessio Fabiani, GeoSolutions
- */
+/** @author Alessio Fabiani, GeoSolutions */
 public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
     protected static Catalog catalog;
@@ -174,15 +165,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         root.delete();
         root.mkdir();
 
-        WMSStoreInfo wms = catalog.getFactory().createWebMapServer();
-        wms.setName("some-wms-store");
-        wms.setWorkspace(catalog.getDefaultWorkspace());
-        catalog.add(wms);
-
-        WMTSStoreInfo wmts = catalog.getFactory().createWebMapTileServer();
-        wmts.setName("some-wmts-store");
-        wmts.setWorkspace(catalog.getDefaultWorkspace());
-        catalog.add(wmts);
+        setupHTTPStores();
 
         // setup an H2 datastore for the purpose of doing joins
         // run all the tests against a store that can do native paging (h2) and one that
@@ -331,6 +314,58 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         data.setUp();
     }
 
+    private void setupHTTPStores() {
+        WMSStoreInfo wms = catalog.getFactory().createWebMapServer();
+        wms.setName("some-wms-store");
+        wms.setWorkspace(catalog.getDefaultWorkspace());
+        wms.setCapabilitiesURL("http://localhost:8080/geoserver/ows");
+        catalog.add(wms);
+
+        WMSLayerInfo wmsLayer = catalog.getFactory().createWMSLayer();
+        wmsLayer.setStore(catalog.getWMSStoreByName("some-wms-store"));
+        wmsLayer.setName("wmsLayer");
+        wmsLayer.setNativeName("wmsLayer");
+        wmsLayer.setTitle("WMS Layer");
+        wmsLayer.setSRS("EPSG:4326");
+        try {
+            wmsLayer.setNativeCRS(CRS.decode("EPSG:4326"));
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+        catalog.add(wmsLayer);
+
+        LayerInfo lay1 = catalog.getFactory().createLayer();
+        lay1.setResource(wmsLayer);
+        lay1.setName("wmsLayer");
+        lay1.setTitle("WMS Layer");
+        catalog.add(lay1);
+
+        WMTSStoreInfo wmts = catalog.getFactory().createWebMapTileServer();
+        wmts.setName("some-wmts-store");
+        wmts.setWorkspace(catalog.getDefaultWorkspace());
+        wmts.setCapabilitiesURL("http://localhost:8080/geoserver/ows");
+        catalog.add(wmts);
+
+        WMTSLayerInfo wmtsLayer = catalog.getFactory().createWMTSLayer();
+        wmtsLayer.setStore(wmts);
+        wmtsLayer.setName("wmtsLayer");
+        wmtsLayer.setNativeName("wmtsLayer");
+        wmtsLayer.setTitle("WMTS Layer");
+        wmtsLayer.setSRS("EPSG:4326");
+        try {
+            wmtsLayer.setNativeCRS(CRS.decode("EPSG:4326"));
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+        catalog.add(wmtsLayer);
+
+        LayerInfo lay2 = catalog.getFactory().createLayer();
+        lay2.setResource(wmtsLayer);
+        lay2.setName("wmtsLayer");
+        lay2.setTitle("WMTS Layer");
+        catalog.add(lay2);
+    }
+
     void addFeature(FeatureStore store, String wkt, Object... atts) throws Exception {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder((SimpleFeatureType) store.getSchema());
         b.add(new WKTReader().read(wkt));
@@ -413,9 +448,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         catalog.dispose();
     }
 
-    /**
-     * @throws InterruptedException
-     */
+    /** @throws InterruptedException */
     protected void ensureCleanedQueues() throws InterruptedException {
         int cnt = 0;
         while (!(backupFacade.getRestoreRunningExecutions().isEmpty()

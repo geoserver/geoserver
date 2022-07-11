@@ -96,31 +96,22 @@ public class ResourceFilePanel extends Panel {
         form.add(chooserButton(form));
     }
 
-    /**
-     * @return the archive file resource
-     */
+    /** @return the archive file resource */
     public Resource getResource() {
         return Files.asResource(new File(this.file));
-    }
-    ;
+    };
 
-    /**
-     * @return the workspaces
-     */
+    /** @return the workspaces */
     public List<WorkspaceInfo> getWorkspaces() {
         return workspaces;
     }
 
-    /**
-     * @return the stores
-     */
+    /** @return the stores */
     public Map<String, List<StoreInfo>> getStores() {
         return stores;
     }
 
-    /**
-     * @return the layers
-     */
+    /** @return the layers */
     public Map<String, List<LayerInfo>> getLayers() {
         return layers;
     }
@@ -213,9 +204,7 @@ public class ResourceFilePanel extends Panel {
         fileChooser.setFilter(new Model(new ExtensionFileFilter(FILE_EXTENSIONS)));
     }
 
-    /**
-     * @param target
-     */
+    /** @param target */
     private void doUpdate(final AjaxRequestTarget target, final String valueAsString) {
         Catalog catalog = GeoServerApplication.get().getCatalog();
 

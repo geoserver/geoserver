@@ -651,6 +651,8 @@
         								 <list>
 										 	<value>featureType</value>
 										 	<value>coverage</value>
+											 <value>wmsLayer</value>
+											 <value>wmtsLayer</value>
 										 </list>
         							</property>
 								</bean>

@@ -70,9 +70,7 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.util.Assert;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public abstract class BackupRestoreItem<T> {
 
     /** logger */
@@ -106,30 +104,22 @@ public abstract class BackupRestoreItem<T> {
         ;
     }
 
-    /**
-     * @return the xStreamPersisterFactory
-     */
+    /** @return the xStreamPersisterFactory */
     public XStreamPersisterFactory getxStreamPersisterFactory() {
         return xStreamPersisterFactory;
     }
 
-    /**
-     * @return the xp
-     */
+    /** @return the xp */
     public XStream getXp() {
         return xp;
     }
 
-    /**
-     * @param xp the xp to set
-     */
+    /** @param xp the xp to set */
     public void setXp(XStream xp) {
         this.xp = xp;
     }
 
-    /**
-     * @return the catalog
-     */
+    /** @return the catalog */
     public Catalog getCatalog() {
         authenticate();
         return catalog;
@@ -140,51 +130,37 @@ public abstract class BackupRestoreItem<T> {
         backupFacade.authenticate();
     }
 
-    /**
-     * @return the isNew
-     */
+    /** @return the isNew */
     public boolean isNew() {
         return isNew;
     }
 
-    /**
-     * @return the currentJobExecution
-     */
+    /** @return the currentJobExecution */
     public AbstractExecutionAdapter getCurrentJobExecution() {
         return currentJobExecution;
     }
 
-    /**
-     * @return the dryRun
-     */
+    /** @return the dryRun */
     public boolean isDryRun() {
         return dryRun;
     }
 
-    /**
-     * @return the bestEffort
-     */
+    /** @return the bestEffort */
     public boolean isBestEffort() {
         return bestEffort;
     }
 
-    /**
-     * @return the filter
-     */
+    /** @return the filter */
     public Filter[] getFilters() {
         return filters;
     }
 
-    /**
-     * @param filter the filter to set
-     */
+    /** @param filter the filter to set */
     public void setFilters(Filter[] filters) {
         this.filters = filters;
     }
 
-    /**
-     * @return a boolean indicating that at least one filter has been defined
-     */
+    /** @return a boolean indicating that at least one filter has been defined */
     public boolean filterIsValid() {
         return (this.filters != null
                 && this.filters.length == 3
@@ -330,9 +306,7 @@ public abstract class BackupRestoreItem<T> {
         return false;
     }
 
-    /**
-     * @param resource
-     */
+    /** @param resource */
     public boolean logValidationExceptions(T resource, Throwable e) {
         CatalogException validationException =
                 e != null
@@ -534,9 +508,7 @@ public abstract class BackupRestoreItem<T> {
         return info;
     }
 
-    /**
-     * @param catalog
-     */
+    /** @param catalog */
     protected void syncTo(Catalog srcCatalog) {
         // do a manual import
 

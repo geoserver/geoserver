@@ -411,6 +411,11 @@
       <artifactId>gs-libdeflate</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-template-editor</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

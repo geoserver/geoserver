@@ -20,6 +20,7 @@
   <name>GeoServer OAuth2 Connect Security Web Module - OpenId Connect</name>
 
   <dependencies>
+
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-sec-core</artifactId>
@@ -29,6 +30,12 @@
     <dependency>
       <groupId>org.geoserver.community.security</groupId>
       <artifactId>gs-sec-oauth2-openid-connect-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
     </dependency>
 

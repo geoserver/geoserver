@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-sec-oauth2-core*</include>
+        <include>gs-sec-oauth2-web*</include>
         <include>gs-sec-oauth2-github*</include>
         <include>spring-security*</include>
         <include>spring-security-oauth2*</include>

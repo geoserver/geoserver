@@ -16,13 +16,13 @@
   </parent>
 
   <groupId>org.geoserver.community.security</groupId>
-  <artifactId>gs-sec-oauth2-openid-connect</artifactId>
+  <artifactId>gs-sec-oauth2</artifactId>
   <packaging>pom</packaging>
-  <name>GeoServer OAuth2 Connect Security Module - OpenId Connect</name>
+  <name>GeoServer OAuth2 Connect Security Module</name>
 
   <modules>
-    <module>oauth2-openid-connect-core</module>
-    <module>oauth2-openid-connect-web</module>
+    <module>oauth2-core</module>
+    <module>oauth2-web</module>
   </modules>
 
 </project>

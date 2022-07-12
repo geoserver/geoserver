@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-sec-oauth2-core*</include>
+        <include>gs-sec-oauth2-web*</include>
         <include>gs-sec-oauth2-openid-connect*</include>
         <include>spring-security-core-*</include>
         <include>spring-security-config-*</include>
@@ -25,6 +26,10 @@
         <include>spring-aop-*</include>
         <include>spring-context-*</include>
         <include>spring-webmvc-*</include>
+        <include>json-path-*</include>
+        <include>json-smart*.jar</include>
+        <include>accessors-smart*</include>
+        <include>json-simple*</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -10,82 +10,70 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-security</artifactId>
+    <groupId>org.geoserver.community.security</groupId>
+    <artifactId>gs-sec-oauth2</artifactId>
     <version>2.21-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-sec-oauth2-geonode</artifactId>
+  <artifactId>gs-sec-oauth2-core</artifactId>
   <packaging>jar</packaging>
-  <name>GeoServer OAuth2 Connect Security Module - GeoNode Token Service</name>
+  <name>GeoServer OAuth2 Connect Security Module - Core</name>
+
+  <properties>
+    <spring.security.jwt.version>1.0.2.RELEASE</spring.security.jwt.version>
+  </properties>
 
   <dependencies>
+
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-sec-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geoserver.community.security</groupId>
-      <artifactId>gs-sec-oauth2-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geoserver.community.security</groupId>
-      <artifactId>gs-sec-oauth2-web</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.security.oauth</groupId>
       <artifactId>spring-security-oauth2</artifactId>
-      <version>2.0.16.RELEASE</version>
+      <version>2.5.2.RELEASE</version>
     </dependency>
 
     <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
     </dependency>
+
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
     </dependency>
+
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
     </dependency>
+
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver.community.security</groupId>
-      <artifactId>gs-sec-oauth2-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>org.geoserver.community.security</groupId>
-      <artifactId>gs-sec-oauth2-web</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>2.6.3</version>
+      <optional>true</optional>
     </dependency>
+
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
@@ -93,6 +81,7 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
@@ -100,6 +89,7 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
@@ -107,6 +97,7 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-sec-core</artifactId>
@@ -114,15 +105,18 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 </project>

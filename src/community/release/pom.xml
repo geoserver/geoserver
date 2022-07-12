@@ -177,8 +177,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-sec-oauth2-openid-connect</artifactId>
+      <groupId>org.geoserver.community.security</groupId>
+      <artifactId>gs-sec-oauth2-openid-connect-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community.security</groupId>
+      <artifactId>gs-sec-oauth2-openid-connect-web</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

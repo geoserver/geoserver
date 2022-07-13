@@ -153,25 +153,27 @@ public class LoggingFilter implements GeoServerFilter {
                         // the default encoding for HTTP 1.1
                         encoding = "ISO-8859-1";
                     }
-                    try (InputStream is = hreq.getInputStream()) {
+                    // The HTTPServletResponse stream should not be closed (Tomcat would complain),
+                    // avoid close() and try-with-resources
+                    InputStream is = hreq.getInputStream();
 
-                        Charset charset = Charset.defaultCharset();
-                        try {
-                            charset = Charset.forName(encoding);
-                        } catch (IllegalCharsetNameException icn) {
-                            logger.info(
-                                    "Request character set not recognized, defaulting to ISO-8859-1");
-                        }
-                        float maxBytesPerCharacter = charset.newEncoder().maxBytesPerChar();
-                        int byteSize = (int) (requestLogBufferSize * (double) maxBytesPerCharacter);
-                        byte[] reqCharacters = new byte[byteSize];
-                        BufferedInputStream bufferedStream = new BufferedInputStream(is);
-                        bufferedStream.mark(byteSize);
-                        bufferedStream.read(reqCharacters, 0, byteSize);
-                        body = new String(reqCharacters, encoding).trim();
-                        bufferedStream.reset();
-                        req = new BufferedRequestWrapper(hreq, encoding, bufferedStream);
+                    Charset charset = Charset.defaultCharset();
+                    try {
+                        charset = Charset.forName(encoding);
+                    } catch (IllegalCharsetNameException icn) {
+                        logger.info(
+                                "Request character set not recognized, using default character set");
                     }
+                    float maxBytesPerCharacter = charset.newEncoder().maxBytesPerChar();
+                    int byteSize = (int) (requestLogBufferSize * (double) maxBytesPerCharacter);
+                    byte[] reqCharacters = new byte[byteSize];
+                    BufferedInputStream bufferedStream = new BufferedInputStream(is);
+                    bufferedStream.mark(byteSize);
+                    bufferedStream.read(reqCharacters, 0, byteSize);
+                    body = new String(reqCharacters, encoding).trim();
+                    bufferedStream.reset();
+
+                    req = new BufferedRequestWrapper(hreq, encoding, bufferedStream);
 
                     if (isBinary(hreq.getHeader("Content-type"))) {
                         message += " bytes (binary content)\n";

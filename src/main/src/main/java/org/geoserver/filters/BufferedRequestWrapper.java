@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import org.geotools.util.Converters;
 
+/** Used to wrap HttpServletRequest to apply {@link BufferedInputStream} on content access. */
 public class BufferedRequestWrapper extends HttpServletRequestWrapper {
     protected HttpServletRequest myWrappedRequest;
 
@@ -36,7 +37,8 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
     protected ServletInputStream myStream = null;
     protected BufferedReader myReader = null;
     protected Map<String, List<String>> myParameterMap;
-    protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(BufferedRequestWrapper.class);
 
     public BufferedRequestWrapper(HttpServletRequest req, String charset, byte[] buff) {
         super(req);
@@ -191,7 +193,7 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
             myParameterMap.get(key).add(value);
 
         } catch (UnsupportedEncodingException e) {
-            logger.severe("Failed to decode form values in LoggingFilter");
+            LOGGER.severe("Failed to decode form values in LoggingFilter");
             // we have the encoding hard-coded for now so no exceptions should be thrown...
         }
     }

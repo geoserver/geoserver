@@ -6,7 +6,9 @@
 package org.geoserver.filters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,6 +34,38 @@ public class BufferedRequestStreamTest {
         int len = 1024;
         int amountRead = myBRS.readLine(b, off, len);
         String s = new String(b, 0, amountRead);
-        assertEquals(s, myTestString);
+        assertEquals(myTestString, s);
+    }
+
+    @Test
+    public void closeClose() throws IOException {
+        byte[] b = new byte[1024];
+        int off = 0;
+        int len = 1024;
+        int amountRead = myBRS.readLine(b, off, len);
+        String s = new String(b, 0, amountRead);
+        assertEquals(myTestString, s);
+        myBRS.reset();
+
+        amountRead = myBRS.readLine(b, off, len);
+        String s2 = new String(b, 0, amountRead);
+        assertEquals(myTestString, s2);
+
+        myBRS.close();
+
+        try {
+            amountRead = myBRS.readLine(b, off, len);
+            String s3 = new String(b, 0, amountRead);
+            assertEquals(myTestString, s3);
+            fail("Buffered Request Stream should already be closed");
+        } catch (IOException closed) {
+            assertEquals("Stream closed", closed.getMessage());
+        }
+
+        try {
+            myBRS.close();
+        } catch (Throwable t) {
+            fail("Calling close a second time should log a message but not produce an exception");
+        }
     }
 }

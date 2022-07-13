@@ -11,6 +11,7 @@ import static org.geoserver.filters.LoggingFilter.REQUEST_LOG_BUFFER_SIZE_DEFAUL
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,7 +22,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.GenericServlet;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.MetadataMap;
@@ -34,6 +45,7 @@ import org.geoserver.config.impl.SettingsInfoImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -95,6 +107,103 @@ public class LoggingFilterTest {
         assertTrue(capturedLog.contains(expectedLogPart));
         assertTrue(capturedLog.contains(expectedHeadersLogPart));
         assertFalse(capturedLog.contains(expectedBodyLogPart));
+    }
+
+    @Test
+    public void testRequestLoggingBodyStreamClose() throws IOException, ServletException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setMethod("POST");
+
+        String generatedString = RandomStringUtils.randomAlphabetic(10);
+        request.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        request.setContent(generatedString.getBytes(StandardCharsets.UTF_8));
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        // Sensitive filter simulating tomcat practice of throwing
+        // Stream closed if LoggingFilter closes initial input stream
+        GeoServerFilter sensitiveFilter =
+                new GeoServerFilter() {
+                    @Override
+                    public void init(FilterConfig filterConfig) throws ServletException {}
+
+                    @Override
+                    public void doFilter(
+                            ServletRequest request, ServletResponse response, FilterChain chain)
+                            throws IOException, ServletException {
+                        HttpServletRequestWrapper wrapper =
+                                new HttpServletRequestWrapper((HttpServletRequest) request) {
+                                    @Override
+                                    public HttpServletRequest getRequest() {
+                                        return (HttpServletRequest) super.getRequest();
+                                    }
+
+                                    @Override
+                                    public ServletInputStream getInputStream() throws IOException {
+                                        return new DelegatingServletInputStream(
+                                                getRequest().getInputStream()) {
+                                            boolean closed = false;
+
+                                            @Override
+                                            public int read() throws IOException {
+                                                if (closed) {
+                                                    throw new IOException("Stream is closed");
+                                                }
+                                                return super.read();
+                                            }
+
+                                            @Override
+                                            public void close() throws IOException {
+                                                super.close();
+                                                closed = true;
+                                            }
+                                        };
+                                    }
+                                };
+                        chain.doFilter(wrapper, response);
+                    }
+
+                    @Override
+                    public void destroy() {}
+                };
+
+        LoggingFilter loggingFilter = getLoggingFilter("true", "true", "false", 5);
+
+        Servlet servlet =
+                new GenericServlet() {
+                    @Override
+                    public void service(ServletRequest req, ServletResponse res)
+                            throws ServletException, IOException {
+
+                        @SuppressWarnings("PMD.CloseResource")
+                        ServletInputStream is = req.getInputStream();
+
+                        // force read to end, ensuring we exhaust 5 byte buffer
+                        StringBuilder echo = new StringBuilder();
+                        int b = is.read();
+                        while (b != -1) {
+                            echo.append((char) b);
+                            b = is.read();
+                        }
+                        res.setContentType("text/plain");
+
+                        @SuppressWarnings("PMD.CloseResource")
+                        ServletOutputStream os = res.getOutputStream();
+                        os.print(echo.toString());
+                    }
+                };
+
+        MockFilterChain chain = new MockFilterChain(servlet, sensitiveFilter, loggingFilter);
+        try {
+            chain.doFilter(request, response);
+        } catch (IOException failure) {
+            if (failure.getMessage().equals("Stream is closed")) {
+                fail("LoggingFilterTest closed the stream");
+            }
+            throw failure;
+        }
+        String capturedLog = getTestCapturedLog();
+        assertTrue(capturedLog.contains(expectedBodyLogPart));
     }
 
     private String getTestCapturedLog() throws IOException {

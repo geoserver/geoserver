@@ -8,6 +8,7 @@ package org.geoserver.filters;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
 import javax.servlet.ServletInputStream;
 
 /**
@@ -31,6 +32,9 @@ public class BufferedRequestStream extends ServletInputStream {
 
     @Override
     public int readLine(byte[] b, int off, int len) throws IOException {
+        if (myInputStream == null) {
+            throw new IOException("Stream closed");
+        }
         int read;
         int index = off;
         int end = off + len;
@@ -48,11 +52,63 @@ public class BufferedRequestStream extends ServletInputStream {
 
     @Override
     public int read() throws IOException {
+        if (myInputStream == null) {
+            throw new IOException("Stream closed");
+        }
         return myInputStream.read();
     }
 
     @Override
+    public long skip(long n) throws IOException {
+        if (myInputStream == null) {
+            throw new IOException("Stream closed");
+        }
+        return myInputStream.skip(n);
+    }
+
+    @Override
     public int available() throws IOException {
+        if (myInputStream == null) {
+            throw new IOException("Stream closed");
+        }
         return myInputStream.available();
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (myInputStream != null) {
+            try {
+                myInputStream.close();
+            } finally {
+                myInputStream = null;
+            }
+        } else {
+            Logger LOGGER =
+                    org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
+            LOGGER.finer("Stream already closed");
+        }
+    }
+
+    @Override
+    public synchronized void mark(int readlimit) {
+        if (myInputStream != null) {
+            myInputStream.mark(readlimit);
+        }
+    }
+
+    @Override
+    public synchronized void reset() throws IOException {
+        if (myInputStream == null) {
+            throw new IOException("Stream closed");
+        }
+        myInputStream.reset();
+    }
+
+    @Override
+    public boolean markSupported() {
+        if (myInputStream == null) {
+            return false;
+        }
+        return myInputStream.markSupported();
     }
 }

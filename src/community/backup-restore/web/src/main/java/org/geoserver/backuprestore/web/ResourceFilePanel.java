@@ -265,6 +265,20 @@ public class ResourceFilePanel extends Panel {
                                             store = catalog.getFactory().createDataStore();
                                             store.setName(stName);
                                         }
+                                    } else if ("WMSStoreInfo".equals(type)) {
+                                        store = catalog.getWMSStoreByName(stName);
+
+                                        if (store == null) {
+                                            store = catalog.getFactory().createWebMapServer();
+                                            store.setName(stName);
+                                        }
+                                    } else if ("WMTSStoreInfo".equals(type)) {
+                                        store = catalog.getWMTSStoreByName(stName);
+
+                                        if (store == null) {
+                                            store = catalog.getFactory().createWebMapTileServer();
+                                            store.setName(stName);
+                                        }
                                     } else if ("CoverageStoreInfo".equals(type)) {
                                         store = catalog.getCoverageStoreByName(stName);
 

@@ -15,6 +15,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.HTTPStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -22,6 +23,8 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.ows.util.OwsUtils;
@@ -87,6 +90,8 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         if (item instanceof LayerInfo) return process((LayerInfo) item);
         if (item instanceof LayerGroupInfo) return process((LayerGroupInfo) item);
         if (item instanceof StyleInfo) return process((StyleInfo) item);
+        if (item instanceof WMSStoreInfo) return process((WMSStoreInfo) item);
+        if (item instanceof WMTSStoreInfo) return process((WMTSStoreInfo) item);
 
         return item;
     }
@@ -124,6 +129,76 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             return null;
         }
         return getClazz().cast(ds);
+    }
+
+    private T process(WMSStoreInfo wms) throws Exception {
+        LOGGER.log(Level.FINE, "Processing wmsstore: {0}", wms);
+        WorkspaceInfo ws = resolveWorkspace(wms);
+
+        if (ws == null && filterIsValid()) {
+            Catalog catalog = getCatalog();
+            WMSStoreInfo source = backupFacade.getCatalog().getWMSStoreByName(wms.getName());
+            LOGGER.log(Level.FINE, "Found source wmsstore: {0}", source);
+            if (source != null && source.getWorkspace() != null) {
+                ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
+                if (ws == null) {
+                    LOGGER.log(Level.WARNING, "Workspace not found for wmsstore: {0}", wms);
+                    return null;
+                }
+                wms.setWorkspace(ws);
+                catalog.add(wms);
+                WMSStoreInfo addedWms = catalog.getWMSStore(wms.getId());
+                catalog.save(addedWms);
+                LOGGER.log(Level.FINE, "Saved wmsstore into catalog: {0}", addedWms);
+            }
+        }
+
+        if (filteredResource(getClazz().cast(wms), ws, true, StoreInfo.class)) {
+            LOGGER.log(Level.FINE, "Filtered out wmsstore : {0}", wms);
+            return null;
+        }
+
+        if (!filterIsValid() && !validateHttpStore(wms, isNew())) {
+            LOGGER.log(Level.WARNING, "Skipped invalid resource: {0}", wms);
+            logValidationExceptions(getClazz().cast(wms), null);
+            return null;
+        }
+        return getClazz().cast(wms);
+    }
+
+    private T process(WMTSStoreInfo wmts) throws Exception {
+        LOGGER.log(Level.FINE, "Processing wmtsstore: {0}", wmts);
+        WorkspaceInfo ws = resolveWorkspace(wmts);
+
+        if (ws == null && filterIsValid()) {
+            Catalog catalog = getCatalog();
+            WMTSStoreInfo source = backupFacade.getCatalog().getWMTSStoreByName(wmts.getName());
+            LOGGER.log(Level.FINE, "Found source wmtsstore: {0}", source);
+            if (source != null && source.getWorkspace() != null) {
+                ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
+                if (ws == null) {
+                    LOGGER.log(Level.WARNING, "Workspace not found for wmtsstore: {0}", wmts);
+                    return null;
+                }
+                wmts.setWorkspace(ws);
+                catalog.add(wmts);
+                WMTSStoreInfo addedWms = catalog.getWMTSStore(wmts.getId());
+                catalog.save(addedWms);
+                LOGGER.log(Level.FINE, "Saved wmtsstore into catalog: {0}", addedWms);
+            }
+        }
+
+        if (filteredResource(getClazz().cast(wmts), ws, true, StoreInfo.class)) {
+            LOGGER.log(Level.FINE, "Filtered out wmtsstore : {0}", wmts);
+            return null;
+        }
+
+        if (!filterIsValid() && !validateHttpStore(wmts, isNew())) {
+            LOGGER.log(Level.WARNING, "Skipped invalid resource: {0}", wmts);
+            logValidationExceptions(getClazz().cast(wmts), null);
+            return null;
+        }
+        return getClazz().cast(wmts);
     }
 
     private T process(StyleInfo style) throws Exception {
@@ -354,6 +429,35 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
      * @return boolean indicating whether the resource is valid or not.
      */
     private boolean validateDataStore(DataStoreInfo resource, boolean isNew) throws Exception {
+        final WorkspaceInfo ws =
+                this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
+        if (ws == null) {
+            return false;
+        }
+
+        ValidationResult result = null;
+        try {
+            result = this.getCatalog().validate(resource, isNew);
+            if (!result.isValid()) {
+                LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
+                logValidationResult(result, resource);
+            }
+        } catch (Exception e) {
+            LOGGER.warning(
+                    "Could not validate the resource "
+                            + resource
+                            + " due to the following issue: "
+                            + e.getLocalizedMessage());
+            logValidationExceptions(result, e);
+            return false;
+        }
+
+        resource.setWorkspace(ws);
+
+        return true;
+    }
+
+    private boolean validateHttpStore(HTTPStoreInfo resource, boolean isNew) throws Exception {
         final WorkspaceInfo ws =
                 this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
         if (ws == null) {

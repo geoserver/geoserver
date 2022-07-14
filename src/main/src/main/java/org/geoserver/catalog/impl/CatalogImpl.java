@@ -333,6 +333,26 @@ public class CatalogImpl implements Catalog {
     }
 
     @Override
+    public WMSStoreInfo getWMSStore(String id) {
+        return getStore(id, WMSStoreInfo.class);
+    }
+
+    @Override
+    public WMSStoreInfo getWMSStoreByName(String name) {
+        return getStoreByName(name, WMSStoreInfo.class);
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStore(String id) {
+        return getStore(id, WMTSStoreInfo.class);
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStoreByName(String name) {
+        return getStoreByName(name, WMTSStoreInfo.class);
+    }
+
+    @Override
     public DataStoreInfo getDataStore(String id) {
         return getStore(id, DataStoreInfo.class);
     }

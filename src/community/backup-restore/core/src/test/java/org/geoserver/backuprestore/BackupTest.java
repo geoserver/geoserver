@@ -492,7 +492,7 @@ public class BackupTest extends BackupRestoreTestSupport {
                 assertEquals(47, restoreCatalog.getResources(FeatureTypeInfo.class).size());
                 assertEquals(4, restoreCatalog.getResources(CoverageInfo.class).size());
                 assertEquals(35, restoreCatalog.getStyles().size());
-                assertEquals(30, restoreCatalog.getLayers().size());
+                assertEquals(32, restoreCatalog.getLayers().size());
                 assertEquals(1, restoreCatalog.getLayerGroups().size());
             }
 
@@ -601,7 +601,7 @@ public class BackupTest extends BackupRestoreTestSupport {
                 assertEquals(50, restoreCatalog.getResources(FeatureTypeInfo.class).size());
                 assertEquals(4, restoreCatalog.getResources(CoverageInfo.class).size());
                 assertEquals(35, restoreCatalog.getStyles().size());
-                assertEquals(33, restoreCatalog.getLayers().size());
+                assertEquals(35, restoreCatalog.getLayers().size());
                 assertEquals(3, restoreCatalog.getLayerGroups().size());
             }
             // check Workspaces and Namespaces IDs are respected

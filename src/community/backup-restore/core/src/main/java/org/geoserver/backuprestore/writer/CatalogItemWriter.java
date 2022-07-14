@@ -19,6 +19,8 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
@@ -58,6 +60,10 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
                     write((NamespaceInfo) item);
                 } else if (item instanceof DataStoreInfo) {
                     write((DataStoreInfo) item);
+                } else if (item instanceof WMSStoreInfo) {
+                    write((WMSStoreInfo) item);
+                } else if (item instanceof WMTSStoreInfo) {
+                    write((WMTSStoreInfo) item);
                 } else if (item instanceof CoverageStoreInfo) {
                     write((CoverageStoreInfo) item);
                 } else if (item instanceof ResourceInfo) {
@@ -134,6 +140,22 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
         if (source == null) {
             getCatalog().add(dsInfo);
             getCatalog().save(getCatalog().getDataStore(dsInfo.getId()));
+        }
+    }
+
+    private void write(WMSStoreInfo wmsInfo) {
+        WMSStoreInfo source = getCatalog().getWMSStoreByName(wmsInfo.getName());
+        if (source == null) {
+            getCatalog().add(wmsInfo);
+            getCatalog().save(getCatalog().getWMSStore(wmsInfo.getId()));
+        }
+    }
+
+    private void write(WMTSStoreInfo wmtsInfo) {
+        WMTSStoreInfo source = getCatalog().getWMTSStoreByName(wmtsInfo.getName());
+        if (source == null) {
+            getCatalog().add(wmtsInfo);
+            getCatalog().save(getCatalog().getWMTSStore(wmtsInfo.getId()));
         }
     }
 

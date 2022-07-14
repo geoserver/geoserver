@@ -594,6 +594,8 @@
         								 <list>
 										 	<value>dataStore</value>
 										 	<value>coverageStore</value>
+													 <value>wmsStore</value>
+													 <value>wmtsStore</value>
 										 </list>
         							</property>
 								</bean>
@@ -649,6 +651,8 @@
         								 <list>
 										 	<value>featureType</value>
 										 	<value>coverage</value>
+											 <value>wmsLayer</value>
+											 <value>wmtsLayer</value>
 										 </list>
         							</property>
 								</bean>

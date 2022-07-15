@@ -76,5 +76,17 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>communityRelease</id>
+      <modules>
+        <module>oauth2</module>
+        <module>oauth2-google</module>
+        <module>oauth2-github</module>
+        <module>oauth2-geonode</module>
+        <module>oauth2-openid-connect</module>
+        <module>keycloak</module>
+      </modules>
+    </profile>
+
   </profiles>
 </project>

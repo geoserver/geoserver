@@ -218,13 +218,6 @@
         <module>gwc-sqlite</module>
         <module>geostyler</module>
         <module>security</module>
-        <module>security/oauth2/oauth2-core</module>
-        <module>security/oauth2/oauth2-web</module>
-        <module>security/oauth2-google</module>
-        <module>security/oauth2-github</module>
-        <module>security/oauth2-geonode</module>
-        <module>security/oauth2-openid-connect</module>
-        <module>security/keycloak</module>
         <module>wmts-styles</module>
         <module>saml</module>
         <module>notification</module>
@@ -473,39 +466,37 @@
     <profile>
       <id>oauth2-google</id>
       <modules>
-        <module>security/oauth2/oauth2-core</module>
-        <module>security/oauth2/oauth2-web</module>
-        <module>security/oauth2-google</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-github</id>
       <modules>
-        <module>security/oauth2/oauth2-core</module>
-        <module>security/oauth2/oauth2-web</module>
-        <module>security/oauth2-github</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-geonode</id>
       <modules>
-        <module>security/oauth2/oauth2-core</module>
-        <module>security/oauth2/oauth2-web</module>
-        <module>security/oauth2-geonode</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-openid-connect</id>
       <modules>
-        <module>security/oauth2/oauth2-core</module>
-        <module>security/oauth2/oauth2-web</module>
-        <module>security/oauth2-openid-connect</module>
+        <module>security</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oauth2-all</id>
+      <modules>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
       <id>keycloak</id>
       <modules>
-        <module>security/keycloak</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>

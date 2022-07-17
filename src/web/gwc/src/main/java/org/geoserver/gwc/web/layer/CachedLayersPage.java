@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -52,6 +52,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.image.io.ImageIOExt;
+import org.geotools.util.logging.Logging;
 import org.geowebcache.diskquota.storage.Quota;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.mime.MimeType;
@@ -63,7 +64,7 @@ import org.geowebcache.seed.TruncateAllRequest;
  */
 public class CachedLayersPage extends GeoServerSecuredPage {
 
-    private static Log log = LogFactory.getLog(CachedLayersPage.class);
+    private static Logger log = Logging.getLogger(CachedLayersPage.class);
 
     private static final long serialVersionUID = -6795610175856538774L;
 
@@ -473,7 +474,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                                 truncateAllRequest = facade.truncateAll();
                             } catch (Exception e) {
                                 error(message("confirmGWCClean"));
-                                log.error("An Error while clearing GWC cache", e);
+                                log.log(Level.SEVERE, "An Error while clearing GWC cache", e);
                                 return false;
                             }
                             return true;

@@ -12,11 +12,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.geotools.util.logging.Logging;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
@@ -42,7 +43,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
     // ~ Static fields/initializers
     // =====================================================================================
 
-    private static final Log logger = LogFactory.getLog(BindingLdapAuthoritiesPopulator.class);
+    private static final Logger logger = Logging.getLogger(BindingLdapAuthoritiesPopulator.class);
 
     // ~ Instance fields
     // ================================================================================================
@@ -148,8 +149,8 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
             final DirContextOperations user, final String username, final String password) {
         final String userDn = user.getNameInNamespace();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Getting authorities for user " + userDn);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Getting authorities for user " + userDn);
         }
 
         final List<GrantedAuthority> result = new ArrayList<>();
@@ -187,8 +188,8 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
 
         Set<GrantedAuthority> authorities = new HashSet<>();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(
                     "Searching for roles for user '"
                             + username
                             + "', DN = "
@@ -225,8 +226,8 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                                     }));
                 });
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Roles from search: " + userRolesNameDn);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Roles from search: " + userRolesNameDn);
         }
 
         for (Pair<String, String> roleNameDn : userRolesNameDn) {
@@ -256,8 +257,8 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
             Set<GrantedAuthority> authorities,
             int depth) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(
                     "Searching for roles for nested group '"
                             + groupName
                             + "', DN = "
@@ -294,8 +295,8 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                                     }));
                 });
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Roles from search: " + groupRolesNameDn);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Roles from search: " + groupRolesNameDn);
         }
 
         for (Pair<String, String> roleNameDn : groupRolesNameDn) {

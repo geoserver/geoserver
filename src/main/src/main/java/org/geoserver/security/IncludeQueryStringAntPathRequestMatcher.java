@@ -4,10 +4,11 @@
  */
 package org.geoserver.security;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.AntPathMatcher;
@@ -24,8 +25,8 @@ import org.springframework.util.StringUtils;
  * @author Mauro Bartolomeoli
  */
 public final class IncludeQueryStringAntPathRequestMatcher implements RequestMatcher {
-    private static final Log logger =
-            LogFactory.getLog(IncludeQueryStringAntPathRequestMatcher.class);
+    private static final Logger logger =
+            Logging.getLogger(IncludeQueryStringAntPathRequestMatcher.class);
     private static final String MATCH_ALL = "/**";
     private static final String QUERYSTRING_SEPARATOR = "|";
 
@@ -96,8 +97,8 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
     @Override
     public boolean matches(HttpServletRequest request) {
         if (httpMethod != null && httpMethod != HttpMethod.valueOf(request.getMethod())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine(
                         "Request '"
                                 + request.getMethod()
                                 + " "
@@ -114,12 +115,12 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
 
         RequestUrlParts url = getRequestPath(request);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Checking match of request : '" + url + "'; against '" + pattern + "'");
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Checking match of request : '" + url + "'; against '" + pattern + "'");
         }
         boolean matched = matchesPath(url) && matchesQueryString(url);
         if (matched) {
-            logger.debug("Matched " + url + " with " + pattern);
+            logger.fine("Matched " + url + " with " + pattern);
         }
         return matched;
     }
@@ -133,8 +134,8 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
 
     private boolean matchesPath(RequestUrlParts url) {
         if (pattern.equals(MATCH_ALL)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Request matched by universal pattern '/**'");
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Request matched by universal pattern '/**'");
             }
 
             return true;
@@ -220,7 +221,7 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
             try {
                 this.pattern = Pattern.compile(parsePattern(pattern), Pattern.CASE_INSENSITIVE);
             } catch (Exception e) {
-                logger.error("Error in filter chain query string pattern", e);
+                logger.log(Level.SEVERE, "Error in filter chain query string pattern", e);
             }
         }
 

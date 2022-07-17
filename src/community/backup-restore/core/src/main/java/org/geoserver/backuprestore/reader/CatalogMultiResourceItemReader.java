@@ -23,9 +23,9 @@ package org.geoserver.backuprestore.reader;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
+import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStream;
@@ -54,7 +54,7 @@ import org.springframework.util.Assert;
  */
 public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
 
-    private static final Log logger = LogFactory.getLog(CatalogMultiResourceItemReader.class);
+    private static final Logger logger = Logging.getLogger(CatalogMultiResourceItemReader.class);
 
     private static final String RESOURCE_KEY = "resourceIndex";
 
@@ -185,7 +185,7 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
                 throw new IllegalStateException(
                         "No resources to read. Set strict=false if this is not an error condition.");
             } else {
-                logger.warn(
+                logger.warning(
                         "No resources to read. Set strict=true if this should be an error condition.");
                 noInput = true;
                 return;

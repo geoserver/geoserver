@@ -7,8 +7,9 @@ package org.geoserver.system.status;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 import org.springframework.stereotype.Component;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -35,7 +36,7 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
 
     private static final long serialVersionUID = 502867203324474735L;
 
-    private static Log log = LogFactory.getLog(OSHISystemInfoCollector.class);
+    private static Logger logger = Logging.getLogger(OSHISystemInfoCollector.class);
 
     private transient OperatingSystem os;
 
@@ -533,7 +534,7 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     break;
             }
         } catch (Throwable e) {
-            log.error(e.getMessage(), e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return si;
     }

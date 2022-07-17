@@ -11,8 +11,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
@@ -24,7 +25,8 @@ import org.springframework.util.StringUtils;
 public class RESTfulPathBasedFilterInvocationDefinitionMap
         implements FilterInvocationSecurityMetadataSource {
 
-    private static Log log = LogFactory.getLog(RESTfulPathBasedFilterInvocationDefinitionMap.class);
+    private static Logger log =
+            Logging.getLogger(RESTfulPathBasedFilterInvocationDefinitionMap.class);
 
     // ~ Instance fields
     // ================================================================================================
@@ -44,8 +46,8 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
             String antPath, String[] httpMethods, Collection<ConfigAttribute> attrs) {
         requestMap.add(new EntryHolder(antPath, httpMethods, attrs));
 
-        if (log.isDebugEnabled()) {
-            log.debug(
+        if (log.isLoggable(Level.FINE)) {
+            log.fine(
                     "Added Ant path: "
                             + antPath
                             + "; attributes: "
@@ -114,8 +116,8 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
         if (isConvertUrlToLowercaseBeforeComparison()) {
             url = url.toLowerCase();
 
-            if (log.isDebugEnabled()) {
-                log.debug(
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(
                         "Converted URL to lowercase, from: '"
                                 + url
                                 + "'; to: '"
@@ -131,8 +133,8 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
 
             String antPath = entryHolder.getAntPath();
             String[] methodList = entryHolder.getHttpMethodList();
-            if (log.isDebugEnabled()) {
-                log.debug(
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(
                         "~~~~~~~~~~ antPath= "
                                 + antPath
                                 + " methodList= "
@@ -150,8 +152,8 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
                     }
                 }
             }
-            if (log.isDebugEnabled())
-                log.debug(
+            if (log.isLoggable(Level.FINE))
+                log.fine(
                         "Candidate is: '"
                                 + url
                                 + "'; antPath is "
@@ -162,7 +164,7 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
                                 + matchedMethods);
 
             if (matchedPath && matchedMethods) {
-                log.debug(
+                log.fine(
                         "returning "
                                 + StringUtils.collectionToCommaDelimitedString(
                                         entryHolder.getConfigAttributes()));

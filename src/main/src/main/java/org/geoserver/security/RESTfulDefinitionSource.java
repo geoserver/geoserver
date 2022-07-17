@@ -13,9 +13,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.security.impl.RESTAccessRuleDAO;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
@@ -25,7 +26,7 @@ import org.springframework.util.StringUtils;
 /** @author Chris Berry http://opensource.atlassian.com/projects/spring/browse/SEC-531 */
 public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadataSource {
 
-    private static Log log = LogFactory.getLog(RESTfulDefinitionSource.class);
+    private static Logger log = Logging.getLogger(RESTfulDefinitionSource.class);
 
     private static final String[] validMethodNames = {"GET", "PUT", "DELETE", "POST"};
 
@@ -121,8 +122,8 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
 
                 line = line.trim();
 
-                if (log.isDebugEnabled()) {
-                    log.debug("Line " + counter + ": " + line);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Line " + counter + ": " + line);
                 }
 
                 if (line.startsWith("//")) {
@@ -154,15 +155,15 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                 String methods = null;
 
                 int firstColonIndex = name.indexOf(":");
-                if (log.isDebugEnabled())
-                    log.debug("~~~~~~~~~~ name= " + name + " firstColonIndex= " + firstColonIndex);
+                if (log.isLoggable(Level.FINE))
+                    log.fine("~~~~~~~~~~ name= " + name + " firstColonIndex= " + firstColonIndex);
 
                 if (firstColonIndex != -1) {
                     antPath = name.substring(0, firstColonIndex);
                     methods = name.substring((firstColonIndex + 1), name.length());
                 }
-                if (log.isDebugEnabled())
-                    log.debug(
+                if (log.isLoggable(Level.FINE))
+                    log.fine(
                             "~~~~~~~~~~ name= "
                                     + name
                                     + " antPath= "
@@ -191,8 +192,8 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                         }
                     }
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("methodList = " + Arrays.toString(methodList));
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("methodList = " + Arrays.toString(methodList));
                 }
 
                 // Should all be lowercase; check each character

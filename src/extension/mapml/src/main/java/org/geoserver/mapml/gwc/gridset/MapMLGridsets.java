@@ -8,11 +8,12 @@ package org.geoserver.mapml.gwc.gridset;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.gwc.GWC;
 import org.geoserver.mapml.tcrs.Bounds;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
+import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.SimpleGridSetConfiguration;
 import org.geowebcache.grid.BoundingBox;
@@ -23,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /** @author prushforth */
 public class MapMLGridsets extends SimpleGridSetConfiguration {
-    private static final Log log = LogFactory.getLog(MapMLGridsets.class);
+    private static final Logger log = Logging.getLogger(MapMLGridsets.class);
 
     private final GridSet WGS84;
     private final GridSet OSMTILE;
@@ -33,7 +34,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
 
     /** */
     public MapMLGridsets() {
-        log.debug("Adding MapML WGS84 gridset");
+        log.fine("Adding MapML WGS84 gridset");
         WGS84 =
                 GridSetFactory.createGridSet(
                         "WGS84",
@@ -52,7 +53,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
         }
         addInternal(WGS84);
 
-        log.debug("Adding MapML OSMTILE gridset");
+        log.fine("Adding MapML OSMTILE gridset");
         OSMTILE =
                 GridSetFactory.createGridSet(
                         "OSMTILE",
@@ -73,7 +74,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
                         + "for areas excluding polar latitudes.");
         addInternal(OSMTILE);
 
-        log.debug("Adding MapML CBMTILE gridset");
+        log.fine("Adding MapML CBMTILE gridset");
         Bounds cb = TiledCRSConstants.tiledCRSDefinitions.get("CBMTILE").getBounds();
         BoundingBox cb_bbox =
                 new BoundingBox(
@@ -100,7 +101,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
                 "Lambert Conformal Conic-based tiled " + "coordinate reference system for Canada.");
         addInternal(CBMTILE);
 
-        log.debug("Adding MapML APSTILE gridset");
+        log.fine("Adding MapML APSTILE gridset");
         Bounds at_b = TiledCRSConstants.tiledCRSDefinitions.get("APSTILE").getBounds();
         BoundingBox at_bbox =
                 new BoundingBox(
@@ -135,7 +136,10 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
                                 try {
                                     gwc.getGridSetBroker().addGridSet(g);
                                 } catch (UnsupportedOperationException ioe) {
-                                    log.info("Error occurred adding gridset: " + g.getName(), ioe);
+                                    log.log(
+                                            Level.SEVERE,
+                                            "Error occurred adding gridset: '" + g.getName() + "'",
+                                            ioe);
                                 }
                             }
                             // embedded gridsets aren't editable by the user,
@@ -150,7 +154,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
         try {
             gwc.saveConfig(gwc.getConfig());
         } catch (IOException ioe) {
-            log.info("Error occured saving MapMLGridsets config.", ioe);
+            log.log(Level.INFO, "Error occured saving MapMLGridsets config.", ioe);
         }
     }
     /** @return array of resolutions m/px */

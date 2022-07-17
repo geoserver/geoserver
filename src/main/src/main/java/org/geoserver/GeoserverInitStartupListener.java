@@ -87,7 +87,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 establishLoggingRedirectionPolicy(sce.getServletContext());
 
         LOGGER = Logging.getLogger("org.geoserver.logging");
-        LOGGER.info("Logging policy: " + policy);
+        LOGGER.config("Logging policy: " + policy);
         GeoTools.init((Hints) null);
 
         // Custom GeoTools ImagingListener used to ignore common warnings
@@ -289,7 +289,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             for (Driver driver : driversToUnload) {
                 try {
                     DriverManager.deregisterDriver(driver);
-                    LOGGER.info("Unregistered JDBC driver " + driver);
+                    LOGGER.fine("Unregistered JDBC driver " + driver);
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Could now unload driver " + driver.getClass(), e);
                 }
@@ -327,15 +327,15 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             WeakCollectionCleaner.DEFAULT.exit();
             DeferredAuthorityFactory.exit();
             CRS.reset("all");
-            LOGGER.info("Shut down GT referencing threads ");
+            LOGGER.fine("Shut down GT referencing threads ");
             // reset
             ReferencingFactoryFinder.reset();
             CommonFactoryFinder.reset();
             DataStoreFinder.reset();
             DataAccessFinder.reset();
-            LOGGER.info("Shut down GT  SPI ");
+            LOGGER.fine("Shut down GT  SPI ");
 
-            LOGGER.info("Shut down coverage thread pool ");
+            LOGGER.fine("Shut down coverage thread pool ");
             Object o = Hints.getSystemDefault(Hints.EXECUTOR_SERVICE);
             if (o != null && o instanceof ExecutorService) {
                 final ThreadPoolExecutor executor = (ThreadPoolExecutor) o;
@@ -363,7 +363,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             }
             for (IIOServiceProvider provider : providersToUnload) {
                 ioRegistry.deregisterServiceProvider(provider);
-                LOGGER.info("Unregistering Image I/O provider " + provider);
+                LOGGER.fine("Unregistering Image I/O provider " + provider);
             }
 
             // unload everything that JAI can still refer to
@@ -394,7 +394,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                                     try {
                                         opRegistry.unregisterFactory(
                                                 mode, red.getName(), product, factory);
-                                        LOGGER.info(
+                                        LOGGER.fine(
                                                 "Unregistering JAI factory " + factory.getClass());
                                     } catch (Throwable t) {
                                         // may fail due to the factory not being registered against
@@ -418,7 +418,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             // flush all javabean introspection caches as this too can keep a webapp classloader
             // from being unloaded
             Introspector.flushCaches();
-            LOGGER.info("Cleaned up javabean caches");
+            LOGGER.fine("Cleaned up javabean caches");
 
             // unload the logging framework
             if (!relinquishLoggingControl) LogManager.shutdown();
@@ -515,7 +515,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             throws FactoryException {
         for (AuthorityFactory af : factories) {
             if (af instanceof AbstractAuthorityFactory) {
-                LOGGER.info("Disposing referencing factory " + af);
+                LOGGER.fine("Disposing referencing factory " + af);
                 ((AbstractAuthorityFactory) af).dispose();
             }
         }

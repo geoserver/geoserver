@@ -13,21 +13,22 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
+import org.geotools.util.logging.Logging;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.ConfigurationResourceProvider;
 import org.geowebcache.config.XMLFileResourceProvider;
 import org.geowebcache.storage.DefaultStorageFinder;
 
+/** Adapt GeoWebCache ConfigurationResourceProvider to GeoServer Resource API. */
 public class GeoserverXMLResourceProvider implements ConfigurationResourceProvider {
 
-    private static Log LOGGER = LogFactory.getLog(GeoserverXMLResourceProvider.class);
+    private static final Logger LOGGER = Logging.getLogger(GeoserverXMLResourceProvider.class);
 
     static final String GEOWEBCACHE_CONFIG_DIR_PROPERTY =
             XMLFileResourceProvider.GWC_CONFIG_DIR_VAR;
@@ -49,7 +50,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
             throws ConfigurationException {
         this.configFileName = configFileName;
         this.configDirectory = inferConfigDirectory(resourceStore, providedConfigDirectory);
-        LOGGER.info(
+        LOGGER.config(
                 String.format(
                         "Will look for '%s' in directory '%s'.",
                         configFileName, configDirectory.dir().getAbsolutePath()));
@@ -97,7 +98,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
             String propertyValue = GeoServerExtensions.getProperty(propertyName);
             if (propertyValue != null) {
                 // this property is defined so let's use is value
-                LOGGER.debug(
+                LOGGER.fine(
                         String.format(
                                 "Property '%s' is set with value '%s'.",
                                 propertyName, propertyValue));
@@ -154,10 +155,10 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
         Resource xmlFile = findConfigFile();
 
         if (Resources.exists(xmlFile)) {
-            LOGGER.info("Found configuration file in " + configDirectory.path());
+            LOGGER.fine("Found configuration file '" + xmlFile.path() + "'");
         } else if (templateLocation != null) {
-            LOGGER.warn(
-                    "Found no configuration file in config directory, will create one at '"
+            LOGGER.config(
+                    "Create configuration file '"
                             + xmlFile.path()
                             + "' from template "
                             + getClass().getResource(templateLocation).toExternalForm());
@@ -177,7 +178,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
         String backUpFileName = "geowebcache_" + timeStamp + ".bak";
         Resource parentFile = xmlFile.parent();
 
-        LOGGER.debug("Backing up config file " + xmlFile.name() + " to " + backUpFileName);
+        LOGGER.fine("Backing up config file " + xmlFile.name() + " to " + backUpFileName);
 
         List<Resource> previousBackUps =
                 Resources.list(
@@ -198,7 +199,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
             Collections.sort(
                     previousBackUps, (o1, o2) -> (int) (o1.lastmodified() - o2.lastmodified()));
             Resource oldest = previousBackUps.get(0);
-            LOGGER.debug(
+            LOGGER.fine(
                     "Deleting oldest config backup "
                             + oldest
                             + " to keep a maximum of "
@@ -209,7 +210,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
 
         Resource backUpFile = parentFile.get(backUpFileName);
         IOUtils.copy(xmlFile.in(), backUpFile.out());
-        LOGGER.debug("Config backup done");
+        LOGGER.fine("Config backup done");
     }
 
     @Override

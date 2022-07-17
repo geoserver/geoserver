@@ -13,12 +13,13 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.util.XStreamPersister;
+import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStream;
@@ -42,7 +43,7 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
     private static final boolean DEFAULT_TRANSACTIONAL = false;
 
-    protected static final Log logger = LogFactory.getLog(CatalogFileWriter.class);
+    protected static final Logger logger = Logging.getLogger(CatalogFileWriter.class);
 
     private static final String WRITTEN_STATISTICS_NAME = "written";
 
@@ -87,9 +88,10 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
             throw new WriterNotOpenException("Writer must be open before it can be written to");
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Writing to flat file with " + items.size() + " items.");
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Writing to flat file with " + items.size() + " items.");
         }
+        logger.fine(() -> "Writing to flat file with " + items.size() + " items.");
 
         OutputState state = getOutputState();
 

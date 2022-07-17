@@ -29,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -42,11 +43,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.util.XStreamPersister;
+import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.UnexpectedInputException;
@@ -74,7 +74,7 @@ import org.springframework.util.StringUtils;
  */
 public class CatalogFileReader<T> extends CatalogReader<T> {
 
-    private static final Log logger = LogFactory.getLog(CatalogFileReader.class);
+    private static final Logger logger = Logging.getLogger(CatalogFileReader.class);
 
     private FragmentEventReader fragmentReader;
 
@@ -210,7 +210,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
                     throw new IllegalStateException(
                             "Input resource must exist (reader is in 'strict' mode)");
                 }
-                logger.warn("Input resource does not exist " + resource.getDescription());
+                logger.warning("Input resource does not exist " + resource.getDescription());
                 return;
             }
             if (!resource.isReadable()) {
@@ -218,7 +218,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
                     throw new IllegalStateException(
                             "Input resource must be readable (reader is in 'strict' mode)");
                 }
-                logger.warn("Input resource is not readable " + resource.getDescription());
+                logger.warning("Input resource is not readable " + resource.getDescription());
                 return;
             }
 

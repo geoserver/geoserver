@@ -327,11 +327,11 @@ class LoggingUtilsDelegate {
                 loggerContext.reconfigure(configuration);
 
                 Logger LOGGER = LoggingStartupContextListener.getLogger();
-                LOGGER.info("Log4j 2 configuration set to " + configResource.name());
+                LOGGER.config("Log4j 2 configuration set to " + configResource.name());
                 return true;
             } else {
                 loggerContext.setConfigLocation(configLocation);
-                LoggingStartupContextListener.LOGGER.info(
+                LoggingStartupContextListener.LOGGER.config(
                         "Log4j 2 configuration set to " + configResource.name());
 
                 if (extension.equalsIgnoreCase("properties")) {

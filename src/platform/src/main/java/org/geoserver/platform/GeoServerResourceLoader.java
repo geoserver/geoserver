@@ -523,7 +523,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      * <p>1) Java environment variable 2) Servlet context variable 3) System variable
      *
      * <p>For each of these, the methods checks that 1) The path exists 2) Is a directory 3) Is
-     * writable
+     * writable. If none of the locatioons are suitable fall back to servlet data directory
      *
      * @param servContext The servlet context.
      * @return String The absolute path to the data directory, or <code>null</code> if it could not
@@ -592,6 +592,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
                     LOGGER.warning(msgPrefix + " , which is not writeable");
                     continue;
                 }
+                LOGGER.finer(msgPrefix);
 
                 // Sweet, we can work with this
                 dataDirStr = value;
@@ -601,7 +602,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
         // fall back to embedded data dir
         if (dataDirStr == null) {
             dataDirStr = servContext.getRealPath("/data");
-            LOGGER.info("Falling back to embedded data directory: " + dataDirStr);
+            LOGGER.finer("Falling back to embedded data directory: '" + dataDirStr + "'");
         }
 
         return dataDirStr;

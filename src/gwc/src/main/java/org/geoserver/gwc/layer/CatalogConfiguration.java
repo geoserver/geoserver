@@ -406,7 +406,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     public void afterPropertiesSet() {
         lock.acquireWriteLock();
         try {
-            LOGGER.info("Initializing GWC configuration based on GeoServer's Catalog");
+            LOGGER.config("Initializing GWC configuration based on GeoServer's Catalog");
             this.layerCache.invalidateAll();
             this.tileLayerCatalog.initialize();
         } finally {

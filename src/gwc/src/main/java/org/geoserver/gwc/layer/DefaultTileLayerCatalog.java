@@ -226,8 +226,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
         Resource baseDir = resourceLoader.get(baseDirectory);
 
-        LOGGER.info("GeoServer TileLayer store base directory is: " + baseDir.path());
-        LOGGER.info("Loading tile layers from " + baseDir.path());
+        LOGGER.config("GeoServer TileLayer store base directory is: " + baseDir.path());
+        LOGGER.config("Loading tile layers from " + baseDir.path());
         Stopwatch sw = Stopwatch.createStarted();
         ExtensionFilter xmlFilter = new Resources.ExtensionFilter("XML");
         // do not thrash the filesystem if there are several cores by using the common
@@ -246,7 +246,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         } finally {
             pool.shutdownNow();
         }
-        LOGGER.info(String.format("Loaded %,d tile layers in %s", layersById.size(), sw.stop()));
+        LOGGER.config(String.format("Loaded %,d tile layers in %s", layersById.size(), sw.stop()));
         this.initialized = true;
     }
 

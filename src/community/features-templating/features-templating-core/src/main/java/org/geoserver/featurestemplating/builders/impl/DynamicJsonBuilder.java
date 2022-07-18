@@ -90,22 +90,6 @@ public abstract class DynamicJsonBuilder extends DynamicValueBuilder {
     }
 
     /**
-     * Evaluate the directive of the builder.
-     *
-     * @param context the TemplateContext.
-     * @return the value obtained by the evaluation.
-     */
-    protected Object evaluateDirective(TemplateBuilderContext context) {
-        Object evaluate = null;
-        if (xpath != null) {
-            evaluate = evaluateXPath(context);
-        } else if (cql != null) {
-            evaluate = evaluateExpressions(cql, context);
-        }
-        return evaluate;
-    }
-
-    /**
      * Get a JsonNode from the evaluation.
      *
      * @param context the builder context.

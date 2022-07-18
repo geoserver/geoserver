@@ -1159,15 +1159,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testReloadConfiguration() throws Exception {
-        String path = "/gwc/rest/reload";
-        String content = "reload_configuration=1";
-        String contentType = "application/x-www-form-urlencoded";
-        MockHttpServletResponse response = postAsServletResponse(path, content, contentType);
-        assertEquals(200, response.getStatus());
-    }
-
-    @Test
     public void testBasicIntegration() throws Exception {
         Catalog cat = getCatalog();
         TileLayerDispatcher tld = GeoWebCacheExtensions.bean(TileLayerDispatcher.class);

@@ -23,6 +23,7 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.json.GeoJSONBuilder;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -279,10 +280,15 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
         // not needed in STAC
     }
 
-    /** capabilities output format string. */
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@code null}, making {@link WFSGetFeatureOutputFormat#getCapabilitiesElementNames()}
+     *     not contributing a result format on the GetCapabilities document for this output format.
+     */
     @Override
     public String getCapabilitiesElementName() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override

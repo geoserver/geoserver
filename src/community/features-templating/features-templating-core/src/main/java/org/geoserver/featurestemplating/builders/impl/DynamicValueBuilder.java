@@ -68,12 +68,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
         if (evaluateFilter(context)) {
-            Object o = null;
-            if (xpath != null) {
-                o = evaluateXPath(context);
-            } else if (cql != null) {
-                o = evaluateExpressions(cql, context);
-            }
+            Object o = evaluateDirective(context);
             addChildrenEvaluationToEncodingHints(writer, context);
             writeValue(writer, o, context);
         }
@@ -221,7 +216,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     }
 
     protected boolean hasDynamic(JsonNode node) {
-        return node.toString().contains("${");
+        return node.toString().contains("$");
     }
 
     public boolean isEncodeNull() {
@@ -249,5 +244,21 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
                 && Objects.equals(cql, that.cql)
                 && Objects.equals(xpath, that.xpath)
                 && Objects.equals(namespaces, that.namespaces);
+    }
+
+    /**
+     * Evaluate the directive of the builder.
+     *
+     * @param context the TemplateContext.
+     * @return the value obtained by the evaluation.
+     */
+    protected Object evaluateDirective(TemplateBuilderContext context) {
+        Object evaluate = null;
+        if (xpath != null) {
+            evaluate = evaluateXPath(context);
+        } else if (cql != null) {
+            evaluate = evaluateExpressions(cql, context);
+        }
+        return evaluate;
     }
 }

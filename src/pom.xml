@@ -39,6 +39,7 @@
     <module>kml</module>
     <module>ows</module>
     <module>gwc</module>
+    <module>gwc-rest</module>
     <module>rest</module>
     <module>restconfig</module>
     <module>restconfig-wcs</module>
@@ -94,13 +95,13 @@
     <spring.version>5.2.22.RELEASE</spring.version>
     <spring.security.version>5.1.13.RELEASE</spring.security.version>
     <servlet-api.version>3.0.1</servlet-api.version>
-    <jetty.version>9.4.44.v20210927</jetty.version>
+    <jetty.version>9.4.48.v20220622</jetty.version>
     <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
     <poi.version>4.1.1</poi.version>
     <wicket.version>7.18.0</wicket.version>
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.13</httpclient.version>
-    <imageio-ext.version>1.4.5</imageio-ext.version>
+    <imageio-ext.version>1.4.6</imageio-ext.version>
     <jaiext.version>1.1.23</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
@@ -239,6 +240,11 @@
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-gwc</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-gwc-rest</artifactId>
         <version>${gs.version}</version>
       </dependency>
       <dependency>
@@ -1377,7 +1383,7 @@
       <dependency>
         <groupId>com.github.oshi</groupId>
         <artifactId>oshi-core</artifactId>
-        <version>6.2.0</version>
+        <version>6.2.1</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -2310,7 +2316,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>7.0.4</version>
+            <version>7.1.1</version>
             <executions>
               <execution>
                 <goals>

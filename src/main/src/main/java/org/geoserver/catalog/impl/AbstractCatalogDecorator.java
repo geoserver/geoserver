@@ -26,6 +26,8 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -147,6 +149,26 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     public <T extends StoreInfo> List<T> getStoresByWorkspace(
             String workspaceName, Class<T> clazz) {
         return delegate.getStoresByWorkspace(workspaceName, clazz);
+    }
+
+    @Override
+    public WMSStoreInfo getWMSStoreByName(String name) {
+        return delegate.getWMSStoreByName(name);
+    }
+
+    @Override
+    public WMSStoreInfo getWMSStore(String id) {
+        return delegate.getWMSStore(id);
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStoreByName(String name) {
+        return delegate.getWMTSStoreByName(name);
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStore(String id) {
+        return delegate.getWMTSStore(id);
     }
 
     @Override

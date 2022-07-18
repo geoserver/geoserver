@@ -605,7 +605,7 @@ public class SearchTest extends OSEOTestSupport {
                 atomHRef,
                 equalTo(
                         "http://localhost:8080/geoserver/oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fatom%2Bxml"));
-        String quickLookRef = sd.select("a[title='View browse image'").attr("href");
+        String quickLookRef = sd.select("a[title=View browse image]").attr("href");
         assertThat(
                 quickLookRef,
                 equalTo(

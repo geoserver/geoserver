@@ -21,14 +21,7 @@ import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.backuprestore.utils.BackupUtils;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
@@ -496,6 +489,10 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                         }
                     }
                 }
+                // save the indexes for WMS stores
+                indexWMSStores(ws, workspace);
+                // save the indexes for WMTS stores
+                indexWMTSStores(ws, workspace);
 
                 for (CoverageStoreInfo cs :
                         getCatalog().getStoresByWorkspace(ws.getName(), CoverageStoreInfo.class)) {
@@ -554,6 +551,60 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         XMLOutputter outter = new XMLOutputter();
         outter.setFormat(Format.getPrettyFormat());
         outter.output(doc, new FileWriter(sourceFolder.get(BR_INDEX_XML).file()));
+    }
+
+    private void indexWMTSStores(WorkspaceInfo ws, Element workspace) {
+        for (WMTSStoreInfo wmts :
+                getCatalog().getStoresByWorkspace(ws.getName(), WMTSStoreInfo.class)) {
+            if (!filteredResource(wmts, ws, true, StoreInfo.class)) {
+                Element store = new Element("Store");
+                store.setAttribute("type", "WMSStoreInfo");
+                store.addContent(new Element("Name").addContent(wmts.getName()));
+                workspace.addContent(store);
+
+                List<WMTSLayerInfo> resourcesByStore =
+                        getCatalog().getResourcesByStore(wmts, WMTSLayerInfo.class);
+                for (WMTSLayerInfo wl : resourcesByStore) {
+                    if (!filteredResource(wl, ws, true, ResourceInfo.class)) {
+                        List<WMTSLayerInfo> wmtsLayerInfoList =
+                                getCatalog().getResourcesByStore(wmts, WMTSLayerInfo.class);
+                        for (WMTSLayerInfo ly : wmtsLayerInfoList) {
+                            Element layer = new Element("Layer");
+                            layer.setAttribute("type", "WMTS");
+                            layer.addContent(new Element("Name").addContent(ly.getName()));
+                            store.addContent(layer);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void indexWMSStores(WorkspaceInfo ws, Element workspace) {
+        for (WMSStoreInfo wms :
+                getCatalog().getStoresByWorkspace(ws.getName(), WMSStoreInfo.class)) {
+            if (!filteredResource(wms, ws, true, StoreInfo.class)) {
+                Element store = new Element("Store");
+                store.setAttribute("type", "WMSStoreInfo");
+                store.addContent(new Element("Name").addContent(wms.getName()));
+                workspace.addContent(store);
+
+                List<WMSLayerInfo> wmsLayerInfoList =
+                        getCatalog().getResourcesByStore(wms, WMSLayerInfo.class);
+                for (WMSLayerInfo wl : wmsLayerInfoList) {
+                    if (!filteredResource(wl, ws, true, ResourceInfo.class)) {
+                        List<WMSLayerInfo> wmsLayerInfos =
+                                getCatalog().getResourcesByStore(wms, WMSLayerInfo.class);
+                        for (WMSLayerInfo ly : wmsLayerInfos) {
+                            Element layer = new Element("Layer");
+                            layer.setAttribute("type", "WMS");
+                            layer.addContent(new Element("Name").addContent(ly.getName()));
+                            store.addContent(layer);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @SuppressWarnings({"unchecked"})

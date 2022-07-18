@@ -227,6 +227,26 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     @Override
+    public WMSStoreInfo getWMSStore(String id) {
+        return checkAccess(user(), delegate.getWMSStore(id), MixedModeBehavior.CHALLENGE);
+    }
+
+    @Override
+    public WMSStoreInfo getWMSStoreByName(String name) {
+        return checkAccess(user(), delegate.getWMSStoreByName(name), MixedModeBehavior.CHALLENGE);
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStore(String id) {
+        return checkAccess(user(), delegate.getWMTSStore(id), MixedModeBehavior.CHALLENGE);
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStoreByName(String name) {
+        return checkAccess(user(), delegate.getWMTSStoreByName(name), MixedModeBehavior.CHALLENGE);
+    }
+
+    @Override
     public DataStoreInfo getDataStore(String id) {
         return checkAccess(user(), delegate.getDataStore(id), MixedModeBehavior.CHALLENGE);
     }

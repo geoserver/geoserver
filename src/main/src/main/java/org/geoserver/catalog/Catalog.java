@@ -317,6 +317,54 @@ public interface Catalog extends CatalogInfo {
     <T extends StoreInfo> List<T> getStoresByWorkspace(String workspaceName, Class<T> clazz);
 
     /**
+     * Returns a WMS store matching a particular id, or <code>null</code> if no such data store
+     * could be found.
+     *
+     * <p>This method is convenience for:
+     *
+     * <pre>
+     * getStore( id, WMSStoreInfo.class );
+     * </pre>
+     */
+    WMSStoreInfo getWMSStore(String id);
+
+    /**
+     * Returns a WMS store matching a particular name in the default workspace,o * or <code>null
+     * </code> if no such WMS store could be found.
+     *
+     * <p>This method is a convenience for:
+     *
+     * <pre>
+     *  getStoreByName(null,name);
+     * </pre>
+     */
+    WMSStoreInfo getWMSStoreByName(String name);
+
+    /**
+     * Returns a WMTS store matching a particular id, or <code>null</code> if no such data store
+     * could be found.
+     *
+     * <p>This method is convenience for:
+     *
+     * <pre>
+     * getStore( id, WMTSStoreInfo.class );
+     * </pre>
+     */
+    WMTSStoreInfo getWMTSStore(String id);
+
+    /**
+     * Returns a WMTS store matching a particular name in the default workspace,o * or <code>null
+     * </code> if no such WMTS store could be found.
+     *
+     * <p>This method is a convenience for:
+     *
+     * <pre>
+     *  getStoreByName(null,name);
+     * </pre>
+     */
+    WMTSStoreInfo getWMTSStoreByName(String name);
+
+    /**
      * Returns a datastore matching a particular id, or <code>null</code> if no such data store
      * could be found.
      *

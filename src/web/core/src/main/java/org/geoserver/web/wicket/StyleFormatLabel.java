@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
@@ -51,7 +52,15 @@ public class StyleFormatLabel extends Panel {
         }
 
         String format = (String) formatModel.getObject();
-        return Styles.handler(format).getName();
+        try {
+            return Styles.handler(format).getName();
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.FINE,
+                    "Go an exception looking up the style handler, using the raw format instead",
+                    e);
+            return format;
+        }
     }
 
     private String getMajorMinorVersionString(IModel<?> versionModel) {

@@ -3,29 +3,29 @@
 Batch Rest API
 ===================
 
-Batch operations allow to run multiple insert, update and delete at the same time over rules and admin rules. All the operations are executed in a single transaction: this means that either all of them are successfull either all the operation are rolled back.
+Batch operations allow to run multiple insert, update and delete at the same time over rules and admin rules. All the operations are executed in a single transaction: this means that either all of them are successful or all the operations are rolled back.
 
 Security
 --------
 
-The Geofence Rest API is only accessible to users with the role ROLE_ADMIN.
+The Geofence REST API is only accessible to users with the role ``ROLE_ADMIN``.
 
 Input/Output
 ------------
 
 Data Object Transfer
 ~~~~~~~~~~~~~~~~~~~~
-Both XML and JSON are supported for transfer of data objects. The default is XML. Alternatively, JSON may be used by setting the 'content-type' (POST) and 'accept' (GET) http headers to 'application/json' in your requests.
+Both XML and JSON are supported for transfer of data objects. The default is XML. Alternatively, JSON may be used by setting the ``Content-Type`` and ``Accept`` HTTP headers to ``application/json`` in your requests.
 
-A  ``Batch`` data object transfer must declare a list of ``operations``. Each operation needs to declare:
+A ``Batch`` data object transfer must declare a list of ``operations``. Each operation needs to declare:
 
 * The ``service`` name (``rules`` for a Rule operation or ``adminrules`` for an AdminRule operation).
 
 * The ``type`` of the operation (``insert``, ``update``, ``delete``).
 
-* The ``id`` of the entity over which the operation is being performed in case of an update or delete types.
+* The ``id`` of the entity over which the operation is being performed in case of an ``update`` or ``delete`` types.
 
-* The ``Rule`` or ``AdminRule`` data object transfer in case of insert or update operation.
+* The ``Rule`` or ``AdminRule`` data object transfer in case of ``insert`` or ``update`` operation.
 
 Encoding of a Batch in XML::
 
@@ -99,15 +99,15 @@ Requests
 
 Issue a Batch operation executing all the declared operations.
 
-.. list-table::
-   :header-rows: 1
-   :widths: 10 20 20 40
++------------+-----------------+--------------+-------------------------------------------------------------+
+| Method     | Action          | Response code| Response                                                    |
++============+=================+==============+=============================================================+
+| POST       | Execute a batch | 200          | OK                                                          |
+|            |                 +--------------+-------------------------------------------------------------+
+|            |                 | 400          | BadRequest: malformed request body, duplicate rule addition |
+|            |                 +--------------+-------------------------------------------------------------+
+|            |                 | 404          | NotFound: rule not found                                    |
+|            |                 +--------------+-------------------------------------------------------------+
+|            |                 | 500          | InternalServerError: unexpected error                       |
++------------+-----------------+--------------+-------------------------------------------------------------+
 
-   * - Method
-     - Action
-     - Response
-     - Error Response
-   * - POST
-     - Execute a batch.
-     - 200 Ok.
-     - 400 (BadRequest: malformed request body, duplicate rule addition) | 500 InternalServerError (unexpected error) | 404 NotFound (rule not found).

@@ -101,11 +101,13 @@ Issue a Batch operation executing all the declared operations.
 
 .. list-table::
    :header-rows: 1
-   :widths: 10 20 20
+   :widths: 10 20 20 40
 
    * - Method
      - Action
      - Response
+     - Error Response
    * - POST
      - Execute a batch.
-     - 200 OK.
+     - 200 Ok.
+     - 400 (BadRequest: malformed request body, duplicate rule addition) | 500 InternalServerError (unexpected error) | 404 NotFound (rule not found).

@@ -139,75 +139,13 @@ public class GeofencePersisterSerializationTest {
 
     @Test
     public void testJSONBatchDeserialization() throws IOException {
-        String jsonBatch =
-                "{\n"
-                        + "   \"Batch\":{\n"
-                        + "      \"operations\":[\n"
-                        + "         {\n"
-                        + "            \"@service\":\"rules\",\n"
-                        + "            \"@type\":\"update\",\n"
-                        + "            \"@id\":\"3\",\n"
-                        + "            \"Rule\":{\n"
-                        + "               \"access\":\"ALLOW\",\n"
-                        + "               \"layer\":\"layer\",\n"
-                        + "               \"priority\":5,\n"
-                        + "               \"request\":\"GETMAP\",\n"
-                        + "               \"service\":\"WMS\",\n"
-                        + "               \"roleName\":\"ROLE_AUTHENTICATED\",\n"
-                        + "               \"workspace\":\"ws\"\n"
-                        + "            }\n"
-                        + "         },\n"
-                        + "         {\n"
-                        + "            \"@service\":\"rules\",\n"
-                        + "            \"@type\":\"delete\",\n"
-                        + "            \"@id\":5\n"
-                        + "         },\n"
-                        + "         {\n"
-                        + "            \"@service\":\"adminrules\",\n"
-                        + "            \"@type\":\"insert\",\n"
-                        + "            \"AdminRule\":{\n"
-                        + "               \"priority\":2,\n"
-                        + "               \"roleName\":\"ROLE_USER\",\n"
-                        + "               \"workspace\":\"ws\",\n"
-                        + "               \"access\":\"ADMIN\"\n"
-                        + "            }\n"
-                        + "         }\n"
-                        + "      ]\n"
-                        + "   }\n"
-                        + "}";
-
-        ByteArrayInputStream bais = new ByteArrayInputStream(jsonBatch.getBytes(UTF_8));
-        Batch batch = jsonPersister.load(bais, Batch.class);
+        Batch batch = jsonPersister.load(getClass().getResourceAsStream("batch.json"), Batch.class);
         assertBatch(batch);
     }
 
     @Test
     public void testBatchXmlDeserialization() throws IOException {
-        String xml =
-                "<Batch>\n"
-                        + "  <operations service=\"rules\" id=\"3\" type=\"update\">\n"
-                        + "    <Rule>\n"
-                        + "        <access>ALLOW</access>\n"
-                        + "        <layer>layer</layer>\n"
-                        + "        <priority>5</priority>\n"
-                        + "        <request>GETMAP</request>\n"
-                        + "        <roleName>ROLE_AUTHENTICATED</roleName>\n"
-                        + "        <service>WMS</service>\n"
-                        + "        <workspace>ws</workspace>\n"
-                        + "    </Rule>\n"
-                        + "  </operations>\n"
-                        + "  <operations service=\"rules\" id=\"5\" type=\"delete\"></operations>\n"
-                        + "  <operations service=\"adminrules\" type=\"insert\">\n"
-                        + "    <AdminRule>\n"
-                        + "      <priority>2</priority>\n"
-                        + "      <roleName>ROLE_USER</roleName>\n"
-                        + "      <workspace>ws</workspace>\n"
-                        + "      <access>ADMIN</access>\n"
-                        + "    </AdminRule>\n"
-                        + "  </operations>\n"
-                        + "</Batch>";
-        ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(UTF_8));
-        Batch batch = xmlPersister.load(bais, Batch.class);
+        Batch batch = xmlPersister.load(getClass().getResourceAsStream("batch.xml"), Batch.class);
         assertBatch(batch);
     }
 

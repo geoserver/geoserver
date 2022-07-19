@@ -151,6 +151,29 @@ Parameters can be provided for multiple layers by separating each parameter map 
 
 The number of parameter maps must match the number of layers (featuretypes) included in the request.
 
+Using XML View parameters format
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Aside the default SQL view parameters format, an XML format is available by using the request parameter/value: 
+
+  ``&viewParamsFormat=XML``
+
+XML alternative format example:
+
+  ``&viewParams=<VP><PS><P n="mmsi">538008302,244060802,538008505</P><P n="mmsi">22,44</P></PS><PS/><PS><P n="csvInput">acv,rrp;1,0;0,7;22,1</P></PS></VP>``
+
+viewParamsFormat new optional parameter definition:
+  - Selects the view parameters format implementation to use by its identifier.
+  - Optional parameter, if not set the default character separated format will be used supporting backward compatibility.
+
+XML tags/attributes definition:
+  - VP: the root xml element tag for View Params.  This was added to comply with the XML format validation.
+  - PS: the parameters set XML element for the positional layer.  If there are no parameters for the current layer this must be set as empty element <PS/>
+  - P: the parameter definition XML element, including the parameter name as the n attributer and the value as the XML element child value text.
+  - n: the parameter name attribute inside the 'P' parameter definition element.
+
+Note: If a layer doesn't have parameters to set we just set an empty PS element as seen on the example: <PS/>
+
 Parameters and validation
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

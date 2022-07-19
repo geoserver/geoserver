@@ -63,6 +63,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.kvp.URIKvpParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.test.RemoteOWSTestSupport;
@@ -1364,6 +1365,87 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             wmsInfo.setRemoteStyleTimeout(30000);
             geoServer.save(wmsInfo);
         }
+    }
+
+    @Test
+    public void testXMLMultipleViewParams() throws Exception {
+        try {
+            Request owsRequest = new Request();
+            owsRequest.setRawKvp(new HashMap<>());
+            owsRequest.getRawKvp().put("viewParamsFormat", "XML");
+            Dispatcher.REQUEST.set(owsRequest);
+            HashMap raw = new HashMap();
+            raw.put(
+                    "layers",
+                    getLayerId(MockData.BASIC_POLYGONS)
+                            + ","
+                            + getLayerId(MockData.BASIC_POLYGONS));
+            raw.put("styles", "");
+            raw.put("format", "image/jpeg");
+            raw.put("srs", "epsg:3003");
+            raw.put("bbox", "-10,-10,10,10");
+            raw.put("height", "600");
+            raw.put("width", "800");
+            raw.put("request", "GetMap");
+            raw.put("service", "wms");
+            raw.put(
+                    "viewParams",
+                    "<VP><PS><P n=\"where\">WHERE PERSONS &gt; 1000000</P><P n=\"str\">ABCD</P></PS>"
+                            + "<PS><P n=\"where\">WHERE PERSONS &gt; 10</P><P n=\"str\">FOO</P></PS></VP>");
+
+            GetMapRequest request = reader.createRequest();
+            request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+
+            List<Map<String, String>> viewParamsList = request.getViewParams();
+            assertEquals(2, viewParamsList.size());
+            Map viewParams = viewParamsList.get(0);
+            assertEquals("WHERE PERSONS > 1000000", viewParams.get("where"));
+            assertEquals("ABCD", viewParams.get("str"));
+            viewParams = viewParamsList.get(1);
+            assertEquals("WHERE PERSONS > 10", viewParams.get("where"));
+            assertEquals("FOO", viewParams.get("str"));
+        } finally {
+            Dispatcher.REQUEST.set(null);
+        }
+    }
+
+    @Test
+    public void testXMLMultipleViewParamsServiceException() throws Exception {
+        ServiceException serviceException = null;
+        try {
+            Request owsRequest = new Request();
+            owsRequest.setRawKvp(new HashMap<>());
+            owsRequest.getRawKvp().put("viewParamsFormat", "unknown-format");
+            Dispatcher.REQUEST.set(owsRequest);
+            HashMap raw = new HashMap();
+            raw.put(
+                    "layers",
+                    getLayerId(MockData.BASIC_POLYGONS)
+                            + ","
+                            + getLayerId(MockData.BASIC_POLYGONS));
+            raw.put("styles", "");
+            raw.put("format", "image/jpeg");
+            raw.put("srs", "epsg:3003");
+            raw.put("bbox", "-10,-10,10,10");
+            raw.put("height", "600");
+            raw.put("width", "800");
+            raw.put("request", "GetMap");
+            raw.put("service", "wms");
+            raw.put(
+                    "viewParams",
+                    "<VP><PS><P n=\"where\">WHERE PERSONS &gt; 1000000</P><P n=\"str\">ABCD</P></PS>"
+                            + "<PS><P n=\"where\">WHERE PERSONS &gt; 10</P><P n=\"str\">FOO</P></PS></VP>");
+
+            GetMapRequest request = reader.createRequest();
+            request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        } catch (ServiceException ex) {
+            serviceException = ex;
+        } finally {
+            Dispatcher.REQUEST.set(null);
+        }
+        assertNotNull("ServiceException not catched", serviceException);
+        assertEquals(serviceException.getLocator(), "viewParamsFormat");
+        assertEquals(serviceException.getCode(), ServiceException.INVALID_PARAMETER_VALUE);
     }
 
     /** Creates a HTTP embedded server with a dynamic port for testing the configures timeout. */

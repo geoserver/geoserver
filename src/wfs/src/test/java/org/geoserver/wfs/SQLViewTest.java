@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.Map;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+import org.apache.commons.text.StringEscapeUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
@@ -187,6 +188,44 @@ public class SQLViewTest extends WFSTestSupport {
                         + "</wfs:Query></wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
+        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+
+        NodeList features = doc.getElementsByTagName("gs:pgeo_view");
+        assertEquals(1, features.getLength());
+        assertEquals(features.item(0).getFirstChild().getNodeName(), "gml:name");
+        assertEquals(features.item(0).getFirstChild().getTextContent(), "name-f003");
+    }
+
+    @Test
+    public void testXMLViewParamsGet() throws Exception {
+        Document dom =
+                getAsDOM(
+                        "wfs?service=WFS&request=GetFeature&typename="
+                                + viewTypeName
+                                + "&version=1.1&viewParamsFormat=XML&viewparams=<VP><PS><P n=\"bool\">true</P><P n=\"name\">name-f003</P></PS></VP>");
+        // print(dom);
+
+        assertXpathEvaluatesTo("name-f003", "//gs:pgeo_view/gml:name", dom);
+        assertXpathEvaluatesTo("1", "count(//gs:pgeo_view)", dom);
+    }
+
+    @Test
+    public void testPostWithXMLViewParams_200() throws Exception {
+        String xmlViewParams =
+                StringEscapeUtils.escapeXml10(
+                        "<VP><PS><P n=\"bool\">true</P><P n=\"name\">name-f003</P></PS></VP>");
+        String xml =
+                "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" "
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" "
+                        + "viewParams=\""
+                        + xmlViewParams
+                        + "\"> "
+                        + "<wfs:Query typeNames=\""
+                        + viewTypeName
+                        + "\">"
+                        + "</wfs:Query></wfs:GetFeature>";
+
+        Document doc = postAsDOM("wfs?viewParamsFormat=XML", xml);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList features = doc.getElementsByTagName("gs:pgeo_view");

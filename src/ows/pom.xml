@@ -55,6 +55,11 @@
       <groupId>org.geotools.xsd</groupId>
       <artifactId>gt-xsd-core</artifactId>
     </dependency>
+    <!-- XML binding support for view params -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>

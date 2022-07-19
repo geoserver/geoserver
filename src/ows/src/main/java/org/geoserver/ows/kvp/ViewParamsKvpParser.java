@@ -5,23 +5,36 @@
  */
 package org.geoserver.ows.kvp;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpParser;
-import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
+import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
- * Parses view parameters which are of the form:
+ * Parses view parameters with the selected format parser or using the default:
  *
  * <pre>VIEWPARAMS=opt1:val1,val2;opt2:val1;opt3:...[,opt1:val1,val2;opt2:val1;opt3:...]</pre>
  *
  * @see FormatOptionsKvpParser
  */
 public class ViewParamsKvpParser extends KvpParser implements ApplicationContextAware {
+
+    private static final Logger LOGGER = Logging.getLogger(ViewParamsKvpParser.class);
+
+    private static final String VIEW_PARAMS_FORMAT_PARAMETER_NAME = "viewParamsFormat";
     /** application context used to lookup KvpParsers */
     ApplicationContext applicationContext;
 
@@ -36,23 +49,71 @@ public class ViewParamsKvpParser extends KvpParser implements ApplicationContext
 
     @Override
     public Object parse(String value) throws Exception {
-        List<Object> ret = new ArrayList<>();
-        List<KvpParser> parsers =
-                GeoServerExtensions.extensions(KvpParser.class, applicationContext);
-        KvpParser formatOptionsParser = null;
-        for (KvpParser parser : parsers) {
-            if (parser.getKey().equalsIgnoreCase("format_options")) {
-                formatOptionsParser = parser;
-                break;
-            }
-        }
-        if (formatOptionsParser == null) {
-            throw new IllegalStateException("Missing format options parser.");
-        }
-        for (String kvp : KvpUtils.escapedTokens(value, ',')) {
-            ret.add(formatOptionsParser.parse(kvp));
-        }
+        ViewParamsFormatParser formatParser = getRequestFormatParser();
+        LOGGER.log(Level.FINE, "Using selected format parser: {0}", formatParser);
+        return formatParser.parse(value);
+    }
 
-        return ret;
+    private ViewParamsFormatParser getRequestFormatParser() {
+        List<ViewParamsFormatParser> formatParsers =
+                GeoServerExtensions.extensions(ViewParamsFormatParser.class, applicationContext);
+        String formatParserParameterValue = getFormatParserParameterValue();
+        LOGGER.log(Level.FINE, "Using format parser identifier: {0}", formatParserParameterValue);
+        return formatParsers.stream()
+                .filter(fp -> fp.getIdentifier().equals(formatParserParameterValue))
+                .findFirst()
+                .orElseThrow(
+                        () ->
+                                new ServiceException(
+                                        "Selected viewParamsFormat is not available as implementation on GeoServer. "
+                                                + "viewParamsFormat value is '"
+                                                + getRequestFormatParserParameterValue()
+                                                + "'",
+                                        ServiceException.INVALID_PARAMETER_VALUE,
+                                        "viewParamsFormat"));
+    }
+
+    private String getFormatParserParameterValue() {
+        String formatParserParameterValue = getRequestFormatParserParameterValue();
+        // set the default if not other implementation found
+        if (StringUtils.isBlank(formatParserParameterValue)) {
+            formatParserParameterValue =
+                    CharSeparatedViewParamsFormatParser.CHAR_SEPARATED_IDENTIFIER;
+        }
+        return formatParserParameterValue;
+    }
+
+    private String getRequestFormatParserParameterValue() {
+        Request request = Dispatcher.REQUEST.get();
+        if (request == null || request.getRawKvp() == null)
+            return getSerlvetRequestFormatParserParameterValue();
+        Map<String, Object> rawKvp = request.getRawKvp();
+        if (rawKvp.containsKey(VIEW_PARAMS_FORMAT_PARAMETER_NAME)) {
+            return (String) rawKvp.get(VIEW_PARAMS_FORMAT_PARAMETER_NAME);
+        }
+        return getSerlvetRequestFormatParserParameterValue();
+    }
+
+    private String getSerlvetRequestFormatParserParameterValue() {
+        ServletRequestAttributes servletRequestAttributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (servletRequestAttributes == null
+                || servletRequestAttributes.getRequest() == null
+                || servletRequestAttributes.getRequest().getParameterMap() == null) return null;
+        HttpServletRequest request = servletRequestAttributes.getRequest();
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        if (parameterMap.containsKey(VIEW_PARAMS_FORMAT_PARAMETER_NAME)) {
+            String[] strings = parameterMap.get(VIEW_PARAMS_FORMAT_PARAMETER_NAME);
+            return getFirstExisting(strings);
+        }
+        return null;
+    }
+
+    private String getFirstExisting(String[] strArray) {
+        if (strArray == null) return null;
+        for (String value : strArray) {
+            if (StringUtils.isNotBlank(value)) return value;
+        }
+        return null;
     }
 }

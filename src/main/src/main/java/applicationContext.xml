@@ -347,4 +347,9 @@
     <constructor-arg ref="rawCatalog"/>
   </bean>
 
+  <bean id="charSeparatedViewParamsFormatParser" class="org.geoserver.ows.kvp.CharSeparatedViewParamsFormatParser">
+  </bean>
+  <bean id="xmlViewParamsFormatParser" class="org.geoserver.ows.kvp.XMLViewParamsFormatParser">
+  </bean>
+
 </beans>

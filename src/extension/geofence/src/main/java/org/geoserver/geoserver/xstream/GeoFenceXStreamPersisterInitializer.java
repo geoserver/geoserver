@@ -3,11 +3,14 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geoserver.authentication;
+package org.geoserver.geoserver.xstream;
 
 import com.thoughtworks.xstream.XStream;
+import org.geoserver.config.util.CollectionConverter;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
+import org.geoserver.geofence.rest.xml.Batch;
+import org.geoserver.geofence.rest.xml.BatchOperation;
 import org.geoserver.geofence.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.rest.xml.JaxbAdminRuleList;
 import org.geoserver.geofence.rest.xml.JaxbRule;
@@ -28,7 +31,13 @@ public class GeoFenceXStreamPersisterInitializer implements XStreamPersisterInit
         xs.alias("AdminRule", JaxbAdminRule.class);
         xs.alias("Rules", JaxbRuleList.class);
         xs.alias("AdminRules", JaxbAdminRuleList.class);
-
+        xs.alias("Batch", Batch.class);
+        xs.alias("BatchOperation", BatchOperation.class);
+        xs.registerLocalConverter(
+                Batch.class, "operations", new CollectionConverter(xs.getMapper()));
+        xs.addImplicitCollection(Batch.class, "operations", BatchOperation.class);
+        xs.registerConverter(
+                new BatchOpXtreamConverter(xs.getMapper(), xs.getReflectionProvider()));
         xs.allowTypes(
                 new Class[] {
                     GeoFenceAuthenticationProviderConfig.class,
@@ -36,7 +45,12 @@ public class GeoFenceXStreamPersisterInitializer implements XStreamPersisterInit
                     JaxbAdminRule.class,
                     JaxbRuleList.class,
                     JaxbAdminRuleList.class,
-                    MultiPolygonAdapter.class
+                    MultiPolygonAdapter.class,
+                    JaxbRule.Limits.class,
+                    JaxbRule.LayerDetails.class,
+                    JaxbRule.LayerAttribute.class,
+                    Batch.class,
+                    BatchOperation.class
                 });
     }
 }

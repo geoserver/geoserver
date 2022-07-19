@@ -33,7 +33,7 @@ import org.geoserver.geofence.server.rest.RulesRestController;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
-import org.geoserver.geoserver.authentication.GeoFenceXStreamPersisterInitializer;
+import org.geoserver.geoserver.xstream.GeoFenceXStreamPersisterInitializer;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.gml3.bindings.GML3MockData;
 import org.junit.Before;

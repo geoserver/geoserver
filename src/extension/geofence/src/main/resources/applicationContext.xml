@@ -125,7 +125,7 @@
     </bean>
 
     <bean id="geoFenceXStreamInitializer" 
-          class="org.geoserver.geoserver.authentication.GeoFenceXStreamPersisterInitializer"
+          class="org.geoserver.geoserver.xstream.GeoFenceXStreamPersisterInitializer"
           lazy-init="false">
     </bean>
 

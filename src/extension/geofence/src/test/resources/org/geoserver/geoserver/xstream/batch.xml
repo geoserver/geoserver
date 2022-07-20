@@ -1,0 +1,22 @@
+<Batch>
+    <operations service="rules" id="3" type="update">
+        <Rule>
+            <access>ALLOW</access>
+            <layer>layer</layer>
+            <priority>5</priority>
+            <request>GETMAP</request>
+            <roleName>ROLE_AUTHENTICATED</roleName>
+            <service>WMS</service>
+            <workspace>ws</workspace>
+        </Rule>
+    </operations>
+    <operations service="rules" id="5" type="delete"></operations>
+    <operations service="adminrules" type="insert">
+        <AdminRule>
+            <priority>2</priority>
+            <roleName>ROLE_USER</roleName>
+            <workspace>ws</workspace>
+            <access>ADMIN</access>
+        </AdminRule>
+    </operations>
+</Batch>

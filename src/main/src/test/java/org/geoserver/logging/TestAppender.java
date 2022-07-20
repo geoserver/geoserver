@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
@@ -51,11 +52,23 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
     public void append(LogEvent event) {
         log.add(event);
         if (trigger != null) {
-            String formattedMessage = event.getMessage().getFormattedMessage();
+            String formattedMessage = getMessage(event);
             if (formattedMessage.contains(trigger)) {
                 fail("The trigger message '" + trigger + "' is still there!");
             }
         }
+    }
+
+    private String getMessage(LogEvent event) {
+        String message = event.getMessage().getFormattedMessage();
+        if (StringUtils.isBlank(message)) {
+            // Fallback looking for a message in the exception
+            Throwable t = event.getThrown();
+            if (t != null) {
+                message = t.getMessage();
+            }
+        }
+        return message;
     }
 
     /** Add appender to configuration and start listening for events. */
@@ -112,7 +125,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
      */
     public void assertTrue(String message, String snippet) {
         for (LogEvent event : this.log) {
-            String formattedMessage = event.getMessage().getFormattedMessage();
+            String formattedMessage = getMessage(event);
             if (formattedMessage.contains(snippet)) {
                 return;
             }
@@ -126,14 +139,14 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
 
     public void assertFalse(String expectedSnippet) {
         for (LogEvent event : this.log) {
-            String formattedMessage = event.getMessage().getFormattedMessage();
+            String formattedMessage = getMessage(event);
             Assert.assertFalse(formattedMessage.contains(expectedSnippet));
         }
     }
 
     public void assertFalse(String message, String expectedSnippet) {
         for (LogEvent event : this.log) {
-            String formattedMessage = event.getMessage().getFormattedMessage();
+            String formattedMessage = getMessage(event);
             Assert.assertFalse(message, formattedMessage.contains(expectedSnippet));
         }
     }

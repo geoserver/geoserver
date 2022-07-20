@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geoserver.authentication.auth;
+package org.geoserver.geoserver.xstream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
@@ -11,15 +11,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.enums.GrantType;
+import org.geoserver.geofence.rest.xml.Batch;
+import org.geoserver.geofence.rest.xml.BatchOperation;
+import org.geoserver.geofence.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.rest.xml.JaxbRule;
 import org.geoserver.geofence.rest.xml.JaxbRule.Limits;
 import org.geoserver.geofence.rest.xml.JaxbRuleList;
-import org.geoserver.geoserver.authentication.GeoFenceXStreamPersisterInitializer;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -28,7 +32,8 @@ import org.locationtech.jts.io.WKTReader;
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class GeofencePersisterSerializationTest {
 
-    private XStreamPersister persister;
+    private XStreamPersister xmlPersister;
+    private XStreamPersister jsonPersister;
 
     @Before
     public void setup() {
@@ -36,7 +41,9 @@ public class GeofencePersisterSerializationTest {
         GeoFenceXStreamPersisterInitializer initializer = new GeoFenceXStreamPersisterInitializer();
         xpf.addInitializer(initializer);
 
-        persister = xpf.createXMLPersister();
+        xmlPersister = xpf.createXMLPersister();
+
+        jsonPersister = xpf.createJSONPersister();
     }
 
     @Test
@@ -56,7 +63,7 @@ public class GeofencePersisterSerializationTest {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(UTF_8));
 
-        JaxbRule rule = persister.load(bais, JaxbRule.class);
+        JaxbRule rule = xmlPersister.load(bais, JaxbRule.class);
 
         assertNotNull(rule);
 
@@ -96,7 +103,7 @@ public class GeofencePersisterSerializationTest {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        persister.save(rule, baos);
+        xmlPersister.save(rule, baos);
         baos.flush();
 
         String xml = new String(baos.toByteArray(), UTF_8);
@@ -120,7 +127,7 @@ public class GeofencePersisterSerializationTest {
         Rule[] rules = {rule2};
         JaxbRuleList ruleList = new JaxbRuleList(Arrays.asList(rules));
 
-        persister.save(ruleList, baos);
+        xmlPersister.save(ruleList, baos);
         baos.flush();
 
         xml = new String(baos.toByteArray(), UTF_8);
@@ -128,5 +135,47 @@ public class GeofencePersisterSerializationTest {
         // System.err.println(xml);
         assertTrue(xml.contains("topolino"));
         assertTrue(xml.contains("minnie"));
+    }
+
+    @Test
+    public void testJSONBatchDeserialization() throws IOException {
+        Batch batch = jsonPersister.load(getClass().getResourceAsStream("batch.json"), Batch.class);
+        assertBatch(batch);
+    }
+
+    @Test
+    public void testBatchXmlDeserialization() throws IOException {
+        Batch batch = xmlPersister.load(getClass().getResourceAsStream("batch.xml"), Batch.class);
+        assertBatch(batch);
+    }
+
+    private void assertBatch(Batch batch) {
+        List<BatchOperation> operations = batch.getOperations();
+        assertEquals(3, operations.size());
+        for (BatchOperation op : operations) {
+            if (op.getType().equals(BatchOperation.TypeName.update)) {
+                assertEquals(BatchOperation.ServiceName.rules, op.getService());
+                assertEquals(3l, op.getId().longValue());
+                JaxbRule rule = (JaxbRule) op.getPayload();
+                assertEquals("ALLOW", rule.getAccess());
+                assertEquals("layer", rule.getLayer());
+                assertEquals(5l, rule.getPriority().longValue());
+                assertEquals("GETMAP", rule.getRequest());
+                assertEquals("WMS", rule.getService());
+                assertEquals("ws", rule.getWorkspace());
+                assertEquals("ROLE_AUTHENTICATED", rule.getRoleName());
+            } else if (op.getType().equals(BatchOperation.TypeName.delete)) {
+                assertEquals(BatchOperation.ServiceName.rules, op.getService());
+                assertEquals(5l, op.getId().longValue());
+            } else {
+                assertEquals(BatchOperation.TypeName.insert, op.getType());
+                assertEquals(BatchOperation.ServiceName.adminrules, op.getService());
+                JaxbAdminRule adminRule = (JaxbAdminRule) op.getPayload();
+                assertEquals("ADMIN", adminRule.getAccess());
+                assertEquals("ROLE_USER", adminRule.getRoleName());
+                assertEquals("ws", adminRule.getWorkspace());
+                assertEquals(2l, adminRule.getPriority().longValue());
+            }
+        }
     }
 }

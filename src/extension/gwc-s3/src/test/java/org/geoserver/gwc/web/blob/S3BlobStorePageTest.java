@@ -95,7 +95,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals("myblobstore", config.getName());
         assertEquals("mybucket", ((S3BlobStoreInfo) config).getBucket());
         assertEquals("myaccesskey", ((S3BlobStoreInfo) config).getAwsAccessKey());
-        assertEquals("mysecretkey", ((S3BlobStoreInfo) config).getAwsSecretKey());
+        assertEquals(null, ((S3BlobStoreInfo) config).getAwsSecretKey());
         assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
         assertEquals("PRIVATE", ((S3BlobStoreInfo) config).getAccess().toString());
 
@@ -124,7 +124,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals("myblobstore", config.getName());
         assertEquals("mybucket", ((S3BlobStoreInfo) config).getBucket());
         assertEquals("myaccesskey", ((S3BlobStoreInfo) config).getAwsAccessKey());
-        assertEquals("mysecretkey", ((S3BlobStoreInfo) config).getAwsSecretKey());
+        assertEquals(null, ((S3BlobStoreInfo) config).getAwsSecretKey());
         assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
         assertEquals("PUBLIC", ((S3BlobStoreInfo) config).getAccess().toString());
 

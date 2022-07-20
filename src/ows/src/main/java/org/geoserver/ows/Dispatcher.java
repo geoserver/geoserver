@@ -1701,17 +1701,33 @@ public class Dispatcher extends AbstractController {
                 logger.log(Level.FINER, "", t);
             }
         } else {
-            logger.log(Level.SEVERE, "", t);
+            String errorCode = null;
+            String message = t.getMessage();
+            Level level = Level.SEVERE;
 
             // unwind the exception stack until we find one we know about
             Throwable cause = t;
             while (cause != null) {
                 if (cause instanceof ServiceException) {
+                    errorCode = ((ServiceException) cause).getCode();
                     break;
                 }
-
                 cause = cause.getCause();
             }
+            // Some pieces of code catch the exception and add it to the error list
+            // (e.g. KvpUtils during parsing) without rethrowing it or wrapping it
+            // since the service might not be known in advance. Therefore, there
+            // might be the case that it isn't a ServiceException and therefore no
+            // errorCode available. Let's use the error message in that case.
+            if ((errorCode != null && errorCode.toUpperCase().startsWith("INVALID"))
+                    || (errorCode == null
+                            && message != null
+                            && message.toUpperCase().startsWith("INVALID"))) {
+                // Log Exceptions dealing with "Invalid" to INFO
+                level = Level.INFO;
+            }
+
+            logger.log(level, "", t);
 
             if (cause == null) {
                 // did not fine a "special" exception, create a service exception by default

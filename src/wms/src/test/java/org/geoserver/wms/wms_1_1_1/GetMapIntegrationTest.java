@@ -548,6 +548,28 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     @Test
+    public void testInvalidDateNotLogged() throws Exception {
+        try (TestAppender appender =
+                TestAppender.createAppender("testInvalidDateNotLogged", null)) {
+            appender.startRecording("org.geoserver.ows");
+            appender.trigger("Invalid date");
+            MockHttpServletResponse response =
+                    getAsServletResponse(
+                            "wms?bbox=-9.6450076761637E7,-3.9566251818225E7,9.6450076761637E7,3.9566251818225E7"
+                                    + "&styles=&layers="
+                                    + layers
+                                    + "&Format=image/png"
+                                    + "&request=GetMap"
+                                    + "&width=550"
+                                    + "&height=250"
+                                    + "&srs=EPSG:900913"
+                                    + "&time=\"2022-6-20T5:30:0:00.000Z\"");
+            assertEquals("text/xml", response.getContentType());
+            appender.stopRecording("org.geoserver.ows");
+        }
+    }
+
+    @Test
     public void testPng8Opaque() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse(

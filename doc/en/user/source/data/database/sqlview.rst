@@ -172,7 +172,7 @@ XML tags/attributes definition:
   - P: the parameter definition XML element, including the parameter name as the n attributer and the value as the XML element child value text.
   - n: the parameter name attribute inside the 'P' parameter definition element.
 
-Note: If a layer doesn't have parameters to set we just set an empty PS element as seen on the example: <PS/>
+Note: If a layer doesn't have parameters to be set, just provide an empty ``PS`` element : ``<PS/>``
 
 Parameters and validation
 ^^^^^^^^^^^^^^^^^^^^^^^^^

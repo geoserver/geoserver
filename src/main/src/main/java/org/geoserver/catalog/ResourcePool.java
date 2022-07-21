@@ -574,12 +574,8 @@ public class ResourcePool {
                     // fine, we had to try
                 }
             }
-            if (info.isDisableOnConnFailure() && info.isEnabled()) {
-                disableStoreInfo(info.getWorkspace(), info.getName());
-                LOGGER.warning(
-                        "Auto disable option is set to true. Disabling the store due connection error: "
-                                + e.getMessage());
-            }
+            disableStoreInfoIfNeeded(info, DataStoreInfo.class, e);
+
             if (e instanceof IOException) {
                 throw (IOException) e;
             } else {
@@ -588,10 +584,17 @@ public class ResourcePool {
         }
     }
 
-    private void disableStoreInfo(WorkspaceInfo ws, String name) {
-        DataStoreInfo storeInfo = catalog.getDataStoreByName(ws, name);
-        storeInfo.setEnabled(false);
-        catalog.save(storeInfo);
+    private void disableStoreInfoIfNeeded(
+            StoreInfo storeInfo, Class<? extends StoreInfo> clazz, Exception e) {
+        if (storeInfo.isEnabled() && storeInfo.isDisableOnConnFailure()) {
+            LOGGER.warning(
+                    "Auto disable option is set to true. Disabling the store due connection error: "
+                            + e.getMessage());
+            StoreInfo toDisable =
+                    catalog.getStoreByName(storeInfo.getWorkspace(), storeInfo.getName(), clazz);
+            toDisable.setEnabled(false);
+            catalog.save(toDisable);
+        }
     }
 
     protected DataAccess<? extends FeatureType, ? extends Feature> createDataAccess(
@@ -1522,7 +1525,11 @@ public class ResourcePool {
 
         final AbstractGridFormat gridFormat = info.getFormat();
         if (gridFormat == null) {
-            throw new IOException("Could not find the raster plugin for format " + info.getType());
+            IOException e =
+                    new IOException(
+                            "Could not find the raster plugin for format " + info.getType());
+            disableStoreInfoIfNeeded(info, CoverageStoreInfo.class, e);
+            throw e;
         }
 
         // we are going to add the repository anyways, but we don't want to modify the original
@@ -1549,26 +1556,31 @@ public class ResourcePool {
                     reader = hintCoverageReaderCache.get(key);
                 }
                 if (reader == null) {
-                    /////////////////////////////////////////////////////////
-                    //
-                    // Getting coverage reader using the format and the real path.
-                    //
-                    // /////////////////////////////////////////////////////////
-                    final String urlString = expandedStore.getURL();
-                    Object readObject =
-                            getObjectToRead(urlString, coverageInfo, expandedStore, hints);
+                    try {
+                        /////////////////////////////////////////////////////////
+                        //
+                        // Getting coverage reader using the format and the real path.
+                        //
+                        // /////////////////////////////////////////////////////////
+                        final String urlString = expandedStore.getURL();
+                        Object readObject =
+                                getObjectToRead(urlString, coverageInfo, expandedStore, hints);
 
-                    // readers might change the provided hints, pass down a defensive copy
-                    reader = gridFormat.getReader(readObject, hints);
-                    if (reader == null) {
-                        throw new IOException(
-                                "Failed to create reader from "
-                                        + urlString
-                                        + " and hints "
-                                        + hints);
-                    }
-                    if (key != null) {
-                        hintCoverageReaderCache.put(key, reader);
+                        // readers might change the provided hints, pass down a defensive copy
+                        reader = gridFormat.getReader(readObject, hints);
+                        if (reader == null) {
+                            throw new IOException(
+                                    "Failed to create reader from "
+                                            + urlString
+                                            + " and hints "
+                                            + hints);
+                        }
+                        if (key != null) {
+                            hintCoverageReaderCache.put(key, reader);
+                        }
+                    } catch (Exception e) {
+                        disableStoreInfoIfNeeded(info, CoverageStoreInfo.class, e);
+                        throw e;
                     }
                 }
             }
@@ -1827,8 +1839,10 @@ public class ResourcePool {
 
             return wms;
         } catch (IOException ioe) {
+            disableStoreInfoIfNeeded(info, WMSStoreInfo.class, ioe);
             throw ioe;
         } catch (Exception e) {
+            disableStoreInfoIfNeeded(info, WMSStoreInfo.class, e);
             throw (IOException) new IOException().initCause(e);
         }
     }
@@ -1884,8 +1898,10 @@ public class ResourcePool {
 
             return wmts;
         } catch (IOException ioe) {
+            disableStoreInfoIfNeeded(info, WMTSStoreInfo.class, ioe);
             throw ioe;
         } catch (Exception e) {
+            disableStoreInfoIfNeeded(info, WMTSStoreInfo.class, e);
             throw new IOException(e);
         }
     }

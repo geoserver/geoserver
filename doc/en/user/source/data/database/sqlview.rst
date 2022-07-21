@@ -160,10 +160,10 @@ Aside the default SQL view parameters format, an XML format is available by usin
 
 XML alternative format example:
 
-  ``&viewParams=<VP><PS><P n="mmsi">538008302,244060802,538008505</P><P n="mmsi">22,44</P></PS><PS/><PS><P n="csvInput">acv,rrp;1,0;0,7;22,1</P></PS></VP>``
+  ``&viewParams=<VP><PS><P n="m1">8302,802,8505</P><P n="m2">22,44</P></PS><PS/><PS><P n="csvInput">acv,rrp;1,0;0,7;22,1</P></PS></VP>``
 
 ``viewParamsFormat`` new optional parameter definition:
-  - Selects the view parameters format, valid implementation values are ... <complete here>
+  - Selects the view parameters format, valid implementation values are ``CharSeparated`` (default) and ``XML``.
   - It's an optional parameter, if not set the default character separated format will be used supporting backward compatibility.
 
 XML tags/attributes definition:
@@ -172,7 +172,9 @@ XML tags/attributes definition:
   - ``P``: the parameter definition XML element, including the parameter name as the ``n`` attribute and the value as its text content.
   - ``n``: the parameter name attribute inside the ``P`` element.
 
-Note: If a layer doesn't have parameters to be set, just provide an empty ``PS`` element : ``<PS/>``
+If a layer doesn't have parameters to be set, just provide an empty ``PS`` element : ``<PS/>``
+
+Note: XML view parameters can be used only in GET requests.
 
 Parameters and validation
 ^^^^^^^^^^^^^^^^^^^^^^^^^

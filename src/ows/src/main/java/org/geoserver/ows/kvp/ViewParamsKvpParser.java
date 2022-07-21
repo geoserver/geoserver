@@ -15,6 +15,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -61,7 +62,15 @@ public class ViewParamsKvpParser extends KvpParser implements ApplicationContext
         return formatParsers.stream()
                 .filter(fp -> fp.getIdentifier().equals(formatParserParameterValue))
                 .findFirst()
-                .get();
+                .orElseThrow(
+                        () ->
+                                new ServiceException(
+                                        "Selected viewParamsFormat is not available as implementation on GeoServer. "
+                                                + "viewParamsFormat value is '"
+                                                + getRequestFormatParserParameterValue()
+                                                + "'",
+                                        ServiceException.INVALID_PARAMETER_VALUE,
+                                        "viewParamsFormat"));
     }
 
     private String getFormatParserParameterValue() {
@@ -76,9 +85,9 @@ public class ViewParamsKvpParser extends KvpParser implements ApplicationContext
 
     private String getRequestFormatParserParameterValue() {
         Request request = Dispatcher.REQUEST.get();
-        if (request == null) return getSerlvetRequestFormatParserParameterValue();
+        if (request == null || request.getRawKvp() == null)
+            return getSerlvetRequestFormatParserParameterValue();
         Map<String, Object> rawKvp = request.getRawKvp();
-        if (rawKvp == null) return getSerlvetRequestFormatParserParameterValue();
         if (rawKvp.containsKey(VIEW_PARAMS_FORMAT_PARAMETER_NAME)) {
             return (String) rawKvp.get(VIEW_PARAMS_FORMAT_PARAMETER_NAME);
         }
@@ -88,7 +97,9 @@ public class ViewParamsKvpParser extends KvpParser implements ApplicationContext
     private String getSerlvetRequestFormatParserParameterValue() {
         ServletRequestAttributes servletRequestAttributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (servletRequestAttributes == null) return null;
+        if (servletRequestAttributes == null
+                || servletRequestAttributes.getRequest() == null
+                || servletRequestAttributes.getRequest().getParameterMap() == null) return null;
         HttpServletRequest request = servletRequestAttributes.getRequest();
         Map<String, String[]> parameterMap = request.getParameterMap();
         if (parameterMap.containsKey(VIEW_PARAMS_FORMAT_PARAMETER_NAME)) {

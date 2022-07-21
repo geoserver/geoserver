@@ -9,6 +9,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public final class XMLViewParamsUtils {
 
+    static final XmlMapper XML_MAPPER = new XmlMapper();
+
     private XMLViewParamsUtils() {}
 
     /**
@@ -18,10 +20,9 @@ public final class XMLViewParamsUtils {
      * @return the parsed instance
      */
     public static ViewParamsRoot parseViewParams(String xmlStr) {
-        XmlMapper mapper = new XmlMapper();
         ViewParamsRoot viewParamsRoot = null;
         try {
-            viewParamsRoot = mapper.readValue(xmlStr, ViewParamsRoot.class);
+            viewParamsRoot = XML_MAPPER.readValue(xmlStr, ViewParamsRoot.class);
             return viewParamsRoot;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

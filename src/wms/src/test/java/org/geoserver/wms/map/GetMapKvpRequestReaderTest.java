@@ -1409,6 +1409,45 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         }
     }
 
+    @Test
+    public void testXMLMultipleViewParamsServiceException() throws Exception {
+        ServiceException serviceException = null;
+        try {
+            Request owsRequest = new Request();
+            owsRequest.setRawKvp(new HashMap<>());
+            owsRequest.getRawKvp().put("viewParamsFormat", "unknown-format");
+            Dispatcher.REQUEST.set(owsRequest);
+            HashMap raw = new HashMap();
+            raw.put(
+                    "layers",
+                    getLayerId(MockData.BASIC_POLYGONS)
+                            + ","
+                            + getLayerId(MockData.BASIC_POLYGONS));
+            raw.put("styles", "");
+            raw.put("format", "image/jpeg");
+            raw.put("srs", "epsg:3003");
+            raw.put("bbox", "-10,-10,10,10");
+            raw.put("height", "600");
+            raw.put("width", "800");
+            raw.put("request", "GetMap");
+            raw.put("service", "wms");
+            raw.put(
+                    "viewParams",
+                    "<VP><PS><P n=\"where\">WHERE PERSONS &gt; 1000000</P><P n=\"str\">ABCD</P></PS>"
+                            + "<PS><P n=\"where\">WHERE PERSONS &gt; 10</P><P n=\"str\">FOO</P></PS></VP>");
+
+            GetMapRequest request = reader.createRequest();
+            request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        } catch (ServiceException ex) {
+            serviceException = ex;
+        } finally {
+            Dispatcher.REQUEST.set(null);
+        }
+        assertNotNull("ServiceException not catched", serviceException);
+        assertEquals(serviceException.getLocator(), "viewParamsFormat");
+        assertEquals(serviceException.getCode(), ServiceException.INVALID_PARAMETER_VALUE);
+    }
+
     /** Creates a HTTP embedded server with a dynamic port for testing the configures timeout. */
     private HttpServer createServer() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);

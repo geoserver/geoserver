@@ -409,4 +409,24 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
                         "text/xml");
         assertThat(response, hasStatus(HttpStatus.FORBIDDEN));
     }
+
+    @Test
+    public void testPostWithDisableOnConnFailure() throws Exception {
+
+        String xml =
+                "<wmsStore>"
+                        + "<name>autodisableWMSStore</name>"
+                        + "<capabilitiesURL>http://somehost/wms?</capabilitiesURL>"
+                        + "<workspace>sf</workspace>"
+                        + "<disableOnConnFailure>true</disableOnConnFailure>"
+                        + "</wmsStore>";
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores", xml, "text/xml");
+
+        assertThat(response, hasStatus(HttpStatus.CREATED));
+        WMSStoreInfo newStore = catalog.getStoreByName("autodisableWMSStore", WMSStoreInfo.class);
+        assertNotNull(newStore);
+        assertTrue(newStore.isDisableOnConnFailure());
+    }
 }

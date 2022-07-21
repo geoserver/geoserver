@@ -421,4 +421,28 @@ public class WMTSStoreTest extends CatalogRESTTestSupport {
                         "text/xml");
         assertThat(response, hasStatus(HttpStatus.FORBIDDEN));
     }
+
+    @Test
+    public void testPutWithDisableOnConnFailure() throws Exception {
+
+        Document dom =
+                getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo.xml");
+        assertXpathEvaluatesTo("false", "/wmtsStore/disableOnConnFailure", dom);
+
+        String xml =
+                "<wmtsStore>"
+                        + "<name>demo</name>"
+                        + "<disableOnConnFailure>true</disableOnConnFailure>"
+                        + "</wmtsStore>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo",
+                        xml,
+                        "text/xml");
+        assertEquals(200, response.getStatus());
+
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo.xml");
+        assertXpathEvaluatesTo("true", "/wmtsStore/disableOnConnFailure", dom);
+    }
 }

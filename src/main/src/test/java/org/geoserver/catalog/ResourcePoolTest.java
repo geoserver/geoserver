@@ -140,6 +140,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
     private static final String HUMANS = "humans";
 
+    private static final String BAD_CONN_DATASTORE = "bad_conn_data_store";
+
     static {
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
     }
@@ -1289,5 +1291,35 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         if (thread != null && thread.isAlive()) {
             thread.interrupt();
         }
+    }
+
+    @Test
+    public void testAutodisableOnConnfailure() {
+
+        Catalog cat = getCatalog();
+        DataStoreInfo ds = cat.getFactory().createDataStore();
+        ds.setName(BAD_CONN_DATASTORE);
+        WorkspaceInfo ws = cat.getDefaultWorkspace();
+        ds.setWorkspace(ws);
+        ds.setEnabled(true);
+        ds.setDisableOnConnFailure(true);
+        Map<String, Serializable> params = ds.getConnectionParameters();
+        params.put("dbtype", "h2");
+        params.put("database", "");
+        cat.add(ds);
+
+        DataStoreInfo dsi = cat.getDataStoreByName(ds.getName());
+        assertTrue(dsi.isEnabled());
+
+        ResourcePool resourcePool = ResourcePool.create(cat);
+        DataAccess<?, ?> access = null;
+        try {
+            access = resourcePool.getDataStore(dsi);
+        } catch (IOException e) {
+
+        }
+        assertNull(access);
+        DataStoreInfo storeInfo = cat.getDataStoreByName(dsi.getName());
+        assertFalse(storeInfo.isEnabled());
     }
 }

@@ -574,12 +574,24 @@ public class ResourcePool {
                     // fine, we had to try
                 }
             }
+            if (info.isDisableOnConnFailure() && info.isEnabled()) {
+                disableStoreInfo(info.getWorkspace(), info.getName());
+                LOGGER.warning(
+                        "Auto disable option is set to true. Disabling the store due connection error: "
+                                + e.getMessage());
+            }
             if (e instanceof IOException) {
                 throw (IOException) e;
             } else {
                 throw (IOException) new IOException().initCause(e);
             }
         }
+    }
+
+    private void disableStoreInfo(WorkspaceInfo ws, String name) {
+        DataStoreInfo storeInfo = catalog.getDataStoreByName(ws, name);
+        storeInfo.setEnabled(false);
+        catalog.save(storeInfo);
     }
 
     protected DataAccess<? extends FeatureType, ? extends Feature> createDataAccess(
@@ -677,6 +689,10 @@ public class ResourcePool {
         if (dataStore == null) {
             throw new NullPointerException(
                     "Could not acquire data access '" + info.getName() + "'");
+        } else if (info.isDisableOnConnFailure()) {
+            // do getNames() to force the store to open a connection and eventually to fail
+            // for misconfiguration so that autodisable can then work properly.
+            dataStore.getNames();
         }
         return dataStore;
     }

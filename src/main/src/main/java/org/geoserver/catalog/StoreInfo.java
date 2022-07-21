@@ -170,4 +170,18 @@ public interface StoreInfo extends CatalogInfo {
      */
     // <T extends Resource> Iterator<T> getResources(ProgressListener monitor) throws IOException;
 
+    /**
+     * Get the auto disable flag on connection failure.
+     *
+     * @return true if the store should be disabled when a connection error happens. False
+     *     otherwise.
+     */
+    boolean isDisableOnConnFailure();
+
+    /**
+     * Set the auto disable flag on connection failure
+     *
+     * @param disableOnConnFailure the auto disable flag on connection failure.
+     */
+    void setDisableOnConnFailure(boolean disableOnConnFailure);
 }

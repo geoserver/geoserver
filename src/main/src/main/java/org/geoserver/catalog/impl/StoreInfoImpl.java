@@ -47,6 +47,8 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected Date dateModified;
 
+    protected boolean disableOnConnFailure;
+
     protected StoreInfoImpl() {}
 
     protected StoreInfoImpl(Catalog catalog) {
@@ -246,5 +248,15 @@ public abstract class StoreInfoImpl implements StoreInfo {
     @Override
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
+    }
+
+    @Override
+    public boolean isDisableOnConnFailure() {
+        return disableOnConnFailure;
+    }
+
+    @Override
+    public void setDisableOnConnFailure(boolean disableOnConnFailure) {
+        this.disableOnConnFailure = disableOnConnFailure;
     }
 }

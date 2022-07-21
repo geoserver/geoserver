@@ -8,12 +8,14 @@ package org.geoserver.web.data.store;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -163,5 +165,29 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         CoverageStoreInfo store = getCatalog().getCoverageStoreByName("tazbm3");
         assertNotNull(store);
         assertEquals("BlueMarble/tazbm.tiff", store.getURL());
+    }
+
+    @Test
+    public void testDisableOnConnFailureCheckbox() {
+        startPage();
+        FormTester ft = tester.newFormTester("rasterStoreForm");
+        ft.setValue(
+                "parametersPanel:url:fileInput:border:border_body:paramValue",
+                "BlueMarble/tazbm.tiff");
+        ft.setValue("namePanel:border:border_body:paramValue", "tazbm99");
+        Component component =
+                tester.getComponentFromLastRenderedPage(
+                        "rasterStoreForm:disableOnConnFailurePanel:paramValue");
+        CheckBox checkBox = (CheckBox) component;
+        assertFalse(Boolean.valueOf(checkBox.getInput()).booleanValue());
+
+        ft.setValue("disableOnConnFailurePanel:paramValue", true);
+
+        ft.submit("save");
+
+        tester.assertNoErrorMessage();
+        CoverageStoreInfo store = getCatalog().getCoverageStoreByName("tazbm99");
+        assertNotNull(store);
+        assertTrue(store.isDisableOnConnFailure());
     }
 }

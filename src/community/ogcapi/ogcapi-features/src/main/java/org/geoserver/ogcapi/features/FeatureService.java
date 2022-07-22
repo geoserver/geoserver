@@ -18,6 +18,7 @@ import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
 
+import com.google.common.collect.ImmutableList;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -347,7 +348,7 @@ public class FeatureService {
         }
         query.setFilter(mergeFiltersAnd(filters));
         if (sortBy != null) {
-            query.setSortBy(List.of(sortBy));
+            query.setSortBy(ImmutableList.copyOf(sortBy));
         }
         if (crs != null) {
             query.setSrsName(new URI(crs));

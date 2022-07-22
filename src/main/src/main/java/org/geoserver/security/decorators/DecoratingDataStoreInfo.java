@@ -149,4 +149,14 @@ public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo>
     public void setDateModified(Date dateModified) {
         delegate.setDateModified(dateModified);
     }
+
+    @Override
+    public boolean isDisableOnConnFailure() {
+        return delegate.isDisableOnConnFailure();
+    }
+
+    @Override
+    public void setDisableOnConnFailure(boolean disableOnConnFailure) {
+        delegate.setDisableOnConnFailure(disableOnConnFailure);
+    }
 }

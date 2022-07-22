@@ -140,6 +140,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
     private static final String HUMANS = "humans";
 
+    private static final String BAD_CONN_DATASTORE = "bad_conn_data_store";
+
     static {
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
     }
@@ -1289,5 +1291,114 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         if (thread != null && thread.isAlive()) {
             thread.interrupt();
         }
+    }
+
+    @Test
+    public void testAutodisableOnConnfailure() {
+
+        Catalog cat = getCatalog();
+        DataStoreInfo ds = cat.getFactory().createDataStore();
+        ds.setName(BAD_CONN_DATASTORE);
+        WorkspaceInfo ws = cat.getDefaultWorkspace();
+        ds.setWorkspace(ws);
+        ds.setEnabled(true);
+        ds.setDisableOnConnFailure(true);
+        Map<String, Serializable> params = ds.getConnectionParameters();
+        params.put("dbtype", "h2");
+        params.put("database", "");
+        cat.add(ds);
+
+        DataStoreInfo dsi = cat.getDataStoreByName(ds.getName());
+        assertTrue(dsi.isEnabled());
+
+        ResourcePool resourcePool = ResourcePool.create(cat);
+        DataAccess<?, ?> access = null;
+        try {
+            access = resourcePool.getDataStore(dsi);
+        } catch (IOException e) {
+
+        }
+        assertNull(access);
+        DataStoreInfo storeInfo = cat.getDataStoreByName(dsi.getName());
+        assertFalse(storeInfo.isEnabled());
+    }
+
+    @Test
+    public void testWmsCascadeAutoDisable() throws Exception {
+        GeoServerExtensions.extensions(ResourcePoolInitializer.class)
+                .get(0)
+                .initialize(getGeoServer());
+
+        ResourcePool rp = getCatalog().getResourcePool();
+
+        WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
+        info.setName("TestAutoDisableWMSStore");
+        URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
+        info.setCapabilitiesURL(url.toExternalForm());
+        info.setEnabled(true);
+        info.setDisableOnConnFailure(true);
+        info.setUseConnectionPooling(false);
+        getCatalog().add(info);
+        WMSStoreInfo wmsStore = getCatalog().getWMSStoreByName(info.getName());
+        assertTrue(wmsStore.isEnabled());
+        try {
+            rp.getWebMapServer(wmsStore);
+        } catch (IOException e) {
+            wmsStore = getCatalog().getWMSStoreByName(info.getName());
+        }
+        assertFalse(wmsStore.isEnabled());
+    }
+
+    @Test
+    public void testWmtsCascadeAutoDisable() throws Exception {
+        GeoServerExtensions.extensions(ResourcePoolInitializer.class)
+                .get(0)
+                .initialize(getGeoServer());
+
+        ResourcePool rp = getCatalog().getResourcePool();
+
+        WMTSStoreInfo info = getCatalog().getFactory().createWebMapTileServer();
+        info.setName("TestAutoDisableWMTSStore");
+        URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
+        info.setCapabilitiesURL(url.toExternalForm());
+        info.setEnabled(true);
+        info.setDisableOnConnFailure(true);
+        info.setUseConnectionPooling(false);
+        getCatalog().add(info);
+        WMTSStoreInfo wmtsStore = getCatalog().getWMTSStoreByName(info.getName());
+        assertTrue(wmtsStore.isEnabled());
+        try {
+            rp.getWebMapTileServer(wmtsStore);
+        } catch (IOException e) {
+            wmtsStore = getCatalog().getWMTSStoreByName(info.getName());
+        }
+        assertFalse(wmtsStore.isEnabled());
+    }
+
+    @Test
+    public void testCovergaeStoreInfoAutodisable() throws Exception {
+        GeoServerExtensions.extensions(ResourcePoolInitializer.class)
+                .get(0)
+                .initialize(getGeoServer());
+
+        ResourcePool rp = getCatalog().getResourcePool();
+
+        CoverageStoreInfo info = getCatalog().getFactory().createCoverageStore();
+        info.setName("TestCoverageAutoDisable");
+        info.setType("ImagePyramid");
+        info.setEnabled(true);
+        info.setDisableOnConnFailure(true);
+        info.setURL("file://./src/test/resources/not-existing.tif");
+        getCatalog().add(info);
+        CoverageStoreInfo storeInfo = getCatalog().getCoverageStoreByName(info.getName());
+        assertTrue(storeInfo.isEnabled());
+        try {
+            rp.getGridCoverageReader(storeInfo, null);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "", e);
+            storeInfo = getCatalog().getCoverageStoreByName(info.getName());
+        }
+        assertFalse(storeInfo.isEnabled());
+        rp.dispose();
     }
 }

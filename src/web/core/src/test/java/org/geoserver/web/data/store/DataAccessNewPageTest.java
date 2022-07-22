@@ -8,6 +8,7 @@ package org.geoserver.web.data.store;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -15,6 +16,7 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -191,5 +193,32 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         DataStoreInfo store = getCatalog().getDataStoreByName("cdf3");
         assertNotNull(store);
         assertEquals("file:cdf", store.getConnectionParameters().get("directory"));
+    }
+
+    @Test
+    public void testDisableOnConnFailureCheckbox() {
+        String name = "autodisablingStore";
+        startPage();
+        FormTester ft = tester.newFormTester("dataStoreForm");
+
+        ft.setValue(
+                "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
+                "file:cdf");
+        ft.setValue("dataStoreNamePanel:border:border_body:paramValue", name);
+
+        Component component =
+                tester.getComponentFromLastRenderedPage(
+                        "dataStoreForm:disableOnConnFailurePanel:paramValue");
+        CheckBox checkBox = (CheckBox) component;
+        assertFalse(Boolean.valueOf(checkBox.getInput()).booleanValue());
+
+        ft.setValue("disableOnConnFailurePanel:paramValue", true);
+
+        ft.submit("save");
+
+        tester.assertNoErrorMessage();
+        DataStoreInfo store = getCatalog().getDataStoreByName(name);
+        assertNotNull(store);
+        assertTrue(store.isDisableOnConnFailure());
     }
 }

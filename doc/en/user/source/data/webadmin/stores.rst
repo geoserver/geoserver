@@ -47,6 +47,7 @@ The basic information is common for all formats.
 * **Data Source Name** - the store name as listed on the view page
 * **Description** - (optional) a description that displays in the administration interface
 * **Enabled** - enables or disables access to the store, along with all datasets defined for it
+* **Auto disable on connection failure** - auto disables access to the store if any issue happens when geoserver tries to acquire access to the store
 
 Connection Parameters
 ^^^^^^^^^^^^^^^^^^^^^

@@ -82,6 +82,15 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
                         "enabledPanel",
                         new PropertyModel<>(model, "enabled"),
                         new ResourceModel("enabled", "Enabled")));
+
+        paramsForm.add(
+                new CheckBoxParamPanel(
+                        "disableOnConnFailurePanel",
+                        new PropertyModel<>(model, "disableOnConnFailure"),
+                        new ResourceModel(
+                                "AbstractCoverageStorePage.disableOnConnFailure",
+                                "Auto disable on connection failure")));
+
         // a custom converter will turn this into a namespace url
         workspacePanel =
                 new WorkspacePanel(

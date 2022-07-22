@@ -125,6 +125,14 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                         new PropertyModel<>(model, "enabled"),
                         new ResourceModel("enabled", "Enabled")));
 
+        paramsForm.add(
+                new CheckBoxParamPanel(
+                        "disableOnConnFailurePanel",
+                        new PropertyModel<>(model, "disableOnConnFailure"),
+                        new ResourceModel(
+                                "AbstractDataAccessPage.disableOnConnFailure",
+                                "Autodisable on connection failure")));
+
         {
             /*
              * Here's where the extension point is applied in order to give extensions a chance to

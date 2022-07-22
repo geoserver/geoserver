@@ -47,6 +47,8 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected Date dateModified;
 
+    protected boolean disableOnConnFailure;
+
     protected StoreInfoImpl() {}
 
     protected StoreInfoImpl(Catalog catalog) {
@@ -197,6 +199,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
+        result = prime * result + (disableOnConnFailure ? 1231 : 1237);
         return result;
     }
 
@@ -225,6 +228,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
         if (workspace == null) {
             if (other.getWorkspace() != null) return false;
         } else if (!workspace.equals(other.getWorkspace())) return false;
+        if (disableOnConnFailure != other.isDisableOnConnFailure()) return false;
         return true;
     }
 
@@ -246,5 +250,15 @@ public abstract class StoreInfoImpl implements StoreInfo {
     @Override
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
+    }
+
+    @Override
+    public boolean isDisableOnConnFailure() {
+        return disableOnConnFailure;
+    }
+
+    @Override
+    public void setDisableOnConnFailure(boolean disableOnConnFailure) {
+        this.disableOnConnFailure = disableOnConnFailure;
     }
 }

@@ -26,7 +26,6 @@ public class ConformanceClass {
     public static final String FILTER =
             "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/filter";
 
-
     /** Sorting conformance class from OGC API - Records. */
     public static final String SORTBY =
             "http://www.opengis.net/spec/ogcapi-records-1/1.0/req/sorting";

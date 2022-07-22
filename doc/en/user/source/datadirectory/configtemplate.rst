@@ -17,9 +17,9 @@ To enable env parametrization the following flag needs to be set via system vari
 
 A  ``properties`` file holding the parametrized settings needs to be created. It can be provided by naming it ``geoserver-environment.properties``  and by placing it in the root directory of the GeoServer's DATA_DIR.
 
-GeoServer is also able to use a  ``properties`` file outside the GeoServer's DATA_DIR. In this case the path to the  ``properties`` file must be defined in one of the following ways:
+GeoServer is also able to use a  ``properties`` file with a different name outside the GeoServer's DATA_DIR. In this case the path (including the filename) to the  ``properties`` file must be defined in one of the following ways:
 
-  * By providing a system variable ``-DENV_PROPERTIES={properties filepath}``.
+  * By providing a system variable ``-DENV_PROPERTIES=/var/lib/geoserver_env/my-geoserver-environment.properties``.
 
   * By providing an environment variable named  ``ENV_PROPERTIES`` and the path to the properties file as the value.
 
@@ -31,7 +31,7 @@ GeoServer is also able to use a  ``properties`` file outside the GeoServer's DAT
      ...
      <context-param>
        <param-name>ENV_PROPERTIES</param-name>
-       <param-value>/var/lib/geoserver_data</param-value>
+       <param-value>/var/lib/geoserver_env/my-geoserver-environment.properties</param-value>
      </context-param>
      ...
    </web-app>

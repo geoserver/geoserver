@@ -23,7 +23,8 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     /** Supports extraction of roles among the token claims */
     public static enum OpenIdRoleSource implements RoleSource {
         IdToken,
-        AccessToken;
+        AccessToken,
+        UserInfo;
 
         @Override
         public boolean equals(RoleSource other) {

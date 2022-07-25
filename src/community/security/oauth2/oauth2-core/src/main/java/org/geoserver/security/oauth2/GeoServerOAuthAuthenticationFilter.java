@@ -48,6 +48,7 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
 /**
@@ -60,6 +61,13 @@ public abstract class GeoServerOAuthAuthenticationFilter
         implements GeoServerAuthenticationFilter, LogoutHandler {
 
     public static final String SESSION_COOKIE_NAME = "sessionid";
+    public static final String OAUTH2_AUTHENTICATION_KEY = "oauth2.authentication";
+    public static final String OAUTH2_AUTHENTICATION_TYPE_KEY = "oauth2.authenticationType";
+
+    public enum OAuth2AuthenticationType {
+        BEARER, // this is a bearer token (meaning existing access token is in the request headers)
+        USER   // this is a "normal" oauth2 login (i.e. interactive user login)
+    }
 
     OAuth2FilterConfig filterConfig;
 
@@ -361,6 +369,12 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
         // Search for an access_token on the request (simulating SSO)
         String accessToken = getAccessTokenFromRequest(req);
+        if (accessToken != null) {
+            req.setAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY, OAuth2AuthenticationType.BEARER);
+        }
+        else {
+            req.setAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY, OAuth2AuthenticationType.USER);
+        }
 
         if (accessToken != null) {
             restTemplate
@@ -376,10 +390,19 @@ public abstract class GeoServerOAuthAuthenticationFilter
         Authentication authentication = null;
         try {
             authentication = filter.attemptAuthentication(req, null);
+            req.setAttribute(OAUTH2_AUTHENTICATION_KEY, authentication);
+
             LOGGER.log(
                     Level.FINE,
                     "Authenticated OAuth request for principal {0}",
                     authentication.getPrincipal());
+        } catch (HttpClientErrorException.Unauthorized unauthorized) {
+            // this exception typically happens when the token has expired (also, if it was
+            // invalid/modified)
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Oauth2 OIDC - an error occurred during token validation.  Most likely the token has expired or is invalid/modified.  "
+                            + unauthorized.getMessage());
         } catch (Exception e) {
             if (e instanceof UserRedirectRequiredException) {
                 if (filterConfig.getEnableRedirectAuthenticationEntryPoint()

@@ -6,14 +6,18 @@
  */
 package org.geoserver.security.oauth2;
 
+import static org.geoserver.security.oauth2.GeoServerAccessTokenConverter.ACCESS_TOKEN_CHECK_KEY;
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.AccessToken;
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.IdToken;
+import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.UserInfo;
 
 import com.jayway.jsonpath.JsonPath;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.platform.GeoServerExtensions;
@@ -27,6 +31,7 @@ import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.token.DefaultRequestEnhancer;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
@@ -34,6 +39,7 @@ import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticationFilter {
 
     static final String ID_TOKEN_VALUE = "OpenIdConnect-IdTokenValue";
+    static final String USERINFO_VALUE = "OpenIdConnect-UserInfoValue";
 
     public OpenIdConnectAuthenticationFilter(
             SecurityNamedServiceConfig config,
@@ -67,13 +73,40 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     protected Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal)
             throws IOException {
         RoleSource rs = getRoleSource();
+
+        // todo remove - security violation, but necessary for debugging
+        // If you're having issues, uncomment this to see more details of the tokens being sent
+        // These tokens are PRIVATE so ONLY do this when necessary!
+
+        //        LOGGER.log(Level.FINE, "OPEN ID CONNECT ---- ===== info for getRoles");
+        //        try {
+        //            LOGGER.log(Level.FINE, "principal: " + principal);
+        //        } catch (Exception e) {
+        //        }
+        //        try {
+        //            LOGGER.log(
+        //                    Level.FINE,
+        //                    "access token: "
+        //                            + (String)
+        //                                    request.getAttribute(
+        //
+        // OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
+        //        } catch (Exception e) {
+        //        }
+        //        try {
+        //            LOGGER.log(Level.FINE, "ID token: " + (String)
+        // request.getAttribute(ID_TOKEN_VALUE));
+        //        } catch (Exception e) {
+        //        }
+
         if (AccessToken.equals(rs)) {
             return getRolesFromToken(
                     (String) request.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
         } else if (IdToken.equals(rs)) {
             return getRolesFromToken((String) request.getAttribute(ID_TOKEN_VALUE));
+        } else if (UserInfo.equals(rs)) {
+            return getRolesFromUserInfo(request);
         }
-
         return super.getRoles(request, principal);
     }
 
@@ -84,6 +117,54 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             // do nothing - the ID Token doesn't have that attribute - handled later with o=null
             return null;
         }
+    }
+
+    // since we've already requested the userinfo for an oidc bearer (or via code) to validate it.
+    // We saved this information in the OAuth2Request extension so we don't have to request it
+    // again.
+    // HttpServletRequest to OAuth2Request via an attribute (key OAUTH2_AUTHENTICATION_KEY)
+    // OAuth2Request -> Extensions
+    // Extensions -> Map<String, Serializable> (the actual userinfo response) (via key
+    // ACCESS_TOKEN_CHECK_KEY)
+    //
+    // NOTE: in oauth2 this is the "check access token" endpoint.  In oidc this is the userinfo
+    // endpoint.
+    private Collection<GeoServerRole> getRolesFromUserInfo(HttpServletRequest request)
+            throws IOException {
+        OAuth2Authentication oAuth2Authentication =
+                (OAuth2Authentication) request.getAttribute(OAUTH2_AUTHENTICATION_KEY);
+        if ((oAuth2Authentication != null)
+                && (oAuth2Authentication.getOAuth2Request() != null)
+                && (oAuth2Authentication.getOAuth2Request().getExtensions() != null)) {
+            Map<String, Serializable> extensions =
+                    oAuth2Authentication.getOAuth2Request().getExtensions();
+            if (extensions.containsKey(ACCESS_TOKEN_CHECK_KEY)
+                    && extensions.get(ACCESS_TOKEN_CHECK_KEY) != null) {
+                Map<String, Serializable> userinfo =
+                        (Map<String, Serializable>) extensions.get(ACCESS_TOKEN_CHECK_KEY);
+                String rolesAttributePath =
+                        ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
+                Object o = JsonPath.read(userinfo, rolesAttributePath);
+                List<GeoServerRole> result = new ArrayList<>();
+                if (o instanceof String) {
+                    result.add(new GeoServerRole((String) o));
+                } else if (o instanceof List) {
+                    ((List) o).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
+                } else {
+                    LOGGER.log(
+                            Level.FINE,
+                            "Did not find "
+                                    + rolesAttributePath
+                                    + "in the token, returning an empty role list");
+                }
+                if (!result.isEmpty()) {
+                    enrichWithRoleCalculator(result);
+                }
+                return result;
+            }
+        }
+
+        return null;
     }
 
     private Collection<GeoServerRole> getRolesFromToken(String token) throws IOException {

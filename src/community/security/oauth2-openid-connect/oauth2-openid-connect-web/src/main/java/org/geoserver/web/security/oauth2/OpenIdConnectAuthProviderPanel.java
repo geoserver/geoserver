@@ -15,6 +15,7 @@ package org.geoserver.web.security.oauth2;
 
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.AccessToken;
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.IdToken;
+import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.UserInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +67,7 @@ public class OpenIdConnectAuthProviderPanel
 
     @Override
     protected Panel getRoleSourcePanel(RoleSource model) {
-        if (IdToken.equals(model) || AccessToken.equals(model)) {
+        if (IdToken.equals(model) || AccessToken.equals(model) || UserInfo.equals(model)) {
             return new TokenClaimPanel("panel");
         }
         return super.getRoleSourcePanel(model);

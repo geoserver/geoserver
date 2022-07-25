@@ -76,7 +76,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                             "footerMessage",
                             new StringResourceModel(
                                     "GeoServerHomePage.footer", this, new Model(params)));
-            label.setEscapeModelStrings(false);
+            label.setEscapeModelStrings(true);
             add(label);
         }
 

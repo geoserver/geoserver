@@ -8,6 +8,7 @@ package org.geoserver.web.admin;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.config.ContactInfo;
+import org.geoserver.web.EmailAddressValidator;
 import org.geoserver.web.StringAndInternationalStringPanel;
 
 public class ContactPanel extends Panel {
@@ -22,7 +23,8 @@ public class ContactPanel extends Panel {
                         contactPerson,
                         contactPerson,
                         "internationalContactPerson",
-                        this));
+                        this,
+                        null));
         String contactOrg = "contactOrganization";
         add(
                 new StringAndInternationalStringPanel(
@@ -31,7 +33,8 @@ public class ContactPanel extends Panel {
                         contactOrg,
                         contactOrg,
                         "internationalContactOrganization",
-                        this));
+                        this,
+                        null));
         String contactPosition = "contactPosition";
         add(
                 new StringAndInternationalStringPanel(
@@ -40,7 +43,8 @@ public class ContactPanel extends Panel {
                         contactPosition,
                         contactPosition,
                         "internationalContactPosition",
-                        this));
+                        this,
+                        null));
         String addressType = "addressType";
         add(
                 new StringAndInternationalStringPanel(
@@ -49,11 +53,12 @@ public class ContactPanel extends Panel {
                         addressType,
                         addressType,
                         "internationalAddressType",
-                        this));
+                        this,
+                        null));
         String address = "address";
         add(
                 new StringAndInternationalStringPanel(
-                        address, model, address, address, "internationalAddress", this));
+                        address, model, address, address, "internationalAddress", this, null));
         String addressDeliveryPt = "addressDeliveryPoint";
         add(
                 new StringAndInternationalStringPanel(
@@ -62,7 +67,8 @@ public class ContactPanel extends Panel {
                         addressDeliveryPt,
                         addressDeliveryPt,
                         "internationalAddressDeliveryPoint",
-                        this));
+                        this,
+                        null));
         String addressCity = "addressCity";
         add(
                 new StringAndInternationalStringPanel(
@@ -71,7 +77,8 @@ public class ContactPanel extends Panel {
                         addressCity,
                         addressCity,
                         "internationalAddressCity",
-                        this));
+                        this,
+                        null));
         String addressState = "addressState";
         add(
                 new StringAndInternationalStringPanel(
@@ -80,7 +87,8 @@ public class ContactPanel extends Panel {
                         addressState,
                         addressState,
                         "internationalAddressState",
-                        this));
+                        this,
+                        null));
         String addressPostalCode = "addressPostalCode";
         add(
                 new StringAndInternationalStringPanel(
@@ -89,7 +97,8 @@ public class ContactPanel extends Panel {
                         addressPostalCode,
                         addressPostalCode,
                         "internationalAddressPostalCode",
-                        this));
+                        this,
+                        null));
         String addressCountry = "addressCountry";
         add(
                 new StringAndInternationalStringPanel(
@@ -98,7 +107,8 @@ public class ContactPanel extends Panel {
                         addressCountry,
                         addressCountry,
                         "internationalAddressCountry",
-                        this));
+                        this,
+                        null));
         String contactVoice = "contactVoice";
         add(
                 new StringAndInternationalStringPanel(
@@ -107,7 +117,8 @@ public class ContactPanel extends Panel {
                         contactVoice,
                         contactVoice,
                         "internationalContactVoice",
-                        this));
+                        this,
+                        null));
         String contactFacsimile = "contactFacsimile";
         add(
                 new StringAndInternationalStringPanel(
@@ -116,7 +127,8 @@ public class ContactPanel extends Panel {
                         contactFacsimile,
                         contactFacsimile,
                         "internationalContactFacsimile",
-                        this));
+                        this,
+                        null));
 
         String contactEmail = "contactEmail";
         add(
@@ -126,6 +138,7 @@ public class ContactPanel extends Panel {
                         contactEmail,
                         contactEmail,
                         "internationalContactEmail",
-                        this));
+                        this,
+                        EmailAddressValidator.getInstance()));
     }
 }

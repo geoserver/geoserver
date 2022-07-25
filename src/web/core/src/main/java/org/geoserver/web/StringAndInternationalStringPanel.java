@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.validation.IValidator;
 
 /**
  * A reusable component for values that can be provided both as a TextField and as an i18n editable
@@ -32,7 +33,8 @@ public class StringAndInternationalStringPanel extends Panel {
             String labelKey,
             String stringProperty,
             String internationalProperty,
-            WebMarkupContainer labelProvider) {
+            WebMarkupContainer labelProvider,
+            IValidator<String> validator) {
         super(id, model);
         WebMarkupContainer container = new WebMarkupContainer("labelContainer");
         add(container);
@@ -40,6 +42,9 @@ public class StringAndInternationalStringPanel extends Panel {
         TextField<String> title =
                 new TextField<>("stringField", new PropertyModel<>(model, stringProperty));
         add(title);
+        if (validator != null) {
+            title.add(validator);
+        }
 
         InternationalStringPanel<TextField<String>> internationalStringField =
                 new InternationalStringPanel<TextField<String>>(
@@ -49,7 +54,11 @@ public class StringAndInternationalStringPanel extends Panel {
                         container) {
                     @Override
                     protected TextField<String> getTextComponent(String id, IModel<String> model) {
-                        return new TextField<>(id, model);
+                        TextField<String> field = new TextField<>(id, model);
+                        if (validator != null) {
+                            field.add(validator);
+                        }
+                        return field;
                     }
                 };
 

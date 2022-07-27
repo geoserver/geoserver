@@ -4,26 +4,25 @@
 	xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
- <form>
-  <ul>
-    <li>
-      <ul wicket:id="header">
-        <li wicket:id="message"></li>
-        <li><span><wicket:message key="RolePanel.title"/></span></li>
-        <li>
-          <ul class="action-group">
-            <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
-            <li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
-          </ul>
-        </li>
+  <form>
+
+    <div wicket:id="header">
+      <div wicket:id="message"></div>
+      <div class="mb-2"><wicket:message key="RolePanel.title"/></div>
+      <ul class="action-group">
+        <li><a class="add-link" href="#" wicket:id="addNew">
+          <wicket:message key="addNew"/>
+        </a></li>
+        <li><a class="remove-link" href="#" wicket:id="removeSelected">
+          <wicket:message key="removeSelected"/>
+        </a></li>
       </ul>
-    </li>
-    <li>
-      <div wicket:id="table"></div>
-    </li>
-  </ul>
- </form>
- <div wicket:id="dialog"></div>
+    </div>
+
+    <div wicket:id="table"></div>
+
+  </form>
+  <div wicket:id="dialog"></div>
 </wicket:panel>
 </body>
 </html>

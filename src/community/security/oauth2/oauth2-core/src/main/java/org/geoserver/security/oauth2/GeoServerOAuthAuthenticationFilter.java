@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -42,6 +43,7 @@ import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
@@ -63,10 +65,11 @@ public abstract class GeoServerOAuthAuthenticationFilter
     public static final String SESSION_COOKIE_NAME = "sessionid";
     public static final String OAUTH2_AUTHENTICATION_KEY = "oauth2.authentication";
     public static final String OAUTH2_AUTHENTICATION_TYPE_KEY = "oauth2.authenticationType";
+    public static final String OAUTH2_ACCESS_TOKEN_CHECK_KEY = "oauth2.AccessTokenCheckResponse";
 
     public enum OAuth2AuthenticationType {
         BEARER, // this is a bearer token (meaning existing access token is in the request headers)
-        USER   // this is a "normal" oauth2 login (i.e. interactive user login)
+        USER // this is a "normal" oauth2 login (i.e. interactive user login)
     }
 
     OAuth2FilterConfig filterConfig;
@@ -371,8 +374,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         String accessToken = getAccessTokenFromRequest(req);
         if (accessToken != null) {
             req.setAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY, OAuth2AuthenticationType.BEARER);
-        }
-        else {
+        } else {
             req.setAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY, OAuth2AuthenticationType.USER);
         }
 
@@ -391,6 +393,25 @@ public abstract class GeoServerOAuthAuthenticationFilter
         try {
             authentication = filter.attemptAuthentication(req, null);
             req.setAttribute(OAUTH2_AUTHENTICATION_KEY, authentication);
+
+            // the authentication (in the extensions) should contain a Map which is the result of
+            // the
+            // Access Token Check Request (which will be the json result from the oidc "userinfo"
+            // endpoint).
+            // We move it from inside the authentication to directly to a request attributes.
+            // This will make it a "peer" with the Access Token (which spring puts on the request as
+            // an attribute).
+            if (authentication instanceof OAuth2Authentication) {
+                OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) authentication;
+                Object map =
+                        oAuth2Authentication
+                                .getOAuth2Request()
+                                .getExtensions()
+                                .get(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
+                if (map instanceof Map) {
+                    req.setAttribute(OAUTH2_ACCESS_TOKEN_CHECK_KEY, map);
+                }
+            }
 
             LOGGER.log(
                     Level.FINE,

@@ -6,32 +6,34 @@
  */
 package org.geoserver.security.oauth2;
 
-import static org.geoserver.security.oauth2.GeoServerAccessTokenConverter.ACCESS_TOKEN_CHECK_KEY;
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.AccessToken;
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.IdToken;
+import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.MSGraphAPI;
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.UserInfo;
 
 import com.jayway.jsonpath.JsonPath;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import net.sf.json.JSONObject;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
+import org.geoserver.security.oauth2.bearer.TokenValidator;
 import org.geoserver.security.oauth2.services.OpenIdConnectTokenServices;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.token.DefaultRequestEnhancer;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
@@ -39,13 +41,14 @@ import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticationFilter {
 
     static final String ID_TOKEN_VALUE = "OpenIdConnect-IdTokenValue";
-    static final String USERINFO_VALUE = "OpenIdConnect-UserInfoValue";
+    TokenValidator bearerTokenValidator;
 
     public OpenIdConnectAuthenticationFilter(
             SecurityNamedServiceConfig config,
             RemoteTokenServices tokenServices,
             GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration,
-            OAuth2RestOperations oauth2RestTemplate) {
+            OAuth2RestOperations oauth2RestTemplate,
+            TokenValidator bearerTokenValidator) {
         super(config, tokenServices, oauth2SecurityConfiguration, oauth2RestTemplate);
         // reconfigure the token services
         if (tokenServices instanceof OpenIdConnectTokenServices
@@ -67,6 +70,38 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) config;
             sc.setConfiguration(idConfig);
         }
+        this.bearerTokenValidator = bearerTokenValidator;
+    }
+
+    @Override
+    protected String getPreAuthenticatedPrincipal(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException, ServletException {
+        String result = super.getPreAuthenticatedPrincipal(req, resp);
+
+        if (result == null) {
+            return null;
+        }
+
+        OAuth2AuthenticationType type =
+                (OAuth2AuthenticationType) req.getAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY);
+        if ((type != null)
+                && (type.equals(OAuth2AuthenticationType.BEARER))
+                && (bearerTokenValidator != null)) {
+            // we must validate
+            String accessToken =
+                    (String) req.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE);
+            Map userinfoMap = (Map) req.getAttribute(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
+            Jwt decodedAccessToken = JwtHelper.decode(accessToken);
+            Map accessTokenClaims = JSONObject.fromObject(decodedAccessToken.getClaims());
+            try {
+                bearerTokenValidator.verifyToken(
+                        (OpenIdConnectFilterConfig) filterConfig, accessTokenClaims, userinfoMap);
+            } catch (Exception e) {
+                throw new IOException("Attached Bearer Token is invalid", e);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -84,13 +119,9 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         //        } catch (Exception e) {
         //        }
         //        try {
-        //            LOGGER.log(
-        //                    Level.FINE,
-        //                    "access token: "
-        //                            + (String)
-        //                                    request.getAttribute(
-        //
-        // OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
+        //            LOGGER.log(Level.FINE,"access token: " +
+        //                   (String)
+        // request.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
         //        } catch (Exception e) {
         //        }
         //        try {
@@ -106,8 +137,29 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             return getRolesFromToken((String) request.getAttribute(ID_TOKEN_VALUE));
         } else if (UserInfo.equals(rs)) {
             return getRolesFromUserInfo(request);
+        } else if (MSGraphAPI.equals(rs)) {
+            return getRolesFromMSGraphAPI(request);
         }
         return super.getRoles(request, principal);
+    }
+
+    private Collection<GeoServerRole> getRolesFromMSGraphAPI(HttpServletRequest request)
+            throws IOException {
+        try {
+            String accessToken =
+                    (String) request.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE);
+            MSGraphRolesResolver resolver = new MSGraphRolesResolver();
+
+            List<String> groupIds = resolver.resolveRoles(accessToken);
+            List<GeoServerRole> result = new ArrayList<>();
+            ((List) groupIds).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
+            if (!result.isEmpty()) {
+                enrichWithRoleCalculator(result);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new IOException("error getting roles from MS Graph API", e);
+        }
     }
 
     static Object extractFromJSON(String json, String path) {
@@ -131,40 +183,32 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     // endpoint.
     private Collection<GeoServerRole> getRolesFromUserInfo(HttpServletRequest request)
             throws IOException {
-        OAuth2Authentication oAuth2Authentication =
-                (OAuth2Authentication) request.getAttribute(OAUTH2_AUTHENTICATION_KEY);
-        if ((oAuth2Authentication != null)
-                && (oAuth2Authentication.getOAuth2Request() != null)
-                && (oAuth2Authentication.getOAuth2Request().getExtensions() != null)) {
-            Map<String, Serializable> extensions =
-                    oAuth2Authentication.getOAuth2Request().getExtensions();
-            if (extensions.containsKey(ACCESS_TOKEN_CHECK_KEY)
-                    && extensions.get(ACCESS_TOKEN_CHECK_KEY) != null) {
-                Map<String, Serializable> userinfo =
-                        (Map<String, Serializable>) extensions.get(ACCESS_TOKEN_CHECK_KEY);
-                String rolesAttributePath =
-                        ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
-                Object o = JsonPath.read(userinfo, rolesAttributePath);
-                List<GeoServerRole> result = new ArrayList<>();
-                if (o instanceof String) {
-                    result.add(new GeoServerRole((String) o));
-                } else if (o instanceof List) {
-                    ((List) o).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
-                } else {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Did not find "
-                                    + rolesAttributePath
-                                    + "in the token, returning an empty role list");
-                }
-                if (!result.isEmpty()) {
-                    enrichWithRoleCalculator(result);
-                }
-                return result;
-            }
+
+        Map userinfoMap = (Map) request.getAttribute(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
+        if (userinfoMap == null) {
+            return null;
         }
 
-        return null;
+        String rolesAttributePath =
+                ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
+        Object o = JsonPath.read(userinfoMap, rolesAttributePath);
+
+        List<GeoServerRole> result = new ArrayList<>();
+        if (o instanceof String) {
+            result.add(new GeoServerRole((String) o));
+        } else if (o instanceof List) {
+            ((List) o).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
+        } else {
+            LOGGER.log(
+                    Level.FINE,
+                    "Did not find "
+                            + rolesAttributePath
+                            + " in the token, returning an empty role list");
+        }
+        if (!result.isEmpty()) {
+            enrichWithRoleCalculator(result);
+        }
+        return result;
     }
 
     private Collection<GeoServerRole> getRolesFromToken(String token) throws IOException {

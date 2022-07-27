@@ -10,19 +10,26 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geoserver.security.oauth2.bearer.TokenValidator;
 
 public class OpenIdConnectAuthenticationProvider extends GeoServerOAuthAuthenticationProvider {
+
+    TokenValidator bearerTokenValidator;
 
     public OpenIdConnectAuthenticationProvider(
             GeoServerSecurityManager securityManager,
             String tokenServices,
             String oauth2SecurityConfiguration,
-            String geoServerOauth2RestTemplate) {
+            String geoServerOauth2RestTemplate,
+            String bearTokenValidatorBeanName) {
         super(
                 securityManager,
                 tokenServices,
                 oauth2SecurityConfiguration,
                 geoServerOauth2RestTemplate);
+        if ((bearTokenValidatorBeanName != null) && (!bearTokenValidatorBeanName.isEmpty())) {
+            bearerTokenValidator = (TokenValidator) context.getBean(bearTokenValidatorBeanName);
+        }
     }
 
     @Override
@@ -38,6 +45,10 @@ public class OpenIdConnectAuthenticationProvider extends GeoServerOAuthAuthentic
     @Override
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
         return new OpenIdConnectAuthenticationFilter(
-                config, tokenServices, oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
+                config,
+                tokenServices,
+                oauth2SecurityConfiguration,
+                geoServerOauth2RestTemplate,
+                bearerTokenValidator);
     }
 }

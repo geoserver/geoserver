@@ -229,38 +229,67 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
             request.setRawKvp(new HashMap<>());
             request.getRawKvp().put("viewParamsFormat", "XML");
             Dispatcher.REQUEST.set(request);
-            Map<String, Object> raw = new HashMap<>();
-            raw.put("service", "WFS");
-            raw.put("version", "1.1.0");
-            raw.put("request", "GetFeature");
-            raw.put(
-                    "typeName",
-                    getLayerId(SystemTestData.STREAMS)
-                            + ","
-                            + getLayerId(SystemTestData.BASIC_POLYGONS));
-            raw.put(
-                    "viewParams",
-                    "<VP><PS><P n=\"where\">WHERE PERSONS &gt; 1000000</P><P n=\"str\">ABCD</P></PS>"
-                            + "<PS><P n=\"where\">WHERE PERSONS &gt; 10</P><P n=\"str\">FOO</P></PS></VP>");
+            Map<String, Object> raw = prepareRawKVPMap();
 
             Map<String, Object> parsed = parseKvp(raw);
 
             GetFeatureType req = WfsFactory.eINSTANCE.createGetFeatureType();
             Object read = reader.read(req, parsed, raw);
             GetFeatureType parsedReq = (GetFeatureType) read;
-            List viewParams = parsedReq.getViewParams();
-            assertEquals(2, viewParams.size());
-            @SuppressWarnings("unchecked")
-            Map<String, String> vp1 = (Map) viewParams.get(0);
-            assertEquals("WHERE PERSONS > 1000000", vp1.get("where"));
-            assertEquals("ABCD", vp1.get("str"));
-            @SuppressWarnings("unchecked")
-            Map<String, String> vp2 = (Map) viewParams.get(1);
-            assertEquals("WHERE PERSONS > 10", vp2.get("where"));
-            assertEquals("FOO", vp2.get("str"));
+            checkXMLResults(parsedReq);
         } finally {
             Dispatcher.REQUEST.set(null);
         }
+    }
+
+    private Map<String, Object> prepareRawKVPMap() {
+        Map<String, Object> raw = new HashMap<>();
+        raw.put("service", "WFS");
+        raw.put("version", "1.1.0");
+        raw.put("request", "GetFeature");
+        raw.put(
+                "typeName",
+                getLayerId(SystemTestData.STREAMS)
+                        + ","
+                        + getLayerId(SystemTestData.BASIC_POLYGONS));
+        raw.put(
+                "viewParams",
+                "<VP><PS><P n=\"where\">WHERE PERSONS &gt; 1000000</P><P n=\"str\">ABCD</P></PS>"
+                        + "<PS><P n=\"where\">WHERE PERSONS &gt; 10</P><P n=\"str\">FOO</P></PS></VP>");
+        return raw;
+    }
+
+    @Test
+    public void testXMLViewParamsMultiCaseInsensitive() throws Exception {
+        try {
+            Request request = new Request();
+            request.setRawKvp(new HashMap<>());
+            request.getRawKvp().put("VIEWPARAMSFORMAT", "XML");
+            Dispatcher.REQUEST.set(request);
+            Map<String, Object> raw = prepareRawKVPMap();
+
+            Map<String, Object> parsed = parseKvp(raw);
+
+            GetFeatureType req = WfsFactory.eINSTANCE.createGetFeatureType();
+            Object read = reader.read(req, parsed, raw);
+            GetFeatureType parsedReq = (GetFeatureType) read;
+            checkXMLResults(parsedReq);
+        } finally {
+            Dispatcher.REQUEST.set(null);
+        }
+    }
+
+    private void checkXMLResults(GetFeatureType parsedReq) {
+        List viewParams = parsedReq.getViewParams();
+        assertEquals(2, viewParams.size());
+        @SuppressWarnings("unchecked")
+        Map<String, String> vp1 = (Map) viewParams.get(0);
+        assertEquals("WHERE PERSONS > 1000000", vp1.get("where"));
+        assertEquals("ABCD", vp1.get("str"));
+        @SuppressWarnings("unchecked")
+        Map<String, String> vp2 = (Map) viewParams.get(1);
+        assertEquals("WHERE PERSONS > 10", vp2.get("where"));
+        assertEquals("FOO", vp2.get("str"));
     }
 
     @Test

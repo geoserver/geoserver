@@ -88,8 +88,8 @@ public class ViewParamsKvpParser extends KvpParser implements ApplicationContext
         if (request == null || request.getRawKvp() == null)
             return getSerlvetRequestFormatParserParameterValue();
         Map<String, Object> rawKvp = request.getRawKvp();
-        if (rawKvp.containsKey(VIEW_PARAMS_FORMAT_PARAMETER_NAME)) {
-            return (String) rawKvp.get(VIEW_PARAMS_FORMAT_PARAMETER_NAME);
+        if (mapContainsKey(VIEW_PARAMS_FORMAT_PARAMETER_NAME, rawKvp)) {
+            return (String) mapGet(VIEW_PARAMS_FORMAT_PARAMETER_NAME, rawKvp);
         }
         return getSerlvetRequestFormatParserParameterValue();
     }
@@ -102,11 +102,24 @@ public class ViewParamsKvpParser extends KvpParser implements ApplicationContext
                 || servletRequestAttributes.getRequest().getParameterMap() == null) return null;
         HttpServletRequest request = servletRequestAttributes.getRequest();
         Map<String, String[]> parameterMap = request.getParameterMap();
-        if (parameterMap.containsKey(VIEW_PARAMS_FORMAT_PARAMETER_NAME)) {
-            String[] strings = parameterMap.get(VIEW_PARAMS_FORMAT_PARAMETER_NAME);
+        if (mapContainsKey(VIEW_PARAMS_FORMAT_PARAMETER_NAME, parameterMap)) {
+            String[] strings = mapGet(VIEW_PARAMS_FORMAT_PARAMETER_NAME, parameterMap);
             return getFirstExisting(strings);
         }
         return null;
+    }
+
+    private boolean mapContainsKey(String key, Map<String, ?> map) {
+        return map.keySet().stream()
+                .anyMatch(k -> k.trim().toLowerCase().equals(key.trim().toLowerCase()));
+    }
+
+    private <T> T mapGet(String key, Map<String, T> map) {
+        return map.entrySet().stream()
+                .filter(e -> e.getKey().trim().toLowerCase().equals(key.trim().toLowerCase()))
+                .map(e -> e.getValue())
+                .findFirst()
+                .orElse(null);
     }
 
     private String getFirstExisting(String[] strArray) {

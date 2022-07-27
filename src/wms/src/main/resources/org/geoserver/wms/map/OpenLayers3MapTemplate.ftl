@@ -131,7 +131,7 @@
     <title>OpenLayers map preview</title>
   </head>
   <body>
-    <div id="toolbar" class="d-none">
+    <div id="toolbar" style="display: none;">
       <ul>
         <li>
           <a>WMS version:</a>

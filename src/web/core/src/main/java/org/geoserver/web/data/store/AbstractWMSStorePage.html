@@ -2,30 +2,26 @@
 <body>
 <wicket:extend>
   <form wicket:id="form">
-  <ul>
-    <li>
-      <fieldset>
-        <legend><span><wicket:message key="basicStoreInfo">Basic Store Info</wicket:message></span></legend>
-        <div wicket:id="workspacePanel"></div>
-        <div wicket:id="namePanel"></div>
-        <div wicket:id="descriptionPanel"></div>
-        <div wicket:id="enabledPanel"></div>
-        <div wicket:id="disableOnConnFailurePanel"></div>
-      </fieldset>
-    </li>
-    <li>
-      <fieldset>
-        <legend><span><wicket:message key="connectionInfo">Connection Info</wicket:message></span></legend>
-        <div wicket:id="capabilitiesURL"></div>
-        <div wicket:id="userNamePanel"></div>
-        <div wicket:id="passwordPanel"></div>
-        <div wicket:id="useConnectionPoolingPanel"></div>
-        <div wicket:id="maxConnectionsPanel"></div>
-        <div wicket:id="connectTimeoutPanel"></div>
-        <div wicket:id="readTimeoutPanel"></div>
-      </fieldset>
-    </li>
-  </ul>
+
+    <fieldset>
+      <legend><span><wicket:message key="basicStoreInfo">Basic Store Info</wicket:message></span></legend>
+      <div wicket:id="workspacePanel"></div>
+      <div wicket:id="namePanel"></div>
+      <div wicket:id="descriptionPanel"></div>
+      <div wicket:id="enabledPanel"></div>
+      <div wicket:id="disableOnConnFailurePanel"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend><span><wicket:message key="connectionInfo">Connection Info</wicket:message></span></legend>
+      <div wicket:id="capabilitiesURL"></div>
+      <div wicket:id="userNamePanel"></div>
+      <div wicket:id="passwordPanel"></div>
+      <div wicket:id="useConnectionPoolingPanel"></div>
+      <div wicket:id="maxConnectionsPanel"></div>
+      <div wicket:id="connectTimeoutPanel"></div>
+      <div wicket:id="readTimeoutPanel"></div>
+    </fieldset>
 
     <div wicket:id="feedback"></div>
     <div class="button-group toolbar-sticky selfclear">

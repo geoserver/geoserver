@@ -3,27 +3,21 @@
 <wicket:extend>
   <wicket:child/>
   <form wicket:id="dataStoreForm">
-    <ul>
-      <li>
-        <fieldset>
+    <fieldset>
         <div><span wicket:id="storeType">store type</span></div>
         <div><span wicket:id="storeTypeDescription">store type description</span></div>
-        </fieldset>
-      </li>
-      <li>
-        <fieldset>
-          <legend><span><wicket:message key="basicStoreInfo">Basic Store Info</wicket:message></span></legend> 
-          <div wicket:id="workspacePanel"></div>
-        	<div wicket:id="dataStoreNamePanel"></div>
-        	<div wicket:id="dataStoreDescriptionPanel"></div>
-        	<div wicket:id="dataStoreEnabledPanel"></div>
-            <div wicket:id="disableOnConnFailurePanel"></div>
-	      </fieldset>
-      </li>
-      <li>
-        <div><span wicket:id="parametersPanel"></span></div>
-      </li>
-    </ul>
+    </fieldset>
+    <fieldset>
+      <legend><span><wicket:message key="basicStoreInfo">Basic Store Info</wicket:message></span></legend>
+      <div wicket:id="workspacePanel"></div>
+      <div wicket:id="dataStoreNamePanel"></div>
+      <div wicket:id="dataStoreDescriptionPanel"></div>
+      <div wicket:id="dataStoreEnabledPanel"></div>
+      <div wicket:id="disableOnConnFailurePanel"></div>
+    </fieldset>
+
+    <div><span wicket:id="parametersPanel"></span></div>
+
     <div wicket:id="feedback"></div>
     <div class="button-group toolbar-sticky selfclear">
       <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>

@@ -87,6 +87,13 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         if ((type != null)
                 && (type.equals(OAuth2AuthenticationType.BEARER))
                 && (bearerTokenValidator != null)) {
+            if (!((OpenIdConnectFilterConfig) filterConfig).isAllowBearerTokens()) {
+                LOGGER.log(
+                        Level.WARNING,
+                        "OIDC: received an attached Bearer token, but Bearer tokens aren't allowed!");
+                throw new IOException(
+                        "OIDC: received an attached Bearer token, but Bearer tokens aren't allowed!");
+            }
             // we must validate
             String accessToken =
                     (String) req.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE);

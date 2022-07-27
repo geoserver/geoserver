@@ -2,35 +2,37 @@
 <body>
 <wicket:extend>
   <form wicket:id="storeForm">
-   <ul>
-      <li>
-        <h3><wicket:message key="vectorDataSources">Vector Data Sources</wicket:message></h3>
-        <div wicket:id="vectorResources">
-         <img wicket:id="storeIcon"/>
-         <a wicket:id="resourcelink">
-            <span wicket:id="resourcelabel"/>
-         </a> - <span wicket:id="resourceDescription"/>
-        </div>
-      </li>
-      <li>
-        <h3><wicket:message key="rasterDataSources">Raster Data Sources</wicket:message></h3>
-        <div wicket:id="rasterResources">
-         <img wicket:id="storeIcon"/>
-         <a wicket:id="resourcelink">
-             <span wicket:id="resourcelabel"/>
-         </a> - <span wicket:id="resourceDescription"/>
-        </div>
-      </li>
-      <li>
-        <h3><wicket:message key="otherStores">other sources</wicket:message></h3>
-        <div wicket:id="otherStores">
-         <img wicket:id="storeIcon"/>
-         <a wicket:id="resourcelink">
-             <span wicket:id="resourcelabel"/>
-         </a> - <span wicket:id="resourceDescription"/>
-        </div>
-      </li>
-    </ul>
+
+    <h3><wicket:message key="vectorDataSources">Vector Data Sources</wicket:message></h3>
+    <div class="mb-3">
+      <div wicket:id="vectorResources">
+       <img wicket:id="storeIcon"/>
+       <a wicket:id="resourcelink">
+          <span wicket:id="resourcelabel"/>
+       </a> - <span wicket:id="resourceDescription"/>
+      </div>
+    </div>
+
+    <h3><wicket:message key="rasterDataSources">Raster Data Sources</wicket:message></h3>
+    <div class="mb-3">
+      <div wicket:id="rasterResources" class="mb-2">
+       <img wicket:id="storeIcon"/>
+       <a wicket:id="resourcelink">
+           <span wicket:id="resourcelabel"/>
+       </a> - <span wicket:id="resourceDescription"/>
+      </div>
+    </div>
+
+    <h3><wicket:message key="otherStores">other sources</wicket:message></h3>
+    <div class="mb-3">
+      <div wicket:id="otherStores" class="mb-2">
+       <img wicket:id="storeIcon"/>
+       <a wicket:id="resourcelink">
+           <span wicket:id="resourcelabel"/>
+       </a> - <span wicket:id="resourceDescription"/>
+      </div>
+    </div>
+
   </form>
 </wicket:extend>
 </body>

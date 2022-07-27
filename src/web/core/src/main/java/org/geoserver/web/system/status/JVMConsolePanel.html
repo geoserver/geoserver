@@ -31,13 +31,13 @@
 </wicket:head>
 <body>
 <wicket:panel>
-    <div style="width:95%">
+    <div class="w-95">
         <div class="button-group selfclear">
             <a href="#" id="dumpThread" wicket:id="dumpThread"><wicket:message key="threadDump">Thread dump</wicket:message></a>
             <a href="#" id="dumpHeap" wicket:id="dumpHeap"><wicket:message key="heapDump">Heap dump</wicket:message></a>
         </div>
 
-        <div><textarea id="dumpContent" readonly="readonly" style="width:100%;height:50em;font-size:small" wicket:id="dumpContent"></textarea></div>
+        <div><textarea id="dumpContent" readonly="readonly" class="w-100 h-50-em text-small" wicket:id="dumpContent"></textarea></div>
         <a onclick="downloadFile('dump.log')"><wicket:message key="download">download as dump text</wicket:message></a>
     </div>
 </wicket:panel>

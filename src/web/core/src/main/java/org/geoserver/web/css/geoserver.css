@@ -227,6 +227,12 @@ Utility Classes
 .w-100-em {
   width: 100em !important;
 }
+.w-20-ex {
+  width: 20ex !important;
+}
+.w-60-ex {
+  width: 60ex !important;
+}
 /* add to Bootstrap utilities */
 .w-95 {
   width: 95% !important;
@@ -382,10 +388,6 @@ table {
 th {
   background: transparent; /* override blueprint's settings */
 }
-td, th {
-  /* replace the `cellpadding` in the HTML table element, it is now obsolete */
-  padding: 2px;
-}
 
 thead th {
   background: var(--gs-green-light);
@@ -499,7 +501,7 @@ border: medium none;
 color: #222;
 display: block;
 font-weight: normal;
-font-size: 0.95em;
+/*font-size: 0.95em;*/
 line-height: 1.5em;
 padding: 0 0 1px;
 }
@@ -632,6 +634,27 @@ width: 100%;
 div.value pre,
 div.value-wide pre { /* override blueprint's settings */
 margin: 0;
+}
+
+/* bootstrap checkbox form */
+.form-check {
+  display: block;
+  min-height: 1.5rem;
+  padding-left: 0.5em;
+  margin-bottom: 0.125rem;
+}
+.form-check-input {
+  width: 1em;
+  height: 1em;
+  margin-top: 0.25em;
+  vertical-align: top;
+}
+.form-check-label {
+  display: inline-block;
+}
+/* special case for the form ion the header */
+#header .form-check {
+  display: inline-block;
 }
 
 /*-----------------------
@@ -1388,8 +1411,8 @@ background-image: url(../img/icons/silk/add.png);
 }
 
 legend a.help-link {
-width: 16px;
-height: 16px;
+  height: 16px;
+  float: right;
 }
 
 .computeLink { 

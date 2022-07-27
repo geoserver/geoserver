@@ -1,7 +1,6 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
   <wicket:extend>
-  <li>
     <fieldset>
       <legend><span><wicket:message key="features">Features</wicket:message></span></legend>
       <ul>
@@ -27,21 +26,17 @@
         </li>
       </ul>
     </fieldset>
-  </li>
-  <li>
-      <fieldset>
-        <legend>
-          <span><wicket:message key="otherSRS">otherSRS</wicket:message></span>
-          <a href="#" wicket:id="otherSRSHelp" class="help-link"></a>
-        </legend>
-        <ul>
-          <li>
-            <textarea class="input textarea" rows="10" cols="30" wicket:id="srs"></textarea>
-          </li>
-        </ul>
-      </fieldset>
-  </li>
-  <li>
+    <fieldset>
+      <legend>
+        <span><wicket:message key="otherSRS">otherSRS</wicket:message></span>
+        <a href="#" wicket:id="otherSRSHelp" class="help-link"></a>
+      </legend>
+      <ul>
+        <li>
+          <textarea class="input textarea" rows="10" cols="30" wicket:id="srs"></textarea>
+        </li>
+      </ul>
+    </fieldset>
     <fieldset>
       <legend><span><wicket:message key="serviceLevel">Service Level</wicket:message></span></legend>
       <div wicket:id="serviceLevel">
@@ -61,8 +56,6 @@
         </ul>
       </div>
     </fieldset>
-  </li>
-  <li>
     <fieldset>
       <legend><span><wicket:message key="getFeatureOutputTypes"></wicket:message></span></legend>
       <ul>
@@ -77,20 +70,17 @@
       <legend><span><wicket:message key="gml2.title">GML2</wicket:message></span></legend>
       <div wicket:id="gml2"></div>
     </fieldset>
-  </li>
-  <li>
+
     <fieldset>
       <legend><span><wicket:message key="gml3.title">GML3</wicket:message></span></legend>
       <div wicket:id="gml3"></div>
     </fieldset>
-  </li>
-  <li>
+
     <fieldset>
       <legend><span><wicket:message key="gml32.title">GML32</wicket:message></span></legend>
       <div wicket:id="gml32"></div>
     </fieldset>
-  </li>
-  <li>
+
     <fieldset>
       <legend><span><wicket:message key="conformance">Conformance</wicket:message></span></legend>
       <ul class="choiceList">
@@ -100,8 +90,7 @@
         </li>
       </ul>
     </fieldset>
-  </li>
-  <li>
+
     <fieldset>
       <legend><span><wicket:message key="encodeFeatureMember">Encode response with </wicket:message></span></legend>
       <div wicket:id="encodeFeatureMember">
@@ -117,8 +106,7 @@
         </ul>
       </div>
     </fieldset>
-  </li>
-  <li>
+
     <fieldset>
       <legend><span><wicket:message key="shapeOutputFormat">SHAPE-ZIP output format</wicket:message></span></legend>
       <ul class="choiceList">
@@ -132,8 +120,7 @@
         </li>
       </ul>
     </fieldset>
-  </li>
-  <li>
+
     <fieldset>
       <legend><span><wicket:message key="storedQueries">Stored Queries</wicket:message></span></legend>
       <ul class="choiceList">
@@ -143,14 +130,13 @@
         </li>
       </ul>
     </fieldset>
-  </li>
-    <li>
-      <fieldset>
-        <legend><span><wicket:message key="i18nSettings">i18n Settings</wicket:message></span></legend>
-        <label for="defaultLocale"><wicket:message key="defaultLocale">Default Language</wicket:message></label>
-        <select wicket:id="defaultLocale"/>
-      </fieldset>
-    </li>
+
+    <fieldset>
+      <legend><span><wicket:message key="i18nSettings">i18n Settings</wicket:message></span></legend>
+      <label for="defaultLocale"><wicket:message key="defaultLocale">Default Language</wicket:message></label>
+      <select wicket:id="defaultLocale"/>
+    </fieldset>
+
   </wicket:extend>
 </body>
 </html>

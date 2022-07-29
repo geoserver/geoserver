@@ -278,8 +278,6 @@ public class FeatureTest extends FeaturesTestSupport {
         ReferencedEnvelope bbox = new ReferencedEnvelope(38, 40, 1, 3, DefaultGeographicCRS.WGS84);
         ReferencedEnvelope wmBox = bbox.transform(CRS.decode("EPSG:3857", true), true);
 
-        System.out.println(filterCrsQueryParameters(wmBox));
-
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/features/collections/"
@@ -404,6 +402,65 @@ public class FeatureTest extends FeaturesTestSupport {
         assertEquals(1, (int) json.read("features.length()", Integer.class));
         assertEquals(
                 1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    @Test
+    public void testSortByWithDefaultSortOrder() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/" + roadSegments + "/items?sortby=name&limit=2",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(null, json.read("features[0].properties.name", String.class));
+        assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+    }
+
+    @Test
+    public void testSortByWithAscendingSortOrder() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?sortby=%2Bname&limit=2",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(null, json.read("features[0].properties.name", String.class));
+        assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+    }
+
+    @Test
+    public void testSortByWithDescendingSortOrder() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/" + roadSegments + "/items?sortby=-name&limit=2",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals("name-f008", json.read("features[0].properties.name", String.class));
+        assertEquals("name-f003", json.read("features[1].properties.name", String.class));
+    }
+
+    @Test
+    public void testSortByMultipleProperties() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?sortby=booleanProperty,-intProperty",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(5, (int) json.read("features.length()", Integer.class));
+        assertEquals(null, json.read("features[0].properties.name", String.class));
+        assertEquals("name-f002", json.read("features[1].properties.name", String.class));
+        assertEquals("name-f008", json.read("features[2].properties.name", String.class));
+        assertEquals("name-f003", json.read("features[3].properties.name", String.class));
+        assertEquals("name-f001", json.read("features[4].properties.name", String.class));
     }
 
     @Test

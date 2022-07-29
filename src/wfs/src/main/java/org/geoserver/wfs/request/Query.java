@@ -65,6 +65,8 @@ public abstract class Query extends RequestObject {
 
     public abstract List<SortBy> getSortBy();
 
+    public abstract void setSortBy(List<SortBy> sortBy);
+
     public abstract List<XlinkPropertyNameType> getXlinkPropertyNames();
 
     public static class WFS11 extends Query {
@@ -104,6 +106,11 @@ public abstract class Query extends RequestObject {
         @SuppressWarnings("unchecked")
         public List<SortBy> getSortBy() {
             return eGet(adaptee, "sortBy", List.class);
+        }
+
+        @Override
+        public void setSortBy(List<SortBy> sortBy) {
+            eSet(adaptee, "sortBy", sortBy);
         }
 
         @Override
@@ -166,6 +173,11 @@ public abstract class Query extends RequestObject {
         @SuppressWarnings("unchecked")
         public List<SortBy> getSortBy() {
             return eGet(adaptee, "abstractSortingClause", List.class);
+        }
+
+        @Override
+        public void setSortBy(List<SortBy> sortBy) {
+            eSet(adaptee, "abstractSortingClause", sortBy);
         }
 
         @Override

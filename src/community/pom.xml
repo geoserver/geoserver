@@ -88,6 +88,7 @@
             <descriptor>release/ext-vsi.xml</descriptor>
             <descriptor>release/ext-teradata.xml</descriptor>
             <descriptor>release/ext-libdeflate.xml</descriptor>
+            <descriptor>release/ext-stac-datastore.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>

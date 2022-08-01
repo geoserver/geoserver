@@ -16,7 +16,9 @@ import static org.geoserver.ogcapi.ConformanceClass.ECQL;
 import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
 
+import com.google.common.collect.ImmutableList;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -66,6 +68,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -265,9 +268,9 @@ public class FeatureService {
                         CQL2_FUNCTIONS,
                         /* CQL2_TEMPORAL excluded for now, no support for all operators */
                         /* CQL2_ARRAY excluded, no support for array operations now */
-                        CQL2_TEXT
+                        CQL2_TEXT,
                         /* CQL2_JSON very different from the binding we have */
-                        );
+                        SORTBY);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -296,6 +299,7 @@ public class FeatureService {
                 null,
                 null,
                 null,
+                null,
                 itemId);
     }
 
@@ -313,6 +317,7 @@ public class FeatureService {
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "filter-lang", required = false) String filterLanguage,
             @RequestParam(name = "filter-crs", required = false) String filterCRS,
+            @RequestParam(name = "sortby", required = false) SortBy[] sortBy,
             @RequestParam(name = "crs", required = false) String crs,
             String itemId)
             throws Exception {
@@ -342,6 +347,9 @@ public class FeatureService {
             filters.add(parsedFilter);
         }
         query.setFilter(mergeFiltersAnd(filters));
+        if (sortBy != null) {
+            query.setSortBy(ImmutableList.copyOf(sortBy));
+        }
         if (crs != null) {
             query.setSrsName(new URI(crs));
         } else {

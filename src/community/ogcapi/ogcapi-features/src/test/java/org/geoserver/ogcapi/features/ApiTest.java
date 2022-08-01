@@ -161,6 +161,7 @@ public class ApiTest extends FeaturesTestSupport {
                         "#/components/parameters/filter",
                         "#/components/parameters/filter-lang",
                         "#/components/parameters/filter-crs",
+                        "#/components/parameters/sortby",
                         "#/components/parameters/crs",
                         "#/components/parameters/bbox-crs",
                         "#/components/parameters/otherParameters"));

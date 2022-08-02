@@ -43,6 +43,7 @@
    </includes>
    <excludes>
     <exclude>log4j-over-slf4j-*.jar</exclude>
+    <exclude>jetty-start*.jar</exclude>
    </excludes>
   </fileSet>
   <fileSet>
@@ -107,4 +108,11 @@
    <outputDirectory></outputDirectory>
   </fileSet>
  </fileSets>
+ <files>
+    <file>
+      <source>release/target/dependency/jetty-start-${jetty.version}-shaded.jar </source>
+      <outputDirectory></outputDirectory>
+      <destName>start.jar</destName>
+    </file>
+ </files>
 </assembly>

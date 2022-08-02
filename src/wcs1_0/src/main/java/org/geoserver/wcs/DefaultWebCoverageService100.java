@@ -7,7 +7,10 @@ package org.geoserver.wcs;
 
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
+import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -17,6 +20,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.Interpolation;
+import javax.media.jai.JAI;
+import javax.media.jai.operator.ConstantDescriptor;
 import net.opengis.gml.CodeType;
 import net.opengis.gml.DirectPositionType;
 import net.opengis.gml.RectifiedGridType;
@@ -49,8 +54,10 @@ import org.geoserver.wcs.response.Wcs10CapsTransformer;
 import org.geoserver.wcs.response.Wcs10DescribeCoverageTransformer;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -63,6 +70,7 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.util.CRSUtilities;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.geotools.util.factory.GeoTools;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.Filter;
@@ -425,10 +433,34 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             coverage = reader.read(readParameters);
             if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
-                throw new IOException(
-                        "No raster data found in the request (it may be that "
-                                + "the request bbox is outside of the coverage area, or that the filters used "
-                                + "match no portions of it.");
+                Integer[] values = new Integer[1];
+
+                values[0] = 0;
+                final ImageLayout2 il = new ImageLayout2();
+                final RenderingHints renderingHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, il);
+
+                RenderedImage finalImage =
+                        ConstantDescriptor.create(
+                                (float) (destinationSize != null ? destinationSize.width : 1),
+                                (float) (destinationSize != null ? destinationSize.height : 1),
+                                values,
+                                renderingHints);
+
+                GridCoverageFactory coverageFactory =
+                        CoverageFactoryFinder.getGridCoverageFactory(GeoTools.getDefaultHints());
+
+                GridCoverage2D gridCoverage2D =
+                        coverageFactory.create(
+                                meta.getName(),
+                                finalImage,
+                                requestedGridGeometry,
+                                null,
+                                null,
+                                null);
+
+                GridCoverage2D[] gridCoverage2Ds = new GridCoverage2D[1];
+                gridCoverage2Ds[0] = gridCoverage2D;
+                return gridCoverage2Ds;
             }
 
             // double check what we have loaded

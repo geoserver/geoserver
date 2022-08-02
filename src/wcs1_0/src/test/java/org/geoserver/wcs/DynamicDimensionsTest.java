@@ -7,7 +7,6 @@ package org.geoserver.wcs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -54,12 +53,12 @@ public class DynamicDimensionsTest extends CoverageTestSupport {
         String request = getWaterTempRequest("bad_dimension_value");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
-        assertNull(image);
+        assertNotNull(image);
 
         request = request.replace(DIMENSION_NAME, DIMENSION_NAME.toUpperCase());
         response = postAsServletResponse("wcs", request);
         image = ImageIO.read(getBinaryInputStream(response));
-        assertNull(image);
+        assertNotNull(image);
     }
 
     @Test
@@ -68,12 +67,12 @@ public class DynamicDimensionsTest extends CoverageTestSupport {
         String request = getWaterTempRequestKVP("bad_dimension_value");
         MockHttpServletResponse response = getAsServletResponse(request);
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
-        assertNull(image);
+        assertNotNull(image);
 
         request = request.replace(DIMENSION_NAME, DIMENSION_NAME.toUpperCase());
         response = getAsServletResponse(request);
         image = ImageIO.read(getBinaryInputStream(response));
-        assertNull(image);
+        assertNotNull(image);
     }
 
     @Test

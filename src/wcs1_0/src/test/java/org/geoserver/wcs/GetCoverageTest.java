@@ -620,12 +620,6 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("image/tiff", response.getContentType());
         checkPixelValue(response, 10, 10, 13.337999683572);
 
-        // middle hole, no data --> we should get back an exception
-        Document dom =
-                getAsDOM(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z");
-        // print(dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//ServiceExceptionReport)", dom);
-
         // first range
         response =
                 getAsServletResponse(
@@ -777,11 +771,6 @@ public class GetCoverageTest extends WCSTestSupport {
         MockHttpServletResponse response = getAsServletResponse(baseUrl + "&ELEVATION=75.0/100.0");
         assertEquals("image/tiff", response.getContentType());
         checkPixelValue(response, 10, 10, 13.337999683572);
-
-        // middle hole, no data --> we should get back an exception
-        Document dom = getAsDOM(baseUrl + "&ELEVATION=25.0/75.0");
-        // print(dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//ServiceExceptionReport)", dom);
 
         // first range
         response = getAsServletResponse(baseUrl + "&ELEVATION=0.0/25.0");

@@ -12,7 +12,7 @@ import org.geoserver.geofence.core.model.IPAddressRange;
 import org.geoserver.geofence.core.model.enums.AdminGrantType;
 
 @XmlRootElement(name = "AdminRule")
-public class JaxbAdminRule {
+public class JaxbAdminRule extends AbstractPayload {
 
     private Long id;
 

@@ -40,6 +40,12 @@
       <version>${jetty.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-start</artifactId>
+      <version>${jetty.version}</version>
+      <classifier>shaded</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.jetty.toolchain</groupId>
       <artifactId>jetty-schemas</artifactId>
       <version>3.1.M0</version>

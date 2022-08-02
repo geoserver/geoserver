@@ -189,7 +189,7 @@ If there are no pending or running tasks, the returned array is empty::
 The returned array of arrays contains one array per seeding/truncating task.
 The meaning of each long value in each thread array is::
 
-  [tiles processed, total # of tiles to process, # of remaining tiles, Task ID, Task status]
+  [tiles processed, total number of tiles to process, estimated remaining time (in seconds), Task ID, Task status]
 
 The returned ``Task Status`` value will be one of the following::
 

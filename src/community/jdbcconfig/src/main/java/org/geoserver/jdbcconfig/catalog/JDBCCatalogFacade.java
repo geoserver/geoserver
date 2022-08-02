@@ -650,7 +650,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
     /** @see org.geoserver.catalog.CatalogFacade#getStyleByName(java.lang.String) */
     @Override
     public StyleInfo getStyleByName(String name) {
-        return getStyleByName(NO_WORKSPACE, name);
+        StyleInfo match = getStyleByName(NO_WORKSPACE, name);
+        if (match == null) {
+            match = getStyleByName(ANY_WORKSPACE, name);
+        }
+        return match;
     }
 
     /** @see org.geoserver.catalog.CatalogFacade#getStyles() */

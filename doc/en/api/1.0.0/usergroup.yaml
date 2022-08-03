@@ -100,26 +100,6 @@ paths:
               description: ID of the newly created user
               type: string
   /usergroup/user/{user}:
-    get:
-      operationId: userDefaultGet
-      tags:
-       - "UserGroup"
-      summary: Query a user
-      description: Not Implemented.  Query a user in the default user/group service.
-      produces:
-        - application/xml
-        - application/json
-      parameters:       
-        - name: user
-          description: the name of the user
-          in: path
-          required: true
-          type: string
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/User"  
     post:
       operationId: userDefaultPost
       tags:
@@ -163,31 +143,6 @@ paths:
         200:
           description: OK
   /usergroup/service/{serviceName}/user/{user}:
-    get:
-      operationId: userGet
-      tags:
-       - "UserGroup"
-      summary: Query a user
-      description: Not Implemented.  Query a user in a particular user/group service.
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - name: serviceName
-          description: the name of the user/group service
-          in: path
-          required: true
-          type: string          
-        - name: user
-          description: the name of the user
-          in: path
-          required: true
-          type: string
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/User"  
     post:
       operationId: userPost
       tags:

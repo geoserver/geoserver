@@ -447,8 +447,8 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         CatalogMode mode = getMode();
 
         if (readable && writable) {
-            if (AdminRequest.get() == null) {
-                // not admin request, read+write means full acesss
+            if (!adminable && AdminRequest.get() == null) {
+                // It is not an admin request, read+write means full access
                 return null;
             }
         }

@@ -23,13 +23,13 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>release</directory>
+      <directory>release/target/html/licenses</directory>
       <outputDirectory></outputDirectory>
       <includes>
-         <include>LGPL.md</include>
-         <include>GEOTOOLS_NOTICE.txt</include>
-         <include>GPL.md</include>
-         <include>NOTICE.md</include>
+         <include>LGPL.html</include>
+         <include>GEOTOOLS_NOTICE.html</include>
+         <include>GPL.html</include>
+         <include>NOTICE.html</include>
       </includes>
     </fileSet>
   </fileSets>

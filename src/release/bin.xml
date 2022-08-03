@@ -67,24 +67,28 @@
    </includes>
   </fileSet>
   <fileSet>
-   <directory>release</directory>
+   <directory>release/target/html</directory>
    <outputDirectory></outputDirectory>
    <includes>
-    <include>NOTICE.md</include>
-    <include>README.txt</include>
-    <include>RELEASE_NOTES.txt</include>
-    <include>RUNNING.txt</include>
+    <include>NOTICE.html</include>
+    <include>README.html</include>
+    <include>RELEASE_NOTES.html</include>
+    <include>RUNNING.html</include>
    </includes>
   </fileSet>
   <fileSet>
-    <directory>release</directory>
+    <directory>release/target/html/licenses</directory>
     <outputDirectory>license</outputDirectory>
     <includes>
-       <include>GPL.md</include>
-       <include>LGPL.md</include>
-       <include>apache-1.1.txt</include>
-       <include>apache-2.0.txt</include>
-       <include>epl-1.0.txt</include>
+         <include>apache-1.1.html</include>
+         <include>apache-2.0.html</include>
+         <include>epl-1.0.html</include>
+         <include>EPSG.html</include>
+         <include>GEOTOOLS_NOTICE.html</include>
+         <include>HSQL.html</include>
+         <include>LGPL.html</include>
+         <include>OGC.html</include>
+         <include>W3C.html</include>
     </includes>
   </fileSet>
   <fileSet>

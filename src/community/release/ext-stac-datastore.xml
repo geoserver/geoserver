@@ -1,0 +1,18 @@
+<assembly>
+  <id>stac-datastore-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory/>
+      <includes>
+        <include>gt-stac-store*.jar</include>
+        <include>gt-cql2-text-*.jar</include>
+        <include>gt-cql-json-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

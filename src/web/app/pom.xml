@@ -1815,5 +1815,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>stac-store</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-stac-store</artifactId>
+          <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

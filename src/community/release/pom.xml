@@ -411,6 +411,11 @@
       <artifactId>gs-libdeflate</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-stac-store</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

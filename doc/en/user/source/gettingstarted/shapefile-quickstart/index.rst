@@ -50,7 +50,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 
 #. Enter the :guilabel:`Name` as ``nyc`` and the :guilabel:`Namespace URI` as ``http://geoserver.org/nyc``.
 
-   .. note:: A workspace name is a identifier describing your project. It must not exceed ten characters or contain spaces. A Namespace URI (Uniform Resource Identifier) can usually be a URL associated with your project with an added trailing identifier indicating the workspace. The Namespace URI filed does not need to resolve to an actual valid web address.
+   .. note:: A workspace name is an identifier describing your project. It must not exceed ten characters or contain spaces. A Namespace URI (Uniform Resource Identifier) can usually be a URL associated with your project with an added trailing identifier indicating the workspace. The Namespace URI filed does not need to resolve to an actual valid web address.
 
    .. figure:: workspace_nycroads.png
 

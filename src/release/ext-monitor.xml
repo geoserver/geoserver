@@ -18,11 +18,11 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>release</directory>
+      <directory>release/target/html/licenses</directory>
       <outputDirectory></outputDirectory>
       <includes>
-         <include>GPL.md</include>
-         <include>NOTICE.md</include>
+         <include>GPL.html</include>
+         <include>NOTICE.html</include>
       </includes>
     </fileSet>
   </fileSets>

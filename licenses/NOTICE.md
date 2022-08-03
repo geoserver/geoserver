@@ -1,3 +1,5 @@
+# GeoServer Notice
+
 GeoServer is distributed under the GNU General Public License Version 2.0 license:
 
     GeoServer, open geospatial information server

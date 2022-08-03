@@ -1,40 +1,33 @@
 <assembly>
-	<id>db2-plugin</id>
-	<formats>
-		<format>zip</format>
-	</formats>
-	<includeBaseDirectory>false</includeBaseDirectory>
-	<fileSets>
-		<fileSet>
-			<directory>release/extensions/db2</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>release/target/dependency</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>gt-jdbc-core-*.jar</include>
-				<include>gt-jdbc-db2-*.jar</include>
-				<include>jcc-*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>release/extensions</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>LICENSE.txt</include>
-				<include>IBM-IPLA.txt</include>
-			</includes>
-		</fileSet>
+    <id>db2-plugin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
         <fileSet>
-            <directory>release</directory>
+            <directory>release/extensions/db2</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>LGPL.md</include>
-                <include>GEOTOOLS_NOTICE.txt</include>
+                <include>*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>release/target/dependency</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>gt-jdbc-core-*.jar</include>
+                <include>gt-jdbc-db2-*.jar</include>
+                <include>jcc-*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>release/target/html/licenses</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>LGPL.html</include>
+                <include>GEOTOOLS_NOTICE.html</include>
+                <include>IBM-IPLA.html</include>
             </includes>
         </fileSet>
 	</fileSets>

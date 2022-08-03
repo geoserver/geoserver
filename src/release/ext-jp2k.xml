@@ -5,29 +5,31 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
-        <fileSet>
-            <directory>release/extensions/jp2k</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <include>*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>release/target/dependency</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <include>*gt-jp2k*.jar</include>
-                <include>*imageio-ext-kakadu*.jar</include>
-                <include>*imageio-ext-imagereadmt*.jar</include>
-            </includes>
-        </fileSet>
-    <fileSet>
-        <directory>release</directory>
+      <fileSet>
+        <directory>release/extensions/jp2k</directory>
         <outputDirectory></outputDirectory>
         <includes>
-            <include>LGPL.md</include>
-            <include>GEOTOOLS_NOTICE.txt</include>
+          <include>*</include>
         </includes>
+      </fileSet>
+      <fileSet>
+        <directory>release/target/dependency</directory>
+        <outputDirectory></outputDirectory>
+        <includes>
+          <include>*gt-jp2k*.jar</include>
+          <include>*imageio-ext-kakadu*.jar</include>
+          <include>*imageio-ext-imagereadmt*.jar</include>
+        </includes>
+      </fileSet>
+    <fileSet>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>LGPL.html</include>
+        <include>GEOTOOLS_NOTICE.html</include>
+        <include>GPL.html</include>
+        <include>NOTICE.html</include>
+      </includes>
     </fileSet>
-    </fileSets>
+  </fileSets>
 </assembly>

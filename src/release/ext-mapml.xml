@@ -15,11 +15,19 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>release/extensions</directory>
+      <directory>release/html/mapml</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>LICENSE.txt</include>
+        <include>*</include>
       </includes>
+    </fileSet>
+    <fileSet>
+        <directory>release/target/html/licenses</directory>
+        <outputDirectory></outputDirectory>
+        <includes>
+            <include>GPL.html</include>
+            <include>NOTICE.html</include>
+        </includes>
     </fileSet>
   </fileSets>
 </assembly>

@@ -1,7 +1,7 @@
 
-       Oracle Free Use Terms and Conditions
+## Oracle Free Use Terms and Conditions
 
-Definitions
+### Definitions
 
 "Oracle" refers to Oracle America, Inc. "You" and "Your" refers to (a)
 a company or organization (each an "Entity") accessing the Programs,
@@ -20,7 +20,7 @@ Licensed Technology. "Separately Licensed Technology" refers to Oracle
 or third party technology that is licensed under Separate Terms and
 not under the terms of this license.
 
-Separately Licensed Technology
+### Separately Licensed Technology
 
 Oracle may provide certain notices to You in Program Documentation,
 readmes or notice files in connection with Oracle or third party
@@ -33,7 +33,7 @@ notice, third party technology that is not Separately Licensed
 Technology shall be deemed part of the Programs licensed to You under
 the terms of this license.
 
-Source Code for Open Source Software
+### Source Code for Open Source Software
 
 For software that You receive from Oracle in binary form that is
 licensed under an open source license that gives You the right to
@@ -50,7 +50,7 @@ Code" section of the latter website.
 The following license terms apply to those Programs that are not
 provided to You under Separate Terms.
 
-License Rights and Restrictions
+### License Rights and Restrictions
 
 Oracle grants to You, as a recipient of this Program, a nonexclusive,
 nontransferable, limited license to, subject to the conditions stated
@@ -70,32 +70,32 @@ Documentation.
 
 Your license is contingent on Your compliance with the following conditions:
 
-    - You include a copy of this license with any distribution by You
-      of the Programs;
+- You include a copy of this license with any distribution by You
+  of the Programs;
 
-    - You do not remove markings or notices of either Oracle's or a
-      licensor's proprietary rights from the Programs or Program
-      Documentation;
+- You do not remove markings or notices of either Oracle's or a
+  licensor's proprietary rights from the Programs or Program
+  Documentation;
 
-    - You comply with all U.S. and applicable export control and
-      economic sanctions laws and regulations that govern Your use of
-      the Programs (including technical data);
+- You comply with all U.S. and applicable export control and
+  economic sanctions laws and regulations that govern Your use of
+  the Programs (including technical data);
 
-    - You do not cause or permit reverse engineering, disassembly or
-      decompilation of the Programs (except as allowed by law) by You
-      nor allow an associated party to do so.
+- You do not cause or permit reverse engineering, disassembly or
+  decompilation of the Programs (except as allowed by law) by You
+  nor allow an associated party to do so.
 
 For clarity, any source code that may be included in the distribution
 with the Programs is provided solely for reference purposes and may
 not be modified, unless such source code is under Separate Terms
 permitting modification.
 
-Ownership
+### Ownership
 
 Oracle or its licensors retain all ownership and intellectual property
 rights to the Programs.
 
-Information Collection
+### Information Collection
 
 The Programs' installation and/or auto-update processes, if any, may
 transmit a limited amount of data to Oracle or its service provider
@@ -104,7 +104,7 @@ them. Oracle does not associate the data with personally identifiable
 information. Refer to Oracle's Privacy Policy at
 www.oracle.com/privacy.
 
-Disclaimer of Warranties; Limitation of Liability
+### Disclaimer of Warranties; Limitation of Liability
 
 THE PROGRAMS ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. ORACLE
 FURTHER DISCLAIMS ALL WARRANTIES, EXPRESS AND IMPLIED, INCLUDING

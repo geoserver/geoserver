@@ -15,6 +15,10 @@
   <artifactId>gs-release</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer Release Module</name>
+  <properties>
+    <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+    <copyright.year>${maven.build.timestamp}</copyright.year>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -401,6 +405,76 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/target/html-template</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/markdown/html</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.ruleoftech</groupId>
+        <artifactId>markdown-page-generator-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>licenses</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputDirectory>${project.basedir}/../../licenses</inputDirectory>
+              <outputDirectory>${project.build.directory}/html/licenses</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>readme</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputDirectory>${project.basedir}/src/markdown</inputDirectory>
+              <outputDirectory>${project.build.directory}/html</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>extensions</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputDirectory>${project.basedir}/extensions</inputDirectory>
+              <outputDirectory>${project.build.directory}/html</outputDirectory>
+              <recursiveInput>true</recursiveInput>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <recursiveInput>false</recursiveInput>
+          <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
+          <headerHtmlFile>${project.basedir}/target/html-template/header.html</headerHtmlFile>
+          <footerHtmlFile>${project.basedir}/target/html-template/footer.html</footerHtmlFile>
+          <pegdownExtensions>TABLES,FENCED_CODE_BLOCKS</pegdownExtensions>
+          <defaultTitle>true</defaultTitle>
+          <inputFileExtensions>md,txt</inputFileExtensions>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
@@ -415,6 +489,7 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <id>remove-dependencies</id>
             <phase>install</phase>
             <goals>
               <goal>run</goal>
@@ -432,4 +507,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>

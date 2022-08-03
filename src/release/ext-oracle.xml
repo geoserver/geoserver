@@ -24,12 +24,12 @@
         </excludes>
     </fileSet>
     <fileSet>
-      <directory>release</directory>
+      <directory>release/target/html/licenses</directory>
       <outputDirectory></outputDirectory>
       <includes>
-         <include>LGPL.md</include>
-         <include>GEOTOOLS_NOTICE.txt</include>
-         <include>OracleFUTC.txt</include>
+         <include>LGPL.html</include>
+         <include>GEOTOOLS_NOTICE.html</include>
+         <include>OracleFUTC.html</include>
       </includes>
     </fileSet>
   </fileSets>

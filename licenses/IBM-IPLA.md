@@ -1,4 +1,4 @@
-LICENSE INFORMATION
+## LICENSE INFORMATION
 
 The Programs listed below are licensed under the following License Information terms and conditions
 in addition to the Program license terms previously agreed to by Client and IBM. If Client does not
@@ -10,19 +10,19 @@ IBM Data Server Driver for JDBC and SQLJ v4.28 (11.5.5.0) (Tool)
 
 The following standard terms apply to Licensee's use of the Program.
 
-Limited use right
+### Limited use right
 
 Licensee is not authorized to use the Program to provide commercial IT services to any third party,
 to provide commercial hosting or timesharing, or to sublicense, rent, or lease the Program unless
 expressly provided for in the applicable agreements under which Licensee obtains authorizations to
 use the Program.
 
-Prohibited Uses
+### Prohibited Uses
 
 Licensee may not use or authorize others to use the Program if failure of the Program could lead to
 death, bodily injury, or property or environmental damage.
 
-Redistributables
+### Redistributables
 
 The Program includes components that are Redistributable and they are listed below.
 Redistributables may be distributed, in object-code form, only as part of Licensee's value-added
@@ -39,12 +39,13 @@ obligation of support and "AS IS", WITH NO WARRANTY OF ANY KIND, EITHER EXPRESS 
 THE WARRANTY OF TITLE, NON-INFRINGEMENT OR NON-INTERFERENCE AND THE IMPLIED WARRANTIES AND CONDITIONS
 OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-The following are Redistributables:
-db2jcc4.jar
-sqlj4.zip
+| The following are Redistributables:
+|
+| db2jcc4.jar
+| sqlj4.zip
 
-L/N: L-CONN-BRAKR7
-D/N: L-CONN-BRAKR7
-P/N: L-CONN-BRAKR7
+| L/N: L-CONN-BRAKR7
+| D/N: L-CONN-BRAKR7
+| P/N: L-CONN-BRAKR7
 
 https://www-03.ibm.com/software/sla/sladb.nsf/lilookup/179A6D1769B0A44D8525862400329FB8?OpenDocument

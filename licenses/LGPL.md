@@ -501,3 +501,5 @@ if necessary. Here is a sample; alter the names:
     Ty Coon, President of Vice
 
 That's all there is to it!
+
+<cite>source: [www.gnu.org](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)</cite>

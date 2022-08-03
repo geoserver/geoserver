@@ -31,8 +31,8 @@
     <directory>release</directory>
     <outputDirectory></outputDirectory>
     <includes>
-       <include>LGPL.md</include>
-       <include>GEOTOOLS_NOTICE.txt</include>
+       <include>LGPL.html</include>
+       <include>GEOTOOLS_NOTICE.html</include>
     </includes>
   </fileSet>
   </fileSets>

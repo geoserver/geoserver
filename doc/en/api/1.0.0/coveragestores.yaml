@@ -386,6 +386,48 @@ paths:
         405:
           description: Method Not Allowed
 
+  /workspaces/{workspace}/coveragestores/{store}/reset:
+    put:
+      operationId: putCoverageStoreReset
+      tags:
+        - "CoverageStores"
+      summary: Reset the caches related to this specific coverage store.
+      description: Resets raster caches for this coverage store. This operation is used to force GeoServer to drop caches associated to this coverage store, and reconnect to the raster source the next time it is needed by a request. This is useful as the readers often cache some information about the bounds, coordinate system and image structure that might have changed in the meantime.
+      parameters:
+        - name: workspace
+          in: path
+          type: string
+          required: true
+          description: The name of the workspace containing the coverage store.
+        - name: store
+          in: path
+          required: true
+          description: The name of the coverage store to modify.
+          type: string      
+      responses:
+        200:
+          description: OK
+    post:
+      operationId: postCoverageStoreReset
+      tags:
+        - "CoverageStores"
+      summary: Reset the caches related to this specific coverage store.
+      description: Resets raster caches for this coverage store. This operation is used to force GeoServer to drop caches associated to this coverage store, and reconnect to the raster source the next time it is needed by a request. This is useful as the readers often cache some information about the bounds, coordinate system and image structure that might have changed in the meantime.
+      parameters:
+        - name: workspace
+          in: path
+          type: string
+          required: true
+          description: The name of the workspace containing the coverage store.
+        - name: store
+          in: path
+          required: true
+          description: The name of the coverage store to modify.
+          type: string
+      responses:
+        200:
+          description: OK
+
 parameters:
   CoverageStorePost:
     name: coverageStoreBody

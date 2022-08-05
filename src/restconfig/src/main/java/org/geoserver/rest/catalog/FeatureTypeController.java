@@ -57,6 +57,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -411,6 +412,20 @@ public class FeatureTypeController extends AbstractCatalogController {
 
         catalog.remove(ftInfo);
         LOGGER.info("DELETE feature type" + storeName + "," + featureTypeName);
+    }
+
+    @RequestMapping(
+            value = "{featureTypeName}/reset",
+            method = {RequestMethod.POST, RequestMethod.PUT})
+    public void reset(
+            @PathVariable String workspaceName,
+            @PathVariable(required = false) String storeName,
+            @PathVariable String featureTypeName) {
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
+        FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, storeName, featureTypeName);
+
+        catalog.getResourcePool().clear(ftInfo);
     }
 
     /** If the feature type doesn't exists throws a REST exception with HTTP 404 code. */

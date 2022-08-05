@@ -894,4 +894,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         checkCoverageName(coverageName);
         return delegate.getDatasetLayout(coverageName);
     }
+
+    /** Made available for testing purposes only */
+    public GridCoverage2DReader getDelegate() {
+        return delegate;
+    }
 }

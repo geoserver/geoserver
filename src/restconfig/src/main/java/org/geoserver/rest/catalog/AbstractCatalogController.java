@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
@@ -91,6 +93,21 @@ public abstract class AbstractCatalogController extends RestBaseController {
                         "Error while calculating lat/lon bounds for featuretype: " + message;
                 throw new RestException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
+        }
+        if (fieldsToCalculate.contains("dimensions") && message instanceof CoverageInfo) {
+            CatalogBuilder cb = new CatalogBuilder(catalog);
+            try {
+                CoverageInfo ci = (CoverageInfo) message;
+                cb.reloadDimensions(ci);
+            } catch (Exception e) {
+                String errorMessage = "Error while calculating bands for coverage: " + message;
+                throw new RestException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
+        }
+        if (fieldsToCalculate.contains("attributes") && message instanceof FeatureTypeInfoImpl) {
+            FeatureTypeInfoImpl ft = (FeatureTypeInfoImpl) message;
+            catalog.getResourcePool().clear(ft);
+            ft.setAttributes(new ArrayList<>());
         }
     }
 

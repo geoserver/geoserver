@@ -11,6 +11,7 @@ import static org.geoserver.data.test.MockData.SF_PREFIX;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -18,6 +19,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +33,7 @@ import java.util.zip.ZipOutputStream;
 import javax.xml.namespace.QName;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -850,5 +854,92 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                         BASEPATH
                                 + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml");
         assertXpathEvaluatesTo("i18n title", "/featureType/internationalTitle/en", dom);
+    }
+
+    @Test
+    public void testFeatureTypeReset() throws Exception {
+        testFeatureTypeStoreReset("/workspaces/sf/featuretypes/PrimitiveGeoFeature/reset");
+    }
+
+    @Test
+    public void testFeatureTypeStoreReset() throws Exception {
+        // force feature type initialization, check it has the expected structure
+        testFeatureTypeStoreReset(
+                "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature/reset");
+    }
+
+    private void testFeatureTypeStoreReset(String resetPath) throws Exception {
+        // force feature type initialization, check it has the expected structure
+        FeatureTypeInfo fti =
+                getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
+        FeatureType featureType = fti.getFeatureType();
+        assertNotNull(featureType.getDescriptor("description"));
+        assertNull(featureType.getDescriptor("identifier"));
+
+        // now go and clear
+        MockHttpServletResponse response = postAsServletResponse(ROOT_PATH + resetPath, "", null);
+        assertEquals(200, response.getStatus());
+
+        // copy over a different file, will change the feature type structure enough
+        try (InputStream is =
+                        SystemTestData.class.getResourceAsStream(
+                                "PrimitiveGeoFeatureId.properties");
+                OutputStream os =
+                        getDataDirectory().get("sf/PrimitiveGeoFeature.properties").out()) {
+            IOUtils.copy(is, os);
+        }
+
+        // feature type is not the same object, and has a different structure
+        fti = getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
+        FeatureType featureTypeNew = fti.getFeatureType();
+        assertNotSame(featureTypeNew, featureType);
+        assertNotNull(featureTypeNew.getDescriptor("description"));
+        assertNotNull(featureTypeNew.getDescriptor("identifier"));
+    }
+
+    @Test
+    public void testFeatureTypeResetAttributes() throws Exception {
+        // force feature type initialization, force the set of attributes as configured
+        FeatureTypeInfo fti =
+                getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
+        fti.getAttributes().clear();
+        fti.getAttributes().addAll(fti.attributes());
+        getCatalog().save(fti);
+        FeatureType featureType = fti.getFeatureType();
+        assertNotNull(featureType.getDescriptor("description"));
+        assertNull(featureType.getDescriptor("identifier"));
+
+        // now go and clear
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        ROOT_PATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature/reset",
+                        "",
+                        null);
+        assertEquals(200, response.getStatus());
+
+        // copy over a different file, will change the feature type structure enough
+        try (InputStream is =
+                        SystemTestData.class.getResourceAsStream(
+                                "PrimitiveGeoFeatureId.properties");
+                OutputStream os =
+                        getDataDirectory().get("sf/PrimitiveGeoFeature.properties").out()) {
+            IOUtils.copy(is, os);
+        }
+
+        // force recalc of the attributes
+        response =
+                putAsServletResponse(
+                        ROOT_PATH
+                                + "/workspaces/sf/featuretypes/PrimitiveGeoFeature?recalculate=attributes",
+                        "<featureType/>",
+                        "text/xml");
+        assertEquals(200, response.getStatus());
+
+        // feature type is not the same object, and has a different structure
+        fti = getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
+        FeatureType featureTypeNew = fti.getFeatureType();
+        assertNotSame(featureTypeNew, featureType);
+        assertNotNull(featureTypeNew.getDescriptor("description"));
+        assertNotNull(featureTypeNew.getDescriptor("identifier"));
     }
 }

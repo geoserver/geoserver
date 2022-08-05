@@ -52,6 +52,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
@@ -214,6 +215,14 @@ public class DataStoreController extends AbstractCatalogController {
         }
 
         LOGGER.info("DELETE datastore " + workspaceName + ":s" + workspaceName);
+    }
+
+    @RequestMapping(
+            value = "{storeName}/reset",
+            method = {RequestMethod.POST, RequestMethod.PUT})
+    public void reset(@PathVariable String workspaceName, @PathVariable String storeName) {
+        DataStoreInfo ds = getExistingDataStore(workspaceName, storeName);
+        catalog.getResourcePool().clear(ds);
     }
 
     private DataStoreInfo getExistingDataStore(String workspaceName, String storeName) {

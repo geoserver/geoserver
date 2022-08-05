@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
@@ -256,6 +257,19 @@ public class CoverageController extends AbstractCatalogController {
         catalog.remove(c);
         catalog.getResourcePool().clear(c.getStore());
         LOGGER.info("DELETE coverage " + storeName + "," + coverageName);
+    }
+
+    @RequestMapping(
+            value = "coveragestores/{storeName}/coverages/{coverageName}/reset",
+            method = {RequestMethod.POST, RequestMethod.PUT})
+    public void reset(
+            @PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable String coverageName) {
+        CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspaceName, storeName);
+        CoverageInfo original = catalog.getCoverageByCoverageStore(cs, coverageName);
+        checkCoverageExists(original, workspaceName, coverageName);
+        catalog.getResourcePool().clear(original);
     }
 
     private List<String> getStoreCoverages(CoverageStoreInfo coverageStore) {

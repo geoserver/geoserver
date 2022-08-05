@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
@@ -197,6 +198,14 @@ public class CoverageStoreController extends AbstractCatalogController {
                 ((StructuredGridCoverage2DReader) reader).delete(deleteData);
             }
         }
+    }
+
+    @RequestMapping(
+            value = "{storeName}/reset",
+            method = {RequestMethod.POST, RequestMethod.PUT})
+    public void reset(@PathVariable String workspaceName, @PathVariable String storeName) {
+        CoverageStoreInfo cs = getExistingCoverageStore(workspaceName, storeName);
+        catalog.getResourcePool().clear(cs);
     }
 
     void clear(CoverageStoreInfo info) {

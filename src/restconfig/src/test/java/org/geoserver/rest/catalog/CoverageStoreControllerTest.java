@@ -6,13 +6,17 @@
 package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -20,12 +24,15 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageDimensionCustomizerReader;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -36,9 +43,13 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.gce.geotiff.GeoTiffReader;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.geometry.Envelope;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -676,5 +687,49 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                 fail();
             }
         }
+    }
+
+    @Test
+    public void testCoverageStoreReset() throws Exception {
+        // force initialization, grab the store, check it's not wrapped
+        CoverageStoreInfo cs = catalog.getCoverageStoreByName("wcs", "BlueMarble");
+        GridCoverageReader reader =
+                ((CoverageDimensionCustomizerReader) cs.getGridCoverageReader(null, null))
+                        .getDelegate();
+        assertNotNull(reader);
+        assertThat(reader, instanceOf(GeoTiffReader.class));
+
+        // read the coverage, check basic properties
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(SystemTestData.TASMANIA_BM));
+        assertNotNull(ci);
+        GridCoverage2D gridCoverage = (GridCoverage2D) ci.getGridCoverage(null, null);
+        Envelope envelope = gridCoverage.getEnvelope();
+        dispose(gridCoverage);
+
+        // now go and clear
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/reset", "", null);
+        assertEquals(200, response.getStatus());
+
+        // copy over a different file, will change the file bounds enough
+        try (InputStream is = SystemTestData.class.getResourceAsStream("world.tiff");
+                OutputStream os = getDataDirectory().get("BlueMarble/tazbm.tiff").out()) {
+            IOUtils.copy(is, os);
+        }
+
+        // we still get the store, but it's not the same object
+        GridCoverageReader readerNew =
+                ((CoverageDimensionCustomizerReader) cs.getGridCoverageReader(null, null))
+                        .getDelegate();
+        assertNotNull(readerNew);
+        assertNotSame(readerNew, reader);
+
+        // checking the envelope changed. Cannot check the bands, unlike features, their definition
+        // is part of the configuration, in case of modification it requires an explicit PUT
+        gridCoverage = (GridCoverage2D) ci.getGridCoverage(null, null);
+        Envelope envelopeNew = gridCoverage.getEnvelope();
+        assertNotEquals(envelopeNew, envelope);
+        dispose(gridCoverage);
     }
 }

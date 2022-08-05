@@ -295,6 +295,7 @@ paths:
       responses:
         405:
           description: Method not allowed.
+          
   /workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}:
     get:    
       operationId: getFeatureType
@@ -631,7 +632,7 @@ paths:
           type: string
         - name: recalculate
           in: query
-          description: Specifies whether to recalculate any bounding boxes for a feature type. Some properties of feature types are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to recalculate both the native bounding box and the lat/lon bounding box.
+          description: Specifies whether to recalculate properties for a feature type. Some properties of feature types are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to recalculate both the native bounding box and the lat/lon bounding box. Finally, 'recalculate=attributes' can be  used to reset the attributes and reload them from the original vector source. Pay attention to its usage, if attributes were explicity configured to perform attribute selection, renaming, and other transformations, such configuration will be lost, resetting the feature type to the list of attributes found in the vector data source. 
           required: false
           type: array
           collectionFormat: csv
@@ -1049,6 +1050,101 @@ paths:
       responses:
         200:
           description: The feature type was successfully deleted.
+          
+  /workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/reset:
+    put:
+      operationId: putFeatureTypeReset
+      tags:
+        - "FeatureTypes"
+      summary: Reset the caches related to this specific feature type.
+      description: Resets caches for this feature type. This operation is used to force GeoServer to drop cached feature type structures, and eventually re-compute them the next time it is needed by a request. This is useful as both GeoServer and the underlying data store can keep state information about a feature type attributes. Warning, if an explicit list of attributes is configured in the feature type, to support attribute selection, renaming, data type conversion and calculation of new attributes, the reset itself won't change such configuration, an explicit PUT on the feature type resource is required.
+      parameters:
+        - name: workspaceName
+          in: path
+          type: string
+          required: true
+          description: The name of the workspace containing the data store.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the data store.
+          type: string
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    post:
+      operationId: postFeatureTypeReset
+      tags:
+        - "FeatureTypes"
+      summary: Reset the caches related to this specific feature type
+      description: Resets caches for this feature type. This operation is used to force GeoServer to drop cached feature type structures, and eventually re-compute them the next time it is needed by a request. This is useful as both GeoServer and the underlying data store can keep state information about a feature type attributes. Warning, if an explicit list of attributes is configured in the feature type, to support attribute selection, renaming, data type conversion and calculation of new attributes, the reset itself won't change such configuration, an explicit PUT on the feature type resource is required.
+      parameters:
+        - name: workspaceName
+          in: path
+          type: string
+          required: true
+          description: The name of the workspace containing the data store.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the data store.
+          type: string
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string          
+      responses:
+        200:
+          description: OK
+
+
+  /workspaces/{workspaceName}/featuretypes/{featureTypeName}/reset:
+    put:
+      operationId: putFeatureTypeReset
+      tags:
+        - "FeatureTypes"
+      summary: Reset the caches related to this specific feature type.
+      description: Resets caches for this feature type. This operation is used to force GeoServer to drop cached feature type structures, and eventually re-compute them the next time it is needed by a request. This is useful as both GeoServer and the underlying data store can keep state information about a feature type attributes. Warning, if an explicit list of attributes is configured in the feature type, to support attribute selection, renaming, data type conversion and calculation of new attributes, the reset itself won't change such configuration, an explicit PUT on the feature type resource is required.
+      parameters:
+        - name: workspaceName
+          in: path
+          type: string
+          required: true
+          description: The name of the workspace containing the data store.
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    post:
+      operationId: postFeatureTypeReset
+      tags:
+        - "FeatureTypes"
+      summary: Reset the caches related to this specific feature type
+      description: Resets caches for this feature type. This operation is used to force GeoServer to drop cached feature type structures, and eventually re-compute them the next time it is needed by a request. This is useful as both GeoServer and the underlying data store can keep state information about a feature type attributes. Warning, if an explicit list of attributes is configured in the feature type, to support attribute selection, renaming, data type conversion and calculation of new attributes, the reset itself won't change such configuration, an explicit PUT on the feature type resource is required.
+      parameters:
+        - name: workspaceName
+          in: path
+          type: string
+          required: true
+          description: The name of the workspace containing the data store.
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
 
 definitions:
   FeatureTypeInfo:

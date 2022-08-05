@@ -753,6 +753,12 @@ public class ResourcePool {
      */
     public void clear(DataStoreInfo info) {
         dataStoreCache.remove(info.getId());
+        String id = info.getId();
+        if (id != null) dataStoreCache.remove(id);
+        // the new instance of the store might generate new feature types, clear the cache
+        for (FeatureTypeInfo ft : catalog.getFeatureTypesByDataStore(info)) {
+            clear(ft);
+        }
     }
 
     public List<AttributeTypeInfo> getAttributes(FeatureTypeInfo info) throws IOException {
@@ -1210,9 +1216,31 @@ public class ResourcePool {
      * @param info The feature type metadata.
      */
     public void clear(FeatureTypeInfo info) {
-        featureTypeCache.remove(getFeatureTypeInfoKey(info, true));
-        featureTypeCache.remove(getFeatureTypeInfoKey(info, false));
-        featureTypeAttributeCache.remove(info.getId());
+        String id = info.getId();
+        if (id != null) {
+            String id2 = getFeatureTypeInfoKey(info, true);
+            String id3 = getFeatureTypeInfoKey(info, false);
+            featureTypeCache.remove(id2);
+            featureTypeCache.remove(id3);
+            featureTypeAttributeCache.remove(id);
+            flushDataStore(info);
+        }
+    }
+
+    /**
+     * Clears a coverage resource from cache. In the current implementation, it resets the
+     * underlying reader, as it's the only bit that's actually cached, to allow discovering new
+     * information potentially available in the source (the reader caches information such as the
+     * bounds, native CRS and the image structure, which affect the coverage itself).
+     */
+    public void clear(CoverageInfo info) {
+        String id = info.getId();
+        if (id != null && info.getStore() != null) {
+            String storeId = info.getStore().getId();
+            hintCoverageReaderCache.keySet().stream()
+                    .filter(k -> storeId.equals(k.id))
+                    .forEach(k -> hintCoverageReaderCache.remove(k));
+        }
     }
 
     /**

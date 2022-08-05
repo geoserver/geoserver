@@ -859,7 +859,7 @@ paths:
             $ref: "#/definitions/CoverageInfo"
         - name: calculate
           in: query
-          description: 'Comma-separated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox".'
+          description: 'Comma-separated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox", "dimensions" (that is, bands).'
           required: false
           type: array
           collectionFormat: csv
@@ -901,6 +901,58 @@ paths:
       responses:
         200:
           description: Successfully deleted.
+          
+  /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/reset:
+    put:
+      operationId: putCoverageReset
+      tags:
+        - "Coverages"
+      summary: Reset the caches related to this specific coverage.
+      description: Resets raster caches for this coverage. This operation is used to force GeoServer to drop caches associated to this coverage, and reconnect to the raster source the next time it is needed by a request. This is useful as the readers often cache some information about the bounds, coordinate system and image structure that might have changed in the meantime. Warning, the band structure is stored as part of the coverage configuration and won't be modified by this call, in case of need it should be modified issuing a PUT request against the coverage resource itself.
+      parameters:
+        - name: workspace
+          in: path
+          type: string
+          required: true
+          description: The name of the workspace containing the coverage store.
+        - name: store
+          in: path
+          required: true
+          description: The name of the coverage store containing the target coverage.
+          type: string      
+        - name: coverage
+          in: path
+          required: true
+          description: The name of the target coverage.
+          type: string
+      responses:
+        200:
+          description: OK
+    post:
+      operationId: postCoverageReset
+      tags:
+        - "Coverages"
+      summary: Reset the caches related to this specific coverage.
+      description: Resets raster caches for this coverage. This operation is used to force GeoServer to drop caches associated to this coverage, and reconnect to the raster source the next time it is needed by a request. This is useful as the readers often cache some information about the bounds, coordinate system and image structure that might have changed in the meantime. Warning, the band structure is stored as part of the coverage configuration and won't be modified by this call, in case of need it should be modified issuing a PUT request against the coverage resource itself.
+      parameters:
+        - name: workspace
+          in: path
+          type: string
+          required: true
+          description: The name of the workspace containing the coverage store.
+        - name: store
+          in: path
+          required: true
+          description: The name of the coverage store containing the target coverage.
+          type: string
+        - name: coverage
+          in: path
+          required: true
+          description: The name of the target coverage.
+          type: string
+      responses:
+        200:
+          description: OK
 
 definitions:
   CoverageInfo:

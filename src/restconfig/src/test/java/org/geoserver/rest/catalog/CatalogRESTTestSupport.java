@@ -5,6 +5,7 @@
  */
 package org.geoserver.rest.catalog;
 
+import it.geosolutions.imageio.utilities.ImageIOUtilities;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -16,12 +17,23 @@ import org.geoserver.config.CatalogTimeStampUpdater;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.junit.Before;
 
 public abstract class CatalogRESTTestSupport extends GeoServerSystemTestSupport {
 
     protected static Catalog catalog;
     protected static XpathEngine xp;
+
+    /** Clears up a coverage and its rendered image, important to get builds working on Windows */
+    protected static void dispose(GridCoverage2D coverage) {
+        try {
+            ImageIOUtilities.disposeImage(coverage.getRenderedImage());
+            coverage.dispose(true);
+        } catch (Throwable t) {
+            // Does nothing;
+        }
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

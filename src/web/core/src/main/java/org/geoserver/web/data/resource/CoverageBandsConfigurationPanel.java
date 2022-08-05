@@ -25,8 +25,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageView;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.DecimalListTextField;
 import org.geoserver.web.wicket.DecimalTextField;
@@ -35,11 +33,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.measure.UnitFormat;
 import org.geotools.measure.UnitFormatter;
 import org.geotools.util.NumberRange;
-import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.SampleDimensionType;
 import si.uom.NonSI;
@@ -152,24 +148,9 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
     private void reloadBands() throws Exception {
         GeoServerApplication app = (GeoServerApplication) getApplication();
         CoverageInfo ci = (CoverageInfo) getResourceInfo();
-        String nativeName = ci.getNativeCoverageName();
         Catalog catalog = app.getCatalog();
         CatalogBuilder cb = new CatalogBuilder(catalog);
-        cb.setStore(ci.getStore());
-        MetadataMap metadata = ci.getMetadata();
-        CoverageInfo rebuilt;
-        if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader)
-                            catalog.getResourcePool()
-                                    .getGridCoverageReader(
-                                            ci, nativeName, GeoTools.getDefaultHints());
-            rebuilt = cb.buildCoverage(reader, nativeName, null);
-        } else {
-            rebuilt = cb.buildCoverage(nativeName);
-        }
-        ci.getDimensions().clear();
-        ci.getDimensions().addAll(rebuilt.getDimensions());
+        cb.reloadDimensions(ci);
     }
 
     protected Component buildUnitField(String id, IModel<String> model) {

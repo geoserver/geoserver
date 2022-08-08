@@ -18,14 +18,6 @@ Uploading a shapefile
          --data-binary @roads.zip 
          http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads/file.shp
 
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
-
 *Response*
 
 ::

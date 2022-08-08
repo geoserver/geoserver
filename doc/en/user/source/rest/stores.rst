@@ -349,14 +349,6 @@ Adding an external WMTS Store
          -d "<wmtsStore><name>basemap-nat-geo-datastore</name><description>esri-street-map</description><capabilitiesURL>https://services.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/1.0.0/WMTSCapabilities.xml</capabilitiesURL><type>WMTS</type></wmtsStore>" 
          http://localhost:8080/geoserver/rest/workspaces/acme/wmtsstores
 
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
-
 *Response*
 
 ::
@@ -378,14 +370,6 @@ Adding an external WMTS Layer
        curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" 
          -d "<wmtsLayer><name>NatGeo_World_Map</name></wmtsLayer>" 
          http://localhost:8080/geoserver/rest/workspaces/acme/wmtsstores/Basemap-Nat-Geo-Datastore/layers
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 

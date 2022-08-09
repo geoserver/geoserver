@@ -18,14 +18,6 @@ Uploading a shapefile
          --data-binary @roads.zip 
          http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads/file.shp
 
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
-
 *Response*
 
 ::
@@ -340,3 +332,47 @@ Given the following content saved as :file:`annotations.xml`:
    201 Created
 
 A new and empty table named "annotations" in the "nyc" database will be created as well.
+
+
+Adding an external WMTS Store
+-----------------------------
+
+**Create a new WMTS store "Basemap-Nat-Geo-Datastore"**
+
+*Request*
+
+.. admonition:: curl
+
+   ::
+
+       curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" 
+         -d "<wmtsStore><name>basemap-nat-geo-datastore</name><description>esri-street-map</description><capabilitiesURL>https://services.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/1.0.0/WMTSCapabilities.xml</capabilitiesURL><type>WMTS</type></wmtsStore>" 
+         http://localhost:8080/geoserver/rest/workspaces/acme/wmtsstores
+
+*Response*
+
+::
+
+   201 Created
+
+
+Adding an external WMTS Layer 
+-----------------------------
+
+**Publish a new WMTS Layer "NatGeo_World_Map" from the WMTS store "Basemap-Nat-Geo-Datastore"**
+
+*Request*
+
+.. admonition:: curl
+
+   ::
+
+       curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" 
+         -d "<wmtsLayer><name>NatGeo_World_Map</name></wmtsLayer>" 
+         http://localhost:8080/geoserver/rest/workspaces/acme/wmtsstores/Basemap-Nat-Geo-Datastore/layers
+
+*Response*
+
+::
+
+   201 Created

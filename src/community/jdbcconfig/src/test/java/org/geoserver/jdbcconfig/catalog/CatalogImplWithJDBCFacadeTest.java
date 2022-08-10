@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
@@ -26,6 +27,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
@@ -394,5 +396,30 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         for (Future<?> future : futures) {
             future.get();
         }
+    }
+
+    @Test
+    public void testGetStyleWithoutWorkspace() {
+        final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        addDataStore();
+        addNamespace();
+        catalog.add(wsB);
+
+        FeatureTypeInfo ft1 = newFeatureType("ft1", ds);
+        ft1.setAdvertised(false);
+        catalog.add(ft1);
+        StyleInfo s1 = newStyle("s1", "s1Filename", wsB);
+        catalog.add(s1);
+
+        StyleInfo style = catalog.getStyleByName("s1");
+        assertNotNull(style);
+    }
+
+    protected StyleInfo newStyle(String name, String fileName, WorkspaceInfo workspaceInfo) {
+        StyleInfo s2 = catalog.getFactory().createStyle();
+        s2.setName(name);
+        s2.setFilename(fileName);
+        s2.setWorkspace(workspaceInfo);
+        return s2;
     }
 }

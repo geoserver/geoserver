@@ -32,6 +32,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
@@ -429,5 +430,30 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         WMTSLayerInfo wmtsLayerByName =
                 catalog.getResourceByName(ns, layerName, WMTSLayerInfo.class);
         assertEquals(resource, wmtsLayerByName);
+    }
+
+    @Test
+    public void testGetStyleWithoutWorkspace() {
+        final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        addDataStore();
+        addNamespace();
+        catalog.add(wsB);
+
+        FeatureTypeInfo ft1 = newFeatureType("ft1", ds);
+        ft1.setAdvertised(false);
+        catalog.add(ft1);
+        StyleInfo s1 = newStyle("s1", "s1Filename", wsB);
+        catalog.add(s1);
+
+        StyleInfo style = catalog.getStyleByName("s1");
+        assertNotNull(style);
+    }
+
+    protected StyleInfo newStyle(String name, String fileName, WorkspaceInfo workspaceInfo) {
+        StyleInfo s2 = catalog.getFactory().createStyle();
+        s2.setName(name);
+        s2.setFilename(fileName);
+        s2.setWorkspace(workspaceInfo);
+        return s2;
     }
 }

@@ -22,6 +22,7 @@
         <include>openws*.jar</include>
         <include>velocity*.jar</include>
         <include>esapi*.jar</include>
+        <include>commons-httpclient*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

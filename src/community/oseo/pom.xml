@@ -25,5 +25,6 @@
     <module>oseo-stac</module>
     <module>oseo-rest</module>
     <module>web-oseo</module>
+    <module>oseo-integration-tests</module>
   </modules>
 </project>

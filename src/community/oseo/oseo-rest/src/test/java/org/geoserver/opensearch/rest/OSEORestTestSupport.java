@@ -5,6 +5,8 @@
 package org.geoserver.opensearch.rest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 
@@ -83,12 +85,13 @@ public class OSEORestTestSupport extends OSEOTestSupport {
         }
 
         assertEquals(expectedHttpCode, response.getStatus());
-        assertThat(response.getContentType(), startsWith("application/json"));
+        // allow application/json, application/geo+json, application/schema+json, ...
+        assertThat(response.getContentType(), allOf(startsWith("application/"), endsWith("json")));
         return JsonPath.parse(response.getContentAsString());
     }
 
     protected byte[] getTestData(String location) throws IOException {
-        return IOUtils.toByteArray(getClass().getResourceAsStream(location));
+        return IOUtils.toByteArray(OSEORestTestSupport.class.getResourceAsStream(location));
     }
 
     protected void createTest123Collection() throws Exception, IOException {

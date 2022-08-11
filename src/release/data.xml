@@ -1,0 +1,34 @@
+<assembly>
+ <id>data</id>
+ <formats>
+  <format>zip</format>
+ </formats>
+ <includeBaseDirectory>false</includeBaseDirectory>
+ <fileSets>
+  <fileSet>
+   <!-- the main webapp -->
+   <directory>../data/release</directory>
+   <outputDirectory>geoserver_data</outputDirectory>
+   <includes>
+    <include>**/*</include>
+   </includes>
+   <excludes>
+    <!-- see data/.gitignore -->
+    <exclude>gwc/**</exclude>
+    <exclude>gwc-gs.xml</exclude>
+    <exclude>gwc-layers/**</exclude>
+    <exclude>logs/**</exclude>
+    <exclude>security/geoserver.jceks</exclude>
+    <exclude>security/masterpw.digest</exclude>
+    <exclude>security/version.properties</exclude>
+   </excludes>
+  </fileSet>
+ </fileSets>
+ <files>
+    <file>
+      <source>../data/release/README.rst</source>
+      <outputDirectory></outputDirectory>
+      <destName>README.txt</destName>
+    </file>
+ </files>
+</assembly>

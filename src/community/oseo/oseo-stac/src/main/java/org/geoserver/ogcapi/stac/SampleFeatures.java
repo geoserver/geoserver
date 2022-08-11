@@ -9,6 +9,9 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
@@ -17,8 +20,15 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.opengis.feature.Feature;
+import org.opengis.feature.GeometryAttribute;
+import org.opengis.feature.IllegalAttributeException;
+import org.opengis.feature.Property;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.identity.FeatureId;
+import org.opengis.geometry.BoundingBox;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,6 +39,91 @@ import org.springframework.stereotype.Component;
 public class SampleFeatures implements GeoServerLifecycleHandler {
 
     private static final Object NO_COLLECTION_KEY = new Object();
+
+    private static final Feature NO_SAMPLE =
+            new Feature() {
+                @Override
+                public FeatureType getType() {
+                    return null;
+                }
+
+                @Override
+                public FeatureId getIdentifier() {
+                    return null;
+                }
+
+                @Override
+                public BoundingBox getBounds() {
+                    return null;
+                }
+
+                @Override
+                public GeometryAttribute getDefaultGeometryProperty() {
+                    return null;
+                }
+
+                @Override
+                public void setDefaultGeometryProperty(GeometryAttribute geometryAttribute) {}
+
+                @Override
+                public void setValue(Collection<Property> values) {}
+
+                @Override
+                public Collection<? extends Property> getValue() {
+                    return null;
+                }
+
+                @Override
+                public Collection<Property> getProperties(Name name) {
+                    return null;
+                }
+
+                @Override
+                public Property getProperty(Name name) {
+                    return null;
+                }
+
+                @Override
+                public Collection<Property> getProperties(String name) {
+                    return null;
+                }
+
+                @Override
+                public Collection<Property> getProperties() {
+                    return null;
+                }
+
+                @Override
+                public Property getProperty(String name) {
+                    return null;
+                }
+
+                @Override
+                public void validate() throws IllegalAttributeException {}
+
+                @Override
+                public AttributeDescriptor getDescriptor() {
+                    return null;
+                }
+
+                @Override
+                public void setValue(Object newValue) {}
+
+                @Override
+                public Name getName() {
+                    return null;
+                }
+
+                @Override
+                public boolean isNillable() {
+                    return false;
+                }
+
+                @Override
+                public Map<Object, Object> getUserData() {
+                    return null;
+                }
+            };
 
     private final OpenSearchAccessProvider accessProvider;
     private final LoadingCache<Object, Feature> sampleFeatures =
@@ -48,7 +143,9 @@ public class SampleFeatures implements GeoServerLifecycleHandler {
                                     Query q = new Query();
                                     q.setMaxFeatures(1);
                                     q.setFilter(filter);
-                                    return DataUtilities.first(ps.getFeatures(q));
+                                    return Optional.ofNullable(
+                                                    DataUtilities.first(ps.getFeatures(q)))
+                                            .orElse(NO_SAMPLE);
                                 }
                             });
 
@@ -66,7 +163,9 @@ public class SampleFeatures implements GeoServerLifecycleHandler {
     public Feature getSample(String collectionId) throws IOException {
         Object key = collectionId == null ? NO_COLLECTION_KEY : collectionId;
         try {
-            return sampleFeatures.get(key);
+            Feature feature = sampleFeatures.get(key);
+            if (feature == NO_SAMPLE) return null;
+            return feature;
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof IOException) throw (IOException) cause;

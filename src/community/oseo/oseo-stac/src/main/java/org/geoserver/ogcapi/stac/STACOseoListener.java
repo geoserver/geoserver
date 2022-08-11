@@ -109,8 +109,11 @@ public class STACOseoListener implements OseoEventListener {
 
     private void handleCollectionsUpdateEvent(String collectionName) {
         try {
-            Map<String, Expression> expressionMap = getQueryablesMap(collectionName);
+            // handle the empty collection case
             Feature sampleFeature = sampleFeatures.getSample(collectionName);
+            if (sampleFeature == null) return;
+
+            Map<String, Expression> expressionMap = getQueryablesMap(collectionName);
             List<Indexable> indexables =
                     expressionMap.entrySet().stream()
                             .map(

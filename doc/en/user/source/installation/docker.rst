@@ -23,6 +23,7 @@ This will run the container with the data directory shipped with the container (
     
       docker run -it -p8080:8080 docker.osgeo.org/geoserver:2.21.1 
  
+#. Visit `http://localhost:8080/geoserver <http://localhost:8080/geoserver>`_.
 
 Using your own Data Directory
 -----------------------------
@@ -48,6 +49,7 @@ This will run the container with a local data directory.  The data directory wil
            --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data  \
            -it -p8080:8080 docker.osgeo.org/geoserver:2.21.1 
 
+#. Visit `http://localhost:8080/geoserver <http://localhost:8080/geoserver>`_.
 
 Using the Standard Geoserver Data Directory
 -------------------------------------------
@@ -70,7 +72,7 @@ This Data Directory will be `mounted <https://docs.docker.com/storage/bind-mount
 
    .. Note::
 
-      You can navigate to this by going to the `Geoserver Source Forge page <https://sourceforge.net/projects/geoserver/>`_ then to `files` , `Geoserver`, and then release that matches your docker container.
+      You can navigate to this by going to the `Geoserver Source Forge page <https://sourceforge.net/projects/geoserver/>`_ then to `files`, `Geoserver`, and then the release that matches your docker container.
 
 #. Unzip the Data Directory
 
@@ -85,3 +87,5 @@ This Data Directory will be `mounted <https://docs.docker.com/storage/bind-mount
       docker run \
            --mount type=bind,src=/MY/geoserver-2.21.1-data,target=/opt/geoserver_data  \
            -it -p8080:8080 docker.osgeo.org/geoserver:2.21.1 
+        
+#. Visit `http://localhost:8080/geoserver <http://localhost:8080/geoserver>`_.

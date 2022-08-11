@@ -1720,6 +1720,7 @@
             <descriptor>release/war.xml</descriptor>
             <descriptor>release/javadoc.xml</descriptor>
             <descriptor>release/bin.xml</descriptor>
+            <descriptor>release/data.xml</descriptor>
             <descriptor>release/ext-db2.xml</descriptor>
             <descriptor>release/ext-feature-pregeneralized.xml</descriptor>
             <descriptor>release/ext-jp2k.xml</descriptor>

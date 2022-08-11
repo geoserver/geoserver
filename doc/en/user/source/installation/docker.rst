@@ -10,82 +10,60 @@ Quick Start
 
 This will run the container with the data directory shipped with the container (which is typically an empty directory).
 
-#. Make sure you have `Docker <https://www.docker.com/>`_ installed.
+#. Make sure you have `Docker <https://www.docker.com/>`__ installed.
 #. Download the container
 
-   .. code-block:: 
-    
-      docker pull docker.osgeo.org/geoserver:2.21.1
+    docker pull docker.osgeo.org/geoserver:|release|
 
 #. Run the container
 
-   .. code-block:: 
-    
-      docker run -it -p8080:8080 docker.osgeo.org/geoserver:2.21.1 
+      docker run -it -p8080:8080 docker.osgeo.org/geoserver:|release|
  
-#. Visit `http://localhost:8080/geoserver <http://localhost:8080/geoserver>`_.
+#. Visit  http://localhost:8080/geoserver.
 
 Using your own Data Directory
 -----------------------------
 
-This will run the container with a local data directory.  The data directory will be `mounted <https://docs.docker.com/storage/bind-mounts/>`_ into the docker container.
+This will run the container with a local data directory.  The data directory will be `mounted <https://docs.docker.com/storage/bind-mounts/>`__ into the docker container.
 
 .. Note::
 
     Change `/MY/DATADIRECTORY` to your data directory.
 
-#. Make sure you have `Docker <https://www.docker.com/>`_ installed.
+#. Make sure you have `Docker <https://www.docker.com/>`__ installed.
 #. Download the container
- 
-   .. code-block:: 
-    
-      docker pull docker.osgeo.org/geoserver:2.21.1
+
+    docker pull docker.osgeo.org/geoserver:|release|
 
 #. Run the container
 
-   .. code-block:: 
-    
-      docker run \
-           --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data  \
-           -it -p8080:8080 docker.osgeo.org/geoserver:2.21.1 
+      docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|release|
 
-#. Visit `http://localhost:8080/geoserver <http://localhost:8080/geoserver>`_.
+
+#. Visit  http://localhost:8080/geoserver.
 
 Using the Standard Geoserver Data Directory
 -------------------------------------------
 
 This will run the container with the standard (release) data directory, which includes a few sample layers.  
-This Data Directory will be `mounted <https://docs.docker.com/storage/bind-mounts/>`_ into the docker container.
+This Data Directory will be `mounted <https://docs.docker.com/storage/bind-mounts/>`__ into the docker container.
 
-.. Note::
 
-    Change `/MY/geoserver-2.21.1-data` to where your data directory is.
-
-#. Make sure you have `Docker <https://www.docker.com/>`_ installed.
+#. Make sure you have `Docker <https://www.docker.com/>`__ installed.
 #. Download the container
- 
-   .. code-block:: 
-    
-      docker pull docker.osgeo.org/geoserver:2.21.1
 
-#. Download the zipped Data Directory from `Source Forge <https://sourceforge.net/projects/geoserver/files/GeoServer/2.21.1/geoserver-2.21.1-data.zip/download>`_.
+    docker pull docker.osgeo.org/geoserver:|release|
 
-   .. Note::
+#. Download the Release Geoseoserver Data Directory :download_release:`data`
 
-      You can navigate to this by going to the `Geoserver Source Forge page <https://sourceforge.net/projects/geoserver/>`_ then to `files`, `Geoserver`, and then the release that matches your docker container.
+#. Unzip the Data Directory (this will create a directory called `geoserver_data`)
 
-#. Unzip the Data Directory
-
-   .. code-block:: 
-    
-      unzip geoserver-2.21.1-data.zip
+    unzip geoserver-\*-data.zip
 
 #. Run the container
 
-   .. code-block:: 
-    
-      docker run \
-           --mount type=bind,src=/MY/geoserver-2.21.1-data,target=/opt/geoserver_data  \
-           -it -p8080:8080 docker.osgeo.org/geoserver:2.21.1 
+      docker run \-\-mount type=bind,src=`pwd`/geoserver_data,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|release|
         
-#. Visit `http://localhost:8080/geoserver <http://localhost:8080/geoserver>`_.
+#. Visit  http://localhost:8080/geoserver.
+
+

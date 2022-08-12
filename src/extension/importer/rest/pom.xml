@@ -30,6 +30,11 @@
       <artifactId>commons-fileupload</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.importer</groupId>
       <artifactId>gs-importer-core</artifactId>
       <version>${project.version}</version>

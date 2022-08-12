@@ -3,7 +3,7 @@ swagger: '2.0'
 info:
   version: 1.0.0
   title: GeoServer Importer Extension - Transforms
-  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The transforms endpoint manages data transforms applied to sindividual import jobs. The importer extension is an optional install and may not be available on all deployments of GeoServer
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The transforms endpoint manages data transforms applied to individual import jobs. The importer extension is an optional install and may not be available on all deployments of GeoServer
   contact:
     name: GeoServer
     email: 'geoserver-users@sourceforge.net'

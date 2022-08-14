@@ -96,9 +96,15 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     public static final String VERSION_3 = "jquery/jquery-3.5.1.js";
 
+    protected GeoServerBasePage(final PageParameters parameters){
+        super(parameters);
+        commonBaseInit();
+    }
     @SuppressWarnings("serial")
-    public GeoServerBasePage() {
-
+    protected GeoServerBasePage() {
+        commonBaseInit();
+    }
+    private void commonBaseInit(){
         // lookup for a pluggable favicon
         PackageResourceReference faviconReference = null;
         List<HeaderContribution> cssContribs =

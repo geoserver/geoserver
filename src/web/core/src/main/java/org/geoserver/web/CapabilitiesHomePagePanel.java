@@ -133,7 +133,6 @@ public class CapabilitiesHomePagePanel extends Panel {
                     protected void populateItem(ListItem<String> item) {
                         final String serviceId = item.getModelObject();
                         item.add(new Label("service", serviceId.toUpperCase()));
-                        item.add(new Label( "title", service)
                         item.add(
                                 new ListView<CapsInfo>("versions", byService.get(serviceId)) {
                                     private static final long serialVersionUID = 1L;

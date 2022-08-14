@@ -39,7 +39,7 @@ public final class Service {
     String customCapabilitiesLink;
 
     /**
-     * Creates a new service descriptor.
+     * Creates a new global (no workspace) service descriptor.
      *
      * @param id A string identifing the service.
      * @param service The object implementing the service.
@@ -53,7 +53,7 @@ public final class Service {
      * Creates a new service descriptor.
      *
      * @param id A string identifying the service.
-     * @param namespace The namespace of the service, may be <code>null</code>
+     * @param namespace The namespace of the service, may be <code>null</code> for global.
      * @param service The object implementing the service.
      * @param version The version of the service.
      * @param operations The list of operations the service provides

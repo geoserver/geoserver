@@ -9,6 +9,7 @@ import static org.geoserver.catalog.Predicates.acceptAll;
 
 import com.google.common.base.Stopwatch;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -23,6 +24,8 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -44,25 +47,38 @@ import org.springframework.security.core.Authentication;
 /**
  * Home page, shows introduction for each kind of service along with any service links.
  *
- * <p>This page uses the {@link CapabilitiesHomePageLinkProvider} extension point to enable other
- * modules to contribute links for GetCapabilities documents. The default {@link
- * ServiceInfoCapabilitiesProvider} contributes the capabilities links for all the available {@link
- * ServiceInfo} implementations. Other extension point implementations may contribute service
- * description document links not backed by ServiceInfo objects.
+ * <p>This page uses {@link ServiceDescriptionProvider} extension point allow other modules describe
+ * web services, and the web service links.
+ *
+ * <p>The {@link CapabilitiesHomePageLinkProvider} extension point to enable other modules to
+ * contribute components. The default {@link ServiceInfoCapabilitiesProvider} contributes the
+ * capabilities links for all the available {@link ServiceInfo} implementations that were not
+ * covered by ServiceDescriptionProvider. Other extension point implementations may contribute
+ * service description document links not backed by ServiceInfo objects.
+ *
+ * <p>The {@link GeoServerHomePageContentProvider} is used by modules to contribute information, status
+ * and warnings.</p>
  *
  * <p>
- * This page can change between gloabl service, workspace service and layer service.
+ * The page has built-in functionality providing administrators with a configuration summary.
  * </p>
+ *
+ * <p>This page can change between gloabl-service, workspace service and layer service.
  *
  * @author Andrea Aime - TOPP
  */
 public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnlockablePage {
 
     /** Display contact name linking to contact URL. */
-    private final ExternalLink contactInfo;
+    private ExternalLink contactInfo;
 
-    @SuppressWarnings("unchecked")
-    public GeoServerHomePage() {
+    public GeoServerHomePage(PageParameters parameters){
+        super(parameters);
+        if (getPageParameters() != null && !getPageParameters().isEmpty()) {
+            StringValue context1 = getPageParameters().get(0);
+            StringValue context2 = getPageParameters().get(1);
+            String context = context1.toString("") + "/" + context2.toString("");
+        }
         GeoServer gs = getGeoServer();
         ContactInfo contact = gs.getGlobal().getSettings().getContact();
 
@@ -155,6 +171,16 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 };
         add(contentView);
 
+        String workspace = null;
+        String layer = null;
+        List<ServicesPanel.ServiceDescription> serviceDescriptions = new ArrayList<>();
+        List<ServicesPanel.ServiceLinkDescription> serviceLinks = new ArrayList<>();
+        for(ServiceDescriptionProvider provider : getGeoServerApplication().getBeansOfType(ServiceDescriptionProvider.class)){
+            serviceDescriptions.addAll(provider.getServices(workspace,layer));
+            serviceLinks.addAll(provider.getServiceLinks(workspace,layer));
+        }
+        add( new ServicesPanel("services", serviceDescriptions,serviceLinks));
+
         final IModel<List<CapabilitiesHomePageLinkProvider>> capsProviders =
                 getContentProviders(CapabilitiesHomePageLinkProvider.class);
 
@@ -165,10 +191,24 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                     @Override
                     protected void populateItem(ListItem<CapabilitiesHomePageLinkProvider> item) {
                         CapabilitiesHomePageLinkProvider provider = item.getModelObject();
-                        Component capsList = provider.getCapabilitiesComponent("capsList");
+                        Component capsList;
+                        if (provider instanceof ServiceDescriptionProvider) {
+                            Label placeHolder = new Label("contentList");
+                            placeHolder.setVisible(false);
+                            capsList = placeHolder;
+                        }
+                        else {
+                            capsList = provider.getCapabilitiesComponent("capsList");
+                            if(capsList == null){
+                                Label placeHolder = new Label("contentList");
+                                placeHolder.setVisible(false);
+                                capsList = placeHolder;
+                            }
+                        }
                         item.add(capsList);
                     }
                 };
+
         add(capsView);
     }
 

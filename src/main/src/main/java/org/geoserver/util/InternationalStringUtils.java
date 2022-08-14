@@ -4,8 +4,11 @@
  */
 package org.geoserver.util;
 
+import org.geotools.text.Text;
 import org.geotools.util.GrowableInternationalString;
 import org.opengis.util.InternationalString;
+
+import java.util.Locale;
 
 /** Utility class that provides some methods to deal with InternationalString. */
 public class InternationalStringUtils {
@@ -23,6 +26,31 @@ public class InternationalStringUtils {
             result = new GrowableInternationalString(internationalString);
         return result;
     }
+
+    /**
+     * Combine default text and translations.
+     *
+     * @param textDefault Default text
+     * @param textTranslations Available translations
+     * @return
+     */
+    public static GrowableInternationalString growable(InternationalString textTranslations, String textDefault){
+        if( textTranslations != null){
+            if( textTranslations instanceof GrowableInternationalString){
+                GrowableInternationalString translations = (GrowableInternationalString) textTranslations;
+                GrowableInternationalString combined = new GrowableInternationalString(textDefault);
+                for(Locale locale : translations.getLocales()){
+                    combined.add(locale,translations.toString(locale));
+                }
+                if( combined.toString(GeoServerDefaultLocale.get()) == null ){
+                    combined.add(GeoServerDefaultLocale.get(),textDefault);
+                }
+                return combined;
+            }
+        }
+        return new GrowableInternationalString(textDefault);
+    }
+
 
     /**
      * Return the string value or the default InternationalString value if the string one is null.

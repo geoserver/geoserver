@@ -13,7 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * Implementation for testing uses serialization into a byte array
@@ -46,10 +46,12 @@ public class MemoryRoleStore extends AbstractRoleStore {
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         ObjectInputStream oin = new ObjectInputStream(in);
         try {
-            helper.roleMap = (TreeMap<String, GeoServerRole>) oin.readObject();
+            helper.roleMap = (ConcurrentSkipListMap<String, GeoServerRole>) oin.readObject();
             helper.role_parentMap = (HashMap<GeoServerRole, GeoServerRole>) oin.readObject();
-            helper.user_roleMap = (TreeMap<String, SortedSet<GeoServerRole>>) oin.readObject();
-            helper.group_roleMap = (TreeMap<String, SortedSet<GeoServerRole>>) oin.readObject();
+            helper.user_roleMap =
+                    (ConcurrentSkipListMap<String, SortedSet<GeoServerRole>>) oin.readObject();
+            helper.group_roleMap =
+                    (ConcurrentSkipListMap<String, SortedSet<GeoServerRole>>) oin.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }

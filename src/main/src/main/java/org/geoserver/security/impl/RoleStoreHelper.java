@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * This class is common helper for {@link AbstractRoleService} and {@link AbstractRoleStore} to
@@ -22,10 +22,10 @@ import java.util.TreeSet;
  * @author christian
  */
 public class RoleStoreHelper {
-    public TreeMap<String, GeoServerRole> roleMap = new TreeMap<>();
-    public TreeMap<String, SortedSet<GeoServerRole>> group_roleMap = new TreeMap<>();
-    public TreeMap<String, SortedSet<GeoServerRole>> user_roleMap = new TreeMap<>();
-    public HashMap<GeoServerRole, GeoServerRole> role_parentMap = new HashMap<>();
+    public Map<String, GeoServerRole> roleMap = new ConcurrentSkipListMap<>();
+    public Map<String, SortedSet<GeoServerRole>> group_roleMap = new ConcurrentSkipListMap<>();
+    public Map<String, SortedSet<GeoServerRole>> user_roleMap = new ConcurrentSkipListMap<>();
+    public Map<GeoServerRole, GeoServerRole> role_parentMap = new HashMap<>();
 
     public void clearMaps() {
         roleMap.clear();

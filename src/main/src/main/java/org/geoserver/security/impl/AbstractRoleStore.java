@@ -17,8 +17,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Logger;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
@@ -319,10 +319,12 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
         ByteArrayInputStream in = new ByteArrayInputStream(byteArray);
         ObjectInputStream oin = new ObjectInputStream(in);
         try {
-            helper.roleMap = (TreeMap<String, GeoServerRole>) oin.readObject();
+            helper.roleMap = (ConcurrentSkipListMap<String, GeoServerRole>) oin.readObject();
             helper.role_parentMap = (HashMap<GeoServerRole, GeoServerRole>) oin.readObject();
-            helper.user_roleMap = (TreeMap<String, SortedSet<GeoServerRole>>) oin.readObject();
-            helper.group_roleMap = (TreeMap<String, SortedSet<GeoServerRole>>) oin.readObject();
+            helper.user_roleMap =
+                    (ConcurrentSkipListMap<String, SortedSet<GeoServerRole>>) oin.readObject();
+            helper.group_roleMap =
+                    (ConcurrentSkipListMap<String, SortedSet<GeoServerRole>>) oin.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }

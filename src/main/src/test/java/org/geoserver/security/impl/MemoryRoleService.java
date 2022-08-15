@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
@@ -50,10 +50,12 @@ public class MemoryRoleService extends AbstractRoleService {
         ByteArrayInputStream in = new ByteArrayInputStream(byteArray);
         ObjectInputStream oin = new ObjectInputStream(in);
         try {
-            helper.roleMap = (TreeMap<String, GeoServerRole>) oin.readObject();
+            helper.roleMap = (ConcurrentSkipListMap<String, GeoServerRole>) oin.readObject();
             helper.role_parentMap = (HashMap<GeoServerRole, GeoServerRole>) oin.readObject();
-            helper.user_roleMap = (TreeMap<String, SortedSet<GeoServerRole>>) oin.readObject();
-            helper.group_roleMap = (TreeMap<String, SortedSet<GeoServerRole>>) oin.readObject();
+            helper.user_roleMap =
+                    (ConcurrentSkipListMap<String, SortedSet<GeoServerRole>>) oin.readObject();
+            helper.group_roleMap =
+                    (ConcurrentSkipListMap<String, SortedSet<GeoServerRole>>) oin.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }

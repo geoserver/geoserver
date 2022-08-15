@@ -3,7 +3,9 @@
 Docker Container
 ================
 
-Geoserver is also packaged as a Docker Container.  For more details, see the `Geoserver Docker Container Project <https://github.com/geoserver/docker>`_.
+Geoserver is also packaged as a Docker Container.  For more details, see the `Geoserver Docker Container Project <https://github.com/geoserver/docker>`__.
+
+See the `README.md <https://github.com/geoserver/docker/blob/master/README.md>`__ file for more technical information.
 
 Quick Start
 -----------
@@ -28,7 +30,7 @@ This will run the container with a local data directory.  The data directory wil
 
 .. Note::
 
-    Change `/MY/DATADIRECTORY` to your data directory.
+    Change `/MY/DATADIRECTORY` to your data directory.  If this directory is empty it will be populated with the standard Geoserver Sample Data Directory.
 
 #. Make sure you have `Docker <https://www.docker.com/>`__ installed.
 #. Download the container
@@ -42,28 +44,28 @@ This will run the container with a local data directory.  The data directory wil
 
 #. Visit  http://localhost:8080/geoserver.
 
-Using the Standard Geoserver Data Directory
--------------------------------------------
 
-This will run the container with the standard (release) data directory, which includes a few sample layers.  
-This Data Directory will be `mounted <https://docs.docker.com/storage/bind-mounts/>`__ into the docker container.
+Adding Geoserver Extensions
+---------------------------
 
+You can add Geoserver Extensions - the container will download them during startup.
 
-#. Make sure you have `Docker <https://www.docker.com/>`__ installed.
-#. Download the container
+      docker run  -it -p8080:8080 --env INSTALL_EXTENSIONS=true --env STABLE_EXTENSIONS="ysld,h2" docker.osgeo.org/geoserver:|release|
 
-    docker pull docker.osgeo.org/geoserver:|release|
+This will download and install the YSLD and H2 extension.
 
-#. Download the Release Geoseoserver Data Directory :download_release:`data`
+Here is a list of available extensions (taken from the Geoserver download page):
 
-#. Unzip the Data Directory (this will create a directory called `geoserver_data`)
+::
 
-    unzip geoserver-\*-data.zip
-
-#. Run the container
-
-      docker run \-\-mount type=bind,src=`pwd`/geoserver_data,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|release|
-        
-#. Visit  http://localhost:8080/geoserver.
-
+    app-schema   gdal            jp2k          ogr-wps          web-resource
+    authkey      geofence        libjpeg-turbo oracle           wmts-multi-dimensional
+    cas          geofence-server mapml         params-extractor wps-cluster-hazelcast
+    charts       geopkg-output   mbstyle       printing         wps-cluster-hazelcast
+    control-flow grib            mongodb       pyramid          wps-download
+    css          gwc-s3          monitor       querylayer       wps-jdbc
+    csw          h2              mysql         sldservice       wps
+    db2          imagemap        netcdf-out    sqlserver        xslt
+    dxf          importer        netcdf        vectortiles      ysld
+    excel        inspire         ogr-wfs       wcs2_0-eo
 

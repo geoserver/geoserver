@@ -32,7 +32,6 @@ public class WMSServiceDescriptionProvider implements ServiceDescriptionProvider
                 WMSInfo info = wms.getServiceInfo();
 
                 String serviceId = service.getId();
-                String namespace = service.getNamespace();
                 boolean available = info.isEnabled();
 
                 InternationalString title = InternationalStringUtils.growable(
@@ -41,18 +40,19 @@ public class WMSServiceDescriptionProvider implements ServiceDescriptionProvider
                 );
                 InternationalString description = InternationalStringUtils.growable(
                     info.getInternationalAbstract(),
-                    Strings.isEmpty(info.getAbstract()) ? namespace : info.getAbstract()
+                    Strings.isEmpty(info.getAbstract()) ? null : info.getAbstract()
                 );
                 if (workspace == null) {
-                    descriptions.add(
-                            new ServicesPanel.ServiceDescription(
-                                    serviceId.toLowerCase(),
-                                    title,
-                                    description,
-                                    available,
-                                    null,
-                                    null)
-                    );
+                    ServicesPanel.ServiceDescription serviceDescription =  new ServicesPanel.ServiceDescription(
+                            serviceId.toLowerCase(),
+                            title,
+                            description,
+                            available,
+                            null,
+                            null);
+                    if (!descriptions.contains(serviceDescription)) {
+                        descriptions.add(serviceDescription);
+                    }
                 }
             }
         }

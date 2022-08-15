@@ -75,6 +75,11 @@ public class ServicesPanel extends Panel {
          */
         final boolean available;
 
+        /**
+         * Service links.
+         */
+        SortedSet<ServiceLinkDescription> links = new TreeSet<>();
+
         public ServiceDescription(String service){
             this(service,null,null);
         }
@@ -160,6 +165,15 @@ public class ServicesPanel extends Panel {
          */
         public String getLayer() {
             return layer;
+        }
+
+        /**
+         * Service links.
+         *
+         * @return service links
+         */
+        public SortedSet<ServiceLinkDescription> getLinks() {
+            return links;
         }
 
         @Override
@@ -288,7 +302,7 @@ public class ServicesPanel extends Panel {
     public ServicesPanel(final String id, final List<ServiceDescription> services, List<ServiceLinkDescription> links){
         super(id);
 
-        final SortedMap<ServiceDescription,SortedSet<ServiceLinkDescription>> serviceMap = processServiceLinks(services,links);
+        final SortedSet<ServiceDescription> serviceSet = processServiceLinks(services,links);
 
         class ServiceLinkListView extends ListView<ServiceLinkDescription> {
             public ServiceLinkListView(String id, List<ServiceLinkDescription> list) {
@@ -297,11 +311,12 @@ public class ServicesPanel extends Panel {
             @Override protected void populateItem(ListItem<ServiceLinkDescription> listItem) {
                 ServiceLinkDescription link = listItem.getModelObject();
 
-                ExternalLink externalLink = new ExternalLink("link", link.getLink());
-                externalLink.add( new Label("version",link.getVersion().toString() ));
+                listItem.add( new Label( "serviceName",link.getService().toUpperCase()));
 
-                add( externalLink );
-                add( new Label( "service",link.getService().toUpperCase()));
+                ExternalLink externalLink = new ExternalLink("serviceLink", link.getLink());
+                externalLink.add( new Label("serviceVersion",link.getVersion().toString() ));
+                listItem.add( externalLink );
+
             }
         }
 
@@ -313,20 +328,20 @@ public class ServicesPanel extends Panel {
                 ServiceDescription service = listItem.getModelObject();
                 Locale locale = getLocale();
 
-                add(new Label("title",service.getTitle().toString(locale)));
-                add(new Label("description",service.getDescription().toString(locale)));
+                listItem.add(new Label("title",service.getTitle().toString(locale)));
+                listItem.add(new Label("description",service.getDescription().toString(locale)));
 
-                List<ServiceLinkDescription> links = new ArrayList<>(serviceMap.get(service));
-                Collections.sort(links);
+                List<ServiceLinkDescription> links = new ArrayList<>(service.getLinks());
+                // Collections.sort(links);
 
-                add( new ServiceLinkListView("links",links));
+                listItem.add( new ServiceLinkListView("links",links));
             }
         }
 
-        List<ServiceDescription> serviceList = new ArrayList<>(serviceMap.keySet());
-        Collections.sort(serviceList);
+        List<ServiceDescription> serviceList = new ArrayList<>(serviceSet);
+        // Collections.sort(serviceList);
 
-        add( new ServiceListView("services", serviceList ));
+        add( new ServiceListView("serviceDescriptions", serviceList ));
     }
 
     /**
@@ -336,26 +351,26 @@ public class ServicesPanel extends Panel {
      * @param links service link descriptions
      * @return map of service descriptions to link descriptions
      */
-    SortedMap<ServiceDescription,SortedSet<ServiceLinkDescription>> processServiceLinks(final List<ServiceDescription> services, List<ServiceLinkDescription> links){
+    SortedSet<ServiceDescription> processServiceLinks(final List<ServiceDescription> services, List<ServiceLinkDescription> links){
         final Map<String, ServiceDescription> serviceMap = new HashMap<>();
 
-        final SortedMap<ServiceDescription, SortedSet<ServiceLinkDescription>> linkMap = new TreeMap<>();
         for( ServiceDescription service : services ){
             String serviceName = service.getService();
             serviceMap.put(serviceName, service);
-            linkMap.put(service, new TreeSet<>());
+            service.getLinks().clear();
         }
         for( ServiceLinkDescription link : links ){
             String serviceName = link.getService();
             if (serviceMap.containsKey(serviceName)){
                 ServiceDescription service = serviceMap.get(serviceName);
-                linkMap.get(service).add(link);
+                service.getLinks().add(link);
             } else {
-                ServiceDescription service = new ServiceDescription(serviceName);
-                serviceMap.put(serviceName, service);
-                linkMap.put(service, new TreeSet<>());
+                // ignore
+//                ServiceDescription service = new ServiceDescription(serviceName);
+//                serviceMap.put(serviceName, service);
+//                service.getLinks().add(link);
             }
         }
-        return linkMap;
+        return new TreeSet<>(serviceMap.values());
     }
 }

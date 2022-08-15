@@ -21,7 +21,7 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testCapabilitiesLinks() {
-        GeoServerHomePage page = new GeoServerHomePage();
+        GeoServerHomePage page = new GeoServerHomePage(null);
 
         tester.startPage(page);
         tester.assertRenderedPage(GeoServerHomePage.class);

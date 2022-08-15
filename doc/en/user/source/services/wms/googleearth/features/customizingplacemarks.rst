@@ -31,6 +31,6 @@ The resulting description will look like this:
 
 It is also possible to create one description template for all layers in a given namespace. To do this, create a ``description.ftl`` file as above, and save it here::
 
-   <data_dir>/templates/<namespace>/description.ftl.
+   <data_dir>/workspaces/<namespace>/description.ftl.
 
 Please note that if a description template is created for a specific layer that also has an associated namespace description template, the layer template (i.e. the most specific template) will take priority.

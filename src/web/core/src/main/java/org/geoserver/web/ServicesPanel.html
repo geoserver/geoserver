@@ -1,19 +1,26 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
-Services Panel
 <wicket:panel>
-  <li wicket:id="serviceDescriptions">
-    <span wicket:id="title"></span>
-    <span wicket:id="description"></span>
-    <ul class="flat">
-      <li wicket:id="links">
-        <span wicket:id="serviceName"></span>
-        <a wicket:id="serviceLink" class="external icon">
-          <span wicket:id="serviceVersion"></span>
-        </a>
-      </li>
-    </ul>
-  </li>
+  <div wicket:id="serviceDescriptions">
+<!--    <span>Geoserver Instance </span> <br>-->
+    <span class="serviceHeader"  wicket:id="title" /> <br><br>
+    <span wicket:id="description"></span><br>
+
+   <br>
+
+    <div  class="table-display">
+      <div  class="table-cell"  wicket:id="links">
+          <div class="link-bordered">
+            <span class="serviceName" wicket:id="serviceName"></span>
+            <hr>
+            <a wicket:id="serviceLink" class="external icon serviceLink">
+              <span style="" wicket:id="serviceVersion"></span>
+            </a>
+         </div>
+         <div class="spacer"></div>
+      </div>
+    </div>
+  </div>
 </wicket:panel>
 </body>
 </html>

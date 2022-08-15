@@ -871,11 +871,58 @@ width: 16px;
 Welcome / Overview
 -------------------------*/
 #welcome {
-float: left;
-max-width: 500px;
+/*float: left;*/
+/*max-width: 500px;*/
 }
 #welcome table {
 margin-bottom: 1em;
+}
+
+#services .serviceHeader {
+font-size:14px;
+font-weight: bold;
+}
+
+#services .link-bordered {
+display: table-cell;
+border:2px;
+border-style:solid;
+border-color: #cccccc;
+padding-right:25px;
+padding-left:25px;
+padding-top:5px;
+padding-bottom:5px;
+}
+
+#services .link-bordered hr{
+margin-left:-25px;
+margin-right:-25px;
+}
+
+#services .link-bordered .serviceName {
+font-size:25px;
+color:#888888;
+display:flex;
+justify-content: center;
+}
+
+#services .link-bordered .serviceLink {
+font-size:25px;
+display:flex;
+justify-content: center;
+}
+
+#services .spacer {
+display: table-cell;
+width:30px;
+}
+
+#services .table-display {
+    display: table;
+}
+
+#services .table-cell {
+    display: table-cell;
 }
 
 /*-----------------------

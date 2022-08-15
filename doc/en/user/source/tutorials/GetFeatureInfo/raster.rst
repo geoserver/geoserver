@@ -80,7 +80,7 @@ Additionally, it is possible to customize the attribute name of the label value,
 
 Assuming to have a ``RasterSymbolizer`` like this
 
-.. code-bloc:: xml
+.. code-block:: xml
   
  <sld:RasterSymbolizer>
     <sld:ColorMap>

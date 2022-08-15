@@ -40,7 +40,7 @@ Listing all layers
       }
    }
 
-**List all styles in a workspace, in XML format:**
+**List all layers on the server, in XML format:**
 
 *Request*
 

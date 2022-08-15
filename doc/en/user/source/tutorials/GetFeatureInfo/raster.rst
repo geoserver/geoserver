@@ -4,7 +4,7 @@ Raster GetFeatureInfo Response Customization
 ============================================
 
 The default output for a ``GetFeatureInfo`` request on a raster layer contains just the value of the selected pixel, one for each band of the image.
-For instance in case of an ``application/json`` output format:
+For instance, in case of an ``application/json`` output format:
 
 .. code-block:: json
   
@@ -75,12 +75,12 @@ The ``VendorOption labelInFeatureInfo`` supports the following values:
 *  ``none`` no label is added to the output. We obtain a normal ``GetFeatureInfo`` response.
 
 
-Additionally it is possible to customize the attribute name of the label value, by means of a second ``VendorOption``: 
+Additionally, it is possible to customize the attribute name of the label value, by means of a second ``VendorOption``: 
 ``<VendorOption name="labelAttributeName">your custom name</VendorOption>``.
 
 Assuming to have a ``RasterSymbolizer`` like this
 
-.. code-bloc::xml
+.. code-block:: xml
   
  <sld:RasterSymbolizer>
     <sld:ColorMap>

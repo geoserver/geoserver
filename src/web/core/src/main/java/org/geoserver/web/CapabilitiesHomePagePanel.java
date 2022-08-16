@@ -36,9 +36,7 @@ public class CapabilitiesHomePagePanel extends Panel {
      */
     public static class CapsInfo implements Serializable {
 
-        /**
-         * Service name.
-         */
+        /** Service name. */
         String service;
 
         /** Service version */
@@ -47,7 +45,7 @@ public class CapabilitiesHomePagePanel extends Panel {
         /** GetCapabilities service description */
         String capsLink;
 
-        public CapsInfo(String service, Version version, String capsLink){
+        public CapsInfo(String service, Version version, String capsLink) {
             this.service = service;
             this.version = version;
             this.capsLink = capsLink;
@@ -95,7 +93,7 @@ public class CapabilitiesHomePagePanel extends Panel {
         for (CapsInfo c : capsLinks) {
             final String key =
                     c.getService().toLowerCase(); // to avoid problems with uppercase definitions
-            if( key.equals("wms")){
+            if (key.equals("wms") || key.equals("wfs")) {
                 continue; // handled by ServicesPanel
             }
             List<CapsInfo> serviceLinks = byService.get(key);
@@ -120,11 +118,14 @@ public class CapabilitiesHomePagePanel extends Panel {
                         item.add(new Label("service", serviceId.toUpperCase()));
 
                         List<CapsInfo> links = new ArrayList<>(byService.get(serviceId));
-                        Collections.sort(links,new Comparator<CapsInfo>(){
-                            @Override public int compare(CapsInfo o1, CapsInfo o2) {
-                                return - o1.version.compareTo(o2.version);
-                            }
-                        });
+                        Collections.sort(
+                                links,
+                                new Comparator<CapsInfo>() {
+                                    @Override
+                                    public int compare(CapsInfo o1, CapsInfo o2) {
+                                        return -o1.version.compareTo(o2.version);
+                                    }
+                                });
                         item.add(
                                 new ListView<CapsInfo>("versions", links) {
                                     private static final long serialVersionUID = 1L;

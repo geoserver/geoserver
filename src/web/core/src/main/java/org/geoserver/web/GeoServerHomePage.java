@@ -56,12 +56,10 @@ import org.springframework.security.core.Authentication;
  * covered by ServiceDescriptionProvider. Other extension point implementations may contribute
  * service description document links not backed by ServiceInfo objects.
  *
- * <p>The {@link GeoServerHomePageContentProvider} is used by modules to contribute information, status
- * and warnings.</p>
+ * <p>The {@link GeoServerHomePageContentProvider} is used by modules to contribute information,
+ * status and warnings.
  *
- * <p>
- * The page has built-in functionality providing administrators with a configuration summary.
- * </p>
+ * <p>The page has built-in functionality providing administrators with a configuration summary.
  *
  * <p>This page can change between gloabl-service, workspace service and layer service.
  *
@@ -72,7 +70,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     /** Display contact name linking to contact URL. */
     private ExternalLink contactInfo;
 
-    public GeoServerHomePage(){
+    public GeoServerHomePage() {
         homeInit();
     }
 
@@ -80,7 +78,8 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         super(parameters);
         homeInit();
     }
-    private void homeInit(){
+
+    private void homeInit() {
         if (getPageParameters() != null && !getPageParameters().isEmpty()) {
             StringValue context1 = getPageParameters().get(0);
             StringValue context2 = getPageParameters().get(1);
@@ -92,7 +91,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         // add some contact info
         contactInfo = new ExternalLink("contactURL", contact.getOnlineResource());
         contactInfo.add(new Label("contactName", contact.getContactOrganization()));
-        add( contactInfo );
+        add(contactInfo);
 
         {
             String version = String.valueOf(new ResourceModel("version").getObject());
@@ -182,11 +181,12 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         String layer = null;
         List<ServicesPanel.ServiceDescription> serviceDescriptions = new ArrayList<>();
         List<ServicesPanel.ServiceLinkDescription> serviceLinks = new ArrayList<>();
-        for(ServiceDescriptionProvider provider : getGeoServerApplication().getBeansOfType(ServiceDescriptionProvider.class)){
-            serviceDescriptions.addAll(provider.getServices(workspace,layer));
-            serviceLinks.addAll(provider.getServiceLinks(workspace,layer));
+        for (ServiceDescriptionProvider provider :
+                getGeoServerApplication().getBeansOfType(ServiceDescriptionProvider.class)) {
+            serviceDescriptions.addAll(provider.getServices(workspace, layer));
+            serviceLinks.addAll(provider.getServiceLinks(workspace, layer));
         }
-        add( new ServicesPanel("serviceList", serviceDescriptions,serviceLinks));
+        add(new ServicesPanel("serviceList", serviceDescriptions, serviceLinks));
 
         final IModel<List<CapabilitiesHomePageLinkProvider>> capsProviders =
                 getContentProviders(CapabilitiesHomePageLinkProvider.class);
@@ -203,10 +203,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                             Label placeHolder = new Label("contentList");
                             placeHolder.setVisible(false);
                             capsList = placeHolder;
-                        }
-                        else {
+                        } else {
                             capsList = provider.getCapabilitiesComponent("capsList");
-                            if(capsList == null){
+                            if (capsList == null) {
                                 Label placeHolder = new Label("contentList");
                                 placeHolder.setVisible(false);
                                 capsList = placeHolder;

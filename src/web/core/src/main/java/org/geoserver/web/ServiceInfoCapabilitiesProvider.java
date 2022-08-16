@@ -6,14 +6,12 @@
 package org.geoserver.web;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo;
-import org.geotools.text.Text;
 
 /**
  * Contributes standard GetCapabilities links for all the versions in all the {@link ServiceInfo}

@@ -4,11 +4,10 @@
  */
 package org.geoserver.web;
 
-import org.geoserver.web.ServicesPanel.ServiceDescription;
-import org.geoserver.web.ServicesPanel.ServiceLinkDescription;
-
 import java.util.Collections;
 import java.util.List;
+import org.geoserver.web.ServicesPanel.ServiceDescription;
+import org.geoserver.web.ServicesPanel.ServiceLinkDescription;
 
 /**
  * Contributes service description and link information for global, workspace and layer services.
@@ -20,26 +19,25 @@ public interface ServiceDescriptionProvider {
 
     /**
      * Provides service descriptions, optionally filtered by workspace and layer.
-     * <p>
-     * Filtering is forgiving: provide the global services unless the workspace exactly matches;
+     *
+     * <p>Filtering is forgiving: provide the global services unless the workspace exactly matches;
      * provide workspace services unless the layer exactly matches.
-     * </p>
+     *
      * @return service descriptions, may be empty if none available.
      */
-    default List<ServiceDescription> getServices(String workspace, String layer){
+    default List<ServiceDescription> getServices(String workspace, String layer) {
         return Collections.emptyList();
     }
 
     /**
      * Provides service links, optionally filtered by workspace and layer.
-     * <p>
-     * Filtering is forgiving: provide the global services unless the workspace exactly matches;
+     *
+     * <p>Filtering is forgiving: provide the global services unless the workspace exactly matches;
      * provide workspace services unless the layer exactly matches.
-     * </p>
+     *
      * @return service links, may be empty if none available.
      */
-    default public List<ServiceLinkDescription> getServiceLinks(String workspace, String layer){
+    public default List<ServiceLinkDescription> getServiceLinks(String workspace, String layer) {
         return Collections.emptyList();
     }
-
 }

@@ -1,8 +1,4 @@
-/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- */
-package org.geoserver.wms.web;
+package org.geoserver.wfs.web;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,43 +11,42 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.LocalWorkspaceCallback;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.util.InternationalStringUtils;
 import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServicesPanel;
-import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WebMapService;
+import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.WebFeatureService;
+import org.geoserver.wfs.WebFeatureService20;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.util.InternationalString;
 
 /** Provide description of WMS services for welcome page. */
-public class WMSServiceDescriptionProvider implements ServiceDescriptionProvider {
+public class WFSServiceDescriptionProvider implements ServiceDescriptionProvider {
 
-    static final Logger LOGGER = Logging.getLogger(LocalWorkspaceCallback.class);
+    static final Logger LOGGER = Logging.getLogger(WFSServiceDescriptionProvider.class);
 
     GeoServer geoserver;
     Catalog catalog;
 
-    public WMSServiceDescriptionProvider(GeoServer gs) {
+    public WFSServiceDescriptionProvider(GeoServer gs) {
         this.geoserver = gs;
         catalog = gs.getCatalog();
     }
 
     /**
-     * Lookup WMSInfo using workspaceName / layerName conotext.
+     * Lookup WFSInfo using workspaceName / layerName conotext.
      *
      * @param workspaceName Name of workspace, or global layer group
      * @param layerName Name of layer or layer group
      * @return WMSInfo if available for workspaceName, or {@code null} for global WMSInfo
      */
-    protected WMSInfo info(String workspaceName, String layerName) {
-        WMSInfo wmsInfo = null;
+    protected WFSInfo info(String workspaceName, String layerName) {
         WorkspaceInfo workspaceInfo = catalog.getWorkspaceByName(workspaceName);
         if (workspaceInfo != null) {
-            return geoserver.getService(workspaceInfo, WMSInfo.class);
+            return geoserver.getService(workspaceInfo, WFSInfo.class);
         }
         return null;
     }
@@ -93,16 +88,16 @@ public class WMSServiceDescriptionProvider implements ServiceDescriptionProvider
             String workspaceName, String layerName) {
         List<ServicesPanel.ServiceDescription> descriptions = new ArrayList<>();
 
-        WMSInfo virutalWMS = info(workspaceName, layerName);
-        WMSInfo globalWMS = geoserver.getService(WMSInfo.class);
+        WFSInfo virtualWFS = info(workspaceName, layerName);
+        WFSInfo globalWFS = geoserver.getService(WFSInfo.class);
         PublishedInfo layerInfo = layer(workspaceName, layerName);
 
-        WMSInfo info = globalWMS;
-        if (virutalWMS != null) {
-            info = virutalWMS;
+        WFSInfo info = globalWFS;
+        if (virtualWFS != null) {
+            info = virtualWFS;
         }
 
-        String serviceId = "wms";
+        String serviceId = "wfs";
         boolean available = info.isEnabled();
         InternationalString title =
                 InternationalStringUtils.growable(
@@ -120,7 +115,7 @@ public class WMSServiceDescriptionProvider implements ServiceDescriptionProvider
                         title,
                         description,
                         available,
-                        virutalWMS != null ? workspaceName : null,
+                        virtualWFS != null ? workspaceName : null,
                         layerInfo != null ? layerName : null);
         descriptions.add(serviceDescription);
         return descriptions;
@@ -132,13 +127,10 @@ public class WMSServiceDescriptionProvider implements ServiceDescriptionProvider
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
 
         for (Service service : extensions) {
-            if (service.getService() instanceof WebMapService) {
-                WebMapService wms = (WebMapService) service.getService();
-                WMSInfo info = wms.getServiceInfo();
-
+            if ((service.getService() instanceof WebFeatureService20)
+                    || (service.getService() instanceof WebFeatureService)) {
                 String serviceId = service.getId();
                 String namespace = service.getNamespace();
-                boolean available = info.isEnabled();
 
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {

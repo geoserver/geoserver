@@ -15,6 +15,10 @@
   <bean class="org.geoserver.wms.web.WMSServiceDescriptionProvider">
   </bean>
 
+
+  <bean class="org.geoserver.wfs.web.WFSServiceDescriptionProvider">
+  </bean>
+
   <bean id="wmsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wms"/>
     <property name="titleKey" value="wms.title"/>

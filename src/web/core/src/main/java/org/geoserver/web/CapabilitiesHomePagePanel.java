@@ -93,7 +93,7 @@ public class CapabilitiesHomePagePanel extends Panel {
         for (CapsInfo c : capsLinks) {
             final String key =
                     c.getService().toLowerCase(); // to avoid problems with uppercase definitions
-            if (key.equals("wms") || key.equals("wfs")) {
+            if (key.equals("wms") || key.equals("wfs") || key.equals("wcs")) {
                 continue; // handled by ServicesPanel
             }
             List<CapsInfo> serviceLinks = byService.get(key);

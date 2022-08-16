@@ -343,6 +343,8 @@ public class ServicesPanel extends Panel {
                 // Collections.sort(links);
 
                 listItem.add(new ServiceLinkListView("links", links));
+
+                listItem.setVisible(service.isAvailable());
             }
         }
 

@@ -68,13 +68,16 @@ public class WMSServiceDescriptionProvider implements ServiceDescriptionProvider
      */
     protected PublishedInfo layer(String workspaceName, String layerName){
         WorkspaceInfo workspaceInfo = catalog.getWorkspaceByName(workspaceName);
-        if(workspaceInfo != null){
-            LayerGroupInfo groupInfo = catalog.getLayerGroupByName(null, workspaceName);
-            if (groupInfo!=null){
-                return groupInfo;
+        if(workspaceInfo == null){
+            if (workspaceName != null) {
+                LayerGroupInfo groupInfo =
+                        catalog.getLayerGroupByName((WorkspaceInfo) null, workspaceName);
+                if (groupInfo != null) {
+                    return groupInfo;
+                }
             }
         }
-        else {
+        else if( layerName != null ){
             NamespaceInfo namespaceInfo = catalog.getNamespaceByPrefix(workspaceInfo.getName());
             LayerInfo layerInfo = catalog.getLayerByName(new NameImpl(namespaceInfo.getURI(), layerName));
             if(layerInfo != null){
@@ -95,14 +98,13 @@ public class WMSServiceDescriptionProvider implements ServiceDescriptionProvider
         WMSInfo globalWMS = geoserver.getService(WMSInfo.class);
         PublishedInfo layerInfo = layer(workspaceName,layerName);
 
-        LayerInfo
+        WMSInfo info = globalWMS;
+        if( virutalWMS != null){
+            info = virutalWMS;
+        }
 
-        WMSInfo info = info(workspaceName);
         String serviceId = "wms";
         boolean available = info.isEnabled();
-
-
-
         InternationalString title = InternationalStringUtils.growable(
             info.getInternationalTitle(),
             Strings.isEmpty(info.getTitle()) ? serviceId.toUpperCase() : info.getTitle()
@@ -116,11 +118,10 @@ public class WMSServiceDescriptionProvider implements ServiceDescriptionProvider
             title,
             description,
             available,
-            null,
-            null);
-        if (!descriptions.contains(serviceDescription)) {
-            descriptions.add(serviceDescription);
-        }
+            virutalWMS != null ? workspaceName : null,
+            layerInfo != null ? layerName : null
+        );
+        descriptions.add(serviceDescription);
         return descriptions;
     }
 

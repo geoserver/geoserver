@@ -294,7 +294,7 @@ public class ServicesPanel extends Panel {
 
         @Override public int compareTo(ServiceLinkDescription o) {
             int compareService = this.service.compareTo(o.service);
-            int compareVersion = this.version.compareTo(o.getVersion());
+            int compareVersion = - this.version.compareTo(o.getVersion());
             return compareService != 0 ? compareService : compareVersion;
         }
     }

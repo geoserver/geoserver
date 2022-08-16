@@ -72,8 +72,15 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     /** Display contact name linking to contact URL. */
     private ExternalLink contactInfo;
 
-    public GeoServerHomePage(PageParameters parameters){
+    public GeoServerHomePage(){
+        homeInit();
+    }
+
+    public GeoServerHomePage(PageParameters parameters) {
         super(parameters);
+        homeInit();
+    }
+    private void homeInit(){
         if (getPageParameters() != null && !getPageParameters().isEmpty()) {
             StringValue context1 = getPageParameters().get(0);
             StringValue context2 = getPageParameters().get(1);
@@ -181,40 +188,35 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         }
         add( new ServicesPanel("serviceList", serviceDescriptions,serviceLinks));
 
+        final IModel<List<CapabilitiesHomePageLinkProvider>> capsProviders =
+                getContentProviders(CapabilitiesHomePageLinkProvider.class);
 
-        Label providedCaps = new Label("providedCaps");
-        providedCaps.setVisible(false);
-        add(providedCaps);
+        ListView<CapabilitiesHomePageLinkProvider> capsView =
+                new ListView<CapabilitiesHomePageLinkProvider>("providedCaps", capsProviders) {
+                    private static final long serialVersionUID = 1L;
 
-//        final IModel<List<CapabilitiesHomePageLinkProvider>> capsProviders =
-//                getContentProviders(CapabilitiesHomePageLinkProvider.class);
-//
-//        ListView<CapabilitiesHomePageLinkProvider> capsView =
-//                new ListView<CapabilitiesHomePageLinkProvider>("providedCaps", capsProviders) {
-//                    private static final long serialVersionUID = 1L;
-//
-//                    @Override
-//                    protected void populateItem(ListItem<CapabilitiesHomePageLinkProvider> item) {
-//                        CapabilitiesHomePageLinkProvider provider = item.getModelObject();
-//                        Component capsList;
-//                        if (provider instanceof ServiceDescriptionProvider) {
-//                            Label placeHolder = new Label("contentList");
-//                            placeHolder.setVisible(false);
-//                            capsList = placeHolder;
-//                        }
-//                        else {
-//                            capsList = provider.getCapabilitiesComponent("capsList");
-//                            if(capsList == null){
-//                                Label placeHolder = new Label("contentList");
-//                                placeHolder.setVisible(false);
-//                                capsList = placeHolder;
-//                            }
-//                        }
-//                        item.add(capsList);
-//                    }
-//                };
-//
-//        add(capsView);
+                    @Override
+                    protected void populateItem(ListItem<CapabilitiesHomePageLinkProvider> item) {
+                        CapabilitiesHomePageLinkProvider provider = item.getModelObject();
+                        Component capsList;
+                        if (provider instanceof ServiceDescriptionProvider) {
+                            Label placeHolder = new Label("contentList");
+                            placeHolder.setVisible(false);
+                            capsList = placeHolder;
+                        }
+                        else {
+                            capsList = provider.getCapabilitiesComponent("capsList");
+                            if(capsList == null){
+                                Label placeHolder = new Label("contentList");
+                                placeHolder.setVisible(false);
+                                capsList = placeHolder;
+                            }
+                        }
+                        item.add(capsList);
+                    }
+                };
+
+        add(capsView);
     }
 
     private <T> IModel<List<T>> getContentProviders(final Class<T> providerClass) {

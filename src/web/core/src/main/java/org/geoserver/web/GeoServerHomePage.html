@@ -19,25 +19,13 @@
 </div>
 
 <div id="services">
-	Hello David
 	<span wicket:id="serviceList"/>
 </div>
 
 <div id="capabilities">
-  <ul>
-    <li class="navigation-tab">
-      <div class="navigation-tab-header">
-        <span><wicket:message key="serviceCapabilities">Service Capabilities</wicket:message></span>
-      </div>
-      <div>
-        <ul class="navigation-tab-content plain">
-          <li wicket:id="providedCaps" class="selfclear">
-            <span wicket:id="capsList"/>
-          </li>
-        </ul>
-      </div>
-    </li>
-  </ul>
+  <div wicket:id="providedCaps">
+    <span wicket:id="capsList"/>
+  </div>
 </div>
 
 <wicket:fragment wicket:id="catalogLinksFragment">

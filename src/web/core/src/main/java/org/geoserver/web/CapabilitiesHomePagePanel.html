@@ -1,16 +1,20 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-  <li wicket:id="services">
-  <span wicket:id="service"></span>
-  <ul class="flat">
-    <li wicket:id="versions">
-      <a wicket:id="link" class="external icon">
-        <span wicket:id="version">
-      </span></a>
-    </li>
-  </ul>
-  </li>
+  <div wicket:id="services">
+    <div class="header" wicket:id="service" />
+    <br>
+    <div class="table-display">
+      <div class="table-cell" wicket:id="versions">
+        <div class="link-bordered">
+          <a wicket:id="link" class="external icon link">
+            <span  wicket:id="version"></span>
+          </a>
+        </div>
+        <div class="spacer"></div>
+      </div>
+    </div>
+  </div>
 </wicket:panel>
 </body>
 </html>

@@ -36,15 +36,6 @@ public class CapabilitiesHomePagePanel extends Panel {
     public static class CapsInfo implements Serializable {
 
         /**
-         * Workspace prefix for virtual web service, may be null for global services.
-         */
-        String workspace;
-
-        /**
-         * Layer name for virtual web service, may be null for workspace or global services.
-         */
-        String layer;
-        /**
          * Service name.
          */
         String service;
@@ -55,18 +46,10 @@ public class CapabilitiesHomePagePanel extends Panel {
         /** GetCapabilities service description */
         String capsLink;
 
-        public CapsInfo(String service, Version version, String capsLink) {
-            this(service,version,capsLink,null);
-        }
-        public CapsInfo(String service, Version version, String capsLink, String workspace) {
-            this(service,version,capsLink,workspace,null);
-        }
-        public CapsInfo(String service, Version version, String capsLink, String workspace, String layer) {
+        public CapsInfo(String service, Version version, String capsLink){
             this.service = service;
             this.version = version;
             this.capsLink = capsLink;
-            this.workspace = workspace;
-            this.layer = layer;
         }
 
         public String getService() {
@@ -89,14 +72,12 @@ public class CapabilitiesHomePagePanel extends Panel {
             CapsInfo ci = (CapsInfo) o;
             return service.equals(ci.service)
                     && version.equals(ci.version)
-                    && capsLink.equals(ci.capsLink)
-                    && Objects.equals(workspace, workspace)
-                    && Objects.equals(layer,layer);
+                    && capsLink.equals(ci.capsLink);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(service, version, capsLink, workspace, layer);
+            return Objects.hash(service, version, capsLink);
         }
     }
 

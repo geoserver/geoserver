@@ -879,13 +879,20 @@ margin-bottom: 1em;
 }
 
 #services .serviceHeader {
-font-size:14px;
+font-size:18px;
 font-weight: bold;
+padding-bottoom: 5px;
+padding-top: 10px;
+}
+
+#services .serviceDescription {
+padding-bottoom: 5px;
 }
 
 #services .link-bordered {
 display: table-cell;
 border:2px;
+border-radius: 8px;
 border-style:solid;
 border-color: #cccccc;
 padding-right:25px;
@@ -894,7 +901,7 @@ padding-top:5px;
 padding-bottom:5px;
 }
 
-#services .link-bordered hr{
+#services .link-bordered hr {
 margin-left:-25px;
 margin-right:-25px;
 }
@@ -918,24 +925,52 @@ width:30px;
 }
 
 #services .table-display {
-    display: table;
+display: table;
 }
 
 #services .table-cell {
-    display: table-cell;
+display: table-cell;
 }
 
 /*-----------------------
 Capabilities
 -------------------------*/
 
-#capabilities {
-float: right;
-padding-right: 50px;
+#capabilities .header {
+font-size:18px;
+font-weight: bold;
+padding-bottoom: 5px;
+padding-top: 10px;
 }
 
-div#capabilities ul {
-list-style-type: none;
+#capabilities .link-bordered {
+display: table-cell;
+border:2px;
+border-radius: 8px;
+border-style:solid;
+border-color: #cccccc;
+padding-right:25px;
+padding-left:25px;
+padding-top:5px;
+padding-bottom:5px;
+}
+#capabilities .link-bordered .link {
+font-size:25px;
+display:flex;
+justify-content: center;
+}
+
+#capabilities .spacer {
+display: table-cell;
+width:30px;
+}
+
+#capabilities .table-display {
+display: table;
+}
+
+#capabilities .table-cell {
+display: table-cell;
 }
 
 /*-----------------------

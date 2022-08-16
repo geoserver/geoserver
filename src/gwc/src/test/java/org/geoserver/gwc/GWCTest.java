@@ -64,6 +64,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.aopalliance.intercept.MethodInvocation;
@@ -83,7 +84,12 @@ import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.gwc.wms.CachingWebMapService;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.util.CaseInsensitiveMap;
+import org.geoserver.platform.ExtensionFilter;
+import org.geoserver.platform.ExtensionProvider;
 import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -135,6 +141,7 @@ import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -260,11 +267,9 @@ public class GWCTest {
         tld = mock(TileLayerDispatcher.class);
         mockTileLayerDispatcher();
 
+        ApplicationContext appContext = createMock(ApplicationContext.class);
         GeoWebCacheEnvironment genv =
                 createMockBuilder(GeoWebCacheEnvironment.class).withConstructor().createMock();
-
-        ApplicationContext appContext = createMock(ApplicationContext.class);
-
         expect(appContext.getBeanNamesForType(GeoWebCacheEnvironment.class))
                 .andReturn(new String[] {"geoWebCacheEnvironment"})
                 .anyTimes();
@@ -274,6 +279,7 @@ public class GWCTest {
                 .andReturn(genvMap)
                 .anyTimes();
         expect(appContext.getBean("geoWebCacheEnvironment")).andReturn(genv).anyTimes();
+        expect(appContext.isSingleton("geoWebCacheEnvironment")).andReturn(true).anyTimes();
 
         expect(appContext.getBeanNamesForType(XMLConfiguration.class))
                 .andReturn(new String[] {"geoWebCacheXMLConfiguration"})
@@ -283,12 +289,81 @@ public class GWCTest {
         expect(appContext.getBeansOfType(XMLConfiguration.class)).andReturn(xmlConfMap).anyTimes();
         expect(appContext.getBean("geoWebCacheXMLConfiguration")).andReturn(xmlConfig).anyTimes();
 
+        GeoServerEnvironment gsenv =
+                createMockBuilder(GeoServerEnvironment.class)
+                        .withConstructor()
+                        .addMockedMethods("getProps")
+                        .createMock();
+        expect(appContext.getBeanNamesForType(GeoServerEnvironment.class))
+                .andReturn(new String[] {"environments"})
+                .anyTimes();
+        Map<String, GeoServerEnvironment> gsenvMap = new HashMap<>();
+        gsenvMap.put("environments", gsenv);
+        expect(appContext.getBeansOfType(GeoServerEnvironment.class))
+                .andReturn(gsenvMap)
+                .anyTimes();
+        expect(appContext.getBean("environments")).andReturn(gsenv).anyTimes();
+        expect(appContext.isSingleton("environments")).andReturn(true).anyTimes();
+
+        Properties properties = new Properties();
+        properties.put("TEST", "TEST VALUE");
+        expect(gsenv.getProps()).andReturn(properties).anyTimes();
+        replay(gsenv);
+
+        GWC gwcenv =
+                createMockBuilder(GWC.class)
+                        .withConstructor(
+                                gwcConfigPersister,
+                                storageBroker,
+                                tld,
+                                gridSetBroker,
+                                tileBreeder,
+                                diskQuotaMonitor,
+                                owsDispatcher,
+                                catalog,
+                                catalog,
+                                storageFinder,
+                                jdbcStorage,
+                                blobStoreAggregator)
+                        .createMock();
+
+        expect(appContext.getBeanNamesForType(GWC.class))
+                .andReturn(new String[] {"gwc"})
+                .anyTimes();
+        Map<String, GWC> gwcenvMap = new HashMap<>();
+        gwcenvMap.put("gwc", gwcenv);
+        expect(appContext.getBeansOfType(GWC.class)).andReturn(gwcenvMap).anyTimes();
+        expect(appContext.getBean("gwc")).andReturn(gwcenv).anyTimes();
+        expect(appContext.isSingleton("gwc")).andReturn(true).anyTimes();
+
+        GeoServerResourceLoader loader =
+                createMockBuilder(GeoServerResourceLoader.class).withConstructor().createMock();
+        expect(appContext.getBeanNamesForType(ExtensionFilter.class))
+                .andReturn(new String[] {})
+                .anyTimes();
+        expect(appContext.getBeanNamesForType(ExtensionProvider.class))
+                .andReturn(new String[] {})
+                .anyTimes();
+        expect(appContext.getBeanNamesForType(GeoServerResourceLoader.class))
+                .andReturn(new String[] {"resourceLoader"})
+                .anyTimes();
+        Map<String, GeoServerResourceLoader> grenvMap = new HashMap<>();
+        grenvMap.put("resourceLoader", loader);
+        expect(appContext.getBeansOfType(GeoServerResourceLoader.class))
+                .andReturn(grenvMap)
+                .anyTimes();
+        expect(appContext.getBean("resourceLoader")).andReturn(loader).anyTimes();
+        expect(appContext.isSingleton("resourceLoader")).andReturn(true).anyTimes();
+
         replay(appContext);
 
         GeoWebCacheExtensions gse = createMockBuilder(GeoWebCacheExtensions.class).createMock();
         gse.setApplicationContext(appContext);
 
         replay(gse);
+
+        GeoServerExtensions gsext = new GeoServerExtensions();
+        gsext.setApplicationContext(appContext);
 
         List<GeoWebCacheEnvironment> extensions =
                 GeoWebCacheExtensions.extensions(GeoWebCacheEnvironment.class);
@@ -1551,5 +1626,19 @@ public class GWCTest {
         if (GeoServerEnvironment.allowEnvParametrization()) {
             assertEquals("H2", jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect());
         }
+    }
+
+    @Test
+    public void testGWCEnvParametrization() {
+        if (GeoServerEnvironment.allowEnvParametrization()) {
+            GeoWebCacheEnvironment gwcEnvironment =
+                    GeoWebCacheExtensions.bean(GeoWebCacheEnvironment.class);
+            assertEquals("TEST VALUE", gwcEnvironment.resolveValue("${TEST}"));
+        }
+    }
+
+    @AfterClass
+    public static void destroyAppContext() {
+        GeoServerExtensionsHelper.init(null);
     }
 }

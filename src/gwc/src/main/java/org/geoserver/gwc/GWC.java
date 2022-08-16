@@ -2404,9 +2404,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     private boolean needsSynchronization() {
         return GeoServerEnvironment.allowEnvParametrization()
                 && gsEnvironment != null
-                && gsEnvironment.isStale()
                 && gsEnvironment.getProps() != null
-                && gwcEnvironment != null;
+                && gwcEnvironment != null
+                && (gsEnvironment.isStale() || gwcEnvironment.getProps() == null);
     }
 
     /**

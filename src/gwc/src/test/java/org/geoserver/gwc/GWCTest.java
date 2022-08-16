@@ -54,6 +54,7 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +66,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -78,14 +80,20 @@ import org.geoserver.gwc.layer.CatalogStyleChangeListener;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
+import org.geoserver.gwc.wms.CachingWebMapService;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.WebMap;
+import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.kvp.PaletteManager;
+import org.geoserver.wms.map.RawMap;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -1193,6 +1201,42 @@ public class GWCTest {
         assertTrue(
                 "mismatch reason '" + target + "' does not contain '" + expectedReason + "'",
                 target.toString().contains(expectedReason));
+    }
+
+    /**
+     * Confirms that GWC handling of WMS requests does not enter recursion when encountering a seed
+     * request
+     */
+    @Test
+    public void testGetMapRequest() throws Throwable {
+        GetMapRequest request = new GetMapRequest();
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        rawKvp.put(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN, "true");
+        request.setRawKvp(rawKvp);
+        rawKvp.put("layers", "test:mockLayer");
+        RawMap rawMap = new RawMap(new WMSMapContent(request), new byte[] {}, "image/png");
+        WebMapService mapService = mock(DefaultWebMapService.class);
+        when(mapService.getMap(request)).thenReturn(rawMap);
+        Method getMapMethod = WebMapService.class.getMethod("getMap", GetMapRequest.class);
+        MethodInvocation invocation =
+                new PassThroughMethodInvocation(mapService, getMapMethod, request);
+        mediator.getConfig().setDirectWMSIntegrationEnabled(true);
+        mediator.getConfig().setRequireTiledParameter(false);
+        CachingWebMapService cwms = new CachingWebMapService(mediator);
+        WebMap webMap = cwms.invoke(invocation);
+        assertNull(webMap.getResponseHeaders());
+        GetMapRequest requestWithoutSeedKey = new GetMapRequest();
+        rawKvp.remove(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
+        requestWithoutSeedKey.setRawKvp(rawKvp);
+        RawMap rawMap2 =
+                new RawMap(new WMSMapContent(requestWithoutSeedKey), new byte[] {}, "image/png");
+        when(mapService.getMap(requestWithoutSeedKey)).thenReturn(rawMap2);
+        MethodInvocation invocation2 =
+                new PassThroughMethodInvocation(mapService, getMapMethod, requestWithoutSeedKey);
+        WebMap webMapWithoutSeed = cwms.invoke(invocation2);
+        assertEquals("geowebcache-cache-result", webMapWithoutSeed.getResponseHeaders()[0][0]);
     }
 
     @Test

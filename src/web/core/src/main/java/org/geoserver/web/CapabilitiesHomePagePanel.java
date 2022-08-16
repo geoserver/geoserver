@@ -8,6 +8,7 @@ package org.geoserver.web;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,9 @@ public class CapabilitiesHomePagePanel extends Panel {
         for (CapsInfo c : capsLinks) {
             final String key =
                     c.getService().toLowerCase(); // to avoid problems with uppercase definitions
+            if( key.equals("wms")){
+                continue; // handled by ServicesPanel
+            }
             List<CapsInfo> serviceLinks = byService.get(key);
             if (serviceLinks == null) {
                 serviceLinks = new ArrayList<>();
@@ -114,8 +118,15 @@ public class CapabilitiesHomePagePanel extends Panel {
                     protected void populateItem(ListItem<String> item) {
                         final String serviceId = item.getModelObject();
                         item.add(new Label("service", serviceId.toUpperCase()));
+
+                        List<CapsInfo> links = new ArrayList<>(byService.get(serviceId));
+                        Collections.sort(links,new Comparator<CapsInfo>(){
+                            @Override public int compare(CapsInfo o1, CapsInfo o2) {
+                                return - o1.version.compareTo(o2.version);
+                            }
+                        });
                         item.add(
-                                new ListView<CapsInfo>("versions", byService.get(serviceId)) {
+                                new ListView<CapsInfo>("versions", links) {
                                     private static final long serialVersionUID = 1L;
 
                                     @Override

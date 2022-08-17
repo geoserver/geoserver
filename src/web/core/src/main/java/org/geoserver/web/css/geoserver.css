@@ -890,7 +890,8 @@ padding-bottoom: 5px;
 }
 
 #services .link-bordered {
-display: table-cell;
+  font-size: 18px;
+/*display: table-cell;*/
 border:2px;
 border-radius: 8px;
 border-style:solid;
@@ -904,17 +905,19 @@ padding-bottom:5px;
 #services .link-bordered hr {
 margin-left:-25px;
 margin-right:-25px;
+  border-top: 1px solid #ccc !important;
+  color: #ccc;
 }
 
 #services .link-bordered .serviceName {
-font-size:25px;
+font-size: 18px;
 color:#888888;
 display:flex;
 justify-content: center;
 }
 
 #services .link-bordered .serviceLink {
-font-size:25px;
+font-size: 18px;
 display:flex;
 justify-content: center;
 }
@@ -924,12 +927,26 @@ display: table-cell;
 width:30px;
 }
 
+#services .flex-display {
+display: flex;
+  gap: 25px;
+}
+
 #services .table-display {
 display: table;
 }
 
 #services .table-cell {
 display: table-cell;
+}
+
+#services a:hover .link-bordered {
+  background-color: #f5f5f5;
+  text-decoration: none;
+}
+#services a:hover {
+  font-size: 18px;
+  text-decoration: none;
 }
 
 /*-----------------------
@@ -944,6 +961,7 @@ padding-top: 10px;
 }
 
 #capabilities .link-bordered {
+  font-size: 18px;
 display: table-cell;
 border:2px;
 border-radius: 8px;
@@ -955,7 +973,7 @@ padding-top:5px;
 padding-bottom:5px;
 }
 #capabilities .link-bordered .link {
-font-size:25px;
+font-size:18px;
 display:flex;
 justify-content: center;
 }
@@ -963,10 +981,6 @@ justify-content: center;
 #capabilities .spacer {
 display: table-cell;
 width:30px;
-}
-
-#capabilities .table-display {
-display: table;
 }
 
 #capabilities .table-cell {

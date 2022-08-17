@@ -18,7 +18,6 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.InternationalStringUtils;
-import org.geoserver.web.CapabilitiesHomePagePanel;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServicesPanel;
@@ -101,7 +100,7 @@ public class WMTSServiceDescriptionProvider extends ServiceDescriptionProvider {
             WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
 
         List<ServicesPanel.ServiceLinkDescription> links = new ArrayList<>();
-        List<CapabilitiesHomePagePanel.CapsInfo> gwcCaps = new ArrayList<>();
+        WMTSInfo info = info(workspaceInfo, layerInfo);
 
         final GeoServerApplication app = GeoServerApplication.get();
         final GWCConfig gwcConfig = gwc.getConfig();
@@ -122,15 +121,15 @@ public class WMTSServiceDescriptionProvider extends ServiceDescriptionProvider {
         }
 
         try {
-            if (geoserver.getService(WMTSInfo.class).isEnabled()
-                    && null != app.getBean("gwcServiceWMTS")) {
+            if (info.isEnabled() && null != app.getBean("gwcServiceWMTS")) {
                 links.add(
                         new ServicesPanel.ServiceLinkDescription(
                                 "wmts",
                                 new Version("1.1.1"),
-                                "../gwc/service/wms?request=GetCapabilities&version=1.1.1&tiled=true",
+                                "../gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities",
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
-                                layerInfo != null ? layerInfo.getName() : null));
+                                layerInfo != null ? layerInfo.getName() : null,
+                                "WMTS"));
             }
         } catch (NoSuchBeanDefinitionException e) {
             // service not found, ignore exception
@@ -141,7 +140,7 @@ public class WMTSServiceDescriptionProvider extends ServiceDescriptionProvider {
                         new ServicesPanel.ServiceLinkDescription(
                                 "wmts",
                                 new Version("1.0.0"),
-                                "\"../gwc/service/tms/1.0.0",
+                                "../gwc/service/tms/1.0.0",
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
                                 layerInfo != null ? layerInfo.getName() : null,
                                 "TMS"));

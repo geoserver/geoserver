@@ -189,6 +189,18 @@ public class ServicesPanel extends Panel {
         public int compareTo(ServiceDescription o) {
             return this.service.compareTo(o.service);
         }
+
+        @Override
+        public String toString() {
+            final StringBuffer sb = new StringBuffer("ServiceDescription{");
+            sb.append("service='").append(service).append('\'');
+            sb.append(", available=").append(available);
+            sb.append(", workspace='").append(workspace).append('\'');
+            sb.append(", layer='").append(layer).append('\'');
+            sb.append(", links=").append(links.size());
+            sb.append('}');
+            return sb.toString();
+        }
     }
     /**
      * A complete reference to a GetCapabilities or other service description document acting as the
@@ -301,19 +313,33 @@ public class ServicesPanel extends Panel {
                     && Objects.equals(layer, that.layer)
                     && service.equals(that.service)
                     && version.equals(that.version)
-                    && Objects.equals(link, that.link);
+                    && Objects.equals(link, that.link)
+                    && protocol.equals(that.protocol);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(workspace, layer, service, version, link);
+            return Objects.hash(workspace, layer, service, version, link, protocol);
         }
 
         @Override
         public int compareTo(ServiceLinkDescription o) {
-            int compareService = this.service.compareTo(o.service);
+            int compareProtocol = this.protocol.compareTo(o.protocol);
             int compareVersion = -this.version.compareTo(o.getVersion());
-            return compareService != 0 ? compareService : compareVersion;
+            return compareProtocol != 0 ? compareProtocol : compareVersion;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuffer sb = new StringBuffer("ServiceLinkDescription{");
+            sb.append("service='").append(service).append('\'');
+            sb.append(", version=").append(version);
+            sb.append(", protocol='").append(protocol).append('\'');
+            sb.append(", workspace='").append(workspace).append('\'');
+            sb.append(", layer='").append(layer).append('\'');
+            sb.append(", link='").append(link).append('\'');
+            sb.append('}');
+            return sb.toString();
         }
     }
 
@@ -391,6 +417,7 @@ public class ServicesPanel extends Panel {
             if (serviceMap.containsKey(serviceName)) {
                 ServiceDescription service = serviceMap.get(serviceName);
                 service.getLinks().add(link);
+                int size = service.getLinks().size();
             } else {
                 // ignore
                 //                ServiceDescription service = new ServiceDescription(serviceName);

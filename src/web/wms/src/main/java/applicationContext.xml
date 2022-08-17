@@ -12,7 +12,7 @@
     <constructor-arg index="1" value="GeoServer Web UI Web Map Service"/>
   </bean>
 
-  <bean class="org.geoserver.wms.web.WMSServiceDescriptionProvider">
+  <bean id="wmsServiceDescriptor" class="org.geoserver.wms.web.WMSServiceDescriptionProvider">
   </bean>
 
   <bean id="wmsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">

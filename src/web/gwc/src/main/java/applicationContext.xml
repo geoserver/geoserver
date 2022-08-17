@@ -11,6 +11,10 @@
     <constructor-arg index="0" value="gs-web-gwc"/>
     <constructor-arg index="1" value="GeoServer Web UI GeoWebCache"/>
   </bean>
+
+  <bean id="wmtsServiceDescriptor" class="org.geoserver.gwc.web.WMTSServiceDescriptionProvider">
+  </bean>
+
   <bean id="GWCCapabilitiesHomePageProvider" class="org.geoserver.gwc.web.GWCCapabilitiesHomePageProvider">
     <constructor-arg ref="gwcFacade"/>
     <constructor-arg ref="geoServer"/>

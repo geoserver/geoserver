@@ -127,6 +127,15 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         }
         if (this.layer != null) {
             layerInfo = layerInfo(workspaceInfo, this.layer);
+            if (layerInfo instanceof LayerInfo) {
+                String prefixedName = ((LayerInfo) layerInfo).prefixedName();
+                if (prefixedName.contains(":")) {
+                    String prefix = prefixedName.substring(0, prefixedName.indexOf(":"));
+                    if (this.workspace == null || !this.workspace.equals(prefix)) {
+                        workspaceInfo = getGeoServer().getCatalog().getWorkspaceByName(prefix);
+                    }
+                }
+            }
         }
 
         ContactInfo contactInfo = gs.getSettings().getContact();

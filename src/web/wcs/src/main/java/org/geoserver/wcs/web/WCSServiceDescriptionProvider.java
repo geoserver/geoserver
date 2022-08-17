@@ -1,14 +1,16 @@
-package org.geoserver.wcs.web;
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */ package org.geoserver.wcs.web;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ServiceResourceProvider;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
@@ -20,12 +22,11 @@ import org.geoserver.wcs.WebCoverageService111;
 import org.geoserver.wcs2_0.WebCoverageService20;
 import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServicesPanel;
-import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.util.InternationalString;
 
 /** Provide description of WMS services for welcome page. */
-public class WCSServiceDescriptionProvider implements ServiceDescriptionProvider {
+public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     static final Logger LOGGER = Logging.getLogger(WCSServiceDescriptionProvider.class);
 
@@ -38,68 +39,39 @@ public class WCSServiceDescriptionProvider implements ServiceDescriptionProvider
     }
 
     /**
-     * Lookup WFSInfo using workspaceName / layerName conotext.
+     * Lookup WCSInfo using workspaceInfo / layerInfo context.
      *
-     * @param workspaceName Name of workspace, or global layer group
-     * @param layerName Name of layer or layer group
-     * @return WMSInfo if available for workspaceName, or {@code null} for global WMSInfo
+     * @param workspaceInfo Workspace, or null for global.
+     * @param layerInfo Layer, LayerGroup, or null for any
+     * @return WCSInfo if available for workspace, or global WCSInfo.
      */
-    protected WCSInfo info(String workspaceName, String layerName) {
-        WorkspaceInfo workspaceInfo = catalog.getWorkspaceByName(workspaceName);
+    protected WCSInfo info(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+        WCSInfo info = null;
         if (workspaceInfo != null) {
-            return geoserver.getService(workspaceInfo, WCSInfo.class);
+            info = geoserver.getService(workspaceInfo, WCSInfo.class);
         }
-        return null;
-    }
-
-    /**
-     * Look up published info using page workspace / layer context (see {@code
-     * LocalWorkspaceCallback}).
-     *
-     * @param workspaceName Name of workspace, or global layer group
-     * @param layerName Name of layer or layer group
-     * @return PublishedInfo representing layer info or group info, or {@code null} if not found
-     */
-    protected PublishedInfo layer(String workspaceName, String layerName) {
-        WorkspaceInfo workspaceInfo = catalog.getWorkspaceByName(workspaceName);
-        if (workspaceInfo == null) {
-            if (workspaceName != null) {
-                LayerGroupInfo groupInfo =
-                        catalog.getLayerGroupByName((WorkspaceInfo) null, workspaceName);
-                if (groupInfo != null) {
-                    return groupInfo;
-                }
-            }
-        } else if (layerName != null) {
-            NamespaceInfo namespaceInfo = catalog.getNamespaceByPrefix(workspaceInfo.getName());
-            LayerInfo layerInfo =
-                    catalog.getLayerByName(new NameImpl(namespaceInfo.getURI(), layerName));
-            if (layerInfo != null) {
-                return layerInfo;
-            }
-            LayerGroupInfo groupInfo = catalog.getLayerGroupByName(workspaceInfo, layerName);
-            if (groupInfo != null) {
-                return groupInfo;
-            }
+        if (info == null) {
+            info = geoserver.getService(WCSInfo.class);
         }
-        return null;
+        return info;
     }
 
     public List<ServicesPanel.ServiceDescription> getServices(
-            String workspaceName, String layerName) {
+            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+
         List<ServicesPanel.ServiceDescription> descriptions = new ArrayList<>();
-
-        WCSInfo virtualWCS = info(workspaceName, layerName);
-        WCSInfo globalWCS = geoserver.getService(WCSInfo.class);
-        PublishedInfo layerInfo = layer(workspaceName, layerName);
-
-        WCSInfo info = globalWCS;
-        if (virtualWCS != null) {
-            info = virtualWCS;
-        }
+        WCSInfo info = info(workspaceInfo, layerInfo);
 
         String serviceId = "wcs";
         boolean available = info.isEnabled();
+        if (layerInfo != null && layerInfo instanceof LayerInfo) {
+            ServiceResourceProvider provider =
+                    GeoServerExtensions.bean(ServiceResourceProvider.class);
+            List<String> layerServices =
+                    provider.getServicesForResource(((LayerInfo) layerInfo).getResource());
+            available = layerServices.contains(serviceId.toUpperCase());
+        }
+
         InternationalString title =
                 InternationalStringUtils.growable(
                         info.getInternationalTitle(),
@@ -116,14 +88,14 @@ public class WCSServiceDescriptionProvider implements ServiceDescriptionProvider
                         title,
                         description,
                         available,
-                        virtualWCS != null ? workspaceName : null,
-                        layerInfo != null ? layerName : null);
+                        workspaceInfo != null ? workspaceInfo.getName() : null,
+                        layerInfo != null ? layerInfo.getName() : null);
         descriptions.add(serviceDescription);
         return descriptions;
     }
 
     public List<ServicesPanel.ServiceLinkDescription> getServiceLinks(
-            String workspace, String layer) {
+            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         List<ServicesPanel.ServiceLinkDescription> links = new ArrayList<>();
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
 
@@ -136,23 +108,7 @@ public class WCSServiceDescriptionProvider implements ServiceDescriptionProvider
 
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {
-                    if (workspace != null) {
-                        link =
-                                "../"
-                                        + workspace
-                                        + "/ows?service="
-                                        + serviceId
-                                        + "&version="
-                                        + service.getVersion().toString()
-                                        + "&request=GetCapabilities";
-                    } else {
-                        link =
-                                "../ows?service="
-                                        + serviceId
-                                        + "&version="
-                                        + service.getVersion().toString()
-                                        + "&request=GetCapabilities";
-                    }
+                    link = getCapabilitiesURL(workspaceInfo, layerInfo, service);
                 } else if (service.getCustomCapabilitiesLink() != null) {
                     link = service.getCustomCapabilitiesLink();
                 }
@@ -163,7 +119,8 @@ public class WCSServiceDescriptionProvider implements ServiceDescriptionProvider
                                     serviceId.toLowerCase(),
                                     service.getVersion(),
                                     link,
-                                    namespace));
+                                    workspaceInfo != null ? workspaceInfo.getName() : null,
+                                    layerInfo != null ? layerInfo.getName() : null));
                 }
             }
         }

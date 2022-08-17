@@ -878,6 +878,20 @@ Welcome / Overview
 margin-bottom: 1em;
 }
 
+#chooser {
+    float: right;
+    margin-top: -70px;
+}
+#chooser .select {
+    display: inline-block;
+}
+#chooser .select input {
+    width: 10em;
+}
+#chooser #refresh {
+    display: inline-block;
+}
+
 #services .serviceHeader {
 font-size:18px;
 font-weight: bold;
@@ -890,8 +904,7 @@ padding-bottoom: 5px;
 }
 
 #services .link-bordered {
-  font-size: 18px;
-/*display: table-cell;*/
+display: table-cell;
 border:2px;
 border-radius: 8px;
 border-style:solid;
@@ -905,8 +918,6 @@ padding-bottom:5px;
 #services .link-bordered hr {
 margin-left:-25px;
 margin-right:-25px;
-  border-top: 1px solid #ccc !important;
-  color: #ccc;
 }
 
 #services .link-bordered .serviceName {
@@ -917,7 +928,7 @@ justify-content: center;
 }
 
 #services .link-bordered .serviceLink {
-font-size: 18px;
+font-size:25px;
 display:flex;
 justify-content: center;
 }
@@ -973,7 +984,7 @@ padding-top:5px;
 padding-bottom:5px;
 }
 #capabilities .link-bordered .link {
-font-size:18px;
+font-size:25px;
 display:flex;
 justify-content: center;
 }
@@ -981,6 +992,10 @@ justify-content: center;
 #capabilities .spacer {
 display: table-cell;
 width:30px;
+}
+
+#capabilities .table-display {
+display: table;
 }
 
 #capabilities .table-cell {

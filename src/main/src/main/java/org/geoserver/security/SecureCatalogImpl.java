@@ -965,8 +965,11 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             }
             if (AdminRequest.get() != null) {
                 // admin request
-                if (wl == null || !wl.isAdminable()) {
+                if (wl == null) {
                     canRead = canWrite = false;
+                } else {
+                    canRead = wl.isReadable();
+                    canWrite = wl.isWritable();
                 }
             }
         } else if (info instanceof LayerInfo || info instanceof ResourceInfo) {

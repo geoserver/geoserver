@@ -37,11 +37,11 @@ Checking the ``Cloud Optimized GeoTIFF (COG)`` checkbox will provide new options
    * - :guilabel:`URL`
      - (prefixed by ``cog://``) representing the connection URL to the COG Dataset.
    * - :guilabel:`Range Reader Settings`
-     - Which type of Range Reader implementation. Values currently supported are HTTP and S3, the latter using an S3 Client
-   * - :guilabel:`User Name / Access Key ID`
-     - Optional user name (HTTP) or Access Key ID (S3) in case the COG dataset requires basic authentication
-   * - :guilabel:`Password / Secret Access Key`
-     - Password (HTTP) or Secret Access Key (S3) for the previous credential
+     - Which type of Range Reader implementation. Values currently supported are HTTP, GoogleCloud, Azure, S3 the latter using an S3 Client
+   * - :guilabel:`User Name / Access Key ID / Account Name`
+     - Optional user name (HTTP) or Access Key ID (S3) or Account Name (Azure) in case the COG dataset requires authentication
+   * - :guilabel:`Password / Secret Access Key / Account Key`
+     - Password (HTTP) or Secret Access Key (S3) or Account Key (Azure) for the previous credential
 
 COG ImageMosaic Configuration
 -----------------------------
@@ -66,10 +66,10 @@ Additional configuration parameters can be specified in the ImageMosaic indexer 
      - Specifies the desired RangeReader implementation performing the Range Reads requests. 
    * - CogUser
      - N
-     - Credential to be set whenever basic HTTP authentication is needed to access the COG Datasets or an S3 Access KeyID is required
+     - Credential to be set whenever basic HTTP authentication is needed to access the COG Datasets or an S3 Access KeyID is required or an Azure AccountName is required
    * - CogPassword
      - N
-     - Password for the above user OR Secret Access Key for the above S3 KeyId.
+     - Password for the above user OR Secret Access Key for the above S3 KeyId or AccountKey for the above Azure AccountName.
 
 .. _cog_plugin_rangereader:
 
@@ -90,6 +90,8 @@ The following table provides the values for the ``CogRangeReader`` based on the 
      - ``it.geosolutions.imageioimpl.plugins.cog.S3RangeReader``
    * - Google Cloud
      - ``it.geosolutions.imageioimpl.plugins.cog.GSRangeReader``
+   * - Azure
+     - ``it.geosolutions.imageioimpl.plugins.cog.AzureRangeReader``
 
 COG Global Settings
 -------------------
@@ -164,6 +166,29 @@ to the key file::
     set GOOGLE_APPLICATION_CREDENTIALS=/path/to/the/key-file.json
     export GOOGLE_APPLICATION_CREDENTIALS
 
+Azure configuration
+-------------------
+A single Azure Client will be used for the same container. 
+Account and container will be retrieved from the provided Azure URL.
+The following System Properties can be set to customize client properties where missing.
+
+.. list-table::
+   :widths: 15 80
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - System property
+     - Description
+   * - azure.reader.accountName
+     - The Azure Account Name
+   * - azure.reader.accountKey
+     - The Azure Account Key for the above Account
+   * - azure.reader.container
+     - The default container for the above Account
+   * - azure.reader.prefix
+     - The optional prefix containing blobs
+   * - azure.reader.maxConnections
+     - The max number of connections supported by the underlying Azure client
 
 Client configuration (System Properties)
 ----------------------------------------

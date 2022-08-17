@@ -23,7 +23,7 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Dispatcher callback that sets and clears the {@link LocalWorkspace} and {@link LocalPublished}
- * thread locals.
+ * thread locals. "abc", "abc/xyz"
  *
  * @author Justin Deoliveira, OpenGeo
  */

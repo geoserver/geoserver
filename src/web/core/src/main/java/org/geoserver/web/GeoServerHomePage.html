@@ -1,16 +1,21 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
+<div id="chooser">
+  <form wicket:id="form">
+    <div class="select"><input type="text" wicket:id="workspace" placeholder="workspace"/></div>
+    <div class="select"><input type="text" wicket:id="layer" placeholder="layer or layergroup"/></div>
+    <div id="refresh"><a href="#" wicket:id="refresh">refresh</a></div>
+  </form>
+</div>
 <div id="welcome">
 <p>
 <wicket:message key="GeoServerHomePage.belongsTo">This GeoServer belongs to</wicket:message> <a wicket:id="contactURL"><span wicket:id="contactName"></span></a>.
 </p>
-<div id="serviceContext">
-  <form wicket:id="form">
-    <div style="float:right"><a href="#" wicket:id="refresh">refresh</a></div>
-    <div style="float:left">Context<input type="text" wicket:id="context"/></div>
-  </form>
-</div>
+<p>
+  <span wicket:id="footerMessage"></span>
+</p>
+
 <p>
 <div wicket:id="catalogLinks"></div>
 </p>
@@ -19,9 +24,7 @@
       <span wicket:id="contentList"/>
 </div>
 </p>
-<p>
-  <span wicket:id="footerMessage"></span>
-</p>
+
 </div>
 
 <div id="services">

@@ -878,15 +878,29 @@ Welcome / Overview
 margin-bottom: 1em;
 }
 
+#chooser {
+    float: right;
+    margin-top: -70px;
+}
+#chooser .select {
+    display: inline-block;
+}
+#chooser .select input {
+    width: 10em;
+}
+#chooser #refresh {
+    display: inline-block;
+}
+
 #services .serviceHeader {
 font-size:18px;
 font-weight: bold;
-padding-bottoom: 5px;
+padding-bottom: 5px;
 padding-top: 10px;
 }
 
 #services .serviceDescription {
-padding-bottoom: 5px;
+padding-bottom: 5px;
 }
 
 #services .link-bordered {
@@ -906,7 +920,7 @@ margin-left:-25px;
 margin-right:-25px;
 }
 
-#services .link-bordered .serviceName {
+#services .link-bordered .serviceProtocol {
 font-size:25px;
 color:#888888;
 display:flex;
@@ -939,7 +953,7 @@ Capabilities
 #capabilities .header {
 font-size:18px;
 font-weight: bold;
-padding-bottoom: 5px;
+padding-bottom: 5px;
 padding-top: 10px;
 }
 

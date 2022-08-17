@@ -43,22 +43,22 @@ public class ServicesPanel extends Panel {
          *
          * <p>Forced to lowercase for ease of comparison.
          */
-        final String workspace;
+        private final String workspace;
 
         /** Layer name for virtual web service, may be null for workspace or global services. */
-        final String layer;
+        private final String layer;
 
         /** Service name. */
-        final String service;
+        private final String service;
 
         /** Service title. */
-        final InternationalString title;
+        private final InternationalString title;
 
         /** Service description. */
-        final InternationalString description;
+        private final InternationalString description;
 
         /** Service availability; may be disabled or users may lack sufficient permissions. */
-        final boolean available;
+        private final boolean available;
 
         /** Service links. */
         SortedSet<ServiceLinkDescription> links = new TreeSet<>();
@@ -201,6 +201,9 @@ public class ServicesPanel extends Panel {
         /** Service name. */
         private final String service;
 
+        /** Protocol */
+        private final String protocol;
+
         /** Service version */
         private final Version version;
 
@@ -213,31 +216,44 @@ public class ServicesPanel extends Panel {
         /** Layer name for virtual web service, may be null for workspace or global services. */
         private final String layer;
 
-        public ServiceLinkDescription(String service, Version version, String link) {
-            this(service, version, link, null);
-        }
-
-        public ServiceLinkDescription(
-                String service, Version version, String link, String workspace) {
-            this(service, version, link, workspace, null);
-        }
-
         public ServiceLinkDescription(
                 String service, Version version, String link, String workspace, String layer) {
+            this(service, version, link, workspace, layer, null);
+        }
+
+        public ServiceLinkDescription(
+                String service,
+                Version version,
+                String link,
+                String workspace,
+                String layer,
+                String protocol) {
             this.service = service.toLowerCase();
             this.version = version;
             this.link = link;
             this.workspace = workspace;
             this.layer = layer;
+            this.protocol = protocol != null ? protocol : service.toUpperCase();
         }
 
         /**
          * Service name, example wfs, wms, ogcapi-features.
          *
+         * <p>A given service may support several protocols and versions (see below).
+         *
          * @return service name, forced to lower case for ease of comparison.
          */
         public String getService() {
             return service;
+        }
+
+        /**
+         * Web service protocol, example "wms", "wmc-c", "wmts", "rest".
+         *
+         * @return service protocol
+         */
+        public String getProtocol() {
+            return protocol;
         }
 
         /**
@@ -318,7 +334,7 @@ public class ServicesPanel extends Panel {
             protected void populateItem(ListItem<ServiceLinkDescription> listItem) {
                 ServiceLinkDescription link = listItem.getModelObject();
 
-                listItem.add(new Label("serviceName", link.getService().toUpperCase()));
+                listItem.add(new Label("serviceProtocol", link.getProtocol()));
 
                 ExternalLink externalLink = new ExternalLink("serviceLink", link.getLink());
                 externalLink.add(new Label("serviceVersion", link.getVersion().toString()));

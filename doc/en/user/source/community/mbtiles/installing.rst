@@ -9,4 +9,4 @@ Installing the GeoServer MBTiles extension
     #. Download the ``mbtiles-store-plugin`` from :download_community:`mbtiles-store` if you simply want to read MBTiles files. 
     #. Download the ``mbtiles-plugin`` from :download_community:`mbtiles` if you also want to use the WMS output format generaring MBTiles and the WPS process doing the same. Make sure to install corresponding WPS extension for GeoServer instance before installing this plugin, or GeoServer won't start.
 
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Extract the contents of the archive into the ``GeoServer/webapps/geoserver/WEB-INF/lib`` directory of the GeoServer installation.

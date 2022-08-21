@@ -5,19 +5,26 @@ Using the web administration interface
 
 GeoServer has a browser-based web administration interface application used to configure all aspects of GeoServer, from adding and publishing data to changing service settings. 
 
-The web admin interface is accessed via a web browser at::
+#. The web admin interface is accessed via a web browser at::
 
-  http://<host>:<port>/geoserver
+     http://<host>:<port>/geoserver
 
-For a default installation on a server the link is::
+#. For a default installation on a server the link is::
 
-  http://localhost:8080/geoserver
+     http://localhost:8080/geoserver
 
-When the application starts, it displays the Welcome page.
+3. When the application starts, it displays the Welcome page.
 
-.. figure:: ../../webadmin/images/web-admin.png
+   .. figure:: ../../webadmin/images/web-admin.png
    
-   Welcome Page
+      Welcome Page
+      
+4. The welcome page provides links describing the web services used to access information.
+   
+   To use copy and paste these links into a Desktop GIS, mobile or web mapping application.
+
+
+.. note:: For more information, please see the :ref:`welcome` section.
 
 .. _logging_in:
 

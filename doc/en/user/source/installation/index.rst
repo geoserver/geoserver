@@ -17,7 +17,6 @@ There are many ways to install GeoServer on your system. This section will discu
    linux
    win_binary
    win_installer
-   osx_binary
    war
    docker
    upgrade

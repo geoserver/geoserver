@@ -16,6 +16,8 @@
     <verbose>false</verbose>
     <verboseExceptions>false</verboseExceptions>
     <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
+    <showCreatedTimeColumnsInAdminList>false</showCreatedTimeColumnsInAdminList>
+    <showModifiedTimeColumnsInAdminList>false</showModifiedTimeColumnsInAdminList>
   </settings>
   <jai>
     <allowInterpolation>false</allowInterpolation>
@@ -29,6 +31,32 @@
     <jpegAcceleration>true</jpegAcceleration>
     <allowNativeMosaic>false</allowNativeMosaic>
     <allowNativeWarp>false</allowNativeWarp>
+    <jaiext>
+      <jaiExtOperations class="sorted-set">
+        <string>Affine</string>
+        <string>BandCombine</string>
+        <string>BandMerge</string>
+        <string>BandSelect</string>
+        <string>Binarize</string>
+        <string>Border</string>
+        <string>ColorConvert</string>
+        <string>Crop</string>
+        <string>ErrorDiffusion</string>
+        <string>Format</string>
+        <string>ImageFunction</string>
+        <string>Lookup</string>
+        <string>Mosaic</string>
+        <string>Null</string>
+        <string>OrderedDither</string>
+        <string>Rescale</string>
+        <string>Scale</string>
+        <string>Stats</string>
+        <string>Translate</string>
+        <string>Warp</string>
+        <string>algebric</string>
+        <string>operationConst</string>
+      </jaiExtOperations>
+    </jaiext>
   </jai>
   <coverageAccess>
     <maxPoolSize>10</maxPoolSize>
@@ -37,7 +65,7 @@
     <queueType>UNBOUNDED</queueType>
     <imageIOCacheThreshold>10240</imageIOCacheThreshold>
   </coverageAccess>
-  <updateSequence>152</updateSequence>
+  <updateSequence>260</updateSequence>
   <featureTypeCacheSize>0</featureTypeCacheSize>
   <globalServices>true</globalServices>
   <xmlPostRequestLogBufferSize>1024</xmlPostRequestLogBufferSize>

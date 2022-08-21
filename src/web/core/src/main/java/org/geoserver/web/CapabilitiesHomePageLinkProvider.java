@@ -21,7 +21,7 @@ public interface CapabilitiesHomePageLinkProvider {
 
     /**
      * Returns a component to be added as a child of the home page {@link ListView} that contains
-     * the list of GetCapabilities links.
+     * the list of Services and Protocols (such as GetCapabilities links).
      *
      * @param id the id of the returned component
      * @return a component suitable to be contained by the home page list of getcapabilities links

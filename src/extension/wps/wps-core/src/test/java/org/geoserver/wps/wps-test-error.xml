@@ -2,7 +2,7 @@
   <id>WPSInfoImpl-749ce9ad:14ed9bdaa2b:-8000</id>
   <enabled>true</enabled>
   <name>WPS</name>
-  <title>Prototype GeoServer WPS</title>
+  <title></title>
   <versions>
     <org.geotools.util.Version>
       <version>1.0.0</version>

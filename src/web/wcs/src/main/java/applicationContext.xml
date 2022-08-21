@@ -38,4 +38,7 @@
       <property name="descriptionKey" value="WCSRequestBuilder.shortDescription" />
       <property name="componentClass" value="org.geoserver.wcs.web.demo.WCSRequestBuilder" />
     </bean>
+
+    <bean class="org.geoserver.wcs.web.WCSServiceDescriptionProvider">
+    </bean>
 </beans>

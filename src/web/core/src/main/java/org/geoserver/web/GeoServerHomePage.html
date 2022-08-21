@@ -1,10 +1,27 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
+<div id="chooser">
+  <form wicket:id="form">
+    <div class="select">
+		<select wicket:id="workspace"/>
+	</div>
+    <div class="select">
+		<select wicket:id="layer"/>
+	</div>
+    <div id="refresh">
+		<a href="#" wicket:id="refresh">refresh</a>
+	</div>
+  </form>
+</div>
 <div id="welcome">
 <p>
 <wicket:message key="GeoServerHomePage.belongsTo">This GeoServer belongs to</wicket:message> <a wicket:id="contactURL"><span wicket:id="contactName"></span></a>.
 </p>
+<p>
+  <span wicket:id="footerMessage"></span>
+</p>
+
 <p>
 <div wicket:id="catalogLinks"></div>
 </p>
@@ -13,25 +30,19 @@
       <span wicket:id="contentList"/>
 </div>
 </p>
-<p>
-  <span wicket:id="footerMessage"></span>
-</p>
+
 </div>
+
+<div id="services">
+	<span wicket:id="serviceList"/>
+</div>
+
 <div id="capabilities">
-  <ul>
-    <li class="navigation-tab">
-      <div class="navigation-tab-header">
-        <span><wicket:message key="serviceCapabilities">Service Capabilities</wicket:message></span>
-      </div>
-      <div>
-        <ul class="navigation-tab-content plain">
-          <li wicket:id="providedCaps" class="selfclear">
-            <span wicket:id="capsList"/>
-          </li>
-        </ul>
-      </div>
-    </li>
-  </ul>
+  <h3><wicket:message key="serviceCapabilities">Service Capabilities</wicket:message></h3>
+
+  <div wicket:id="providedCaps">
+    <div wicket:id="capsList" class="flex-display"/>
+  </div>
 </div>
 
 <wicket:fragment wicket:id="catalogLinksFragment">

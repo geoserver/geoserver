@@ -5,7 +5,7 @@
   </workspace>
   <enabled>true</enabled>
   <name>WPS</name>
-  <title>Prototype GeoServer WPS</title>
+  <title></title>
   <versions>
     <org.geotools.util.Version>
       <version>1.0.0</version>

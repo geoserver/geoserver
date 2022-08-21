@@ -6,7 +6,9 @@
 package org.geoserver.web;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.wicket.Component;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.GeoServerExtensions;
@@ -27,24 +29,35 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
     @Override
     public Component getCapabilitiesComponent(final String id) {
 
+        Set<String> skip = new HashSet<>();
+        for (ServiceDescriptionProvider provider :
+                GeoServerExtensions.extensions(ServiceDescriptionProvider.class)) {
+            for (ServicesPanel.ServiceDescription service : provider.getServices(null, null)) {
+                skip.add(service.getService());
+            }
+            for (ServicesPanel.ServiceLinkDescription link : provider.getServiceLinks(null, null)) {
+                skip.add(link.getProtocol().toLowerCase());
+            }
+        }
+
         List<CapsInfo> serviceInfoLinks = new ArrayList<>();
 
-        List<Service> extensions = GeoServerExtensions.extensions(Service.class);
-        for (Service si : extensions) {
-            if (si.getCustomCapabilitiesLink() != null) {
-                String serviceId = si.getId();
-                String capsLink = si.getCustomCapabilitiesLink();
-                CapsInfo ci = new CapsInfo(serviceId, si.getVersion(), capsLink);
+        for (Service service : GeoServerExtensions.extensions(Service.class)) {
+            String serviceId = service.getId();
+            if (skip.contains(serviceId.toLowerCase())) {
+                continue;
+            } else if (service.getCustomCapabilitiesLink() != null) {
+                String capsLink = service.getCustomCapabilitiesLink();
+                CapsInfo ci = new CapsInfo(serviceId, service.getVersion(), capsLink);
                 serviceInfoLinks.add(ci);
-            } else if (si.getOperations().contains("GetCapabilities")) {
-                String serviceId = si.getId();
+            } else if (service.getOperations().contains("GetCapabilities")) {
                 String capsLink =
                         "../ows?service="
                                 + serviceId
                                 + "&version="
-                                + si.getVersion().toString()
+                                + service.getVersion().toString()
                                 + "&request=GetCapabilities";
-                CapsInfo ci = new CapsInfo(serviceId, si.getVersion(), capsLink);
+                CapsInfo ci = new CapsInfo(serviceId, service.getVersion(), capsLink);
                 serviceInfoLinks.add(ci);
             }
         }

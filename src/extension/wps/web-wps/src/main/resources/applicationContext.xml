@@ -10,6 +10,8 @@
     <constructor-arg index="0" value="gs-web-wps"/>
     <constructor-arg index="1" value="GeoServer Web UI Web Processing Service"/>
   </bean>
+  <bean id="wpsServiceDescriptor" class="org.geoserver.wps.web.WPSServiceDescriptionProvider">
+  </bean>
   <bean id="wpsRequestBuilder" class="org.geoserver.web.DemoLinkInfo">
     <property name="id" value="wpsRequestBuilder" />
     <property name="titleKey" value="WPSRequestBuilder.title" />

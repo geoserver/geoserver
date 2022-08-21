@@ -162,14 +162,14 @@
               <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>
+              <target>
                 <replace dir="${project.build.outputDirectory}" encoding="ISO-8859-1">
                   <include name="*.properties"></include>
                   <replacefilter token="@project.version@" value="${project.version}"></replacefilter>
                   <replacefilter token="@build.revision@" value="${build.commit.id}"></replacefilter>
                   <replacefilter token="@build.timestamp@" value="${build.timestamp}"></replacefilter>
                 </replace>
-              </tasks>
+              </target>
             </configuration>
           </execution>
         </executions>

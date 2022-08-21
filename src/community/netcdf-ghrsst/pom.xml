@@ -80,12 +80,12 @@
               <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>
+              <target>
                 <replace dir="${project.build.outputDirectory}" encoding="ISO-8859-1">
                   <include name="netcdf.properties"></include>
                   <replacefilter token="@netcdf.version@" value="${netcdf.version}"></replacefilter>
                 </replace>
-              </tasks>
+              </target>
             </configuration>
           </execution>
         </executions>

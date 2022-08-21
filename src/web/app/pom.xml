@@ -249,7 +249,7 @@
               <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>
+              <target>
                 <!-- check if config is available, if not fail -->
                 <available file="${configDirectory}/${configId}" property="configIsAvailable"></available>
                 <fail message="Unable to locate configuration: ${configDirectory}/${configId}" unless="configIsAvailable"></fail>
@@ -259,7 +259,7 @@
                 <copy todir="${webappSourceDirectory}/data">
                   <fileset dir="${configDirectory}/${configId}" includes="**/**"></fileset>
                 </copy>
-              </tasks>
+              </target>
             </configuration>
           </execution>
           <execution>

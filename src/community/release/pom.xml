@@ -441,11 +441,11 @@
             </goals>
             <configuration>
               <!-- remove some unwanted dependencies that get pulled over -->
-              <tasks>
+              <target>
                 <delete>
                   <fileset dir="${project.build.directory}/dependency" includes="servlet-api-*.jar,core*.jar"></fileset>
                 </delete>
-              </tasks>
+              </target>
             </configuration>
           </execution>
         </executions>

@@ -2214,7 +2214,7 @@
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <tasks>
+                  <target>
                     <loadproperties prefix="gt">
                       <zipentry name="META-INF/MANIFEST.MF" zipfile="target/dependency/gt-main-${gt.version}.jar"></zipentry>
                     </loadproperties>
@@ -2234,7 +2234,7 @@
                         <filter token="build.hudsonId" value="${build.hudsonId}"></filter>
                       </filterset>
                     </copy>
-                  </tasks>
+                  </target>
                 </configuration>
               </execution>
             </executions>

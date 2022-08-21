@@ -11,7 +11,7 @@ The general GeoServer upgrade process is as follows:
 
 #. Make sure that the current data directory is external to the application (not located inside the application file structure).
 
-   Check the GeoServer Server status page for the double check the data directory location.
+   Check the GeoServer Server status page to double check the data directory location.
 
 #. Make a note of any extensions you have installed.
 

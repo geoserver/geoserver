@@ -50,11 +50,11 @@ Running
 
 #. Navigate to ``http://localhost:8080/geoserver`` (or wherever you installed GeoServer) to access the GeoServer :ref:`web_admin`.
 
-If you see the GeoServer logo, then GeoServer is successfully installed.
+   If you see the GeoServer Welcome page, then GeoServer is successfully installed.
 
    .. figure:: images/success.png
-
-      GeoServer installed and running successfully
+      
+      GeoServer Welcome Page
 
 Stopping
 --------

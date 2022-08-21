@@ -46,14 +46,14 @@ Installation
 
 #. In a web browser, navigate to ``http://localhost:8080/geoserver``.
 
-If you see the GeoServer logo, then GeoServer is successfully installed.
+   If you see the GeoServer Welcome page, then GeoServer is successfully installed.
 
-.. figure:: images/success.png
+   .. figure:: images/success.png
 
-   GeoServer installed and running successfully
+      GeoServer Welcome Page
 
-To shut down GeoServer, either close the persistent command-line window, or run the :file:`shutdown.sh` file inside the :file:`bin` directory.
-
+#. To shut down GeoServer, either close the persistent command-line window, or run the :file:`shutdown.sh` file inside the :file:`bin` directory.
+    
 Uninstallation
 --------------
 

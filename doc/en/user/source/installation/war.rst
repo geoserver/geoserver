@@ -42,7 +42,7 @@ To remove the Tomcat version, create following file with emtpy parameters
  EOF
 
 
-Additionally add to server.xml the ErrorReportValve to disable showReport and showServerInfo. This is used to hide errors handled globally by tomcat in host section.
+Additionally add to :file:`server.xml` the ErrorReportValve to disable showReport and showServerInfo. This is used to hide errors handled globally by tomcat in host section.
 
 ``vi ./conf/server.xml``
 
@@ -85,7 +85,7 @@ Default full response:
  Description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
  Apache Tomcat/7.0.67
 
-Ahh, great, the software ist not really maintained. Tomcat is far outdated from Dec. 2015 (6 years old as of today Jan. 2022) with a lot of unfixed vulnerabilities.
+Ahh, great, the software is not really maintained. Tomcat is far outdated from Dec. 2015 (6 years old as of today Jan. 2022) with a lot of unfixed vulnerabilities.
 
 Notice: For support reason, the local output of version.sh still outputs the current version
 ::
@@ -103,10 +103,16 @@ Use your container application's method of starting and stopping webapps to run 
 
 To access the :ref:`web_admin`, open a browser and navigate to ``http://SERVER/geoserver`` . For example, with Tomcat running on port 8080 on localhost, the URL would be ``http://localhost:8080/geoserver``.
 
+If you see the GeoServer Welcome page, then GeoServer is successfully installed.
+
+.. figure:: images/success.png
+
+   GeoServer Welcome Page
+
 Update
 ------
 
-Update regularly at least the container application! And repeat the hardening.
+Update regularly at least the container application! And repeat the hardening process.
 
 There are a lot of geoserver installations visible with outdated Tomcat versions.
 
@@ -115,4 +121,4 @@ Uninstallation
 
 #. Stop the container application.
 
-#. Remove the GeoServer webapp from the container application's ``webapps`` directory. This will usually include the :file:`geoserver.war` file as well as a ``geoserver`` directory.
+#. Remove the GeoServer webapp from the container application's ``webapps`` directory. This will usually include the :file:`geoserver.war` file as well as a :file:`geoserver` directory.

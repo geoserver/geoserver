@@ -10,7 +10,7 @@ See the `README.md <https://github.com/geoserver/docker/blob/master/README.md>`_
 Quick Start
 -----------
 
-This will run the container with the data directory shipped with the container (which is typically an empty directory).
+This will run the container, with the data directory included with the container:
 
 #. Make sure you have `Docker <https://www.docker.com/>`__ installed.
 #. Download the container
@@ -21,7 +21,15 @@ This will run the container with the data directory shipped with the container (
 
       docker run -it -p8080:8080 docker.osgeo.org/geoserver:|release|
  
-#. Visit  http://localhost:8080/geoserver.
+#. In a web browser, navigate to ``http://localhost:8080/geoserver``.
+
+   If you see the GeoServer Welcome page, then GeoServer is successfully installed.
+
+   .. figure:: images/success.png
+
+      GeoServer Welcome Page
+      
+#. This setup is a quick test to ensure the software is working, but is difficult to use as file data can only be transfered to the data directory included with the container via the REST API.
 
 Using your own Data Directory
 -----------------------------
@@ -33,6 +41,7 @@ This will run the container with a local data directory.  The data directory wil
     Change `/MY/DATADIRECTORY` to your data directory.  If this directory is empty it will be populated with the standard Geoserver Sample Data Directory.
 
 #. Make sure you have `Docker <https://www.docker.com/>`__ installed.
+
 #. Download the container
 
     docker pull docker.osgeo.org/geoserver:|release|
@@ -42,8 +51,15 @@ This will run the container with a local data directory.  The data directory wil
       docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|release|
 
 
-#. Visit  http://localhost:8080/geoserver.
+#. In a web browser, navigate to ``http://localhost:8080/geoserver``.
 
+   If you see the GeoServer Welcome page, then GeoServer is successfully installed.
+
+   .. figure:: images/success.png
+
+      GeoServer Welcome Page
+      
+#. This setup allows direct management of the file data shared with the container. This setup is also easy to update to use the latest container.
 
 Adding Geoserver Extensions
 ---------------------------

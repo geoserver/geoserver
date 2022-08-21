@@ -9,6 +9,7 @@ This section describes how to view and configure workspaces. Analogous to a name
    
    Workspaces page
 
+.. _data_webadmin_workspaces_add_workspace:
 
 Add a Workspace
 ---------------

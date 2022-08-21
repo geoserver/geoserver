@@ -248,58 +248,24 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                             // No input selected, check model object displayed
                             layerName = layerField.getModelObject().prefixedName();
                         }
-                        if (!Strings.isEmpty(layerName)) {
-                            if (layerName.contains(":")) {
-                                setResponsePage(
-                                        GeoServerHomePage.class,
-                                        new PageParameters()
-                                                .set(
-                                                        "workspace",
-                                                        layerName.substring(
-                                                                0, layerName.indexOf(":")),
-                                                        0,
-                                                        INamedParameters.Type.QUERY_STRING)
-                                                .set(
-                                                        "layer",
-                                                        layerName.substring(
-                                                                layerName.indexOf(":") + 1),
-                                                        1,
-                                                        INamedParameters.Type.QUERY_STRING));
-                            } else {
-                                setResponsePage(
-                                        GeoServerHomePage.class,
-                                        new PageParameters()
-                                                .set(
-                                                        "workspace",
-                                                        null,
-                                                        0,
-                                                        INamedParameters.Type.QUERY_STRING)
-                                                .set(
-                                                        "layer",
-                                                        layerName,
-                                                        1,
-                                                        INamedParameters.Type.QUERY_STRING));
-                            }
-                        } else {
-                            String workspaceName = workspaceField.getInput();
-                            if (workspaceName == null && workspaceField.getModelObject() != null) {
-                                // No input selected, check model object displayed
-                                workspaceName = workspaceField.getModelObject().getName();
-                            }
-                            setResponsePage(
-                                    GeoServerHomePage.class,
-                                    new PageParameters()
-                                            .set(
-                                                    "workspace",
-                                                    workspaceName,
-                                                    0,
-                                                    INamedParameters.Type.QUERY_STRING)
-                                            .set(
-                                                    "layer",
-                                                    null,
-                                                    1,
-                                                    INamedParameters.Type.QUERY_STRING));
+                        String workspaceName = workspaceField.getInput();
+                        if (workspaceName == null && workspaceField.getModelObject() != null) {
+                            // No input selected, check model object displayed
+                            workspaceName = workspaceField.getModelObject().getName();
                         }
+                        setResponsePage(
+                                GeoServerHomePage.class,
+                                new PageParameters()
+                                        .set(
+                                                "workspace",
+                                                toWorkspace(workspaceName, layerName),
+                                                0,
+                                                INamedParameters.Type.QUERY_STRING)
+                                        .set(
+                                                "layer",
+                                                toLayer(workspaceName, layerName),
+                                                1,
+                                                INamedParameters.Type.QUERY_STRING));
                     }
                 });
 
@@ -560,5 +526,42 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
         // And between the new filter and the initial filter
         return orFilter;
+    }
+
+    /**
+     * Determine workspace parameter from select input.
+     *
+     * @param workspaceName
+     * @param layerName
+     * @return workspace parameter value
+     */
+    String toWorkspace(String workspaceName, String layerName) {
+        if (!Strings.isEmpty(layerName)) {
+            if (layerName.contains(":")) {
+                return layerName.substring(layerName.indexOf(":"));
+            } else {
+                return null;
+            }
+        }
+        return workspaceName;
+    }
+
+    /**
+     * Determine layer parameter from select input.
+     *
+     * @param workspaceName
+     * @param layerName
+     * @return layer parameter value
+     */
+    String toLayer(String workspaceName, String layerName) {
+        if (!Strings.isEmpty(layerName)) {
+            if (layerName.contains(":")) {
+                return layerName.substring(layerName.indexOf(":") + 1);
+            } else {
+                return layerName;
+            }
+        } else {
+            return null;
+        }
     }
 }

@@ -157,7 +157,7 @@ public class StyleParameterFilter extends ParameterFilter {
                 super.getDefaultValue()); // Want to get the configured value so use super
         clone.setKey(getKey());
         clone.allowedStyles = getStyles();
-        clone.availableStyles = availableStyles;
+        clone.availableStyles = new TreeSet<>(availableStyles);
         clone.defaultStyle = defaultStyle;
         return clone;
     }
@@ -165,7 +165,7 @@ public class StyleParameterFilter extends ParameterFilter {
     /** Get the names of all the styles supported by the layer */
     public Set<String> getLayerStyles() {
         checkInitialized();
-        return availableStyles;
+        return Collections.unmodifiableSet(availableStyles);
     }
 
     @Override
@@ -191,11 +191,14 @@ public class StyleParameterFilter extends ParameterFilter {
 
     /** Set/update the availableStyles and defaultStyle based on the given GeoServer layer. */
     public void setLayer(LayerInfo layer) {
-        availableStyles = new TreeSet<>();
+        Set<String> newStyles = new TreeSet<>();
 
         for (StyleInfo style : layer.getStyles()) {
-            availableStyles.add(style.prefixedName());
+            newStyles.add(style.prefixedName());
         }
+
+        availableStyles = newStyles;
+
         if (layer.getDefaultStyle() != null) {
             defaultStyle = layer.getDefaultStyle().prefixedName();
         } else {

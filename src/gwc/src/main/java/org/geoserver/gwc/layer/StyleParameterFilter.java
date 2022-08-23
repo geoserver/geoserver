@@ -157,7 +157,7 @@ public class StyleParameterFilter extends ParameterFilter {
                 super.getDefaultValue()); // Want to get the configured value so use super
         clone.setKey(getKey());
         clone.allowedStyles = getStyles();
-        clone.availableStyles = new TreeSet<>(availableStyles);
+        clone.availableStyles = availableStyles != null ? new TreeSet<>(availableStyles) : null;
         clone.defaultStyle = defaultStyle;
         return clone;
     }

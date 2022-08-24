@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.featurestemplating.expressions.aggregate.StringCQLFunction;
 import org.geoserver.util.XCQL;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
@@ -386,6 +387,15 @@ public class TemplateCQLManager {
                 return f;
             }
             return getFactory(extraData).property(expression.getPropertyName(), namespaces);
+        }
+
+        @Override
+        public Object visit(Function expression, Object extraData) {
+            if (expression instanceof StringCQLFunction) {
+                StringCQLFunction function = (StringCQLFunction) expression;
+                function.setNamespaceSupport(namespaces);
+            }
+            return super.visit(expression, extraData);
         }
     }
 

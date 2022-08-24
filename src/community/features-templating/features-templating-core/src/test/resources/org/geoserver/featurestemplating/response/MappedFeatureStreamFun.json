@@ -1,0 +1,14 @@
+
+    {
+      "@id": "${@id}",
+      "@type": [
+        "Feature",
+        "gsml:MappedFeature",
+        "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
+      ],
+      "geometry": "${gsml:shape}",
+      "properties": {
+        "name": "$${strConcat('FeatureName: ', xpath('gml:name'))}",
+        "lithology":"$${aggregate(stream(xpath('gsml:specification/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:lithology/gsml:ControlledConcept/gsml:name'),sort('DESC')),'JOIN(,)')}!"
+      }
+    }

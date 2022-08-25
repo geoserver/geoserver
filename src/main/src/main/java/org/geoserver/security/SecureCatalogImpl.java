@@ -117,7 +117,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         }
         // should never happen,just in case we have multiple singleton beans
         // of type DefaultResourceAccessManager
-        if (manager == null) manager = managers.get(size - 1);
+        if (manager == null) manager = managers.get(0);
 
         CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);

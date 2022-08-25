@@ -19,6 +19,7 @@ import java.util.List;
  * @author Andrea Aime - GeoSolutions
  */
 public class ServiceException extends RuntimeException {
+
     /** Serial UID */
     private static final long serialVersionUID = 7254349181794561723L;
 
@@ -32,6 +33,11 @@ public class ServiceException extends RuntimeException {
     public static final String INVALID_UPDATE_SEQUENCE = "InvalidUpdateSequence";
     public static final String CURRENT_UPDATE_SEQUENCE = "CurrentUpdateSequence";
     public static final String VERSION_NEGOTIATION_FAILED = "VersionNegotiationFailed";
+
+    /**
+     * Vendor exception code used when too much memory would have been needed to serve the request
+     */
+    public static final String MAX_MEMORY_EXCEEDED = "MaxMemoryExceeded";
 
     /** Application specfic code. */
     protected String code;

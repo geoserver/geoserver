@@ -227,21 +227,21 @@ public class RasterLayerLegendHelper {
      *
      * @return a {@link BufferedImage} that represents the legend for the provided request.
      */
-    public BufferedImage getLegend() {
+    public BufferedImage getLegend(Tally tally) {
         if (rasterSymbolizer == null) {
             return null;
         }
-        return createResponse();
+        return createResponse(tally);
     }
 
-    private synchronized BufferedImage createResponse() {
+    private synchronized BufferedImage createResponse(Tally tally) {
 
         if (image == null) {
 
             if (cMapLegendCreator != null)
 
                 // creating a legend
-                image = cMapLegendCreator.getLegend();
+                image = cMapLegendCreator.getLegend(tally);
             else {
                 image = ImageUtils.createImage(width, height, null, transparent);
                 final Graphics2D graphics =

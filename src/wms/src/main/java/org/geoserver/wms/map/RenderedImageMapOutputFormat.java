@@ -271,7 +271,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                             + "KB, whilst the "
                             + "maximum memory allowed is "
                             + kbMax
-                            + "KB");
+                            + "KB",
+                    ServiceException.MAX_MEMORY_EXCEEDED);
         }
 
         final MapDecorationLayout layout = findDecorationLayout(request, tiled);

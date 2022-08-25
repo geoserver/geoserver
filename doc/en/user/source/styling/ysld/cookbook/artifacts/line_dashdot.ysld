@@ -12,7 +12,7 @@ feature-styles:
         stroke-width: 1
         stroke-dasharray: 5 15
         stroke-dashoffset: 7.5
-        stroke-graphic-stroke:
+        stroke-graphic:
           size: 5
           symbols:
           - mark:

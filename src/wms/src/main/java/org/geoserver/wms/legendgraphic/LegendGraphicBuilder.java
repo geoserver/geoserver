@@ -61,6 +61,8 @@ import org.opengis.filter.expression.Literal;
 /** @author ian */
 public abstract class LegendGraphicBuilder {
 
+    public static final String MEMORY_USAGE_EXCEEDED = "Max legend graphic memory usage exceeded.";
+
     Logger LOGGER = Logger.getLogger("org.geoserver.wms.legendgraphic");
     /** Tolerance used to compare doubles for equality */
     public static final double TOLERANCE = 1e-6;

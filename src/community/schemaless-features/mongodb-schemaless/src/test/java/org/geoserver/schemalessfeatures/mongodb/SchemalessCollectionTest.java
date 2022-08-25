@@ -16,6 +16,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -24,6 +25,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 
 public class SchemalessCollectionTest extends AbstractMongoDBOnlineTestSupport {
@@ -99,5 +101,44 @@ public class SchemalessCollectionTest extends AbstractMongoDBOnlineTestSupport {
             assertEquals(5, listRes.size());
             ((List) result).forEach(e -> assertTrue(e instanceof Feature));
         }
+    }
+
+    @Test
+    public void testPostFilterEvaluation() throws Exception {
+        FeatureTypeInfo fti =
+                getCatalog().getFeatureTypeByName("gs:" + StationsTestSetup.COLLECTION_NAME);
+        @SuppressWarnings("unchecked")
+        FeatureSource<FeatureType, Feature> source =
+                (FeatureSource<FeatureType, Feature>) fti.getFeatureSource(null, null);
+        Expression filter = FF.function("filter", FF.literal("value < 40"));
+        Expression stream =
+                FF.function(
+                        "stream", FF.property("measurements.values"), filter, FF.property("value"));
+        Expression aggregate = FF.function("aggregate", stream, FF.literal("AVG"));
+        Filter eq = FF.equals(aggregate, FF.literal(30));
+        FeatureCollection<FeatureType, Feature> collection = source.getFeatures(eq);
+        collection.size();
+
+        FeatureIterator<Feature> it = collection.features();
+        PropertyName pn = FF.property("measurements.values.value");
+        while (it.hasNext()) {
+            Feature f = it.next();
+            Object result = pn.evaluate(f);
+            List<Number> values = (List<Number>) result;
+            assertAvg(values);
+        }
+    }
+
+    private void assertAvg(List<Number> result) {
+        int sum = 0;
+        int denom = 0;
+        for (Number n : result) {
+            int integer = n.intValue();
+            if (integer < 40) {
+                sum += integer;
+                denom++;
+            }
+        }
+        assertEquals(30, sum / denom);
     }
 }

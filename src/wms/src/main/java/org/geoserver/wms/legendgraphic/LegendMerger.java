@@ -35,7 +35,7 @@ public class LegendMerger {
      * @author mauro.bartolomeoli@geo-solutions.it
      */
     public static class MergeOptions {
-        List<RenderedImage> imageStack;
+        ImageList imageStack;
         int dx;
         int dy;
         int margin;
@@ -75,7 +75,7 @@ public class LegendMerger {
          * @param forceTitlesOff force titles to be never rendered
          */
         public MergeOptions(
-                List<RenderedImage> imageStack,
+                ImageList imageStack,
                 int dx,
                 int dy,
                 int margin,
@@ -125,7 +125,7 @@ public class LegendMerger {
          * @param forceTitlesOff force titles to be never rendered
          */
         public MergeOptions(
-                List<RenderedImage> imageStack,
+                ImageList imageStack,
                 int dx,
                 int dy,
                 int margin,
@@ -154,11 +154,12 @@ public class LegendMerger {
                     forceTitlesOff);
         }
 
-        public List<RenderedImage> getImageStack() {
+        @SuppressWarnings("unchecked")
+        public ImageList getImageStack() {
             return imageStack;
         }
 
-        public void setImageStack(List<RenderedImage> imageStack) {
+        public void setImageStack(ImageList imageStack) {
             this.imageStack = imageStack;
         }
 
@@ -291,7 +292,7 @@ public class LegendMerger {
         }
 
         public static MergeOptions createFromRequest(
-                List<RenderedImage> imageStack,
+                ImageList imageStack,
                 int dx,
                 int dy,
                 int margin,
@@ -321,10 +322,10 @@ public class LegendMerger {
      * @return the legend image with all the images on the argument list.
      */
     public static BufferedImage mergeRasterLegends(MergeOptions mergeOptions) {
-        List<RenderedImage> imageStack = mergeOptions.getImageStack();
+        ImageList imageStack = mergeOptions.getImageStack();
         LegendLayout layout = mergeOptions.getLayout();
 
-        List<BufferedImage> nodes = new ArrayList<>();
+        ImageList nodes = new ImageList(imageStack.getTally().getFull());
         for (RenderedImage renderedImage : imageStack) {
             nodes.add((BufferedImage) renderedImage);
         }
@@ -333,9 +334,7 @@ public class LegendMerger {
         if (layout == LegendLayout.HORIZONTAL) {
             Row[] rows = createRows(nodes, mergeOptions.getRowWidth(), mergeOptions.getRows());
             finalLegend = buildFinalHLegend(rows, mergeOptions);
-        }
-
-        if (layout == LegendLayout.VERTICAL) {
+        } else if (layout == LegendLayout.VERTICAL) {
             Column[] columns =
                     createColumns(
                             nodes,
@@ -362,17 +361,17 @@ public class LegendMerger {
      */
     public static BufferedImage mergeLegends(
             Rule[] rules, GetLegendGraphicRequest req, MergeOptions mergeOptions) {
-        List<RenderedImage> imageStack = mergeOptions.getImageStack();
+        ImageList imageStack = mergeOptions.getImageStack();
 
         // Builds legend nodes (graphics + label)
         final int imgCount = imageStack.size();
-        List<BufferedImage> nodes = new ArrayList<>();
+        ImageList nodes = new ImageList(imageStack.getTally().getFull());
         // Single legend, no rules, no force label
         if (imgCount == 1 && (!mergeOptions.isForceLabelsOn() || rules == null)) {
-            return (BufferedImage) imageStack.get(0);
+            return imageStack.get(0);
         } else {
             for (int i = 0; i < imgCount; i++) {
-                BufferedImage img = (BufferedImage) imageStack.get(i);
+                BufferedImage img = imageStack.get(i);
                 if (rules != null && rules[i] != null) {
                     BufferedImage label = renderLabel(img, rules[i], req, mergeOptions);
                     if (label != null) {
@@ -399,9 +398,7 @@ public class LegendMerger {
         if (layout == LegendLayout.HORIZONTAL) {
             Row[] rows = createRows(nodes, mergeOptions.getRowWidth(), mergeOptions.getRows());
             finalLegend = buildFinalHLegend(rows, mergeOptions);
-        }
-
-        if (layout == LegendLayout.VERTICAL) {
+        } else if (layout == LegendLayout.VERTICAL) {
             Column[] columns =
                     createColumns(
                             nodes,
@@ -426,24 +423,24 @@ public class LegendMerger {
      * @return the image with all the images on the argument list.
      */
     public static BufferedImage mergeGroups(Rule[] rules, MergeOptions mergeOptions) {
-        List<RenderedImage> imageStack = mergeOptions.getImageStack();
+        ImageList imageStack = mergeOptions.getImageStack();
 
         final int imgCount = imageStack.size();
         if (imgCount == 1 && (!mergeOptions.isForceLabelsOn() || rules == null)) {
-            return (BufferedImage) imageStack.get(0);
+            return imageStack.get(0);
         }
 
-        List<BufferedImage> nodes = new ArrayList<>(imgCount / 2);
+        ImageList nodes = new ImageList(imageStack.getTally().getFull());
 
         if (mergeOptions.isForceTitlesOff()) {
-            for (RenderedImage img : imageStack) {
-                nodes.add((BufferedImage) img);
+            for (BufferedImage img : imageStack) {
+                nodes.add(img);
             }
         } else {
             // merge layer titles with legend images
             for (int i = 0; i < imgCount; i = i + 2) {
-                BufferedImage lbl = (BufferedImage) imageStack.get(i);
-                BufferedImage img = (BufferedImage) imageStack.get(i + 1);
+                BufferedImage lbl = imageStack.get(i);
+                BufferedImage img = imageStack.get(i + 1);
                 img =
                         joinBufferedImageVertically(
                                 lbl,
@@ -537,7 +534,7 @@ public class LegendMerger {
      * @param checkColor check for presence of color in legend
      */
     private static Column[] createColumns(
-            List<BufferedImage> nodes,
+            ImageList nodes,
             int maxHeight,
             int maxColumns,
             GetLegendGraphicRequest req,
@@ -642,7 +639,7 @@ public class LegendMerger {
      * @param maxWidth maximum width of legend
      * @param maxRows maximum number of rows
      */
-    private static Row[] createRows(List<BufferedImage> nodes, int maxWidth, int maxRows) {
+    private static Row[] createRows(ImageList nodes, int maxWidth, int maxRows) {
         Row[] legendMatrix = new Row[0];
         /*
          * Limit max height

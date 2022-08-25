@@ -15,7 +15,6 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +125,9 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         // a layer group is given)
         setup(request);
 
-        List<RenderedImage> layersImages = new ArrayList<>();
+        Tally tally = new Tally(request.getWms().getMaxRequestMemory());
+        TalliedList<RenderedImage> layersImages = new TalliedList<>(tally);
+
         for (LegendRequest legend : layers) {
             FeatureType layer = legend.getFeatureType();
             // style and rule to use for the current layer
@@ -176,7 +177,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             } else if (buildRasterLegend) {
                 final RasterLayerLegendHelper rasterLegendHelper =
                         new RasterLayerLegendHelper(request, gt2Style, ruleName);
-                final BufferedImage image = rasterLegendHelper.getLegend();
+                final BufferedImage image = rasterLegendHelper.getLegend(tally);
                 if (image != null) {
                     if (titleImage != null) {
                         layersImages.add(titleImage);
@@ -223,7 +224,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                  * A legend graphic is produced for each applicable rule. They're being held here
                  * until the process is done and then painted on a "stack" like legend.
                  */
-                final List<RenderedImage> legendsStack = new ArrayList<>(ruleCount);
+                final TalliedList<RenderedImage> legendsStack = new TalliedList<>(tally);
 
                 final SLDStyleFactory styleFactory = new SLDStyleFactory();
 
@@ -301,7 +302,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
     /** */
     private void renderRules(
             GetLegendGraphicRequest request,
-            List<RenderedImage> layersImages,
+            TalliedList<RenderedImage> layersImages,
             boolean forceLabelsOn,
             boolean forceLabelsOff,
             boolean forceTitlesOff,
@@ -313,7 +314,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             Rule[] applicableRules,
             final NumberRange<Double> scaleRange,
             final int ruleCount,
-            final List<RenderedImage> legendsStack,
+            final TalliedList<RenderedImage> legendsStack,
             final SLDStyleFactory styleFactory,
             double minimumSymbolSize,
             boolean rescalingRequired,
@@ -534,7 +535,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
      * @throws IllegalArgumentException if the list is empty
      */
     private BufferedImage mergeGroups(
-            List<RenderedImage> imageStack,
+            TalliedList<RenderedImage> imageStack,
             Rule[] rules,
             GetLegendGraphicRequest req,
             boolean forceLabelsOn,

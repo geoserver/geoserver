@@ -599,7 +599,7 @@ public class ColorMapLegendCreator {
         this.wrap = builder.isWrap();
     }
 
-    public synchronized BufferedImage getLegend() {
+    public synchronized BufferedImage getLegend(Tally tally) {
 
         // do we already have a legend
         if (legend == null) {
@@ -617,18 +617,18 @@ public class ColorMapLegendCreator {
             //
             // body
             //
-            final Queue<BufferedImage> body = createBody();
+            final TalliedQueue<BufferedImage> body = createBody(tally);
 
             //
             // footer
             //
             if (bandInformation) {
-                final Queue<BufferedImage> footer = createFooter();
+                final TalliedQueue<BufferedImage> footer = createFooter(tally);
                 body.addAll(footer);
             }
 
             // now merge them
-            legend = mergeRows(body);
+            legend = mergeRows(body, tally);
         }
         return legend;
     }
@@ -767,7 +767,7 @@ public class ColorMapLegendCreator {
         }
     }
 
-    private Queue<BufferedImage> createFooter() {
+    private TalliedQueue<BufferedImage> createFooter(Tally tally) {
 
         // creating a backbuffer image on which we should draw the bkgColor for this colormap
         // element
@@ -777,7 +777,7 @@ public class ColorMapLegendCreator {
                 ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
 
         // list where we store the rows for the footer
-        final Queue<BufferedImage> queue = new LinkedList<>();
+        final TalliedQueue<BufferedImage> queue = new TalliedQueue<>(tally);
         // //the height is already fixed
         // final int rowHeight=(int)Math.round(rowH);
         final int rowWidth = (int) Math.round(footerW);
@@ -812,9 +812,9 @@ public class ColorMapLegendCreator {
         return queue; // mergeRows(queue);
     }
 
-    private Queue<BufferedImage> createBody() {
+    private TalliedQueue<BufferedImage> createBody(Tally tally) {
 
-        final Queue<BufferedImage> queue = new LinkedList<>();
+        final TalliedQueue<BufferedImage> queue = new TalliedQueue<>(tally);
 
         //
         // draw the various elements
@@ -935,7 +935,7 @@ public class ColorMapLegendCreator {
         return queue; // mergeRows(queue);
     }
 
-    private BufferedImage mergeRows(Queue<BufferedImage> legendsQueue) {
+    private BufferedImage mergeRows(TalliedQueue<BufferedImage> legendsQueue, Tally tally) {
         // I am doing a straight cast since I know that I built this
         // dimension object by using the widths and heights of the various
         // bufferedimages for the various bkgColor map entries.
@@ -982,7 +982,7 @@ public class ColorMapLegendCreator {
                 finalGraphics.dispose();
             }
         } else {
-            List<RenderedImage> imgs = new ArrayList<>(legendsQueue);
+            TalliedList<RenderedImage> imgs = new TalliedList<>(tally, legendsQueue);
 
             LegendMerger.MergeOptions options =
                     new LegendMerger.MergeOptions(

@@ -35,7 +35,7 @@ public class LegendMerger {
      * @author mauro.bartolomeoli@geo-solutions.it
      */
     public static class MergeOptions {
-        List<RenderedImage> imageStack;
+        TalliedList imageStack;
         int dx;
         int dy;
         int margin;
@@ -75,7 +75,7 @@ public class LegendMerger {
          * @param forceTitlesOff force titles to be never rendered
          */
         public MergeOptions(
-                List<RenderedImage> imageStack,
+                TalliedList<RenderedImage> imageStack,
                 int dx,
                 int dy,
                 int margin,
@@ -125,7 +125,7 @@ public class LegendMerger {
          * @param forceTitlesOff force titles to be never rendered
          */
         public MergeOptions(
-                List<RenderedImage> imageStack,
+                TalliedList<RenderedImage> imageStack,
                 int dx,
                 int dy,
                 int margin,
@@ -154,11 +154,12 @@ public class LegendMerger {
                     forceTitlesOff);
         }
 
-        public List<RenderedImage> getImageStack() {
+        @SuppressWarnings("unchecked")
+        public TalliedList<RenderedImage> getImageStack() {
             return imageStack;
         }
 
-        public void setImageStack(List<RenderedImage> imageStack) {
+        public void setImageStack(TalliedList<RenderedImage> imageStack) {
             this.imageStack = imageStack;
         }
 
@@ -291,7 +292,7 @@ public class LegendMerger {
         }
 
         public static MergeOptions createFromRequest(
-                List<RenderedImage> imageStack,
+                TalliedList<RenderedImage> imageStack,
                 int dx,
                 int dy,
                 int margin,
@@ -321,11 +322,11 @@ public class LegendMerger {
      * @return the legend image with all the images on the argument list.
      */
     public static BufferedImage mergeRasterLegends(MergeOptions mergeOptions) {
-        List<RenderedImage> imageStack = mergeOptions.getImageStack();
+        TalliedList<RenderedImage> imageStack = mergeOptions.getImageStack();
         LegendLayout layout = mergeOptions.getLayout();
 
         List<BufferedImage> nodes = new ArrayList<>();
-        for (RenderedImage renderedImage : imageStack) {
+        for (RenderedImage renderedImage : imageStack.get()) {
             nodes.add((BufferedImage) renderedImage);
         }
 
@@ -362,7 +363,7 @@ public class LegendMerger {
      */
     public static BufferedImage mergeLegends(
             Rule[] rules, GetLegendGraphicRequest req, MergeOptions mergeOptions) {
-        List<RenderedImage> imageStack = mergeOptions.getImageStack();
+        List<RenderedImage> imageStack = mergeOptions.getImageStack().get();
 
         // Builds legend nodes (graphics + label)
         final int imgCount = imageStack.size();
@@ -426,7 +427,7 @@ public class LegendMerger {
      * @return the image with all the images on the argument list.
      */
     public static BufferedImage mergeGroups(Rule[] rules, MergeOptions mergeOptions) {
-        List<RenderedImage> imageStack = mergeOptions.getImageStack();
+        List<RenderedImage> imageStack = mergeOptions.getImageStack().get();
 
         final int imgCount = imageStack.size();
         if (imgCount == 1 && (!mergeOptions.isForceLabelsOn() || rules == null)) {

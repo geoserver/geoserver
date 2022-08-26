@@ -141,6 +141,8 @@ class GeoFenceAreaHelper {
      * @return the reprojected geometry.
      */
     Geometry reprojectGeometry(Geometry geometry, CoordinateReferenceSystem targetCRS) {
+        if (geometry == null) return null;
+
         try {
             CoordinateReferenceSystem geomCrs = CRS.decode("EPSG:" + geometry.getSRID(), true);
             if ((targetCRS != null) && !CRS.equalsIgnoreMetadata(geomCrs, targetCRS)) {

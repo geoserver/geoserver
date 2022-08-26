@@ -520,8 +520,13 @@ public class GeofenceAccessManager
             intersectsArea = resultLimits.getIntersectArea();
             clipArea = resultLimits.getClipArea();
         } else {
+            CoordinateReferenceSystem crs = helper.getCRSFromInfo(info);
+
             intersectsArea = helper.parseAllowedArea(rule.getAreaWkt());
+            intersectsArea = helper.reprojectGeometry(intersectsArea, crs);
+
             clipArea = helper.parseAllowedArea(rule.getClipAreaWkt());
+            clipArea = helper.reprojectGeometry(clipArea, crs);
         }
         CatalogMode catalogMode = getCatalogMode(rule, resultLimits);
         LOGGER.log(

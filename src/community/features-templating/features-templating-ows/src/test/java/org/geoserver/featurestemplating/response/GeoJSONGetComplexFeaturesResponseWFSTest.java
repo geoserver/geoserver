@@ -21,6 +21,9 @@ public class GeoJSONGetComplexFeaturesResponseWFSTest extends TemplateComplexTes
     private static final String GEOJSON_MF_TEMPLATE = "NormalGeoJSONMappedFeature";
     private static final String GEOJSON_MF_PARAM = "&" + GEOJSON_MF_TEMPLATE + "=true";
 
+    private static final String AGGREGATE_MF_TEMPLATE = "AggregateMappedFeature";
+    private static final String AGGREGATE_MF_PARAM = "&" + AGGREGATE_MF_TEMPLATE + "=true";
+
     @Override
     public void onSetUp(SystemTestData testData) throws IOException {
         Catalog catalog = getCatalog();
@@ -31,6 +34,16 @@ public class GeoJSONGetComplexFeaturesResponseWFSTest extends TemplateComplexTes
                 SupportedFormat.GEOJSON,
                 templateMappedFeature,
                 GEOJSON_MF_TEMPLATE,
+                ".json",
+                "gsml",
+                mappedFeature);
+
+        String templateStreamMappedFeature = "MappedFeatureStreamFun.json";
+        setUpTemplate(
+                "requestParam('" + AGGREGATE_MF_TEMPLATE + "')='true'",
+                SupportedFormat.GEOJSON,
+                templateStreamMappedFeature,
+                AGGREGATE_MF_TEMPLATE,
                 ".json",
                 "gsml",
                 mappedFeature);
@@ -111,5 +124,53 @@ public class GeoJSONGetComplexFeaturesResponseWFSTest extends TemplateComplexTes
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkMappedFeatureGeoJSON(features.getJSONObject(0));
         checkAdditionalInfo(result);
+    }
+
+    @Test
+    public void testGeoJSONAggregateFunResponse() throws Exception {
+        StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
+        sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
+        sb.append("application/json");
+        sb.append(AGGREGATE_MF_PARAM);
+        JSONObject result = (JSONObject) getJson(sb.toString());
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(5, features.size());
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = (JSONObject) features.get(i);
+            String id = feature.getString("@id");
+            String lithology = feature.getJSONObject("properties").getString("lithology");
+            switch (id) {
+                case "mf5":
+                    assertEquals("null", lithology);
+                    break;
+                case "mf4":
+                    assertEquals("name_c,name_b,name_a,name_2", lithology);
+                    break;
+                case "mf3":
+                case "mf2":
+                    assertEquals("name_cc_4,name_cc_3", lithology);
+                    break;
+                default:
+                    assertEquals("name_cc_5", lithology);
+                    break;
+            }
+        }
+    }
+
+    @Test
+    public void testGeoJSONAggregateFunBackwardMapping() throws Exception {
+        StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
+        sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
+        sb.append("application/json");
+        sb.append(AGGREGATE_MF_PARAM);
+        sb.append("&cql_filter=properties.lithology = 'name_cc_4,name_cc_3'");
+        JSONObject result = (JSONObject) getJson(sb.toString());
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(2, features.size());
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = (JSONObject) features.get(i);
+            String lithology = feature.getJSONObject("properties").getString("lithology");
+            assertEquals("name_cc_4,name_cc_3", lithology);
+        }
     }
 }

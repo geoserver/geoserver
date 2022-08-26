@@ -128,7 +128,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
     }
 
     /**
-     * Tests that the user cannot access without any role
+     * Tests that the user can access with rules assigned personally and not to a role
      *
      * @throws Exception
      */
@@ -148,7 +148,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
             ruleId1 =
                     addRule(GrantType.ALLOW, "john", null, "WMS", null, null, null, 1, ruleService);
 
-            login("john", "", "ROLE_WMS");
+            login("john", "");
             String url =
                     "wms?request=getmap&service=wms"
                             + "&layers=Lakes"
@@ -156,7 +156,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
                             + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
             MockHttpServletResponse resp = getAsServletResponse(url);
 
-            assertTrue(resp.getContentAsString().contains("Could not find layer Lakes"));
+            assertEquals(200, resp.getStatus());
         } finally {
             deleteRules(ruleService, ruleId1);
             config.setUseRolesToFilter(false);

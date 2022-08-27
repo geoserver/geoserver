@@ -10,7 +10,7 @@ GeoServer is packaged as a standalone servlet for use with existing application 
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment,available from `OpenJDK <https://openjdk.java.net>`__, `Adoptium <https://adoptium.net>`__, or provided by your OS distribution.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 11** or **Java 17** environment,available from `OpenJDK <https://openjdk.java.net>`__, `Adoptium <https://adoptium.net>`__, or provided by your OS distribution.
 
    .. note:: For more information about Java and GeoServer compatibility, please see the section on :ref:`production_java`.
 
@@ -99,7 +99,7 @@ Notice: For support reason, the local output of version.sh still outputs the cur
 Running
 -------
 
-Use your container application's method of starting and stopping webapps to run GeoServer. 
+Use your container application's method of starting and stopping webapps to run GeoServer.
 
 To access the :ref:`web_admin`, open a browser and navigate to ``http://SERVER/geoserver`` . For example, with Tomcat running on port 8080 on localhost, the URL would be ``http://localhost:8080/geoserver``.
 

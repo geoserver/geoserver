@@ -10,7 +10,7 @@ The platform-independent binary is a GeoServer web application bundled inside `J
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment, available from `OpenJDK <https://openjdk.java.net>`__, `Adoptium <https://adoptium.net>`__, or provided by your OS distribution.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 11** or **Java 17** environment, available from `OpenJDK <https://openjdk.java.net>`__, `Adoptium <https://adoptium.net>`__, or provided by your OS distribution.
 
    .. note:: For more information about Java and GeoServer compatibility, please see the section on :ref:`production_java`.
 

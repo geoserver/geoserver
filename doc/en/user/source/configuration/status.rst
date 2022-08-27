@@ -2,7 +2,7 @@
 
 Status
 ======
-The Server Status page has two tabs to summarize the current status of GeoServer. The Status tab provides a summary of server configuration parameters and run-time status. The modules tab provides the status of the various modules installed on the server. This page provides a useful diagnostic tool in a testing environment. 
+The Server Status page has two tabs to summarize the current status of GeoServer. The Status tab provides a summary of server configuration parameters and run-time status. The modules tab provides the status of the various modules installed on the server. This page provides a useful diagnostic tool in a testing environment.
 
 Server Status
 -------------
@@ -27,7 +27,7 @@ The following table describes the current status indicators.
    * - Locks
      - A WFS has the ability to lock features to prevent more than one person from updating the feature at one time.  If data is locked, edits can be performed by a single WFS editor. When the edits are posted, the locks are released and features can be edited by other WFS editors. A zero in the locks field means all locks are released. If locks is non-zero then a client has reserved some content for editing.
        
-       Press :guilabel:`Free locks` to release all feature locks currently held by the server and update the field value to zero. 
+       Press :guilabel:`Free locks` to release all feature locks currently held by the server and update the field value to zero.
        
    * - Connections
      - Refers to the numbers of stores GeoServer is connected to, in the above case 9, that are enabled and available.
@@ -42,12 +42,12 @@ The following table describes the current status indicators.
    * - Available Fonts
      - Shows the number of fonts available. Selecting the link will show the full list.
    * - Native JAI
-     - GeoServer uses `Java Advanced Imaging <https://www.oracle.com/java/technologies/java-archive-downloads-java-client-downloads.html>`__ (JAI) framework for image rendering and coverage manipulation. When installed (true) native operations are available for image processing in a Java 8 environment.
+     - GeoServer uses `Java Advanced Imaging <https://www.oracle.com/java/technologies/java-archive-downloads-java-client-downloads.html>`__ (JAI) framework for image rendering and coverage manipulation.
      
-       We recommend the use of JAI-EXT operations for greater stability. 
+       We recommend the use of JAI-EXT operations for greater stability.
 
    * - Native JAI ImageIO
-     - GeoServer uses `JAI Image IO <https://docs.oracle.com/javase/6/docs/technotes/guides/imageio/>`__ (JAI) framework for raster data loading and image encoding. When installed (true) native encoders are available for WCS and WMS output in a Java 8 environment.
+     - GeoServer uses `JAI Image IO <https://docs.oracle.com/javase/6/docs/technotes/guides/imageio/>`__ (JAI) framework for raster data loading and image encoding.
      
        We recommend use of libjpeg-turbo for those interested in increasing encoding performance.
        
@@ -74,7 +74,7 @@ The following table describes the current status indicators.
    * - Resource cache
      - GeoServer maintains a resource cache with connections to stores, feature type definitions, external graphics, font definitions, and CRS definitions. This includes custom CRS definitions defined in data directory :file:`user_projections/epsg.properties`.
      
-       Press :guilabel:`Clear` to empty the resource cache. This will force GeoServer to reconnect to stores, reconnect to databases, re-read icon and font information, and reload custom CRS definitions. 
+       Press :guilabel:`Clear` to empty the resource cache. This will force GeoServer to reconnect to stores, reconnect to databases, re-read icon and font information, and reload custom CRS definitions.
    * - Configuration and catalog
      - GeoServer keeps its configuration data in memory.
        
@@ -85,7 +85,7 @@ The following table describes the current status indicators.
 Module Status
 -------------
 
-The :guilabel:`Modules` tab provides a summary of the status of all installed modules in the running server. 
+The :guilabel:`Modules` tab provides a summary of the status of all installed modules in the running server.
 
 .. figure:: img/module_status.png
    
@@ -125,7 +125,7 @@ Field Descriptions
 System Status
 -------------
 
-The :guilabel:`System Status` tab provides extra information about the system environment GeoServer is running in.  This provides an overview of the status of the GeoServer instance. 
+The :guilabel:`System Status` tab provides extra information about the system environment GeoServer is running in.  This provides an overview of the status of the GeoServer instance.
 
 .. figure:: img/system_status.png
    
@@ -234,7 +234,7 @@ The available system information is:
      - 5.83 %
      - Percentage of the JVM memory used by GeoServer
 
-If some information is not available the special term ``NOT AVAILABLE`` will appear. Values will be automatically converted to best human readable unit. 
+If some information is not available the special term ``NOT AVAILABLE`` will appear. Values will be automatically converted to best human readable unit.
 
 .. _config_serverstatus_jvm:
 
@@ -250,8 +250,8 @@ Press :guilabel:`Thread Dump` for a summary of all active threads. This is prima
    Thread Dump console output
    
    
-Press :guilabel:`Heap Dump` for an overview of memory use. This can be used to troubleshoot systems that are encountering a memory leak over time.
 
+Press :guilabel:`Heap Dump` for an overview of memory use. This can be used to troubleshoot systems that are encountering a memory leak over time.
 .. figure:: img/heap_dump.png
    
    Heap Dump console output

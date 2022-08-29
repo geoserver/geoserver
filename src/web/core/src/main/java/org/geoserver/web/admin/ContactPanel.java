@@ -23,8 +23,7 @@ public class ContactPanel extends Panel {
                         contactPerson,
                         contactPerson,
                         "internationalContactPerson",
-                        this,
-                        null));
+                        this));
         String contactOrg = "contactOrganization";
         add(
                 new StringAndInternationalStringPanel(
@@ -33,8 +32,7 @@ public class ContactPanel extends Panel {
                         contactOrg,
                         contactOrg,
                         "internationalContactOrganization",
-                        this,
-                        null));
+                        this));
         String contactPosition = "contactPosition";
         add(
                 new StringAndInternationalStringPanel(
@@ -43,8 +41,7 @@ public class ContactPanel extends Panel {
                         contactPosition,
                         contactPosition,
                         "internationalContactPosition",
-                        this,
-                        null));
+                        this));
         String addressType = "addressType";
         add(
                 new StringAndInternationalStringPanel(
@@ -53,8 +50,7 @@ public class ContactPanel extends Panel {
                         addressType,
                         addressType,
                         "internationalAddressType",
-                        this,
-                        null));
+                        this));
         String address = "address";
         add(
                 new StringAndInternationalStringPanel(
@@ -67,8 +63,7 @@ public class ContactPanel extends Panel {
                         addressDeliveryPt,
                         addressDeliveryPt,
                         "internationalAddressDeliveryPoint",
-                        this,
-                        null));
+                        this));
         String addressCity = "addressCity";
         add(
                 new StringAndInternationalStringPanel(
@@ -77,8 +72,7 @@ public class ContactPanel extends Panel {
                         addressCity,
                         addressCity,
                         "internationalAddressCity",
-                        this,
-                        null));
+                        this));
         String addressState = "addressState";
         add(
                 new StringAndInternationalStringPanel(
@@ -87,8 +81,7 @@ public class ContactPanel extends Panel {
                         addressState,
                         addressState,
                         "internationalAddressState",
-                        this,
-                        null));
+                        this));
         String addressPostalCode = "addressPostalCode";
         add(
                 new StringAndInternationalStringPanel(
@@ -97,8 +90,7 @@ public class ContactPanel extends Panel {
                         addressPostalCode,
                         addressPostalCode,
                         "internationalAddressPostalCode",
-                        this,
-                        null));
+                        this));
         String addressCountry = "addressCountry";
         add(
                 new StringAndInternationalStringPanel(
@@ -107,8 +99,7 @@ public class ContactPanel extends Panel {
                         addressCountry,
                         addressCountry,
                         "internationalAddressCountry",
-                        this,
-                        null));
+                        this));
         String contactVoice = "contactVoice";
         add(
                 new StringAndInternationalStringPanel(
@@ -117,8 +108,7 @@ public class ContactPanel extends Panel {
                         contactVoice,
                         contactVoice,
                         "internationalContactVoice",
-                        this,
-                        null));
+                        this));
         String contactFacsimile = "contactFacsimile";
         add(
                 new StringAndInternationalStringPanel(
@@ -127,8 +117,7 @@ public class ContactPanel extends Panel {
                         contactFacsimile,
                         contactFacsimile,
                         "internationalContactFacsimile",
-                        this,
-                        null));
+                        this));
 
         String contactEmail = "contactEmail";
         add(

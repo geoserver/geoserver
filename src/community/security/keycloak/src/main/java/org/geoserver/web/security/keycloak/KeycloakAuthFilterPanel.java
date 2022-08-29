@@ -6,10 +6,11 @@ package org.geoserver.web.security.keycloak;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.keycloak.GeoServerKeycloakFilterConfig;
-import org.geoserver.security.web.auth.AuthenticationFilterPanel;
+import org.geoserver.security.web.auth.PreAuthenticatedUserNameFilterPanel;
 import org.geoserver.web.wicket.HelpLink;
 import org.geotools.util.logging.Logging;
 
@@ -19,7 +20,7 @@ import org.geotools.util.logging.Logging;
  * over-complicate the UI.
  */
 public class KeycloakAuthFilterPanel
-        extends AuthenticationFilterPanel<GeoServerKeycloakFilterConfig> {
+        extends PreAuthenticatedUserNameFilterPanel<GeoServerKeycloakFilterConfig> {
 
     private static final Logger LOG = Logging.getLogger(KeycloakAuthFilterPanel.class);
 
@@ -28,6 +29,8 @@ public class KeycloakAuthFilterPanel
     public KeycloakAuthFilterPanel(String id, IModel<GeoServerKeycloakFilterConfig> model) {
         super(id, model);
         LOG.log(Level.FINER, "KeycloakAuthFilterPanel.[constructor] ENTRY");
+        add(new HelpLink("enableRedirectEntryPointHelp", this).setDialog(this.dialog));
+        add(new CheckBox("enableRedirectEntryPoint"));
         add(new HelpLink("adapterConfigHelp", this).setDialog(this.dialog));
         add(new TextArea<String>("adapterConfig"));
     }

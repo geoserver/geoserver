@@ -33,6 +33,24 @@ public class StringAndInternationalStringPanel extends Panel {
             String labelKey,
             String stringProperty,
             String internationalProperty,
+            WebMarkupContainer labelProvider) {
+        this(id, model, labelKey, stringProperty, internationalProperty, labelProvider, null);
+    }
+
+    /**
+     * @param id the component id.
+     * @param model the model of the form object.
+     * @param labelKey the key of the label to be used for the string and i18n string field.
+     * @param stringProperty the property of the string value.
+     * @param internationalProperty the property of the i18n value.
+     * @param labelProvider the WebMarkupContainer being the context for labels in properties files.
+     */
+    public StringAndInternationalStringPanel(
+            String id,
+            IModel<?> model,
+            String labelKey,
+            String stringProperty,
+            String internationalProperty,
             WebMarkupContainer labelProvider,
             IValidator<String> validator) {
         super(id, model);

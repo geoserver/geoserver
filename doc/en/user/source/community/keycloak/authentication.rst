@@ -72,17 +72,25 @@ Configuration Instructions
     .. figure:: images/keycloak_adapter001.png
        :align: center
 
-   The :guilabel:`Enable redirect to Keycloak Login page` checkbox should be checked if the desired behaviour is to authenticate on the web ui only through keycloak. Otherwise if the keycloak filter needs to coexists with other filter on the ``/web`` filter chain it must be unchecked. In this case we will keep it checked.
+   The :guilabel:`Enable redirect to Keycloak Login page` checkbox should be checked if the desired behaviour is to authenticate on the web ui only through keycloak. Note that in this case the keycloak filter should be the only one available in the ``/web`` filter chain. 
+   On the contrary if the keycloak filter needs to coexists with other filters on the filter chain and reach  it must be unchecked.
 
    The :guilabel:`Role Source` drop down enable the selection of the desired role source for the user being authenticated through keycloak. If none is selected by default the ``Active Role Service`` will be used.
 
 
-2. Add the `keycloak_adapter` to the *web* `filter-chain` if you want to protect the Admin GUI, as an instance. If you want to be redirected everytime to Keycloak, then remove all of the others `chain filters` (basic, form, rememberme, anonymous), otherwise you will need to access directly the login url on Keycloak.
+2. Add the `keycloak_adapter` to the *web* `filter-chain` if you want to protect the Admin GUI, as an instance. If you have checked :guilabel:`Enable redirect to Keycloak Login page` on the filter configuration to be redirected everytime to Keycloak, then remove all of the others `chain filters` (basic, form, rememberme, anonymous).
 
     .. figure:: images/keycloak_adapter002.png
        :align: center
 
-3. Check your work so far by navigating to the GeoServer UI. You should be redirected to the Keycloak `login-page`, and after logging-in you should be redirected back to the actual GUI page.
+3. Check your work so far by navigating to the GeoServer UI. 
+If at filter configuration time the checkbox was kept unchecked and the keycloak filter cohexists on the /web chain with the form and anonymous filter you will see a keycloak login button that allows the user to land to the keycloak login page.
+
+.. figure:: images/keycloak_login.png
+       :align: center
+
+
+Otherwise you will be directly redirected to the Keycloak `login-page`, and after logging-in you should be redirected back to the actual GUI page.
 
     .. figure:: images/keycloak_adapter003.png
        :align: center

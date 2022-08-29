@@ -22,10 +22,15 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.security.GeoServerSecurityTestSupport;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geoserver.security.impl.GeoServerRole;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,17 +38,16 @@ import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
  * Tests for {@link GeoServerKeycloakFilter}. Focus is on the 4 possible valid responses handled in
  * {@link GeoServerKeycloakFilter#getNewAuthn(HttpServletRequest, HttpServletResponse)}.
  */
-public class GeoServerKeycloakFilterTest {
+public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
 
     // name shortening
     public static final String AEP_HEADER =
@@ -125,6 +129,7 @@ public class GeoServerKeycloakFilterTest {
         // set up the object under test
         GeoServerKeycloakFilter filter = new GeoServerKeycloakFilter();
         filter.initializeFromConfig(config);
+        filter.setSecurityManager(getSecurityManager());
 
         // set up the test inputs
         when(response.getStatus()).thenReturn(HttpStatus.MOVED_PERMANENTLY.value());
@@ -157,7 +162,7 @@ public class GeoServerKeycloakFilterTest {
         config.writeAdapterConfig(aConfig);
         GeoServerKeycloakFilter filter = new GeoServerKeycloakFilter();
         filter.initializeFromConfig(config);
-
+        filter.setSecurityManager(getSecurityManager());
         // set up the test inputs
         when(response.getStatus()).thenReturn(HttpStatus.FORBIDDEN.value());
 
@@ -183,7 +188,7 @@ public class GeoServerKeycloakFilterTest {
         // set up the object under test
         GeoServerKeycloakFilter filter = new GeoServerKeycloakFilter();
         filter.initializeFromConfig(config);
-
+        filter.setSecurityManager(getSecurityManager());
         // set up the test inputs
         String auth_header = "bearer this.is.not.a.valid.token";
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(auth_header);
@@ -216,7 +221,7 @@ public class GeoServerKeycloakFilterTest {
         config.writeAdapterConfig(aConfig);
         GeoServerKeycloakFilter filter = new GeoServerKeycloakFilter();
         filter.initializeFromConfig(config);
-
+        filter.setSecurityManager(getSecurityManager());
         // set up the test inputs
         String auth_header = "bearer " + JWT_2018_2037;
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(auth_header);
@@ -234,11 +239,15 @@ public class GeoServerKeycloakFilterTest {
         verify(response, never()).addCookie(any());
         Authentication authn = SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(authn);
-        assertTrue(authn instanceof UsernamePasswordAuthenticationToken);
-        assertFalse(authn.getAuthorities().isEmpty());
-        for (GrantedAuthority a : authn.getAuthorities()) {
-            assertFalse(a.getAuthority().startsWith("ROLE_"));
-        }
+        assertTrue(authn instanceof PreAuthenticatedAuthenticationToken);
+        List<String> roles =
+                authn.getAuthorities().stream()
+                        .map(a -> a.getAuthority())
+                        .collect(Collectors.toList());
+        assertTrue(roles.contains(GeoServerRole.AUTHENTICATED_ROLE.getAuthority()));
+        assertTrue(roles.contains("create-realm"));
+        assertTrue(roles.contains("admin"));
+        assertTrue(roles.contains("uma_authorization"));
     }
 
     @Test
@@ -246,7 +255,7 @@ public class GeoServerKeycloakFilterTest {
         // set up the object under test
         GeoServerKeycloakFilter filter = new GeoServerKeycloakFilter();
         filter.initializeFromConfig(config);
-
+        filter.setSecurityManager(getSecurityManager());
         // set up the test inputs
         when(response.getStatus()).thenReturn(HttpStatus.MOVED_PERMANENTLY.value());
         when(request.getHeader("x-forwarded-proto")).thenReturn("https");
@@ -266,5 +275,39 @@ public class GeoServerKeycloakFilterTest {
         verify(response).setStatus(status.capture());
         assertTrue(HttpStatus.valueOf(status.getValue()).is3xxRedirection());
         verify(response).setHeader(eq(HttpHeaders.LOCATION), contains("redirect_uri=https"));
+    }
+
+    // AuthOutcome.AUTHENTICATED
+    @Test
+    public void testRoleSource() throws Exception {
+        // set up the object under test
+        AdapterConfig aConfig = config.readAdapterConfig();
+        aConfig.setRealmKey(PUBLIC_KEY);
+        config.writeAdapterConfig(aConfig);
+        config.setRoleSource(
+                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
+        config.setRolesHeaderAttribute("role");
+        String auth_header = "bearer " + JWT_2018_2037;
+        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(auth_header);
+        when(request.getHeaders(HttpHeaders.AUTHORIZATION))
+                .thenReturn(Collections.enumeration(Collections.singleton(auth_header)));
+        String role = "ROLE_ADMINISTRATOR";
+        when(request.getHeader("role")).thenReturn(role);
+        when(request.getHeaders("role"))
+                .thenReturn(Collections.enumeration(Collections.singleton(role)));
+        when(response.getStatus()).thenReturn(HttpStatus.OK.value());
+        GeoServerKeycloakFilter filter = new GeoServerKeycloakFilter();
+        filter.initializeFromConfig(config);
+        filter.setSecurityManager(getSecurityManager());
+        // set up the test inputs
+
+        // run the test
+        filter.doFilter(request, response, chain);
+
+        Authentication authn = SecurityContextHolder.getContext().getAuthentication();
+        assertNotNull(authn);
+        assertFalse(authn.getAuthorities().isEmpty());
+        assertTrue(authn.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE));
+        assertTrue(authn.getAuthorities().contains(GeoServerRole.ADMIN_ROLE));
     }
 }

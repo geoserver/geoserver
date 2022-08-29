@@ -31,7 +31,7 @@ Configuration Instructions
        :align: center
 
 3. Set the `access-type` of client as appropriate. If your GeoServer instance is depending on another service for authentication (eg: NGINX auth plugin) then you should probably select *bearer-only*.
-   Otherwise, you should probably select *confidential*.
+   Otherwise, you should select *confidential*.
 
     .. figure:: images/keycloak_client003.png
        :align: center
@@ -71,6 +71,11 @@ Configuration Instructions
 
     .. figure:: images/keycloak_adapter001.png
        :align: center
+
+   The :guilabel:`Enable redirect to Keycloak Login page` checkbox should be checked if the desired behaviour is to authenticate on the web ui only through keycloak. Otherwise if the keycloak filter needs to coexists with other filter on the ``/web`` filter chain it must be unchecked. In this case we will keep it checked.
+
+   The :guilabel:`Role Source` drop down enable the selection of the desired role source for the user being authenticated through keycloak. If none is selected by default the ``Active Role Service`` will be used.
+
 
 2. Add the `keycloak_adapter` to the *web* `filter-chain` if you want to protect the Admin GUI, as an instance. If you want to be redirected everytime to Keycloak, then remove all of the others `chain filters` (basic, form, rememberme, anonymous), otherwise you will need to access directly the login url on Keycloak.
 

@@ -11,10 +11,10 @@ import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityAuthFilterConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityConfig;
-import org.geoserver.security.config.SecurityFilterConfig;
 import org.geotools.util.logging.Logging;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.representations.adapters.config.AdapterConfig;
@@ -24,7 +24,7 @@ import org.keycloak.representations.adapters.config.AdapterConfig;
  * the base {@link AdapterConfig} with some additional bits to help xstream read/write XML. The
  * adapter config should be input exactly as provided by the Keycloak server.
  */
-public class GeoServerKeycloakFilterConfig extends SecurityFilterConfig
+public class GeoServerKeycloakFilterConfig extends PreAuthenticatedUserNameFilterConfig
         implements SecurityAuthFilterConfig, SecurityAuthProviderConfig, Cloneable {
 
     private static final Logger LOG = Logging.getLogger(GeoServerKeycloakFilterConfig.class);
@@ -38,6 +38,8 @@ public class GeoServerKeycloakFilterConfig extends SecurityFilterConfig
 
     // this is the only relevant nugget of information stored here
     protected String adapterConfig;
+
+    private boolean enableRedirectEntryPoint = true;
 
     /**
      * Convert the adapter configuration into an object we can use to configure the rest of the
@@ -114,6 +116,14 @@ public class GeoServerKeycloakFilterConfig extends SecurityFilterConfig
     @Override
     public void setUserGroupServiceName(String userGroupServiceName) {
         this.userGroupServiceName = userGroupServiceName;
+    }
+
+    public boolean isEnableRedirectEntryPoint() {
+        return enableRedirectEntryPoint;
+    }
+
+    public void setEnableRedirectEntryPoint(boolean enableRedirectEntryPoint) {
+        this.enableRedirectEntryPoint = enableRedirectEntryPoint;
     }
 
     @Override

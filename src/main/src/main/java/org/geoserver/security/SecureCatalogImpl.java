@@ -104,16 +104,20 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         List<ResourceAccessManager> managers =
                 GeoServerExtensions.extensions(ResourceAccessManager.class);
         ResourceAccessManager manager = null;
-        if (managers.size() == 1) {
+        int size = managers.size();
+        if (size == 1) {
             manager = managers.get(0);
         } else {
             for (ResourceAccessManager resourceAccessManager : managers) {
-                if (!(resourceAccessManager instanceof DefaultResourceAccessManager)) {
+                if (!DefaultResourceAccessManager.class.equals(resourceAccessManager.getClass())) {
                     manager = resourceAccessManager;
                     break;
                 }
             }
         }
+        // should never happen,just in case we have multiple singleton beans
+        // of type DefaultResourceAccessManager
+        if (manager == null) manager = managers.get(0);
 
         CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);

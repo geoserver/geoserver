@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  postgis:
+    image: 'postgis/postgis:latest'
+    hostname: postgis
+    volumes:
+      - './pgdata:/var/lib/postgresql/data'
+      - './conf/postgis/20_pgraster.sh:/docker-entrypoint-initdb.d/20_pgraster.sh'
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./conf/postgis/postgis.env
+    restart: on-failure
+
+  pgadmin:
+    image: 'dpage/pgadmin4'
+    ports:
+      - "8082:80"
+    environment:
+      - PGADMIN_LISTEN_PORT=80
+      - PGADMIN_DEFAULT_EMAIL=admin@geoserver.org
+      - PGADMIN_DEFAULT_PASSWORD=geoserver
+    volumes:
+      - './conf/pgadmin/servers.json:/pgadmin4/servers.json'

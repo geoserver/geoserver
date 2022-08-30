@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.net.URL;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
@@ -35,7 +36,7 @@ import org.springframework.http.MediaType;
 public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
 
     /** print page structure? */
-    private static final boolean debugMode = true;
+    private static final boolean debugMode = false;
 
     private static WireMockServer wmtsService;
 
@@ -43,12 +44,9 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        wmtsService =
-                new WireMockServer(
-                        wireMockConfig()
-                                .dynamicPort()
-                                // uncomment the following to get wiremock logging
-                                .notifier(new ConsoleNotifier(true)));
+        WireMockConfiguration config = wireMockConfig().dynamicPort();
+        if (debugMode) config.notifier(new ConsoleNotifier(debugMode));
+        wmtsService = new WireMockServer(config);
         wmtsService.start();
         capabilities =
                 "http://localhost:"

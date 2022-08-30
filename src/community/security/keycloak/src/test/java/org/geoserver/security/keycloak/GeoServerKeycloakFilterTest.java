@@ -106,6 +106,7 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
         aConfig.setAuthServerUrl(AUTH_URL);
         config = new GeoServerKeycloakFilterConfig();
         config.writeAdapterConfig(aConfig);
+        config.setEnableRedirectEntryPoint(true);
         request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer(APP_URL));
         when(request.getHeaders(anyString())).thenReturn(Collections.emptyEnumeration());

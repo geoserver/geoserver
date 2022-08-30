@@ -28,6 +28,7 @@ import org.geoserver.web.wicket.FileExistsValidator;
  *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
+@SuppressWarnings({"rawtypes", "unchecked", "serial"})
 public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
 
     private CheckBox enabled;

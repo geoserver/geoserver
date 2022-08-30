@@ -29,6 +29,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * a Panel with PGRaster automatic configuration options TODO: 1) Add numeric validator for PORT 2)
  * change text description on the GUI (right now there is the name of the params)
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class PGRasterPanel extends Panel {
 
     private static final long serialVersionUID = -8845475833628642890L;

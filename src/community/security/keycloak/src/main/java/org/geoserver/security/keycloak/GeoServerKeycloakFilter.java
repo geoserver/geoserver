@@ -74,6 +74,8 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
 
     private boolean enableRedirectEntryPoint;
 
+    private static final String KEYCLOAK_LOGIN_BTN = "j_spring_keycloak_login";
+
     /** Default constructor. */
     public GeoServerKeycloakFilter() {
         this.adapterTokenStoreFactory = new SpringSecurityAdapterTokenStoreFactory();
@@ -243,7 +245,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
             try {
                 roles.addAll(calc.calculateRoles(principal));
             } catch (IOException e) {
-                LOGGER.log(
+                LOG.log(
                         Level.WARNING,
                         "Error while trying to fetch default Roles with the following Exception cause:",
                         e.getCause());
@@ -308,24 +310,40 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
             case NOT_ATTEMPTED:
                 if (deployment.isBearerOnly()) {
                     // if bearer-only, then missing auth means you are forbidden
-                    return setAndReturnChallengeAep(request, null);
+                    return setAndReturnChallengeAep(request, response, null);
                 } else {
-                    return setAndReturnChallengeAep(request, challenge);
+                    return setAndReturnChallengeAep(request, response, challenge);
                 }
             case FAILED:
-                return setAndReturnChallengeAep(request, null);
+                return setAndReturnChallengeAep(request, response, null);
             default:
-                return setAndReturnChallengeAep(request, challenge);
+                return setAndReturnChallengeAep(request, response, challenge);
         }
     }
 
     private AuthResults setAndReturnChallengeAep(
-            HttpServletRequest request, AuthChallenge challenge) {
+            HttpServletRequest request, HttpServletResponse response, AuthChallenge challenge) {
         AuthResults results = new AuthResults(challenge);
-        if (enableRedirectEntryPoint)
+        if (enableRedirectEntryPoint) {
             request.setAttribute(
                     GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, results);
+        } else if (redirectFromLoginBtn(request)) {
+            try {
+                results.commence(request, response, null);
+            } catch (IOException | ServletException e) {
+                LOG.log(Level.SEVERE, "Error while sending redirect to keycloak login page.", e);
+            }
+        }
         return results;
+    }
+
+    private boolean redirectFromLoginBtn(HttpServletRequest request) {
+        // unlike openid google etc. uses a parameter because keycloak will redirect by default
+        // to the url from which the user land on the keycloak login page.
+        // in this way we ensure the user will be redirect to the /web and not to a not existing
+        // page.
+        String keycloakParam = request.getParameter(KEYCLOAK_LOGIN_BTN);
+        return keycloakParam != null && "true".equals(keycloakParam);
     }
 
     /**

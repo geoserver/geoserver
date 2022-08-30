@@ -39,7 +39,7 @@ public class GeoServerKeycloakFilterConfig extends PreAuthenticatedUserNameFilte
     // this is the only relevant nugget of information stored here
     protected String adapterConfig;
 
-    private boolean enableRedirectEntryPoint = true;
+    private boolean enableRedirectEntryPoint = false;
 
     /**
      * Convert the adapter configuration into an object we can use to configure the rest of the

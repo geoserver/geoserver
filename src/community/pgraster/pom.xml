@@ -19,6 +19,11 @@
   <name>PGRaster DataStore Extension for automatic configuration</name>
 
   <dependencies>
+  	<dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-imagemosaic-jdbc</artifactId>
+      <version>28-SNAPSHOT</version>
+  	</dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>

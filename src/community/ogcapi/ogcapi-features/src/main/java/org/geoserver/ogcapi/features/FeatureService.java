@@ -294,12 +294,12 @@ public class FeatureService {
                 limit,
                 bbox,
                 bboxCRS,
-                crs,
                 time,
-                null,
-                null,
-                null,
-                null,
+                null, /* filter */
+                null, /* filter-lang */
+                null, /* filter-crs */
+                null, /* sortby */
+                crs,
                 itemId);
     }
 

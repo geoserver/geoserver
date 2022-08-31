@@ -34,17 +34,16 @@ public class StyleParameterFilterTest {
     public void testConcurrentModification() throws Exception {
         StyleParameterFilter filter = new StyleParameterFilter();
 
-        String[] styleNames =
-                new String[] {
-                    UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString()
-                };
+        String[] styleNames = {
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString()
+        };
 
         LayerInfo layerInfo =
                 GWCTestHelpers.mockLayer(

@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.net.URLEncoder;
@@ -674,5 +675,78 @@ public class FeatureTest extends FeaturesTestSupport {
             genericEntity.setName(MockData.GENERICENTITY.getLocalPart());
             getCatalog().save(genericEntity);
         }
+    }
+
+    @Test
+    public void testGetItemAsGeoJson() throws Exception {
+        String primitiveLayer = ResponseUtils.urlEncode(getLayerId(MockData.PRIMITIVEGEOFEATURE));
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse(
+                        "ogc/features/collections/"
+                                + primitiveLayer
+                                + "/items/PrimitiveGeoFeature.f002",
+                        200);
+        assertEquals(
+                "http://www.opengis.net/def/crs/OGC/1.3/CRS84; axisOrder=Lon,Lat",
+                response.getHeader(FeatureResponseMessageConverter.CRS_RESPONSE_HEADER));
+        DocumentContext json = getAsJSONPath(response);
+        assertEquals("Feature", json.read("type", String.class));
+        assertEquals("PrimitiveGeoFeature.f002", json.read("id", String.class));
+
+        // check self link
+        List selfRels = json.read("links[?(@.type == 'application/geo+json')].rel");
+        assertEquals(1, selfRels.size());
+        assertEquals("self", selfRels.get(0));
+        // check alternate link
+        List alternatefRels = json.read("links[?(@.type == 'application/json')].rel");
+        assertTrue(alternatefRels.size() > 1);
+        assertEquals("alternate", alternatefRels.get(0));
+        assertEquals("collection", alternatefRels.get(1));
+        // check collection link
+        List selfLink = json.read("links[?(@.rel == 'collection')].href");
+        assertThat(selfLink.size(), greaterThan(0));
+        assertThat(
+                (String) selfLink.get(0),
+                startsWith(
+                        "http://localhost:8080/geoserver/ogc/features/collections/"
+                                + primitiveLayer
+                                + "?"));
+    }
+
+    @Test
+    public void testGetItemAsGeoJsonWithCRS() throws Exception {
+        String primitiveLayer = ResponseUtils.urlEncode(getLayerId(MockData.PRIMITIVEGEOFEATURE));
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse(
+                        "ogc/features/collections/"
+                                + primitiveLayer
+                                + "/items/PrimitiveGeoFeature.f002"
+                                + "?crs=CRS:84",
+                        200);
+        assertEquals(
+                "http://www.opengis.net/def/crs/OGC/1.3/CRS84; axisOrder=Lon,Lat",
+                response.getHeader(FeatureResponseMessageConverter.CRS_RESPONSE_HEADER));
+        DocumentContext json = getAsJSONPath(response);
+        assertEquals("Feature", json.read("type", String.class));
+        assertEquals("PrimitiveGeoFeature.f002", json.read("id", String.class));
+
+        // check self link
+        List selfRels = json.read("links[?(@.type == 'application/geo+json')].rel");
+        assertEquals(1, selfRels.size());
+        assertEquals("self", selfRels.get(0));
+        // check alternate link
+        List alternatefRels = json.read("links[?(@.type == 'application/json')].rel");
+        assertTrue(alternatefRels.size() > 1);
+        assertEquals("alternate", alternatefRels.get(0));
+        assertEquals("collection", alternatefRels.get(1));
+        // check collection link
+        List selfLink = json.read("links[?(@.rel == 'collection')].href");
+        assertThat(selfLink.size(), greaterThan(0));
+        assertThat(
+                (String) selfLink.get(0),
+                startsWith(
+                        "http://localhost:8080/geoserver/ogc/features/collections/"
+                                + primitiveLayer
+                                + "?"));
     }
 }

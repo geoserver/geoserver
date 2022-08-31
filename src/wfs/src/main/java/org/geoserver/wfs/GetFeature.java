@@ -1064,7 +1064,7 @@ public class GetFeature {
                 .collect(
                         Collectors.toMap(
                                 e -> e.getKey(),
-                                e -> (String) e.getValue(),
+                                e -> String.valueOf(e.getValue()),
                                 (u, v) -> {
                                     throw new IllegalStateException(
                                             String.format("Duplicate key %s", u));

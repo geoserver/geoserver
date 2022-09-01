@@ -11,13 +11,14 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  */
-package org.geotools.gce.imagemosaic.jdbc;
+package org.geotools.gce.pgraster.config;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -159,7 +160,8 @@ public class Config {
 
         // db mapping
         String name = readNameString(dom.getDocumentElement(), "spatialExtension");
-        result.spatialExtension = SpatialExtension.valueOf(name);
+        Objects.requireNonNull(name, "spatialExtension is null");
+        result.spatialExtension = SpatialExtension.valueOf(name.toUpperCase());
         readMapping(result, dom);
         result.initStatements();
         configMap.put(xmlURL.toString(), result);

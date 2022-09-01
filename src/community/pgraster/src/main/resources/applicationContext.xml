@@ -10,7 +10,7 @@
 
   <bean id="pgrasterCoverageStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="pgraster_gce"/>
-    <property name="factoryClass" value="org.geotools.gce.imagemosaic.jdbc.ImageMosaicJDBCFormat"/>
+    <property name="factoryClass" value="org.geotools.gce.pgraster.PostgisRasterFormat"/>
     <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
     <property name="icon" value="img/icons/geosilk/database_raster.png"/>
     <property name="componentClass" value="org.geoserver.web.data.store.pgraster.PGRasterCoverageStoreEditPanel"/>

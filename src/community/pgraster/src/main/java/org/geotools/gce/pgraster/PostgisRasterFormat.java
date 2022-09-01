@@ -1,20 +1,17 @@
 /*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
+ * GeoTools - The Open Source Java GIS Toolkit http://geotools.org
  *
- *    (C) 2008, Open Source Geospatial Foundation (OSGeo)
+ * (C) 2008, Open Source Geospatial Foundation (OSGeo)
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
+ * This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; version 2.1 of
+ * the License.
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  */
-package org.geotools.gce.imagemosaic.jdbc;
+package org.geotools.gce.pgraster;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
@@ -28,7 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
-import org.geotools.gce.imagemosaic.jdbc.custom.JDBCPGRasterConfigurationBuilder;
+import org.geotools.gce.pgraster.config.JDBCPGRasterConfigurationBuilder;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
@@ -40,7 +37,8 @@ import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.ParameterDescriptor;
 
 /**
- * {@link AbstractGridFormat} sublass for controlling {@link ImageMosaicJDBCReader} creation.
+ * {@link AbstractGridFormat} sublass for controlling {@link PostgisRasterGridCoverage2DReader}
+ * creation.
  *
  * <p>As the name says, it handles mosaicing georeferenced images and image pyramids, based on tiles
  * stored in a JDBC database.
@@ -56,21 +54,16 @@ import org.opengis.parameter.ParameterDescriptor;
  * @author mcr
  * @since 2.5
  */
-public class ImageMosaicJDBCFormat extends AbstractGridFormat implements Format {
+public class PostgisRasterFormat extends AbstractGridFormat implements Format {
     /** Logger. */
-    private static final Logger LOGGER = Logging.getLogger(ImageMosaicJDBCFormat.class);
+    private static final Logger LOGGER = Logging.getLogger(PostgisRasterFormat.class);
 
     /** Control the transparency of the output coverage. */
     public static final ParameterDescriptor<Color> OUTPUT_TRANSPARENT_COLOR =
             new DefaultParameterDescriptor<>("OutputTransparentColor", Color.class, null, null);
-    /** Control the background values for the output coverage */
-
-    //        public static final ParameterDescriptor<Color> BACKGROUND_COLOR = new
-    // DefaultParameterDescriptor<Color>(
-    //                "BackgroundColor", Color.class, null, Color.BLACK);
 
     /** Creates an instance and sets the metadata. */
-    public ImageMosaicJDBCFormat() {
+    public PostgisRasterFormat() {
         setInfo();
     }
 
@@ -87,7 +80,9 @@ public class ImageMosaicJDBCFormat extends AbstractGridFormat implements Format 
                 String path = file.getPath();
                 if (path.contains("pgraster:/")) {
                     path = path.substring(path.indexOf("pgraster:/"));
-                    sourceURL = JDBCPGRasterConfigurationBuilder.createConfiguration(path, null);
+                    sourceURL =
+                            JDBCPGRasterConfigurationBuilder.createConfiguration(
+                                    path, (Hints) null);
                 } else {
                     sourceURL = file.toURI().toURL();
                 }
@@ -97,7 +92,9 @@ public class ImageMosaicJDBCFormat extends AbstractGridFormat implements Format 
                 String path = ((String) source);
                 if (path.contains("pgraster:/")) {
                     path = path.substring(path.indexOf("pgraster:/"));
-                    sourceURL = JDBCPGRasterConfigurationBuilder.createConfiguration(path, null);
+                    sourceURL =
+                            JDBCPGRasterConfigurationBuilder.createConfiguration(
+                                    path, (Hints) null);
                 } else {
 
                     final File tempFile = new File((String) source);
@@ -106,18 +103,11 @@ public class ImageMosaicJDBCFormat extends AbstractGridFormat implements Format 
                         sourceURL = tempFile.toURI().toURL();
                     } else {
                         sourceURL = new URL(URLDecoder.decode((String) source, "UTF8"));
-
-                        // if (sourceURL.getProtocol().equals("file") == false) {
-                        // return null;
-                        // }
                     }
                 }
             }
         } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
-            }
-
+            LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
             return null;
         }
 
@@ -129,7 +119,7 @@ public class ImageMosaicJDBCFormat extends AbstractGridFormat implements Format 
         HashMap<String, String> info = new HashMap<>();
 
         info.put("name", "ImageMosaicJDBC");
-        info.put("description", "Image mosaicking/pyramidal jdbc plugin");
+        info.put("description", "Postgis Raster Image Mosaic (formerly ImageMosaicJDBC)");
         info.put("vendor", "Geotools");
         info.put("docURL", "");
         info.put("version", "1.0");
@@ -150,7 +140,7 @@ public class ImageMosaicJDBCFormat extends AbstractGridFormat implements Format 
 
     /** @see org.geotools.data.coverage.grid.AbstractGridFormat#getReader(Object) */
     @Override
-    public ImageMosaicJDBCReader getReader(Object source) {
+    public PostgisRasterGridCoverage2DReader getReader(Object source) {
         return getReader(source, (Hints) null);
     }
 
@@ -190,9 +180,9 @@ public class ImageMosaicJDBCFormat extends AbstractGridFormat implements Format 
 
     /** @see AbstractGridFormat#getReader(Object, Hints) */
     @Override
-    public ImageMosaicJDBCReader getReader(Object source, Hints hints) {
+    public PostgisRasterGridCoverage2DReader getReader(Object source, Hints hints) {
         try {
-            return new ImageMosaicJDBCReader(source, hints);
+            return new PostgisRasterGridCoverage2DReader(source, hints);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
             return null;

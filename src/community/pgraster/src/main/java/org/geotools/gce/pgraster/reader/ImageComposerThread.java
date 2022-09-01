@@ -15,7 +15,7 @@
  *    Lesser General Public License for more details.
  */
 
-package org.geotools.gce.imagemosaic.jdbc;
+package org.geotools.gce.pgraster.reader;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -46,6 +46,7 @@ import javax.media.jai.RenderedOp;
 import javax.media.jai.TiledImage;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.gce.pgraster.config.Config;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
@@ -58,18 +59,18 @@ import org.geotools.util.logging.Logging;
  */
 public class ImageComposerThread extends Thread {
 
-    Config config;
-
     protected static final Logger LOGGER = Logging.getLogger(ImageComposerThread.class);
 
-    private final ImageMosaicJDBCReaderState state;
+    private final Config config;
+
+    private final PostgisRasterReaderState state;
 
     protected GridCoverageFactory coverageFactory;
 
     private GridCoverage2D gridCoverage2D;
 
     public ImageComposerThread(
-            ImageMosaicJDBCReaderState state, Config config, GridCoverageFactory coverageFactory) {
+            PostgisRasterReaderState state, Config config, GridCoverageFactory coverageFactory) {
         this.state = state;
         this.config = config;
         this.coverageFactory = coverageFactory;
@@ -128,7 +129,7 @@ public class ImageComposerThread extends Thread {
     private BufferedImage getStartImage(int imageType) {
         int imageTypeReviewed;
         if (imageType == BufferedImage.TYPE_CUSTOM) {
-            imageTypeReviewed = ImageMosaicJDBCReader.DEFAULT_IMAGE_TYPE;
+            imageTypeReviewed = PostgisRasterReaderState.DEFAULT_IMAGE_TYPE;
         } else {
             imageTypeReviewed = imageType;
         }
@@ -192,7 +193,7 @@ public class ImageComposerThread extends Thread {
 
         if (image == null) {
             // no tiles ??
-            image = getStartImage(ImageMosaicJDBCReader.DEFAULT_IMAGE_TYPE);
+            image = getStartImage(PostgisRasterReaderState.DEFAULT_IMAGE_TYPE);
         }
 
         GeneralEnvelope resultEnvelope = null;
@@ -225,7 +226,7 @@ public class ImageComposerThread extends Thread {
         }
     }
 
-    GridCoverage2D getGridCoverage2D() {
+    public GridCoverage2D getGridCoverage2D() {
         return gridCoverage2D;
     }
 

@@ -1,23 +1,19 @@
 /*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
+ * GeoTools - The Open Source Java GIS Toolkit http://geotools.org
  *
- *    (C) 2008, Open Source Geospatial Foundation (OSGeo)
+ * (C) 2008, Open Source Geospatial Foundation (OSGeo)
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
+ * This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; version 2.1 of
+ * the License.
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  */
 
-package org.geotools.gce.imagemosaic.jdbc.custom;
+package org.geotools.gce.pgraster.reader;
 
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.sql.Connection;
@@ -38,12 +34,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.gce.imagemosaic.jdbc.Config;
-import org.geotools.gce.imagemosaic.jdbc.ImageDecoderThread;
-import org.geotools.gce.imagemosaic.jdbc.ImageLevelInfo;
-import org.geotools.gce.imagemosaic.jdbc.TileQueueElement;
+import org.geotools.data.jdbc.datasource.DataSourceFinder;
+import org.geotools.gce.pgraster.config.Config;
+import org.geotools.gce.pgraster.config.SpatialExtension;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -54,25 +51,75 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * This class is used for JDBC Access to the Postgis raster feature
  *
  * @author Christian Mueller
  */
-public class JDBCAccessPGRaster extends JDBCAccessCustom {
+public class JDBCAccess {
 
-    private static final Logger LOGGER = Logging.getLogger(JDBCAccessPGRaster.class);
+    private static final Logger LOGGER = Logging.getLogger(JDBCAccess.class);
+
+    private static Map<String, JDBCAccess> jdbcAccessMap = new HashMap<>();
 
     /** Different sql statements needed for in-db and out-db raster data */
     protected Map<ImageLevelInfo, String> statementMap;
 
-    /** @param config Config from XML file passed to this class */
+    private Config config;
+    private DataSource dataSource;
 
-    // Map<ImageLevelInfo,Boolean> isOutDBMap;
+    private List<ImageLevelInfo> levelInfos = new ArrayList<>();
 
-    public JDBCAccessPGRaster(Config config) throws IOException {
-        super(config);
+    public JDBCAccess(Config config) throws IOException {
+        this.config = config;
+        this.dataSource = DataSourceFinder.getDataSource(config.getDataSourceParams());
+    }
+
+    /**
+     * Factory method
+     *
+     * @param config The Config object
+     * @return the corresponding JDBCAccess object
+     */
+    public static synchronized JDBCAccess getJDBCAcess(Config config) throws Exception {
+        JDBCAccess jdbcAccess = jdbcAccessMap.get(config.getXmlUrl());
+
+        if (jdbcAccess != null) {
+            return jdbcAccess;
+        }
+
+        SpatialExtension type = config.getSpatialExtension();
+
+        if (type == null) {
+            throw new Exception("Property <spatialExtension> missing");
+        } else if (type == SpatialExtension.PGRASTER) {
+            jdbcAccess = new JDBCAccess(config);
+        } else {
+            throw new Exception("spatialExtension: " + type + " not supported");
+        }
+
+        jdbcAccess.initialize();
+        jdbcAccessMap.put(config.getXmlUrl(), jdbcAccess);
+
+        return jdbcAccess;
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public List<ImageLevelInfo> getLevelInfos() {
+        return levelInfos;
+    }
+
+    public ImageLevelInfo getLevelInfo(int level) {
+        return levelInfos.get(level);
+    }
+
+    public int getNumOverviews() {
+        return levelInfos.size() - 1;
     }
 
     /*
@@ -80,7 +127,6 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
      *
      * @see org.geotools.gce.imagemosaic.jdbc.JDBCAccess#initialize()
      */
-    @Override
     public void initialize() throws IOException {
 
         try (Connection con = getConnection()) {
@@ -94,18 +140,15 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
             calculateExtentsFromDB(getConfig().getCoverageName(), con);
             calculateResolutionsFromDB(getConfig().getCoverageName(), con);
             /*
-            populate statementsMap independently of calculateResolutionsFromDB()
-            in case resolutions have been pre-set and don't need to be recalculated.
-            */
+             * populate statementsMap independently of calculateResolutionsFromDB() in case
+             * resolutions have been pre-set and don't need to be recalculated.
+             */
             populateStatementsMap(getConfig().getCoverageName(), con);
             /*
-            TODO nat changes - GEOT-4525. I am  not sure if this is the best place for the next
-             statement, as
-            if configurations have been already defined and were not recalculated, we will be
-            just overwriting
-            existing configuration, albeit with the same values. But for simplicity sake, it is
-            probably better
-             to leave it here...
+             * TODO nat changes - GEOT-4525. I am not sure if this is the best place for the next
+             * statement, as if configurations have been already defined and were not recalculated,
+             * we will be just overwriting existing configuration, albeit with the same values. But
+             * for simplicity sake, it is probably better to leave it here...
              */
             con.commit();
 
@@ -134,25 +177,15 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
     }
 
     /**
-     * startTileDecoders
+     * Method for starting the main action, getting the neccessairy tiles and decoding them in a
+     * multithreaded manner
      *
-     * @param pixelDimension Not Used (passed as per interface requirement)
      * @param requestEnvelope Geographic Envelope of request
      * @param info Pyramid Level
      * @param tileQueue Queue to place retrieved tile into
      * @param coverageFactory not used (passed as per interface requirement)
      */
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.geotools.gce.imagemosaic.jdbc.JDBCAccess#startTileDecoders(java.awt.Rectangle,
-     * org.geotools.geometry.GeneralEnvelope, org.geotools.gce.imagemosaic.jdbc.ImageLevelInfo,
-     * java.util.concurrent.LinkedBlockingQueue)
-     */
-    @Override
     public void startTileDecoders(
-            Rectangle pixelDimension,
             GeneralEnvelope requestEnvelope,
             ImageLevelInfo levelInfo,
             LinkedBlockingQueue<TileQueueElement> tileQueue,
@@ -300,11 +333,11 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
                     }
 
                     /*
-                    Set noDataValue on imageLevelInfo based on what
-                    is stored in raster band metadata.
-                    Please note: alternatively this value could be loaded from mosaic config file,
-                    we could add an optional element/attribute to specify this value.
-                    */
+                     * Set noDataValue on imageLevelInfo based on what is stored in raster band
+                     * metadata. Please note: alternatively this value could be loaded from mosaic
+                     * config file, we could add an optional element/attribute to specify this
+                     * value.
+                     */
                     Number noDataValue =
                             getNoDataValue(
                                     imageLevelInfo.getTileTableName(),
@@ -316,11 +349,12 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
 
                     imageLevelInfo.setCrs(getCRS());
                     /*
-                    Set SrsId based on what has been specified in mosaic
-                    xml configuration file. It can get overwritten by value retrieved from database in
-                    method calculateResolutionsFromDB(). The reason I added this is: if user has specified
-                    resolutions in the mosaic table, then calculateResolutionsFromDB() will skip setting srsID
-                    which will eventually result in an exception further down the track.
+                     * Set SrsId based on what has been specified in mosaic xml configuration file.
+                     * It can get overwritten by value retrieved from database in method
+                     * calculateResolutionsFromDB(). The reason I added this is: if user has
+                     * specified resolutions in the mosaic table, then calculateResolutionsFromDB()
+                     * will skip setting srsID which will eventually result in an exception further
+                     * down the track.
                      */
                     imageLevelInfo.setSrsId(getSrsId());
                 }
@@ -330,9 +364,7 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
         }
     }
 
-    /*
-    extract noDataValues for each overview from overview raster tables
-    */
+    /** extract noDataValues for each overview from overview raster tables */
     private Number getNoDataValue(
             String coverageTableName, String blobAttributeName, Connection con)
             throws SQLException {
@@ -436,7 +468,7 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
                 stmt.setString(5, li.getCoverageName());
                 stmt.setString(6, li.getTileTableName());
                 /*
-                TODO nat - changes for GEOT-4525
+                 * TODO nat - changes for GEOT-4525
                  */
                 if (li.getSpatialTableName() != null) {
                     stmt.setString(7, li.getSpatialTableName());
@@ -528,9 +560,9 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
                     LOGGER.info("ResX: " + li.getResX() + " ResY: " + li.getResY());
 
                 /*
-                moved code from here into method 'populateStatementsMap' below
-                which is called at initialisation. Otherwise this code was skipped in line #496
-                */
+                 * moved code from here into method 'populateStatementsMap' below which is called at
+                 * initialisation. Otherwise this code was skipped in line #496
+                 */
                 stmt.setDouble(1, li.getResX().doubleValue());
                 stmt.setDouble(2, li.getResY().doubleValue());
                 stmt.setString(3, li.getCoverageName());
@@ -650,7 +682,7 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
     }
 
     /*
-    Extract srs Id from xml configuration file
+     * Extract srs Id from xml configuration file
      */
     protected Integer getSrsId() {
         String crsStr = getConfig().getCoordsys();
@@ -663,5 +695,39 @@ public class JDBCAccessPGRaster extends JDBCAccessCustom {
             }
         }
         return null;
+    }
+
+    protected Connection getConnection() {
+
+        Connection con = null;
+        try {
+
+            con = dataSource.getConnection();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return con;
+    }
+
+    /** closeConnection */
+    protected void closeConnection(Connection con) {
+        try {
+            if (con != null) {
+                con.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected CoordinateReferenceSystem getCRS() {
+        try {
+            return CRS.decode(config.getCoordsys());
+        } catch (Exception e) {
+            LOGGER.severe("Cannot parse CRS from Config File " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 }

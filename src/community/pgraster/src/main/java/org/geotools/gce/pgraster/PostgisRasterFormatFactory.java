@@ -14,20 +14,23 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geotools.gce.imagemosaic.jdbc;
+package org.geotools.gce.pgraster;
 
 import java.util.Collections;
 import java.util.Map;
 import org.geotools.coverage.grid.io.GridFormatFactorySpi;
 
 /**
- * Implementation of the GridCoverageFormat service provider interface for mosaicing of
- * georeferenced images and image pyramids stored in a jdbc database
+ * Implementation of the {@link GridFormatFactorySpi} service provider interface for mosaicing of
+ * georeferenced images and image pyramids stored in postgis-raster.
  *
  * @author mcr
  * @since 2.5
  */
-public class ImageMosaicJDBCFormatFactory implements GridFormatFactorySpi {
+public class PostgisRasterFormatFactory implements GridFormatFactorySpi {
+
+    private static Boolean available;
+
     /**
      * Tells me if this plugin will work on not given the actual installation.
      *
@@ -38,13 +41,14 @@ public class ImageMosaicJDBCFormatFactory implements GridFormatFactorySpi {
      */
     @Override
     public boolean isAvailable() {
-        boolean available = true;
-
-        try {
-            Class.forName("javax.media.jai.JAI");
-            Class.forName("org.geotools.gce.imagemosaic.jdbc.ImageMosaicJDBCReader");
-        } catch (ClassNotFoundException cnf) {
-            available = false;
+        if (null == available) {
+            try {
+                Class.forName("javax.media.jai.JAI");
+                Class.forName("org.postgresql.Driver");
+                available = true;
+            } catch (ClassNotFoundException cnf) {
+                available = false;
+            }
         }
 
         return available;
@@ -52,8 +56,8 @@ public class ImageMosaicJDBCFormatFactory implements GridFormatFactorySpi {
 
     /** @see GridFormatFactorySpi#createFormat(). */
     @Override
-    public ImageMosaicJDBCFormat createFormat() {
-        return new ImageMosaicJDBCFormat();
+    public PostgisRasterFormat createFormat() {
+        return new PostgisRasterFormat();
     }
 
     /**

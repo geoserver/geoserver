@@ -1,1 +1,1 @@
-org.geotools.gce.imagemosaic.jdbc.ImageMosaicJDBCFormatFactory
+org.geotools.gce.pgraster.PostgisRasterFormatFactory

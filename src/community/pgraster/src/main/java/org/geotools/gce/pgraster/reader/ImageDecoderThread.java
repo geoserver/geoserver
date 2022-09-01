@@ -15,7 +15,7 @@
  *    Lesser General Public License for more details.
  */
 
-package org.geotools.gce.imagemosaic.jdbc;
+package org.geotools.gce.pgraster.reader;
 
 import com.sun.media.jai.codec.ByteArraySeekableStream;
 import com.sun.media.jai.codec.ImageCodec;
@@ -42,7 +42,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author mcr, christian
  */
-public class ImageDecoderThread extends Thread {
+class ImageDecoderThread extends Thread {
 
     protected static final Logger LOGGER = Logging.getLogger(ImageDecoderThread.class);
 

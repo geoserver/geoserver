@@ -14,7 +14,7 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geotools.gce.imagemosaic.jdbc;
+package org.geotools.gce.pgraster.reader;
 
 import java.awt.image.BufferedImage;
 import org.geotools.geometry.GeneralEnvelope;
@@ -25,7 +25,7 @@ import org.geotools.geometry.GeneralEnvelope;
  *
  * @author mcr
  */
-public class TileQueueElement {
+class TileQueueElement {
 
     public static TileQueueElement ENDELEMENT = new TileQueueElement(null, null, null);
 

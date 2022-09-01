@@ -11,7 +11,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  */
-package org.geotools.gce.imagemosaic.jdbc;
+package org.geotools.gce.pgraster.config;
 
 import java.sql.Connection;
 import javax.sql.DataSource;
@@ -24,14 +24,13 @@ import org.geotools.data.jdbc.datasource.DataSourceFinder;
  * @author mcr
  * @since 2.5
  */
-public abstract class DBDialect {
+public class DBDialect {
     protected DataSource dataSource;
 
     protected Config config;
 
     /** Constructor */
     public DBDialect(Config config) {
-        super();
         this.config = config;
     }
 
@@ -39,16 +38,25 @@ public abstract class DBDialect {
     public static DBDialect getDBDialect(Config config) {
         SpatialExtension type = config.getSpatialExtension();
         if (type == SpatialExtension.PGRASTER) {
-            return new PostgisDialect(config);
+            return new DBDialect(config);
         }
         return null;
     }
 
     /** @return the sql type name for a blob (Binary Large Object) */
-    protected abstract String getBLOBSQLType();
+    protected String getBLOBSQLType() {
+        return "BYTEA";
+    }
 
     /** @return the sql type name for a Multipolygon */
-    protected abstract String getMultiPolygonSQLType();
+    protected String getMultiPolygonSQLType() {
+        return "MULTIPOLYGON";
+    }
+
+    /** @return sql datatype for 8 byte floating point */
+    protected String getDoubleSQLType() {
+        return "FLOAT8";
+    }
 
     /** @return the config object for this dialect */
     protected Config getConfig() {
@@ -85,7 +93,11 @@ public abstract class DBDialect {
      * @return sql unregister spatial column statement for nt
      */
     protected String getUnregisterSpatialStatement(String tn) {
-        return null;
+        return "select DropGeometryColumn('"
+                + tn
+                + "','"
+                + getConfig().getGeomAttributeNameInSpatialTable()
+                + "')";
     }
 
     /**
@@ -94,23 +106,34 @@ public abstract class DBDialect {
      * @return sql unregister spatial column statement for nt
      */
     protected String getRegisterSpatialStatement(String tn, String srs) {
-        return null;
+        return "select AddGeometryColumn('"
+                + tn
+                + "','"
+                + config.getGeomAttributeNameInSpatialTable()
+                + "',"
+                + srs
+                + ",'"
+                + getMultiPolygonSQLType()
+                + "',2)";
     }
 
     /**
      * @param tn sql table name
      * @return sql create spatial index statement for tn
      */
-    protected abstract String getCreateIndexStatement(String tn) throws Exception;
+    protected String getCreateIndexStatement(String tn) throws Exception {
+        return "CREATE INDEX IX_"
+                + tn
+                + " ON "
+                + tn
+                + " USING gist("
+                + getConfig().getGeomAttributeNameInSpatialTable()
+                + ") ";
+    }
 
     /** @return sql drop index statement */
     String getDropIndexStatment(String tn) {
         return "drop index IX_" + tn;
-    }
-
-    /** @return sql datatype for 8 byte floating point */
-    protected String getDoubleSQLType() {
-        return "DOUBLE";
     }
 
     /** @return the create table statement for the master table */
@@ -177,15 +200,9 @@ public abstract class DBDialect {
 
     /** @return the sql create table statement for a spatial table */
     protected String getCreateSpatialTableStatement(String tableName) throws Exception {
-        String statement = "CREATE TABLE " + tableName;
+        String statement = " CREATE TABLE " + tableName;
         statement +=
-                (" ( "
-                        + getConfig().getKeyAttributeNameInSpatialTable()
-                        + " CHAR(64) NOT NULL, "
-                        + getConfig().getGeomAttributeNameInSpatialTable()
-                        + " "
-                        + getMultiPolygonSQLType()
-                        + " NOT NULL ");
+                (" (" + getConfig().getKeyAttributeNameInSpatialTable() + " CHAR(64) NOT NULL ");
         statement +=
                 (",CONSTRAINT "
                         + tableName
@@ -198,15 +215,9 @@ public abstract class DBDialect {
 
     /** @return the sql create table statement for a combined spatial/tile table named tableName */
     protected String getCreateSpatialTableStatementJoined(String tableName) throws Exception {
-        String statement = "CREATE TABLE " + tableName;
+        String statement = " CREATE TABLE " + tableName;
         statement +=
-                (" ( "
-                        + getConfig().getKeyAttributeNameInSpatialTable()
-                        + " CHAR(64) NOT NULL, "
-                        + getConfig().getGeomAttributeNameInSpatialTable()
-                        + " "
-                        + getMultiPolygonSQLType()
-                        + " NOT NULL ");
+                (" (" + getConfig().getKeyAttributeNameInSpatialTable() + " CHAR(64) NOT NULL ");
         statement += ("," + getConfig().getBlobAttributeNameInTileTable() + " " + getBLOBSQLType());
         statement +=
                 (",CONSTRAINT "

@@ -22,7 +22,6 @@ import org.geoserver.web.wicket.SRSToCRSModel;
 import org.geotools.gce.imagemosaic.ImageMosaicReader;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -70,8 +69,6 @@ public class PGRasterPanel extends Panel {
     static {
         try {
             DEFAULT_CRS = CRS.decode("EPSG:4326");
-        } catch (NoSuchAuthorityCodeException e) {
-            LOGGER.log(Level.FINER, e.getMessage(), e);
         } catch (FactoryException e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
         }

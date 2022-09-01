@@ -15,20 +15,26 @@
  *    Lesser General Public License for more details.
  */
 
-package org.geotools.gce.imagemosaic.jdbc;
+package org.geotools.gce.pgraster.reader;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.concurrent.LinkedBlockingQueue;
+import javax.media.jai.RenderedImageAdapter;
+import org.geotools.gce.pgraster.PostgisRasterGridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.image.util.ImageUtilities;
 
 /**
- * Holds the state of the {@link ImageMosaicJDBCReader} making the reader thread safe.
+ * Holds the state of the {@link PostgisRasterGridCoverage2DReader} making the reader thread safe.
  *
  * @author mcr
  * @since 2.6
  */
-public class ImageMosaicJDBCReaderState {
+public class PostgisRasterReaderState {
+    public static int DEFAULT_IMAGE_TYPE = BufferedImage.TYPE_3BYTE_BGR;
 
     private Color backgroundColor = null;
 
@@ -47,6 +53,26 @@ public class ImageMosaicJDBCReaderState {
     private ImageLevelInfo imageLevelInfo = null;
 
     private final LinkedBlockingQueue<TileQueueElement> tileQueue = new LinkedBlockingQueue<>();
+
+    /** @return BufferdImage filled with outputTransparentColor */
+    public BufferedImage getEmptyImage(int width, int height) {
+        Color backGroundcolor = getBackgroundColor();
+        Color outputTransparentColor = getOutputTransparentColor();
+        BufferedImage emptyImage =
+                new BufferedImage(width, height, PostgisRasterReaderState.DEFAULT_IMAGE_TYPE);
+        Graphics2D g2D = (Graphics2D) emptyImage.getGraphics();
+        Color save = g2D.getColor();
+        g2D.setColor(backGroundcolor);
+        g2D.fillRect(0, 0, emptyImage.getWidth(), emptyImage.getHeight());
+        g2D.setColor(save);
+        if (outputTransparentColor != null) {
+            emptyImage =
+                    new RenderedImageAdapter(
+                                    ImageUtilities.maskColor(outputTransparentColor, emptyImage))
+                            .getAsBufferedImage();
+        }
+        return emptyImage;
+    }
 
     public Color getBackgroundColor() {
         return backgroundColor;

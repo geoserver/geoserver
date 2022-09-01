@@ -1,20 +1,17 @@
 /*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
+ * GeoTools - The Open Source Java GIS Toolkit http://geotools.org
  *
- *    (C) 2013, Open Source Geospatial Foundation (OSGeo)
+ * (C) 2013, Open Source Geospatial Foundation (OSGeo)
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
+ * This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; version 2.1 of
+ * the License.
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  */
-package org.geotools.gce.imagemosaic.jdbc.custom;
+package org.geotools.gce.pgraster.config;
 
 import java.util.Properties;
 import org.geotools.util.factory.Hints.Key;
@@ -33,17 +30,13 @@ public class JDBCPGrasterConfigurationBean {
             Properties datastoreProperties,
             String tableName,
             String tileTablePrefix,
-            String fileExtension,
             String coverageName,
-            String importOptions,
             String schema,
             final int epsgCode) {
         this.datastoreProperties = datastoreProperties;
         this.tableName = tableName;
         this.tileTablePrefix = tileTablePrefix;
-        this.fileExtension = fileExtension;
         this.coverageName = coverageName;
-        this.importOptions = importOptions;
         this.schema = schema;
         this.epsgCode = epsgCode;
     }
@@ -54,11 +47,7 @@ public class JDBCPGrasterConfigurationBean {
 
     private String tileTablePrefix;
 
-    private String fileExtension;
-
     private String coverageName;
-
-    private String importOptions;
 
     private String schema;
 
@@ -88,28 +77,12 @@ public class JDBCPGrasterConfigurationBean {
         this.tileTablePrefix = tileTablePrefix;
     }
 
-    public String getFileExtension() {
-        return fileExtension;
-    }
-
-    public void setFileExtension(String fileExtension) {
-        this.fileExtension = fileExtension;
-    }
-
     public void setTableName(String tableName) {
         this.tableName = tableName;
     }
 
     public void setCoverageName(String coverageName) {
         this.coverageName = coverageName;
-    }
-
-    public String getImportOptions() {
-        return importOptions;
-    }
-
-    public void setImportOptions(String importOptions) {
-        this.importOptions = importOptions;
     }
 
     public String getSchema() {

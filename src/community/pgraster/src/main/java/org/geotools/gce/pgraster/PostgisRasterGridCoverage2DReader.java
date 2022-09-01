@@ -1,37 +1,32 @@
 /*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
+ * GeoTools - The Open Source Java GIS Toolkit http://geotools.org
  *
- *    (C) 2008, Open Source Geospatial Foundation (OSGeo)
+ * (C) 2008, Open Source Geospatial Foundation (OSGeo)
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
+ * This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; version 2.1 of
+ * the License.
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  */
 
-package org.geotools.gce.imagemosaic.jdbc;
+package org.geotools.gce.pgraster;
 
+import com.google.common.base.Stopwatch;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageReadParam;
-import javax.media.jai.RenderedImageAdapter;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -41,8 +36,12 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.processing.Operations;
 import org.geotools.data.DataSourceException;
+import org.geotools.gce.pgraster.config.Config;
+import org.geotools.gce.pgraster.reader.ImageComposerThread;
+import org.geotools.gce.pgraster.reader.ImageLevelInfo;
+import org.geotools.gce.pgraster.reader.JDBCAccess;
+import org.geotools.gce.pgraster.reader.PostgisRasterReaderState;
 import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.image.util.ImageUtilities;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.BufferedCoordinateOperationFactory;
@@ -62,17 +61,13 @@ import org.opengis.referencing.operation.TransformException;
 
 /**
  * This reader is responsible for providing access to images and image pyramids stored in a JDBC
- * datbase as tiles.
- *
- * <p>All jdbc databases which are able to handle blobs are supported.
- *
- * <p>Additonally, spatial extensions for mysql,postgis,db2 and oracle are supported
+ * database as Postgis_Raster extension tiles.
  *
  * @author mcr
  * @since 2.5
  */
-public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
-    private static final Logger LOGGER = Logging.getLogger(ImageMosaicJDBCReader.class);
+public class PostgisRasterGridCoverage2DReader extends AbstractGridCoverage2DReader {
+    private static final Logger LOGGER = Logging.getLogger(PostgisRasterGridCoverage2DReader.class);
 
     protected static final CoordinateOperationFactory operationFactory =
             new BufferedCoordinateOperationFactory(
@@ -85,8 +80,6 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
     private static Set<AxisDirection> UPDirections;
 
     private static Set<AxisDirection> LEFTDirections;
-
-    protected static int DEFAULT_IMAGE_TYPE = BufferedImage.TYPE_3BYTE_BGR;
 
     // class initializer
     static {
@@ -104,11 +97,11 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
     }
 
     /** @param source The source object. */
-    public ImageMosaicJDBCReader(Object source, Hints uHints)
+    public PostgisRasterGridCoverage2DReader(Object source, Hints uHints)
             throws IOException, MalformedURLException {
         this.source = source;
 
-        URL url = ImageMosaicJDBCFormat.getURLFromSource(source);
+        URL url = PostgisRasterFormat.getURLFromSource(source);
 
         if (url == null) {
             throw new MalformedURLException(source.toString());
@@ -142,7 +135,7 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
         //
         // /////////////////////////////////////////////////////////////////////
         try {
-            jdbcAccess = JDBCAccessFactory.getJDBCAcess(config);
+            jdbcAccess = JDBCAccess.getJDBCAcess(config);
         } catch (Exception e1) {
             LOGGER.severe(e1.getLocalizedMessage());
             throw new IOException(e1);
@@ -227,18 +220,13 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
      *
      * @param source The source object.
      */
-    public ImageMosaicJDBCReader(Object source) throws IOException {
+    public PostgisRasterGridCoverage2DReader(Object source) throws IOException {
         this(source, null);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.opengis.coverage.grid.GridCoverageReader#getFormat()
-     */
     @Override
     public Format getFormat() {
-        return new ImageMosaicJDBCFormat();
+        return new PostgisRasterFormat();
     }
 
     private void logRequestParams(GeneralParameterValue[] params) {
@@ -261,8 +249,8 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
     @Override
     public GridCoverage2D read(GeneralParameterValue... params) throws IOException {
         logRequestParams(params);
-        ImageMosaicJDBCReaderState state = new ImageMosaicJDBCReaderState();
-        Date start = new Date();
+        PostgisRasterReaderState state = new PostgisRasterReaderState();
+        final Stopwatch sw = Stopwatch.createStarted();
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Reading mosaic from " + coverageName);
@@ -279,9 +267,9 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
         // Checking params
         //
         // /////////////////////////////////////////////////////////////////////
-        state.setBackgroundColor(ImageMosaicJDBCFormat.BACKGROUND_COLOR.getDefaultValue());
+        state.setBackgroundColor(PostgisRasterFormat.BACKGROUND_COLOR.getDefaultValue());
         state.setOutputTransparentColor(
-                ImageMosaicJDBCFormat.OUTPUT_TRANSPARENT_COLOR.getDefaultValue());
+                PostgisRasterFormat.OUTPUT_TRANSPARENT_COLOR.getDefaultValue());
 
         if (params != null) {
             for (GeneralParameterValue generalParameterValue : params) {
@@ -298,13 +286,13 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
                 } else if (param.getDescriptor()
                         .getName()
                         .getCode()
-                        .equals(ImageMosaicJDBCFormat.BACKGROUND_COLOR.getName().toString())) {
+                        .equals(PostgisRasterFormat.BACKGROUND_COLOR.getName().toString())) {
                     state.setBackgroundColor((Color) param.getValue());
                 } else if (param.getDescriptor()
                         .getName()
                         .getCode()
                         .equals(
-                                ImageMosaicJDBCFormat.OUTPUT_TRANSPARENT_COLOR
+                                PostgisRasterFormat.OUTPUT_TRANSPARENT_COLOR
                                         .getName()
                                         .toString())) {
                     state.setOutputTransparentColor((Color) param.getValue());
@@ -318,16 +306,13 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
         //
         // /////////////////////////////////////////////////////////////////////
         GridCoverage2D coverage = loadTiles(state);
-        LOGGER.info(
-                "Mosaic Reader needs : "
-                        + ((new Date()).getTime() - start.getTime())
-                        + " millisecs");
+        LOGGER.info("Mosaic Reader needs : " + sw.stop());
 
         return coverage;
     }
 
-    /** transforms (if neccessairy) the requested envelope into the CRS used by this reader. */
-    private void transformRequestedEnvelope(ImageMosaicJDBCReaderState state)
+    /** transforms (if necessary) the requested envelope into the CRS used by this reader. */
+    private void transformRequestedEnvelope(PostgisRasterReaderState state)
             throws DataSourceException {
 
         if (CRS.equalsIgnoreMetadata(
@@ -391,7 +376,7 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
     }
 
     /** Expand the Transformed Requested Envelope to fit the virtual tiles grid. * */
-    private void expandRequestedEnvelope(ImageMosaicJDBCReaderState state) {
+    private void expandRequestedEnvelope(PostgisRasterReaderState state) {
 
         GeneralEnvelope ret = state.getRequestedEnvelopeTransformed();
         ImageLevelInfo levelInfo = state.getImageLevelInfo();
@@ -426,7 +411,7 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
     @SuppressFBWarnings("NP_NULL_PARAM_DEREF") // pixelDimension gets into the ImageComposerThread
     // and is eventually dereferenced by some call to base constructor. Verified the bug is here,
     // just don't know how to fix it
-    private GridCoverage2D loadTiles(ImageMosaicJDBCReaderState state) throws IOException {
+    private GridCoverage2D loadTiles(PostgisRasterReaderState state) throws IOException {
         Rectangle renderedImageRectangle = state.getRenderedImageRectangle();
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(
@@ -458,11 +443,11 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
             LOGGER.warning(state.getRequestedEnvelopeTransformed().toString());
             LOGGER.warning(originalEnvelope.toString());
 
-            //            return coverageFactory.create(coverageName, getEmptyImage((int)
+            // return coverageFactory.create(coverageName, getEmptyImage((int)
             // pixelDimension
-            //                    .getWidth(), (int) pixelDimension.getHeight(), backgroundColor,
+            // .getWidth(), (int) pixelDimension.getHeight(), backgroundColor,
             // outputTransparentColor), state
-            //                    .getRequestedEnvelope());
+            // .getRequestedEnvelope());
             return null;
         }
 
@@ -486,14 +471,12 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
                 readP.setSourceSubsampling(1, 1, 0, 0);
             } catch (TransformException e) {
                 LOGGER.severe(e.getLocalizedMessage());
-                return coverageFactory.create(
-                        coverageName,
-                        getEmptyImage(
+                BufferedImage emptyImage =
+                        state.getEmptyImage(
                                 (int) renderedImageRectangle.getWidth(),
-                                (int) renderedImageRectangle.getHeight(),
-                                state.getBackgroundColor(),
-                                state.getOutputTransparentColor()),
-                        state.getRequestedEnvelope());
+                                (int) renderedImageRectangle.getHeight());
+                GeneralEnvelope envelope = state.getRequestedEnvelope();
+                return coverageFactory.create(coverageName, emptyImage, envelope);
             }
         }
         if (imageChoice == null) {
@@ -517,7 +500,6 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
         imageComposerThread.start();
 
         jdbcAccess.startTileDecoders(
-                renderedImageRectangle,
                 state.getRequestedEnvelopeTransformedExpanded(),
                 levelInfo,
                 state.getTileQueue(),
@@ -538,7 +520,7 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
     }
 
     private GridCoverage2D transformResult(
-            GridCoverage2D coverage, ImageMosaicJDBCReaderState state) {
+            GridCoverage2D coverage, PostgisRasterReaderState state) {
         if (state.getRequestedEnvelopeTransformed() == state.getRequestedEnvelope()) {
             return coverage; // nothing to do
         }
@@ -574,24 +556,6 @@ public class ImageMosaicJDBCReader extends AbstractGridCoverage2DReader {
 
         return coverageFactory.create(
                 result.getName(), result.getRenderedImage(), result.getEnvelope());
-    }
-
-    /** @return BufferdImage filled with outputTransparentColor */
-    private BufferedImage getEmptyImage(
-            int width, int height, Color backGroundcolor, Color outputTransparentColor) {
-        BufferedImage emptyImage = new BufferedImage(width, height, DEFAULT_IMAGE_TYPE);
-        Graphics2D g2D = (Graphics2D) emptyImage.getGraphics();
-        Color save = g2D.getColor();
-        g2D.setColor(backGroundcolor);
-        g2D.fillRect(0, 0, emptyImage.getWidth(), emptyImage.getHeight());
-        g2D.setColor(save);
-        if (outputTransparentColor != null) {
-            emptyImage =
-                    new RenderedImageAdapter(
-                                    ImageUtilities.maskColor(outputTransparentColor, emptyImage))
-                            .getAsBufferedImage();
-        }
-        return emptyImage;
     }
 
     /**

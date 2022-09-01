@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.data.store.pgraster;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -20,7 +19,6 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
-import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
 
 /**
@@ -63,7 +61,7 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
         add(url);
 
         // enabled flag, and show the rest only if enabled is true
-        IModel<Boolean> enabledModel = new Model<Boolean>(false);
+        IModel<Boolean> enabledModel = new Model<>(false);
         enabled = new CheckBox("enabled", enabledModel);
         add(enabled);
         enabled.add(
@@ -105,30 +103,5 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
                         storeInfo.setURL(coverageUrl);
                     }
                 });
-    }
-
-    private FormComponent addTextPanel(final IModel paramsModel, final String paramName) {
-
-        final String resourceKey = getClass().getSimpleName() + "." + paramName;
-
-        final boolean required = true;
-
-        final TextParamPanel textParamPanel =
-                new TextParamPanel(
-                        paramName,
-                        new MapModel(paramsModel, paramName),
-                        new ResourceModel(resourceKey, paramName),
-                        required);
-        textParamPanel.getFormComponent().setType(String.class);
-
-        String defaultTitle = paramName;
-
-        ResourceModel titleModel = new ResourceModel(resourceKey + ".title", defaultTitle);
-        String title = String.valueOf(titleModel.getObject());
-
-        textParamPanel.add(AttributeModifier.replace("title", title));
-
-        add(textParamPanel);
-        return textParamPanel.getFormComponent();
     }
 }

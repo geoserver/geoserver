@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ImageMosaicJDBCConfig>
+   <spatialExtension name="pgraster" />
+   <mapping>
+      <masterTable name="$MASTER_TABLE">
+         <coverageNameAttribute name="NAME" />
+         <maxXAttribute name="maxX" />
+         <maxYAttribute name="maxY" />
+         <minXAttribute name="minX" />
+         <minYAttribute name="minY" />
+         <resXAttribute name="resX" />
+         <resYAttribute name="resY" />
+         <tileTableNameAtribute name="TileTable" />
+      </masterTable>
+      <tileTable>
+         <blobAttributeName name="rast" />
+      </tileTable>
+   </mapping>
+   <config version="1.0">
+      <coverageName name="$COVERAGE_NAME" />
+      <coordsys name="EPSG:$EPSG_CODE" />
+      <!-- interpolation 1 = nearest neighbour, 2 = bipolar, 3 = bicubic -->
+      <scaleop interpolation="1" />
+   </config>
+   <connect>
+      <!-- value DBCP or JNDI -->
+      <dstype value="DBCP" />
+      <!-- 		<jndiReferenceName value=""/>		 -->
+      <username value="$USER" />
+      <password value="$PASSWORD" />
+      <jdbcUrl value="jdbc:postgresql://$HOST:$PORT/$DATABASE" />
+      <driverClassName value="org.postgresql.Driver" />
+      <maxActive value="10" />
+      <maxIdle value="0" />
+   </connect>
+</ImageMosaicJDBCConfig>

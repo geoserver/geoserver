@@ -224,9 +224,6 @@ public class GeoServerKeycloakFilterTest {
                 .thenReturn(Collections.enumeration(Collections.singleton(auth_header)));
         when(response.getStatus()).thenReturn(HttpStatus.OK.value());
 
-        // verify that we are not already authorised
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
-
         // run the test
         filter.doFilter(request, response, chain);
 
@@ -245,58 +242,29 @@ public class GeoServerKeycloakFilterTest {
     }
 
     @Test
-    public void testLoginWithRedirectResponse() throws Exception {
+    public void testHttps() throws Exception {
         // set up the object under test
-        AdapterConfig aConfig = config.readAdapterConfig();
-        aConfig.setRealmKey(PUBLIC_KEY);
-        config.writeAdapterConfig(aConfig);
         GeoServerKeycloakFilter filter = new GeoServerKeycloakFilter();
         filter.initializeFromConfig(config);
 
         // set up the test inputs
-        String auth_header = "bearer " + JWT_2018_2037;
-        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(auth_header);
-        when(request.getHeaders(HttpHeaders.AUTHORIZATION))
-                .thenReturn(Collections.enumeration(Collections.singleton(auth_header)));
-        when(response.getStatus()).thenReturn(HttpStatus.FOUND.value());
-        when(response.getHeader(HttpHeaders.LOCATION)).thenReturn("dummy");
+        when(response.getStatus()).thenReturn(HttpStatus.MOVED_PERMANENTLY.value());
+        when(request.getHeader("x-forwarded-proto")).thenReturn("https");
 
-        // verify that we are not already authorised
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
-
+        // run the test
         filter.doFilter(request, response, chain);
 
-        verify(chain).doFilter(eq(request), eq(response));
+        // simulate execution of the AEP
+        ArgumentCaptor<AuthenticationEntryPoint> aep =
+                ArgumentCaptor.forClass(AuthenticationEntryPoint.class);
+        verify(request).setAttribute(eq(AEP_HEADER), aep.capture());
+        aep.getValue().commence(request, response, null);
 
-        verify(response).getHeader(eq(HttpHeaders.LOCATION));
-        verify(response).setHeader(eq(HttpHeaders.LOCATION), anyString());
-    }
-
-    @Test
-    public void testLoginWithoutRedirectResponse() throws Exception {
-        // set up the object under test
-        AdapterConfig aConfig = config.readAdapterConfig();
-        aConfig.setRealmKey(PUBLIC_KEY);
-        config.writeAdapterConfig(aConfig);
-        GeoServerKeycloakFilter filter = new GeoServerKeycloakFilter();
-        filter.initializeFromConfig(config);
-
-        // set up the test inputs
-        String auth_header = "bearer " + JWT_2018_2037;
-        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(auth_header);
-        when(request.getHeaders(HttpHeaders.AUTHORIZATION))
-                .thenReturn(Collections.enumeration(Collections.singleton(auth_header)));
-        when(response.getStatus()).thenReturn(HttpStatus.FOUND.value());
-        when(response.getHeader(HttpHeaders.LOCATION)).thenReturn(null);
-
-        // verify that we are not already authorised
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
-
-        filter.doFilter(request, response, chain);
-
-        verify(chain).doFilter(eq(request), eq(response));
-
-        verify(response).getHeader(eq(HttpHeaders.LOCATION));
-        verify(response, never()).setHeader(anyString(), anyString());
+        // check the results
+        verify(chain).doFilter(request, response);
+        ArgumentCaptor<Integer> status = ArgumentCaptor.forClass(Integer.class);
+        verify(response).setStatus(status.capture());
+        assertTrue(HttpStatus.valueOf(status.getValue()).is3xxRedirection());
+        verify(response).setHeader(eq(HttpHeaders.LOCATION), contains("redirect_uri=https"));
     }
 }

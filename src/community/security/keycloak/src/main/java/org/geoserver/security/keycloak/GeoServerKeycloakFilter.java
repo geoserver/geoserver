@@ -123,7 +123,8 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
 
         String location = response.getHeader(HttpHeaders.LOCATION);
         // replace geoserver/j_spring_keycloak_security_login endpoint and redirect_uri query
-        // parameter in Location header present in HTTP 3xx redirects
+        // parameter
+        // in Location header present in HTTP 3xx redirects
         if (location != null) {
             response.setHeader(
                     HttpHeaders.LOCATION,
@@ -304,7 +305,6 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
             // LOG.log(level, String.format("request.method   = %s", request.getMethod()));
             // LOG.log(level, String.format("request.uri      = %s", request.getRequestURI()));
             // LOG.log(level, String.format("request.headers  = %s", request.getHeaderNames()));
-            LOG.log(level, "request.method   = " + request.getMethod());
             for (String headerName : Collections.list(request.getHeaderNames())) {
                 if (headerName.equals(HttpHeaders.COOKIE)) {
                     continue;

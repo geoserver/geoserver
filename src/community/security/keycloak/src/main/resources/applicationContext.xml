@@ -39,17 +39,4 @@
 		<property name="descriptionKey" value="KeycloakRoleServicePanel.description"/>
 	</bean>
 
-	<!-- Keycloak Login Button  -->
-	<bean id="keycloakFormLoginButton" class="org.geoserver.web.LoginFormInfo">
-		<property name="id" value="keycloakFormLoginButton" />
-		
-		<!-- property name="titleKey" value="GeoNodeOAuth2AuthProviderPanel.login" / -->
-		<property name="titleKey" value="" />
-		<property name="descriptionKey" value="KeycloakAuthFilterPanel.description" />
-		<property name="componentClass" value="org.geoserver.web.security.keycloak.KeycloakAuthFilterPanel" />
-		<property name="name" value="keycloak" />
-		<property name="icon" value="keycloak.png" />
-		<property name="filterClass" value="org.geoserver.security.keycloak.GeoServerKeycloakFilter" />
-		<property name="loginPath" value="j_spring_keycloak_security_login" />
-	</bean>
 </beans>

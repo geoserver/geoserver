@@ -120,17 +120,6 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
         LOG.log(Level.FINEST, chain.getClass().getCanonicalName());
 
         chain.doFilter(request, response);
-
-        String location = response.getHeader(HttpHeaders.LOCATION);
-        // replace geoserver/j_spring_keycloak_security_login endpoint and redirect_uri query
-        // parameter
-        // in Location header present in HTTP 3xx redirects
-        if (location != null) {
-            response.setHeader(
-                    HttpHeaders.LOCATION,
-                    location.replace("j_spring_keycloak_security_login", "web"));
-        }
-
         logHttpResponse(Level.FINEST, response);
         LOG.log(Level.FINEST, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     }
@@ -302,11 +291,11 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
 
     private static void logHttpRequest(Level level, HttpServletRequest request) {
         if (LOG.isLoggable(level)) {
-            // LOG.log(level, String.format("request.method   = %s", request.getMethod()));
-            // LOG.log(level, String.format("request.uri      = %s", request.getRequestURI()));
-            // LOG.log(level, String.format("request.headers  = %s", request.getHeaderNames()));
+            LOG.log(level, "request.method   = " + request.getMethod());
+            LOG.log(level, "request.uri      = " + request.getRequestURI());
+            LOG.log(level, "request.headers  = ");
             for (String headerName : Collections.list(request.getHeaderNames())) {
-                if (headerName.equals(HttpHeaders.COOKIE)) {
+                if (headerName == HttpHeaders.COOKIE) {
                     continue;
                 }
                 StringBuilder buffer = new StringBuilder(80);

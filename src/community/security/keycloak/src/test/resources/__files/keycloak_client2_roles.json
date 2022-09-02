@@ -1,0 +1,15 @@
+[ {
+  "id" : "e3928f3f-4077-4073-9a2e-f68d29a73f01",
+  "name" : "client2-role1",
+  "description" : "",
+  "composite" : true,
+  "clientRole" : false,
+  "containerId" : "d7a7e795-974a-41b1-9a0d-0cc5fcf94a31"
+}, {
+  "id" : "f64c653d-4ef6-474f-964e-785a90e5d6a9",
+  "name" : "client2-role2",
+  "description" : "${role_create-realm}",
+  "composite" : false,
+  "clientRole" : false,
+  "containerId" : "d7a7e795-974a-41b1-9a0d-0cc5fcf94a31"
+}]

@@ -118,6 +118,14 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.security</groupId>
+      <artifactId>gs-security-tests</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>

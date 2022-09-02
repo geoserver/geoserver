@@ -1,0 +1,8 @@
+{
+  "access_token": "new_access_token",
+  "refresh_token": "new_refresh_token",
+  "id_token": "id_token",
+  "scope": "openid keycloak profile email phone address",
+  "expires_in": 86400,
+  "token_type": "Bearer"
+}

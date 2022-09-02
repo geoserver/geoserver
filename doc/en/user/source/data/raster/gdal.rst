@@ -146,7 +146,7 @@ Testing the installation
 
 Once these steps have been completed, restart GeoServer.
 
-Navigate to :menuselection:`About > Server Status` page, and change to the :guilabel:`Moduels` tab, and click :guilabel:`` link for status information.
+Navigate to :menuselection:`About > Server Status` page, and change to the :guilabel:`Modules` tab, and click :guilabel:`` link for status information.
 
 .. figure:: images/gdal-extension-status.png
    

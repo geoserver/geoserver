@@ -37,7 +37,7 @@ Conditions for the sidecar table to work:
 
 **Querying the sidecar table will bypass all of the main table configurations and security, including**:
 
-* Property mapping (renaming, type modification, synthetic propertis based on expression).
+* Property mapping (renaming, type modification, synthetic properties based on expression).
 * CQL filtering defined in the layer configuration.
 * Any security restriction (the layer must be public).
 

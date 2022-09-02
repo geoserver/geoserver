@@ -3,7 +3,7 @@
 WMTS Multidimensional usage
 ===========================
 
-All described operations including is optional parameters and other extensions were implemented, only the the REST interfaces for the domain discovery operations were not implemented. 
+All described operations including is optional parameters and other extensions were implemented, only the REST interfaces for the domain discovery operations were not implemented. 
 
 The ``GetFeature`` operation only supports the profile GML 3.1 as feature info format ("application/gml+xml; version=3.1") and the ``GetHistogram`` operation only supports ``text/xml`` as output format.
 
@@ -346,7 +346,7 @@ using the last value of the previous page as a reference:
     </DomainValues>
 
 For elevations it might not be uncommon to iterate backwards, from the top-most elevation down to the lowest value. The interaction
-between client and server migth then look as follows:
+between client and server might then look as follows:
 
 .. code-block:: guess
 

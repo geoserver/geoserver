@@ -24,7 +24,7 @@ Configuration
 -------------
 
 The module does not require any configuration in case the default behavior is suitable for the
-deploy enviroment.
+deploy environment.
 
 By default, the module will use multicast messages to locate other nodes in the same cluster
 and will automatically start sharing information about the process status with them.

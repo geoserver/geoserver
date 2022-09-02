@@ -301,7 +301,7 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 
    .. image:: ../style/img/polygon_pattern_5.png
 
-#. Multiple fills can be applied by using a seperate symbolizer for each fill as part of the same rule.
+#. Multiple fills can be applied by using a separate symbolizer for each fill as part of the same rule.
 
    .. code-block:: yaml
       :emphasize-lines: 2,3,4,5
@@ -510,7 +510,7 @@ When working with labels a map can become busy very quickly, and difficult to re
           x-maxDisplacement: 40
           x-autoWrap: 70
 
-#. By making use of **fill-opacity** on the **halo** we we still allow stroke information to show through, but prevent the stroke information from making the text hard to read.
+#. By making use of **fill-opacity** on the **halo** we still allow stroke information to show through, but prevent the stroke information from making the text hard to read.
 
    .. image:: ../style/img/polygon_label_5.png
 
@@ -572,7 +572,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
       * filter vs function for theming
       * Cascading
 
-#. We can use a site like `ColorBrewer <http://www.colorbrewer2.com>`_ to explore the use of color theming for polygon symbology. In this approach the the fill color of the polygon is determined by the value of the attribute under study.
+#. We can use a site like `ColorBrewer <http://www.colorbrewer2.com>`_ to explore the use of color theming for polygon symbology. In this approach the fill color of the polygon is determined by the value of the attribute under study.
 
    .. image:: ../style/img/polygon_06_brewer.png
 
@@ -778,7 +778,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
 Bonus
 -----
 
-The following optional explore and challenge activities offer a chance to review and apply the ideas introduced here. The challenge activities equire a bit of creativity and research to complete.
+The following optional explore and challenge activities offer a chance to review and apply the ideas introduced here. The challenge activities require a bit of creativity and research to complete.
 
 In a classroom setting you are encouraged to team up into groups, with each group taking on a different challenge.
 

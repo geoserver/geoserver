@@ -27,7 +27,7 @@ By default the metadata module will add an extra tab to the edit layer page. Ope
   
   The initial UI. Note the :guilabel:`Metadata fields` panel is still empty
 
-The content of the :guilabel:`Metadata fields` is configured by placing one or multiple `yaml <https://yaml.org/>`__ files describing the UI compontents in the metadata configuration folder, see :ref:`tutorial_metadata` for a real life example.
+The content of the :guilabel:`Metadata fields` is configured by placing one or multiple `yaml <https://yaml.org/>`__ files describing the UI components in the metadata configuration folder, see :ref:`tutorial_metadata` for a real life example.
 
 Example UI configuration:
 

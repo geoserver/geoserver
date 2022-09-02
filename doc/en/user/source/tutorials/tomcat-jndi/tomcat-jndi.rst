@@ -11,7 +11,7 @@ Tomcat setup
 
 In order to setup a connection pool Tomcat needs a JDBC driver and the necessary pool configurations.
 
-First off, you need to find the JDBC driver for your database. Most often it is distributed on the web site of your DBMS provider, or available in the installed version of your database.
+First off, you need to find the JDBC driver for your database. Most often it is distributed on the website of your DBMS provider, or available in the installed version of your database.
 For example, a Oracle XE install on a Linux system provides the driver at  :file:`/usr/lib/oracle/xe/app/oracle/product/10.2.0/server/jdbc/lib/ojdbc14.jar`, and that file needs to be moved into Tomcat shared libs directory, :file:`{TOMCAT_HOME}/lib`
 
 .. note:: be careful to remove the jdbc driver from the GeoServer WEB-INF/lib folder when copied to the Tomcat shared libs, to avoid issues in JNDI DataStores usage.
@@ -46,7 +46,7 @@ Once that is done, the Tomcat configuration file :file:`{TOMCAT_HOME}/conf/conte
 
 
 The example sets up a connection pool connecting to the local Oracle XE instance. 
-The pool configuration shows is quite full fledged:
+The pool configuration shows is quite full-fledged:
 
 * at most 20 active connections (max number of connection that will ever be used in parallel)
 * at most 3 connections kept in the pool unused
@@ -60,7 +60,7 @@ Other parameters to setup connection pool:
 
 * timeBetweenEvictionRunsMillis	(default -1) The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run.
 * numTestsPerEvictionRun	(default 3) The number of objects to examine during each run of the idle object evictor thread (if any).
-* minEvictableIdleTimeMillis	(default 1000 * 60 * 30) The minimum amount of time an object may sit idle in the pool before it is eligable for eviction by the idle object evictor (if any).
+* minEvictableIdleTimeMillis	(default 1000 * 60 * 30) The minimum amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any).
 * removeAbandoned	(default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
 * removeAbandonedTimeout	(default 300) Timeout in seconds before an abandoned connection can be removed.
 * logAbandoned	(default false) Flag to log stack traces for application code which abandoned a Statement or Connection.

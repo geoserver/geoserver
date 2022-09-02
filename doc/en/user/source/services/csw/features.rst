@@ -50,7 +50,7 @@ Mapping files are located in the ``csw`` directory inside the :ref:`datadir`. Ea
 * ISO Metadata mapping can be found in the file ``csw/MD_Metadata.properties`` inside the data directory (see :ref:`csw_iso` Community Module).
 
 The mapping files take the syntax from Java properties files. The left side of the equals sign specifies the target field name or path in the metadata record, paths being separated with dots. The right side of the equals sign specifies any CQL expression that denotes the value of the target property. The CQL expression is applied to each ResourceInfo_ object in the catalog and can retrieve all properties from this object. These expressions can make use of literals, properties present in the ResourceInfo_ object, and all normal CQL operators and functions. 
-There is also support for complex datastructures such as Maps using the dot notation and Lists using the bracket notation (Example mapping files are given below).
+There is also support for complex data structures such as Maps using the dot notation and Lists using the bracket notation (Example mapping files are given below).
 
 The properties in the ResourceInfo_ object that can be used are:: 
 
@@ -113,8 +113,8 @@ You may use :ref:`rest` to view an xml model of feature types and datastores in 
 
 .. _ResourceInfo: http://rancor.boundlessgeo.com:8080/display/GEOS/Catalog+Design#CatalogDesign-resources
 
-Some fields in the metadata schemes can have multiple occurences. They may be mapped to properties in the Catalog model that are also multi-valued, such as for example ``keywords``.
-It is also possible to use a filter function called ``list`` to map multiple single-valued or multi-valued catalog properties to a MetaData field with multiple occurences (see in ISO MetaData Profile example, mapping for the ``identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle`` field). 
+Some fields in the metadata schemes can have multiple occurrences. They may be mapped to properties in the Catalog model that are also multi-valued, such as for example ``keywords``.
+It is also possible to use a filter function called ``list`` to map multiple single-valued or multi-valued catalog properties to a MetaData field with multiple occurrences (see in ISO MetaData Profile example, mapping for the ``identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle`` field). 
 
 Placing the ``@`` symbol in front of the field will set that to use as identifier for each metadata record. This may be useful for ID filters.  Use a ``$`` sign in front of fields that are required to make sure the mapping is aware of the requirement (specifically for the purpose of property selection).
   

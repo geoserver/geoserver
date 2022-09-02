@@ -166,7 +166,7 @@ Create the application context
    which is a descriptor for pages linked from the main page of the GeoServer 
    web application. The property ``titleKey`` is the title of the page and it 
    receives the value of the title i18n key created in the previous section.
-   Similar for the the ``descriptionKey`` property.
+   Similar for the ``descriptionKey`` property.
 
 Test the extension
 ------------------

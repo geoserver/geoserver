@@ -81,7 +81,7 @@ Applying the obstacle to a regular point style:
    .. figure:: images/obs-mark1.png  
    .. figure:: images/obs-mark2.png
 
-Applying the obstacle to line/polygon style style:
+Applying the obstacle to line/polygon style:
 
 .. cssclass:: no-border
 

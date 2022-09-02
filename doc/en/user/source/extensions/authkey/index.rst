@@ -227,7 +227,7 @@ named **authkey** offering the following options.
 #. User/group service to be used.
 
 Some of the key providers can require additional configuration parameter. These will appear under the 
-Key Provider combobox when one of those is selected.
+Key Provider combo-box when one of those is selected.
 
 After configuring the filter it is necessary to put this filter on the authentication filter chain(s).
 

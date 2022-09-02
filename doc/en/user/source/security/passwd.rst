@@ -17,7 +17,7 @@ A GeoServer configuration stores two types of passwords:
 
 As these passwords are typically stored on disk it is strongly recommended that they be encrypted and not stored as human-readable text. GeoServer security provides four schemes for encrypting passwords: **empty**, **plain text**, **Digest**, and **Password-based encryption (PBE)**.
 
-The password encryption scheme is specified as a global setting that affects the encryption of passwords used for external resources, and as an encryption scheme for each :ref:`user/group service <security_rolesystem_usergroupservices>`. The encryption scheme for external resources has to be be :ref:`reversible <security_passwd_reversible>`, while the user/group services can use any scheme.
+The password encryption scheme is specified as a global setting that affects the encryption of passwords used for external resources, and as an encryption scheme for each :ref:`user/group service <security_rolesystem_usergroupservices>`. The encryption scheme for external resources has to be :ref:`reversible <security_passwd_reversible>`, while the user/group services can use any scheme.
 
 Empty
 ~~~~~

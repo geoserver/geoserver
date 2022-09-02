@@ -378,7 +378,7 @@ To draw the inner lines always on top of the outer lines we need to control the 
 
    Feature style buffers
    
-During composition these two off-screen buffers are combined into the the final map.
+During composition these two off-screen buffers are combined into the final map.
 
 .. figure:: img/line-casing-map.*
 

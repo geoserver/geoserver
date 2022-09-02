@@ -3,7 +3,7 @@
 Maven Eclipse Plugin Quickstart
 ===============================
 
-This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the the :ref:`eclipse_guide`.
+This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the :ref:`eclipse_guide`.
 
 .. include:: checkout.txt
 

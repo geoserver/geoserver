@@ -183,7 +183,7 @@ In this example, **lines 3-9** comprise the first feature style, which is the ou
 renders the ends of the line as rounded instead of flat. 
 (When working with bordered lines using a round line cap ensures that the border connects properly at the ends of the lines.)
 
-**Lines 10-16** comprise the second ``feature-style``, which is the the inner line (or "fill"). **Line 14**
+**Lines 10-16** comprise the second ``feature-style``, which is the inner line (or "fill"). **Line 14**
 specifies the color of the line to be a medium blue (``'#6699FF'``), **line 15** specifies the width of this line to be 3 pixels, and **line 16** again renders the edges of the line to be rounded instead of flat.
 
 The result is a 3 pixel blue line with a 1 pixel gray border, since the 5 pixel gray line will display 1 pixel on each side of the 3 pixel blue line.

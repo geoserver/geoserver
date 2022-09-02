@@ -15,7 +15,7 @@ Review of point symbology:
 
 * Labeling of points is anchored to the point location.
 
-As points have no inherent shape of of their own, emphasis is placed on marking locations with an appropriate symbol.
+As points have no inherent shape of their own, emphasis is placed on marking locations with an appropriate symbol.
 
 Reference:
 

@@ -36,7 +36,7 @@ Configuration Instructions
     .. figure:: images/keycloak_client003.png
        :align: center
 
-4. Add the the *ADMINISTRATOR* and *AUTHENTICATED* `client-role <http://www.keycloak.org/docs/2.5/server_admin/topics/roles/client-roles.html>`_ to the `geoserver-client` in Keycloak.
+4. Add the *ADMINISTRATOR* and *AUTHENTICATED* `client-role <http://www.keycloak.org/docs/2.5/server_admin/topics/roles/client-roles.html>`_ to the `geoserver-client` in Keycloak.
 
     .. figure:: images/keycloak_client004.png
        :align: center
@@ -78,7 +78,7 @@ Configuration Instructions
    The :guilabel:`Role Source` drop down enable the selection of the desired role source for the user being authenticated through keycloak. If none is selected by default the ``Active Role Service`` will be used.
 
 
-2. Add the `keycloak_adapter` to the *web* `filter-chain` if you want to protect the Admin GUI, as an instance. If you have checked :guilabel:`Enable redirect to Keycloak Login page` on the filter configuration to be redirected everytime to Keycloak, then remove all of the others `chain filters` (basic, form, rememberme, anonymous).
+2. Add the `keycloak_adapter` to the *web* `filter-chain` if you want to protect the Admin GUI, as an instance. If you have checked :guilabel:`Enable redirect to Keycloak Login page` on the filter configuration to be redirected every time to Keycloak, then remove all of the others `chain filters` (basic, form, rememberme, anonymous).
 
     .. figure:: images/keycloak_adapter002.png
        :align: center

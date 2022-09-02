@@ -102,7 +102,7 @@ Since OpenFire RPM package is not included in any major RHEL / CentOS / Fedora d
   
   $> wget http://www.igniterealtime.org/downloadServlet?filename=openfire/openfire-3.10.0-1.i386.rpm -O openfire-3.10.0-1.i386.rpm
   
-  # This package come in 32bit version only, so in case we run this installation on x86_64 system, we need to make sure to install coresponding 32bit libraries as well.
+  # This package come in 32bit version only, so in case we run this installation on x86_64 system, we need to make sure to install corresponding 32bit libraries as well.
   
   $> yum install -y /root/openfire-3.9.3-1.i386.rpm
   

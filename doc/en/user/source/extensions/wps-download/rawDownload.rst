@@ -150,7 +150,7 @@ In case the ROI is defined using a REFERENCE source, the input block is slightly
     </wps:Input>
 
   
-Note the ``<wps:Reference>`` tag replacing ``<wps:ComplexData>`` tag, and the extra ``xlink:href="url_to_fetch_data"`` parameter, which defines the url to peform the HTTP GET request. For POST request cases, tech method is switched to POST, and a ``<wps:Body>`` tag is used to wrap POST data:
+Note the ``<wps:Reference>`` tag replacing ``<wps:ComplexData>`` tag, and the extra ``xlink:href="url_to_fetch_data"`` parameter, which defines the url to perform the HTTP GET request. For POST request cases, tech method is switched to POST, and a ``<wps:Body>`` tag is used to wrap POST data:
 
  .. code-block:: xml
 
@@ -323,7 +323,7 @@ In case of asynchronous execution, the initial request to download data returns 
     </wps:Status>
   </wps:ExecuteResponse>
 
-The response contains a ``<wps:Status>`` block indicating successfull process creation and process start time. However, the important part in this response is the **executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba** attribute in the ``<wps:ExecuteResponse>`` tag. The ``dd0d61f5-7da3-41ed-bd3f-15311fa660ba`` ID can be used as a reference for this process, in order to issue new GET requests and to check process status. These requests have the form:
+The response contains a ``<wps:Status>`` block indicating successful process creation and process start time. However, the important part in this response is the **executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba** attribute in the ``<wps:ExecuteResponse>`` tag. The ``dd0d61f5-7da3-41ed-bd3f-15311fa660ba`` ID can be used as a reference for this process, in order to issue new GET requests and to check process status. These requests have the form:
 
 ``http://127.0.0.1:8080/geoserver/ows?service=WPS&request=GetExecutionStatus&executionId=277e24eb-365d-42e1-8329-44b8076d4fc0``
 

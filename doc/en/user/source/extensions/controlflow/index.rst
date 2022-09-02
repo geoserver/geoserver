@@ -73,9 +73,9 @@ Currently the only way to specific a priority for a request is to add it to a re
 The header "headerName" will contain a number defining the priority for the request, the default priority is used
 as a fallback if/when the header is not found.
 
-Using a header implies some other system is involved in the priority management. This is particulary good when using
+Using a header implies some other system is involved in the priority management. This is particularly good when using
 a load balancer, as the requests priorities need to be evenly split across cluster elements, control-flow only
-has visibility of a single instance. As an example, the priority will be de-facto ignored at the cluster level
+has visibility of a single instance. As an example, the priority will be de facto ignored at the cluster level
 if there are two nodes, and for whatever chance or design, the high priority requests end up converging on the same cluster node.
 
 Per user concurrency control
@@ -100,7 +100,7 @@ It is also possible to make this a bit more specific and throttle a single ip ad
 
   ip.<ip_addr>=<count>
 
-Where ``<count>`` is the maximum number of requests the ip speficied in ``<ip_addr>`` will execute in parallel.
+Where ``<count>`` is the maximum number of requests the ip specified in ``<ip_addr>`` will execute in parallel.
 
 To reject requests from a list of ip addresses::
 

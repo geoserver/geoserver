@@ -17,7 +17,7 @@ Consider this image, which is generated from GeoServer. When zoomed out, the dat
 .. figure:: images/tile0small.png
    :align: center
 
-When zooming in, the image grows larger, but since the image is at low resolution (orignially designed to be viewed small), the quality degrades.
+When zooming in, the image grows larger, but since the image is at low resolution (originally designed to be viewed small), the quality degrades.
 
 .. figure:: images/tile0.png
    :align: center

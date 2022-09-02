@@ -92,7 +92,7 @@ The batch is executed in two phases:
 
 -  ``RUN`` phase: tasks are executed in the defined order. If an error
    occurs or the run is manually intermitted, cease execution and go to
-   ``ROLLBACK`` phase. If all tasks finish succesfully, go to ``COMMIT``
+   ``ROLLBACK`` phase. If all tasks finish successfully, go to ``COMMIT``
    phase.
 -  ``COMMIT/ROLLBACK`` phase: tasks are committed or rollbacked in the
    *opposite* order.
@@ -158,8 +158,8 @@ are the possible statuses:
    (or rolling back).
 -  ``COMMITTING``: the task is currently committing.
 -  ``ROLLING_BACK``: the task is currently rolling back.
--  ``COMMITTED``: the task was succesfully committed.
--  ``ROLLED_BACK``: the task was succesfully rolled back.
+-  ``COMMITTED``: the task was successfully committed.
+-  ``ROLLED_BACK``: the task was successfully rolled back.
 -  ``NOT_COMMITTED``: the task was supposed to commit but failed during
    the commit phase.
 -  ``NOT_ROLLED_BACK``: the task was supposed to roll back but failed

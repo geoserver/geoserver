@@ -16,7 +16,7 @@ MBStyle Tips and Tricks
 MBStyle Workshop Answer Key
 ---------------------------
 
-The following questions were listed through out the workshop as an opportunity to explore the material in greater depth. Please do your best to consider the questions in detail prior to checking here for the answer. Questions are provided to teach valuable skills, such as a chance to understand how feature type styles are used to control z-order, or where to locate information in the user manual.
+The following questions were listed throughout the workshop as an opportunity to explore the material in greater depth. Please do your best to consider the questions in detail prior to checking here for the answer. Questions are provided to teach valuable skills, such as a chance to understand how feature type styles are used to control z-order, or where to locate information in the user manual.
 
 
 .. note:: Coming Soon

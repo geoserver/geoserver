@@ -116,7 +116,7 @@ The **legend** decoration (``type="legend"``) overlays a graphic containing lege
 
 
 The **text** decoration (``type="text"``) overlays a parametric, single line text message on top of the map. The
-parameter values can be fed via the the ``env`` request parameter, just like SLD enviroment parameters.
+parameter values can be fed via the ``env`` request parameter, just like SLD environment parameters.
 
 .. list-table::
    :widths: 20 80
@@ -190,7 +190,7 @@ For example, this decoration layout:
 Would generate a scale line with:
 
 * A light gray background, with a GetMap request that does not contain the ``bg`` env variable.
-* A red backgorund, if the request includes a env section like ``&env=bg:FF0000``.
+* A red background, if the request includes a env section like ``&env=bg:FF0000``.
 * A scaleline positioned on the top right, if the request includes a env section like ``&env=sla:top,right``.
 
 All options allow usage of expressions, with **one notable exception**: the ``message`` option in 

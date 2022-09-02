@@ -92,7 +92,7 @@ If this element is omitted, no label is rendered.
 Font
 ^^^^
 
-The ``<Font>`` element specifes the font to be used for the label.
+The ``<Font>`` element specifies the font to be used for the label.
 A set of ``<CssParameter>`` elements specify the details of the font.  
 
 The ``name`` **attribute** indicates what aspect of the font is described,

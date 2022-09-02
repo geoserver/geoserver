@@ -227,7 +227,7 @@ definitions:
                     description: Coordinates used to set bounds uses double(ie. {-x,-y,x,y})
               'zoomStart':
                 type: integer
-                description: If the the layer does not make sense at high zoom levels you can define a starting point here.
+                description: If the layer does not make sense at high zoom levels you can define a starting point here.
               'zoomStop':
                 type: integer
                 description: If the layer does not contain features that make sense to show when zoomed in then you can set the stop level here.

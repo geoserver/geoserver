@@ -101,7 +101,7 @@ An example of such a properties file can be like below:
     welcome = {"type": "string", "description": "A welcome message"}
     goodbye = {"type": "string", "description": "A goodbye message"}
 
-.. warning:: the configuration above is a simplified and non-working example of a Remote Process wrapper configuration. The scope of the example above is just for better understand of the high-level scenario and is not ment to be used in a real use case.
+.. warning:: the configuration above is a simplified and non-working example of a Remote Process wrapper configuration. The scope of the example above is just for better understand of the high-level scenario and is not meant to be used in a real use case.
 
 Deploy Diagram
 ++++++++++++++

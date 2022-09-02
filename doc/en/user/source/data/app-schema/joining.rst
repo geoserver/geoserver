@@ -14,7 +14,7 @@ In order to use App-schema Joining, the following configuration conditions must 
 
 * All feature mappings that are chained to each other must map to the same physical database.
 
-* In your mappings, there are restrictions on the CQL expressions specified in the <SourceExpression> of both the referencing field in the parent feature as well as the referenced field in the nested feature (like FEATURE_LINK). Any operators or functions used in this expression must be supported by the filter capibilities, i.e. geotools must be able to translate them directly to SQL code. This can be different for each DBMS, though as a general rule it can assumed that comparison operators, logical operators and arithmetic operators are all supported but functions are not. Using simple field names for feature chaining is guaranteed to always work.
+* In your mappings, there are restrictions on the CQL expressions specified in the <SourceExpression> of both the referencing field in the parent feature as well as the referenced field in the nested feature (like FEATURE_LINK). Any operators or functions used in this expression must be supported by the filter capabilities, i.e. geotools must be able to translate them directly to SQL code. This can be different for each DBMS, though as a general rule it can assumed that comparison operators, logical operators and arithmetic operators are all supported but functions are not. Using simple field names for feature chaining is guaranteed to always work.
 
 Failing to comply with any of these three restrictions when turning on Joining will result in exceptions thrown at run-time.
 
@@ -55,7 +55,7 @@ produced will be shaped like this:
 
 In the default implementation, response time increases rapidly with respect to the amount of produced features. This is because feature chaining
 is implemented by sending multiple SQL requests to the DBMS per feature, so the amount of requests increases with the amount
-of features produced. When Joining is turned on, response time will be almost constant with respect to the number of features. This is because in this implementation a small amount of larger queries is sent to the DBMS, independant of the amount of features produced.
+of features produced. When Joining is turned on, response time will be almost constant with respect to the number of features. This is because in this implementation a small amount of larger queries is sent to the DBMS, independent of the amount of features produced.
 In summary, difference in performance becomes greater as the amount of features requested gets bigger. General performance of joining will be dependant on database and mapping design (see above) and database size. 
 
 Using joining is strongly recommended when a large number of features need to be produced, for example 

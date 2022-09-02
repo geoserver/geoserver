@@ -11,7 +11,7 @@ Informal Code Review
 For GeoServer developers there is no hard policy relating to code review such that every line of code needs to be reviewed, over time we have adopted the following practice:
 
 * if the change is to a core module and the developer does not have core commit access it requires a pull request and formal review
-* if the change is non-trivial and to a core module, it should be be handed as a pull-request
+* if the change is non-trivial and to a core module, it should be handed as a pull-request
 * if the change is local to a module the developer maintains it usually does not require a review
 * community modules are a playground for experimentation - collaborate with the module maintainer as appropriate
 
@@ -72,7 +72,7 @@ The key point of a review is to make sure that GeoServer remains stable (does no
 * *Backwards compatibility*. The change being proposed should not hamper backwards compatibility, every change must be performed ensuring that users can keep on upgrading the GeoServer behind their services and application without functional regressions.
 * *Standards conformance*. The change being proposed must not be at odds with GeoServer OGC standard conformance, in particular, after the change the CITE tests must keep on passing properly, and there should be no visible violation of known standards. This is not to say that we cannot occasionally break compliance, but that doing so must be controlled by a configuration flag that the admin chooses to enable, and that by default, the flag is turned off. Extensions to the standard are also welcomed, but are better discussed on the list and setup in such a way that they look like a natural extension.
 * *Performance*. The change should not introduce evident performance regressions. This is not to say that every pull request must be load tested, but some attention should be paid during the review to changes that might be damaging in those respects, looking for CPU hungry code or heavy memory allocation
-* *Leaks*. A java server side application like GeoServer should be able to run for months uninterrupted, thus particular attention should be paid to resource control, in particular resources that ought to to closed (files, connections, pools in general), significant allocation of classes with finalizers.
+* *Leaks*. A java server side application like GeoServer should be able to run for months uninterrupted, thus particular attention should be paid to resource control, in particular resources that ought to closed (files, connections, pools in general), significant allocation of classes with finalizers.
 * *Thread safety*. GeoServer is, like all Java server side application, serving one request per thread. In this respect thread safety is of paramount importance. Be on the lookout for lazy initialization, stateful classes shared among threads, thread locals that fail to be properly cleaned at the end of the request, and static fields and data structures in general.
 * *Good usage and fit with the existing code and architecture*. The code is easier to understand and maintain when it follows common pattern across the code base, and when there is little or no code duplication. Check the pull request for conformance with the existing code, and proper usage of existing facilities.
 * *Use of the Resources (not Files)*. Contributors should read and write to resources using the ResourceStore API whenever applicable and only convert Resources to Files when absolutely necessary (for example, for a third party library).

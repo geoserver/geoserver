@@ -55,7 +55,7 @@ When the extension has been installed, :guilabel:`MBTiles with vector tiles` wil
    * - ``database``
      - Path to the MBTiles file
    * - ``user``
-     - Optional user name 
+     - Optional username 
    * - ``passwd``
      - Optional password
 

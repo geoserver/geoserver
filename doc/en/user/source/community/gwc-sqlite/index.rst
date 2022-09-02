@@ -99,7 +99,7 @@ Eager Truncate
 
 When performing a truncate of the cache the store will try to remove the whole database file avoiding to create fragmented space. This is not suitable for all the situations and is highly dependent on the database files granularity. The configuration property ``eagerDelete`` allows the user to disable or deactivate this feature which is disabled by default. 
 
-When a truncate request by tile range is received all the the databases files that contains tiles that belong to the tile range are identified. If eager delete is set to true those databases files are deleted otherwise a single delete query for each file is performed.
+When a truncate request by tile range is received all the databases files that contains tiles that belong to the tile range are identified. If eager delete is set to true those databases files are deleted otherwise a single delete query for each file is performed.
 
 Configuration Example
 ``````````````````````

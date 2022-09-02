@@ -4,7 +4,7 @@ ECQL Reference
 ==============
 
 This section provides a reference for the syntax of the ECQL language.
-The full language grammar is documented in the the GeoTools `ECQL BNF definition <https://github.com/geotools/geotools/blob/main/modules/library/cql/ECQL.md>`_ 
+The full language grammar is documented in the GeoTools `ECQL BNF definition <https://github.com/geotools/geotools/blob/main/modules/library/cql/ECQL.md>`_ 
 
 Syntax Notes
 ------------

@@ -59,7 +59,7 @@ The table contains several information bits:
 In GeoServer there are the following execution phases:
 
 * *QUEUED*: the process is waiting to be executed
-* *RUNNING*: the process is either retriving and parsing the inputs, computing the results, or writing them out
+* *RUNNING*: the process is either retrieving and parsing the inputs, computing the results, or writing them out
 * *FAILED*: the process execution terminated with a failure
 * *SUCCESS*: the process execution terminated with a success
 * *DISMISSING*: the process execution is being dismissed, depending on the process nature this might take some time, or be instantaneous
@@ -68,5 +68,5 @@ All executions listed in the table can be selected, and then dismissed using the
 Unlike the "Dismiss" vendor operation this UI allows to also dismiss synchronous processes.
 Once the process dismissal is complete, the process execution will disappear from the table (in accordance with the WPS specification).
 
-Completed processes can also be dismissed, this will cause all on disk resources associated to the processe to be removed
+Completed processes can also be dismissed, this will cause all on disk resources associated to the process to be removed
 immediately, instead of waiting for the regular time based expiration.

@@ -144,7 +144,7 @@ The system requires Python 2.7.9+ with few packages in order to work correctly. 
 
   # as administrator
 
-  #.1 Download the Python 2.7.9 installation package from the browser, chosing the best suitable distribution accordingly to the OS
+  #.1 Download the Python 2.7.9 installation package from the browser, choosing the best suitable distribution accordingly to the OS
 
     https://www.python.org/downloads/release/python-279/
 
@@ -676,7 +676,7 @@ Default Section
 
 * **workdir**; Temporary folder where to store the outcomes and log files.
 
-* **sharedir**; Sahred folder where to **backup** outcomes with ``backup_on_wps_execution_shared_dir`` property equal *true*
+* **sharedir**; Shared folder where to **backup** outcomes with ``backup_on_wps_execution_shared_dir`` property equal *true*
 
 * **active**; *Boolean* which enables or disables the service.
 
@@ -843,7 +843,7 @@ Outputs Section
   publish_default_style = raster
   publish_target_workspace = it.geosolutions
   publish_layer_name = srtm_39_04_c
-  # Such metadata is a JSON snippet itslef (/tmp/resource_dir/result2.json) with a small particularity. 
+  # Such metadata is a JSON snippet itself (/tmp/resource_dir/result2.json) with a small particularity. 
   # Since you cannot know a-priori some of the final Layer properties, 
   # you can use inside the json (/tmp/resource_dir/result2.json) some keywords which will be updated 
   # automatically by the RemoteWPS which are the following ones:
@@ -883,7 +883,7 @@ Outputs Section
   publish_default_style = raster
   publish_target_workspace = it.geosolutions
   publish_layer_name = wind
-  # Such metadata is a JSON snippet itslef (/tmp/resource_dir/result3.json) with a small particularity. 
+  # Such metadata is a JSON snippet itself (/tmp/resource_dir/result3.json) with a small particularity. 
   # Since you cannot know a-priori some of the final Layer properties, 
   # you can use inside the json (/tmp/resource_dir/result4.json) some keywords which will be updated 
   # automatically by the RemoteWPS which are the following ones:

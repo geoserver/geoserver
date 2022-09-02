@@ -112,7 +112,7 @@ The REST API can be used to convert any of your existing CSS or SLD styles to YS
 YSLD Workshop Answer Key
 ------------------------
 
-The following questions were listed through out the workshop as an opportunity to explore the material in greater depth. Please do your best to consider the questions in detail prior to checking here for the answer. Questions are provided to teach valuable skills, such as a chance to understand how feature type styles are used to control z-order, or where to locate information in the user manual.
+The following questions were listed throughout the workshop as an opportunity to explore the material in greater depth. Please do your best to consider the questions in detail prior to checking here for the answer. Questions are provided to teach valuable skills, such as a chance to understand how feature type styles are used to control z-order, or where to locate information in the user manual.
 
 .. _ysld.line.a1:
 
@@ -175,7 +175,7 @@ Answer for :ref:`Challenge One Rule Classification <ysld.line.q2>`:
 
 #. **Challenge:** Create a new style and classify the roads based on their scale rank using expressions in a single rule instead of multiple rules with filters.
 
-#. This exercise requires looking up information in the user guide, the search tearm *recode* provides several examples.
+#. This exercise requires looking up information in the user guide, the search term *recode* provides several examples.
    
    * The YSLD Reference :ref:`theming functions <ysld_reference_functions_theming>` provides a clear example.
 
@@ -543,7 +543,7 @@ Answer for :ref:`Challenge Intervals <ysld.raster.q2>`:
    * :kbd:`intervals` provides categorization for quantitative data, assigning each range of values a solid color.
    * :kbd:`values` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
 
-#. **Chalenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
+#. **Challenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
 
    By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.
 

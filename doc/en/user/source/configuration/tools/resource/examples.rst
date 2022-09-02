@@ -14,7 +14,7 @@ To upload a file to the global styles folder:
       
       Resource Browser styles folder
       
-#. Click :guilabel:`Upload` buton to open :guilabel:`Upload a Resource` dialog.
+#. Click :guilabel:`Upload` button to open :guilabel:`Upload a Resource` dialog.
 
 #. Use :guilabel:`Browse` to select a file from the local file system.
    
@@ -43,7 +43,7 @@ To create a :file:`controlflow.properties` file:
       
       Resource Browser root folder
       
-#. Click :guilabel:`New resource` buton to open :guilabel:`Edit a Resource` dialog.
+#. Click :guilabel:`New resource` button to open :guilabel:`Edit a Resource` dialog.
    
    * :guilabel:`Resource`: :kbd:`controlflow.properties`
    * :guilabel:`Content`: file contents
@@ -55,4 +55,4 @@ To create a :file:`controlflow.properties` file:
    
    .. figure:: img/control_edit.png
       
-      Edit a Resoruce controlflow.properties
+      Edit a Resource controlflow.properties

@@ -13,7 +13,7 @@ Additional resources:
 CSS Workbook Answer Key
 ------------------------
 
-The following questions were listed through out the workshop as an opportunity to explore the material in greater depth. Please do your best to consider the questions in detail prior to checking here for the answer. Questions are provided to teach valuable skills, such as a chance to understand how feature type styles are used to control z-order, or where to locate information in the user manual.
+The following questions were listed throughout the workshop as an opportunity to explore the material in greater depth. Please do your best to consider the questions in detail prior to checking here for the answer. Questions are provided to teach valuable skills, such as a chance to understand how feature type styles are used to control z-order, or where to locate information in the user manual.
 
 .. _css.line.a0:
 
@@ -433,7 +433,7 @@ Answer for :ref:`Challenge Intervals <css.raster.q2>`:
    * :kbd:`intervals` provides categorization for quantitative data, assigning each range of values a solid color.
    * :kbd:`values` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
 
-#. **Chalenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
+#. **Challenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
 
    By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.
 

@@ -83,14 +83,14 @@ Configuration Instructions
     .. figure:: images/keycloak_adapter002.png
        :align: center
 
-3. Check your work so far by navigating to the GeoServer UI. 
-If at filter configuration time the checkbox was kept unchecked and the keycloak filter cohexists on the /web chain with the form and anonymous filter you will see a keycloak login button that allows the user to land to the keycloak login page.
+3. Once done navigate to the GeoServer UI. 
+If at filter configuration time the checkbox ``Enable redirect to Keycloak Login page`` was kept unchecked and the keycloak filter cohexists on the /web chain with the form and anonymous filter you will see a keycloak login button that allows the user to reach the keycloak login page.
 
 .. figure:: images/keycloak_login.png
        :align: center
 
 
-Otherwise you will be directly redirected to the Keycloak `login-page`, and after logging-in you should be redirected back to the actual GUI page.
+Otherwise the user will be directly redirected to the Keycloak `login-page`, and after logging-in redirected back to the actual GeoServer UI page.
 
     .. figure:: images/keycloak_adapter003.png
        :align: center

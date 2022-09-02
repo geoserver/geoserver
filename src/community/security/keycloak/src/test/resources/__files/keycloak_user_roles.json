@@ -1,0 +1,8 @@
+[ {
+  "id" : "a7b9fb8d-1012-4a16-b7c0-ef9fb4bc7649",
+  "name" : "admin",
+  "description" : "${role_admin}",
+  "composite" : true,
+  "clientRole" : false,
+  "containerId" : "d7a7e795-974a-41b1-9a0d-0cc5fcf94a31"
+} ]

@@ -20,7 +20,7 @@ public class KeycloakRoleServicePanel extends RoleServicePanel<KeycloakRoleServi
         add(new TextField<String>("serverURL").setRequired(true));
         add(new TextField<String>("realm").setRequired(true));
         add(new TextField<String>("clientID").setRequired(true));
-        add(new TextField<String>("idOfClient").setRequired(true));
         add(new TextField<String>("clientSecret").setRequired(true));
+        add(new TextField<String>("idsOfClientsList").setRequired(false));
     }
 }

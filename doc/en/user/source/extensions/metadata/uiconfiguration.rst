@@ -66,8 +66,8 @@ label
 ^^^^^
 
 If present this value will be used as the label for the field.
-When the label is not present in the yaml cofiguration the key will be used as label. 
-Note: when the key is present in the internationalization (i18n) file see `Internationalization support`_  than the value from that file wil be used as the label.
+When the label is not present in the yaml configuration the key will be used as label. 
+Note: when the key is present in the internationalization (i18n) file see `Internationalization support`_  than the value from that file will be used as the label.
 
 
 ================  ========  ============================
@@ -81,7 +81,7 @@ Key               Required  Value
 occurrence
 ^^^^^^^^^^
 
-The value for ``occurrence`` determins whether or not the field should displayed as a table or as a single input field.
+The value for ``occurrence`` determines whether or not the field should displayed as a table or as a single input field.
 ``SINGLE`` will result in one input field.
 
     .. figure:: images/single-value.png

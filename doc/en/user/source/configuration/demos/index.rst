@@ -41,7 +41,7 @@ Both :ref:`wfs` as well as :ref:`wcs` requests will display the request URL and 
    
    WFS 1.1 DescribeFeatureType sample request
 
-Click :guilabel:`Submit` to send the request to GeoServer. For WFS and WCS requests, GeoServer will automatically generate an XML reponse.
+Click :guilabel:`Submit` to send the request to GeoServer. For WFS and WCS requests, GeoServer will automatically generate an XML response.
 
 .. figure:: img/demos_requests_schema.png
    

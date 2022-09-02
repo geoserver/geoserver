@@ -23,7 +23,7 @@ Three template files are currently supported:
 * ``description.ftl``
 * ``link.ftl``
 
-Each of these files may be used to customize the assocated field in the GeoRSS feed.
+Each of these files may be used to customize the associated field in the GeoRSS feed.
 
 Ajax Map Mashups
 ----------------
@@ -129,7 +129,7 @@ Microsoft Virtual Earth
 -----------------------
 .. note::
    
-   Non Internet Explorer Users*: GeoRSS overlays are only supported in Internet Explorer, versions greater then 5.5.
+   Non Internet Explorer Users*: GeoRSS overlays are only supported in Internet Explorer, versions greater than 5.5.
     
 How to create a Microsoft Virtual Earth mashup with a GeoRSS overlay produced by GeoServer.
 

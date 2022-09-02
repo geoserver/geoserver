@@ -85,7 +85,7 @@ The various properties have different usages:
 * The *namespace* is used in XML output, along with the prefix (e.g., ``xmlns:opt="http://www.opengis.net/opt/2.1"``)
 
 
-It is possible to add new product classes as well as changing the build-in ones, but care should
+It is possible to add new product classes as well as changing the built-in ones, but care should
 be taken to keep product classes and database aligned. After any change to the database structure
 remember to "reset" the GeoServer configuration to make it re-scan the table structures.
 

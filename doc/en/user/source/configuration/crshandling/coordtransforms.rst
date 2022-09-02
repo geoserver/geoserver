@@ -7,7 +7,7 @@ Coordinate Operations
 
 Coordinate operations are used to convert coordinates from a `source CRS` to a `target CRS`.
 
-If source and target CRSs are refered to a different datum, a datum transform has to be applied. Datum transforms are not exact, they are determined empirically. For the same pair of CRS, there can be many datum transforms and versions, each one with its own domain of validity and an associated transform error. Given a CRS pair, GeoServer will automatically pick the most accurate datum transform from the EPSG database, unless a custom operation is declared.
+If source and target CRSs are referred to a different datum, a datum transform has to be applied. Datum transforms are not exact, they are determined empirically. For the same pair of CRS, there can be many datum transforms and versions, each one with its own domain of validity and an associated transform error. Given a CRS pair, GeoServer will automatically pick the most accurate datum transform from the EPSG database, unless a custom operation is declared.
 
 * Coordinate operations can be queried and tested using the `Reprojection Console`_.
 * To enable higher accuracy Grid Shift transforms, see `Add Grid Shift Transform files`_.
@@ -23,7 +23,7 @@ Read more about the :ref:`demos_reprojectionconsole`.
 Add Grid Shift Transform files
 ------------------------------
 
-GeoServer supports NTv2 and NADCON grid shift transforms. Grid files are not shipped out with GeoServer. They need to be downloaded, usually from yor National Mapping Agency website.
+GeoServer supports NTv2 and NADCON grid shift transforms. Grid files are not shipped out with GeoServer. They need to be downloaded, usually from your National Mapping Agency website.
 
 .. warning::
 

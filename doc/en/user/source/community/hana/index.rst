@@ -86,5 +86,5 @@ The following options are relevant for SAP HANA:
    * - ``passwd``
      - The password used to connect to the database.
    * - ``use ssl``
-     - If checked the TLS/SSL cryptograhic protocol is used to establish a secure connection with the database.
+     - If checked the TLS/SSL cryptographic protocol is used to establish a secure connection with the database.
 

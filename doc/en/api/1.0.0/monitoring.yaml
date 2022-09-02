@@ -21,7 +21,7 @@ paths:
       summary: Get a list of requests
       description: |
                    Returns a list of all requests known to the monitoring system.
-                   If no list of fields is specified, the full list will be returned, with the exception of of Class, Body and Error fields.
+                   If no list of fields is specified, the full list will be returned, with the exception of Class, Body and Error fields.
                    The HTML format return a summary of the requests, and links to the single request to gather details.
                    Use the "Accept:" header to specify format or append an extension to the endpoint (example "/requests.xls" for Excel).
       produces:

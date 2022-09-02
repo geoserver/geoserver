@@ -113,7 +113,7 @@ The **fill-color** property is used to provide the color used to draw the interi
 
 #. To draw the boundary of the polygon the **fill-outline** property is used:
 
-   The **fill-outline** property is used to provide the color of the polygon boundary. For more advanced boundary styling, use a seperate line layer.
+   The **fill-outline** property is used to provide the color of the polygon boundary. For more advanced boundary styling, use a separate line layer.
    
    .. code-block:: json
       :emphasize-lines: 11
@@ -193,7 +193,7 @@ The **fill-pattern** property can be used to provide a pattern.
 
 .. image:: ../style/img/PolygonPattern.svg
 
-The fill pattern is defined by repeating an image defined in a spritesheet.
+The fill pattern is defined by repeating an image defined in a sprite-sheet.
 
 #. Update `polygon_example` with the following sprite as a repeating fill pattern:
 
@@ -221,7 +221,7 @@ The fill pattern is defined by repeating an image defined in a spritesheet.
    .. image:: ../style/img/polygon_pattern_0.png
 
 
-#. You can view the names of all the icons in the spritesheet by looking at its json definition, at `http://localhost:8080/geoserver/styles/sprites.json <http://localhost:8080/geoserver/styles/sprites.json>`_.
+#. You can view the names of all the icons in the sprite-sheet by looking at its json definition, at `http://localhost:8080/geoserver/styles/sprites.json <http://localhost:8080/geoserver/styles/sprites.json>`_.
 
    .. literalinclude:: ../files/sprites.json
       :language: json
@@ -250,7 +250,7 @@ The fill pattern is defined by repeating an image defined in a spritesheet.
    
    .. image:: ../style/img/polygon_pattern_4.png
 
-#. Multiple fills can be applied by using a seperate layer for each fill.
+#. Multiple fills can be applied by using a separate layer for each fill.
    
    .. code-block:: json
 
@@ -469,7 +469,7 @@ Legibility
 
 When working with labels a map can become busy very quickly, and difficult to read.
 
-#. MBStyle extensive proterties for controlling the labelling process.
+#. MBStyle extensive properties for controlling the labelling process.
 
    One common property for controlling labeling is **text-max-width**, which allows any labels extending past the provided width will be wrapped into multiple lines.
 
@@ -575,7 +575,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
       * filter vs function for theming
       * Cascading
 
-#. We can use a site like `ColorBrewer <http://www.colorbrewer2.com>`_ to explore the use of color theming for polygon symbology. In this approach the the fill color of the polygon is determined by the value of the attribute under study.
+#. We can use a site like `ColorBrewer <http://www.colorbrewer2.com>`_ to explore the use of color theming for polygon symbology. In this approach the fill color of the polygon is determined by the value of the attribute under study.
 
    .. image:: ../style/img/polygon_06_brewer.png
 
@@ -702,9 +702,9 @@ A thematic map (rather than focusing on representing the shape of the world) use
 
 #. Property functions can be used to make theming substantially easier, by directly mapping property values to style values using an array of stops. MBStyle supports three types of function interpolation, which is used to define the behavior between these stops:
 
-   * **categorical**: Used the theme qualitative data. Attribute values are directly mapped to styling property such as **fill** or **stroke-width**. Equvalent to the SLD **Recode** function.
+   * **categorical**: Used the theme qualitative data. Attribute values are directly mapped to styling property such as **fill** or **stroke-width**. Equivalent to the SLD **Recode** function.
 
-   * **interval**: Used the theme quantitative data. Categories are defined using min and max ranges, and values are sorted into the appropriate category. Equvalent to the SLD **Categorize** function.
+   * **interval**: Used the theme quantitative data. Categories are defined using min and max ranges, and values are sorted into the appropriate category. Equivalent to the SLD **Categorize** function.
 
    * **exponential**: Used to smoothly theme quantitative data by calculating a styling property based on an attribute value. Supports a **base** attribute for controlling the steepness of interpolation. When **base** is 1, this is equivalent to the SLD **Interpolate** function.
 
@@ -791,7 +791,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
 Bonus
 -----
 
-The following optional explore and challenge activities offer a chance to review and apply the ideas introduced here. The challenge activities equire a bit of creativity and research to complete.
+The following optional explore and challenge activities offer a chance to review and apply the ideas introduced here. The challenge activities enquire a bit of creativity and research to complete.
 
 In a classroom setting you are encouraged to team up into groups, with each group taking on a different challenge.
 

@@ -25,7 +25,7 @@ Input preparation
 -----------------
 
 A GHRSST file contains multiple variables that are related with each other, and should be explored
-toghether in order to better understand the data. Thus, it is assumed that the source GHRSST file is published
+together in order to better understand the data. Thus, it is assumed that the source GHRSST file is published
 as a single coverage view holding all the variables as bands, retaining their native name (this is important for
 the plugin to work):
 

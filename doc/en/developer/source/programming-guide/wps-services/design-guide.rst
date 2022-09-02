@@ -9,7 +9,7 @@ This guide serves as an introduction to the WPS module. As such, it does not con
 *  it does not repeat again what can be already found in the classes javadocs
 *  it does not explain how to implement a OWS service using the GeoServer OWS framework, that is left to its dedicated :ref:`guide <ows_services>`.
 
-In short, it provides a global vision of how the module fits togheter, leaving the details to other information sources.
+In short, it provides a global vision of how the module fits together, leaving the details to other information sources.
 
 
 General architecture
@@ -111,7 +111,7 @@ Implementation level
 At the moment the WPS is pretty much bare bones protocol wise, it implements only the required behaviour leaving off pretty much everything else. In particulat:
 - ``GetCapabilities`` and ``DescribeProcess`` are supported in both GET and POST form, but ``Execute`` is implemented only as a POST request
 - there is no raster data I/O support
-- there is no asynch support, no process monitoring, no output storage abilities. 
+- there is no asynchronous support, no process monitoring, no output storage abilities. 
 - there is no integration whatsoever with the WMS to visualize the results of an analysis (this will require output storage and per session catalog extensions)
 - the vector processes are not using any kind of disk buffering, meaning everything is kept just in memory (won't scale to bigger data amounts)
 - there is no set of demo requests nor a GUI to build a request. That is considered fundamental to reduce the time spent trying to figure out how to build a proper request so it will be tackled sooner rather than later.

@@ -197,7 +197,7 @@ Defining a JDBC data store with a ``jndiReferenceName`` allows you to use a conn
 
 To use a JNDI connection provider:
 
-#. Specify a ``dbtype`` parameter to to indicate the database type. These values are the same as for the non-JNDI examples above.
+#. Specify a ``dbtype`` parameter to indicate the database type. These values are the same as for the non-JNDI examples above.
 #. Give the ``jndiReferenceName`` you set in your servlet container. Both the abbreviated form ``jdbc/oracle`` form, as in Tomcat, and the canonical form ``java:comp/env/jdbc/oracle`` are supported.
 
 This example uses JNDI to obtain Oracle connections::

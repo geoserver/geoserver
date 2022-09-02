@@ -311,7 +311,7 @@ Requirements:
 
    - click on the **Sign in** button and enter the user and password.
 
-   - after creating the session, and chosing the test, enter the following parameters:
+   - after creating the session, and choosing the test, enter the following parameters:
 
    #. ``Capabilities URL`` http://<ip-of-the-geoserver>:8080/geoserver/wfs?request=getcapabilities&service=wfs&version=1.0.0
 
@@ -387,7 +387,7 @@ Requirements:
 
    - click on the **Sign in** button and enter the user and password.
 
-   - after creating the session, and chosing the test, enter the following parameters:
+   - after creating the session, and choosing the test, enter the following parameters:
 
    #. ``Capabilities URL`` http://<ip-of-the-geoserver>:8080/geoserver/wfs?service=wfs&request=getcapabilities&version=1.1.0
 
@@ -426,7 +426,7 @@ Run WMS 1.1 tests
 
    - click on the **Sign in** button and enter the user and password.
 
-   - after creating the session, and chosing the test, enter the following parameters:
+   - after creating the session, and choosing the test, enter the following parameters:
 
    #. ``Capabilities URL``
 
@@ -476,7 +476,7 @@ Run WCS 1.0 tests
 
    - click on the **Sign in** button and enter the user and password.
 
-   - after creating the session, and chosing the test, enter the following parameters:
+   - after creating the session, and choosing the test, enter the following parameters:
 
    #. ``Capabilities URL``:
 
@@ -536,7 +536,7 @@ Run WCS 1.1 tests
 
    - click on the **Sign in** button and enter the user and password.
 
-   - after creating the session, and chosing the test, enter the following parameters:
+   - after creating the session, and choosing the test, enter the following parameters:
 
    #. ``Capabilities URL``:
 
@@ -571,7 +571,7 @@ Run WMS 1.3 tests
 
    - click on the **Sign in** button and enter the user and password.
 
-   - after creating the session, and chosing the test, enter the following parameters:
+   - after creating the session, and choosing the test, enter the following parameters:
 
    #. ``Capabilities URL``:
 

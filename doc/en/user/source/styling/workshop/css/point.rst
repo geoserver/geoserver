@@ -15,7 +15,7 @@ Review of point symbology:
 
 * Labeling of points is anchored to the point location.
 
-As points have no inherent shape of of their own, emphasis is placed on marking locations with an appropriate symbol.
+As points have no inherent shape of their own, emphasis is placed on marking locations with an appropriate symbol.
 
 Reference:
 
@@ -718,7 +718,7 @@ Explore Custom Graphics
    
    This facility is used by GeoServer to offer the shapes used for pattern fills. Community extensions allow the use of simple custom shapes and even charts.
 
-#. Support has been added for custom grpahics using the WKT Geometry representation.
+#. Support has been added for custom graphics using the WKT Geometry representation.
 
    .. code-block:: css
 

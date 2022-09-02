@@ -690,10 +690,10 @@ definitions:
         description: Name of the attribute
       minOccurs:
         type: integer
-        description: Minimum number of occurences (0 for optional attribute)
+        description: Minimum number of occurrences (0 for optional attribute)
       maxOccurs:
         type: integer
-        description: Maximumn number of occurences (normally 1)
+        description: Maximumn number of occurrences (normally 1)
       nillable:
         type: boolean
         description: If the attribute can be missing

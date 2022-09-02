@@ -3,7 +3,7 @@
 XSLT WFS output format module
 =============================
 
-The ``xslt`` module for GeoServer is a WFS output format generator which brings togheter a base output,
+The ``xslt`` module for GeoServer is a WFS output format generator which brings together a base output,
 such as GML, and a XSLT 1.0 style sheet to generate a new textual output format of user choosing.
 
 The configuration for this output format can be either performed directly on disk, or via a REST API.
@@ -112,7 +112,7 @@ Here is an example of a transformation declaration that is type specific, that w
 The extra ``featureType`` element associates the transformation to the specific feature type
 
 The associated xslt file will be located at ``$GEOSERVER_DATA_DIR/wfs/transform/html_bridges.xslt`` and will 
-leveraging knowlegde about the input attributes:
+leveraging knowledge about the input attributes:
 
 .. code-block:: xml
 

@@ -13,7 +13,7 @@ This document is a guide designed to help contributors in successfully submittin
    
    We require the following for fixes submitted via pull requests:
 
-   1. Required: Prepare your fix for the the main development branch branch
+   1. Required: Prepare your fix for the main development branch
    2. Required: Check the following (and comment in your pull request, or jira issue):
       
       * Investigate if the issue impacts any of the other active branches (the main development branch / stable / maintenance)
@@ -23,7 +23,7 @@ This document is a guide designed to help contributors in successfully submittin
 
    We require the following for new features submitted via pull request or patch:
    
-   1. Required: Prepare your feature for the the main development branch branch.
+   1. Required: Prepare your feature for the main development branch.
    2. Optional: If the new feature is suitable for backport, you may ask on the developer list after a 1 month.
 
 GitHub pull requests
@@ -63,7 +63,7 @@ The following guidelines are meant to ensure that contirbutions submitted via pu
 Clean Build
 ^^^^^^^^^^^
 
-In general developers will only accept pull requests that apply cleanly against the latest versions of the stable and the main development branch branches. Therefore before you generate a patch it is important that you update your checkout to the latest for the branch you are working on.
+In general developers will only accept pull requests that apply cleanly against the latest versions of the stable and the main development branches. Therefore before you generate a patch it is important that you update your checkout to the latest for the branch you are working on.
 
 Ensure your IDE/editor is properly configured
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -71,7 +71,7 @@ Ensure your IDE/editor is properly configured
 Ensure that your development environment is properly configured for GeoServer development. A common issue 
 with patches from newcomers is that their text editor is configured to use tabs rather than spaces.
 
-See the the :ref:`eclipse_guide` for general information about formatting and IDE setup. 
+See the :ref:`eclipse_guide` for general information about formatting and IDE setup. 
 
 Include only relevant changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

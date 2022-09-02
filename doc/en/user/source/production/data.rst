@@ -46,14 +46,14 @@ Inner tiling sets up the image layout so that it's organized in tiles instead of
    gdal_translate -of GTiff -projwin -180 90 -50 -10 -co "TILED=YES" bigDataSet.ecw myTiff.tiff
 
 An overview is a downsampled version of the same image, that is, a zoomed out version, which is usually much smaller. When GeoServer needs to render the Geotiff, it'll look for the most appropriate overview as a starting point, thus reading and converting way less data. Overviews can be added using 
-`gdaladdo <http://www.gdal.org/gdaladdo.html>`_, or the the OverviewsEmbedded command included in Geotools. Here is a sample of using gdaladdo to add overviews that are downsampled 2, 4, 8 and 16 times compared to the original:
+`gdaladdo <http://www.gdal.org/gdaladdo.html>`_, or the OverviewsEmbedded command included in Geotools. Here is a sample of using gdaladdo to add overviews that are downsampled 2, 4, 8 and 16 times compared to the original:
 
 .. code-block:: xml
 
    gdaladdo -r average mytiff.tif 2 4 8 16
 
 As a final note, Geotiff supports various kinds of compression both lossles as well as lossy. JPEG compression can produce artifacts but it usually produce very good results on RGB or RGBA images if coupled with inner masks. Deflate compression is to be preferred with elevation or similar data when a lossless compressions is needed.
-Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O altough at the expenses of some CPU cycles.
+Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O although at the expenses of some CPU cycles.
 
 Handling huge data sets
 -----------------------

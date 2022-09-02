@@ -29,7 +29,7 @@ This will run the container, with the data directory included with the container
 
       GeoServer Welcome Page
       
-#. This setup is a quick test to ensure the software is working, but is difficult to use as file data can only be transfered to the data directory included with the container via the REST API.
+#. This setup is a quick test to ensure the software is working, but is difficult to use as file data can only be transferred to the data directory included with the container via the REST API.
 
 Using your own Data Directory
 -----------------------------

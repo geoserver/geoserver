@@ -523,7 +523,7 @@ Initialize Configurations
 
 If you have imported configurations in bulk based on an Initializing template, you 
 may also want to initialize them in bulk. This works similarly to running batches in bulk.
-The configurations will be validated after initalization.
+The configurations will be validated after initialization.
 
 .. figure:: img/bulk_initialize.png
 

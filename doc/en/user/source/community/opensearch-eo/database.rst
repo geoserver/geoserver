@@ -65,7 +65,7 @@ Specific attributes notes:
 
 * A ``primary`` collection is normally linked to a particular satellite/sensor and contains its own products.
   Setting "primary" to false makes the collection "virtual" and the ``productCQLFilter`` field should be filled with
-  a CQL filter that will collect all the products in the collection (warning, virtual collections are largerly
+  a CQL filter that will collect all the products in the collection (warning, virtual collections are largely
   untested at the moment)
 * The ``footprint`` field is used for spatial searches, while ``timeStart`` and ``timeEnd`` are used for
   temporal ones
@@ -225,7 +225,7 @@ The granules associated to a product can have different topologies:
 
 * A single raster file containing all the information about the product
 * Multiple raster files splitting the products spatially in regular tiles
-* Multiple raster files splitting the product wavelenght wise
+* Multiple raster files splitting the product wavelength wise
 * A mix of the two above
 
 Notes about the columns:

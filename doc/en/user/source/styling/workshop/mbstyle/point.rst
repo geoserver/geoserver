@@ -15,7 +15,7 @@ Review of point symbology:
 
 * Labeling of points is anchored to the point location.
 
-As points have no inherent shape of of their own, emphasis is placed on marking locations with an appropriate symbol.
+As points have no inherent shape of their own, emphasis is placed on marking locations with an appropriate symbol.
 
 Reference:
 
@@ -73,7 +73,7 @@ The **symbol** layer controls the display of point data. Points are typically re
 
 .. figure:: ../style/img/PointSymbology.svg
 
-MBStyle uses a spritesheet defined at the top-level of the style to define a set of icons. You can view the names of all the icons in the spritesheet by looking at its json definition, at `http://localhost:8080/geoserver/styles/sprites.json <http://localhost:8080/geoserver/styles/sprites.json>`_.
+MBStyle uses a sprite-sheet defined at the top-level of the style to define a set of icons. You can view the names of all the icons in the sprite-sheet by looking at its json definition, at `http://localhost:8080/geoserver/styles/sprites.json <http://localhost:8080/geoserver/styles/sprites.json>`_.
 
 #. Change the symbol used by the style to a square:
 
@@ -197,7 +197,7 @@ Labeling is now familiar from our experience with LineString and Polygons.
 
 .. image:: ../style/img/Point_Label.svg
 
-The **symbol** layer with the **label** property are used to to label Point Locations.
+The **symbol** layer with the **label** property are used to label Point Locations.
 
 #. Replace ``point_example`` with the following:
 
@@ -798,7 +798,7 @@ Dynamic Styling
         }
       }
 
-   Also add the spritesheet url to the top of the style if it is not present:
+   Also add the sprite-sheet url to the top of the style if it is not present:
 
    .. code-block:: json
       :emphasize-lines: 4

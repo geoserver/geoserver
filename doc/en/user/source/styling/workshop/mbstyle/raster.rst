@@ -89,9 +89,9 @@ DEM
 
 A digital elevation model is an example of raster data made up of measurements, rather than color information.
 
-The ``usgs:dem`` layer used used for this exercise:
+The ``usgs:dem`` layer used for this exercise:
 
-#. Return to the the **Styles** page.
+#. Return to the **Styles** page.
 
 #. Click :guilabel:`Add a new style` and choose the following:
 

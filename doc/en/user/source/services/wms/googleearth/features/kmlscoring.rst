@@ -19,7 +19,7 @@ The following shows the same dataset rendered in Placemark form on the top and O
 .. figure:: images/raster.png
    :align: center
 
-KML scoring is the process of determing whether to render features as rasters or as vectors.
+KML scoring is the process of determining whether to render features as rasters or as vectors.
 
 The kmscore attribute
 ---------------------
@@ -28,7 +28,7 @@ GeoServer makes the determination on whether to render a layer as raster or vect
 
   maximum number of features = 10^(kmscore/15)
 
-The following table shows the values of this threashold for various values of the ``kmscore`` parameter:
+The following table shows the values of this threshold for various values of the ``kmscore`` parameter:
 
 .. list-table::
    :widths: 20 80

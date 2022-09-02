@@ -167,7 +167,7 @@ Here are a few examples based on the "ArcSample" arcgrid sample layer, containin
 ncWMS GetCapabilities extensions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-ncWMS allows users to filter the contents of a capabilites document by adding a ``&dataset=datasetName`` parameter to the request.
+ncWMS allows users to filter the contents of a capabilities document by adding a ``&dataset=datasetName`` parameter to the request.
 
 While GeoServer does not have a concept of dataset, the ncWMS extension allows to use the same parameter to filter on workspaces, layers and layer groups, by name.
 
@@ -226,7 +226,7 @@ Since GeoServer 2.17, TIME parameter also supports 2 additional syntax even if n
              * Oct **28** 00:00:00 2000
              * Nov **27** 00:00:00 2000
              * Dec **27** 00:00:00 2000
-             * Therefore if your original dataset has an entry for the the first day of each month, this request will only return 2 values: Apr 01 and May 01. In that case, you might consider enabling nearest match on Layer's time dimension.
+             * Therefore if your original dataset has an entry for the first day of each month, this request will only return 2 values: Apr 01 and May 01. In that case, you might consider enabling nearest match on Layer's time dimension.
 
 
 Sample CSV output:
@@ -276,7 +276,7 @@ The ncWMS extension adds a panel at the bottom of the WMS administration page:
    * - Option
      - Description
    * - GetTimeSeries thread pool size
-     - Size of the thread pool used to compute GetTimeSeries results (paralellized to speed up computation) 
+     - Size of the thread pool used to compute GetTimeSeries results (parallelized to speed up computation) 
    * - Maximum number of times in GetTimeSeries
      - Maximum number of times tha GetTimeSeries will process. A user asking for more times will get back a service exception.
        The configuration is set the first time the admin hits save in the WMS page, even with a value of 0 (from that

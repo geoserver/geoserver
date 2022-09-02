@@ -43,7 +43,7 @@ Here are step-by-step instructions to import multiple shapefiles in one operatio
       
       Import layer list
 
-#. In most cases, all files will be ready for import, but if the the spatial reference system (SRS) is not recognized, you will need to manually input this but clicking :guilabel:`Advanced`
+#. In most cases, all files will be ready for import, but if the spatial reference system (SRS) is not recognized, you will need to manually input this but clicking :guilabel:`Advanced`
 
    .. note:: You will need to manually input the SRS if you used the Natural Earth data above. For each layer click on :guilabel:`Advanced` and set reprojection to :kbd:`EPSG:4326`.
    

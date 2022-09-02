@@ -80,8 +80,8 @@ Service Request Settings
 
 .. _config_globalsettings_external_entities:
 
-Unrestriced XML External Entity Resolution
-''''''''''''''''''''''''''''''''''''''''''
+Unrestricted XML External Entity Resolution
+'''''''''''''''''''''''''''''''''''''''''''
 
 XML Requests sent to GeoServer can include references to other XML documents. Since these files are processed by GeoServer the facility could be used to access files on the server, which is a security concern.
 
@@ -168,7 +168,7 @@ Log Location
 
 Sets the written output location for the logs. A log location may be a directory or a file, and can be specified as an absolute path (e.g., :file:`C:\\GeoServer\\GeoServer.log`) or a relative one (for example, :file:`geoserver.log`). Relative paths are relative to the GeoServer data directory. Default is :file:`logs/geoserver.log`.
 
-This :guilabel:`Log location` setting can be overriden by ``GEOSERVER_LOG_LOCATION`` property, see :ref:`logging` for details (this setting is applied FileAppender or RollingFile ``geoserverlogfile`` appender).
+This :guilabel:`Log location` setting can be overridden by ``GEOSERVER_LOG_LOCATION`` property, see :ref:`logging` for details (this setting is applied FileAppender or RollingFile ``geoserverlogfile`` appender).
 
 .. _config_globalsettings_log_profile:
 
@@ -214,7 +214,7 @@ Standard output determines where a program writes its output data. In GeoServer,
 
 If you are running GeoServer in a large J2EE container, you might not want your container-wide logs filled with GeoServer information. Clearing this option will suppress most GeoServer logging, with only FATAL exceptions still output to the console log.
 
-This setting can be overriden by system property, see :ref:`logging` for details (this setting removes Console ``stdout`` appender).
+This setting can be overridden by system property, see :ref:`logging` for details (this setting removes Console ``stdout`` appender).
 
 .. _config_globalsettings_log_request:
 
@@ -269,7 +269,7 @@ WebUI Settings
 WebUI Mode
 ''''''''''
 
-This configuration setting allows control over WebUI redirecting behaviour. By default, when the user loads a page that contains input, a HTTP 302 Redirect response is returned that causes a reload of that same with a generated session ID in the request parameter. This session ID allows the state of the page to be remembered after a refresh and prevents any occurence of the 'double submit problem'. However, this behaviour is incompatible with clustering of multiple geoserver instances.
+This configuration setting allows control over WebUI redirecting behaviour. By default, when the user loads a page that contains input, a HTTP 302 Redirect response is returned that causes a reload of that same with a generated session ID in the request parameter. This session ID allows the state of the page to be remembered after a refresh and prevents any occurrence of the 'double submit problem'. However, this behaviour is incompatible with clustering of multiple geoserver instances.
 
 There are three options:
 

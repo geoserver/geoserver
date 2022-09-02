@@ -57,7 +57,7 @@ available, see :ref:`security_tutorials_cas`.
    * - Role source
      - A choice of role sources for the user authenticated via CAS
 
-Specifically for the **role source**, the followig options are available:
+Specifically for the **role source**, the following options are available:
 
 .. list-table::
    :widths: 20 80
@@ -81,7 +81,7 @@ Example CAS configuration
 In order to use the CAS custom attributes the server must be configured to extract the attributes
 from a given attribute repository, and then allow their release in the GeoServer service configuration.
 
-For example, the following ``cas.properties`` file sets up a JDBC user source, as well as as JDBC
+For example, the following ``cas.properties`` file sets up a JDBC user source, as well as JDBC
 attribute repository (this configuration file might useful for testing purposes, but not setup for production):
 
 .. code-block:: none
@@ -181,7 +181,7 @@ a CAS logout (the logout is shared among all examples, won't be repeated in the 
        :align: center
 
 A second option is to allow anonymous access in the web chain, allowing users to access the layer
-preview and other demo functionality without loggin in:
+preview and other demo functionality without logging in:
 
     .. figure:: images/webCasAnonymous.png
        :align: center
@@ -198,7 +198,7 @@ As a final example, let's consider having both CAS and form login in the web cha
        :align: center
 
 This allows both a CAS login, and a form based login using GeoServer local username/password.
-It could be useful to allow GeoServer adminstration while the CAS server is offline for any reason.
+It could be useful to allow GeoServer administration while the CAS server is offline for any reason.
 In this case both the form login and the CAS login button appear at the same time:
 
     .. figure:: images/webCasFormLogin.png

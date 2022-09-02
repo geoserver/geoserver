@@ -153,4 +153,4 @@ You can notice that:
 * Only the columns needed for the display (in this case, a single geometry) are retrieved
 * The bbox and layer identification filters are specified in the first ``fq``
 * The custom ``fq`` is passed as a second ``fq`` parameter (SOLR will treat it as being and-ed with
-  the previuos one)
+  the previous one)

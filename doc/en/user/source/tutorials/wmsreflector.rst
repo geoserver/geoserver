@@ -79,7 +79,7 @@ In the example above the sf:restricted layer is very difficult to see, because i
     
 Example 4
 `````````
-Now, if you mainly want to show the restricted layer, but also provide the context, you can set the bounding box for the the request. The easiest way to obtain the coordinates is to use the application in example three and the coordinates at the bottom right of the map. The coordinates displayed in OpenLayers are x , y , the reflector service expects to be given bbox=minx,miny,maxx,maxy . Make sure it contains no whitespaces and users a period (".") as the decimal separator. In our case, it will be bbox=-103.929,44.375,-103.633,44.500 ::
+Now, if you mainly want to show the restricted layer, but also provide the context, you can set the bounding box for the request. The easiest way to obtain the coordinates is to use the application in example three and the coordinates at the bottom right of the map. The coordinates displayed in OpenLayers are x , y , the reflector service expects to be given bbox=minx,miny,maxx,maxy . Make sure it contains no whitespaces and users a period (".") as the decimal separator. In our case, it will be bbox=-103.929,44.375,-103.633,44.500 ::
 
   http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&layers=topp:states,sf:restricted&width=640&bbox=-103.929,44.375,-103.633,44.500
   

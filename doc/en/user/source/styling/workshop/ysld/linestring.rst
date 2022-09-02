@@ -17,7 +17,7 @@ Review of line symbology:
 
 * SLD uses a **LineSymbolizer** to record how the shape of a line is drawn. The primary characteristic documented is the **Stroke** used to draw each segment between vertices.
 
-* Labeling of line work is anchored to the mid-point of the line. GeoServer provides a vendor option to allow label rotation aligned with line segments.
+* Labeling of line work is anchored to the midpoint of the line. GeoServer provides a vendor option to allow label rotation aligned with line segments.
 
 For our exercises we are going to be using simple YSLD documents, often consisting of a single rule, in order to focus on the properties used for line symbology.
 
@@ -106,7 +106,7 @@ A line symbolizer is represented by a :kbd:`line` key.  You can make a completel
     </sld:StyledLayerDescriptor>
 
 
-We only specified the line symbolizer, so all of the boilerplate arround was generated for us.
+We only specified the line symbolizer, so all of the boilerplate around was generated for us.
 
 #. Additional properties can be used fine-tune appearance. Use **stroke-color** to specify the colour of the line.
 
@@ -183,7 +183,7 @@ Providing two strokes is often used to provide a contrasting edge (called casing
 
    .. image:: ../style/img/line_zorder_1.png
 
-   This is becaue the black and blue symbolizers are being drawn on a feature by feature basis.  For nice line casing, we want all of the black symbols, and then all of the blue symbols.
+   This is because the black and blue symbolizers are being drawn on a feature by feature basis.  For nice line casing, we want all of the black symbols, and then all of the blue symbols.
 
 #. Create a new feature style and move the second symbolizer there.
 
@@ -202,7 +202,7 @@ Providing two strokes is often used to provide a contrasting edge (called casing
               stroke-color: '#8080E6'
               stroke-width: 3px
 
-   Again we are using painter's algorithm order: the first feature style is drawn first then the second so the the second is drawn on top of the first.  The difference is that for each feature style, all of the features are drawn before the next feature style is drawn.
+   Again we are using painter's algorithm order: the first feature style is drawn first then the second so the second is drawn on top of the first.  The difference is that for each feature style, all of the features are drawn before the next feature style is drawn.
 
 #. If you look carefully you can see the difference.
 
@@ -285,7 +285,7 @@ This is also our first example making use of a dynamic style (where a value come
            placement: line
            offset: 7px
 
-#. The **placement** property is used to set how the label is placed with respect to the line.  By default it is :kbd:`point` which casues the label to be placed next to the midpoint as it would be for a point feature.  When set to :kbd:`line` it is placed along the line instead.  **offset** specifies how far from the line the label should be placed.
+#. The **placement** property is used to set how the label is placed with respect to the line.  By default it is :kbd:`point` which causes the label to be placed next to the midpoint as it would be for a point feature.  When set to :kbd:`line` it is placed along the line instead.  **offset** specifies how far from the line the label should be placed.
 
    .. code-block:: yaml
       :emphasize-lines: 8,9

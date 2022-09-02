@@ -25,7 +25,7 @@ symbol is randomly repeated. Here is a table with options, default values, and p
        position of the symbol around the cell centers, providing a more even distribution in space
    * - random-tile-size
      - 256
-     - Size the the texture fill tile that will contain the randomly distributed symbols
+     - Size the texture fill tile that will contain the randomly distributed symbols
    * - random-rotation
      - none
      - Activates random symbol rotation. Possible values are **none** (no rotation) or **free**

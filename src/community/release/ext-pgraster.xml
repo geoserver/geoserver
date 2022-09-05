@@ -6,17 +6,9 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<fileSets>
 		<fileSet>
-			<directory>release/extensions/pgraster</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
 			<directory>release/target/dependency</directory>
 			<outputDirectory></outputDirectory>
 			<includes>
-				<include>ant*1.8.4.jar</include>
 				<include>gs-pgraster-*.jar</include>
 			</includes>
 		</fileSet>

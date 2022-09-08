@@ -19,19 +19,22 @@ import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
  */
 public class SubjectTokenValidator implements TokenValidator {
 
+    private final String SUBJECT_CLAIM_NAME = "sub";
+    private final String AZURE_SUBJECT_CONTAINER_NAME = "xms_st";
+
     @Override
     public void verifyToken(OpenIdConnectFilterConfig config, Map claims, Map userInfoClaims)
             throws Exception {
         // normal case - subjects are the same
-        if ((claims.get("sub") != null) && (userInfoClaims.get("sub") != null)) {
-            if (claims.get("sub").equals(userInfoClaims.get("sub"))) return;
+        if ((claims.get(SUBJECT_CLAIM_NAME) != null) && (userInfoClaims.get(SUBJECT_CLAIM_NAME) != null)) {
+            if (claims.get(SUBJECT_CLAIM_NAME).equals(userInfoClaims.get(SUBJECT_CLAIM_NAME))) return;
         }
 
         // Azure AD case - use accesstoken.xms_st.sub vs userinfo.sub
-        if ((claims.get("xms_st") != null) && (claims.get("xms_st") instanceof Map)) {
-            Map xmls_st = (Map) claims.get("xms_st");
-            if (xmls_st.get("sub") != null) {
-                if (xmls_st.get("sub").equals(userInfoClaims.get("sub"))) return;
+        if ((claims.get(AZURE_SUBJECT_CONTAINER_NAME) != null) && (claims.get(AZURE_SUBJECT_CONTAINER_NAME) instanceof Map)) {
+            Map xmls_st = (Map) claims.get(AZURE_SUBJECT_CONTAINER_NAME);
+            if (xmls_st.get(SUBJECT_CLAIM_NAME) != null) {
+                if (xmls_st.get(SUBJECT_CLAIM_NAME).equals(userInfoClaims.get(SUBJECT_CLAIM_NAME))) return;
             }
         }
         throw new Exception("JWT Bearer token VS UserInfo - subjects dont match");

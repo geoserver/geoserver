@@ -21,6 +21,11 @@ import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
  */
 public class AudienceAccessTokenValidator implements TokenValidator {
 
+
+    private final String AUDIENCE_CLAIM_NAME = "aud";
+    private final String APPID_CLAIM_NAME = "appid";
+    private final String KEYCLOAK_AUDIENCE_CLAIM_NAME = "azp";
+
     /**
      * "aud" must be our client id OR "azp" must be our client id (or, if its a list, contain our
      * client id) OR "appid" must be our client id.
@@ -37,20 +42,27 @@ public class AudienceAccessTokenValidator implements TokenValidator {
     public void verifyToken(OpenIdConnectFilterConfig config, Map claimsJWT, Map userInfoClaims)
             throws Exception {
         String clientId = config.getCliendId();
-        if ((claimsJWT.get("aud") != null) && claimsJWT.get("aud").equals(clientId)) return;
+        if ((claimsJWT.get(AUDIENCE_CLAIM_NAME) != null) && claimsJWT.get(AUDIENCE_CLAIM_NAME).equals(clientId)) {
+            return;
+        }
 
-        if ((claimsJWT.get("appid") != null) && claimsJWT.get("appid").equals(clientId))
+        if ((claimsJWT.get(APPID_CLAIM_NAME) != null) && claimsJWT.get(APPID_CLAIM_NAME).equals(clientId)) {
             return; // azure specific
+        }
 
         // azp - keycloak
-        Object azp = claimsJWT.get("azp");
+        Object azp = claimsJWT.get(KEYCLOAK_AUDIENCE_CLAIM_NAME);
         if (azp != null) {
             if (azp instanceof String) {
-                if (((String) azp).equals(config.getCliendId())) return;
+                if (((String) azp).equals(config.getCliendId())) {
+                    return;
+                }
             } else if (azp instanceof List) {
                 List azps = (List) azp;
                 for (Object o : azps) {
-                    if ((o instanceof String) && (o.equals(clientId))) return;
+                    if ((o instanceof String) && (o.equals(clientId))) {
+                        return;
+                    }
                 }
             }
         }

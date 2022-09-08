@@ -26,15 +26,19 @@ public class SubjectTokenValidator implements TokenValidator {
     public void verifyToken(OpenIdConnectFilterConfig config, Map claims, Map userInfoClaims)
             throws Exception {
         // normal case - subjects are the same
-        if ((claims.get(SUBJECT_CLAIM_NAME) != null) && (userInfoClaims.get(SUBJECT_CLAIM_NAME) != null)) {
-            if (claims.get(SUBJECT_CLAIM_NAME).equals(userInfoClaims.get(SUBJECT_CLAIM_NAME))) return;
+        if ((claims.get(SUBJECT_CLAIM_NAME) != null)
+                && (userInfoClaims.get(SUBJECT_CLAIM_NAME) != null)) {
+            if (claims.get(SUBJECT_CLAIM_NAME).equals(userInfoClaims.get(SUBJECT_CLAIM_NAME)))
+                return;
         }
 
         // Azure AD case - use accesstoken.xms_st.sub vs userinfo.sub
-        if ((claims.get(AZURE_SUBJECT_CONTAINER_NAME) != null) && (claims.get(AZURE_SUBJECT_CONTAINER_NAME) instanceof Map)) {
+        if ((claims.get(AZURE_SUBJECT_CONTAINER_NAME) != null)
+                && (claims.get(AZURE_SUBJECT_CONTAINER_NAME) instanceof Map)) {
             Map xmls_st = (Map) claims.get(AZURE_SUBJECT_CONTAINER_NAME);
             if (xmls_st.get(SUBJECT_CLAIM_NAME) != null) {
-                if (xmls_st.get(SUBJECT_CLAIM_NAME).equals(userInfoClaims.get(SUBJECT_CLAIM_NAME))) return;
+                if (xmls_st.get(SUBJECT_CLAIM_NAME).equals(userInfoClaims.get(SUBJECT_CLAIM_NAME)))
+                    return;
             }
         }
         throw new Exception("JWT Bearer token VS UserInfo - subjects dont match");

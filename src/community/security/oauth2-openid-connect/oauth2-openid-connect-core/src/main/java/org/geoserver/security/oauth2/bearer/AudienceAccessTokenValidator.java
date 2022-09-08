@@ -21,7 +21,6 @@ import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
  */
 public class AudienceAccessTokenValidator implements TokenValidator {
 
-
     private final String AUDIENCE_CLAIM_NAME = "aud";
     private final String APPID_CLAIM_NAME = "appid";
     private final String KEYCLOAK_AUDIENCE_CLAIM_NAME = "azp";
@@ -42,11 +41,13 @@ public class AudienceAccessTokenValidator implements TokenValidator {
     public void verifyToken(OpenIdConnectFilterConfig config, Map claimsJWT, Map userInfoClaims)
             throws Exception {
         String clientId = config.getCliendId();
-        if ((claimsJWT.get(AUDIENCE_CLAIM_NAME) != null) && claimsJWT.get(AUDIENCE_CLAIM_NAME).equals(clientId)) {
+        if ((claimsJWT.get(AUDIENCE_CLAIM_NAME) != null)
+                && claimsJWT.get(AUDIENCE_CLAIM_NAME).equals(clientId)) {
             return;
         }
 
-        if ((claimsJWT.get(APPID_CLAIM_NAME) != null) && claimsJWT.get(APPID_CLAIM_NAME).equals(clientId)) {
+        if ((claimsJWT.get(APPID_CLAIM_NAME) != null)
+                && claimsJWT.get(APPID_CLAIM_NAME).equals(clientId)) {
             return; // azure specific
         }
 

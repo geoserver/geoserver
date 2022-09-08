@@ -6,7 +6,7 @@ GeoServer supports `GeoRSS <http://georss.org/>`_ as an output format allowing y
 
 Quick Start
 -----------
-If you are using a web browser which can render RRS feeds simply visit the URL `http://localhost:8080/geoserver/wms/reflect?layers=states&format=rss <http://localhost:8080/geoserver/wms/reflect?layers=states&format=rss>`_  in your browser. This is assuming a local GeoServer instance is running with an out of the box configuration. You should see a result that looks more or less like this:
+If you are using a web browser which can render RSS feeds simply visit the URL `http://localhost:8080/geoserver/wms/reflect?layers=states&format=rss <http://localhost:8080/geoserver/wms/reflect?layers=states&format=rss>`_  in your browser. This is assuming a local GeoServer instance is running with an out of the box configuration. You should see a result that looks more or less like this:
 
 .. figure:: browser.png
    :align: center

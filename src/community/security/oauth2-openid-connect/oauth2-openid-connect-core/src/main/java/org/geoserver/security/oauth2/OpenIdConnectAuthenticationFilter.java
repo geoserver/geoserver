@@ -38,6 +38,9 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
 /** OpenID Connect authentication filter. */
+/**
+ * Authenticate using OpenID Connect.
+ */
 public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticationFilter {
 
     static final String ID_TOKEN_VALUE = "OpenIdConnect-IdTokenValue";

@@ -1825,5 +1825,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>vector-mosaic</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-vector-mosaic</artifactId>
+          <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

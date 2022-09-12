@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -452,32 +453,75 @@ public class GeofenceAccessManager
         return summaries;
     }
 
-    private void setRuleFilterUserOrRole(Authentication user, RuleFilter ruleFilter) {
+    private void setRuleFilterUserAndRole(Authentication user, RuleFilter ruleFilter) {
         if (user != null) {
             GeoFenceConfiguration config = configurationManager.getConfiguration();
-            if (config.isUseRolesToFilter() && config.getRoles().size() > 0) {
 
-                String role = "UNKNOWN";
-                for (GrantedAuthority authority : user.getAuthorities()) {
-                    if (config.getRoles().contains(authority.getAuthority())
-                            || config.getRoles().contains("*")) {
-                        role = authority.getAuthority();
-                        break;
-                    }
+            // just some loggings here
+            if (config.isUseRolesToFilter()) {
+                if (config.getRoles().isEmpty()) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Role filtering requested, but no roles provided. Will only use user authorizations");
                 }
-                LOGGER.log(Level.FINE, "Setting role for filter: {0}", new Object[] {role});
-                ruleFilter.setRole(role);
-                ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
-            } else {
-                String username = user.getName();
-                if (username == null || username.isEmpty()) {
-                    ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
-                } else {
-                    LOGGER.log(Level.FINE, "Setting user for filter: {0}", new Object[] {username});
-                    ruleFilter.setUser(username);
+
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    String authList =
+                            user.getAuthorities().stream()
+                                    .map(a -> a.getAuthority())
+                                    .collect(Collectors.joining(",", "[", "]"));
+                    LOGGER.log(
+                            Level.FINE,
+                            "Authorizations found for user {0}: {1}",
+                            new Object[] {user.getName(), authList});
+
+                    String allowedAuth =
+                            config.getRoles().stream().collect(Collectors.joining(",", "[", "]"));
+                    LOGGER.log(
+                            Level.FINE, "Authorizations allowed: {0}", new Object[] {allowedAuth});
                 }
             }
+
+            if (config.isUseRolesToFilter() && !config.getRoles().isEmpty()) {
+
+                boolean getAllRoles = config.getRoles().contains("*");
+                Set<String> excluded =
+                        config.getRoles().stream()
+                                .filter(r -> r.startsWith("-"))
+                                .map(r -> r.substring(1))
+                                .collect(Collectors.toSet());
+
+                List<String> roles = new ArrayList<>();
+                for (GrantedAuthority authority : user.getAuthorities()) {
+                    String authRole = authority.getAuthority();
+                    boolean addRole = getAllRoles || config.getRoles().contains(authRole);
+                    addRole = addRole && !(excluded.contains(authRole));
+
+                    if (addRole) {
+                        roles.add(authRole);
+                    }
+                }
+
+                if (roles.isEmpty()) {
+                    roles.add("UNKNOWN");
+                }
+
+                String joinedRoles = String.join(",", roles);
+
+                LOGGER.log(Level.FINE, "Setting role for filter: {0}", new Object[] {joinedRoles});
+                ruleFilter.setRole(joinedRoles);
+            }
+
+            String username = user.getName();
+            if (StringUtils.isEmpty(username)) {
+                LOGGER.log(Level.WARNING, "Username is null for user: {0}", new Object[] {user});
+                ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
+            } else {
+                LOGGER.log(Level.FINE, "Setting user for filter: {0}", new Object[] {username});
+                ruleFilter.setUser(username);
+            }
         } else {
+            LOGGER.log(Level.WARNING, "No user given");
             ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
         }
     }
@@ -677,7 +721,7 @@ public class GeofenceAccessManager
             String workspace, String layer, Authentication user, String ipAddress) {
         // get the request infos
         RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
-        setRuleFilterUserOrRole(user, ruleFilter);
+        setRuleFilterUserAndRole(user, ruleFilter);
         ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
         // get info from the current request
         String service = null;
@@ -862,7 +906,7 @@ public class GeofenceAccessManager
 
             // get the rule, it contains default and allowed styles
             RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
-            setRuleFilterUserOrRole(user, ruleFilter);
+            setRuleFilterUserAndRole(user, ruleFilter);
             ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
             ruleFilter.setService(service);
             ruleFilter.setRequest(request);
@@ -931,7 +975,7 @@ public class GeofenceAccessManager
             // get the rule, it contains default and allowed styles
             RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
 
-            setRuleFilterUserOrRole(user, ruleFilter);
+            setRuleFilterUserAndRole(user, ruleFilter);
             ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
             ruleFilter.setService(service);
             ruleFilter.setRequest(request);

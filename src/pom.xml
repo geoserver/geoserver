@@ -554,6 +554,11 @@
         <version>${gt.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-vector-mosaic</artifactId>
+        <version>${gt.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jdom</groupId>
         <artifactId>jdom2</artifactId>
         <version>2.0.6.1</version>

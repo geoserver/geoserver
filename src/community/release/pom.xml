@@ -416,6 +416,11 @@
       <artifactId>gt-stac-store</artifactId>
       <version>${gt.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-vector-mosaic</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

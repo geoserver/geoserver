@@ -412,6 +412,16 @@
     <property name="icon" value="img/icons/geosilk/server_vector.png" />
   </bean>
 
+  <bean id="vectorMosaicDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="vector-mosaic" />
+    <property name="factoryClass"
+              value="org.geotools.vectormosaic.VectorMosaicStoreFactory" />
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
+    <property name="icon" value="img/icons/geosilk/page_white_vector.png" />
+    <property name="componentClass"
+              value="org.geoserver.web.data.resource.VectorMosaicDataStoreEditPanel" />
+  </bean>
+
   <bean id="ServiceInfoCapabilitiesProvider" class="org.geoserver.web.ServiceInfoCapabilitiesProvider">
   </bean>
 

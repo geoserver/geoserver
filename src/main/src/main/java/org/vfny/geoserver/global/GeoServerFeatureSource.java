@@ -221,7 +221,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             // tell the data sources about the default linearization tolerance for curved
             // geometries they might be reading
             if (linearizationTolerance != null) {
-                query.getHints().put(Hints.LINEARIZATION_TOLERANCE, linearizationTolerance);
+                defQuery.getHints().put(Hints.LINEARIZATION_TOLERANCE, linearizationTolerance);
             }
 
             return defQuery;

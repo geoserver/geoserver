@@ -7,6 +7,7 @@ package org.geoserver.web.data.store;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -16,8 +17,14 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+
+import java.io.Serializable;
+
 import java.net.URL;
+import java.util.List;
 import org.apache.wicket.Component;
+import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.feedback.IFeedbackMessageFilter;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
@@ -128,7 +135,12 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("capabilitiesURL:border:border_body:paramValue", "http://foo");
 
         tester.clickLink("form:save", true);
-        tester.assertErrorMessages("Connection test failed: foo");
+
+        List<FeedbackMessage> feedback = tester.getFeedbackMessages(IFeedbackMessageFilter.ALL);
+        assertEquals(1, feedback.size());
+        Serializable msg = feedback.get(0).getMessage();
+        assertTrue(msg.toString().startsWith("Connection test failed:"));
+
         catalog.save(info);
 
         assertNotNull(info.getId());

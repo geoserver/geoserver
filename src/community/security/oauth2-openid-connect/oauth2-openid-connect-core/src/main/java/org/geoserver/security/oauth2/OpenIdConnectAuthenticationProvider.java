@@ -12,9 +12,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.oauth2.bearer.TokenValidator;
 
-/**
- * AuthenticationProvider for OpenId Connect.
- */
+/** AuthenticationProvider for OpenId Connect. */
 public class OpenIdConnectAuthenticationProvider extends GeoServerOAuthAuthenticationProvider {
 
     TokenValidator bearerTokenValidator;

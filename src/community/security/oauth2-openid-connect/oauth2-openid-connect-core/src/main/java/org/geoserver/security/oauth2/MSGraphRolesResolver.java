@@ -19,8 +19,8 @@ import net.sf.json.JSONObject;
 
 /**
  * Verify role using Azure graph.
- * 
- * Make sure your Azure AD application has "GroupMember.Read.All" permission: a) go to your
+ *
+ * <p>Make sure your Azure AD application has "GroupMember.Read.All" permission: a) go to your
  * application in Azure AD (in the portal) b) On the left, go to "API permissions" c) click "Add a
  * permission" d) press "Microsoft Graph" e) press "Delegated permission" f) Scroll down to
  * "GroupMember" g) Choose "GroupMemeber.Read.All" h) press "Add permission" i) on the API

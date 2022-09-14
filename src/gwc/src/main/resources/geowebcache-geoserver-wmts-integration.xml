@@ -16,6 +16,20 @@
     <property name="alwaysUseFullPath" value="true" />
     <property name="order" value="10" />
   </bean>
+
+  <!-- Used for workspace-based demo requests so the requests to GS stay workspace-based -->
+  <bean id="gwcDemoUrlHandlerMapping" class="org.geoserver.gwc.controller.GwcDemoUrlHandlerMapping">
+    <constructor-arg ref="catalog" />
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="order" value="10" />
+  </bean>
+
+  <!-- Used for workspace-based web requests (i.e. for rest/web/openlayer/ol.js) -->
+  <bean id="gwcRestWebUrlHandlerMapping" class="org.geoserver.gwc.controller.GwcRestWebUrlHandlerMapping">
+    <constructor-arg ref="catalog" />
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="order" value="10" />
+  </bean>
   
   <bean id="gwcResourceServiceVoter" class="org.geoserver.gwc.wmts.GWCResourceServiceVoter"/>
 

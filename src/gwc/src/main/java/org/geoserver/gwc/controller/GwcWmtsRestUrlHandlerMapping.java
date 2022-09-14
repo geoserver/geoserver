@@ -13,6 +13,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -21,9 +22,13 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * Specific URL mapping handler for GWC WMTS REST API. The main goal of this handler id to handle
  * virtual services, it makes sure URLs with an workspace are correctly mapped and that a local
  * workspace is set and removed when needed.
+ *
+ * <p>SUBCLASSES: Set the `handlerMappingString` in the constructor.
  */
-public final class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMapping
+public class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMapping
         implements HandlerInterceptor {
+
+    protected String handlerMappingString = "/gwc/rest/wmts";
 
     private final Catalog catalog;
 
@@ -36,7 +41,7 @@ public final class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMap
             Object handler, Method method, RequestMappingInfo mapping) {
         // this handler is only interested on GWC WMTS REST API URLs
         for (String pattern : mapping.getPatternsCondition().getPatterns()) {
-            if (pattern.contains("/gwc/rest/wmts")) {
+            if (pattern.contains(handlerMappingString)) {
                 // this is an handler for GWC WMTS REST API
                 super.registerHandlerMethod(handler, method, mapping);
                 break;
@@ -47,7 +52,7 @@ public final class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMap
     @Override
     protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request)
             throws Exception {
-        int gwcRestBaseIndex = lookupPath.indexOf("/gwc/rest/wmts");
+        int gwcRestBaseIndex = lookupPath.indexOf(handlerMappingString);
         if (gwcRestBaseIndex == -1 || gwcRestBaseIndex == 0) {
             // not a GWC REST URL or not in the context of a virtual service
             return null;
@@ -85,6 +90,13 @@ public final class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMap
 
         Wrapper(HttpServletRequest request, Catalog catalog, String workspaceName) {
             super(request);
+
+            // spring uses this LOOKUP_PATH
+            request.setAttribute(
+                    HandlerMapping.LOOKUP_PATH,
+                    ((String) request.getAttribute(HandlerMapping.LOOKUP_PATH))
+                            .replace(workspaceName + "/", ""));
+
             // remove the virtual service workspace from the URL
             requestUri = request.getRequestURI().replace(workspaceName + "/", "");
         }

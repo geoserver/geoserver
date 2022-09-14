@@ -752,6 +752,16 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         params.put("TRANSPARENT", "true");
         params.put(GWC_SEED_INTERCEPT_TOKEN, "true");
 
+        // we have the layer's ID (the one with a GUID), use the catalog to get its workspace name
+        try {
+            params.put(
+                    "WORKSPACE", catalog.getLayer(getId()).getResource().getNamespace().getName());
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Couldn't get workspace from layer ID - " + getName() + ", with ID=" + getId());
+        }
+
         Map<String, String> filteredParams = tile.getFilteringParameters();
         if (filteredParams.isEmpty()) {
             filteredParams = getDefaultParameterFilters();

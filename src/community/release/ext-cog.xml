@@ -12,10 +12,14 @@
         <include>annotations-2.*.jar</include>
         <include>auth-2.*.jar</include>
         <include>aws-*-2.*.jar</include>
+        <include>azure-storage*.jar</include>
+        <include>client-runtime*.jar</include>
         <include>gs-cog*.jar</include>
         <include>http-client-spi-2*.jar</include>
         <include>http*-osgi*.jar</include>
         <include>imageio-ext-*rangereader*.jar</include>
+        <include>jackson-datatype*.jar</include>
+        <include>jackson-module*.jar</include>
         <include>kotlin-stdlib*.jar</include>
         <include>*netty*.jar</include>
         <include>okhttp*.jar</include>
@@ -24,6 +28,7 @@
         <include>protocol-core-2.*.jar</include>
         <include>reactive-streams*.jar</include>
         <include>regions-2.*.jar</include>
+        <include>rxjava*.jar</include>
         <include>s3-2.*.jar</include>
         <include>sdk-core-2.*.jar</include>
         <include>utils-2.*.jar</include>

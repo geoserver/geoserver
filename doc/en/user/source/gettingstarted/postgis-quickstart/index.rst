@@ -65,7 +65,7 @@ The next step is to create a workspace for the data. A workspace is a container 
 Creating a store
 ----------------
 
-Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the shapefile. 
+Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the database. 
 
 #. Navigate to :menuselection:`Data-->Stores`.
     

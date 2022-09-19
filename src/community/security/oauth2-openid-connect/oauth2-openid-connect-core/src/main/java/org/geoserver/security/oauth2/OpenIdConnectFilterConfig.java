@@ -19,7 +19,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     String tokenRolesClaim;
     String responseMode;
     boolean sendClientSecret = false;
-    boolean allowBearerTokens = false;
+    boolean allowBearerTokens = true;
 
     /** Supports extraction of roles among the token claims */
     public static enum OpenIdRoleSource implements RoleSource {

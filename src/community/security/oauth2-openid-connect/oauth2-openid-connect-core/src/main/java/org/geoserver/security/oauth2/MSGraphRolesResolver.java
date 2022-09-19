@@ -12,10 +12,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import org.geotools.util.logging.Logging;
 
 /**
  * Verify role using Azure graph.
@@ -33,13 +36,16 @@ import net.sf.json.JSONObject;
  */
 public class MSGraphRolesResolver {
 
+    private static final Logger LOGGER = Logging.getLogger(MSGraphRolesResolver.class);
+
     static URL memberOfEndpoint;
 
     static {
         try {
             memberOfEndpoint = new URL("https://graph.microsoft.com/v1.0/me/memberOf");
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            // this shouldn't happen (unless typo in above line)
+            LOGGER.log(Level.WARNING, "Error parsing MS GRAPH API URL", e);
         }
     }
 

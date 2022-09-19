@@ -9,8 +9,8 @@ import java.util.Map;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
 
 /**
- * This is a simple token validator that runs a list of TokenValidators. This doesn't do any
- * validation on its own...
+ * This is a token validator that runs a list of TokenValidators. This doesn't do any validation on
+ * its own...
  */
 public class MultiTokenValidator implements TokenValidator {
 

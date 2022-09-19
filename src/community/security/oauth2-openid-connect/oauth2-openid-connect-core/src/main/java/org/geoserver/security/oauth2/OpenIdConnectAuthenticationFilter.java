@@ -37,7 +37,6 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
-/** OpenID Connect authentication filter. */
 /** Authenticate using OpenID Connect. */
 public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticationFilter {
 
@@ -179,6 +178,15 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         }
     }
 
+    static Object extractFromJSON(Map json, String path) {
+        try {
+            return JsonPath.read(json, path);
+        } catch (Exception e) {
+            // do nothing - the ID Token doesn't have that attribute - handled later with o=null
+            return null;
+        }
+    }
+
     // since we've already requested the userinfo for an oidc bearer (or via code) to validate it.
     // We saved this information in the OAuth2Request extension so we don't have to request it
     // again.
@@ -199,13 +207,31 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
 
         String rolesAttributePath =
                 ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
-        Object o = JsonPath.read(userinfoMap, rolesAttributePath);
+        Object o = extractFromJSON(userinfoMap, rolesAttributePath);
 
+        List<GeoServerRole> result = getGeoServerRoles(rolesAttributePath, o);
+        return result;
+    }
+
+    /**
+     * Given a part of the json, jsonObject, (from rolesAttributePath in the main json object),
+     * generate GeoServerRole roles.
+     *
+     * <p>jsonObject can either be a single String or a list-of-Strings.
+     *
+     * @param rolesAttributePath for logging purposes - where are we looking for the role
+     *     information?
+     * @param jsonObject should be either a String or list-of-String
+     * @return
+     * @throws IOException
+     */
+    private List<GeoServerRole> getGeoServerRoles(String rolesAttributePath, Object jsonObject)
+            throws IOException {
         List<GeoServerRole> result = new ArrayList<>();
-        if (o instanceof String) {
-            result.add(new GeoServerRole((String) o));
-        } else if (o instanceof List) {
-            ((List) o).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
+        if (jsonObject instanceof String) {
+            result.add(new GeoServerRole((String) jsonObject));
+        } else if (jsonObject instanceof List) {
+            ((List) jsonObject).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
         } else {
             LOGGER.log(
                     Level.FINE,
@@ -229,27 +255,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         String rolesAttributePath =
                 ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
         Object o = extractFromJSON(claims, rolesAttributePath);
-        List<GeoServerRole> result = new ArrayList<>();
-        if (o instanceof String) {
-            result.add(new GeoServerRole((String) o));
-        } else if (o instanceof List) {
-            ((List) o).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
-        } else if (o != null) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Was expecting to find a list of strings or a single value in "
-                            + rolesAttributePath
-                            + ", but it was something else: "
-                            + o);
-        } else {
-            LOGGER.log(
-                    Level.FINE,
-                    "Did not find "
-                            + rolesAttributePath
-                            + "in the token, returning an empty role list");
-        }
-
-        if (!result.isEmpty()) enrichWithRoleCalculator(result);
+        List<GeoServerRole> result = getGeoServerRoles(rolesAttributePath, o);
 
         return result;
     }

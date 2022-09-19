@@ -1,4 +1,4 @@
-/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018-2022 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -28,7 +28,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMapping
         implements HandlerInterceptor {
 
-    protected String handlerMappingString = "/gwc/rest/wmts";
+    protected String GWC_URL_PATTERN = "/gwc/rest/wmts";
 
     private final Catalog catalog;
 
@@ -41,7 +41,7 @@ public class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMapping
             Object handler, Method method, RequestMappingInfo mapping) {
         // this handler is only interested on GWC WMTS REST API URLs
         for (String pattern : mapping.getPatternsCondition().getPatterns()) {
-            if (pattern.contains(handlerMappingString)) {
+            if (pattern.contains(GWC_URL_PATTERN)) {
                 // this is an handler for GWC WMTS REST API
                 super.registerHandlerMethod(handler, method, mapping);
                 break;
@@ -52,7 +52,7 @@ public class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMapping
     @Override
     protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request)
             throws Exception {
-        int gwcRestBaseIndex = lookupPath.indexOf(handlerMappingString);
+        int gwcRestBaseIndex = lookupPath.indexOf(GWC_URL_PATTERN);
         if (gwcRestBaseIndex == -1 || gwcRestBaseIndex == 0) {
             // not a GWC REST URL or not in the context of a virtual service
             return null;
@@ -91,7 +91,7 @@ public class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMapping
         Wrapper(HttpServletRequest request, Catalog catalog, String workspaceName) {
             super(request);
 
-            // spring uses this LOOKUP_PATH
+            // Adjust LOOKUP_PATH used by spring to remove workspace
             request.setAttribute(
                     HandlerMapping.LOOKUP_PATH,
                     ((String) request.getAttribute(HandlerMapping.LOOKUP_PATH))

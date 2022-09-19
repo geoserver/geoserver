@@ -769,7 +769,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 if (workspace == null) {
                     throw new ParameterException(
                             "Global web services are disabled, global LayerGroup "
-                                    + groupInfo.getName());
+                                    + groupInfo.getName()
+                                    + " inaccessible");
                 }
                 params.put("WORKSPACE", workspace.getName());
             }

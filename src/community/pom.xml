@@ -89,6 +89,7 @@
             <descriptor>release/ext-teradata.xml</descriptor>
             <descriptor>release/ext-libdeflate.xml</descriptor>
             <descriptor>release/ext-stac-datastore.xml</descriptor>
+            <descriptor>release/ext-vector-mosaic-datastore.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -246,6 +247,7 @@
         <module>vsi</module>
         <module>teradata</module>
         <module>libdeflate</module>
+        <module>vector-mosaic</module>
       </modules>
     </profile>
     <profile>
@@ -667,6 +669,12 @@
       <id>libdeflate</id>
       <modules>
         <module>libdeflate</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>vector-mosaic</id>
+      <modules>
+        <module>vector-mosaic</module>
       </modules>
     </profile>
   </profiles>

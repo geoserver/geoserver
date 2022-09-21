@@ -202,6 +202,16 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
         assertNumberMathcedAndNumberReturned(doc, 1, 1);
     }
 
+    @Test
+    public void testGetMappedNumberMatchedWithIdFilter() {
+        Document doc =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits&&cql_filter=IN('mf1')");
+        LOGGER.info("WFS GetFeature, typename=gsml:MappedFeature response:\n" + prettyString(doc));
+
+        assertNumberMathcedAndNumberReturned(doc, 1, 0);
+    }
+
     private void assertNumberMathcedAndNumberReturned(
             Document doc, int numberMatched, int numberReturned) {
         assertXpathEvaluatesTo(

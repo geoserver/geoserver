@@ -421,6 +421,11 @@
       <artifactId>gt-vector-mosaic</artifactId>
       <version>${gt.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-vector-mosaic</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

@@ -43,12 +43,17 @@ then configured in GeoServer, and then serve as the base for mosaic store:
 .. figure:: images/places-stores.png
    :align: center
 
-   *The store containing the delegate/index table, and the mosaick store*
+   *The store containing the delegate/index table, and the mosaic store*
 
 .. figure:: images/places-mosaic-config.png
    :align: center
 
    *The mosaic store refers to the delegate store by name*
+
+The ``connectionParameterKey`` is ``url``, as that's what the Shapefile datastore is looking for,
+a parameter named ``url`` with the location of the shapefile to open. The preferred SPI is
+setup to the Shapefile store to speed up the lookup of the granule store (it can be omitted,
+with a small performance drop).
 
 The mosaic layer can then be published in GeoServer, rendering all the required shapefiles
 in a single map:

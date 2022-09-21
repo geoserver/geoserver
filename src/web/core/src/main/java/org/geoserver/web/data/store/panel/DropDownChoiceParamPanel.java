@@ -42,7 +42,8 @@ public class DropDownChoiceParamPanel extends Panel implements ParamPanel<Serial
         add(label);
 
         choice = new Select2DropDownChoice<>("paramValue", paramValue, options);
-        choice.setMarkupId(paramLabelModel.getObject().toString());
+        choice.setOutputMarkupId(true);
+        choice.setMarkupId(paramLabelModel.getObject());
         choice.setRequired(required);
         if (!required) {
             choice.setNullValid(true);

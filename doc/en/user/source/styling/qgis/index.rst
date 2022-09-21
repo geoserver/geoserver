@@ -11,7 +11,7 @@ QGIS style exporting abilities have been evolving over time, as a reference:
 * For vector data QGIS exports SLD 1.1 styles that can be read by GeoServer. In order to get
   the suitable results it's important to use QGIS 3.0 or newer, and GeoServer 2.13.x or newer.
 * Raster data styling export is new in QGIS 3.4.5 (yet to be released at the time of writing).
-  This new version exports SLD 1.0 styles with vendor extensions to support constrast streching that most recent GeoServer versions support properly. For older QGIS versions limited export functionality is available using the SLD4Raster plugin.
+  This new version exports SLD 1.0 styles with vendor extensions to support contrast stretching that most recent GeoServer versions support properly. For older QGIS versions limited export functionality is available using the SLD4Raster plugin.
 
 For the export it is advised to use the :guilabel:`Save As` functionality available in the style dialog,
 as indicated below in this guide. Other plugins exist that streamline the export process, but they

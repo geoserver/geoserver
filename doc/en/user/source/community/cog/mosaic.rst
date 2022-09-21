@@ -12,7 +12,7 @@ This tutorial provide some hints on configuring an ImageMosaic on top of some MO
 ImageMosaic Configuration files
 ------------------------------- 
 
-We need a couple of configuration files to have an ImageMosaic propertly set. Configuration is based on these key points:
+We need a couple of configuration files to have an ImageMosaic properly set. Configuration is based on these key points:
 
 * The ImageMosaic will be initially created empty without any data. Data will be harvested as a second step.
 * A Time dimension will be used, based on the date contained in the file's name.

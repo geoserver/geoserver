@@ -14,7 +14,7 @@ General rules for writing the (Geo)JSON templates:
   * The "eo" prefix has a special rule, when it's used in the ``products`` table, it's called ``eop`` in the template. For example the column ``eoSensorMode`` in the ``products`` tables becomes ``eop:sensorMode``.
 * Two special CQL functions assist in the creation of links:
 
-  * ``serviceLink`` takes a URL template using the `Java Formatter syntax <https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html>`_ and all the subsequent paramters are meant to be replaced in the template, one by one. This is used for links that are built on the fly based on product/collection attributes only.
+  * ``serviceLink`` takes a URL template using the `Java Formatter syntax <https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html>`_ and all the subsequent parameters are meant to be replaced in the template, one by one. This is used for links that are built on the fly based on product/collection attributes only.
   * ``templateLink`` takes a URL template using a single ``${BASE_URL}`` placeholder, and replaces it with the base URL of the request. This is already used by RSS output, and assumes the links are contained database fields, like the OGC links.
 
-For for information about building feature templates, refer to the :ref:`features templating <community_wfstemplating>` documentation.
+For information about building feature templates, refer to the :ref:`features templating <community_wfstemplating>` documentation.

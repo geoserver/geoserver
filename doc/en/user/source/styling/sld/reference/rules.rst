@@ -6,7 +6,7 @@ Rules
 Styling **rules** define the portrayal of features.
 A rule combines a :ref:`filter <sld_reference_filters>` with any number of symbolizers. 
 Features for which the filter condition evaluates as true
-are rendered using the the symbolizers in the rule. 
+are rendered using the symbolizers in the rule. 
 
 Syntax
 ------
@@ -163,7 +163,7 @@ within the rule, in the order in which they occur.
 The rendering is performed into the image buffer
 for the parent ``<FeatureTypeStyle>``.
 Thus symbolizers earlier in a ``FeatureTypeStyle`` and ``Rule`` are rendered 
-*before* symbolizers occuring later in the document
+*before* symbolizers occurring later in the document
 (this is the "Painter's Model" method of rendering).
 
        

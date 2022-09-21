@@ -119,7 +119,7 @@ Simplified Property Access
 
 Behind the scenes the module builds a complex feature schema on the fly automatically along with the complex features being served. Every array or object in the document is considered to be a nested feature. This might result in a hard time trying to foreseen the xpath needed to access a feature property for styling or filtering purpose, because the internal nested feature representation follows the GML object property model.
 
-To clarify this lets assume that we want to filter the stations features on a measurements value greater then 100. 
+To clarify this lets assume that we want to filter the stations features on a measurements value greater than 100. 
 According to the above GeoJSON feature representation the whole filter will look like: ``measurements.MeasurementsFeature.values.ValuesFeature.value > 100``. 
 
 The property path needs to specify for each nested complex attribute the property name and the feature name. The former coincides with the original attribute name in the document, while the latter with that attribute name with the first letter upper cased and the `Feature` suffix.

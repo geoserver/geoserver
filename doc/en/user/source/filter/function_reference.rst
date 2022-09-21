@@ -107,7 +107,7 @@ Environment function
 
 This function returns the value of environment variables
 defined in various contexts.
-WMS GetMap automatically defines somes variables :ref:`SLD rendering <sld_variable_substitution>`,
+WMS GetMap automatically defines some variables :ref:`SLD rendering <sld_variable_substitution>`,
 while others can be provided using the ``env`` request parameter.
 Example usage in e.g. a dynamic symbolizer:
 
@@ -579,7 +579,7 @@ Temporal functions
        Default as milliseconds. Possible values are ``s`` (seconds), ``m`` (minutes), ``h`` (hours), ``d`` (days).
    * - now
      - None
-     - Retuns the current time as a Date
+     - Returns the current time as a Date
 
 Transformation functions
 --------------------------------

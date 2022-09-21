@@ -8,6 +8,7 @@ package org.geoserver.config.impl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
@@ -242,13 +243,14 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     @Override
     @Deprecated
     public Boolean isUseHeadersProxyURL() {
-        return getSettings().isUseHeadersProxyURL();
+        return Optional.ofNullable(getSettings().isUseHeadersProxyURL()).orElse(useHeadersProxyURL);
     }
 
     @Override
     @Deprecated
     public void setUseHeadersProxyURL(Boolean useHeadersProxyURL) {
         getSettings().setUseHeadersProxyURL(useHeadersProxyURL);
+        this.useHeadersProxyURL = null;
     }
 
     @Override
@@ -479,5 +481,13 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     @Override
     public void setWebUIMode(WebUIMode webUIMode) {
         this.webUIMode = webUIMode;
+    }
+
+    public Boolean getUseHeadersProxyURLRaw() {
+        return useHeadersProxyURL;
+    }
+
+    public void setUseHeadersProxyURLRaw(Boolean useHeadersProxyURL) {
+        this.useHeadersProxyURL = useHeadersProxyURL;
     }
 }

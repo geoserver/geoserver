@@ -97,7 +97,7 @@ The service title and description are provided by the existing :ref:`wfs` settin
 Open API
 ''''''''
 
-For programatic access an `OpenAPI <https://www.openapis.org/>`__ description of the service is provided, that may be browsed as documentation, or used to generate a client to access the web services.
+For programmatic access an `OpenAPI <https://www.openapis.org/>`__ description of the service is provided, that may be browsed as documentation, or used to generate a client to access the web services.
 
 .. figure:: img/features-api.png
    
@@ -148,7 +148,7 @@ The service does not require any additional configuration to use. The service is
 
 * The existing :ref:`wfs` settings to define title, abstract, and output formats.
   
-  This is why the service page is is titled :kbd:`GeoServer Web Feature Service`` by default.
+  This is why the service page is titled :kbd:`GeoServer Web Feature Service`` by default.
   
 * Built-in templates used for html generation
 

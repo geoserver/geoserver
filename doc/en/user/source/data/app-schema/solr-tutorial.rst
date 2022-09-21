@@ -27,7 +27,7 @@ Apache Solr data source configuration as a specific syntax and allow us to speci
     </SolrDataStore>
   </sourceDataStores>
 
-In this particular case the the ``location`` attribute contains a point geometry and will be the default geometry.
+In this particular case the ``location`` attribute contains a point geometry and will be the default geometry.
 
 The complete mapping file is:
 

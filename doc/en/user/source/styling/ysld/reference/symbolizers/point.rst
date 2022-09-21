@@ -95,7 +95,7 @@ where:
      - ``[0,0]``
    * - ``opacity``
      - No
-     - Specifies the level of transparency. Value of ``0`` means entirely transparent, while ``1`` means entirely opaque. Only affects graphics referenced by the ``external`` parameter; the opacity of ``mark`` symbols is controled by the ``fill-opacity`` and ``stroke-opacity`` of the mark.
+     - Specifies the level of transparency. Value of ``0`` means entirely transparent, while ``1`` means entirely opaque. Only affects graphics referenced by the ``external`` parameter; the opacity of ``mark`` symbols is controlled by the ``fill-opacity`` and ``stroke-opacity`` of the mark.
      - ``1``
    * - ``rotation``
      - No

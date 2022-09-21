@@ -58,7 +58,7 @@ Set security for data modification
 
 GeoServer includes support for WFS-T (transactions) by default, which lets users modify your data.
 
-If you don't want your database modified, you can turn off transactions in the the :ref:`services_webadmin_wfs`. Set the :guilabel:`Service Level` to ``Basic``. For extra security, we recommend any database access use datastore credentials providing read-only permissions. This will eliminate the possibility of a SQL injection (though GeoServer is generally not vulnerable to that sort of attack).
+If you don't want your database modified, you can turn off transactions in the :ref:`services_webadmin_wfs`. Set the :guilabel:`Service Level` to ``Basic``. For extra security, we recommend any database access use datastore credentials providing read-only permissions. This will eliminate the possibility of a SQL injection (though GeoServer is generally not vulnerable to that sort of attack).
 
 If you would like some users to be able to modify data, set the service level :guilabel:`Service Level` to ``Transactional`` (or ``Complete``) and use :ref:`security_service` to limit access to the `WFS.Transaction` operation.
 

@@ -31,7 +31,7 @@ The following are the directives available in JSON based templates.
    * - cql evaluation
      - $${cql}
      - specify it as an element value (:code:`"json_attribute":"$${cql}"`)
-   * - setting the evaluation context for for child attributes.
+   * - setting the evaluation context for child attributes.
      - ${source}.
      - specify it as the first nested object in arrays (:code:`{"$source":"property"}`) or as an attribute in objects (:code:`"$source":"property"`)
    * - filter the array, object, attribute
@@ -79,7 +79,7 @@ The following are the directives available in XML based templates.
      - It has to be the root element of an XML template (:code:`<gft:Template> Template content</gft:Template>`)
    * - defines options to customize the output outside of a feature scope
      - gft:Options
-     - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`. HTML options: :code:`<script>`, :code: `<script type="application/ld+json"/>`, :code:`<style>`, :code: `<link>`.
+     - specify it as an element at the beginning of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`. HTML options: :code:`<script>`, :code: `<script type="application/ld+json"/>`, :code:`<style>`, :code: `<link>`.
    * - allows including a template into another
      - $include, gft:includeFlat
      - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included template as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
@@ -231,7 +231,7 @@ As it is possible to see the geometry is being encoded only as a wkt, moreover t
 Looking at these examples it is possible to see additional directives that can customize the output:
 
 * Property interpolation can be invoked using the directive :code:`${property_name}`.
-* In case complex operation are needed a CQL expression can be used throught a :code:`$${cql}` syntax (all CQL functions are supported).
+* In case complex operation are needed a CQL expression can be used thought a :code:`$${cql}` syntax (all CQL functions are supported).
 * Simple text values are reproduced in the final output as they are.
 * Finally the GML template needs the actual template content to be wrapped into a :code:`gft:Template` element. The :code:`gft` doesn't needs to be bound to a namespace. It is used just as marker of a features-templating related element and will not be present in the final output.
 * There is also another element, the :code:`gft:Options`, with two more elements inside. It will be explained in a later dedicated section.
@@ -648,7 +648,7 @@ The :code:`options` directive, instead, allows customizing the output for part o
 
 GeoJSON
 """""""
-In the context of a GeoJSON template two options ara available: :code:`flat_output` and :code:`separator`. These options are meant to provide a GeoJSON output encoded following INSPIRE rule for `alternative feature GeoJSON encoding <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/ads/simple-addresses.md>`_ (`see also <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/efs/simple-environmental-monitoring-facilities.md>`_).
+In the context of a GeoJSON template two options are available: :code:`flat_output` and :code:`separator`. These options are meant to provide a GeoJSON output encoded following INSPIRE rule for `alternative feature GeoJSON encoding <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/ads/simple-addresses.md>`_ (`see also <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/efs/simple-environmental-monitoring-facilities.md>`_).
 To use the functionality an :code:`"$options"` JSON object can be added on top of a JSON template, like in the following example:
 
 .. code-block:: json
@@ -842,7 +842,7 @@ The :code:`@context` will show up at the beginning of the JSON-LD output:
 
 The above template defines, along with the :code:`@context`, also the :code:`option` :code:`encode_as_string`. The option is used to request a JSON-LD output where all the attributes are encoded as text. By default attributes are instead encoded as in :code:`GeoJSON` output format.
 
-When dealing with a GetFeatureInfo request over a LayerGroup asking for a JSON-LD output the plug-in will perform a union of the JSON-LD :code:`@context` (when different) defined in the template of each containted layer. This means that in case of conflicting attributes name the attributes name will override each other according to the processing order of the layers.
+When dealing with a GetFeatureInfo request over a LayerGroup asking for a JSON-LD output the plug-in will perform a union of the JSON-LD :code:`@context` (when different) defined in the template of each contained layer. This means that in case of conflicting attributes name the attributes name will override each other according to the processing order of the layers.
 The user can prevent this behaviour by taking advantage of the  :code:`include` directive, explained below, defining a single :code:`@context` included in the template of each contained layer. In this way all the layer will share the same context definition.
 
 GML
@@ -888,9 +888,9 @@ HTML
 
 HTML templates can use several :code:`options`: 
 
-* :code:`<script>` allows defining whathever javascript is needed, e.g. to create a tree view (as in the example below) or an openlayers map client.
+* :code:`<script>` allows defining whatever javascript is needed, e.g. to create a tree view (as in the example below) or an openlayers map client.
 
-* :code: `<script type="application/ld+json"/>` allows to inject the JSON-LD representation of the features being templated in the `<head>`. In order to have the option working properly a JSON-LD template must be configured for the layer, or GeoServer will return an error messsage.
+* :code: `<script type="application/ld+json"/>` allows to inject the JSON-LD representation of the features being templated in the `<head>`. In order to have the option working properly a JSON-LD template must be configured for the layer, or GeoServer will return an error message.
 
 * :code:`<style>` allows defining css content.
 
@@ -1384,7 +1384,7 @@ present):
 There is currently no explicit support for array based columns in GML templates.
 
 
-Simplfied Property Access
+Simplified Property Access
 --------------------------
 
 The features-templating plug-in provides the possibility to directly reference domain name when dealing with Complex Features and using property interpolation in a template.
@@ -1436,7 +1436,7 @@ The following is a GeoJSON template that directly reference table names and colu
 
 As it is possible to see this template has some differences comparing to the one seen above:
 
-* Property interpolation  (``${property}``) and cql evaluation (``$${cql}``) directives are referencing the column name of the attribute that is meant to be included in the final output. The names match the ones of the columns and no namepsaces prefix is being used.
+* Property interpolation  (``${property}``) and cql evaluation (``$${cql}``) directives are referencing the column name of the attribute that is meant to be included in the final output. The names match the ones of the columns and no namespaces prefix is being used.
 * Inside the $${cql} directive instead of using an ``xpath`` function  the ``propertyPath`` function is being use. It must be used when the property references domain names inside a ``$${cql}`` directive. Paths in this case are no more separated by a ``/`` but by a ``.`` dot.
 * The ``$source`` directive references the table names.
 * When a ``column/property`` in a ``table/source`` is referenced from the context of the upper ``table/source``, as in all the filters in the template, the table name needs to be prefixed with a ``->`` symbol, and column name can come next separated by a ``.`` dot. Putting it in another way: the ``->``  signals that the next path part is a table joined to the last source defined.
@@ -1445,17 +1445,42 @@ As it is possible to see this template has some differences comparing to the one
 
 This functionality is particularly useful when defining templates on top of Smart Data Loader based Complex Features.
 
+Controlling Attributes With N Cardinality
+------------------------------------------
+
+When a property interpolation targets an attribute with multiple cardinality in a Complex Feature, feature templating will output the result as an array. This default behaviour can be controlled and modified with the usage of a set of CQL functions that are available in the plug-in, which allow to control how the list should be encoded in the template.
+
+* ``aggregate``: takes as arguments an expression (a property name or a function) that returns a list of values and a literal with the aggregation type eg. ``aggregate(my.property.name,'MIN')``. The supported aggregation type are the following:
+
+   - ``MIN`` will return the minimum value from a list of numeric values.
+   - ``MAX`` will return the max value from a list of numeric values.
+   - ``AVG`` will return the average value from a list of numeric values.
+   - ``UNIQUE`` will remove duplicates values from a list of values.
+   - ``JOIN`` will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: ``aggregate(my.property.name,'JOIN(,)')`` .
+
+* ``stream``: takes an undefined number of expressions as parameters and chain them so that each expression evaluate on top of the output of the previous expression: eg. ``stream(aPropertyName,aFunction,anotherPropertyName)`` while evaluate the ``aFunction`` on the output of ``aPropertyName`` evaluation and finally ``anotherPropertyName`` will evaluate on top of the result of ``aFunction``.
+
+* ``filter``: takes a literal cql filter as a parameter and evaluates it. Every string literal value in the cql filter must be between double quotes escaped: eg. ``filter('aProperty = \"someValue\"')``.
+
+* ``sort``: sort the list of values in ascending or descending order. It accepts as a parameter the sort order (``ASC``,``DESC``) and optionally a property name to target the property on which the sorting should be executed. If no property name is defined the sorting will be applied on the current node on which the function evaluates: ``sort('DESC',nested.property)``, ``sort('ASC')``.
+
+The above functions can be combined allowing fine grained control over the encoding of list values in a template. Assuming to write a template for the `meteo stations use case <#source-and-filter-complex-feature-example>`__, these are some example of the usage of the functions (simplified property access is used in the example below):
+
+- ``aggregate(stream(->meteo_observations,filter('value > 35')),AVG)`` will compute and return the average value of all the Observation nested feature value attribute.
+
+- ``aggregate(stream(->meteo_observations.->meteo_parameters,sort("ASC",param_name),param_unit),JOIN(,))`` will pick up the ``meteo_parameter`` nested features for each station feature, will sort them in ascending order based on the value of the ``param_name`` and will concatenate the ``param_unit`` values in a single string, comma separated.
+
 Template Validation
 -------------------
 
-There are two kind of validation available. The first one is done automatically every time a template is requested for the first time or after modifications occured. It is done automatically by GeoServer and validates that all the property names being used in the template applies to the Feature Type.
+There are two kind of validation available. The first one is done automatically every time a template is requested for the first time or after modifications occurred. It is done automatically by GeoServer and validates that all the property names being used in the template applies to the Feature Type.
 The second type of validation can be issued from the UI (see the configuration section) in case a JSON-LD or a GML output are request. The GML validation will validate the output against the provided ``SchemaLocation`` values. The ``JSON-LD`` validation is detailed below.
 
 JSON-LD Validation
 ^^^^^^^^^^^^^^^^^^
 
 The plugin provides a validation for the json-ld output against the ``@context`` defined in the template. It is possible to require it by specifying a new query parameter in the request: ``validation=true``.
-The validation takes advantage form the json-ld api and performes the following steps:
+The validation takes advantage form the json-ld api and performs the following steps:
 
 * the `expansion algorithm <https://www.w3.org/TR/json-ld11-api/#expansion-algorithm>`_ is executed against the json-ld output, expanding each features' attribute name to IRIs, removing those with no reference in the ``@context`` and the ``@context`` itself;
 

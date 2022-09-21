@@ -4,7 +4,7 @@ GeoJSON output format
 ======================
 
 The default GeoJSON output uses the WFS GeoJSON  encoding mechanism, producing a fixed output, it is however possible to customize the output using FreeMarker templates.
-GeoServer will lookup for json templates following the same rules defined for the hmtl output, but the template files have to be named appending ``_json`` to the usual name, as below:
+GeoServer will lookup for json templates following the same rules defined for the html output, but the template files have to be named appending ``_json`` to the usual name, as below:
 
 * ``header_json.ftl``
 * ``content_json.ftl``

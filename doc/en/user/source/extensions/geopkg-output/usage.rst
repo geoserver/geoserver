@@ -44,7 +44,7 @@ Using WMS 1.3.0 to access tiled image geopkg:
 You can use ``format=geopkg``, ``format=geopackage``, or ``format=gpkg`` as the output format in the request.  Use WMS ``version=1.1.0``, or ``version=1.3.0`` to specify which WMS version to use, keeping in mind axis order for ``bbox`` differences.
 
 .. note::
-    Regradless of of WMS axis order used for ``bbox`` the resulting GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) order as required by the specification.
+    Regardless of WMS axis order used for ``bbox`` the resulting GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) order as required by the specification.
 
 Format options
 ~~~~~~~~~~~~~~

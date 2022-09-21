@@ -133,7 +133,7 @@ As it is possible to see from the second example, if a template filter is define
 
 
 
-Backwards mapping capability is availabel for all the output formats. Consider the following JSON-LD output example:
+Backwards mapping capability is available for all the output formats. Consider the following JSON-LD output example:
 
 The following are example of valid CQL filters:
 

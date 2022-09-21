@@ -19,13 +19,13 @@ To perform the installation of the libjpeg-turbo binaries (or native library) yo
 
 1. Go to the download site `here <https://sourceforge.net/projects/libjpeg-turbo/files/>`__ and download the latest available stable release (1.2.90 at the time of writing)
 2. Select the package that matches the target platform in terms of Operating System (e.g. Linux rather than Windows) and Architecture (32 vs 64 bits)
-3. Perform the installation using the target platform conventions. As an instance for Windows you should be using an installer that installs all the needed libs in a location at user's choice. On Ubuntu Linux systems you can use the *deb* files insted.
+3. Perform the installation using the target platform conventions. As an instance for Windows you should be using an installer that installs all the needed libs in a location at user's choice. On Ubuntu Linux systems you can use the *deb* files instead.
 4. Once the native libraries are installed, you have to make sure the GeoServer can load them. This should happen automatically after Step 2 on Linux, while on Windows you should make sure that the location where you placed the DLLs is part of the PATH environment variable for the Java Process for the GeoServer.
 
 .. warning:: When installing on Windows, always make sure that the location where you placed the DLLs is part of the PATH environment variable for the Java Process for the GeoServer. This usually means that you have to add such location to the PATH environmental variable for the user that is used to run GeoServer or the system wide variables.
 .. warning:: When installing on Linux, make sure that the location where you placed the DLLs is part of the LD_LIBRARY_PATH environment variable for the Java Process for the GeoServer. This usually happens automatically for the various Linux packages, but in some cases you might be forced to do that manually
 
-.. note:: It does not hurt to add also the location where where the native libraries where installed to the Java startup options -Djava.library.path=<absolute_and_valid_path>
+.. note:: It does not hurt to add also the location where the native libraries where installed to the Java startup options -Djava.library.path=<absolute_and_valid_path>
 
 
 Installing the GeoServer libjpeg-turbo extension

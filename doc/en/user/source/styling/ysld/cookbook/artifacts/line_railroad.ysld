@@ -9,7 +9,7 @@ feature-styles:
     - line:
         stroke-color: '#333333'
         stroke-width: 1
-        stroke-graphic-stroke:
+        stroke-graphic:
           size: 12
           symbols:
           - mark:

@@ -158,7 +158,7 @@ The following format_options are supported:
 
 POST options
 ---------------------------
-Unfortunately, it's not currently possibile to use format_options in POST
+Unfortunately, it's not currently possible to use format_options in POST
 requests. The only thing we chose to implement is the layers options, via
 the handle attribute of Query attributes. So, if specified, the layer
 of a Query will be named as its handle attribute.

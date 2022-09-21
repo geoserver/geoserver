@@ -11,6 +11,7 @@ import com.google.common.base.Stopwatch;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -70,7 +71,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             params.put("version", version);
             params.put(
                     "contactEmail",
-                    (contactEmail == null ? "geoserver@example.org" : contactEmail));
+                    (contactEmail == null
+                            ? "geoserver@example.org"
+                            : StringEscapeUtils.escapeHtml4(contactEmail)));
             Label label =
                     new Label(
                             "footerMessage",

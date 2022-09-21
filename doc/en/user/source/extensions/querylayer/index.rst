@@ -102,7 +102,7 @@ To prevent impacting server stability there are built-in limits to how much data
 * at most 1000 features are collected by ``queryCollection``
 * at most 37000 coordinates (1MB worth of Coordinate objects) are collected by ``collectGeometries``
 
-These limits can be overridden by setting alternate values for the following parameters (this can be done using JVM system variables, servlet context variables, or enviroment variables):
+These limits can be overridden by setting alternate values for the following parameters (this can be done using JVM system variables, servlet context variables, or environment variables):
 
 * ``QUERY_LAYER_MAX_FEATURES`` controls the maximum number of features collected by ``queryCollection``
 * ``GEOMETRY_COLLECT_MAX_COORDINATES`` controls the maximum number of coordinates collected by ``collectGeometries``

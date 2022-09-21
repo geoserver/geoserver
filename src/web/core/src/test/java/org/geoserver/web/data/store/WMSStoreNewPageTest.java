@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.net.URL;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -40,12 +41,9 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        wmsService =
-                new WireMockServer(
-                        wireMockConfig()
-                                .dynamicPort()
-                                // uncomment the following to get wiremock logging
-                                .notifier(new ConsoleNotifier(true)));
+        WireMockConfiguration config = wireMockConfig().dynamicPort();
+        if (debugMode) config.notifier(new ConsoleNotifier(debugMode));
+        wmsService = new WireMockServer(config);
         wmsService.start();
         capabilities =
                 "http://localhost:"

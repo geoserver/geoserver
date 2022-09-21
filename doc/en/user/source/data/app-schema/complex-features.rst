@@ -119,7 +119,7 @@ physically attached::
     | 31 | ALBY | Albany         | POINT(117.8102 -34.9502) | 92774 |
 
 
-The geologic unit is is stored in the table ``geologicunit``::
+The geologic unit is stored in the table ``geologicunit``::
 
     | gu_id |                       urn             |         text        |
     +-------+---------------------------------------+---------------------+

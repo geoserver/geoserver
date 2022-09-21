@@ -20,7 +20,7 @@ The buttons for adding and removing a workspace can be found at the top of the W
 
    Buttons to add and remove
    
-To add a workspace, select the :guilabel:`Add new workspace` button. You will be prompted to enter the the workspace name and URI (as described in :ref:`data_webadmin_workspaces_edit` below).
+To add a workspace, select the :guilabel:`Add new workspace` button. You will be prompted to enter the workspace name and URI (as described in :ref:`data_webadmin_workspaces_edit` below).
    
 .. figure:: img/data_workspaces_sde.png
 
@@ -66,7 +66,7 @@ This parameter is used by the RESTful API as the `Root Directory` for uploaded f
 Workspace Settings
 ^^^^^^^^^^^^^^^^^^
 
-Use :guilabel:`Enabled` checkbox to override the global contact information for this this workspace.
+Use :guilabel:`Enabled` checkbox to override the global contact information for this workspace.
 
 .. figure:: img/workspace_settings.png
    
@@ -79,7 +79,7 @@ Clients accessing this workspace as a :ref:`virtual_services` will use the conta
 Workspace Services
 ^^^^^^^^^^^^^^^^^^
 
-Use the checkbox located next to each serivce to override the global settings for the associated service.
+Use the checkbox located next to each service to override the global settings for the associated service.
 
 .. figure:: img/workspace_services.png
    

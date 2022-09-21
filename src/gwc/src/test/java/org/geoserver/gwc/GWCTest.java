@@ -54,6 +54,7 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +64,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -78,14 +81,25 @@ import org.geoserver.gwc.layer.CatalogStyleChangeListener;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
+import org.geoserver.gwc.wms.CachingWebMapService;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.util.CaseInsensitiveMap;
+import org.geoserver.platform.ExtensionFilter;
+import org.geoserver.platform.ExtensionProvider;
 import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.WebMap;
+import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.kvp.PaletteManager;
+import org.geoserver.wms.map.RawMap;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -127,6 +141,7 @@ import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -251,11 +266,9 @@ public class GWCTest {
         tld = mock(TileLayerDispatcher.class);
         mockTileLayerDispatcher();
 
+        ApplicationContext appContext = createMock(ApplicationContext.class);
         GeoWebCacheEnvironment genv =
                 createMockBuilder(GeoWebCacheEnvironment.class).withConstructor().createMock();
-
-        ApplicationContext appContext = createMock(ApplicationContext.class);
-
         expect(appContext.getBeanNamesForType(GeoWebCacheEnvironment.class))
                 .andReturn(new String[] {"geoWebCacheEnvironment"})
                 .anyTimes();
@@ -265,6 +278,7 @@ public class GWCTest {
                 .andReturn(genvMap)
                 .anyTimes();
         expect(appContext.getBean("geoWebCacheEnvironment")).andReturn(genv).anyTimes();
+        expect(appContext.isSingleton("geoWebCacheEnvironment")).andReturn(true).anyTimes();
 
         expect(appContext.getBeanNamesForType(XMLConfiguration.class))
                 .andReturn(new String[] {"geoWebCacheXMLConfiguration"})
@@ -274,12 +288,81 @@ public class GWCTest {
         expect(appContext.getBeansOfType(XMLConfiguration.class)).andReturn(xmlConfMap).anyTimes();
         expect(appContext.getBean("geoWebCacheXMLConfiguration")).andReturn(xmlConfig).anyTimes();
 
+        GeoServerEnvironment gsenv =
+                createMockBuilder(GeoServerEnvironment.class)
+                        .withConstructor()
+                        .addMockedMethods("getProps")
+                        .createMock();
+        expect(appContext.getBeanNamesForType(GeoServerEnvironment.class))
+                .andReturn(new String[] {"environments"})
+                .anyTimes();
+        Map<String, GeoServerEnvironment> gsenvMap = new HashMap<>();
+        gsenvMap.put("environments", gsenv);
+        expect(appContext.getBeansOfType(GeoServerEnvironment.class))
+                .andReturn(gsenvMap)
+                .anyTimes();
+        expect(appContext.getBean("environments")).andReturn(gsenv).anyTimes();
+        expect(appContext.isSingleton("environments")).andReturn(true).anyTimes();
+
+        Properties properties = new Properties();
+        properties.put("TEST", "TEST VALUE");
+        expect(gsenv.getProps()).andReturn(properties).anyTimes();
+        replay(gsenv);
+
+        GWC gwcenv =
+                createMockBuilder(GWC.class)
+                        .withConstructor(
+                                gwcConfigPersister,
+                                storageBroker,
+                                tld,
+                                gridSetBroker,
+                                tileBreeder,
+                                diskQuotaMonitor,
+                                owsDispatcher,
+                                catalog,
+                                catalog,
+                                storageFinder,
+                                jdbcStorage,
+                                blobStoreAggregator)
+                        .createMock();
+
+        expect(appContext.getBeanNamesForType(GWC.class))
+                .andReturn(new String[] {"gwc"})
+                .anyTimes();
+        Map<String, GWC> gwcenvMap = new HashMap<>();
+        gwcenvMap.put("gwc", gwcenv);
+        expect(appContext.getBeansOfType(GWC.class)).andReturn(gwcenvMap).anyTimes();
+        expect(appContext.getBean("gwc")).andReturn(gwcenv).anyTimes();
+        expect(appContext.isSingleton("gwc")).andReturn(true).anyTimes();
+
+        GeoServerResourceLoader loader =
+                createMockBuilder(GeoServerResourceLoader.class).withConstructor().createMock();
+        expect(appContext.getBeanNamesForType(ExtensionFilter.class))
+                .andReturn(new String[] {})
+                .anyTimes();
+        expect(appContext.getBeanNamesForType(ExtensionProvider.class))
+                .andReturn(new String[] {})
+                .anyTimes();
+        expect(appContext.getBeanNamesForType(GeoServerResourceLoader.class))
+                .andReturn(new String[] {"resourceLoader"})
+                .anyTimes();
+        Map<String, GeoServerResourceLoader> grenvMap = new HashMap<>();
+        grenvMap.put("resourceLoader", loader);
+        expect(appContext.getBeansOfType(GeoServerResourceLoader.class))
+                .andReturn(grenvMap)
+                .anyTimes();
+        expect(appContext.getBean("resourceLoader")).andReturn(loader).anyTimes();
+        expect(appContext.isSingleton("resourceLoader")).andReturn(true).anyTimes();
+
         replay(appContext);
 
         GeoWebCacheExtensions gse = createMockBuilder(GeoWebCacheExtensions.class).createMock();
         gse.setApplicationContext(appContext);
 
         replay(gse);
+
+        GeoServerExtensions gsext = new GeoServerExtensions();
+        gsext.setApplicationContext(appContext);
 
         List<GeoWebCacheEnvironment> extensions =
                 GeoWebCacheExtensions.extensions(GeoWebCacheEnvironment.class);
@@ -1195,6 +1278,42 @@ public class GWCTest {
                 target.toString().contains(expectedReason));
     }
 
+    /**
+     * Confirms that GWC handling of WMS requests does not enter recursion when encountering a seed
+     * request
+     */
+    @Test
+    public void testGetMapRequest() throws Throwable {
+        GetMapRequest request = new GetMapRequest();
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        rawKvp.put(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN, "true");
+        request.setRawKvp(rawKvp);
+        rawKvp.put("layers", "test:mockLayer");
+        RawMap rawMap = new RawMap(new WMSMapContent(request), new byte[] {}, "image/png");
+        WebMapService mapService = mock(DefaultWebMapService.class);
+        when(mapService.getMap(request)).thenReturn(rawMap);
+        Method getMapMethod = WebMapService.class.getMethod("getMap", GetMapRequest.class);
+        MethodInvocation invocation =
+                new PassThroughMethodInvocation(mapService, getMapMethod, request);
+        mediator.getConfig().setDirectWMSIntegrationEnabled(true);
+        mediator.getConfig().setRequireTiledParameter(false);
+        CachingWebMapService cwms = new CachingWebMapService(mediator);
+        WebMap webMap = cwms.invoke(invocation);
+        assertNull(webMap.getResponseHeaders());
+        GetMapRequest requestWithoutSeedKey = new GetMapRequest();
+        rawKvp.remove(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
+        requestWithoutSeedKey.setRawKvp(rawKvp);
+        RawMap rawMap2 =
+                new RawMap(new WMSMapContent(requestWithoutSeedKey), new byte[] {}, "image/png");
+        when(mapService.getMap(requestWithoutSeedKey)).thenReturn(rawMap2);
+        MethodInvocation invocation2 =
+                new PassThroughMethodInvocation(mapService, getMapMethod, requestWithoutSeedKey);
+        WebMap webMapWithoutSeed = cwms.invoke(invocation2);
+        assertEquals("geowebcache-cache-result", webMapWithoutSeed.getResponseHeaders()[0][0]);
+    }
+
     @Test
     public void testDispatchGetMapMultipleCrsMatchingGridSubsets() throws Exception {
 
@@ -1506,5 +1625,19 @@ public class GWCTest {
         if (GeoServerEnvironment.allowEnvParametrization()) {
             assertEquals("H2", jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect());
         }
+    }
+
+    @Test
+    public void testGWCEnvParametrization() {
+        if (GeoServerEnvironment.allowEnvParametrization()) {
+            GeoWebCacheEnvironment gwcEnvironment =
+                    GeoWebCacheExtensions.bean(GeoWebCacheEnvironment.class);
+            assertEquals("TEST VALUE", gwcEnvironment.resolveValue("${TEST}"));
+        }
+    }
+
+    @AfterClass
+    public static void destroyAppContext() {
+        GeoServerExtensionsHelper.init(null);
     }
 }

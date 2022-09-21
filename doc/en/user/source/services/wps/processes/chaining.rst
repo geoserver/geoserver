@@ -28,7 +28,7 @@ In order to calculate the total length, we will need the following built in WPS 
 
 
 
-The sequence in which these processes are executed is important. The first thing we want to do is interesect the road network with the restricted areas. This gives us the feature collection with all the roads that we are interested in. Then we collect those geometries into a single GeometryCollection so that the length can be calculated with the built in JTS algorithm.
+The sequence in which these processes are executed is important. The first thing we want to do is intersect the road network with the restricted areas. This gives us the feature collection with all the roads that we are interested in. Then we collect those geometries into a single GeometryCollection so that the length can be calculated with the built in JTS algorithm.
 
 `gs:IntersectionFeatureCollection` --> `gs:CollectGeometries` --> `JTS:length`
 

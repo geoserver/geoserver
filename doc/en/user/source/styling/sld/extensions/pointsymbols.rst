@@ -230,8 +230,8 @@ This results in the following map display:
 
    *Shield symbols rendered on the map*
 
-Extending the Mark subsytem using Java
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extending the Mark subsystem using Java
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Mark subsystem is user-extensible.  
 To do this using Java code, implement the ``MarkFactory`` interface and declare the implementation in the ``META-INF/services/org.geotools.renderer.style.MarkFactory`` file.
@@ -294,7 +294,7 @@ SVG Parameters
 GeoServer can handle SVG images in which parts of the SVG-attributes are 
 named parameters, as outlined the `SVG Parameters 1.0 specification <https://www.w3.org/TR/SVGParamPrimer/>`__. This capability is also supported by `QGIS <http://qgis.org>`__.
 
-SVG Prameters are represented in a file like: `poi_peak.svg <https://github.com/qgis/QGIS/blob/master/images/svg/symbol/poi_peak.svg>`__ as:
+SVG Parameters are represented in a file like: `poi_peak.svg <https://github.com/qgis/QGIS/blob/master/images/svg/symbol/poi_peak.svg>`__ as:
 
 .. code-block:: xml
 
@@ -303,7 +303,7 @@ SVG Prameters are represented in a file like: `poi_peak.svg <https://github.com/
     fill-opacity="param(fill-opacity)" stroke="param(outline)" stroke-opacity="param(outline-opacity)" stroke-width="param(outline-width)"/>
    </svg>
 
-The 'param'-constructs mean that you can define the parameters: `fill`, `fill-opacity`, `outline`, `outline-opacity` and `outline-width` as part of an SVG URL reference, where a refence to this image with red fill would be: ``poi_peak.svg?fill=#FF0000``.
+The 'param'-constructs mean that you can define the parameters: `fill`, `fill-opacity`, `outline`, `outline-opacity` and `outline-width` as part of an SVG URL reference, where a reference to this image with red fill would be: ``poi_peak.svg?fill=#FF0000``.
 
 Note: When editng :file:`SVG` files (e.g. in Inkscape) save using 'simple svg' format.
 
@@ -351,7 +351,7 @@ To define several parameters, the query-parameters should be url-encoded.
 
 Parameters names are defined by the SVG file:
 
-* The parameter 'stroke' above is called 'outline' in the origional :file:`svg` file:
+* The parameter 'stroke' above is called 'outline' in the original :file:`svg` file:
   
   .. code-block:: xml
   
@@ -369,7 +369,7 @@ Parameters names are defined by the SVG file:
      
      SVG image with fill
 
-The use of SVG paramters can be combinded with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.
+The use of SVG parameters can be combinded with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.
 
 * OnlineResource `href` URI referencing SVG Parameter with dynamic CQL expression:
    

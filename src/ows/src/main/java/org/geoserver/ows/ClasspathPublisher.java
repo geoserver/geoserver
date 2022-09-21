@@ -5,7 +5,10 @@
  */
 package org.geoserver.ows;
 
+import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -50,10 +53,14 @@ public class ClasspathPublisher extends AbstractURLPublisher {
     }
 
     @Override
-    protected URL getUrl(HttpServletRequest request) {
+    protected URL getUrl(HttpServletRequest request) throws IOException {
         String ctxPath = request.getContextPath();
         String reqPath = request.getRequestURI();
+        reqPath = URLDecoder.decode(reqPath, "UTF-8");
         reqPath = reqPath.substring(ctxPath.length());
+        if (Arrays.stream(reqPath.split("/")).anyMatch(".."::equals)) {
+            throw new IllegalArgumentException("Contains invalid '..' path: " + reqPath);
+        }
 
         // try a few lookups
         URL url = clazz.getResource(reqPath);

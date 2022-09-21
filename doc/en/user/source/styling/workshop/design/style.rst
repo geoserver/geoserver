@@ -43,7 +43,7 @@ From GeoServer's **line.sld** style:
 Polygon symbolizer
 ------------------
 
-A polygon symbolizer documents both the the stroke in addition to the fill used to draw a polygon. A fill can consist of a color, pattern, or other texture:
+A polygon symbolizer documents both the stroke in addition to the fill used to draw a polygon. A fill can consist of a color, pattern, or other texture:
   
 The SLD specification provides a default gray fill, but does not supply a stroke. These values will be used if you do not provide an alternative.
   

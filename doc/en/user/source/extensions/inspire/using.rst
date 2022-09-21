@@ -88,7 +88,7 @@ Once on the WFS or WCS configuration page, there will be a block titled :guilabe
 * :guilabel:`Other Supported Languages` area for setting Supported Languages
 * :guilabel:`Service Metadata URL` field, a URL containing the location of the metadata associated with the WFS or WCS
 * :guilabel:`Service Metadata Type` combo box, for detailing whether the metadata came from a CSW (Catalog Service) or a standalone metadata file
-* :guilabel:`Spatial dataset identifers` table, where you can specify a code (mandatory), a namespace (optional) and a metadata URL (optional) for each spatial data set the WFS or WCS is offering
+* :guilabel:`Spatial dataset identifiers` table, where you can specify a code (mandatory), a namespace (optional) and a metadata URL (optional) for each spatial data set the WFS or WCS is offering
 
 .. figure:: images/inspire_wfs.png
    :align: center
@@ -97,7 +97,7 @@ Once on the WFS or WCS configuration page, there will be a block titled :guilabe
 
 After clicking :guilabel:`Submit` on this page, any changes will be immediately reflected in the WFS 1.1 and WFS 2.0 or WCS 2.0 capabilities documents as appropriate.
 
-.. note:: The :guilabel:`Service Metadata URL` field and at least one :guilabel:`Spatial dataset identifers` entry are mandatory so you will not be allowed to submit the page without these.
+.. note:: The :guilabel:`Service Metadata URL` field and at least one :guilabel:`Spatial dataset identifiers` entry are mandatory so you will not be allowed to submit the page without these.
 
 .. note:: The :guilabel:`Service Metadata Type` combo box only allows to select the appropriate MIME type for a CSW response or standalone metadata file or to omit a value altogether. If you think other values would be useful you could raise the issue on the :ref:`GeoServer mailing list <getting_involved>`. In the meantime it is possible to manually edit the created configuration files as a workaround.
 
@@ -153,7 +153,7 @@ The spatial data identifiers section is mandatory, but cannot be filled by defau
 Internationalization support
 ----------------------------
 
-GeoServer offers the ability to configure GetCapabilities response in multiple languages. Content in different laguages can be requested by using the request parameter `Language`, e.g. `Language=eng`. At the time of writing, the following services support the parameter: WFS 2.0, WMS 1.1 and 1.3, WCS 2.0.
+GeoServer offers the ability to configure GetCapabilities response in multiple languages. Content in different languages can be requested by using the request parameter `Language`, e.g. `Language=eng`. At the time of writing, the following services support the parameter: WFS 2.0, WMS 1.1 and 1.3, WCS 2.0.
 
 At the time of writing the `INSPIRE Schemas <https://inspire.ec.europa.eu/schemas/common/1.0/common.xsd>`_ only allow 23 choices for :guilabel:`DefaultLanguage`. The GeoServer INSPIRE extension allows some other languages to be chosen. If you choose one of these your capabilities document won't be Schema valid but, as discussed in :geos:`issue 7388 <7388>`, the INSPIRE Schemas seem to be at fault.
 

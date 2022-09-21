@@ -34,7 +34,7 @@ Indexer files and regex
 
 The approach will be exactly the same of the ``datastore.properties``.
 
-Is is worth notice that the backup extension will overwrite only the files having a corresponding ``.template`` prototype.
+It's worth notice that the backup extension will overwrite only the files having a corresponding ``.template`` prototype.
 
 Granules stored on the same mosaic folder vs. absolute path
 -----------------------------------------------------------

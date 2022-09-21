@@ -5,7 +5,7 @@ YSLD Quickstart
 
 In the last section, we saw how the OGC defines style using XML documents (called SLD files).
 
-We will now explore GeoServer styling in greater detail using a tool to generate our SLD files. The **YSLD** GeoServer extension is used to generate SLD files using a clearer, more consice language based on **YAML**. Unlike **CSS**, the **YSLD** styling language has a one-to-one correspondance to SLD, meaning that each line of YSLD translates directly to one or more lines of SLD. Aditionally, A YSLD style can be converted to SLD *and back* without loss of information.
+We will now explore GeoServer styling in greater detail using a tool to generate our SLD files. The **YSLD** GeoServer extension is used to generate SLD files using a clearer, more concise language based on **YAML**. Unlike **CSS**, the **YSLD** styling language has a one-to-one correspondence to SLD, meaning that each line of YSLD translates directly to one or more lines of SLD. Additionally, A YSLD style can be converted to SLD *and back* without loss of information.
 
 Using the YSLD extension to define styles results in shorter examples that are easier to understand. At any point we will be able to review the generated SLD file.
 
@@ -32,7 +32,7 @@ The :kbd:`<property>` is a string denoting the property name, while the :kbd:`<v
 =========== ====================================================
 Integer     Numerical value. May be surrounded by quotes.
 Float       Numerical value. May be surrounded by quotes.
-Text        Text value.  If value is amiguous, use single quotes.
+Text        Text value.  If value is ambiguous, use single quotes.
 Color       Hexadecimal color of the form :kbd:`'#RRGGBB'`.
 Tuple       A list of values in brackets. e.g. :kbd:`[0, 1]`
 Expression  CQL expression surrounded by :kbd:`${ }`
@@ -95,7 +95,7 @@ If you have a list that contains only one item, and there is no other content at
           shape: circle
           fill-color: 'gray'
 
-This is usefull for making your styles more concise.
+This is useful for making your styles more concise.
 
 Indentation
 ^^^^^^^^^^^
@@ -192,7 +192,7 @@ Variables
 
 Up to this point we have been styling individual features, documenting how each shape is represented.
 
-When styling multiple feaures, or using filters to style individual features in different yars, you may need to repeat styling information.
+When styling multiple features, or using filters to style individual features in different years, you may need to repeat styling information.
 
 Variables in YSLD allow for a certain directive or block of directives to be defined by name and later reused. This can greatly simplify the styling document.
 
@@ -243,7 +243,7 @@ The syntax for using a variable block is to prepend the variable name with :kbd:
 Compare YSLD to SLD
 -------------------
    
-As noted above, YSLD has a one-to-one correspondance with SLD, it merely uses a different markup language to diplay the same content. We can compare a SLD style with a YSLD style to see this correspondence:
+As noted above, YSLD has a one-to-one correspondence with SLD, it merely uses a different markup language to display the same content. We can compare a SLD style with a YSLD style to see this correspondence:
 
 SLD Style
 ^^^^^^^^^
@@ -272,7 +272,7 @@ To confirm everything works, let's reproduce the airports style above.
 
 #. Navigate to the **Styles** page.
 
-#. Each time we edit a style, the contents of the associated SLD file are replaced. Rather then disrupt any of our existing styles we will create a new style. Click :guilabel:`Add a new style` and choose the following:
+#. Each time we edit a style, the contents of the associated SLD file are replaced. Rather than disrupt any of our existing styles we will create a new style. Click :guilabel:`Add a new style` and choose the following:
 
    .. list-table:: 
       :widths: 30 70
@@ -285,12 +285,12 @@ To confirm everything works, let's reproduce the airports style above.
       * - Format:
         - :kbd:`YSLD`
 
-#. Replace the initial YSLD definition with with our airport YSLD example and click :guilabel:`Apply`:
+#. Replace the initial YSLD definition with our airport YSLD example and click :guilabel:`Apply`:
 
     .. literalinclude:: ../files/airports0.ysld
        :language: yaml
 
-#. Click the :guilabel:`Layer Preview` tab to preview the style. We want to preview on the aiports layer, so click the name of the current layer and select :kbd:`ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
+#. Click the :guilabel:`Layer Preview` tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select :kbd:`ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
 
    .. figure:: ../style/img/css_02_choose_data.png
 
@@ -347,7 +347,7 @@ Challenge Compare SLD Generation
 
      curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld?pretty=true
 
-#. Compare the generated SLD differ above with the hand written :download:`SLD file <../files/airports0.sld>` used as an example?
+#. Compare the generated SLD differ above with the handwritten :download:`SLD file <../files/airports0.sld>` used as an example?
    
    **Challenge:** What differences can you spot?
    

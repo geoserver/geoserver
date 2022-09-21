@@ -31,12 +31,12 @@ Configuration Instructions
        :align: center
 
 3. Set the `access-type` of client as appropriate. If your GeoServer instance is depending on another service for authentication (eg: NGINX auth plugin) then you should probably select *bearer-only*.
-   Otherwise, you should probably select *confidential*.
+   Otherwise, you should select *confidential*.
 
     .. figure:: images/keycloak_client003.png
        :align: center
 
-4. Add the the *ADMINISTRATOR* and *AUTHENTICATED* `client-role <http://www.keycloak.org/docs/2.5/server_admin/topics/roles/client-roles.html>`_ to the `geoserver-client` in Keycloak.
+4. Add the *ADMINISTRATOR* and *AUTHENTICATED* `client-role <http://www.keycloak.org/docs/2.5/server_admin/topics/roles/client-roles.html>`_ to the `geoserver-client` in Keycloak.
 
     .. figure:: images/keycloak_client004.png
        :align: center
@@ -72,12 +72,25 @@ Configuration Instructions
     .. figure:: images/keycloak_adapter001.png
        :align: center
 
-2. Add the `keycloak_adapter` to the *web* `filter-chain` if you want to protect the Admin GUI, as an instance. If you want to be redirected everytime to Keycloak, then remove all of the others `chain filters` (basic, form, rememberme, anonymous), otherwise you will need to access directly the login url on Keycloak.
+   The :guilabel:`Enable redirect to Keycloak Login page` checkbox should be checked if the desired behaviour is to authenticate on the web ui only through keycloak. Note that in this case the keycloak filter should be the only one available in the ``/web`` filter chain. 
+   On the contrary if the keycloak filter needs to coexists with other filters on the filter chain and reach  it must be unchecked.
+
+   The :guilabel:`Role Source` drop down enable the selection of the desired role source for the user being authenticated through keycloak. If none is selected by default the ``Active Role Service`` will be used.
+
+
+2. Add the `keycloak_adapter` to the *web* `filter-chain` if you want to protect the Admin GUI, as an instance. If you have checked :guilabel:`Enable redirect to Keycloak Login page` on the filter configuration to be redirected every time to Keycloak, then remove all of the others `chain filters` (basic, form, rememberme, anonymous).
 
     .. figure:: images/keycloak_adapter002.png
        :align: center
 
-3. Check your work so far by navigating to the GeoServer UI. You should be redirected to the Keycloak `login-page`, and after logging-in you should be redirected back to the actual GUI page.
+3. Once done navigate to the GeoServer UI. 
+If at filter configuration time the checkbox ``Enable redirect to Keycloak Login page`` was kept unchecked and the keycloak filter cohexists on the /web chain with the form and anonymous filter you will see a keycloak login button that allows the user to reach the keycloak login page.
+
+.. figure:: images/keycloak_login.png
+       :align: center
+
+
+Otherwise the user will be directly redirected to the Keycloak `login-page`, and after logging-in redirected back to the actual GeoServer UI page.
 
     .. figure:: images/keycloak_adapter003.png
        :align: center

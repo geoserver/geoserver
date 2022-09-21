@@ -84,7 +84,7 @@ which is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` secti
 GraphicStroke
 ^^^^^^^^^^^^^
 
-The ``<GraphicStroke>`` element specifies the the line is to be drawn 
+The ``<GraphicStroke>`` element specifies the line is to be drawn 
 using a repeated graphic image or symbol following the line.
 The graphic is specified by a ``<Graphic>`` sub-element,  
 which is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` section.

@@ -43,7 +43,7 @@ Move on to the connection parameters used to connect and interact with the datab
 
    *PostGIS connection parameters*
 
-The ``dbtype`` and ``namespace`` connection parameters are not directly editable. The :guilabel:`dbtype` parameter is for internal use only (and only accessable via the REST API).
+The ``dbtype`` and ``namespace`` connection parameters are not directly editable. The :guilabel:`dbtype` parameter is for internal use only (and only accessible via the REST API).
 
 .. list-table::
    :widths: 20 80
@@ -73,7 +73,7 @@ Connection parameters establishing a database connection (see :doc:`connection-p
    * - :guilabel:`schema`
      - Schema in the above database.
    * - :guilabel:`user`
-     - User name to connect to the database.
+     - Username to connect to the database.
    * - :guilabel:`passwd`
      - Password associated with the above user.
    * - :guilabel:`max connections`
@@ -259,7 +259,7 @@ The following are the main characteristics of the implementation:
 
 * GeoServer will perform a cast automatically to the expect type from the evaluation; the cast is completely delegated to the database.
 
-* If the property doesn't exists no errors will be issued, but the features that have that property will be excluded; hence the property we whish to query is not mandatory in all features.
+* If the property doesn't exists no errors will be issued, but the features that have that property will be excluded; hence the property we wish to query is not mandatory in all features.
 
 Examples
 ````````

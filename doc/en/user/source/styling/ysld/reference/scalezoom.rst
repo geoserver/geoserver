@@ -5,11 +5,11 @@ Scale and zoom
 
 It is common for different :ref:`rules <ysld_reference_rules>` to be applied at different zoom levels on a web map. 
 
-For example, on a roads layer, you would not not want to display every single road when viewing the whole world. Or perhaps you may wish to styles the same features differently depending on the zoom level. For example: a cities layer styled using points at low zoom levels (when "zoomed out") and with polygon borders at higher zoom levels ("zoomed in").
+For example, on a roads layer, you would not want to display every single road when viewing the whole world. Or perhaps you may wish to styles the same features differently depending on the zoom level. For example: a cities layer styled using points at low zoom levels (when "zoomed out") and with polygon borders at higher zoom levels ("zoomed in").
 
 .. todo:: ADD FIGURE
 
-YSLD allows rules to be applied depending on the the scale or zoom level. You can specify by scale, or you can define zoom levels in terms of scales and specify by zoom level.
+YSLD allows rules to be applied depending on the scale or zoom level. You can specify by scale, or you can define zoom levels in terms of scales and specify by zoom level.
 
 .. warning:: Be aware that scales for a layer (where a style is applied) may interact differently when the layer is contained in a map, if the map has a different coordinate reference system from the layer.
 

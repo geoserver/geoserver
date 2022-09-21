@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.nio.channels.Channels;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.wms.GetMapRequest;
@@ -64,7 +66,11 @@ public class CachingWebMapService implements MethodInterceptor {
 
         final GetMapRequest request = getRequest(invocation);
         boolean tiled = request.isTiled() || !config.isRequireTiledParameter();
-        if (!tiled) {
+        final Map<String, String> rawKvp = request.getRawKvp();
+        // skipping seeding requests to avoid meta tile recursion
+        boolean isSeedingRequest =
+                rawKvp != null && rawKvp.containsKey(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
+        if (!tiled || isSeedingRequest) {
             return (WebMap) invocation.proceed();
         }
 

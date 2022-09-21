@@ -215,7 +215,7 @@ Here is an example :download:`SLD file <../files/airports2.sld>` for reference:
 CSS Style
 ^^^^^^^^^
 
-**CSS** also makes use of rules, each rule making use of **selectors** to shortlist content for display. Each selector uses a CQL filter that suports attribute, spatial and temporal queries. Once selected, CSS Properties are used to describe how content is rendered.
+**CSS** also makes use of rules, each rule making use of **selectors** to shortlist content for display. Each selector uses a CQL filter that supports attribute, spatial and temporal queries. Once selected, CSS Properties are used to describe how content is rendered.
 
 Content is not drawn by more than one rule. When content satisfies the conditions of more than one rule the resulting properties are combined using a process called inheritance. This technique of having a generic rule that is refined for specific cases is where the **Cascading** in Cascading Style Sheet comes from.
   
@@ -237,7 +237,7 @@ To confirm everything works, let's reproduce the airports style above.
 
 #. Navigate to the **Styles** page.
 
-#. Each time we edit a style, the contents of the associated SLD file are replaced. Rather then disrupt any of our existing styles we will create a new style. Click :guilabel:`Add a new style` and choose the following:
+#. Each time we edit a style, the contents of the associated SLD file are replaced. Rather than disrupt any of our existing styles we will create a new style. Click :guilabel:`Add a new style` and choose the following:
 
    .. list-table:: 
       :widths: 30 70
@@ -250,7 +250,7 @@ To confirm everything works, let's reproduce the airports style above.
       * - Format:
         - :kbd:`CSS`
    
-#. Replace the initial YSLD definition with with our airport CSS example and click :guilabel:`Apply`:
+#. Replace the initial YSLD definition with our airport CSS example and click :guilabel:`Apply`:
 
    .. code-block:: css
 
@@ -259,7 +259,7 @@ To confirm everything works, let's reproduce the airports style above.
         mark-mime: "image/svg";
       }
 
-#. Click the :guilabel:`Layer Preview` tab to preview the style. We want to preview on the aiports layer, so click the name of the current layer and select :kbd:`ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
+#. Click the :guilabel:`Layer Preview` tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select :kbd:`ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
 
    .. figure:: ../style/img/css_02_choose_data.png
 
@@ -310,7 +310,7 @@ Challenge Compare SLD Generation
 
      curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld?pretty=true
 
-#. Compare the generated SLD differ above with the hand written :download:`SLD file <../files/airports0.sld>` used as an example?
+#. Compare the generated SLD differ above with the handwritten :download:`SLD file <../files/airports0.sld>` used as an example?
    
    **Challenge:** What differences can you spot?
    

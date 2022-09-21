@@ -1,7 +1,7 @@
 .. _tutorial_imagemosaic_footprint:
 
-Using the ImageMosaic plugin with footprint mangement
-=====================================================
+Using the ImageMosaic plugin with footprint management
+======================================================
 
 
 Introduction
@@ -67,7 +67,7 @@ must be added)::
 **Full** inset type calculates the inset for each footprint side while **Border** does the same operation but those straight lines that overlap the image bounds are avoided; this last parameter is useful for
 images already cut in a regular grid.
 
-Each modification of the **footprints.properties** file requires to *Reload* GeoServer. This operation can be achieved by going to :guilabel:`Server Status` and cliking on the 
+Each modification of the **footprints.properties** file requires to *Reload* GeoServer. This operation can be achieved by going to :guilabel:`Server Status` and clicking on the 
 :guilabel:`Reload` button on the bottom-right side of the page.
 
 The two datasets used in the tutorial can be downloaded here: `Mosaic with a single image <http://demo.geo-solutions.it/share/tutorial/mosaic_single_tiff.zip>`_  which represents Boulder (Colorado), `Mosaic with multiple images <http://demo.geo-solutions.it/share/tutorial/mosaic_sample.zip>`_ which represents Italy. 

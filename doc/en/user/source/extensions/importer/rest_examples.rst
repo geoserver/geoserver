@@ -288,7 +288,7 @@ In this case, let's assume we have a single shapefile, :file:`tasmania_cities.sh
       curl -u admin:geoserver -XGET -H "Content-type: application/json" \
            http://localhost:8080/geoserver/rest/imports/13/tasks/0
    
-   The import is now ready ready to execute:
+   The import is now ready to execute:
 
    .. code-block:: json
    
@@ -325,7 +325,7 @@ In this case, let's assume we have a single shapefile, :file:`tasmania_cities.sh
       curl -u admin:geoserver -XPOST \
         "http://localhost:8080/geoserver/rest/imports/13"
 
-   With a sucessful import marking the task as ``COMPLETE``:
+   With a successful import marking the task as ``COMPLETE``:
 
    .. code-block:: json
    
@@ -578,7 +578,7 @@ into PostGIS as a new spatial table.
 6. The new layer is created in PostGIS and registered in GeoServer as a new layer.
 
    In case the features in the CSV need to be appended to an existing layer a PUT request against the task might be performed, changing its
-   updateMode from "CREATE" to "APPEND". Changing it to "REPLACE" instead will preserve the layer, but remove the old conents and replace
+   updateMode from "CREATE" to "APPEND". Changing it to "REPLACE" instead will preserve the layer, but remove the old contents and replace
    them with the newly uploaded ones.
 
 Replacing PostGIS table using the contents of a CSV file
@@ -922,7 +922,7 @@ Asynchronously fetching and importing data from a remote server
 ---------------------------------------------------------------
 
 We assume a remote FTP server contains multiple shapefiles that we need to import in GeoServer
-as new layers. The files are large, and the server has much better bandwith than the client,
+as new layers. The files are large, and the server has much better bandwidth than the client,
 so it's best if GeoServer performs the data fetching on its own.
 
 In this case a asynchronous request using ``remote`` data will be the best fit::
@@ -1011,4 +1011,4 @@ Where import.json is::
     }
     
 Given the request is asynchronous, the client will have to poll the server in order to check
-if the initialization and execution have succeded.
+if the initialization and execution have succeeded.

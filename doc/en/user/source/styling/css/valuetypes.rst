@@ -64,7 +64,7 @@ Strings can be enclosed in either single or double quotes.  It's easiest to
 simply use whichever type of quotes are not in your string value, but you can
 escape quote characters by prefixing them with a backslash ``\``.  Backslash
 characters themselves must also be prefixed.  For example, ``'\\\''`` is a
-string value consisting of a single backslash followed by a single single quote
+string value consisting of a single backslash followed by a single quote
 character.
 
 Labels

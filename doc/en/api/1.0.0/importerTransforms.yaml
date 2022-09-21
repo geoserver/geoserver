@@ -54,7 +54,7 @@ paths:
       tags:
        - "ImporterTransforms"
       summary: Create a new transformation
-      description: Create a new transormation and append it inside a task with id {taskId} within import with id {importId}
+      description: Create a new transformation and append it inside a task with id {taskId} within import with id {importId}
       consumes:
         - application/json
         - text/json

@@ -74,7 +74,7 @@ Select the templates that needs to be removed and click delete, the selected row
 Template order
 ^^^^^^^^^^^^^^
 The templates have an order. The templates at the top of the list have a higher priority than the templates at the bottom.
-When a field has a value in multiple templates and the layer is linked with those templates the priority will determine wich value is displayed in the metadata UI.
+When a field has a value in multiple templates and the layer is linked with those templates the priority will determine which value is displayed in the metadata UI.
 The value defined in the template with the highest priority will be displayed.
 
 Change the order of the templates with the arrow keys in the priority column and save the changes by clicking `Save` button, this will also recalculate the values in all linked layers that may be affected.
@@ -115,4 +115,4 @@ You may optionally specify a selected list of rules if you do not wish to apply 
 Clear metadata
 ^^^^^^^^^^^^^^
 Removes all existing metadata from all layers. Optionally, remove all existing templates as well.
-This cannot be be undone.
+This cannot be undone.

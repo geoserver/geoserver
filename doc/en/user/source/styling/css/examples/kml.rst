@@ -14,7 +14,7 @@ a certain scale, and switches to a vector, clickable representation once the num
 fall below a certain scale (as controlled by the ``KMSCORE`` parameter): the end user is not informed "visually" that
 the switch happened.
 
-There is however a custom enviroment variable, set by the KML generator, that styles can leverage to know whether
+There is however a custom environment variable, set by the KML generator, that styles can leverage to know whether
 the KML generation is happening in ground overlay or vector mode.
 
 The following example leverages this function to show a larger point symbol when points become clickable: 

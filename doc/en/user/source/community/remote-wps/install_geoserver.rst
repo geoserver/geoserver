@@ -21,7 +21,7 @@ Preparation of the system: standard and basic OS packages
 Hostname and other useful packages
 ++++++++++++++++++++++++++++++++++
 
-Update the file ``/etc/hosts`` making sure that the ip addreses matches the name of the machine.
+Update the file ``/etc/hosts`` making sure that the ip addresses matches the name of the machine.
 
 .. code-block:: bash
 

@@ -175,7 +175,7 @@ PerpendicularOffset
 ^^^^^^^^^^^^^^^^^^^
 
 The optional ``<PerpendicularOffset>`` element allows you to position a label above or below a line.
-(This is similiar to the ``<DisplacementY>`` for label points described above.)
+(This is similar to the ``<DisplacementY>`` for label points described above.)
 The displacement value is specified in pixels.  
 A positive value displaces upwards, a negative value downwards.
 

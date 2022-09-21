@@ -105,7 +105,7 @@ but it's useful to force a specific choice when multiple competing drivers are a
 data source (e.g., OpenFileGDB vs FileGDB).
 
 The pooling parameters, similar to those found in a database, merit an explanation.
-OGR exposes access to data throught DataSource objects, which are not thread safe, so only one
+OGR exposes access to data through DataSource objects, which are not thread safe, so only one
 request at a time can use them. At the same time, they can be expensive to create and hold onto
 useful state, like in memory data caches, spatial indexes and the like.
 As such, they have been stored in a pool much like relational database connections.

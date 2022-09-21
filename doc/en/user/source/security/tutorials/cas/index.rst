@@ -13,7 +13,7 @@ CAS server certificates
 
 A running `CAS server <https://apereo.github.io/cas/5.3.x/index.html>`_ is needed. 
 
-The first step is to import the server certificates into the the GeoServer JVM.
+The first step is to import the server certificates into the GeoServer JVM.
 
 If you need to export the `CRT` from the CAS server, you must execute the following 
 command on the server JVM:: 

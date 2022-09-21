@@ -237,7 +237,7 @@ Code
 Details
 ~~~~~~~
 
-The single rule in the CSS applies to all feature: first it fills all polygons a light green with white outline, and thn applies the "name" attribute as the label, using the default font (Times), with black color and default font size (10 px).
+The single rule in the CSS applies to all feature: first it fills all polygons a light green with white outline, and then applies the "name" attribute as the label, using the default font (Times), with black color and default font size (10 px).
 
 
 Label halo

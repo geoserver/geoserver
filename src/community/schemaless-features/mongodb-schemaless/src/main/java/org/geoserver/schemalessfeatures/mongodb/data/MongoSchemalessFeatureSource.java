@@ -190,6 +190,8 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
                         } else if (expression2 instanceof PropertyName
                                 && expression1 instanceof Literal) {
                             preStack.push(filter);
+                        } else {
+                            super.visitBinaryComparisonOperator(filter);
                         }
                     }
                 };

@@ -189,7 +189,7 @@ The setup of a MongoDB Store implies the creation of a Mongo schema, inferred fr
 This process by default will use a random Mongo object from the collection. If that object doesn't contain all attributes of interest, the result will be an incomplete schema.  
 This behaviour can thus be controlled by means of the following two parameters, which should be provided inside the ``<parameters>`` element under the ``<DataStore>`` node:
 
-* ``objs_id_schema``, which specifies a comma separeted list of MongoDB JSON object to be used to build the schema (not needed if ``max_objs_schema`` is present).
+* ``objs_id_schema``, which specifies a comma separated list of MongoDB JSON object to be used to build the schema (not needed if ``max_objs_schema`` is present).
 
 .. code-block:: xml
 

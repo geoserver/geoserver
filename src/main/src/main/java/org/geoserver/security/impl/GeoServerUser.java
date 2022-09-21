@@ -83,6 +83,7 @@ public class GeoServerUser implements UserDetails, CredentialsContainer, Compara
         this.accountNonExpired = other.isAccountNonExpired();
         this.accountNonLocked = other.isAccountNonLocked();
         this.credentialsNonExpired = other.isCredentialsNonExpired();
+        this.enabled = other.isEnabled();
         this.authorities =
                 other.getAuthorities() != null ? new ArrayList<>(other.getAuthorities()) : null;
     }

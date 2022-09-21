@@ -49,7 +49,8 @@ public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticat
 
         // create delegate auth provider
         authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(ugService);
+
+        authProvider.setUserDetailsService(new EnvPwdResolverUserGroupServiceWrapper(ugService));
 
         // set up the password encoder
         // multiplex password encoder actually allows us to handle all types of passwords for

@@ -120,3 +120,6 @@ Each user/group service uses a password policy to enforce these rules. The defau
 * Password minimum length
 * Password maximum length
 
+Parametrized Passwords
+-----------------------
+It is possible to parametrize users' passwords in a similar way to the catalog settings (see :ref:`datadir_configtemplate`). Parametrization is supported when the encryption method used to store the place holder in the password field is plain text or is reversible (pbe, strong pbe). Non reverisble encoding for the placeholder (eg. digest) is not supported. On the contrary the actual value can be defined in the ``geoserver-environment.properties`` with any password encoding method supported by GeoServer. 

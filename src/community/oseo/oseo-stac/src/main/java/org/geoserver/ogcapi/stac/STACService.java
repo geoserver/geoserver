@@ -124,6 +124,10 @@ public class STACService {
     public static final String STAC_SEARCH = "https://api.stacspec.org/v1.0.0-beta.5/item-search";
     public static final String STAC_SEARCH_SORT =
             "https://api.stacspec.org/v1.0.0-beta.5/item-search#sort";
+
+    public static final String STAC_SEARCH_FIELDS =
+            "https://api.stacspec.org/v1.0.0-beta.5/item-search#fields";
+
     public static final String STAC_SEARCH_FILTER =
             "https://api.stacspec.org/v1.0.0-beta.5/item-search#filter";
     public static final String STAC_FEATURES =
@@ -195,6 +199,7 @@ public class STACService {
                         STAC_SEARCH,
                         STAC_SEARCH_FILTER,
                         STAC_SEARCH_SORT,
+                        STAC_SEARCH_FIELDS,
                         FEATURES_FILTER,
                         FILTER,
                         ECQL,

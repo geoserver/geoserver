@@ -48,6 +48,7 @@ public class ConformanceTest extends STACTestSupport {
             STACService.STAC_SEARCH,
             STACService.STAC_SEARCH_FILTER,
             STACService.STAC_SEARCH_SORT,
+            STACService.STAC_SEARCH_FIELDS,
             FEATURES_FILTER,
             FILTER,
             ECQL,

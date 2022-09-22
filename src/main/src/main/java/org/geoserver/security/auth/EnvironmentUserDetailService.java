@@ -10,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.platform.GeoServerEnvironment;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.GeoServerUser;
@@ -24,39 +23,41 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * A UserGroupService wrapper able to resolve password that have been parametrized. The placeholder
  * can be encoded in plain txt or any reversible encoding.
  */
-class EnvPwdResolverUserGroupServiceWrapper implements UserDetailsService {
+class EnvironmentUserDetailService implements UserDetailsService {
 
     private GeoServerUserGroupService delegate;
     private final GeoServerEnvironment environment;
 
-    private static Logger LOGGER = Logging.getLogger(EnvPwdResolverUserGroupServiceWrapper.class);
+    private static Logger LOGGER = Logging.getLogger(EnvironmentUserDetailService.class);
 
-    EnvPwdResolverUserGroupServiceWrapper(GeoServerUserGroupService userDetailsService) {
+    EnvironmentUserDetailService(
+            GeoServerUserGroupService userDetailsService, GeoServerEnvironment environment) {
         this.delegate = userDetailsService;
-        environment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        this.environment = environment;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetails userDetails = delegate.loadUserByUsername(username);
-        if (environment != null && GeoServerEnvironment.allowEnvParametrization()) {
-            if (userDetails instanceof GeoServerUser) {
-                GeoServerUser user = (GeoServerUser) userDetails;
-                String password = user.getPassword();
-                GeoServerSecurityManager manager = delegate.getSecurityManager();
-                List<GeoServerPasswordEncoder> encoders =
-                        manager.loadPasswordEncoders(null, true, null);
-                String decodedPwd = decode(password, encoders);
-                return returnOrGetResolvedPwdUser(decodedPwd, user);
-            }
+        if (userDetails instanceof GeoServerUser) {
+            GeoServerUser user = (GeoServerUser) userDetails;
+            String password = user.getPassword();
+            GeoServerSecurityManager manager = delegate.getSecurityManager();
+            List<GeoServerPasswordEncoder> encoders =
+                    manager.loadPasswordEncoders(null, true, null);
+            // first decode the pwd. The placeholder might have been encoded with a reversible
+            // pwd encoder
+            String decodedPwd = decode(password, encoders);
+            return resolvePassword(decodedPwd, user);
         }
         return userDetails;
     }
 
     // copy the user and set the pwd value if it was parametrized in env properties.
     // otherwise returns the user passed as a parameter.
-    private GeoServerUser returnOrGetResolvedPwdUser(String decodedPwd, GeoServerUser user) {
+    private GeoServerUser resolvePassword(String decodedPwd, GeoServerUser user) {
         if (isParametrized(decodedPwd)) {
+            // it is a placeholder try to resolve
             String resolved = (String) environment.resolveValue(decodedPwd);
             if (!resolved.equals(decodedPwd)) {
                 user = user.copy();

@@ -122,4 +122,10 @@ Each user/group service uses a password policy to enforce these rules. The defau
 
 Parametrized Passwords
 -----------------------
-It is possible to parametrize users' passwords in a similar way to the catalog settings (see :ref:`datadir_configtemplate`). Parametrization is supported when the encryption method used to store the place holder in the password field is plain text or is reversible (pbe, strong pbe). Non reverisble encoding for the placeholder (eg. digest) is not supported. On the contrary the actual value can be defined in the ``geoserver-environment.properties`` with any password encoding method supported by GeoServer. 
+It is possible to parametrize users' passwords in a similar way to the catalog settings (see :ref:`datadir_configtemplate`). Parametrization is supported when the encryption method used to store the place holder in the password field is plain text or is reversible (pbe, strong pbe). Non reversible encoding for the placeholder (e.g. digest) is not supported. On the contrary the actual value can be defined in the ``geoserver-environment.properties`` with any password encoding method supported by GeoServer. Examples are provided below:
+
+.. code-block:: properties
+
+ pwd.one=plain:clear_text_password
+ pwd.two=digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw
+ pwd.three=crypt1:xZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw

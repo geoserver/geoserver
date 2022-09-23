@@ -38,16 +38,17 @@ public class WMTSXStreamLoader extends XStreamServiceLoader<WMTSInfo> {
     protected WMTSInfo initialize(WMTSInfo service) {
         service = super.initialize(service);
         if (service.getMaintainer() == null) {
-            service.setMaintainer("http://geoserver.org/com");
+            service.setMaintainer("GeoServer");
         }
         if (service.getOnlineResource() == null) {
-            service.setOnlineResource("http://geoserver.org");
+            service.setOnlineResource("https://geoserver.org");
         }
         if (service.getTitle() == null) {
             service.setTitle("GeoServer Web Map Tile Service");
         }
         if (service.getAbstract() == null) {
-            service.setAbstract("A compliant implementation of WMTS service.");
+            service.setAbstract(
+                    "Predefined map tiles generated from vector data, raster data, and imagery.");
         }
         if (service.getFees() == null) {
             service.setFees("NONE");

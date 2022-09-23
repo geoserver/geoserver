@@ -6,6 +6,7 @@ package org.geoserver.gwc.wmts;
 
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.util.InternationalStringUtils;
 import org.geowebcache.config.meta.ServiceContact;
 import org.geowebcache.config.meta.ServiceInformation;
 import org.geowebcache.config.meta.ServiceProvider;
@@ -24,6 +25,8 @@ public class WMTSCapabilitiesProvider extends WMTSExtensionImpl {
     public ServiceInformation getServiceInformation() {
         // make WMTS service metadata configured in GeoServer available to GWC
         WMTSInfo gsInfo = geoserver.getService(WMTSInfo.class);
+        ContactInfo gsContactInfo = geoserver.getSettings().getContact();
+
         ServiceInformation gwcInfo = new ServiceInformation();
         // add service information
         gwcInfo.setTitle(gsInfo.getTitle());
@@ -34,12 +37,27 @@ public class WMTSCapabilitiesProvider extends WMTSExtensionImpl {
         gwcInfo.setAccessConstraints(gsInfo.getAccessConstraints());
         // add provider information
         ServiceProvider serviceProvider = new ServiceProvider();
-        serviceProvider.setProviderName(gsInfo.getMaintainer());
-        serviceProvider.setProviderName(gsInfo.getOnlineResource());
+
+        String providerName =
+                InternationalStringUtils.firstNonBlank(
+                        gsInfo.getMaintainer(), gsContactInfo.getContactOrganization());
+        if (providerName != null) {
+            serviceProvider.setProviderName(providerName);
+        }
+
+        String onlineResource =
+                InternationalStringUtils.firstNonBlank(
+                        gsInfo.getOnlineResource(),
+                        gsContactInfo != null ? gsContactInfo.getOnlineResource() : null,
+                        gsInfo.getGeoServer().getSettings().getOnlineResource());
+        if (onlineResource != null) {
+            serviceProvider.setProviderSite(onlineResource);
+        }
+
         // add contact information
-        ContactInfo gsContactInfo = geoserver.getSettings().getContact();
         if (gsContactInfo != null) {
             ServiceContact gwcContactInfo = new ServiceContact();
+
             gwcContactInfo.setIndividualName(gsContactInfo.getContactPerson());
             gwcContactInfo.setPositionName(gsContactInfo.getContactPosition());
             gwcContactInfo.setAddressType(gsContactInfo.getAddressType());
@@ -50,6 +68,7 @@ public class WMTSCapabilitiesProvider extends WMTSExtensionImpl {
             gwcContactInfo.setPhoneNumber(gsContactInfo.getContactVoice());
             gwcContactInfo.setFaxNumber(gsContactInfo.getContactFacsimile());
             gwcContactInfo.setAddressEmail(gsContactInfo.getContactEmail());
+
             serviceProvider.setServiceContact(gwcContactInfo);
         }
         gwcInfo.setServiceProvider(serviceProvider);

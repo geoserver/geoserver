@@ -64,4 +64,18 @@ public class JaxbUser {
         }
         return user;
     }
+
+    @Override
+    public String toString() {
+        return "JaxbUser{"
+                + "userName='"
+                + userName
+                + '\''
+                + ", password='"
+                + password
+                + '\''
+                + ", enabled="
+                + enabled
+                + '}';
+    }
 }

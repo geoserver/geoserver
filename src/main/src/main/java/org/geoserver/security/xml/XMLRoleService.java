@@ -127,8 +127,8 @@ public class XMLRoleService extends AbstractRoleService {
             }
 
             XPathExpression expr = XMLXpathFactory.Singleton.getVersionExpressionRR();
-            String versioNummer = expr.evaluate(doc);
-            RoleXMLXpath xmlXPath = XMLXpathFactory.Singleton.getRoleXMLXpath(versioNummer);
+            String versioNumber = expr.evaluate(doc);
+            RoleXMLXpath xmlXPath = XMLXpathFactory.Singleton.getRoleXMLXpath(versioNumber);
 
             clearMaps();
 

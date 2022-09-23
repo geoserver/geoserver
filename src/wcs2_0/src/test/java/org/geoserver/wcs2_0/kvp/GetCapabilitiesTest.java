@@ -43,7 +43,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     @Test
     public void testBasicKVP() throws Exception {
         Document dom = getAsDOM("wcs?request=GetCapabilities&service=WCS");
-        // print(dom);
+        print(dom);
 
         checkFullCapabilitiesDocument(dom);
     }

@@ -15,13 +15,17 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.Interpolation;
+import javax.media.jai.RenderedOp;
+import javax.media.jai.operator.ConstantDescriptor;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.DecimationPolicy;
@@ -35,12 +39,17 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.matrix.XAffineTransform;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.math.DD;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.coverage.processing.Operation;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
 import org.opengis.metadata.spatial.PixelOrientation;
@@ -49,6 +58,7 @@ import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.wcs.WcsException;
@@ -58,6 +68,8 @@ import org.vfny.geoserver.wcs.WcsException;
  * @author Alessio Fabiani, GeoSolutions
  */
 public class WCSUtils {
+
+    private static final double SHEAR_EPS = 1e-3;
 
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(WCSUtils.class);
@@ -644,5 +656,216 @@ public class WCSUtils {
         pv.setValue(value);
         readParametersClone[readParameters.length] = pv;
         return readParametersClone;
+    }
+
+    /**
+     * Maps the declared envelope so that it fits with the native grid geometry, making sure a
+     * request without parameter does not result in pixel resampling.
+     *
+     * @param ci The coverage info with the configured envelope
+     * @param reader The reader
+     * @return
+     */
+    public static ReferencedEnvelope fitEnvelope(CoverageInfo ci, GridCoverage2DReader reader) {
+        try {
+            ReferencedEnvelope bounds = ci.boundingBox();
+
+            return fitEnvelope(bounds, reader);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Failed to fit the grid geometry to the declared envelope/crs", e);
+        }
+    }
+
+    protected static ReferencedEnvelope fitEnvelope(
+            ReferencedEnvelope bounds, GridCoverage2DReader reader) {
+        if (fitUnecessary(bounds, reader)) {
+            return bounds;
+        }
+
+        if (!simpleFitSupported(bounds, reader)) {
+            return bounds;
+        }
+
+        return simpleEnvelopeFit(bounds, reader);
+    }
+
+    private static ReferencedEnvelope simpleEnvelopeFit(
+            ReferencedEnvelope bounds, GridCoverage2DReader reader) {
+        GeneralEnvelope original = reader.getOriginalEnvelope();
+        AffineTransform2D at =
+                (AffineTransform2D) reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
+        double scaleX = Math.abs(at.getScaleX());
+        double minX = fit(bounds.getMinimum(0), original.getMinimum(0), scaleX);
+        double maxX = fit(bounds.getMaximum(0), original.getMaximum(0), scaleX);
+        if (maxX <= minX) maxX = minX + scaleX;
+        double scaleY = Math.abs(at.getScaleY());
+        double minY = fit(bounds.getMinimum(1), original.getMinimum(1), scaleY);
+        double maxY = fit(bounds.getMaximum(1), original.getMaximum(1), scaleY);
+        if (maxY <= minY) maxY = minY + scaleY;
+
+        return new ReferencedEnvelope(
+                minX, maxX, minY, maxY, bounds.getCoordinateReferenceSystem());
+    }
+
+    private static boolean simpleFitSupported(
+            ReferencedEnvelope bounds, GridCoverage2DReader reader) {
+        // in case of reprojection resampling will happen anyways
+        if (!CRS.equalsIgnoreMetadata(
+                bounds.getCoordinateReferenceSystem(), reader.getCoordinateReferenceSystem())) {
+            LOGGER.fine(
+                    "Cannot fit the declared envelope to native grid: reprojection is being used");
+            return false;
+        }
+
+        // same if the transformation is not an affine
+        MathTransform tx = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
+        if (!(tx instanceof AffineTransform2D)) {
+            LOGGER.fine(
+                    "Cannot fit the declared envelope to native grid: grid to world is not an affine");
+            return false;
+        }
+
+        AffineTransform2D at = (AffineTransform2D) tx;
+        if (Math.abs(at.getShearX()) > SHEAR_EPS || Math.abs(at.getShearY()) > SHEAR_EPS) {
+            LOGGER.fine(
+                    "Cannot fit the declared envelope to native grid: grid to world affine has shear factors");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean fitUnecessary(ReferencedEnvelope bounds, GridCoverage2DReader reader) {
+        return bounds.equals(ReferencedEnvelope.reference(reader.getOriginalEnvelope()));
+    }
+
+    private static double fit(double cornerValue, double origin, double scale) {
+        // using DoubleDouble to get as much precision as possible (resolutions in degrees
+        // tend to be very small numbers)
+        DD cv = DD.valueOf(cornerValue);
+        DD px = cv.subtract(origin).divide(scale);
+        DD roundPx = roundDD(px);
+        double fit = cv.subtract(px.subtract(roundPx).multiply(scale)).doubleValue();
+        return fit;
+    }
+
+    private static DD roundDD(DD x) {
+        DD xCeil = x.ceil();
+        DD spaceAbove = xCeil.subtract(x);
+        DD xFloor = x.floor();
+        DD spaceBelow = x.subtract(xFloor);
+        DD roundPx = spaceAbove.compareTo(spaceBelow) < 0 ? xCeil : xFloor;
+        return roundPx;
+    }
+
+    public static GridGeometry2D fitGridGeometry(CoverageInfo ci, GridCoverage2DReader reader) {
+        // if envelope has not been remapped, then go with the original grid geometry
+        MathTransform gridToWorld = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
+        GridGeometry2D nativeGridGeometry =
+                new GridGeometry2D(
+                        reader.getOriginalGridRange(),
+                        gridToWorld,
+                        reader.getCoordinateReferenceSystem());
+
+        try {
+            ReferencedEnvelope nativeEnvelope = ci.boundingBox();
+            if (fitUnecessary(nativeEnvelope, reader)) {
+                return nativeGridGeometry;
+            }
+
+            if (!simpleFitSupported(nativeEnvelope, reader)) {
+                // could make up something more precise for specific rotation transforms
+                return reprojectGridGeometryFit(reader, nativeEnvelope);
+            }
+
+            return simpleGridGeometryFit(
+                    simpleEnvelopeFit(nativeEnvelope, reader),
+                    (AffineTransform2D) reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER));
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Failed to fit the grid geometry to the declared envelope/crs", e);
+        }
+    }
+
+    /**
+     * In case of reprojection, the grid geometry is just loosely fitted by reprojecting a fake,
+     * small raster in the center of the area, and picking up scale factors from its grid geometry
+     *
+     * @param reader
+     * @param envelope
+     * @return
+     */
+    private static GridGeometry2D reprojectGridGeometryFit(
+            GridCoverage2DReader reader, ReferencedEnvelope envelope) {
+        // build a fake coverage in the same area as the original one, with
+        // the same pixel size and raster size, but without actually pushing it in memory
+        AffineTransform2D originalG2W =
+                (AffineTransform2D) reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
+        double scale = XAffineTransform.getScale(originalG2W);
+        GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
+        AffineTransform2D g2w =
+                new AffineTransform2D(
+                        scale,
+                        0,
+                        0,
+                        -scale,
+                        originalEnvelope.getMinimum(0),
+                        originalEnvelope.getMaximum(1));
+        GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
+        GridEnvelope range = reader.getOriginalGridRange();
+        RenderedOp image =
+                ConstantDescriptor.create(
+                        (float) range.getSpan(0), (float) range.getSpan(1), new Byte[] {0}, null);
+        GridCoverage2D sampleCoverage =
+                factory.create(
+                        "sample",
+                        image,
+                        originalEnvelope.getCoordinateReferenceSystem(),
+                        g2w,
+                        null,
+                        null,
+                        null);
+
+        // reproject to target CRS
+        CoverageProcessor processor = CoverageProcessor.getInstance();
+        final Operation operation = processor.getOperation("Resample");
+        final ParameterValueGroup param = operation.getParameters().clone();
+        param.parameter("source").setValue(sampleCoverage);
+        param.parameter("CoordinateReferenceSystem")
+                .setValue(envelope.getCoordinateReferenceSystem());
+        GridCoverage2D reprojected = (GridCoverage2D) processor.doOperation(param, hints);
+        GridGeometry2D gg = reprojected.getGridGeometry();
+
+        // fit the grid geometry based on the reprojected grid to world
+        return simpleGridGeometryFit(
+                envelope, ((AffineTransform2D) gg.getGridToCRS(PixelInCell.CELL_CORNER)));
+    }
+
+    private static GridGeometry2D simpleGridGeometryFit(
+            ReferencedEnvelope envelope, AffineTransform2D g2w) {
+        // move the top left corner where the fitted envelope is
+        AffineTransform2D fittedG2W =
+                new AffineTransform2D(
+                        g2w.getScaleX(),
+                        g2w.getShearX(),
+                        g2w.getShearY(),
+                        g2w.getScaleY(),
+                        envelope.getMinimum(0),
+                        envelope.getMaximum(1));
+
+        try {
+            GeneralEnvelope gridEnvelope = CRS.transform(fittedG2W.inverse(), envelope);
+            GridEnvelope2D fittedGridRange =
+                    new GridEnvelope2D(
+                            0,
+                            0,
+                            (int) Math.round(gridEnvelope.getSpan(0)),
+                            (int) Math.round(gridEnvelope.getSpan(1)));
+            return new GridGeometry2D(
+                    fittedGridRange, fittedG2W, envelope.getCoordinateReferenceSystem());
+        } catch (TransformException e) {
+            throw new RuntimeException("Failed to invert grid to world", e);
+        }
     }
 }

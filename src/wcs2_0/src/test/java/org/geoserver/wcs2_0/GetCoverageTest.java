@@ -207,6 +207,7 @@ public class GetCoverageTest extends WCSTestSupport {
                 new GetCoverage(service, getCatalog(), axesMapper, mimeMapper) {
                     @Override
                     MathTransform getMathTransform(
+                            CoverageInfo ci,
                             GridCoverage2DReader reader,
                             Envelope subset,
                             GridCoverageRequest request,
@@ -215,7 +216,7 @@ public class GetCoverageTest extends WCSTestSupport {
                             throws IOException {
                         MathTransform mt =
                                 super.getMathTransform(
-                                        reader, subset, request, pixelInCell, scaling);
+                                        ci, reader, subset, request, pixelInCell, scaling);
 
                         // check we are giving the reader the expected scaling factor
                         AffineTransform2D actual = (AffineTransform2D) mt;

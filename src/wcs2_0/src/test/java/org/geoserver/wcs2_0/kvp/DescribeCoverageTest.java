@@ -918,6 +918,92 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 dom);
     }
 
+    @Test
+    public void testImposedBBoxUTM11() throws Exception {
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__utm11");
+        assertNotNull(dom);
+
+        checkValidationErrors(dom, getWcs20Schema());
+        // declared bounds have been fit to the native grid
+        assertXpathEvaluatesTo(
+                "440562.0 3720758.0", "//gml:boundedBy/gml:Envelope/gml:lowerCorner", dom);
+        assertXpathEvaluatesTo(
+                "471794.0 3750966.0", "//gml:boundedBy/gml:Envelope/gml:upperCorner", dom);
+        // origin of grid to world is top/left, affine points downwards, screen like
+        assertXpathEvaluatesTo(
+                "440562.0 3750966.0", "//gml:RectifiedGrid/gml:origin/gml:Point/gml:pos", dom);
+        assertXpathEvaluatesTo(
+                "0 0", "//gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:low", dom);
+        // raster space adapted, 2 more pixels west to east, 2 less north to south
+        assertXpathEvaluatesTo(
+                "121 117", "//gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:high", dom);
+        // native resolution preserved
+        assertXpathEvaluatesTo("256.0 0.0", "//gml:RectifiedGrid/gml:offsetVector[1]", dom);
+        assertXpathEvaluatesTo("0.0 -256.0", "//gml:RectifiedGrid/gml:offsetVector[2]", dom);
+    }
+
+    @Test
+    public void testImposedBBoxRotated() throws Exception {
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__RotatedCad");
+        assertNotNull(dom);
+
+        checkValidationErrors(dom, getWcs20Schema());
+        // matching exactly the declared envelope due to rotation
+        assertXpathEvaluatesTo(
+                "1402800.0 5000000.0", "//gml:boundedBy/gml:Envelope/gml:lowerCorner", dom);
+        assertXpathEvaluatesTo(
+                "1402900.0 5000100.0", "//gml:boundedBy/gml:Envelope/gml:upperCorner", dom);
+        // origin of grid to world is top/left, affine points downwards, screen like
+        assertXpathEvaluatesTo(
+                "1402800.0 5000100.0", "//gml:RectifiedGrid/gml:origin/gml:Point/gml:pos", dom);
+        // scale factors preserved
+        assertXpathEvaluatesTo(
+                "0.11285131376709559 0.0", "//gml:RectifiedGrid/gml:offsetVector[1]", dom);
+        assertXpathEvaluatesTo(
+                "0.0 -0.11285131376709559", "//gml:RectifiedGrid/gml:offsetVector[2]", dom);
+        // raster space now square
+        assertXpathEvaluatesTo(
+                "0 0", "//gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:low", dom);
+        assertXpathEvaluatesTo(
+                "885 885", "//gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:high", dom);
+    }
+
+    @Test
+    public void testReprojectFromNative() throws Exception {
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=cdf__usa");
+        assertNotNull(dom);
+
+        checkValidationErrors(dom, getWcs20Schema());
+        // bounds have been reprojected
+        assertXpathEvaluatesTo(
+                "http://www.opengis.net/def/crs/EPSG/0/3857",
+                "//gml:boundedBy/gml:Envelope/@srsName",
+                dom);
+        assertXpathEvaluatesTo(
+                "-1.457024062347863E7 6199732.713729635",
+                "//gml:boundedBy/gml:Envelope/gml:lowerCorner",
+                dom);
+        assertXpathEvaluatesTo(
+                "-1.3790593336628266E7 7197101.83024677",
+                "//gml:boundedBy/gml:Envelope/gml:upperCorner",
+                dom);
+        // origin of grid to world is top/left, affine points downwards, screen like
+        assertXpathEvaluatesTo(
+                "-1.457024062347863E7 7197101.83024677",
+                "//gml:RectifiedGrid/gml:origin/gml:Point/gml:pos",
+                dom);
+        assertXpathEvaluatesTo(
+                "0 0", "//gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:low", dom);
+        // raster space guessed from reprojection
+        assertXpathEvaluatesTo(
+                "110 88", "//gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:high", dom);
+        // native resolution also guessed from reprojection
+        assertXpathEvaluatesTo(
+                "7007.8198281689365 0.0", "//gml:RectifiedGrid/gml:offsetVector[1]", dom);
+        assertXpathEvaluatesTo(
+                "0.0 -11164.572122037076", "//gml:RectifiedGrid/gml:offsetVector[2]", dom);
+    }
+
     private void checkWaterTempTimeEnvelope(Document dom) throws XpathException {
         // check the envelope with time
         assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);

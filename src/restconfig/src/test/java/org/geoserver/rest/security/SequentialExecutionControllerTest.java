@@ -5,13 +5,17 @@
 package org.geoserver.rest.security;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.geoserver.rest.security.xml.JaxbRoleList;
 import org.geoserver.rest.security.xml.JaxbUser;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.validation.PasswordPolicyException;
 import org.geoserver.test.GeoServerTestSupport;
 import org.junit.Before;
@@ -80,5 +84,34 @@ public class SequentialExecutionControllerTest extends GeoServerTestSupport {
         assertTrue(jaxbRoleList.getRoles().contains("roleb"));
         assertTrue(jaxbRoleList.getRoles().contains("rolec"));
         assertTrue(jaxbRoleList.getRoles().contains("roled"));
+    }
+
+    @Test
+    public void testMultipleUserCreation() throws PasswordPolicyException, IOException {
+        // concurrently add users
+        int USERS_COUNT = 16;
+        IntStream.range(0, USERS_COUNT).parallel().forEach(i -> createUser(i));
+
+        // grab the users, check
+        GeoServerSecurityManager manager =
+                applicationContext.getBean(GeoServerSecurityManager.class);
+        GeoServerUserGroupService userService = manager.loadUserGroupService("default");
+        for (int i = 0; i < USERS_COUNT; i++) {
+            assertNotNull(userService.getUserByUsername("user" + i));
+        }
+    }
+
+    private void createUser(int i) {
+        String userBody =
+                String.format(
+                        "<user><userName>%s</userName><password>%s</password>"
+                                + "<enabled>true</enabled></user>",
+                        "user" + i, "password" + i);
+
+        try {
+            postAsServletResponse("rest/security/usergroup/users", userBody, "text/xml");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

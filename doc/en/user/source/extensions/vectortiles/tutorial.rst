@@ -27,7 +27,7 @@ Vector tile formats
 
 GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and MapBox Vector (MVT). These are also supported by OpenLayers and other clients.
 
-.. warning:: When using vector tiles, be sure to use an up-to-date client. Older clients do not support all vector tiles capabilities and may result in rendering errors. We recommend using the latest version of OpenLayers (Currently v5.3.0).
+.. warning:: When using vector tiles, be sure to use an up-to-date client. Older clients do not support all vector tiles capabilites and may result in rendering errors. We recommend using the latest version of OpenLayers (Currently v5.3.0).
 
 * MVT is the preferred format for production.
 
@@ -46,7 +46,7 @@ GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and
      - This is a human readable JSON format.  Although many geo-spatial applications support GeoJSON datasets, few Vector Tile applications support tiles in this format.  Supported by Open Layers 3.
    * - `TopoJSON <https://github.com/mbostock/topojson/wiki>`_
      - ``application/json;type=topojson``
-     - This is a very complex, but somewhat human readable JSON format that is good for polygon coverages.  It is not a widely supported and very few Vector Tile applications support it.  Supported by Open Layers 3.
+     - This is a very complex, but somewhat human readable JSON format that is good for polygon coverages.  It is not a widely supported and very few Vector Tile applications support it.  Suported by Open Layers 3.
 
 
 Publish vector tiles in GeoWebCache
@@ -80,10 +80,10 @@ For this tutorial, we'll be using the layer ``opengeo:countries`` to show off th
 
 Our layer is now ready to be served.
 
-Create OpenLayers application
------------------------------
+Create OpenLayers application - TMS Vector Tiles
+------------------------------------------------
 
-#. Create a ``www/vectortiles`` directory inside your GeoServer Data Directory.
+#. Create a ``www/tms-vectortiles`` directory inside your GeoServer Data Directory.
 
 #. Download the `latest version of OpenLayers <http://openlayers.org/download/>`_.
 
@@ -116,7 +116,7 @@ Create OpenLayers application
         </style>
       </head>
       <body>
-        <h3>Mapbox Protobuf - vector tiles</h3>
+        <h3>Mapbox Protobuf - vector tiles TMS</h3>
         <div id="map" class="map"></div>
         <script>
 
@@ -159,7 +159,7 @@ Create OpenLayers application
 
 #. Save this file in the directory created above as ``index.html``.
 
-#. Navigate to ``http://localhost:8080/geoserver/www/vectortiles/index.html`` and verify that the output shows without any errors.
+#. Navigate to ``http://localhost:8080/geoserver/www/tms-vectortiles/index.html`` and verify that the output shows without any errors.
 
    .. note:: If your GeoServer is deployed at a server other than ``http://localhost:8080/geoserver/``, then please adjust the above URL.
 
@@ -168,6 +168,115 @@ Create OpenLayers application
       Vector tile output
 
 These tiles are being rendered by the OpenLayers client.
+
+Create OpenLayers application - WMS Vector Tiles
+------------------------------------------------
+
+.. note::   Vector tiles requested with WMS allows to retrieve non-cached vector tiles (server side), setting the ``tiled=false`` parameter on the ``getMap`` request. This setting could be particularly useful when serving fast changing source data that should constantly be kept up-to-date for display.
+
+#. Create a ``www/wms-vectortiles`` directory inside your GeoServer Data Directory.
+
+#. Download the `latest version of OpenLayers <http://openlayers.org/download/>`_.
+
+#. Extract the following files to from the downloaded archive to the directory created in step 1:
+
+   * ``ol.js``
+   * ``ol-debug.js``
+   * ``ol.css``
+
+#. In a text editor, create a new file with the following content:
+
+   .. code-block:: html
+      :emphasize-lines: 5
+      
+      <!doctype html>
+      <html>
+      <head>
+        <title>Vector tiles</title>
+        <script src="ol.js"></script>
+        <link rel="stylesheet" href="ol.css">
+        <style>
+          html, body {
+            font-family: sans-serif;
+            width: 100%;
+          }
+          .map {
+            height: 500px;
+            width: 100%;
+          }
+        </style>
+      </head>
+        <body>
+          <h3>Mapbox Protobuf - vector tiles WMS</h3>
+          <div class="refresh-container">
+          <button id="refresh-button" type="button" onclick="updateFunc();">Refresh/reload cache</button>
+          </div>
+          <div id="map" class="map"></div>
+          <script>
+          
+            var layerParams = {'LAYERS': 'opengeo:countries', 'TILED': false, 'format': 'application/vnd.mapbox-vector-tile'};
+          
+          var sourceOptions = {
+              url: '/geoserver/wms?',
+              params: layerParams,
+              serverType: 'geoserver',
+              transition: 0,
+              hidpi: false
+            };
+          
+          var WMSTileSource = new ol.source.TileWMS(sourceOptions);
+        
+          var mvtVectorSource = new ol.source.VectorTile(
+            Object.assign(
+              sourceOptions,
+              {
+                url: undefined,
+                format: new ol.format.MVT({layerName: '_layer_'}),
+                tileUrlFunction: function(tileCoord, pixelRatio, projection) {
+                  return WMSTileSource.tileUrlFunction(tileCoord, pixelRatio, projection);
+                }
+              }
+            )
+          );
+          
+            
+            var updateFunc = function () {
+            WMSTileSource.updateParams(
+              Object.assign(
+                layerParams,
+                {
+                  '_v_' : Date.now()
+                }
+              )
+            );
+            WMSTileSource.tileCache.pruneExceptNewestZ();
+            mvtVectorSource.clear();
+            mvtVectorSource.refresh();
+          };
+        
+        
+          var layer = new ol.layer.VectorTile({
+            source: mvtVectorSource
+          });
+        
+          var map = new ol.Map({
+            target: 'map',
+            view: new ol.View({
+              center: [0,0],
+              zoom: 2
+            }),
+            layers: [layer]
+          });
+          
+          </script>
+        </body>
+      </html>
+
+#. Save this file in the directory created above as ``index.html``.
+
+#. Navigate to ``http://localhost:8080/geoserver/www/wms-vectortiles/index.html`` and verify that the output shows without any errors.
+
+   .. note:: If your GeoServer is deployed at a server other than ``http://localhost:8080/geoserver/``, then please adjust the above URL.
 
 Styling vector tiles
 --------------------

@@ -117,7 +117,7 @@ public class CapabilitiesTransformerTest extends WFSTestSupport {
                 "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:ContactInfo/ows:Address/ows:DeliveryPoint";
         assertXpathExists(xpathExpr, dom);
         assertXpathEvaluatesTo(
-                "1600 Pennsylvania Ave NW, Washington DC 20500, United States", xpathExpr, dom);
+                "9450 SW Gemini Dr. #42523, Beaverton Oregon 97008, United States", xpathExpr, dom);
 
         xpathExpr =
                 "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:ContactInfo/ows:Address/ows:ElectronicMailAddress";

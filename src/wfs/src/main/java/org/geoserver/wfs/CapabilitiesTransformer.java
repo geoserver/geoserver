@@ -43,6 +43,7 @@ import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.InternationalStringUtils;
 import org.geoserver.wfs.CapabilitiesTransformer.WFS1_1.CapabilitiesTranslator1_1;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
 import org.geotools.factory.CommonFactoryFinder;
@@ -444,9 +445,27 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 handleKeywords(wfs.getKeywords());
 
-                element(
-                        "OnlineResource",
-                        buildURL(request.getBaseUrl(), "wfs", null, URLType.SERVICE));
+                GeoServer geoServer = wfs.getGeoServer();
+                ContactInfo contact = geoServer.getSettings().getContact();
+
+                String onlineResource =
+                        InternationalStringUtils.firstNonBlank(
+                                wfs.getOnlineResource(),
+                                contact.getOnlineResource(),
+                                wfs.getGeoServer().getSettings().getOnlineResource(),
+                                buildURL(request.getBaseUrl(), null, null, URLType.SERVICE));
+                if (onlineResource != null) {
+                    try {
+                        new URL(onlineResource);
+                    } catch (MalformedURLException e) {
+                        LOGGER.log(
+                                Level.WARNING,
+                                "WFS online resource seems to be an invalid URL: '"
+                                        + onlineResource
+                                        + "'");
+                    }
+                }
+                element("OnlineResource", onlineResource);
                 element("Fees", wfs.getFees());
                 element("AccessConstraints", wfs.getAccessConstraints());
                 end("Service");

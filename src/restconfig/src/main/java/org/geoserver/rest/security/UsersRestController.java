@@ -7,6 +7,7 @@ package org.geoserver.rest.security;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.security.xml.JaxbGroupList;
 import org.geoserver.rest.security.xml.JaxbUser;
 import org.geoserver.rest.security.xml.JaxbUserList;
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController(value = "usergroupRestController")
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/usergroup")
-public class UsersRestController {
+public class UsersRestController implements SequentialExecutionController {
 
     protected GeoServerSecurityManager securityManager;
 

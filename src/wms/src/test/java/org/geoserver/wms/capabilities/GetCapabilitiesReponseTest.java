@@ -211,6 +211,18 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         fti.setInternationalTitle(title);
         catalog.save(fti);
 
+        // clear wms online resource defaults
+        GeoServer geoServer = getGeoServer();
+        WMSInfo wmsInfo = getWMS().getServiceInfo();
+        wmsInfo.setOnlineResource("");
+        geoServer.save(wmsInfo);
+
+        // clear global online resources defaults
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setOnlineResource("");
+        global.getSettings().getContact().setOnlineResource("");
+        geoServer.save(global);
+
         Document dom =
                 getAsDOM(
                         "wms?version=1.1.1&request=GetCapabilities&service=WMS&AcceptLanguages=it");

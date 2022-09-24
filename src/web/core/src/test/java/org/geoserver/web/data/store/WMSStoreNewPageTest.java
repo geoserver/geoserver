@@ -17,9 +17,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-
 import java.io.Serializable;
-
 import java.net.URL;
 import java.util.List;
 import org.apache.wicket.Component;

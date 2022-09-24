@@ -41,6 +41,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     private String onlineResource;
 
+    private String welcome;
+
     private InternationalString internationalAddress;
 
     private InternationalString internationalAddressCity;
@@ -68,6 +70,8 @@ public class ContactInfoImpl implements ContactInfo {
     private InternationalString internationalContactVoice;
 
     private InternationalString internationalOnlineResource;
+
+    private InternationalString internationalWelcome;
 
     @Override
     public String getId() {
@@ -223,6 +227,16 @@ public class ContactInfoImpl implements ContactInfo {
     }
 
     @Override
+    public String getWelcome() {
+        return InternationalStringUtils.getOrDefault(welcome, internationalWelcome);
+    }
+
+    @Override
+    public void setWelcome(String welcome) {
+        this.welcome = welcome;
+    }
+
+    @Override
     public InternationalString getInternationalAddress() {
         return internationalAddress;
     }
@@ -298,6 +312,16 @@ public class ContactInfoImpl implements ContactInfo {
     public void setInternationalOnlineResource(InternationalString internationalOnlineResource) {
         this.internationalOnlineResource =
                 InternationalStringUtils.growable(internationalOnlineResource);
+    }
+
+    @Override
+    public InternationalString getInternationalWelcome() {
+        return internationalWelcome;
+    }
+
+    @Override
+    public void setInternationalWelcome(InternationalString internationalWelcome) {
+        this.internationalWelcome = InternationalStringUtils.growable(internationalWelcome);
     }
 
     @Override
@@ -468,6 +492,11 @@ public class ContactInfoImpl implements ContactInfo {
                         + ((internationalAddressDeliveryPoint == null)
                                 ? 0
                                 : internationalAddressDeliveryPoint.hashCode());
+
+        result =
+                PRIME * result
+                        + ((internationalWelcome == null) ? 0 : internationalWelcome.hashCode());
+
         return result;
     }
 

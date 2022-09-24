@@ -6,11 +6,8 @@
 package org.geoserver.web;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -21,7 +18,7 @@ import org.geotools.util.Version;
 
 /**
  * Default component for a {@link CapabilitiesHomePageLinkProvider} implementation to provide a list
- * of getcapabilities links discriminated by service name and version.
+ * of {@link CapsInfo} (GetCapabilities links discriminated by service name and version.)
  *
  * @author Gabriel Roldan
  */
@@ -32,14 +29,18 @@ public class CapabilitiesHomePagePanel extends Panel {
     /**
      * A complete reference to a GetCapabilities or other service description document acting as the
      * model object to this panel's ListView.
+     *
+     * @deprecated Please use {@link ServiceDescription} and {@link ServiceLinkDescription}
      */
     public static class CapsInfo implements Serializable {
-        private static final long serialVersionUID = 1L;
 
+        /** Service name. */
         String service;
 
+        /** Service version */
         Version version;
 
+        /** GetCapabilities service description */
         String capsLink;
 
         public CapsInfo(String service, Version version, String capsLink) {
@@ -75,6 +76,16 @@ public class CapabilitiesHomePagePanel extends Panel {
         public int hashCode() {
             return Objects.hash(service, version, capsLink);
         }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("CapsInfo{");
+            sb.append("service='").append(service).append('\'');
+            sb.append(", version=").append(version);
+            sb.append(", capsLink='").append(capsLink).append('\'');
+            sb.append('}');
+            return sb.toString();
+        }
     }
 
     /**
@@ -84,49 +95,39 @@ public class CapabilitiesHomePagePanel extends Panel {
     public CapabilitiesHomePagePanel(final String id, final List<CapsInfo> capsLinks) {
 
         super(id);
+        capsLinks.sort(
+                new Comparator<CapsInfo>() {
+                    @Override
+                    public int compare(CapsInfo o1, CapsInfo o2) {
+                        int serviceOrder =
+                                o1.getService()
+                                        .toUpperCase()
+                                        .compareTo(o2.getService().toUpperCase());
+                        int versionOrder = -o1.version.compareTo(o2.getVersion());
 
-        final Map<String, List<CapsInfo>> byService = new HashMap<>();
-        for (CapsInfo c : capsLinks) {
-            final String key =
-                    c.getService().toLowerCase(); // to avoid problems with uppercase definitions
-            List<CapsInfo> serviceLinks = byService.get(key);
-            if (serviceLinks == null) {
-                serviceLinks = new ArrayList<>();
-                byService.put(key, serviceLinks);
-            }
-            serviceLinks.add(c);
-        }
+                        return serviceOrder != 0 ? serviceOrder : versionOrder;
+                    }
+                });
 
-        ArrayList<String> services = new ArrayList<>(byService.keySet());
-        Collections.sort(services);
-
-        ListView<String> view =
-                new ListView<String>("services", services) {
-
+        ListView<CapsInfo> view =
+                new ListView<CapsInfo>("services", capsLinks) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void populateItem(ListItem<String> item) {
-                        final String serviceId = item.getModelObject();
-                        item.add(new Label("service", serviceId.toUpperCase()));
-                        item.add(
-                                new ListView<CapsInfo>("versions", byService.get(serviceId)) {
-                                    private static final long serialVersionUID = 1L;
+                    protected void populateItem(ListItem<CapsInfo> captItem) {
+                        @SuppressWarnings("deprecation")
+                        CapsInfo capsInfo = captItem.getModelObject();
 
-                                    @Override
-                                    protected void populateItem(ListItem<CapsInfo> item) {
-                                        CapsInfo capsInfo = item.getModelObject();
-                                        Version version = capsInfo.getVersion();
-                                        String capsLink = capsInfo.getCapsLink();
-                                        ExternalLink link = new ExternalLink("link", capsLink);
-                                        item.add(link);
+                        Version version = capsInfo.getVersion();
+                        String capsLink = capsInfo.getCapsLink();
+                        ExternalLink link = new ExternalLink("link", capsLink);
 
-                                        link.add(new Label("version", version.toString()));
-                                    }
-                                });
+                        link.add(new Label("service", capsInfo.getService().toUpperCase()));
+                        link.add(new Label("version", version.toString()));
+
+                        captItem.add(link);
                     }
                 };
-
         add(view);
     }
 }

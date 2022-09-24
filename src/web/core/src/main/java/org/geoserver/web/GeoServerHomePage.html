@@ -1,10 +1,27 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
+<div id="chooser">
+  <form wicket:id="form">
+    <div class="select">
+			<img class="icon" src="#" wicket:id="workspace.icon" wicket:message="title:workspace"/>
+			<select wicket:id="workspace"/>
+	  </div>
+    <div class="select">
+			<img class="icon" src="#" wicket:id="layer.icon" wicket:message="title:layer"/>
+		  <select wicket:id="layer"/>
+	  </div>
+    <div id="refresh">
+		  <a href="#" wicket:id="refresh">refresh</a>
+	  </div>
+  </form>
+</div>
 <div id="welcome">
 <p>
-<wicket:message key="GeoServerHomePage.belongsTo">This GeoServer belongs to</wicket:message> <a wicket:id="contactURL"><span wicket:id="contactName"></span></a>.
+	<span wicket:id="welcome"></span>
+	<span wicket:id="belongsTo"></span>
 </p>
+
 <p>
 <div wicket:id="catalogLinks"></div>
 </p>
@@ -13,25 +30,19 @@
       <span wicket:id="contentList"/>
 </div>
 </p>
-<p>
-  <span wicket:id="footerMessage"></span>
-</p>
+
 </div>
+
+<div id="services">
+	<span wicket:id="serviceList"/>
+</div>
+
 <div id="capabilities">
-  <ul>
-    <li class="navigation-tab">
-      <div class="navigation-tab-header">
-        <span><wicket:message key="serviceCapabilities">Service Capabilities</wicket:message></span>
-      </div>
-      <div>
-        <ul class="navigation-tab-content plain">
-          <li wicket:id="providedCaps" class="selfclear">
-            <span wicket:id="capsList"/>
-          </li>
-        </ul>
-      </div>
-    </li>
-  </ul>
+  <h3 wicket:id="serviceCapabilities" />
+
+  <div wicket:id="providedCaps">
+    <div wicket:id="capsList" class="flex-display"/>
+  </div>
 </div>
 
 <wicket:fragment wicket:id="catalogLinksFragment">
@@ -45,23 +56,32 @@
 	   <td>
 	     <a wicket:id="layersLink"><span wicket:id="nlayers"></span> <wicket:message key="layers">layers</wicket:message></a>
 	   </td>
-	   <td><a class="add-link" wicket:id="addLayerLink"><wicket:message key="addLayers">Add layers</wicket:message></a></td>
+	   <td><a class="add-link" wicket:id="addLayerLink"><wicket:message key="addLayers">Add new layer</wicket:message></a></td>
 	 </tr>
-	 <tr class="even">
+		<tr class="even">
+			<td>
+				<a wicket:id="groupsLink"><span wicket:id="ngroups"></span> <wicket:message key="groups">groups</wicket:message></a>
+			</td>
+			<td><a class="add-link" wicket:id="addGroupLink"><wicket:message key="addGroups">Add new layer group</wicket:message></a></td>
+		</tr>
+	 <tr class="odd">
 	   <td>
 	     <a wicket:id="storesLink"><span wicket:id="nstores"></span> <wicket:message key="stores">stores</wicket:message></a>
 	   </td>
-	   <td><a class="add-link" wicket:id="addStoreLink"><wicket:message key="addStores">Add stores</wicket:message></a></td>
+	   <td><a class="add-link" wicket:id="addStoreLink"><wicket:message key="addStores">Add new store</wicket:message></a></td>
 	 </tr>
-	 <tr class="odd">
+	 <tr class="even">
 	   <td>
 	     <a wicket:id="workspacesLink"><span wicket:id="nworkspaces"></span> <wicket:message key="workspaces">workspaces</wicket:message></a>
 	   </td>
-	   <td><a class="add-link" wicket:id="addWorkspaceLink"><wicket:message key="addWorkspaces">Create workspaces</wicket:message></a></td>
+	   <td><a class="add-link" wicket:id="addWorkspaceLink"><wicket:message key="addWorkspaces">Add new workspaces</wicket:message></a></td>
 	 </tr>
 	</table>
 </wicket:fragment>
 
+<p>
+	<span wicket:id="footerMessage"></span> <span wicket:id="footerContact"></span>
+</p>
 </wicket:extend>
 
 

@@ -20,6 +20,24 @@ import org.apache.wicket.validation.IValidator;
 public class StringAndInternationalStringPanel extends Panel {
 
     /**
+     * Create using id to generate labelKey, stringProperty, internationalProperty.
+     *
+     * @param id the component id.
+     * @param model the model of the form object.
+     * @param labelProvider the WebMarkupContainer being the context for labels in properties files.
+     */
+    public StringAndInternationalStringPanel(
+            String id, IModel<?> model, WebMarkupContainer labelProvider) {
+        this(
+                id,
+                model,
+                id,
+                id,
+                "international" + id.substring(0, 1).toUpperCase() + id.substring(1),
+                labelProvider);
+    }
+
+    /**
      * @param id the component id.
      * @param model the model of the form object.
      * @param labelKey the key of the label to be used for the string and i18n string field.

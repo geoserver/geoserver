@@ -9,10 +9,7 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.Model;
 import org.geoserver.GeoServerNodeData;
-import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.web.spring.security.GeoServerSession;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 
 /**
  * Default node id customizer, will respond to a system variable, env variable or servlet context
@@ -55,15 +52,6 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
             return false;
         }
         // we don't show the node id to all users, only to the admin
-        Authentication auth = ((GeoServerSession) parent.getSession()).getAuthentication();
-        if (auth == null
-                || !auth.isAuthenticated()
-                || auth instanceof AnonymousAuthenticationToken) {
-            return false;
-        } else {
-            GeoServerSecurityManager securityManager =
-                    GeoServerApplication.get().getSecurityManager();
-            return securityManager.checkAuthenticationForAdminRole(auth);
-        }
+        return ((GeoServerSession) parent.getSession()).isAdmin();
     }
 }

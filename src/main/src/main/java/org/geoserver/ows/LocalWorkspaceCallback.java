@@ -25,6 +25,13 @@ import org.geotools.util.logging.Logging;
  * Dispatcher callback that sets and clears the {@link LocalWorkspace} and {@link LocalPublished}
  * thread locals.
  *
+ * <p>This class is responsible for parsing request context information ({@code workspace/ows?},
+ * {@code layergroup/wms?}, {@code workspace/layer}) and resolving the intended local workspace,
+ * layer group, and/or layer information which are stored in a thread locale for reference.
+ *
+ * <p>The logic used here is duplicated by GeoServerHomePage which provides a user interface
+ * reflecting this context lookup process.
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPriority {

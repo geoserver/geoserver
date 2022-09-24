@@ -8,8 +8,8 @@ package org.geoserver.web.data.workspace;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.WorkspaceInfo;
 
-/** Simple choice renderer for {@link WorkspaceInfo} */
-public class WorkspaceChoiceRenderer extends ChoiceRenderer<WorkspaceInfo> {
+/** Simple choice renderer for {@link WorkspaceInfo} providing selection by name. */
+public class WorkspaceChoiceNameRenderer extends ChoiceRenderer<WorkspaceInfo> {
 
     private static final long serialVersionUID = 9065816461497078542L;
 
@@ -20,6 +20,6 @@ public class WorkspaceChoiceRenderer extends ChoiceRenderer<WorkspaceInfo> {
 
     @Override
     public String getIdValue(WorkspaceInfo workspace, int index) {
-        return workspace.getId();
+        return workspace.getName();
     }
 }

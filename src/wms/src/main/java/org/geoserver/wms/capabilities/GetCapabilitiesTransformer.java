@@ -69,6 +69,7 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.sld.GetStylesResponse;
+import org.geoserver.util.InternationalStringUtils;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilities;
@@ -371,11 +372,16 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             orAtts.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
             orAtts.addAttribute(XLINK_NS, "xlink:type", "xlink:type", "", "simple");
 
-            String onlineResource = serviceInfo.getOnlineResource();
-            if (onlineResource == null || onlineResource.trim().length() == 0) {
-                String requestBaseUrl = request.getBaseUrl();
-                onlineResource = buildURL(requestBaseUrl, null, null, URLType.SERVICE);
-            } else {
+            GeoServer geoServer = wmsConfig.getGeoServer();
+            ContactInfo contact = geoServer.getSettings().getContact();
+
+            String onlineResource =
+                    InternationalStringUtils.firstNonBlank(
+                            serviceInfo.getOnlineResource(),
+                            contact.getOnlineResource(),
+                            serviceInfo.getGeoServer().getSettings().getOnlineResource(),
+                            buildURL(request.getBaseUrl(), null, null, URLType.SERVICE));
+            if (onlineResource != null) {
                 try {
                     new URL(onlineResource);
                 } catch (MalformedURLException e) {
@@ -389,8 +395,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             orAtts.addAttribute("", "xlink:href", "xlink:href", "", onlineResource);
             element("OnlineResource", null, orAtts);
 
-            GeoServer geoServer = wmsConfig.getGeoServer();
-            ContactInfo contact = geoServer.getSettings().getContact();
             encodeContactInfo(contact);
 
             String fees = serviceInfo.getFees();

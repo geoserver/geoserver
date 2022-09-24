@@ -62,6 +62,7 @@ import org.geoserver.data.InternationalContentHelper;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.InternationalStringUtils;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilities;
@@ -421,11 +422,16 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             handleKeywordList(serviceInfo.getKeywords());
 
-            String onlineResource = serviceInfo.getOnlineResource();
-            if (onlineResource == null || onlineResource.trim().length() == 0) {
-                String requestBaseUrl = request.getBaseUrl();
-                onlineResource = buildURL(requestBaseUrl, null, null, URLType.SERVICE);
-            } else {
+            GeoServer geoServer = wmsConfig.getGeoServer();
+            ContactInfo contact = geoServer.getSettings().getContact();
+
+            String onlineResource =
+                    InternationalStringUtils.firstNonBlank(
+                            serviceInfo.getOnlineResource(),
+                            contact.getOnlineResource(),
+                            serviceInfo.getGeoServer().getSettings().getOnlineResource(),
+                            buildURL(request.getBaseUrl(), null, null, URLType.SERVICE));
+            if (onlineResource != null) {
                 try {
                     new URL(onlineResource);
                 } catch (MalformedURLException e) {
@@ -440,8 +446,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     attributes("xlink:type", "simple", "xlink:href", onlineResource);
             element("OnlineResource", null, attributes);
 
-            GeoServer geoServer = wmsConfig.getGeoServer();
-            ContactInfo contact = geoServer.getSettings().getContact();
             encodeContactInfo(contact);
 
             String fees = serviceInfo.getFees();

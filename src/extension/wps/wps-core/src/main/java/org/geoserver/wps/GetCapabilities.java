@@ -113,7 +113,7 @@ public class GetCapabilities {
         }
 
         sp.setProviderSite(owsf.createOnlineResourceType());
-        sp.getProviderSite().setHref(settings.getOnlineResource());
+        sp.getProviderSite().setHref(settings.getContact().getOnlineResource());
         sp.setServiceContact(responsibleParty(settings, owsf));
 
         // OperationsMetadata

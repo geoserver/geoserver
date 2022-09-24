@@ -126,6 +126,7 @@ public class XStreamPersisterTest {
         ContactInfo contact = factory.createContact();
         g1.getSettings().setContact(contact);
         contact.setAddress("123");
+        contact.setAddressDeliveryPoint("123"); // synomym with above
         contact.setAddressCity("Victoria");
         contact.setAddressCountry("Canada");
         contact.setAddressPostalCode("V1T3T8");
@@ -137,6 +138,8 @@ public class XStreamPersisterTest {
         contact.setContactPerson("Bob");
         contact.setContactPosition("hacker");
         contact.setContactVoice("+1 250 765 4321");
+        contact.setOnlineResource("https://acme.org/");
+        contact.setWelcome("Welcome to ACME mapping services");
 
         g1.getSettings().setNumDecimals(2);
         g1.getSettings().setOnlineResource("http://acme.org");

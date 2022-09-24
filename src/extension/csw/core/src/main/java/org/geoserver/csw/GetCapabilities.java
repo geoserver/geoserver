@@ -44,6 +44,7 @@ import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.util.InternationalStringUtils;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.capability.FilterCapabilitiesImpl;
 import org.geotools.filter.capability.ScalarCapabilitiesImpl;
@@ -163,7 +164,13 @@ public class GetCapabilities {
 
             OnlineResourceType providerSite = owsf.createOnlineResourceType();
             sp.setProviderSite(providerSite);
-            providerSite.setHref((csw.getOnlineResource() != null ? csw.getOnlineResource() : ""));
+            providerSite.setHref(
+                    InternationalStringUtils.firstNonBlank(
+                            csw.getOnlineResource(),
+                            contact.getOnlineResource(),
+                            csw.getGeoServer().getSettings().getOnlineResource(),
+                            ResponseUtils.buildURL(
+                                    request.getBaseUrl(), null, null, URLType.SERVICE)));
 
             ResponsiblePartySubsetType serviceContact = owsf.createResponsiblePartySubsetType();
             sp.setServiceContact(serviceContact);
@@ -186,7 +193,10 @@ public class GetCapabilities {
 
             OnlineResourceType onlineResource = owsf.createOnlineResourceType();
             contactInfo.setOnlineResource(onlineResource);
-            onlineResource.setHref(contact.getOnlineResource());
+            onlineResource.setHref(
+                    InternationalStringUtils.firstNonBlank(
+                            contact.getOnlineResource(),
+                            csw.getGeoServer().getSettings().getOnlineResource()));
 
             TelephoneType telephone = owsf.createTelephoneType();
             contactInfo.setPhone(telephone);

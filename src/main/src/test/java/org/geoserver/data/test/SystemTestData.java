@@ -1039,11 +1039,13 @@ public class SystemTestData extends CiteTestData {
         settings.setWorkspace(ws);
         settings.getContact().setContactPerson("Andrea Aime");
         settings.getContact().setContactEmail("andrea@geoserver.org");
+        settings.getContact().setOnlineResource("https://www.osgeo.org");
+        settings.getContact().setContactOrganization("Open Source Geospatial Foundation");
         settings.getContact()
                 .setAddressDeliveryPoint(
-                        "1600 Pennsylvania Ave NW, Washington DC 20500, United States");
+                        "9450 SW Gemini Dr. #42523, Beaverton Oregon 97008, United States");
         settings.setNumDecimals(8);
-        settings.setOnlineResource("http://geoserver.org");
+        settings.setOnlineResource("https://geoserver.org");
         settings.setVerbose(false);
         settings.setVerboseExceptions(false);
         settings.setLocalWorkspaceIncludesPrefix(false);

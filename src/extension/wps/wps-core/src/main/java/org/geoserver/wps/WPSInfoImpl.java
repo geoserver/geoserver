@@ -100,9 +100,7 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     /** The flag indicating whether remote inputs are enabled. */
     boolean remoteInputDisabled;
 
-    public WPSInfoImpl() {
-        title = "Prototype GeoServer WPS";
-    }
+    public WPSInfoImpl() {}
 
     /**
      * Returns the connection timeout (in seconds). It represents the timeout to be used during WPS

@@ -7,6 +7,7 @@ package org.geoserver.wps;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 import javax.xml.namespace.QName;
@@ -473,7 +474,7 @@ public class SnapTest extends WPSTestSupport {
     public void testWpsTitle() {
         final GeoServer geoserver = getGeoServer();
         WPSInfo wps = geoserver.getService(WPSInfo.class);
-        assertEquals("Prototype GeoServer WPS", wps.getTitle());
+        assertNull(wps.getTitle());
 
         final String updatedTitle = "WPS latest title";
         wps.setTitle(updatedTitle);

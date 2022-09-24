@@ -1,0 +1,203 @@
+<project name="data_directory" default="process"
+ xmlns:if="ant:if" xmlns:unless="ant:unless"
+ xmlns:resolver="antlib:org.apache.maven.resolver.ant"
+> 
+  <!-- macros -->
+  <macrodef name="download">
+    <attribute name="download" default="download"/>
+    <attribute name="file"/>
+    <attribute name="url"/>
+    <sequential>
+      <condition property="@{file}.downloaded">
+        <available file="@{download}/@{file}"/>
+      </condition>
+      <get unless:set="@{file}.downloaded"
+        skipexisting="true" tryGzipEncoding="true" 
+         src="@{url}"
+         dest="@{download}/@{file}"/>
+    </sequential>
+  </macrodef>
+    
+  <!-- some common locations -->
+  <property name="download" location="download"/>
+  <property name="process" location="process"/>
+  <property name="data" location="../../data/release/data"/>
+
+  <!-- check environment -->
+  <condition property="download.available">
+    <available file="${download}"/>
+  </condition>
+  <condition property="process.available">
+    <available file="${process}"/>
+  </condition>
+  
+  <property environment="env"/>
+  <path id="combined-PATH">
+    <pathelement path="${env.PATH}"/> <!--linux-->
+    <pathelement path="${env.Path}"/> <!--windows-->
+  </path>
+  <property name="PATH" refid="combined-PATH"/>
+  <condition property="ogr.available">
+    <or>
+      <available file="ogr2ogr.exe" filepath="${PATH}"/>
+      <available file="ogr2ogr" filepath="${PATH}"/>
+    </or>
+  </condition>
+  
+  <!-- clean -->
+  <target name="clean_download"
+          description="clean downloads ">
+     <delete dir="${download}"/>
+  </target>
+  
+  <target name="clean"
+          description="clean processed files">
+     <delete dir="${process}"/>
+  </target>
+
+  <!-- init -->
+  <target name="init_download" unless="download.available">
+     <mkdir dir="${download}"/>
+  </target>
+  
+  <target name="init" depends="init_download" unless="process.available">
+     <mkdir dir="${process}"/>
+  </target>
+  
+  <!-- download -->
+  <target name="download" depends="init_download" 
+          description="Pre-download and prep files">
+    <parallel threadCount="5">
+      <antcall target="ne_geopackage_download"/>
+    </parallel>
+  </target>
+  
+  <!-- process -->
+  <target name="process" depends="download,init" 
+          description="Prep files">
+    <antcall target="ne_geopackage_process"/>
+  </target>
+  
+  <target name="install" depends="process" description="Update release/data with processed data.">
+      <copy 
+        file="${process}/natural_earth.gpkg" todir="${data}/ne"/>
+  </target>
+  
+  <!-- Natural Earth GeoPackage -->
+  <target name="ne_geopackage_download" depends="init_download">
+     <download
+       url="https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip"
+       file="natural_earth_vector.gpkg.zip">
+     </download>
+  </target>
+
+  <!-- check if custom (processed) geopackage is available -->
+  <target name="ne_geopackage_check">
+      <available file="${process}/natural_earth.gpkg" property="gpkg.processed"/>
+  </target>
+  
+  <target name="ne_geopackage_process" depends="ne_geopackage_download,ne_geopackage_check" unless="gpkg.processed">
+      <echo level="info">Unzip into ${download}</echo>
+      <unzip overwrite="false" src="${download}/natural_earth_vector.gpkg.zip" dest="${download}">
+         <patternset>
+            <include name="packages/*"/>
+         </patternset>
+         <mapper type="flatten"/>
+      </unzip>
+      <echo level="info">Use ogr2ogr create natural_earth.gpkg</echo>
+      <property name="input" location="${download}/natural_earth_vector.gpkg"/>
+      <property name="output" location="${process}/natural_earth.gpkg"/>
+      <property name="options" location="-append -update"/>
+      
+      <antcall target="-lines">
+        <param name="table" value="boundary_lines_land"/>
+        <param name="from" value="ne_110m_admin_0_boundary_lines_land"/>
+        <param name="select" value = "*"/>
+        <param name="where" value ="TRUE"/>
+        <param name="options" value=""/>
+        <param name="title" value="Boundary Lines"/>
+        <param name="description" value="Country boundaries on land and offshore."/>
+      </antcall>
+
+      <antcall target="-lines">
+        <param name="table" value="coastlines"/>
+        <param name="from" value="ne_110m_coastline"/>
+        <param name="select" value = "*"/>
+        <param name="where" value ="TRUE"/>
+        <param name="options" value="-update"/>
+        <param name="title" value="Coastlines"/>
+        <param name="description" value="Ocean coastline, including major islands."/>
+      </antcall>
+
+      <antcall target="-polygons">
+        <param name="table" value="countries"/>
+        <param name="from" value="ne_110m_admin_0_countries"/>
+        <param name="select" value = "*"/>
+        <param name="where" value ="TRUE"/>
+        <param name="options" value="-update"/>
+        <param name="title" value="Countries"/>
+        <param name="description" value="Sovereign states"/>
+      </antcall>
+
+      <antcall target="-point">
+        <param name="table" value="populated_places"/>
+        <param name="from" value="ne_110m_populated_places_simple"/>
+        <param name="select" value = "*"/>
+        <param name="where" value ="TRUE"/>
+        <param name="options" value="-update"/>
+        <param name="title" value="Populated places"/>
+        <param name="description" value="City and town points"/>
+      </antcall>
+
+  </target>
+  
+  <!-- processing -->
+  <target name="-lines">
+      <echo level="info">${title}: ${description}</echo>
+      <exec executable="ogr2ogr">
+        <arg line="-f 'GPKG'"/>
+        <arg path="${output}"/>
+        <arg path="${input}"/>
+        <arg line="-lco IDENTIFIER='${title}'"/>
+        <arg line="-lco DESCRIPTION='${description}'"/>
+        <arg line="${options}"/>
+        <arg line="-nlt MULTILINESTRING"/>
+        <arg line="-nln ${table}"/>
+        <arg value="-sql"/>
+        <arg value="SELECT ${select} FROM ${from} WHERE ${where}"/>
+      </exec>
+  </target>
+  
+  <target name="-polygons">
+      <echo level="info">${title}: ${description}</echo>
+      <exec executable="ogr2ogr">
+        <arg line="-f 'GPKG'"/>
+        <arg path="${output}"/>
+        <arg path="${input}"/>
+        <arg line="-lco OVERWRITE=YES"/>
+        <arg line="-lco IDENTIFIER='${title}'"/>
+        <arg line="-lco DESCRIPTION='${description}'"/>
+        <arg line="${options}"/>
+        <arg line="-nlt MULTIPOLYGON"/>
+        <arg line="-nln ${table}"/>
+        <arg value="-sql"/>
+        <arg value="SELECT ${select} FROM ${from}"/>
+      </exec>
+  </target>
+  <target name="-point">
+      <echo level="info">${title}: ${description}</echo>
+      <exec executable="ogr2ogr">
+        <arg line="-f 'GPKG'"/>
+        <arg path="${output}"/>
+        <arg path="${input}"/>
+        <arg line="-lco IDENTIFIER='${title}'"/>
+        <arg line="-lco DESCRIPTION='${description}'"/>
+        <arg line="${options}"/>
+        <arg line="-nlt POINT"/>
+        <arg line="-nln ${table}"/>
+        <arg value="-sql"/>
+        <arg value="SELECT ${select} FROM ${from}"/>
+      </exec>
+  </target>
+    
+</project>

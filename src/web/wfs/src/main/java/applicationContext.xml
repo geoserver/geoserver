@@ -31,4 +31,8 @@
       </list>
     </property>
   </bean>
+
+  <bean class="org.geoserver.wfs.web.WFSServiceDescriptionProvider">
+  </bean>
+  
 </beans>

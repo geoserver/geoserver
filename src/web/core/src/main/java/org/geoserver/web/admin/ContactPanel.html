@@ -2,13 +2,22 @@
 <body>
 <wicket:panel>
   <fieldset>
+    <legend><span><wicket:message key="contactOrganization">Organization</wicket:message></span></legend>
+    <li>
+      <div wicket:id="contactOrganization"/>
+    </li>
+    <li>
+      <div wicket:id="onlineResource"/>
+    </li>
+    <li>
+      <div wicket:id="welcome"/>
+    </li>
+  </fieldset>
+  <fieldset>
     <legend><span><wicket:message key="contact">Contact</wicket:message></span></legend>
     <ul>
       <li>
         <div wicket:id="contactPerson"/>
-      </li>
-      <li>
-        <div wicket:id="contactOrganization"/>
       </li>
       <li>
         <div wicket:id="contactPosition"/>

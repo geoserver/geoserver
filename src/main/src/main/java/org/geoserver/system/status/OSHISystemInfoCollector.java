@@ -67,8 +67,10 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
         oldLoadTicks = pr.getSystemCpuLoadTicks();
         // compute CPU usage for this process
         Thread collector =
-                new Thread(
-                        () -> {
+                startCollector();
+    }
+
+    private void update() {
                             boolean processExists = true;
                             long currentTime = 0;
                             long previousTime = 0;
@@ -99,9 +101,14 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                                     processExists = false;
                                 }
                             }
-                        });
+    }
+
+    Thread startCollector() {
+        Thread collector = new Thread(this::update);
+        collector.setName(getClass().getSimpleName());
         collector.setDaemon(true);
         collector.start();
+        return collector;
     }
 
     @Override

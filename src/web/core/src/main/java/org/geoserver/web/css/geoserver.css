@@ -70,6 +70,22 @@
   /* GeoServer */
   --gs-green-light: #c6e09b;
   --gs-blue: #0076a1;
+  --gs-blue-heading: #0082b6;
+  --gs-orange: #cc6d00;
+  /* (feedback) messages */
+  --gs-info-bg: #c6ff8e;
+  --gs-info-link: #6a993d;
+  --gs-info-link-hover: #007a99;
+  --gs-warning-bg: #ffec8e;
+  --gs-warning-link: #cc872e;
+  --gs-warning-link-hover: #dd7c14;
+  --gs-error-bg: #f24e50;
+  --gs-error-link: #801a1b;
+  --gs-error-link-hover: #660002;
+  /* tables */
+  --gs-table-bg: #f4f9eb;
+  --gs-tabel-bg-even: #e2efcd;
+  --gs-tabel-bg-even-hover: var(--gs-table-bg);
 ;}
 
 /*-----------------------
@@ -81,85 +97,55 @@ html {
 }
 body {
   font-size: 100%; /* override blueprint */
-background: #fff;
-color: var(--gs-blue);
-font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
-text-align:left !important; /* override blueprint's ie.css */
-overflow-y: scroll;
+  background: #fff;
+  color: var(--gs-blue);
+  font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+  text-align:left !important; /* override blueprint's ie.css */
+  overflow-y: scroll;
 }
-
 body.help {
-padding: 2em;
+  padding: 2em;
 }
-
 body.help ol, ul ul {
-color:black;
+  color:black;
 }
-
 body.help ol li {
-display:list-item;
+  display:list-item;
 }
 body.help p {
-color: black;
+  color: black;
 }
 
-h1, 
-h2, 
-h3, 
-h4, 
-h5, 
-h6 {
-color: #0082b6;
-font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
-height: auto; /* override blueprint's screen.css */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--gs-blue-heading);
+  font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+  height: auto; /* override blueprint's screen.css */
 }
-
 h1 { /* override blueprint.css */
-font-size: 2.1em;
+  font-size: 2.1em;
 }
 
-strong, 
-em,
-dt, 
-b, 
-i {
-font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+strong, em, dt, b, i {
+  font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
 }
-
 a {
-color: var(--gs-blue);
-text-decoration: none;
-outline: none !important; /* avoid ugly dotted border for Firefox */
+  color: var(--gs-blue);
+  text-decoration: none;
+  outline: none !important; /* avoid ugly dotted border for Firefox */
 }
-
 a:hover {
-color: #cc6d00;
-text-decoration: underline;
+  color: var(--gs-orange);
+  text-decoration: underline;
 }
-
 a img {
-border: none; 
+  border: none;
 }
-
-.error, 
-.notice, 
-.success { /* override blueprint.css */
-border: 0 none transparent;
-margin-bottom: 0;
-padding: 0;
-background: transparent;
-border-color: transparent;
-}
-
-input,
-textarea,
-select {
-background: #fff;
-color: #000;
-}
-
-input[readonly] {
-	border: 1px solid Lightgrey;
+.error, .notice, .success { /* override blueprint.css */
+  border: 0 none transparent;
+  margin-bottom: 0;
+  padding: 0;
+  background: transparent;
+  border-color: transparent;
 }
 
 .palette th, .palette td {
@@ -207,6 +193,9 @@ Utility Classes
 .text-small {
   font-size: small !important;
 }
+.text-smaller {
+  font-size: 11px !important;
+}
 
 /* widths */
 .w-10-em {
@@ -234,12 +223,21 @@ Utility Classes
   width: 60ex !important;
 }
 /* add to Bootstrap utilities */
+.w-10 {
+  width: 10% !important;
+}
 .w-95 {
   width: 95% !important;
 }
 /* heights */
+.h-5-em {
+  height: 5em !important;
+}
 .h-10-em {
   height: 10em !important;
+}
+.h-20-em {
+  height: 20em !important;
 }
 .h-25-em {
   height: 25em !important;
@@ -266,11 +264,11 @@ Utility Classes
 }
 
 .wrap {
-width: 82em;
-min-width: 80%;
-margin: 0; 
-padding: 0;
-position: relative;
+  width: 82em;
+  min-width: 80%;
+  margin: 0;
+  padding: 0;
+  position: relative;
 }
 
 /* lists */
@@ -306,43 +304,39 @@ border: 1px solid #ccccb8;
 list-style-type: none;
 }
 
+
+
 .feedbackPanelINFO {
-color: #000;
-background: #c6ff8e;
+  color: #000;
+  background: var(--gs-info-bg);
 }
-
 .feedbackPanelINFO a {
-color: #6a993d;
+  color: var(--gs-info-link);
 }
-
 .feedbackPanelINFO a:hover {
-color: #007a99;
+  color: var(--gs-info-link-hover);
 }
 
 .feedbackPanelWARNING {
-color: #000;
-background: #ffec8e;
+  color: #000;
+  background: var(--gs-warning-bg);
 }
-
 .feedbackPanelWARNING a {
-color: #cc872e;
+  color: var(--gs-warning-link);
 }
-
 .feedbackPanelWARNING a:hover {
-color: #dd7c14;
+  color: var(--gs-warning-link-hover);
 }
 
 .feedbackPanelERROR {
-color: #fff;
-background: #f24e50;
+  color: #fff;
+  background: var(--gs-error-bg);
 }
-
 .feedbackPanelERROR a {
-color: #801a1b;
+  color: var(--gs-error-link);
 }
-
 .feedbackPanelERROR a:hover {
-color: #660002;
+  color: var(--gs-error-link-hover);
 }
 
 /*-----------------------
@@ -395,14 +389,12 @@ thead th {
   border-width: 0 0 1px;
 }
 
-tr:hover td,
-tbody tr:hover th {
-background: #f4f9eb;
+tr:hover td, tbody tr:hover th {
+background: var(--gs-table-bg);
 }
 
-tr.even td,
-tr.even th {
-background: #e2efcd; /* override blueprint's settings */
+tr.even td, tr.even th {
+  background: var(--gs-table-bg-even); /* override blueprint's settings */
 }
 
 tr.dnd-drop-center td {
@@ -416,9 +408,8 @@ div.dnd-theme-web tr {
   cursor: -webkit-grab;
 }
 
-tr.even:hover td,
-tr.even:hover th {
-background: #f4f9eb;
+tr.even:hover td, tr.even:hover th {
+  background: var(--gs-tabel-bg-even-hover);
 }
 
 th.actions,
@@ -431,50 +422,57 @@ th.selection {
 }
 
 .alternating-rows tr:nth-child(even) {
-	background: #e2efcd;
+	background: var(--gs-table-bg-even)
 }
 /*-----------------------
 Forms
 -----------------------*/
+
+input,
+textarea,
+select {
+  background: #fff;
+  color: #000;
+}
+
+input[readonly] {
+  border: 1px solid Lightgrey;
+}
+
 form ul,
 ul.form-data {
-margin: 0; /* override blueprint's settings for unordered lists */
-list-style-type: none;
+  margin: 0; /* override blueprint's settings for unordered lists */
+  list-style-type: none;
 }
 
 form li,
 ul.form-data li {
-display: block;
-margin: 0 0 0.3em;
-padding: 4px 5px 2px 0;
-position: relative;
+  display: block;
+  margin: 0 0 0.3em;
+  padding: 4px 5px 2px 0;
+  position: relative;
 }
 
 form ul ul {
-margin: 0;
+  margin: 0;
 }
 
 form li li {
-padding: 0;
-margin: 0.3em 0;
+  padding: 0;
+  margin: 0.3em 0;
 }
 
-form a.expanded {
-background-image: url(../img/icons/silk/bullet_arrow_down.png);
-background-repeat: no-repeat;
-background-position: 0px 0px;
-padding-left: 16px;
-height: 18px;
-font-weight: bold;
+form a.expanded, form a.collapsed {
+  background-image: url(../img/icons/silk/bullet_arrow_down.png);
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  padding-left: 16px;
+  height: 18px;
+  font-weight: bold;
 }
 
 form a.collapsed {
-background-image: url(../img/icons/silk/bullet_arrow_right.png);
-background-repeat: no-repeat;
-background-position: 0px 0px;
-padding-left: 16px;
-height: 18px;
-font-weight: bold;
+  background-image: url(../img/icons/silk/bullet_arrow_right.png);
 }
 
 fieldset { /* override blueprint's settings */
@@ -497,36 +495,34 @@ legend li {
   font-size: 12px;
 }
 label, span.fieldname {
-border: medium none;
-color: #222;
-display: block;
-font-weight: normal;
-/*font-size: 0.95em;*/
-line-height: 1.5em;
-padding: 0 0 1px;
+  border: medium none;
+  color: #222;
+  display: block;
+  font-weight: normal;
+  line-height: 1.5em;
+  padding: 0 0 1px;
 }
 
 label.choice {
-display: block;
-margin: -1.65em 0 0 25px;
-padding: 0.44em 0 0.5em;
-width: 90%;
-line-height: 1.5em;
+  display: block;
+  margin: -1.65em 0 0 25px;
+  padding: 0.44em 0 0.5em;
+  width: 90%;
+  line-height: 1.5em;
 }
 
 label.choice,ul.choiceList>li label, *.choiceItem label {
-color: #222; 
-font-weight: normal;
-font-size: 100%;
+  color: #222;
+  font-weight: normal;
+  font-size: 100%;
 }
 
 ul.choiceList>li span.fieldname:dir(rtl), *.choiceItem span.fieldname:dir(rtl) {
-margin-left: 0;
-margin-right: -2em;
+  margin-left: 0;
+  margin-right: -2em;
 }
-
 ul.choiceList>li label,*.choiceItem label{
-display: inline;
+  display: inline;
 }
 textarea.cql {
   height: 1.2em;
@@ -565,6 +561,10 @@ border: 1px solid #7c7c7c;
 border-color: #7c7c7c #c3c3c3 #ddd;
 padding: 0.2em;
 width: 25em;
+}
+input[type=text], input[type=number], input[type=password] {
+  border: 1px solid #7c7c7c;
+  border-color: #7c7c7c #c3c3c3 #ddd;
 }
 
 input.longtext {
@@ -1233,16 +1233,13 @@ border: 1px solid #ccc;
 }
 
 div.progress-bar {
--moz-border-radius-bottomleft:5px;
--moz-border-radius-bottomright:5px;
--moz-border-radius-topleft:5px;
--moz-border-radius-topright:5px;
-background-color:#E8E6E6;
-border:1px solid #555555;
-float:none;
-height:16px;
-margin:1.2em auto;
-width:50%;
+  -moz-border-radius: 5px;
+  background-color:#E8E6E6;
+  border:1px solid #555555;
+  float:none;
+  height:16px;
+  margin:1.2em auto;
+  width:50%;
 }
 
 div.progress-bar span.bar {

@@ -92,4 +92,12 @@
     <property name="category" ref="servicesCategory"/>
     <property name="serviceClass" value="org.geoserver.gwc.wmts.WMTSInfo"/>
   </bean>
+
+  <!-- Used for workspace-based demo requests so the requests to GS stay workspace-based -->
+  <bean id="gwcDemoUrlHandlerMapping" class="org.geoserver.gwc.web.GwcDemoUrlHandlerMapping">
+    <constructor-arg ref="catalog" />
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="order" value="10" />
+  </bean>
+
 </beans>

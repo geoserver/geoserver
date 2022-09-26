@@ -9,20 +9,6 @@
     <constructor-arg ref="resourceLoader"/>
   </bean>
   <bean id="wmtsFactoryExtension" class="org.geoserver.gwc.wmts.WMTSFactoryExtension"/>
-
-  <!-- Specific URL mapping for GWC WMTS REST API -->
-  <bean id="gwcWmtsRestUrlHandlerMapping" class="org.geoserver.gwc.controller.GwcWmtsRestUrlHandlerMapping">
-    <constructor-arg ref="catalog" />
-    <property name="alwaysUseFullPath" value="true" />
-    <property name="order" value="10" />
-  </bean>
-
-  <!-- Used for workspace-based web requests (i.e. for rest/web/openlayer/ol.js) -->
-  <bean id="gwcRestWebUrlHandlerMapping" class="org.geoserver.gwc.controller.GwcRestWebUrlHandlerMapping">
-    <constructor-arg ref="catalog" />
-    <property name="alwaysUseFullPath" value="true" />
-    <property name="order" value="10" />
-  </bean>
   
   <bean id="gwcResourceServiceVoter" class="org.geoserver.gwc.wmts.GWCResourceServiceVoter"/>
 

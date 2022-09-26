@@ -15,25 +15,22 @@
     </wicket:fragment>
     <div wicket:id="rulesPanel"></div>
     <form wicket:id="form">
-        <ul style="padding-top:50px;">
-            <li>
-                <fieldset>
-                    <legend><span><wicket:message key="testRules"></wicket:message></span></legend>
-                    <ul>
-                        <li>
-                            <label for="input"><wicket:message key="input"></wicket:message>
-                            </label>
-                            <textarea wicket:id="input" id="input" style="width: 80%; height:50px;"></textarea>
-                        </li>
-                        <li>
-                            <label for="output"><wicket:message key="output"></wicket:message>
-                            </label>
-                            <textarea wicket:id="output" id="output" style="width: 80%; height:50px;"></textarea>
-                        </li>
-                    </ul>
-                </fieldset>
-            </li>
-        </ul>
+        <fieldset class="mt-5">
+            <legend><span><wicket:message key="testRules"></wicket:message></span></legend>
+            <ul>
+                <li>
+                    <label for="input"><wicket:message key="input"></wicket:message>
+                    </label>
+                    <textarea wicket:id="input" id="input" class="w-75 h-5-em"></textarea>
+                </li>
+                <li>
+                    <label for="output"><wicket:message key="output"></wicket:message>
+                    </label>
+                    <textarea wicket:id="output" id="output" class="w-75 h-5-em"></textarea>
+                </li>
+            </ul>
+        </fieldset>
+
         <div class="button-group selfclear">
             <a href="#" wicket:id="test"><wicket:message key="test"></wicket:message></a>
         </div>

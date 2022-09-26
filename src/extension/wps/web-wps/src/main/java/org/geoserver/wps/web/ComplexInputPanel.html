@@ -7,7 +7,7 @@
    
    <wicket:fragment wicket:id="text">
       <select wicket:id="mime"/><br/>
-      <textarea style="height:200px;width:600px" wicket:id="textarea"></textarea>
+      <textarea class="w-25-em h-5-em p-2" wicket:id="textarea"></textarea>
    </wicket:fragment>
    
    <wicket:fragment wicket:id="vectorLayer">
@@ -25,14 +25,14 @@
    <wicket:fragment wicket:id="reference">
       <br/>Method <select wicket:id="method"/><br/>
       Mime type <select wicket:id="mime"/><br/>
-      URL <input type="text" style="width:550px" wicket:id="url"/><br/>
+      URL <input type="text" class="w-25-em" wicket:id="url"/><br/>
       <div wicket:id="bodyContainer">
-      Body <br/> <textarea style="height:200px;width:600px" wicket:id="body"></textarea></div>
+      Body <br/> <textarea class="w-25-em h-5-em p-2" wicket:id="body"></textarea></div>
    </wicket:fragment>
    
    <wicket:fragment wicket:id="subprocess">
       <a href="#" wicket:id="edit">Define/Edit</a><br/>
-      <textarea style="height:200px;width:600px" readonly="readonly" wicket:id="xml"></textarea>
+      <textarea class="w-25-em h-5-em p-2" readonly="readonly" wicket:id="xml"></textarea>
    </wicket:fragment>
    
  </body>

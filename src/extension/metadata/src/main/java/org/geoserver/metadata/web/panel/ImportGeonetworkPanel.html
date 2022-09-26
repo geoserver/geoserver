@@ -5,8 +5,7 @@
 <body>
 <wicket:panel>
     <div wicket:id="importDialog"></div>
-    <ul>
-        <li>
+
             <fieldset>
                 <legend>
                     <span><wicket:message key="header"></wicket:message></span>
@@ -14,15 +13,14 @@
                 <ul>
                     <li>
                         <select wicket:id="geonetworkName" /> <input
-							wicket:id="textfield" style="width: 600px;" /> <a href="#"
+							wicket:id="textfield" class="w-30-em" /> <a href="#"
 							wicket:id="link"> <wicket:message key="actionImport"></wicket:message>
 						</a>
                         <span wicket:id="importFeedback"></span>
                     </li>
                 </ul>
             </fieldset>
-        </li>
-    </ul>
+
 </wicket:panel>
 </body>
 </html>

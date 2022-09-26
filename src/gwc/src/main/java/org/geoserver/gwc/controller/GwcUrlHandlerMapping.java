@@ -25,15 +25,16 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  *
  * <p>SUBCLASSES: Set the `handlerMappingString` in the constructor.
  */
-public class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMapping
+public class GwcUrlHandlerMapping extends RequestMappingHandlerMapping
         implements HandlerInterceptor {
 
-    protected String GWC_URL_PATTERN = "/gwc/rest/wmts";
+    protected String GWC_URL_PATTERN = "";
 
     private final Catalog catalog;
 
-    public GwcWmtsRestUrlHandlerMapping(Catalog catalog) {
+    public GwcUrlHandlerMapping(Catalog catalog, String gwcUrlPattern) {
         this.catalog = catalog;
+        GWC_URL_PATTERN = gwcUrlPattern;
     }
 
     @Override

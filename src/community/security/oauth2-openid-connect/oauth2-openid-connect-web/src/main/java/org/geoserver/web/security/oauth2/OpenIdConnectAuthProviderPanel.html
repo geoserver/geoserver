@@ -30,6 +30,22 @@
                 <input id="sendClientSecret" wicket:id="sendClientSecret" type="checkbox"/>
                 <a href="#" wicket:id="sendClientSecretHelp" class="help-link"></a>
             </li>
+
+            <br>
+            <fieldset>
+                <legend>
+                    <span> <wicket:message key="bearerTokens">Bearer Tokens</wicket:message> </span>
+                    <a href="#" wicket:id="allowBearerTokensHelp" class="help-link"></a>
+                </legend>
+                <li>
+                    <label for="allowBearerTokens"><span><wicket:message
+                            key="allowBearerTokens"></wicket:message></span></label>
+                </li>
+                <li>
+                    <input id="allowBearerTokens" wicket:id="allowBearerTokens" type="checkbox"/>
+                </li>
+            </fieldset>
+
         </wicket:extend>
     </body>
 </html>

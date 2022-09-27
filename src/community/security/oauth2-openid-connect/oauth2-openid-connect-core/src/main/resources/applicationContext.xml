@@ -28,12 +28,22 @@
 		class="org.geoserver.security.oauth2.services.OpenIdConnectTokenServices">
 	</bean>
 
+	<bean id="openIdConnectBearerTokenValidator" class="org.geoserver.security.oauth2.bearer.MultiTokenValidator">
+		<constructor-arg>
+			<list>
+				<bean class="org.geoserver.security.oauth2.bearer.AudienceAccessTokenValidator"/>
+				<bean class="org.geoserver.security.oauth2.bearer.SubjectTokenValidator"/>
+			</list>
+		</constructor-arg>
+	</bean>
+
 	<bean id="openidConnectAuthenticationProvider"
 		class="org.geoserver.security.oauth2.OpenIdConnectAuthenticationProvider">
 		<constructor-arg ref="authenticationManager" />
 		<constructor-arg value="openIdConnectTokenServices" />
 		<constructor-arg value="openIdConnectSecurityConfiguration" />
 		<constructor-arg value="openIdConnectRestTemplate" />
+		<constructor-arg value="openIdConnectBearerTokenValidator" />
 	</bean>
 
 </beans>

@@ -149,7 +149,9 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
             IModel<?> model = (IModel<?>) getReplaceModelMethod.invoke(attr.get(0));
             assertTrue(
                     "Unmangled names fail",
-                    model.getObject().toString().contains("http://localhost/context/gwc/demo/cgf"));
+                    model.getObject()
+                            .toString()
+                            .contains("http://localhost/context/cgf/gwc/demo/cgf"));
             return;
         } catch (Exception e) {
             throw new RuntimeException(e);

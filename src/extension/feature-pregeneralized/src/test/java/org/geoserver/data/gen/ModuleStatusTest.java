@@ -7,9 +7,9 @@ package org.geoserver.data.gen;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-public class ModuleStatusTest extends GeoServerSystemTestSupport{
+public class ModuleStatusTest extends GeoServerSystemTestSupport {
     @Test
-    public void test() { 
+    public void test() {
         assertModuleStatus("gs-feature-pregeneralized", "Pregeneralized Features Extension");
     }
-} 
+}

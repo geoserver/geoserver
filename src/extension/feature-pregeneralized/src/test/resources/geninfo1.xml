@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GeneralizationInfos dataSourceName="DSInfos" dataSourceNameSpace="WSInfos" version="1.0">
+	<GeneralizationInfo dataSourceName="DSInfo" dataSourceNameSpace="WSInfo" featureName="GenFeature1" baseFeatureName="BaseFeature1" geomPropertyName="the_geom">
+		<Generalization distance="100" featureName="GenFeature1" geomPropertyName="the_geom"/>
+		<Generalization dataSourceName="DSDistance" dataSourceNameSpace="WSDistance" distance="1000" featureName="GenFeature2" geomPropertyName="the_geom"/>
+	</GeneralizationInfo>
+	<GeneralizationInfo featureName="BaseFeature2" baseFeatureName="BaseFeature2" geomPropertyName="the_geom">
+		<Generalization distance="100" featureName="BaseFeature2" geomPropertyName="the_geom1"/>
+		<Generalization distance="1000" featureName="BaseFeature2" geomPropertyName="the_geom2"/>
+	</GeneralizationInfo>	
+</GeneralizationInfos>

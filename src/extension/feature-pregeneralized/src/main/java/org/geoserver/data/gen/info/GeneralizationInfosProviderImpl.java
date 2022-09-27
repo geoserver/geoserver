@@ -5,25 +5,38 @@
  */
 package org.geoserver.data.gen.info;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.dom.DOMSource;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.Resources;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geotools.data.gen.info.GeneralizationInfos;
+import org.geotools.util.URLs;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
- * The default implementation for GeneralizationInfosProvider, reading the info from an XML file.
- *
- * <p>The xml schema file is "/geninfos_1.0.xsd"
+ * Replacement of the geotools default implementation to use the GeoServer Resource loader to be
+ * agnostic of how the resources are stored (on disk or on database) With this implementation it is
+ * possible to store the external configuration file into a JDBC Resource store for example
  *
  * @author Christian Mueller
  */
 public class GeneralizationInfosProviderImpl
         extends org.geotools.data.gen.info.GeneralizationInfosProviderImpl {
 
+    /**
+     * Override the default implementation to use the GeoServer Resource loader to be agnostic of
+     * how the resources are stored (on disk or on database)
+     */
     @Override
     protected URL deriveURLFromSourceObject(Object source) throws IOException {
         if (source == null) {
@@ -35,19 +48,62 @@ public class GeneralizationInfosProviderImpl
 
             GeoServerResourceLoader loader =
                     GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            File f =
-                    Resources.find(
-                            Resources.fromURL(Files.asResource(loader.getBaseDirectory()), path),
-                            true);
+            Resource resource = loader.get(Paths.convert(path));
+
             URL url = null;
-            if (f != null && f.exists()) {
-                url = f.toURI().toURL();
-            } else {
-                url = new URL(path);
+            switch (resource.getType()) {
+                case RESOURCE:
+                    url = URLs.fileToUrl(resource.file());
+                    break;
+                case UNDEFINED:
+                    url = new URL(path);
+                    break;
+                default:
+                    throw new IOException("Trying to use for configuration directory " + source);
             }
+
             url = new URL(URLDecoder.decode(url.toExternalForm(), "UTF8"));
             return url;
         }
         throw new IOException("Cannot read from " + source);
+    }
+
+    /**
+     * Override the default implementation to use the GeoServer Resource loader to be agnostic of
+     * how the resources are stored (on disk or on database)
+     */
+    @Override
+    protected GeneralizationInfos parseXML(URL url) throws IOException {
+
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        Resource configurationResource = loader.fromURL(url);
+
+        Document doc = null;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setIgnoringComments(true);
+        factory.setNamespaceAware(true);
+        factory.setIgnoringElementContentWhitespace(true);
+
+        try (InputStream in = configurationResource.in()) {
+            DocumentBuilder db = factory.newDocumentBuilder();
+            doc = db.parse(in);
+            VALIDATOR.validate(new DOMSource(doc));
+        } catch (Exception e) {
+            throw new IOException(e.getMessage());
+        }
+        NodeList nl = doc.getElementsByTagName(GENERALIZATION_INFOS_TAG);
+        GeneralizationInfos gInfos = new GeneralizationInfos();
+
+        Node gInfosNode = nl.item(0);
+        checkVersion(gInfosNode);
+
+        NamedNodeMap attrMap = gInfosNode.getAttributes();
+        if (attrMap.getNamedItem(DATASOURCE_NAME_ATTR) != null)
+            gInfos.setDataSourceName(attrMap.getNamedItem(DATASOURCE_NAME_ATTR).getTextContent());
+        if (attrMap.getNamedItem(DATASOURCE_NAMESPACE_NAME_ATTR) != null)
+            gInfos.setDataSourceNameSpace(
+                    attrMap.getNamedItem(DATASOURCE_NAMESPACE_NAME_ATTR).getTextContent());
+        parseGeneralizationInfoNodes(gInfosNode, gInfos);
+        return gInfos;
     }
 }

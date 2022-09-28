@@ -172,7 +172,7 @@ These tiles are being rendered by the OpenLayers client.
 Create OpenLayers application - WMS Vector Tiles
 ------------------------------------------------
 
-.. note::   Vector tiles requested with WMS allows to retrieve non-cached vector tiles (server side), setting the ``tiled=false`` parameter on the ``getMap`` request. This setting could be particularly useful when serving fast changing source data that should constantly be kept up-to-date for display.
+.. note::   Vector tiles requested with WMS allows retrieving non-cached vector tiles (server side) by setting the ``tiled=false`` parameter on the ``getMap`` request. This setting could be particularly useful when serving fast changing source data that should constantly be kept up-to-date for display.
 
 #. Create a ``www/wms-vectortiles`` directory inside your GeoServer Data Directory.
 

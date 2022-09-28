@@ -148,6 +148,18 @@
         <param name="title" value="Populated places"/>
         <param name="description" value="City and town points"/>
       </antcall>
+      
+      <!-- roads increases size from 900k to 3.6M -->
+      <!--antcall target="-lines">
+        <param name="table" value="roads"/>
+        <param name="from" value="ne_10m_roads"/>
+        <param name="select" value = "fid,geom,type,name,label,label2,local,localalt,labelrank,min_zoom,min_label"/>
+        <param name="where" value ="min_zoom &lt; 6"/>
+        <param name="options" value="-update"/>
+        <param name="title" value="Roads"/>
+        <param name="simplify" value ="0.15"/>
+        <param name="description" value="Transportation."/>
+      </antcall-->
 
   </target>
   
@@ -165,6 +177,7 @@
         <arg line="-nln ${table}"/>
         <arg value="-sql"/>
         <arg value="SELECT ${select} FROM ${from} WHERE ${where}"/>
+        <arg line="-simplify ${simplify}" unless:blank="${simplify}"/>
       </exec>
   </target>
   

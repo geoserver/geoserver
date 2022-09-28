@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
   <sld:NamedLayer>
-    <sld:Name>countries_transparent</sld:Name>
-    <sld:Title>Countries</sld:Title>
-    <sld:Abstract>Alternate on mapcolor9 theme for ne:countries layer. This presentation uses 0.5 opacity to allow background to show thru as part of a layer group or map.</sld:Abstract>
+    <sld:Name>countries_mapcolor9</sld:Name>
+    <sld:Title>Countries Mapcolor9</sld:Title>
+    <sld:Abstract>Theme using mapcolor9 for ne:countries layer.</sld:Abstract>
     <sld:UserStyle>
       <sld:Name />
       <sld:FeatureTypeStyle>
@@ -42,7 +42,6 @@
                   <ogc:Literal>#d9d9d9</ogc:Literal>
                 </ogc:Function>
               </sld:CssParameter>
-              <sld:CssParameter name="fill-opacity">0.5</sld:CssParameter>
             </sld:Fill>
           </sld:PolygonSymbolizer>
           <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>

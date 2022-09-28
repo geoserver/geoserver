@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
   <sld:NamedLayer>
-    <sld:Name>countries</sld:Name>
+    <sld:Name>countries_transparent</sld:Name>
+    <sld:Title>Countries</sld:Title>
+    <sld:Abstract>Alternate on mapcolor9 theme for ne:countries layer. This presentation uses a slight transparencyto allow background to show thru as part of a layer group or map. Labeling is done at a lower priority than populated places to allow cities to take precedence</sld:Abstract>
     <sld:UserStyle>
       <sld:Name />
       <sld:FeatureTypeStyle>
@@ -40,10 +42,183 @@
                   <ogc:Literal>#d9d9d9</ogc:Literal>
                 </ogc:Function>
               </sld:CssParameter>
+              <sld:CssParameter name="fill-opacity">0.75</sld:CssParameter>
             </sld:Fill>
           </sld:PolygonSymbolizer>
           <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
         </sld:Rule>
+        
+        <sld:Rule>
+          <ogc:Filter>
+            <ogc:PropertyIsLessThan>
+              <ogc:PropertyName>MIN_ZOOM</ogc:PropertyName>
+              <ogc:Literal>2</ogc:Literal>
+            </ogc:PropertyIsLessThan>
+          </ogc:Filter>
+          <sld:MinScaleDenominator>14.0E7</sld:MinScaleDenominator>
+          <sld:TextSymbolizer>
+            <sld:Label>
+              <ogc:Function name="if_then_else">
+                <ogc:Function name="lessThan">
+                  <ogc:PropertyName>NAME_LEN</ogc:PropertyName>
+                  <ogc:Literal>8</ogc:Literal>
+                </ogc:Function>
+                <ogc:PropertyName>NAME</ogc:PropertyName>
+                <ogc:PropertyName>ABBREV</ogc:PropertyName>
+              </ogc:Function>
+            </sld:Label>
+            <sld:Font>
+              <sld:CssParameter name="font-family">SansSerif</sld:CssParameter>
+              <sld:CssParameter name="font-size">10</sld:CssParameter>
+            </sld:Font>
+            <sld:LabelPlacement>
+              <sld:PointPlacement>
+                <sld:AnchorPoint>
+                  <sld:AnchorPointX>0.5</sld:AnchorPointX>
+                  <sld:AnchorPointY>0.5</sld:AnchorPointY>
+                </sld:AnchorPoint>
+              </sld:PointPlacement>
+            </sld:LabelPlacement>
+            <sld:Fill>
+              <CssParameter name="fill">#777777</CssParameter>
+            </sld:Fill>
+            <sld:Priority>
+              <ogc:Sub>
+                <ogc:Literal>50</ogc:Literal>
+                <ogc:PropertyName>LABELRANK</ogc:PropertyName>
+              </ogc:Sub>
+            </sld:Priority>
+            <sld:VendorOption name="maxDisplacement">20</sld:VendorOption>
+            <sld:VendorOption name="spaceAround">8</sld:VendorOption>
+            <sld:VendorOption name="charSpacing">1</sld:VendorOption>
+            <sld:VendorOption name="autoWrap">70</sld:VendorOption>
+            <sld:VendorOption name="goodnessOfFit">0.95</sld:VendorOption>
+          </sld:TextSymbolizer>
+          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
+        </sld:Rule>
+        <sld:Rule>
+          <ogc:Filter>
+            <ogc:PropertyIsLessThan>
+              <ogc:PropertyName>MIN_ZOOM</ogc:PropertyName>
+              <ogc:Literal>3</ogc:Literal>
+            </ogc:PropertyIsLessThan>
+          </ogc:Filter>
+          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
+          <sld:MinScaleDenominator>7.0E7</sld:MinScaleDenominator>
+          <sld:TextSymbolizer>
+            <sld:Label>
+              <ogc:PropertyName>NAME</ogc:PropertyName>
+            </sld:Label>
+            <sld:Font>
+              <sld:CssParameter name="font-family">SansSerif</sld:CssParameter>
+              <sld:CssParameter name="font-size">12</sld:CssParameter>
+            </sld:Font>
+            <sld:LabelPlacement>
+              <sld:PointPlacement>
+                <sld:AnchorPoint>
+                  <sld:AnchorPointX>0.5</sld:AnchorPointX>
+                  <sld:AnchorPointY>0.5</sld:AnchorPointY>
+                </sld:AnchorPoint>
+              </sld:PointPlacement>
+            </sld:LabelPlacement>
+            <sld:Fill>
+              <CssParameter name="fill">#777777</CssParameter>
+            </sld:Fill>
+            <sld:Priority>
+              <ogc:Sub>
+                <ogc:Literal>5</ogc:Literal>
+                <ogc:PropertyName>LABELRANK</ogc:PropertyName>
+              </ogc:Sub>
+            </sld:Priority>
+            <sld:VendorOption name="maxDisplacement">20</sld:VendorOption>
+            <sld:VendorOption name="spaceAround">8</sld:VendorOption>
+            <sld:VendorOption name="charSpacing">1</sld:VendorOption>
+            <sld:VendorOption name="autoWrap">70</sld:VendorOption>
+            <sld:VendorOption name="goodnessOfFit">0.95</sld:VendorOption>
+          </sld:TextSymbolizer>
+          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
+        </sld:Rule>
+        <sld:Rule>
+          <ogc:Filter>
+            <ogc:PropertyIsLessThan>
+              <ogc:PropertyName>MIN_ZOOM</ogc:PropertyName>
+              <ogc:Literal>50</ogc:Literal>
+            </ogc:PropertyIsLessThan>
+          </ogc:Filter>
+          <sld:MinScaleDenominator>3.5E7</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>7.0E7</sld:MaxScaleDenominator>
+          <sld:TextSymbolizer>
+            <sld:Label>
+              <ogc:PropertyName>NAME</ogc:PropertyName>
+            </sld:Label>
+            <sld:Font>
+              <sld:CssParameter name="font-family">SansSerif</sld:CssParameter>
+              <sld:CssParameter name="font-size">14</sld:CssParameter>
+              <sld:CssParameter name="font-weight">bold</sld:CssParameter>
+            </sld:Font>
+            <sld:LabelPlacement>
+              <sld:PointPlacement>
+                <sld:AnchorPoint>
+                  <sld:AnchorPointX>0.5</sld:AnchorPointX>
+                  <sld:AnchorPointY>0.5</sld:AnchorPointY>
+                </sld:AnchorPoint>
+              </sld:PointPlacement>
+            </sld:LabelPlacement>
+            <sld:Fill>
+              <CssParameter name="fill">#777777</CssParameter>
+            </sld:Fill>
+            <sld:Priority>
+              <ogc:Sub>
+                <ogc:Literal>50</ogc:Literal>
+                <ogc:PropertyName>LABELRANK</ogc:PropertyName>
+              </ogc:Sub>
+            </sld:Priority>
+            <sld:VendorOption name="maxDisplacement">40</sld:VendorOption>
+            <sld:VendorOption name="spaceAround">8</sld:VendorOption>
+            <sld:VendorOption name="charSpacing">1</sld:VendorOption>
+            <sld:VendorOption name="autoWrap">90</sld:VendorOption>
+            <sld:VendorOption name="goodnessOfFit">1.0</sld:VendorOption>
+          </sld:TextSymbolizer>
+          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:MaxScaleDenominator>3.5E7</sld:MaxScaleDenominator>
+          <sld:TextSymbolizer>
+            <sld:Label>
+              <ogc:PropertyName>NAME</ogc:PropertyName>
+            </sld:Label>
+            <sld:Font>
+              <sld:CssParameter name="font-family">SansSerif</sld:CssParameter>
+              <sld:CssParameter name="font-size">16</sld:CssParameter>
+              <sld:CssParameter name="font-weight">bold</sld:CssParameter>
+            </sld:Font>
+            <sld:LabelPlacement>
+              <sld:PointPlacement>
+                <sld:AnchorPoint>
+                  <sld:AnchorPointX>0.5</sld:AnchorPointX>
+                  <sld:AnchorPointY>0.5</sld:AnchorPointY>
+                </sld:AnchorPoint>
+              </sld:PointPlacement>
+            </sld:LabelPlacement>
+            <sld:Fill>
+              <CssParameter name="fill">#777777</CssParameter>
+            </sld:Fill>
+            <sld:Priority>
+              <ogc:Sub>
+                <ogc:Literal>50</ogc:Literal>
+                <ogc:PropertyName>LABELRANK</ogc:PropertyName>
+              </ogc:Sub>
+            </sld:Priority>
+            <sld:VendorOption name="maxDisplacement">50</sld:VendorOption>
+            <sld:VendorOption name="spaceAround">10</sld:VendorOption>
+            <sld:VendorOption name="charSpacing">1</sld:VendorOption>
+            <sld:VendorOption name="autoWrap">100</sld:VendorOption>
+            <sld:VendorOption name="goodnessOfFit">1.00</sld:VendorOption>
+          </sld:TextSymbolizer>
+          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
+        </sld:Rule>        
+        
+        
       </sld:FeatureTypeStyle>
     </sld:UserStyle>
   </sld:NamedLayer>

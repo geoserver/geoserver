@@ -34,7 +34,7 @@ public abstract class AbstractCatalogController extends RestBaseController {
         super();
         this.catalog = catalog;
         this.dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
-        this.validImageFileExtensions = Arrays.asList("svg", "png", "jpg");
+        this.validImageFileExtensions = Arrays.asList("svg", "png", "jpg", "bmp", "gif");
     }
 
     /**

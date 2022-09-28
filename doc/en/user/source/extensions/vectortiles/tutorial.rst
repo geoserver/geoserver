@@ -178,7 +178,7 @@ Create OpenLayers application - WMS Vector Tiles
 
 #. Download the `latest version of OpenLayers <http://openlayers.org/download/>`_.
 
-#. Extract the following files to from the downloaded archive to the directory created in step 1:
+#. Extract the following files from the downloaded archive to the directory created in step 1:
 
    * ``ol.js``
    * ``ol-debug.js``

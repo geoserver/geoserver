@@ -327,37 +327,49 @@ public class Dispatcher extends AbstractController {
             } else if (reqContentType != null
                     && ServletFileUpload.isMultipartContent(httpRequest)) {
                 // multipart form upload
-                ServletFileUpload up = new ServletFileUpload();
-                up.setFileItemFactory(new DiskFileItemFactory());
+                ServletFileUpload up = new ServletFileUpload(new DiskFileItemFactory());
 
                 // treat regular form fields as additional kvp parameters
                 Map<String, FileItem> kvpFileItems =
                         new CaseInsensitiveMap<>(new LinkedHashMap<>());
                 try {
-                    for (FileItem item : up.parseRequest(httpRequest)) {
+                    List<FileItem> items = up.parseRequest(httpRequest);
+                    FileItemCleanupCallback.setFileItems(items);
+                    FileItem body = null;
+                    for (FileItem item : items) {
                         if (item.isFormField()) {
-                            kvpFileItems.put(item.getFieldName(), item);
+                            FileItem old = kvpFileItems.put(item.getFieldName(), item);
+                            if (old != null) {
+                                old.delete(); // the temp file can be deleted at this point
+                            }
                         } else {
-                            request.setInput(fileItemReader(item));
+                            if (body != null) {
+                                // GeoServer only reads the last uploaded file per request so any
+                                // other file uploads can be deleted immediately
+                                body.delete();
+                            }
+                            body = item;
                         }
                     }
+                    // if no file fields were found, look for one named "body"
+                    if (body == null) {
+                        body = kvpFileItems.remove("body");
+                        if (body == null) {
+                            throw new IllegalArgumentException(
+                                    "Unable to find input from multipart/form-data content");
+                        }
+                    }
+                    request.setInput(fileItemReader(body));
                 } catch (Exception e) {
                     throw new ServiceException("Error handling multipart/form-data content", e);
                 }
 
-                // if no file fields were found, look for one named "body"
-                if (request.getInput() == null) {
-                    FileItem body = kvpFileItems.get("body");
-                    if (body != null) {
-                        request.setInput(fileItemReader(body));
-                        kvpFileItems.remove("body");
-                    }
-                }
-
                 Map<String, Object> kvpItems = new LinkedHashMap<>();
-                for (Map.Entry<String, FileItem> e : kvpFileItems.entrySet()) {
-                    kvpItems.put(e.getKey(), e.getValue().toString());
-                }
+                kvpFileItems.forEach(
+                        (key, value) -> {
+                            kvpItems.put(key, value.getString());
+                            value.delete(); // the temp file can be deleted at this point
+                        });
 
                 request.setOrAppendKvp(parseKVP(request, kvpItems));
             } else {

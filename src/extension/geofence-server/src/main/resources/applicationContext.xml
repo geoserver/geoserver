@@ -75,16 +75,16 @@
     </bean>
 
     <!-- use the internal user resolver so geofence uses geoserver users and roles rather than its own -->
-    <bean id="securityContextUserResolver" class="org.geoserver.geofence.internal.SecurityContextUserResolver" />
+    <bean id="securityContextUserResolver" class="org.geoserver.geofence.server.internal.SecurityContextUserResolver" />
 
-	  <alias name="securityContextUserResolver" alias="defaultUserResolver" />
+    <alias name="securityContextUserResolver" alias="defaultUserResolver" />
     
     <!-- web admin page -->
     <bean id="geofenceServerPage" class="org.geoserver.web.MenuPageInfo">
        <property name="id" value="geofenceServerPage"/>
        <property name="titleKey" value="GeofenceServerPage.page.title"/>
        <property name="descriptionKey" value="GeofenceServerPage.page.description"/>
-       <property name="componentClass" value="org.geoserver.geofence.web.GeofenceServerPage"/>
+       <property name="componentClass" value="org.geoserver.geofence.server.web.GeofenceServerPage"/>
        <property name="category" ref="securityCategory" />
        <property name="order" value="1001" />
        <property name="icon" value="img/icons/geofence.png" />
@@ -94,11 +94,16 @@
         <property name="id" value="geofenceServerAdminPage"/>
         <property name="titleKey" value="GeofenceServerAdminPage.page.title"/>
         <property name="descriptionKey" value="GeofenceServerAdminPage.page.description"/>
-        <property name="componentClass" value="org.geoserver.geofence.web.GeofenceServerAdminPage"/>
+        <property name="componentClass" value="org.geoserver.geofence.server.web.GeofenceServerAdminPage"/>
         <property name="category" ref="securityCategory" />
         <property name="order" value="1002" />
         <property name="icon" value="img/icons/geofence.png" />
     </bean>
+    
+    <bean id="geofenceServerXStreamInitializer" 
+          class="org.geoserver.geofence.server.xstream.GeoFenceServerXStreamInitializer"
+          lazy-init="false">
+    </bean>    
 
     <mvc:interceptors>
        <bean class="org.geoserver.geofence.server.rest.GeofenceSecurityInterceptor"/>

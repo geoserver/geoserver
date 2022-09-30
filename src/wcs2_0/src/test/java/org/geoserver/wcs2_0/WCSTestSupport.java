@@ -257,7 +257,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
         // alter the native BBOX of one raster for at least a pixel to make sure the declared
         // bounds are used, but also fitted to the grid to avoid resampling.
-        // Compared to the native bbox we are expanding by almost one pixel in all directions:
+        // Compared to the native bbox we are expanding by almost one pixel on both the west and
+        // east sides, and shrinking by one pixel on both the north and south ones:
         //          1 pixel
         //             ↓
         //  1 pixel ←-   -→ 1 pixel

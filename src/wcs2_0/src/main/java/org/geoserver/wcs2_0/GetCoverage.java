@@ -830,8 +830,7 @@ public class GetCoverage {
         //
         // Extract CRS values for relative extension
         //
-        final CoordinateReferenceSystem subsettingCRS =
-                extractSubsettingCRS(ci, reader, extensions);
+        final CoordinateReferenceSystem subsettingCRS = extractSubsettingCRS(ci, extensions);
         final CoordinateReferenceSystem outputCRS =
                 extractOutputCRS(reader, extensions, subsettingCRS);
 
@@ -847,7 +846,7 @@ public class GetCoverage {
         //
         // notice that for the moment we support only homogeneous interpolation on the 2D axis
         final Map<String, InterpolationPolicy> axesInterpolations =
-                extractInterpolation(ci, reader, extensions);
+                extractInterpolation(ci, extensions);
         final Interpolation spatialInterpolation =
                 extractSpatialInterpolation(axesInterpolations, ci.getNativeBoundingBox());
         final OverviewPolicy overviewPolicy = extractOverviewPolicy(extensions);
@@ -1522,15 +1521,11 @@ public class GetCoverage {
      *
      * <p>In case it is not provided the subsettingCRS falls back on the nativeCRS.
      *
-     * @param reader the {@link GridCoverage2DReader} to be used
      * @param extensions the {@link Map} of extension for this request.
      * @return the subsettingCRS as a {@link CoordinateReferenceSystem}
      */
     private CoordinateReferenceSystem extractSubsettingCRS(
-            CoverageInfo ci,
-            GridCoverage2DReader reader,
-            Map<String, ExtensionItemType> extensions) {
-        Utilities.ensureNonNull("reader", reader);
+            CoverageInfo ci, Map<String, ExtensionItemType> extensions) {
         return extractCRSInternal(extensions, ci.getCRS(), false);
     }
 
@@ -1605,9 +1600,7 @@ public class GetCoverage {
 
     /** */
     private Map<String, InterpolationPolicy> extractInterpolation(
-            CoverageInfo ci,
-            GridCoverage2DReader reader,
-            Map<String, ExtensionItemType> extensions) {
+            CoverageInfo ci, Map<String, ExtensionItemType> extensions) {
         // preparation
         final Map<String, InterpolationPolicy> returnValue = new HashMap<>();
         final Envelope envelope = ci.getNativeBoundingBox();

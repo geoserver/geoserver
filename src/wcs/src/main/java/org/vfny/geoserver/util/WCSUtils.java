@@ -740,6 +740,15 @@ public class WCSUtils {
         return bounds.equals(ReferencedEnvelope.reference(reader.getOriginalEnvelope()));
     }
 
+    /**
+     * Fits the a given corner coordinate to a grid identified by origin and pixel size, using
+     * {@link DD} for higher precision
+     *
+     * @param cornerValue The value to fit
+     * @param origin The origin of the grid
+     * @param scale The size of the pixel
+     * @return The corner value snapped to the closest grid position
+     */
     private static double fit(double cornerValue, double origin, double scale) {
         // using DoubleDouble to get as much precision as possible (resolutions in degrees
         // tend to be very small numbers)
@@ -799,7 +808,8 @@ public class WCSUtils {
     private static GridGeometry2D reprojectGridGeometryFit(
             GridCoverage2DReader reader, ReferencedEnvelope envelope) {
         // build a fake coverage in the same area as the original one, with
-        // the same pixel size and raster size, but without actually pushing it in memory
+        // the same pixel size and raster size, but without actually pushing it in memory:
+        // ConstantDescriptor is a JAI operation, will produce tiles only on pull.
         AffineTransform2D originalG2W =
                 (AffineTransform2D) reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
         double scale = XAffineTransform.getScale(originalG2W);
@@ -827,7 +837,7 @@ public class WCSUtils {
                         null,
                         null);
 
-        // reproject to target CRS
+        // reproject to target CRS (again does not really compute pixels, just set up a JAI chain)
         CoverageProcessor processor = CoverageProcessor.getInstance();
         final Operation operation = processor.getOperation("Resample");
         final ParameterValueGroup param = operation.getParameters().clone();

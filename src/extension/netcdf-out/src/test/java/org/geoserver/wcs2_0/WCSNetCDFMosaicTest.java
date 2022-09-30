@@ -204,10 +204,6 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     private void setupNetCDFoutSettings(QName name, boolean setNoData) {
         CoverageInfo info = getCatalog().getCoverageByName(getLayerId(name));
 
-        //        // Set the Declared SRS
-        //        info.setSRS("EPSG:4326");
-        //        info.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
-
         String layerName = name.getLocalPart().toUpperCase();
         boolean isPackedLayer = layerName.contains("PACKED");
         boolean isCF = layerName.contains("CF");

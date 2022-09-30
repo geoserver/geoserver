@@ -43,6 +43,8 @@ import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.wcs.v2_0.WCS;
@@ -51,6 +53,7 @@ import org.geotools.xml.transform.Translator;
 import org.opengis.geometry.BoundingBox;
 import org.vfny.geoserver.global.CoverageInfoLabelComparator;
 import org.vfny.geoserver.util.ResponseUtils;
+import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -724,8 +727,12 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("wcs:CoverageId", covId);
             element("wcs:CoverageSubtype", "RectifiedGridCoverage"); // TODO make this parametric
 
+            GridCoverage2DReader reader =
+                    (GridCoverage2DReader) cv.getGridCoverageReader(null, null);
+            ReferencedEnvelope envelope = WCSUtils.fitEnvelope(cv, reader);
+            handleBoundingBox(envelope);
+            // should we "fit" this one too?
             handleWGS84BoundingBox(cv.getLatLonBoundingBox());
-            handleBoundingBox(cv.boundingBox());
             cv.getMetadataLinks().forEach(this::handleMetadataLink);
 
             end("wcs:CoverageSummary");

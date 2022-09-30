@@ -34,7 +34,6 @@ import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
@@ -204,10 +203,6 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
     private void setupNetCDFoutSettings(QName name, boolean setNoData) {
         CoverageInfo info = getCatalog().getCoverageByName(getLayerId(name));
-
-        // Set the Declared SRS
-        info.setSRS("EPSG:4326");
-        info.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
 
         String layerName = name.getLocalPart().toUpperCase();
         boolean isPackedLayer = layerName.contains("PACKED");

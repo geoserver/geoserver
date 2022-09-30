@@ -167,6 +167,7 @@ public class SystemTestData extends CiteTestData {
      *   <li>{@link CiteTestData#TASMANIA_DEM}
      *   <li>{@link CiteTestData#ROTATED_CAD}
      *   <li>{@link CiteTestData#WORLD}
+     *   <li>{@link SystemTestData#MULTIBAND}
      * </ul>
      */
     public void setUpDefaultRasterLayers() throws IOException {

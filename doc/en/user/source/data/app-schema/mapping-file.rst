@@ -240,7 +240,7 @@ In this example, ``om:result`` is of ``xs:anyType``, which is abstract. We can u
 
     <AttributeMapping>
           <targetAttribute>om:result</targetAttribute>
-          <targetAttributeNode>gml:MeasureType<targetAttributeNode>
+          <targetAttributeNode>gml:MeasureType</targetAttributeNode>
           <sourceExpression>
               <OCQL>TOPAGE</OCQL>
           </sourceExpression>

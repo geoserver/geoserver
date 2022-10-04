@@ -1641,6 +1641,10 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.10.1</version>
+        </plugin>
+        <plugin>
           <artifactId>maven-war-plugin</artifactId>
           <version>3.3.2</version>
         </plugin>
@@ -1664,9 +1668,7 @@
 
       <!-- compilation -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -2432,9 +2434,7 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
             <configuration>
               <fork>false</fork>
               <compilerArgs>
@@ -2470,9 +2470,7 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
             <configuration>
               <fork>true</fork>
               <compilerArgs combine.children="append">

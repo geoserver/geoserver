@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
@@ -125,6 +126,26 @@ public class LoggingStartupContextListenerTest {
                         fileAppender.getFileName());
             }
         }
+    }
+
+    @Test
+    public void testLogLocationFromEmptyContext() throws Exception {
+        File tmp = File.createTempFile("log", "tmp", new File("target"));
+        tmp.delete();
+        tmp.mkdirs();
+
+        File logs = new File(tmp, "logs");
+        assertTrue(logs.mkdirs());
+
+        MockServletContext context = new MockServletContext();
+        context.setInitParameter("GEOSERVER_DATA_DIR", tmp.getPath());
+        context.setInitParameter(
+                "GEOSERVER_LOG_LOCATION", new File(tmp, "foo.log").getAbsolutePath());
+
+        ServletContextListener listener = new LoggingStartupContextListener();
+
+        listener.contextInitialized(new ServletContextEvent(context));
+        listener.contextDestroyed(new ServletContextEvent(context));
     }
 
     @Test

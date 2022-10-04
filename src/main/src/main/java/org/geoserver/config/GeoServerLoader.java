@@ -1111,6 +1111,8 @@ public abstract class GeoServerLoader {
 
     public void destroy() throws Exception {
         // dispose
-        geoserver.dispose();
+        if (geoserver != null) {
+            geoserver.dispose();
+        }
     }
 }

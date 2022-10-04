@@ -156,7 +156,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
     }
 
     /** Returns the executionId bound to this thread, if any */
-    String getCurrentExecutionId() {
+    public String getCurrentExecutionId() {
         return this.executionId.get();
     }
 

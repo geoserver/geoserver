@@ -288,7 +288,7 @@ public class RetypingDataStore extends DecoratingDataStore {
 
     /** Retypes a filter making sure the fids are using the internal typename prefix */
     Filter retypeFilter(Filter filter, FeatureTypeMap typeMap) {
-        FidTransformeVisitor visitor = new FidTransformeVisitor(typeMap);
+        FidTransformerVisitor visitor = new FidTransformerVisitor(typeMap);
         return (Filter) filter.accept(visitor, null);
     }
 

@@ -408,7 +408,7 @@ div.dnd-theme-web tr {
 }
 
 tr.even:hover td, tr.even:hover th {
-  background: var(--gs-tabel-bg-even-hover);
+  background: var(--gs-table-bg-even-hover);
 }
 
 th.actions,

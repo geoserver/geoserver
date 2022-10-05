@@ -52,12 +52,9 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
         return info;
     }
 
-    /**
-     *  GWC-bases services don't have layer-specific enabling...
-     */
+    /** GWC-bases services don't have layer-specific enabling... */
     @Override
-    protected boolean isAvailable(
-            ServiceInfo info,  PublishedInfo layerInfo) {
+    protected boolean isAvailable(ServiceInfo info, PublishedInfo layerInfo) {
         return info.isEnabled();
     }
 

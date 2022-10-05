@@ -77,14 +77,14 @@ public abstract class ServiceDescriptionProvider {
     }
 
     /**
-     * Is this service/layer available?
-     * This works for standard GS services like WMS/WFS - GWC-based ones will need to re-implement.
+     * Is this service/layer available? This works for standard GS services like WMS/WFS - GWC-based
+     * ones will need to re-implement.
+     *
      * @param info - Info about the service (service can be on/off)
      * @param layerInfo - Info about the layer (layer can not have this service enabled)
      * @return
      */
-    protected boolean isAvailable(
-            ServiceInfo info, PublishedInfo layerInfo) {
+    protected boolean isAvailable(ServiceInfo info, PublishedInfo layerInfo) {
         if (layerInfo instanceof LayerInfo) {
             ServiceResourceProvider provider =
                     GeoServerExtensions.bean(ServiceResourceProvider.class);
@@ -107,7 +107,7 @@ public abstract class ServiceDescriptionProvider {
      */
     protected ServiceDescription description(
             ServiceInfo info, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
-        boolean available = isAvailable(info,  layerInfo);
+        boolean available = isAvailable(info, layerInfo);
 
         InternationalString title =
                 InternationalStringUtils.growable(
@@ -132,9 +132,9 @@ public abstract class ServiceDescriptionProvider {
     }
 
     /**
-     * gets the name of the "version" parameter for the service.
-     * This will usually be "version", but some (i.e. WCS 2+) it will be "acceptversions".
-     * To overrided by subclasses.
+     * gets the name of the "version" parameter for the service. This will usually be "version", but
+     * some (i.e. WCS 2+) it will be "acceptversions". To overrided by subclasses.
+     *
      * @param service
      * @return
      */

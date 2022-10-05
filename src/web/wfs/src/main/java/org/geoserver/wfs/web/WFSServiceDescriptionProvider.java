@@ -65,6 +65,14 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
     }
 
     @Override
+    protected String getVersionParameterName(Service service) {
+        if (service.getVersion().getMajor().toString().equals("2")) {
+            return "acceptversions";
+        }
+        return "version";
+    }
+
+    @Override
     public List<ServiceLinkDescription> getServiceLinks(
             WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         List<ServiceLinkDescription> links = new ArrayList<>();

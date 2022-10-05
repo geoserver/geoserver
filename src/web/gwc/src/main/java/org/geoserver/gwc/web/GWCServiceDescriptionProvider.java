@@ -10,6 +10,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.wmts.WMTSInfo;
@@ -51,6 +52,15 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
         return info;
     }
 
+    /**
+     *  GWC-bases services don't have layer-specific enabling...
+     */
+    @Override
+    protected boolean isAvailable(
+            ServiceInfo info,  PublishedInfo layerInfo) {
+        return info.isEnabled();
+    }
+
     @Override
     public List<ServiceDescription> getServices(
             WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
@@ -62,6 +72,63 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
             descriptions.add(description(info, workspaceInfo, layerInfo));
         }
         return descriptions;
+    }
+
+    private String createLinkWMSC(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+
+        if ((workspaceInfo == null) && (layerInfo == null)) {
+            return "../gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
+        } else if ((workspaceInfo != null) && (layerInfo == null)) {
+            return "../"
+                    + workspaceInfo.getName()
+                    + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
+        } else if ((workspaceInfo == null) && (layerInfo != null)) {
+            return "../"
+                    + layerInfo.getName()
+                    + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
+        } else {
+            return "../"
+                    + workspaceInfo.getName()
+                    + "/"
+                    + layerInfo.getName()
+                    + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
+        }
+    }
+
+    private String createLinkWMTS(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+        if ((workspaceInfo == null) && (layerInfo == null)) {
+            return "../gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
+        } else if ((workspaceInfo != null) && (layerInfo == null)) {
+            return "../"
+                    + workspaceInfo.getName()
+                    + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
+        } else if ((workspaceInfo == null) && (layerInfo != null)) {
+            return "../"
+                    + layerInfo.getName()
+                    + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
+        } else {
+            return "../"
+                    + workspaceInfo.getName()
+                    + "/"
+                    + layerInfo.getName()
+                    + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
+        }
+    }
+
+    private String createLinkTMS(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+        if ((workspaceInfo == null) && (layerInfo == null)) {
+            return "../gwc/service/tms/1.0.0";
+        } else if ((workspaceInfo != null) && (layerInfo == null)) {
+            return "../" + workspaceInfo.getName() + "/gwc/service/tms/1.0.0";
+        } else if ((workspaceInfo == null) && (layerInfo != null)) {
+            return "../" + layerInfo.getName() + "/gwc/service/tms/1.0.0";
+        } else {
+            return "../"
+                    + workspaceInfo.getName()
+                    + "/"
+                    + layerInfo.getName()
+                    + "/gwc/service/tms/1.0.0";
+        }
     }
 
     @Override
@@ -85,7 +152,9 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
                         new ServiceLinkDescription(
                                 "wmts",
                                 new Version("1.1.1"),
-                                "../gwc/service/wms?request=GetCapabilities&version=1.1.1&tiled=true",
+                                createLinkWMSC(workspaceInfo, layerInfo),
+                                //
+                                // "../gwc/service/wms?request=GetCapabilities&version=1.1.1&tiled=true",
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
                                 layerInfo != null ? layerInfo.getName() : null,
                                 "WMS-C"));
@@ -100,7 +169,8 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
                         new ServiceLinkDescription(
                                 "wmts",
                                 new Version("1.1.1"),
-                                "../gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities",
+                                createLinkWMTS(workspaceInfo, layerInfo),
+                                // "../gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities",
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
                                 layerInfo != null ? layerInfo.getName() : null,
                                 "WMTS"));
@@ -114,7 +184,8 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
                         new ServiceLinkDescription(
                                 "wmts",
                                 new Version("1.0.0"),
-                                "../gwc/service/tms/1.0.0",
+                                createLinkTMS(workspaceInfo, layerInfo),
+                                //   "../gwc/service/tms/1.0.0",
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
                                 layerInfo != null ? layerInfo.getName() : null,
                                 "TMS"));

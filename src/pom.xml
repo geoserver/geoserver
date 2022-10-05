@@ -2202,9 +2202,6 @@
           <releases>
             <enabled>true</enabled>
           </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
           <id>geosolutions</id>
           <name>geosolutions repository</name>
           <url>https://maven.geo-solutions.it/</url>

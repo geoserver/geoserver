@@ -62,7 +62,6 @@
   --bs-border-radius-xl: 1rem;
   --bs-border-radius-2xl: 2rem;
   --bs-border-radius-pill: 50rem;
-  --bs-heading-color: ;
   --bs-link-color: #0d6efd;
   --bs-link-hover-color: #0a58ca;
   --bs-code-color: #d63384;
@@ -84,9 +83,9 @@
   --gs-error-link-hover: #660002;
   /* tables */
   --gs-table-bg: #f4f9eb;
-  --gs-tabel-bg-even: #e2efcd;
-  --gs-tabel-bg-even-hover: var(--gs-table-bg);
-;}
+  --gs-table-bg-even: #e2efcd;
+  --gs-table-bg-even-hover: var(--gs-table-bg);
+}
 
 /*-----------------------
 General styles
@@ -409,7 +408,7 @@ div.dnd-theme-web tr {
 }
 
 tr.even:hover td, tr.even:hover th {
-  background: var(--gs-tabel-bg-even-hover);
+  background: var(--gs-table-bg-even-hover);
 }
 
 th.actions,

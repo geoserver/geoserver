@@ -85,13 +85,12 @@ Create OpenLayers application - TMS Vector Tiles
 
 #. Create a ``www/tms-vectortiles`` directory inside your GeoServer Data Directory.
 
-#. Download the `latest version of OpenLayers <http://openlayers.org/download/>`_.
+#. Download the `latest version of OpenLayers <http://openlayers.org/download/>. Download the v<ol-version>-package.zip file`_.
 
 #. Extract the following files from the downloaded archive to the directory created in step 1:
 
-   * ``ol.js``
-   * ``ol-debug.js``
-   * ``ol.css``
+   * ``v<ol-version>-package/dist/ol.js``
+   * ``v<ol-version>-package/ol.css``
 
 #. In a text editor, create a new file with the following content:
 
@@ -172,17 +171,19 @@ These tiles are being rendered by the OpenLayers client.
 Create OpenLayers application - WMS Vector Tiles
 ------------------------------------------------
 
-.. note::   Vector tiles requested with WMS allows retrieving non-cached vector tiles (server side) by setting the ``tiled=false`` parameter on the ``getMap`` request. This setting could be particularly useful when serving fast changing source data that should constantly be kept up-to-date for display.
+.. note::   
+   Vector tiles requested with WMS allows retrieving non-cached vector tiles (server side) by setting the ``tiled=false`` parameter on the ``getMap`` request. This setting could be particularly useful when serving fast changing source data that should constantly be kept up-to-date for display. 
+   However, in terms of rendering performances, vector tiles can be faster than a PNG provided there are few features per tile and a limited amount of attributes in the source vector data.
+   Viceversa, for tiles containing a large number of features with a long list of attributes the PNG may still be the preferred option since it is orders of magnitude smaller in size.    
 
 #. Create a ``www/wms-vectortiles`` directory inside your GeoServer Data Directory.
 
-#. Download the `latest version of OpenLayers <http://openlayers.org/download/>`_.
+#. Download the `latest version of OpenLayers <http://openlayers.org/download/>. Download the v<ol-version>-package.zip file`_.
 
 #. Extract the following files from the downloaded archive to the directory created in step 1:
 
-   * ``ol.js``
-   * ``ol-debug.js``
-   * ``ol.css``
+   * ``v<ol-version>-package/dist/ol.js``
+   * ``v<ol-version>-package/ol.css``
 
 #. In a text editor, create a new file with the following content:
 
@@ -214,7 +215,7 @@ Create OpenLayers application - WMS Vector Tiles
         <div id="map" class="map"></div>
         <script>
         
-          var layerParams = {'LAYERS': 'opengeo:countries', 'TILED': false, 'format': 'application/vnd.mapbox-vector-tile'};
+          var layerParams = {'LAYERS': 'opengeo:countries', 'TILED': false, 'FORMAT': 'application/vnd.mapbox-vector-tile'};
         
         var sourceOptions = {
             url: '/geoserver/wms?',

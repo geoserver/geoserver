@@ -241,7 +241,7 @@ A brief listing of UI design guidelines for Wicket pages in GeoServer follows.
 
         The suffix in the class name corresponds with the sizing unit used.
 
-        Bootstrap uses mostly ``em`` and ``rem`` as sizing units, and the ``3`` suffix (like ``.px-3``) is roughly the same as 15px. When extra spacing is needed it is advised to use this.1
+        Bootstrap uses mostly ``em`` and ``rem`` as sizing units, and the ``3`` suffix (like ``.px-3``) is roughly the same as 15px. When extra spacing is needed it is advised to use this.
 
         Some other sizing used to set the width of an element and its pixel equivalent:
 

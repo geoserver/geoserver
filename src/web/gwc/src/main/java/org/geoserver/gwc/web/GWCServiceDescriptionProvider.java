@@ -150,8 +150,6 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
                                 "wmts",
                                 new Version("1.1.1"),
                                 createLinkWMSC(workspaceInfo, layerInfo),
-                                //
-                                // "../gwc/service/wms?request=GetCapabilities&version=1.1.1&tiled=true",
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
                                 layerInfo != null ? layerInfo.getName() : null,
                                 "WMS-C"));
@@ -167,7 +165,6 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
                                 "wmts",
                                 new Version("1.1.1"),
                                 createLinkWMTS(workspaceInfo, layerInfo),
-                                // "../gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities",
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
                                 layerInfo != null ? layerInfo.getName() : null,
                                 "WMTS"));
@@ -182,7 +179,6 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
                                 "wmts",
                                 new Version("1.0.0"),
                                 createLinkTMS(workspaceInfo, layerInfo),
-                                //   "../gwc/service/tms/1.0.0",
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
                                 layerInfo != null ? layerInfo.getName() : null,
                                 "TMS"));

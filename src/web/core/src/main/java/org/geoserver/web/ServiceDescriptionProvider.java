@@ -77,6 +77,27 @@ public abstract class ServiceDescriptionProvider {
     }
 
     /**
+     * Is this service/layer available? This works for standard GS services like WMS/WFS - GWC-based
+     * ones will need to re-implement.
+     *
+     * @param info - Info about the service (service can be on/off)
+     * @param layerInfo - Info about the layer (layer can not have this service enabled)
+     * @return
+     */
+    protected boolean isAvailable(ServiceInfo info, PublishedInfo layerInfo) {
+        if (layerInfo instanceof LayerInfo) {
+            ServiceResourceProvider provider =
+                    GeoServerExtensions.bean(ServiceResourceProvider.class);
+            List<String> layerServices =
+                    provider.getServicesForResource(((LayerInfo) layerInfo).getResource());
+
+            return layerServices.contains(info.getName().toUpperCase());
+        }
+
+        return info.isEnabled();
+    }
+
+    /**
      * Generate ServiceDescription from provided ServiceInfo.
      *
      * <p>Subclasses may use when implementing {@link #getServices(WorkspaceInfo, PublishedInfo)}.
@@ -86,17 +107,7 @@ public abstract class ServiceDescriptionProvider {
      */
     protected ServiceDescription description(
             ServiceInfo info, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
-
-        boolean available = info.isEnabled();
-
-        if (layerInfo instanceof LayerInfo) {
-            ServiceResourceProvider provider =
-                    GeoServerExtensions.bean(ServiceResourceProvider.class);
-            List<String> layerServices =
-                    provider.getServicesForResource(((LayerInfo) layerInfo).getResource());
-
-            available = layerServices.contains(info.getName().toUpperCase());
-        }
+        boolean available = isAvailable(info, layerInfo);
 
         InternationalString title =
                 InternationalStringUtils.growable(
@@ -121,21 +132,36 @@ public abstract class ServiceDescriptionProvider {
     }
 
     /**
+     * Gets the name of the {@code version} parameter for the service. This will usually be {@code version}, but
+     * some (i.e. WCS 2+) it will be {@code acceptversions}. To overrided by subclasses.
+     *
+     * @param service
+     * @return version parameter of service, example {@code version} or {@code acceptversions}
+     */
+    protected String getVersionParameterName(Service service) {
+        return "version";
+    }
+
+    /**
      * Generate getcapabilities url for workspace / layer context.
      *
      * @param workspace WorkspaceInfo if available
      * @param layer Layer or LayerGroup info if available
-     * @param service open web service
      * @return getcapabilities link
      */
     protected String getCapabilitiesURL(
             WorkspaceInfo workspace, PublishedInfo layer, Service service) {
+
         String serviceId = service.getId();
+        String serviceVersion = service.getVersion().toString();
+
         String query =
                 "service="
-                        + serviceId
-                        + "&version="
-                        + service.getVersion().toString()
+                        + serviceId.toUpperCase()
+                        + "&"
+                        + getVersionParameterName(service)
+                        + "="
+                        + serviceVersion
                         + "&request=GetCapabilities";
 
         if (workspace != null && layer != null) {

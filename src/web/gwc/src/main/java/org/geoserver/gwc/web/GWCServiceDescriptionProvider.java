@@ -72,60 +72,64 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
     }
 
     private String createLinkWMSC(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
-
         if ((workspaceInfo == null) && (layerInfo == null)) {
             return "../gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
-        } else if ((workspaceInfo != null) && (layerInfo == null)) {
-            return "../"
-                    + workspaceInfo.getName()
-                    + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
-        } else if ((workspaceInfo == null) && (layerInfo != null)) {
-            return "../"
-                    + layerInfo.getName()
-                    + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
-        } else {
+        }
+        if ((workspaceInfo != null) && (layerInfo != null)) {
             return "../"
                     + workspaceInfo.getName()
                     + "/"
                     + layerInfo.getName()
                     + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
         }
+        if ((workspaceInfo != null)) {
+            return "../"
+                    + workspaceInfo.getName()
+                    + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
+        }
+
+        // workspaceInfo will be null
+        return "../"
+                + layerInfo.getName()
+                + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
     }
 
     private String createLinkWMTS(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         if ((workspaceInfo == null) && (layerInfo == null)) {
             return "../gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
-        } else if ((workspaceInfo != null) && (layerInfo == null)) {
-            return "../"
-                    + workspaceInfo.getName()
-                    + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
-        } else if ((workspaceInfo == null) && (layerInfo != null)) {
-            return "../"
-                    + layerInfo.getName()
-                    + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
-        } else {
+        }
+        if ((workspaceInfo != null) && (layerInfo != null)) {
             return "../"
                     + workspaceInfo.getName()
                     + "/"
                     + layerInfo.getName()
                     + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
         }
+        if ((workspaceInfo != null)) {
+            return "../"
+                    + workspaceInfo.getName()
+                    + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
+        }
+        return "../"
+                + layerInfo.getName()
+                + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
     }
 
     private String createLinkTMS(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         if ((workspaceInfo == null) && (layerInfo == null)) {
             return "../gwc/service/tms/1.0.0";
-        } else if ((workspaceInfo != null) && (layerInfo == null)) {
-            return "../" + workspaceInfo.getName() + "/gwc/service/tms/1.0.0";
-        } else if ((workspaceInfo == null) && (layerInfo != null)) {
-            return "../" + layerInfo.getName() + "/gwc/service/tms/1.0.0";
-        } else {
+        }
+        if ((workspaceInfo != null) && (layerInfo != null)) {
             return "../"
                     + workspaceInfo.getName()
                     + "/"
                     + layerInfo.getName()
                     + "/gwc/service/tms/1.0.0";
         }
+        if ((workspaceInfo != null)) {
+            return "../" + workspaceInfo.getName() + "/gwc/service/tms/1.0.0";
+        }
+        return "../" + layerInfo.getName() + "/gwc/service/tms/1.0.0";
     }
 
     @Override

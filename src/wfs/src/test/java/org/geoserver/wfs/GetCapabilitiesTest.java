@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -143,6 +144,40 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         }
 
         assertEquals(s1, s2);
+    }
+
+    @Test
+    public void testOutputFormatAllowed() throws Exception {
+        Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=1.0.0");
+
+        Element outputFormats = getFirstElementByTagName(doc, "ResultFormat");
+        NodeList formats = outputFormats.getChildNodes();
+
+        Set<String> s1 = new TreeSet<>();
+        for (int i = 0; i < formats.getLength(); i++) {
+            String format = formats.item(i).getNodeName();
+            s1.add(format);
+        }
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        wfsInfo.setGetFeatureOutputTypeCheckingEnabled(true);
+        wfsInfo.setGetFeatureOutputTypes(Collections.singleton("CSV"));
+        getGeoServer().save(wfsInfo);
+
+        Document doc2 = getAsDOM("wfs?service=WFS&request=getCapabilities&version=1.0.0");
+
+        Element outputFormats2 = getFirstElementByTagName(doc2, "ResultFormat");
+        NodeList formats2 = outputFormats2.getChildNodes();
+
+        Set<String> s2 = new TreeSet<>();
+        for (int i = 0; i < formats2.getLength(); i++) {
+            String format = formats2.item(i).getNodeName();
+            s2.add(format);
+        }
+        assertTrue(s2.size() < s1.size());
+        assertEquals(1, s2.size());
+
+        wfsInfo.setGetFeatureOutputTypeCheckingEnabled(false);
+        getGeoServer().save(wfsInfo);
     }
 
     @Test

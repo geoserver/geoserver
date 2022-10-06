@@ -7,9 +7,11 @@ package org.geoserver.wfs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
@@ -25,6 +27,8 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected List<String> srs = new ArrayList<>();
     protected Boolean allowGlobalQueries = true;
     protected Boolean simpleConversionEnabled = false;
+    protected boolean getFeatureOutputTypeCheckingEnabled = false;
+    protected Set<String> getFeatureOutputTypes = new HashSet<>();
 
     public WFSInfoImpl() {}
 
@@ -155,6 +159,27 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     }
 
     @Override
+    public boolean isGetFeatureOutputTypeCheckingEnabled() {
+        return getFeatureOutputTypeCheckingEnabled;
+    }
+
+    @Override
+    public void setGetFeatureOutputTypeCheckingEnabled(
+            boolean getFeatureOutputTypeCheckingEnabled) {
+        this.getFeatureOutputTypeCheckingEnabled = getFeatureOutputTypeCheckingEnabled;
+    }
+
+    @Override
+    public Set<String> getGetFeatureOutputTypes() {
+        return getFeatureOutputTypes;
+    }
+
+    @Override
+    public void setGetFeatureOutputTypes(Set<String> getFeatureOutputTypes) {
+        this.getFeatureOutputTypes = getFeatureOutputTypes;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -173,6 +198,10 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
                         + (simpleConversionEnabled == null
                                 ? 0
                                 : simpleConversionEnabled.hashCode());
+        result = prime * result + (getFeatureOutputTypeCheckingEnabled ? 1231 : 1237);
+        result =
+                prime * result
+                        + ((getFeatureOutputTypes == null) ? 0 : getFeatureOutputTypes.hashCode());
         return result;
     }
 
@@ -199,6 +228,14 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         } else if (!srs.equals(other.getSRS())) return false;
         if (allowGlobalQueries == null && other.getAllowGlobalQueries() != null
                 || !Objects.equals(allowGlobalQueries, other.getAllowGlobalQueries())) {
+            return false;
+        }
+        if (getFeatureOutputTypeCheckingEnabled != other.isGetFeatureOutputTypeCheckingEnabled()) {
+            return false;
+        }
+        if (getFeatureOutputTypes == null && other.getGetFeatureOutputTypes() != null
+                || getFeatureOutputTypes != null && other.getGetFeatureOutputTypes() == null
+                || !Objects.equals(getFeatureOutputTypes, other.getGetFeatureOutputTypes())) {
             return false;
         }
         return true;

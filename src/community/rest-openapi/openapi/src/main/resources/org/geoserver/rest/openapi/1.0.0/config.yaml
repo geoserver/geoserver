@@ -280,6 +280,14 @@ components:
             hitsIgnoreMaxFeatures:
               type: boolean
               description: Flag that determines if WFS hit requests (counts) will ignore the maximum features limit for this server
+            getFeatureOutputTypeCheckingEnabled:
+              type: boolean
+              description: Flag that determines if WFS GetFeature output type checking is enabled
+            getFeatureOutputTypes:
+              description : A set of output types allowed for a getFeature request. Active if getFeatureOutputTypeCheckingEnabled is true
+              type: array
+              items:
+                type: string
     WCSInfo:
       allOf:
         - $ref: "#/components/schemas/ServiceInfo"

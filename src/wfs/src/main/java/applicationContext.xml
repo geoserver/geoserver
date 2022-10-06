@@ -704,6 +704,11 @@
 	<bean id="wfsGMLMimeTypeEnforcer" class="org.geoserver.wfs.WFSGMLMimeTypeEnforcer">
 		<constructor-arg ref="geoServer"/>
 	</bean>
+
+	<!-- dispatcher callback that will enforce configured Output Formats for WFS responses -->
+	<bean id="wfsOutputFormatCallback" class="org.geoserver.wfs.outputformat.WFSOutputFormatCallback">
+		<constructor-arg ref="geoServer"/>
+	</bean>
 	
 	<!-- Resource voter -->
 	<bean id="wfsResourceVoter" class="org.geoserver.wfs.WFSResourceVoter"/>

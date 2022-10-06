@@ -442,7 +442,7 @@ public class GetCoverage {
         for (GridCoverage2D gridCoverage2D : coverages) {
             List<GridCoverage2D> subsetted =
                     handleSubsettingExtension(
-                            gridCoverage2D, gridCoverageRequest.getSpatialSubset(), hints);
+                            gridCoverage2D, gridCoverageRequest.getSpatialSubset());
             temp.addAll(subsetted);
         }
         coverages = temp;
@@ -1330,6 +1330,8 @@ public class GetCoverage {
         if (request.getOverviewPolicy() != null) {
             readHints.add(new Hints(Hints.OVERVIEW_POLICY, request.getOverviewPolicy()));
         }
+        if (readGG.getGridRange().getSpan(0) <= 0 || readGG.getGridRange().getSpan(1) <= 0)
+            return null;
         GridCoverage2D coverage =
                 RequestUtils.readBestCoverage(
                         cinfo,
@@ -1849,15 +1851,14 @@ public class GetCoverage {
      * @return a cropped version of the source {@link GridCoverage}
      */
     private List<GridCoverage2D> handleSubsettingExtension(
-            GridCoverage2D coverage, WCSEnvelope subset, Hints hints) {
+            GridCoverage2D coverage, WCSEnvelope subset) {
 
         List<GridCoverage2D> result = new ArrayList<>();
         if (subset != null) {
             if (subset.isCrossingDateline()) {
-                Envelope2D coverageEnvelope = coverage.getEnvelope2D();
                 GeneralEnvelope[] normalizedEnvelopes = subset.getNormalizedEnvelopes();
                 for (GeneralEnvelope ge : normalizedEnvelopes) {
-                    if (ge.intersects(coverageEnvelope, false)) {
+                    if (!emptyIntersection(coverage, ge)) {
                         GridCoverage2D cropped = cropOnEnvelope(coverage, ge);
                         if (cropped != null) result.add(cropped);
                     }
@@ -1868,6 +1869,24 @@ public class GetCoverage {
             }
         }
         return result;
+    }
+
+    /**
+     * Checks if the intersection between the coverage envelope and cropEnvelope is not empty, and
+     * would read at least a pixel along both axis
+     */
+    private boolean emptyIntersection(GridCoverage2D coverage, GeneralEnvelope cropEnvelope) {
+        Envelope2D coverageEnvelope = coverage.getEnvelope2D();
+        if (!cropEnvelope.intersects(coverageEnvelope, false)) return true;
+        // check at least one pixel along both axis
+        ReferencedEnvelope intersection =
+                new ReferencedEnvelope(coverageEnvelope)
+                        .intersection(ReferencedEnvelope.reference(cropEnvelope));
+        GridGeometry2D gg = coverage.getGridGeometry();
+        double resx = gg.getEnvelope2D().getSpan(0) / gg.getGridRange().getSpan(0);
+        double resy = gg.getEnvelope2D().getSpan(1) / gg.getGridRange().getSpan(1);
+        // given tolerances, more than half a pixel should result in a full pixel being returned
+        return intersection.getSpan(0) <= resx / 2 || intersection.getSpan(1) <= resy / 2;
     }
 
     private GridCoverage2D cropOnEnvelope(GridCoverage2D coverage, Envelope cropEnvelope) {

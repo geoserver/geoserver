@@ -531,6 +531,51 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
 
     @Test
     @SuppressWarnings("PMD.SimplifiableTestAssertion")
+    public void testDatelineCross() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__dateline_cross");
+        // got back a tiff
+        assertEquals("image/tiff", response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("dateline", "dateline.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        // check the tiff structure is the one requested
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D coverage = null;
+        try {
+            CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+
+            coverage = reader.read(null);
+            assertNotNull(coverage);
+
+            // resolution is the native one
+            final double scale = getScale(coverage);
+            assertEquals(0.005, scale, 1e-4);
+
+            // expect the fitted bounding box
+            GeneralEnvelope expected =
+                    new GeneralEnvelope(new double[] {179.5, -84.272}, new double[] {180, -82.217});
+            expected.setCoordinateReferenceSystem(crs);
+            assertTrue(
+                    "Equality failed, actual envelope was " + coverage.getEnvelope2D(),
+                    expected.equals(coverage.getEnvelope2D(), 1e-4, false));
+
+            // fitting adds a pixel left and right, removes one top and bottom
+            assertEquals(100, reader.getOriginalGridRange().getSpan(0));
+            assertEquals(411, reader.getOriginalGridRange().getSpan(1));
+
+        } finally {
+            clean(reader, coverage);
+        }
+    }
+
+    @Test
+    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testReprojected() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse(

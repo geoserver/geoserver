@@ -132,8 +132,9 @@ public abstract class ServiceDescriptionProvider {
     }
 
     /**
-     * Gets the name of the {@code version} parameter for the service. This will usually be {@code version}, but
-     * some (i.e. WCS 2+) it will be {@code acceptversions}. To overrided by subclasses.
+     * Gets the name of the {@code version} parameter for the service. This will usually be {@code
+     * version}, but some (i.e. WCS 2+) it will be {@code acceptversions}. To overrided by
+     * subclasses.
      *
      * @param service
      * @return version parameter of service, example {@code version} or {@code acceptversions}

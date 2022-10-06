@@ -86,6 +86,13 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static final QName UTM11 = new QName(MockData.WCS_URI, "utm11", MockData.WCS_PREFIX);
 
     /**
+     * Small dataset that sits slightly across the dateline, enough to trigger the "across the
+     * dateline" machinery
+     */
+    protected static final QName DATELINE_CROSS =
+            new QName(MockData.WCS_URI, "dateline_cross", MockData.WCS_PREFIX);
+
+    /**
      * Small value for comparaison of sample values. Since most grid coverage implementations in
      * Geotools 2 store geophysics values as {@code float} numbers, this {@code EPS} value must be
      * of the order of {@code float} relative precision, not {@code double}.
@@ -234,6 +241,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         testData.setUpWcs10RasterLayers();
         testData.setUpWcs11RasterLayers();
         testData.setUpRasterLayer(UTM11, "/utm11-2.tiff", null, null, WCSTestSupport.class);
+        testData.setUpRasterLayer(
+                DATELINE_CROSS, "/datelinecross.tif", null, null, WCSTestSupport.class);
     }
 
     @Override
@@ -278,6 +287,14 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
             cad.setNativeBoundingBox(
                     new ReferencedEnvelope(1402800, 1402900, 5000000, 5000100, cad.getNativeCRS()));
             getCatalog().save(cad);
+        }
+
+        // not reprojected, originally crossing the dateline
+        CoverageInfo dateline = getCatalog().getCoverageByName(getLayerId(DATELINE_CROSS));
+        if (dateline != null) {
+            dateline.setNativeBoundingBox(
+                    new ReferencedEnvelope(179.5, 180, -84.272, -82.217, dateline.getNativeCRS()));
+            getCatalog().save(dateline);
         }
 
         // forcing envelope + reprojection (changes the envelope, grid to world)

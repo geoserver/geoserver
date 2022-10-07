@@ -3,7 +3,8 @@
 GeoFence Server GUI
 ===================
 
-The GeoFence user interface is a component of the GeoServer web interface. You can access it from the GeoServer web interface by clicking the :guilabel:`GeoFence Server` link, found on the left side of the screen after logging in.
+The GeoFence user interface is a component of the GeoServer web interface.
+You can access it from the GeoServer web interface by clicking the :guilabel:`GeoFence Data Rules` link, found on the left side of the screen after logging in.
 
 Rules page
 ----------

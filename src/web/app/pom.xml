@@ -1088,6 +1088,26 @@
       </dependencies>
     </profile>
     <profile>
+      <id>geofence-server</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-geofence-server</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geofence-wps</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-geofence-wps</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>sldService</id>
       <dependencies>
         <dependency>
@@ -1123,16 +1143,6 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-geomesa</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>geofence-server</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-geofence-server</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

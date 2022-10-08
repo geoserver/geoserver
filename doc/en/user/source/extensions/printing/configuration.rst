@@ -33,7 +33,7 @@ Here is the general structure:
     - {HOST_WHITELIST_DEFINITION}
     {...}
 
-  ?localHostForward: # For request on map.example.com we build an http request on localhost with the header Host=map.example.com, this is to don't pass throw the proxy.
+  ?localHostForward: # For request on map.example.com we build an http request on localhost with the header Host=map.example.com, this is to not pass the request through the proxy.
   ?  from:
   ?    - map.example.com
   ?  https2http: True # For above hosts on request on https we build a request on http

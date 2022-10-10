@@ -25,6 +25,9 @@ public class WMSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     static final Logger LOGGER = Logging.getLogger(WMSServiceDescriptionProvider.class);
 
+    /** Service used to cross-link between service description and service link description. */
+    public static final String SERVICE = "wms";
+
     GeoServer geoserver;
     Catalog catalog;
 
@@ -59,7 +62,7 @@ public class WMSServiceDescriptionProvider extends ServiceDescriptionProvider {
         WMSInfo info = info(workspaceInfo, layerInfo);
 
         if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
-            descriptions.add(description(info, workspaceInfo, layerInfo));
+            descriptions.add(description(SERVICE, info, workspaceInfo, layerInfo));
         }
         return descriptions;
     }
@@ -76,8 +79,6 @@ public class WMSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
         for (Service service : extensions) {
             if (service.getService() instanceof WebMapService) {
-                String serviceId = service.getId();
-
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {
                     link = getCapabilitiesURL(workspaceInfo, layerInfo, service);
@@ -88,7 +89,7 @@ public class WMSServiceDescriptionProvider extends ServiceDescriptionProvider {
                 if (link != null) {
                     links.add(
                             new ServiceLinkDescription(
-                                    serviceId.toLowerCase(),
+                                    SERVICE,
                                     service.getVersion(),
                                     link,
                                     workspaceInfo != null ? workspaceInfo.getName() : null,

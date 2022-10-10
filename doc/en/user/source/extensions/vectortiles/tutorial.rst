@@ -85,7 +85,7 @@ Create OpenLayers application - TMS Vector Tiles
 
 #. Create a ``www/tms-vectortiles`` directory inside your GeoServer Data Directory.
 
-#. Download the `latest version of OpenLayers <http://openlayers.org/download/>. Download the v<ol-version>-package.zip file`_.
+#. Download the `latest version of OpenLayers <http://openlayers.org/download/>`_. Download the v<ol-version>-package.zip file`_.
 
 #. Extract the following files from the downloaded archive to the directory created in step 1:
 

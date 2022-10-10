@@ -77,6 +77,7 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geoserver.platform.GeoServerExtensionsHelper;
@@ -1472,6 +1473,15 @@ public class XStreamPersisterTest {
         XMLAssert.assertXpathEvaluatesTo("key2", "//settings/metadata/map/entry[2]/string[1]", doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "value2", "//settings/metadata/map/entry[2]/string[2]", doc);
+    }
+
+    @Test
+    public void readSettingsMetadataMissingElement() throws Exception {
+        String xml = "<global/>";
+        GeoServerInfo gs =
+                persister.load(new ByteArrayInputStream(xml.getBytes()), GeoServerInfo.class);
+
+        XMLAssert.assertEquals(gs.getSettings(), new SettingsInfoImpl());
     }
 
     @Test

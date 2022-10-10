@@ -26,6 +26,9 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     static final Logger LOGGER = Logging.getLogger(WFSServiceDescriptionProvider.class);
 
+    /** Service used to cross-link between service description and service link description. */
+    public static final String SERVICE = "wfs";
+
     GeoServer geoserver;
     Catalog catalog;
 
@@ -59,7 +62,7 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
         WFSInfo info = info(workspaceInfo, layerInfo);
         if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
-            descriptions.add(description(info, workspaceInfo, layerInfo));
+            descriptions.add(description(SERVICE, info, workspaceInfo, layerInfo));
         }
         return descriptions;
     }
@@ -86,8 +89,6 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
         for (Service service : extensions) {
             if ((service.getService() instanceof WebFeatureService20)
                     || (service.getService() instanceof WebFeatureService)) {
-                String serviceId = service.getId();
-
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {
                     link = getCapabilitiesURL(workspaceInfo, layerInfo, service);
@@ -98,7 +99,7 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
                 if (link != null) {
                     links.add(
                             new ServiceLinkDescription(
-                                    serviceId.toLowerCase(),
+                                    SERVICE,
                                     service.getVersion(),
                                     link,
                                     workspaceInfo != null ? workspaceInfo.getName() : null,

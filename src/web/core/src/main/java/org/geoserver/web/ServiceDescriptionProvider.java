@@ -102,11 +102,17 @@ public abstract class ServiceDescriptionProvider {
      *
      * <p>Subclasses may use when implementing {@link #getServices(WorkspaceInfo, PublishedInfo)}.
      *
-     * @param info ServiceInfo
+     * @param service Service identifier, example {@code wps}, to cross reference with service links
+     * @param info ServiceInfo providing customer configured description
+     * @param workspaceInfo workspace context for info lookup
+     * @param layerInfo layer or layergroup context for info lookup
      * @return ServiceDescription
      */
     protected ServiceDescription description(
-            ServiceInfo info, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+            String service,
+            ServiceInfo info,
+            WorkspaceInfo workspaceInfo,
+            PublishedInfo layerInfo) {
         boolean available = isAvailable(info, layerInfo);
 
         InternationalString title =
@@ -122,7 +128,7 @@ public abstract class ServiceDescriptionProvider {
                         Strings.isEmpty(info.getAbstract()) ? null : info.getAbstract());
 
         return new ServiceDescription(
-                info.getName().toLowerCase(),
+                service,
                 title,
                 description,
                 available,

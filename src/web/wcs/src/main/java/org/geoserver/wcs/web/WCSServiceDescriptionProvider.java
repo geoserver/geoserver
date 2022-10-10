@@ -26,6 +26,9 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     static final Logger LOGGER = Logging.getLogger(WCSServiceDescriptionProvider.class);
 
+    /** Service used to cross-link between service description and service link description. */
+    public static final String SERVICE = "wcs";
+
     GeoServer geoserver;
     Catalog catalog;
 
@@ -60,7 +63,7 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
         WCSInfo info = info(workspaceInfo, layerInfo);
 
         if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
-            descriptions.add(description(info, workspaceInfo, layerInfo));
+            descriptions.add(description(SERVICE, info, workspaceInfo, layerInfo));
         }
         return descriptions;
     }
@@ -88,7 +91,6 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
             if ((service.getService() instanceof WebCoverageService111)
                     || (service.getService() instanceof WebCoverageService100)
                     || (service.getService() instanceof WebCoverageService20)) {
-                String serviceId = service.getId();
 
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {
@@ -100,7 +102,7 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
                 if (link != null) {
                     links.add(
                             new ServiceLinkDescription(
-                                    serviceId.toLowerCase(),
+                                    SERVICE,
                                     service.getVersion(),
                                     link,
                                     workspaceInfo != null ? workspaceInfo.getName() : null,

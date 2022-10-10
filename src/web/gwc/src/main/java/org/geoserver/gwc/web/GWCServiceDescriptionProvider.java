@@ -24,6 +24,9 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 /** Provide description of GeoWebCache services for welcome page. */
 public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
 
+    /** Service used to cross-link between service description and service link description. */
+    public static final String SERVICE = "gwc";
+
     private final GWC gwc;
     GeoServer geoserver;
     Catalog catalog;
@@ -66,7 +69,7 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
         WMTSInfo info = info(workspaceInfo, layerInfo);
 
         if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
-            descriptions.add(description(info, workspaceInfo, layerInfo));
+            descriptions.add(description(SERVICE, info, workspaceInfo, layerInfo));
         }
         return descriptions;
     }
@@ -151,7 +154,7 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
             if (gwcConfig.isWMSCEnabled() && null != app.getBean("gwcServiceWMS")) {
                 links.add(
                         new ServiceLinkDescription(
-                                "wmts",
+                                SERVICE,
                                 new Version("1.1.1"),
                                 createLinkWMSC(workspaceInfo, layerInfo),
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
@@ -166,7 +169,7 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
             if (info.isEnabled() && null != app.getBean("gwcServiceWMTS")) {
                 links.add(
                         new ServiceLinkDescription(
-                                "wmts",
+                                SERVICE,
                                 new Version("1.1.1"),
                                 createLinkWMTS(workspaceInfo, layerInfo),
                                 workspaceInfo != null ? workspaceInfo.getName() : null,
@@ -180,7 +183,7 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
             if (gwcConfig.isTMSEnabled() && null != app.getBean("gwcServiceTMS")) {
                 links.add(
                         new ServiceLinkDescription(
-                                "wmts",
+                                SERVICE,
                                 new Version("1.0.0"),
                                 createLinkTMS(workspaceInfo, layerInfo),
                                 workspaceInfo != null ? workspaceInfo.getName() : null,

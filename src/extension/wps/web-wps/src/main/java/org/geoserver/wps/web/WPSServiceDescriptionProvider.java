@@ -25,6 +25,9 @@ public class WPSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     static final Logger LOGGER = Logging.getLogger(WPSServiceDescriptionProvider.class);
 
+    /** Service used to cross-link between service description and service link description. */
+    public static final String SERVICE = "wps";
+
     GeoServer geoserver;
     Catalog catalog;
 
@@ -59,7 +62,7 @@ public class WPSServiceDescriptionProvider extends ServiceDescriptionProvider {
         WPSInfo info = info(workspaceInfo, layerInfo);
 
         if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
-            descriptions.add(description(info, workspaceInfo, layerInfo));
+            descriptions.add(description(SERVICE, info, workspaceInfo, layerInfo));
         }
         return descriptions;
     }
@@ -77,8 +80,6 @@ public class WPSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
         for (Service service : extensions) {
             if (service.getService() instanceof WebProcessingService) {
-                String serviceId = service.getId();
-
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {
                     link = getCapabilitiesURL(workspaceInfo, layerInfo, service);
@@ -89,7 +90,7 @@ public class WPSServiceDescriptionProvider extends ServiceDescriptionProvider {
                 if (link != null) {
                     links.add(
                             new ServiceLinkDescription(
-                                    serviceId.toLowerCase(),
+                                    SERVICE,
                                     service.getVersion(),
                                     link,
                                     workspaceInfo != null ? workspaceInfo.getName() : null,

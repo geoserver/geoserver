@@ -112,7 +112,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
         // the "change" between logging.xml and the versions stored in JDBC. KS
         // TODO find a better solution than re-initializing on JDBCCOnfig startup.
         Resource f = store.get("logging.xml");
-        if (f != null) {
+        if (f != null && f.getType() == Resource.Type.RESOURCE) {
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
             try (BufferedInputStream in = new BufferedInputStream(f.in())) {
                 LoggingInfo loginfo = xp.load(in, LoggingInfo.class);

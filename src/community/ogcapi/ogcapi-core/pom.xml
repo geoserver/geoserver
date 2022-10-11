@@ -80,6 +80,11 @@
       <version>${gt.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-rest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geojson-core</artifactId>
       <version>${gt.version}</version>

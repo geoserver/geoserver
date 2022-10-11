@@ -142,10 +142,17 @@ public class LoggingStartupContextListenerTest {
         context.setInitParameter(
                 "GEOSERVER_LOG_LOCATION", new File(tmp, "foo.log").getAbsolutePath());
 
-        ServletContextListener listener = new LoggingStartupContextListener();
+        try (TestAppender appender = TestAppender.createAppender("quite", null)) {
+            appender.startRecording("org.geoserver.logging");
 
-        listener.contextInitialized(new ServletContextEvent(context));
-        listener.contextDestroyed(new ServletContextEvent(context));
+            appender.trigger("Could not reconfigure LOG4J loggers");
+
+            ServletContextListener listener = new LoggingStartupContextListener();
+            listener.contextInitialized(new ServletContextEvent(context));
+            listener.contextDestroyed(new ServletContextEvent(context));
+
+            appender.stopRecording("org.geoserver.logging");
+        }
     }
 
     @Test

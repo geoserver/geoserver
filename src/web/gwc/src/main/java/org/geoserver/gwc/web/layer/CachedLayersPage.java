@@ -297,10 +297,19 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         final String baseURL = ResponseUtils.baseURL(getGeoServerApplication().servletRequest());
         // Since we're working with an absolute URL, build the URL this way to ensure proxy
         // mangling is applied.
+
+        // make the URL workspace-based (in case global services are turned off)
+        String workspaceName = "";
+        if (layer.getName().contains(":")) {
+            workspaceName = layer.getName().substring(0, layer.getName().indexOf(":")) + "/";
+        }
         final String demoURL =
                 "'"
                         + ResponseUtils.buildURL(
-                                baseURL, "gwc/demo/" + layer.getName(), null, URLType.EXTERNAL)
+                                baseURL + workspaceName,
+                                "gwc/demo/" + layer.getName(),
+                                null,
+                                URLType.EXTERNAL)
                         + "?' + this.options[this.selectedIndex].value";
         menu.add(
                 new AttributeAppender(

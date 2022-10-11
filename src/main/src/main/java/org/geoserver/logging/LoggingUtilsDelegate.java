@@ -599,11 +599,10 @@ class LoggingUtilsDelegate {
 
     /**
      * Used by modules to register additional built-in logging profiles during startup, confirming
-     * logConfigFile is available (and updating if needed).
+     * logConfigFile is available.
      *
-     * <p>This method will check resource loader logConfigFile profile against the internal
-     * templates and only update the xml file if needed. If the file is updated the previous
-     * definition is available as a {@code xml.bak} file allowing.
+     * <p>This method will check resource loader logConfigFile profile and create from internal
+     * template if needed.
      *
      * @param resourceLoader GeoServer resource access
      * @param logConfigFile Logging profile matching a built-in template on the classpath
@@ -615,36 +614,7 @@ class LoggingUtilsDelegate {
         String logConfigXml = logConfigFile + ".xml";
 
         File target = new File(logsDirectory.getAbsolutePath(), logConfigXml);
-        if (target.exists()) {
-            try (FileInputStream targetContents = new FileInputStream(target);
-                    InputStream template = getStreamFromResource(logConfigXml)) {
-                if (!IOUtils.contentEquals(targetContents, template)) {
-                    String logConfigBackup = logConfigFile + ".xml.bak";
-                    File backup = new File(logsDirectory.getAbsolutePath(), logConfigBackup);
-                    boolean renamed = target.renameTo(backup);
-                    if (renamed) {
-                        LoggingStartupContextListener.getLogger()
-                                .finer(
-                                        "Check '"
-                                                + logConfigXml
-                                                + "' logging configuration - outdated and renamed to '"
-                                                + logConfigBackup
-                                                + "'");
-                    }
-                    LoggingStartupContextListener.getLogger()
-                            .finer("Check '" + logConfigXml + "' logging configuration, outdated");
-                    resourceLoader.copyFromClassPath(logConfigXml, target);
-                }
-            } catch (IOException e) {
-                LoggingStartupContextListener.getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Check '"
-                                        + logConfigXml
-                                        + "' logging configuration - unable to check against template",
-                                e);
-            }
-        } else {
+        if (!target.exists()) {
             try {
                 resourceLoader.copyFromClassPath(logConfigXml, target);
             } catch (IOException e) {
@@ -659,8 +629,8 @@ class LoggingUtilsDelegate {
     /**
      * Upgrade standard logging configurations to match built-in class resources.
      *
-     * <p>This method will check each LOGGING profile against the internal templates and unpack any
-     * xml configurations that are missing, and remove any log4j properties configurations.
+     * <p>This method will check against the internal templates and unpack any xml
+     * configurations that are missing, and remove any log4j properties configurations.
      *
      * @param resourceLoader GeoServer resource access
      */

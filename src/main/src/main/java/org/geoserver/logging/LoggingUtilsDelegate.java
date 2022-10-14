@@ -5,7 +5,6 @@
 package org.geoserver.logging;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +16,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -598,11 +596,8 @@ class LoggingUtilsDelegate {
     }
 
     /**
-     * Used by modules to register additional built-in logging profiles during startup, confirming
-     * logConfigFile is available.
-     *
-     * <p>This method will check resource loader logConfigFile profile and create from internal
-     * template if needed.
+     * Restores the given built-in logging configuration, if it's no longer found in the GeoServer
+     * data directory.
      *
      * @param resourceLoader GeoServer resource access
      * @param logConfigFile Logging profile matching a built-in template on the classpath
@@ -619,18 +614,18 @@ class LoggingUtilsDelegate {
                 resourceLoader.copyFromClassPath(logConfigXml, target);
             } catch (IOException e) {
                 LoggingStartupContextListener.getLogger()
-                        .config(
-                                "Check '"
-                                        + logConfigXml
-                                        + "' logging configuration - unable to create. Is your data dir writeable?");
+                        .log(
+                                Level.CONFIG,
+                                "Unable to create '{0}'. Is your data directory writeable?",
+                                target.getAbsolutePath());
             }
         }
     }
     /**
      * Upgrade standard logging configurations to match built-in class resources.
      *
-     * <p>This method will check against the internal templates and unpack any xml
-     * configurations that are missing, and remove any log4j properties configurations.
+     * <p>This method will check against the internal templates and unpack any xml configurations
+     * that are missing, and remove any log4j properties configurations.
      *
      * @param resourceLoader GeoServer resource access
      */
@@ -665,26 +660,5 @@ class LoggingUtilsDelegate {
             }
             checkBuiltInLoggingConfiguration(resourceLoader, logConfigFile);
         }
-    }
-
-    /**
-     * Used to access internal logging template contents.
-     *
-     * @param classpathResource Example "DEFAULT_LOGGING.xml"
-     * @return inputstream for resource contents
-     * @throws IOException If the resource could not be found.
-     */
-    private static InputStream getStreamFromResource(String classpathResource) throws IOException {
-        InputStream is = null;
-        is = Thread.currentThread().getContextClassLoader().getResourceAsStream(classpathResource);
-        if (is == null) {
-            throw new IOException(
-                    "Could not obtain "
-                            + classpathResource
-                            + " from scope "
-                            + Thread.currentThread().getContextClassLoader().toString()
-                            + ".");
-        }
-        return is;
     }
 }

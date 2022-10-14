@@ -12,10 +12,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
@@ -227,5 +229,45 @@ public class LoggingStartupContextListenerTest {
 
         GeoServerXMLConfiguration.attributePut(node, "fileName", "geoserver.log");
         assertEquals("store match", "geoserver.log", node.getAttributes().get("filename"));
+    }
+
+    @Test
+    public void testAvoidCustomizationOverwrite() throws Exception {
+        final File target = new File("./target/logs-customize");
+        File logs = new File(target, "logs");
+        FileUtils.deleteQuietly(logs);
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(target);
+        FileSystemResourceStore store = (FileSystemResourceStore) loader.getResourceStore();
+        store.setLockProvider(new MemoryLockProvider());
+
+        // make it copy the log files
+        LoggingUtils.initLogging(loader, "VERBOSE_LOGGING.xml", false, false, null);
+
+        // customize the verbose logging profile
+        File verbose = new File(logs, "VERBOSE_LOGGING.xml");
+        String xml = FileUtils.readFileToString(verbose, StandardCharsets.UTF_8);
+        String xmlUpdated = xml.replace("trace", "debug");
+        FileUtils.writeStringToFile(verbose, xmlUpdated, StandardCharsets.UTF_8);
+        long lastModified = verbose.lastModified();
+
+        // switch to that logging profile, this will generate some logs
+        LoggingUtils.initLogging(loader, "VERBOSE_LOGGING.xml", false, false, null);
+        try (TestAppender appender = TestAppender.createAppender("override-test", null)) {
+            appender.startRecording("org.geoserver.logging");
+
+            // file was not modified
+            assertEquals(lastModified, verbose.lastModified());
+
+            // two log messages, one above, one below threshold
+            Logger logger = LogManager.getLogger("org.geoserver.logging");
+            logger.debug("Should appear");
+            logger.trace("Should not appear");
+
+            appender.stopRecording("org.geoserver.logging");
+
+            // check the messages have been filtered by level as expected
+            appender.assertTrue("Should appear");
+            appender.assertFalse("Should not appear");
+        }
     }
 }

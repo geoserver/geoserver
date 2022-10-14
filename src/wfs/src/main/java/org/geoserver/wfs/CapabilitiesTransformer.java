@@ -205,7 +205,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) featureProducer;
             if (format.canHandle(wfsVersion)) {
                 for (String s : format.getOutputFormats()) {
-                    oflist.add(s.toString());
+                    if (isAllowed(s.toString())) {
+                        oflist.add(s.toString());
+                    }
                 }
             }
         }
@@ -603,7 +605,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 start(resultFormat);
 
                 // we accept numerous formats, but cite only allows you to have GML2
-                if (wfs.isCiteCompliant()) {
+                if (wfs.isCiteCompliant() && isAllowed("GML2")) {
                     element("GML2", null);
                 } else {
                     // FULL MONTY
@@ -614,8 +616,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     for (Object featureProducer : featureProducers) {
                         WFSGetFeatureOutputFormat format =
                                 (WFSGetFeatureOutputFormat) featureProducer;
+
                         for (String name : format.getCapabilitiesElementNames()) {
-                            if (!dupes.contains(name)) {
+                            if (!dupes.contains(name) && isAllowed(name)) {
                                 element(name, null);
                                 dupes.add(name);
                             }
@@ -965,6 +968,25 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         }
     }
 
+    /**
+     * Checks if OutputFormat is allowed for this request.
+     *
+     * @param outputFormat OutputFormat to check.
+     * @return true if OutputFormat is allowed for this request.
+     */
+    public boolean isAllowed(String outputFormat) {
+        if (!wfs.isGetFeatureOutputTypeCheckingEnabled()) {
+            return true;
+        }
+        boolean contains = wfs.getGetFeatureOutputTypes().contains(outputFormat);
+        if (!contains) {
+            LOGGER.fine(
+                    "OutputFormat "
+                            + outputFormat
+                            + " is not allowed for this request.due to Global WFS Configuration");
+        }
+        return contains;
+    }
     /** Transformer for wfs 1.1 capabilities document. */
     public static class WFS1_1 extends CapabilitiesTransformer {
 

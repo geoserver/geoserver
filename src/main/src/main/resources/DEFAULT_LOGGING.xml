@@ -4,12 +4,12 @@
 <Configuration name="DEFAULT_LOGGING" status="fatal" dest="out">
     <Appenders>
         <Console name="stdout" target="SYSTEM_OUT">
-            <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
+            <PatternLayout pattern="%date{dd MMM HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
         </Console>
         <RollingFile name="geoserverlogfile">
             <filename>logs/geoserver.log</filename>
             <filePattern>logs/geoserver-%i.log</filePattern>
-            <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
+            <PatternLayout pattern="%date{dd MMM HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="20 MB" />
             </Policies>

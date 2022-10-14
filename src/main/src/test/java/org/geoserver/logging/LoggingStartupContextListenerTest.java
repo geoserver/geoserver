@@ -5,6 +5,8 @@
  */
 package org.geoserver.logging;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.regex.Pattern.DOTALL;
 import static org.geoserver.logging.GeoServerXMLConfiguration.attributeGet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,9 +14,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Locale;
+import java.util.regex.Pattern;
 import javax.servlet.ServletContextEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
@@ -23,6 +28,8 @@ import org.apache.logging.log4j.core.config.Node;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.MemoryLockProvider;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockServletContext;
 
@@ -34,6 +41,22 @@ import org.springframework.mock.web.MockServletContext;
  * </code>
  */
 public class LoggingStartupContextListenerTest {
+
+    static Locale systemLocale;
+
+    @BeforeClass
+    public static void initialize() {
+        systemLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+        // reset static state leftover from other tests
+        System.clearProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL);
+        LoggingUtils.relinquishLog4jControl = false;
+    }
+
+    @AfterClass
+    public static void reset() {
+        Locale.setDefault(systemLocale);
+    }
 
     @Test
     public void testLogLocationFromServletContext() throws Exception {
@@ -199,5 +222,35 @@ public class LoggingStartupContextListenerTest {
 
         GeoServerXMLConfiguration.attributePut(node, "fileName", "geoserver.log");
         assertEquals("store match", "geoserver.log", node.getAttributes().get("filename"));
+    }
+
+    @Test
+    public void testDateFormat() throws Exception {
+        final File target = new File("./target/logs-date");
+        File logs = new File(target, "logs");
+        FileUtils.deleteQuietly(logs);
+        logs.mkdir();
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(target);
+
+        testExpectetFormat(loader, "DEFAULT_LOGGING");
+        testExpectetFormat(loader, "GEOSERVER_DEVELOPER_LOGGING");
+        testExpectetFormat(loader, "PRODUCTION_LOGGING");
+        testExpectetFormat(loader, "VERBOSE_LOGGING");
+        testExpectetFormat(loader, "GEOTOOLS_DEVELOPER_LOGGING");
+
+        // reset the file logging, disabling it
+        LoggingUtils.initLogging(loader, "TEST_LOGGING", true, true, null);
+    }
+
+    private static void testExpectetFormat(GeoServerResourceLoader loader, String configuration)
+            throws Exception {
+        String location = "logs/" + configuration + ".log";
+        LoggingUtils.initLogging(loader, configuration, true, false, location);
+        Logger logger = LogManager.getLogger("org.geoserver.logging");
+        logger.error("Test message");
+        File logFile = new File(loader.getBaseDirectory(), location);
+        String contents = FileUtils.readFileToString(logFile, UTF_8);
+        Pattern pattern = Pattern.compile("\\d{2} \\w{3} \\d{2}:\\d{2}:\\d{2}.*", DOTALL);
+        assertTrue(pattern.matcher(contents).matches());
     }
 }

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -30,6 +31,9 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue(
                 "form:maxNumberOfFeaturesForPreview", wfs.getMaxNumberOfFeaturesForPreview());
         tester.assertModelValue("form:keywords", wfs.getKeywords());
+        tester.assertModelValue(
+                "form:getFeatureOutputTypes:outputTypeCheckingEnabled",
+                wfs.isGetFeatureOutputTypeCheckingEnabled());
     }
 
     @Test
@@ -63,6 +67,22 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
         assertFalse("includeWFSRequestDumpFile= false", wfs.getIncludeWFSRequestDumpFile());
+        // test includeOutputTypes
+        tester.startPage(WFSAdminPage.class);
+        ft = tester.newFormTester("form");
+        ft.setValue("getFeatureOutputTypes:outputTypeCheckingEnabled", true);
+        ft.getForm()
+                .get("getFeatureOutputTypes:palette")
+                .setDefaultModelObject(Collections.singleton("KML"));
+        ft.submit("submit");
+        wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
+        assertTrue(
+                "getFeatureOutputTypeCheckingEnabled= true",
+                wfs.isGetFeatureOutputTypeCheckingEnabled());
+        assertEquals(
+                "getFeatureOutputTypes= KML",
+                Collections.singleton("KML"),
+                wfs.getGetFeatureOutputTypes());
     }
 
     @Test

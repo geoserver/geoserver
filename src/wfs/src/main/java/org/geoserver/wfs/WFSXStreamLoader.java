@@ -8,6 +8,7 @@ package org.geoserver.wfs;
 import com.thoughtworks.xstream.XStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
@@ -47,6 +48,10 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         wfs.setName("WFS");
         wfs.setMaxFeatures(1000000);
 
+        // Feature Output Type Checking
+        wfs.setGetFeatureOutputTypeCheckingEnabled(false);
+        wfs.setGetFeatureOutputTypes(new HashSet<String>());
+
         // gml2
         addGml(wfs, WFSInfo.Version.V_10, GMLInfo.SrsNameStyle.XML, true);
 
@@ -73,6 +78,11 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
 
         if (!service.getVersions().contains(WFSInfo.Version.V_20.getVersion())) {
             service.getVersions().add(WFSInfo.Version.V_20.getVersion());
+        }
+
+        // set the defaults for Output Type Checking if not set
+        if (service.getGetFeatureOutputTypes() == null) {
+            service.setGetFeatureOutputTypes(new HashSet<String>());
         }
 
         // set the defaults for GMLInfo if they are not set

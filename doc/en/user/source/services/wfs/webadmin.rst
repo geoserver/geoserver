@@ -66,6 +66,17 @@ A list of values to be declared in all feature types can be provided in the WFS 
 
 The list will be used only for the capabilities document generation. It does not limit the actual target SRS usage in GetFeature requests.
 
+Configuration of Output Format types allowed in GetFeature
+----------------------------------------------------------
+
+Checking the ``Enable Output Format type checking`` checkbox will enable restrictions on the available output formats for GetFeature requests.  It will also limit what Output Format types will be displayed as available in GetCapabilities responses. GetFeature requests with Output types not included in the ``Allowed Output types`` panel will result in an ``Invalid Parameter ServiceException`` response. 
+
+Note that if the Allowed Output Types panel is left as empty and the ``Enable Output Format Type checking`` is checked, all Output types will be restricted.
+
+.. figure:: img/services_WFS_outputformat.png
+
+   Output Format types configuration
+
 GML
 ---
 

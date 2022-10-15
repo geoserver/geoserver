@@ -8,6 +8,7 @@ package org.geoserver.wfs;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.geoserver.config.ServiceInfo;
 import org.geotools.util.Version;
 
@@ -301,4 +302,32 @@ public interface WFSInfo extends ServiceInfo {
      * shapefile/zip output
      */
     void setIncludeWFSRequestDumpFile(boolean includeWFSRequestDumpFile);
+
+    /**
+     * Flag that determines if Output Type checking is enforced
+     *
+     * @return whether checking is enforced
+     */
+    boolean isGetFeatureOutputTypeCheckingEnabled();
+
+    /**
+     * Sets the flag that determines if Output Type checking is enforced
+     *
+     * @param getFeatureOutputTypeCheckingEnabled whether checking is enforced
+     */
+    void setGetFeatureOutputTypeCheckingEnabled(boolean getFeatureOutputTypeCheckingEnabled);
+
+    /**
+     * Set of Output Types allowed for GetFeature and GetFeatureWithLock
+     *
+     * @return set of Output Types
+     */
+    Set<String> getGetFeatureOutputTypes();
+
+    /**
+     * Set the Set of Output Types allowed for GetFeature and GetFeatureWithLock
+     *
+     * @param getFeatureOutputTypes set of Output Types to be enforced
+     */
+    void setGetFeatureOutputTypes(Set<String> getFeatureOutputTypes);
 }

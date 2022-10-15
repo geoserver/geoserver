@@ -405,7 +405,18 @@ components:
                     "featureBounding": false,
                     "canonicalSchemaLocation": false,
                     "encodeFeatureMember": false,
-                    "hitsIgnoreMaxFeatures": false
+                    "hitsIgnoreMaxFeatures": false,
+                    "getFeatureOutputTypeCheckingEnabled": true,
+                    "getFeatureOutputTypes": [
+                      "text/xml; subtype=gml/3.1.1",
+                      "application/json",
+                      "application/vnd.geo+json",
+                      "text/xml; subtype=gml/2.1.2",
+                      "text/xml; subtype=gml/3.2",
+                      "application/gml+xml; version=3.2",
+                      "application/gml+xml; version=3.1.1",
+                      "application/gml+xml; version=2.1.2"
+                    ]
                   }
                 }
     WCSInfo:

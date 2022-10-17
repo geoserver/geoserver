@@ -35,8 +35,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
 
-    // currently no logger required
-    // private final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(this.getClass());
 
     private static String parseMimeType(String format) {
         int pos = format.indexOf(';');

@@ -69,8 +69,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     /**
      * Constructor to be used by subclasses.
      *
-     * @param outputFormat The well-known name of the format, not <code>null</code>
-     * @param jsonp <code>true</code> if specified format uses JSONP
+     * @param outputFormat The well-known name of the format, not {@code null}
+     * @param jsonp {@code true} if specified format uses JSONP
      */
     protected GeoJSONGetFeatureResponse(GeoServer gs, String format, boolean jsonp) {
         super(gs, format);

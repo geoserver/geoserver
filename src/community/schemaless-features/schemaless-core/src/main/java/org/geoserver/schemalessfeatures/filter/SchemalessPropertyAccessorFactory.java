@@ -98,14 +98,17 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
             for (int i = 0; i < path.length; i++) {
                 String pathPart = path[i];
                 result = walkComplexAttribute(complexAttribute, pathPart);
-                if (result instanceof ComplexAttribute)
+                if (result instanceof ComplexAttribute) {
                     complexAttribute = (ComplexAttribute) result;
-                else if (result instanceof List) {
+                } else if (result instanceof List) {
                     @SuppressWarnings("unchecked")
                     List<Object> attributes = List.class.cast(result);
                     List<Object> results = walkList(attributes, path, i);
-                    if (results.size() == 1) return results.get(0);
-                    else return results;
+                    if (results.size() == 1) result = results.get(0);
+                    else result = results;
+                    break;
+                } else if (result == null) {
+                    break;
                 }
             }
             return result;

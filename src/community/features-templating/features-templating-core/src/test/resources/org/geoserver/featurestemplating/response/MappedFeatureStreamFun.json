@@ -8,7 +8,10 @@
       ],
       "geometry": "${gsml:shape}",
       "properties": {
-        "name": "$${strConcat('FeatureName: ', xpath('gml:name'))}",
-        "lithology":"$${aggregate(stream(xpath('gsml:specification/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:lithology/gsml:ControlledConcept/gsml:name'),sort('DESC')),'JOIN(,)')}!"
+        "$source": "gsml:specification/gsml:GeologicUnit",
+        "name": "$${strConcat('FeatureName: ', xpath('../gml:name'))}",
+        "lithology":"$${aggregate(stream(xpath('gsml:composition/gsml:CompositionPart/gsml:lithology/gsml:ControlledConcept/gsml:name'),sort('DESC')),'JOIN(,)')}",
+        "lithology2":"$${aggregate(stream(xpath('../gsml:specification/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:lithology/gsml:ControlledConcept/gsml:name'),sort('DESC')),'JOIN(,)')}!"
+
       }
     }

@@ -7,7 +7,11 @@ package org.geoserver.featurestemplating.request;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -271,7 +275,9 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
          * Features only
          */
         private String completeXPath(String xpath) {
-            if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
+            if (currentSource != null && !isSimple) {
+                xpath = completeXpath(currentSource, xpath);
+            }
             return xpath;
         }
 
@@ -286,6 +292,37 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
                     || (extradata instanceof Boolean && ((Boolean) extradata).booleanValue());
         }
 
+        private String completeXpath(String source, String xpath) {
+            String sepSrc = "/";
+            String sepXpath = "/";
+            if (source.indexOf(sepSrc) == -1) sepSrc = "\\.";
+            if (xpath.indexOf(sepXpath) == -1) sepXpath = "\\.";
+
+            String[] sourceSteps = source.split(sepSrc);
+            String[] xpathSteps = xpath.split(sepXpath);
+
+            List<String> sourceList = new LinkedList<>();
+            List<String> xpathList = new LinkedList<>();
+            Collections.addAll(sourceList, sourceSteps);
+            Collections.addAll(xpathList, xpathSteps);
+
+            // does the xpath contains all or some portions of the source already?
+            List<String> intersection = new LinkedList<>(xpathList);
+            intersection.retainAll(sourceList);
+
+            if (intersection.isEmpty()) return source.concat("/").concat(xpath);
+
+            StringBuilder sb = new StringBuilder();
+            String sourcePart =
+                    sourceList.stream()
+                            .filter(s -> !intersection.contains(s))
+                            .collect(Collectors.joining("/"));
+            if (StringUtils.isNotEmpty(sourcePart)) sb.append(sourcePart).append("/");
+            String xpathPart = xpathList.stream().collect(Collectors.joining("/"));
+            sb.append(xpathPart);
+            return sb.toString();
+        }
+
         @Override
         public Object visit(Function expression, Object extraData) {
             // Stream Function is a special case since after the first property name
@@ -294,11 +331,16 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
                 StreamFunction streamFunction = (StreamFunction) expression;
                 List<Expression> expressions = streamFunction.getParameters();
                 int size = expressions.size();
+                int pnCounter = 0;
                 for (int i = 0; i < size; i++) {
                     Expression e = expressions.get(i);
-                    if (e instanceof PropertyName) visit((PropertyName) e, i == 0);
-                    else visit(e, extraData);
+                    if (e instanceof PropertyName) {
+                        e = (Expression) visit((PropertyName) e, pnCounter == 0);
+                        pnCounter++;
+                    } else e = visit(e, extraData);
+                    expressions.set(i, e);
                 }
+                return expression;
             }
             return super.visit(expression, extraData);
         }

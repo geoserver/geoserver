@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -156,7 +156,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
             if (rules == null || force) {
                 // no security folder, let's work against an empty properties then
                 if (securityDir == null || securityDir.getType() == Type.UNDEFINED) {
-                    this.rules = new TreeSet<>();
+                    this.rules = new ConcurrentSkipListSet<>();
                 } else {
                     // no security config, let's work against an empty properties then
                     Resource layers = securityDir.get(propertyFileName);
@@ -171,7 +171,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
                     }
 
                     if (layers.getType() == Type.UNDEFINED) {
-                        this.rules = new TreeSet<>();
+                        this.rules = new ConcurrentSkipListSet<>();
                     } else {
                         // ok, something is there, let's load it
                         watcher = new PropertyFileWatcher(layers);

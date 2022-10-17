@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -51,14 +52,14 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     }
 
     /** Builds a new dao with a custom security dir. Used mostly for testing purposes */
-    ServiceAccessRuleDAO(Catalog rawCatalog, Resource securityDir) {
+    ServiceAccessRuleDAO(Resource securityDir) {
         super(securityDir, SERVICES);
     }
 
     /** Parses the rules contained in the property file */
     @Override
     protected void loadRules(Properties props) {
-        TreeSet<ServiceAccessRule> result = new TreeSet<>();
+        SortedSet<ServiceAccessRule> result = new ConcurrentSkipListSet<>();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String ruleKey = (String) entry.getKey();
             String ruleValue = (String) entry.getValue();

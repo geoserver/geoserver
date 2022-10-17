@@ -35,7 +35,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
 
-
     private static String parseMimeType(String format) {
         int pos = format.indexOf(';');
         return pos != -1 ? format.substring(0, pos).trim() : format;
@@ -239,8 +238,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
                 GeometryDescriptor defaultGeomType = fType.getGeometryDescriptor();
                 List<AttributeDescriptor> types = fType.getAttributeDescriptors();
 
-                for (int j = 0; j < types.size(); j++) {
-                    AttributeDescriptor ad = types.get(j);
+                for (AttributeDescriptor ad : types) {
                     if (id_option != null && id_option.equals(ad.getLocalName())) {
                         continue; // skip this attribute as it it used as the id
                     }

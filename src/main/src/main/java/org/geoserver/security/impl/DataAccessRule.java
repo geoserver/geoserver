@@ -173,7 +173,9 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
         if (item == null) {
             return otherItem != null ? -1 : 0;
         }
-        if (item.equals(otherItem)) return 0;
+        if (item.equals(otherItem)
+                || (ANY.equals(item) && otherItem == null)
+                || (item == null && ANY.equals(otherItem))) return 0;
         else if (ANY.equals(item)) return -1;
         else if (ANY.equals(otherItem)) return 1;
         else return item.compareTo(otherItem);

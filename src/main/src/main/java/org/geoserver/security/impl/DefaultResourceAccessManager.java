@@ -10,6 +10,7 @@ import static org.geoserver.security.impl.DataAccessRule.ANY;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -380,7 +381,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                                 + rule
                                 + " is overriding another rule targetting the same resource");
             }
-            node.setAuthorizedRoles(accessMode, rule.getRoles());
+            node.setAuthorizedRoles(accessMode, new HashSet<>(rule.getRoles()));
         }
 
         return root;

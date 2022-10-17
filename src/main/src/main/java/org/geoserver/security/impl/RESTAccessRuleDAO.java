@@ -7,6 +7,7 @@
 package org.geoserver.security.impl;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -39,7 +40,8 @@ public class RESTAccessRuleDAO extends AbstractAccessRuleDAO<String> {
 
     @Override
     protected void loadRules(Properties props) {
-        rules = new LinkedHashSet<>();
+        // no concurrent version of LinkedHashMap, making it synchronized to preserve rule order
+        rules = Collections.synchronizedSet(new LinkedHashSet<>());
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String key = (String) entry.getKey();
             String val = (String) entry.getValue();

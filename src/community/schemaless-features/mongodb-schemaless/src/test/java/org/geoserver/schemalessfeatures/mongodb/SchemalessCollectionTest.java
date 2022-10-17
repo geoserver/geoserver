@@ -6,6 +6,7 @@
 package org.geoserver.schemalessfeatures.mongodb;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -126,6 +128,24 @@ public class SchemalessCollectionTest extends AbstractMongoDBOnlineTestSupport {
             Object result = pn.evaluate(f);
             List<Number> values = (List<Number>) result;
             assertAvg(values);
+        }
+    }
+
+    @Test
+    public void testWrongPropertyName() throws Exception {
+        FeatureTypeInfo fti =
+                getCatalog().getFeatureTypeByName("gs:" + StationsTestSetup.COLLECTION_NAME);
+        @SuppressWarnings("unchecked")
+        FeatureSource<FeatureType, Feature> source =
+                (FeatureSource<FeatureType, Feature>) fti.getFeatureSource(null, null);
+        FeatureCollection<FeatureType, Feature> collection = source.getFeatures(Query.ALL);
+
+        FeatureIterator<Feature> it = collection.features();
+        PropertyName pn = FF.property("some_wrong_heading.measurements.values.value");
+        while (it.hasNext()) {
+            Feature f = it.next();
+            Object result = pn.evaluate(f);
+            assertNull(result);
         }
     }
 

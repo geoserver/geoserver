@@ -16,6 +16,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -70,7 +71,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     /** Parses the rules contained in the property file */
     @Override
     protected void loadRules(Properties props) {
-        TreeSet<DataAccessRule> result = new TreeSet<>();
+        SortedSet<DataAccessRule> result = new ConcurrentSkipListSet<>();
         catalogMode = CatalogMode.HIDE;
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String ruleKey = (String) entry.getKey();
@@ -149,7 +150,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
             if (!ANY.equals(layerName)
                     && rawCatalog.getLayerByName(new NameImpl(root, layerName)) == null
                     && rawCatalog.getLayerGroupByName(root, layerName) == null)
-                LOGGER.warning("Layer " + root + ":" + layerName + " is unknown in rule: " + rule);
+                LOGGER.fine("Layer " + root + ":" + layerName + " is unknown in rule: " + rule);
         } else {
             if (!ANY.equals(root) && rawCatalog.getLayerGroupByName(root) == null)
                 LOGGER.warning("Global layer group " + root + " is unknown in rule " + rule);

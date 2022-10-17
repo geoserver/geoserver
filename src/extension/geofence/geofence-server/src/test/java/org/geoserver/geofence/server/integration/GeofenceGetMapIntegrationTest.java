@@ -558,4 +558,50 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
             removeLayerGroup(group);
         }
     }
+
+    @Test
+    public void testLimitAndAllowRuleEnlargementLayerGroup() throws Exception {
+        // tests LayerGroup rule with allowed area. The allowedArea defined for the layerGroup
+        // should be
+        // applied to the contained layen also.
+        Long ruleId1 = null;
+        Long ruleId2 = null;
+        LayerGroupInfo group = null;
+        try {
+            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
+            ruleId2 =
+                    addRule(
+                            GrantType.LIMIT,
+                            null,
+                            "ROLE_ONE",
+                            "WMS",
+                            null,
+                            null,
+                            "lakes_and_places",
+                            0,
+                            ruleService);
+            String areWKT =
+                    "MULTIPOLYGON (((0.0006 -0.0018, 0.001 -0.0006, 0.0024 -0.0001, 0.0031 -0.0015, 0.0006 -0.0018), (0.0017 -0.0011, 0.0025 -0.0011, 0.0025 -0.0006, 0.0017 -0.0006, 0.0017 -0.0011)))";
+            addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326, ruleService);
+
+            // check the group works without workspace qualification;
+            group = addLakesPlacesLayerGroup(SINGLE, "lakes_and_places");
+
+            login("someUser", "", "ROLE_ONE", "ROLE_TWO");
+            String url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers="
+                            + group.getName()
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            BufferedImage image = getAsImage(url, "image/png");
+            URL expectedResponse = getClass().getResource("lakes_and_places_full.png");
+            BufferedImage expectedImage = ImageIO.read(expectedResponse);
+            ImageAssert.assertEquals(image, expectedImage, 500);
+        } finally {
+            deleteRules(ruleService, ruleId1, ruleId2);
+            logout();
+            removeLayerGroup(group);
+        }
+    }
 }

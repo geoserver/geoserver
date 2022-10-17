@@ -42,6 +42,7 @@
             <descriptor>release/ext-pgraster.xml</descriptor>
             <descriptor>release/ext-dyndimension.xml</descriptor>
             <descriptor>release/ext-flatgeobuf.xml</descriptor>
+            <descriptor>release/ext-spatialjson.xml</descriptor>
             <descriptor>release/ext-gpx.xml</descriptor>
             <descriptor>release/ext-jms-cluster.xml</descriptor>
             <descriptor>release/ext-hz-cluster.xml</descriptor>
@@ -204,6 +205,7 @@
         <module>pgraster</module>
         <module>dyndimension</module>
         <module>flatgeobuf</module>
+        <module>spatialjson</module>
         <module>gpxppio</module>
         <module>jms-cluster</module>
         <module>hz-cluster</module>
@@ -319,6 +321,12 @@
       <id>flatgeobuf</id>
       <modules>
         <module>flatgeobuf</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>spatialjson</id>
+      <modules>
+        <module>spatialjson</module>
       </modules>
     </profile>
     <profile>

@@ -68,6 +68,11 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-spatialjson</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-pgraster</artifactId>
       <version>${project.version}</version>
     </dependency>

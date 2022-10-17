@@ -61,6 +61,7 @@ officially part of the GeoServer releases. They are however built along with the
    saml/index
    schemaless-features/index
    smart-data-loader/index
+   spatialjson/index
    stac-datastore/index
    solr/index
    taskmanager/index

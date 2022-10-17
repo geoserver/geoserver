@@ -5,6 +5,7 @@
 package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -138,10 +139,13 @@ public class GeoJSONGetComplexFeaturesResponseWFSTest extends TemplateComplexTes
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             String id = feature.getString("@id");
-            String lithology = feature.getJSONObject("properties").getString("lithology");
+            JSONObject props = feature.getJSONObject("properties");
+            String lithology = null;
+            if (props != null && !props.isEmpty() && !props.isNullObject())
+                lithology = props.getString("lithology");
             switch (id) {
                 case "mf5":
-                    assertEquals("null", lithology);
+                    assertNull(lithology);
                     break;
                 case "mf4":
                     assertEquals("name_c,name_b,name_a,name_2", lithology);
@@ -170,6 +174,23 @@ public class GeoJSONGetComplexFeaturesResponseWFSTest extends TemplateComplexTes
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             String lithology = feature.getJSONObject("properties").getString("lithology");
+            assertEquals("name_cc_4,name_cc_3", lithology);
+        }
+    }
+
+    @Test
+    public void testGeoJSONAggregateFunBackwardMappingWithBackPoints() throws Exception {
+        StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
+        sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
+        sb.append("application/json");
+        sb.append(AGGREGATE_MF_PARAM);
+        sb.append("&cql_filter=properties.lithology2 = 'name_cc_4,name_cc_3'");
+        JSONObject result = (JSONObject) getJson(sb.toString());
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(2, features.size());
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = (JSONObject) features.get(i);
+            String lithology = feature.getJSONObject("properties").getString("lithology2");
             assertEquals("name_cc_4,name_cc_3", lithology);
         }
     }

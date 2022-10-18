@@ -122,4 +122,28 @@ public interface DimensionInfo extends Serializable {
      * #getAcceptableInterval()}.
      */
     public void setAcceptableInterval(String acceptableInterval);
+
+    /**
+     * Returns the start value for the data range, which will be used in capabilities documents. Has
+     * to be either numeric, of type ISO8601 DateTime or the string "PRESENT" which will use the
+     * current DateTime when the capabilities document is generated.
+     *
+     * @return the value for startValue
+     */
+    public String getStartValue();
+
+    /** Sets the startValue for the data range */
+    public void setStartValue(String startValue);
+
+    /**
+     * Returns the end value for the data range, which will be used in capabilities documents. Has
+     * to be either numeric, of type ISO8601 DateTime or the string "PRESENT" which will use the
+     * current DateTime when the capabilities document is generated.
+     *
+     * @return the value for endValue
+     */
+    public String getEndValue();
+
+    /** Sets the endValue for the data range */
+    public void setEndValue(String endValue);
 }

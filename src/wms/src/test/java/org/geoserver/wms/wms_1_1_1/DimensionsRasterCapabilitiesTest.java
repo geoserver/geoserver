@@ -374,4 +374,96 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("20.0", "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("20.0/150.0/0", "//Layer/Extent", dom);
     }
+
+    @Test
+    public void testStaticTimeRange() throws Exception {
+        String startValue = "2014-01-24T13:25:00.000Z";
+        String endValue = "2021";
+
+        setupRasterDimension(
+                TIMERANGES,
+                ResourceInfo.TIME,
+                DimensionPresentation.DISCRETE_INTERVAL,
+                Double.valueOf(1000 * 60 * 60 * 12),
+                null,
+                null);
+
+        setupRasterStartAndEndValues(TIMERANGES, ResourceInfo.TIME, startValue, endValue);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+        assertXpathEvaluatesTo("time", "//Layer/Dimension/@name", dom);
+        assertXpathEvaluatesTo(
+                "2014-01-24T13:25:00.000Z/2021-01-01T00:00:00.000Z/PT12H", "//Layer/Extent", dom);
+    }
+
+    @Test
+    public void testStaticTimeRangeContinuous() throws Exception {
+        String startValue = "2014-01-24T13:25:00.000Z";
+        String endValue = "2021";
+
+        setupRasterDimension(
+                TIMERANGES,
+                ResourceInfo.TIME,
+                DimensionPresentation.CONTINUOUS_INTERVAL,
+                null,
+                null,
+                null);
+
+        setupRasterStartAndEndValues(TIMERANGES, ResourceInfo.TIME, startValue, endValue);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+        assertXpathEvaluatesTo("time", "//Layer/Dimension/@name", dom);
+        assertXpathEvaluatesTo(
+                "2014-01-24T13:25:00.000Z/2021-01-01T00:00:00.000Z/PT1S",
+                "//Layer[Name='sf:timeranges']/Extent",
+                dom);
+    }
+
+    @Test
+    public void testStaticElevationRange() throws Exception {
+        String startValue = "-11034.0";
+        String endValue = "8848.86";
+
+        setupRasterDimension(
+                TIMERANGES,
+                ResourceInfo.ELEVATION,
+                DimensionPresentation.DISCRETE_INTERVAL,
+                1.1,
+                UNITS,
+                UNIT_SYMBOL);
+
+        setupRasterStartAndEndValues(TIMERANGES, ResourceInfo.ELEVATION, startValue, endValue);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+        assertXpathEvaluatesTo("elevation", "//Layer/Dimension/@name", dom);
+        assertXpathEvaluatesTo("-11034.0/8848.86/1.1", "//Layer[Name='sf:timeranges']/Extent", dom);
+    }
+
+    @Test
+    public void testStaticElevationRangeContinuous() throws Exception {
+        String startValue = "-11034.0";
+        String endValue = "8848.86";
+
+        setupRasterDimension(
+                TIMERANGES,
+                ResourceInfo.ELEVATION,
+                DimensionPresentation.CONTINUOUS_INTERVAL,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+
+        setupRasterStartAndEndValues(TIMERANGES, ResourceInfo.ELEVATION, startValue, endValue);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+        assertXpathEvaluatesTo("elevation", "//Layer/Dimension/@name", dom);
+        assertXpathEvaluatesTo("-11034.0/8848.86/0", "//Layer[Name='sf:timeranges']/Extent", dom);
+    }
 }

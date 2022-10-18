@@ -148,6 +148,26 @@ public class VectorCustomDimensionEntry implements DimensionInfo {
     }
 
     @Override
+    public String getStartValue() {
+        return dimensionInfo.getStartValue();
+    }
+
+    @Override
+    public void setStartValue(String startValue) {
+        dimensionInfo.setStartValue(startValue);
+    }
+
+    @Override
+    public String getEndValue() {
+        return dimensionInfo.getEndValue();
+    }
+
+    @Override
+    public void setEndValue(String endValue) {
+        dimensionInfo.setEndValue(endValue);
+    }
+
+    @Override
     public boolean isRawNearestMatchEnabled() {
         // raw nearest match isn't implemented on vectors, yet.
         return false;

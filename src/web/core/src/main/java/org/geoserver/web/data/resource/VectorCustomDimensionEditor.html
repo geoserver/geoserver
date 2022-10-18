@@ -64,6 +64,14 @@
               <input type="text" wicket:id="acceptableInterval" class="field text" />
             </div>
           </li>
+          <li wicket:id="startEndContainer">
+            <label><wicket:message key="startValue">startValue</wicket:message></label>
+            <input type="text" wicket:id="startValue" class="field text" />
+            &nbsp;<em><span class="error" wicket:id="startValueValidationMsg"></span></em>
+            <label><wicket:message key="endValue">endValue</wicket:message></label>
+            <input type="text" wicket:id="endValue" class="field text" />
+            &nbsp;<em><span class="error" wicket:id="endValueValidationMsg"></span></em>
+          </li>
         </ul>
       </li>
     </ul>

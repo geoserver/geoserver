@@ -577,7 +577,8 @@ paths:
               featureType:              
                 $ref: "#/definitions/CoverageInfo"
           examples:
-            application/json: {
+            application/json: |
+                          {
                               "coverage": {
                                   "abstract": "Digital elevation model for the Spearfish region.\r\n\r\nsfdem is a Tagged Image File Format with Geographic information",
                                   "defaultInterpolationMethod": "nearest neighbor",
@@ -633,10 +634,25 @@ paths:
                                       "miny": 44.370187074132616
                                   },
                                   "metadata": {
-                                      "entry": {
-                                          "$": "sfdem_sfdem",
-                                          "@key": "dirName"
-                                      }
+                                      "entry": [
+                                        {
+                                            "$": "sfdem_sfdem",
+                                            "@key": "dirName"
+                                        },
+                                        {
+                                            "@key": "time",
+                                            "dimensionInfo": {
+                                                "enabled": true,
+                                                "presentation": "CONTINUOUS_INTERVAL",
+                                                "units": "ISO8601",
+                                                "defaultValue": "",
+                                                "nearestMatchEnabled": false,
+                                                "rawNearestMatchEnabled": false,
+                                                "startValue": 2001,
+                                                "endValue": "2017-09-01"
+                                            }
+                                        }
+                                      ]
                                   },
                                   "name": "sfdem",
                                   "namespace": {
@@ -756,8 +772,14 @@ paths:
                   <entry key="cacheAgeMax">10</entry>
                   <entry key="time">
                     <dimensionInfo>
-                      <enabled>false</enabled>
+                      <enabled>true</enabled>
+                      <presentation>CONTINUOUS_INTERVAL</presentation>
+                      <units>ISO8601</units>
                       <defaultValue/>
+                      <nearestMatchEnabled>false</nearestMatchEnabled>
+                      <rawNearestMatchEnabled>false</rawNearestMatchEnabled>
+                      <startValue>2001</startValue>
+                      <endValue>2017-09-01</endValue>
                     </dimensionInfo>
                   </entry>
                   <entry key="cachingEnabled">true</entry>

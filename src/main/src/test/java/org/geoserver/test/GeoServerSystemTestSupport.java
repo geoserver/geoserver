@@ -1922,6 +1922,40 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
+     * Adds static start and end data range values to the specified layer.
+     *
+     * @param layer The layer name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param startValue The startValue
+     * @param endValue The endValue
+     */
+    protected void setupVectorStartAndEndValues(
+            QName layer, String dimensionName, String startValue, String endValue) {
+        ResourceInfo info = getCatalog().getResourceByName(getLayerId(layer), ResourceInfo.class);
+        DimensionInfo di = info.getMetadata().get(dimensionName, DimensionInfo.class);
+        di.setStartValue(startValue);
+        di.setEndValue(endValue);
+        getCatalog().save(info);
+    }
+
+    /**
+     * Adds static start and end data range values to the specified layer.
+     *
+     * @param layer The layer name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param startValue The startValue
+     * @param endValue The endValue
+     */
+    protected void setupRasterStartAndEndValues(
+            QName layer, String dimensionName, String startValue, String endValue) {
+        CoverageInfo info = getCatalog().getCoverageByName(layer.getLocalPart());
+        DimensionInfo di = info.getMetadata().get(dimensionName, DimensionInfo.class);
+        di.setStartValue(startValue);
+        di.setEndValue(endValue);
+        getCatalog().save(info);
+    }
+
+    /**
      * Asserts that the image is not blank, in the sense that there must be pixels different from
      * the passed background color.
      *

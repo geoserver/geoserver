@@ -733,6 +733,159 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("0.0,1.0,2.0,3.0", "//wms:Layer/wms:Dimension", dom);
     }
 
+    @Test
+    public void testStaticTimeRange() throws Exception {
+        String startValue = "2014-01-24T13:25:00.000Z";
+        String endValue = "2021";
+
+        setupVectorDimension(
+                ResourceInfo.TIME,
+                "time",
+                DimensionPresentation.DISCRETE_INTERVAL,
+                Double.valueOf(1000 * 60 * 60 * 12),
+                null,
+                null);
+
+        setupVectorStartAndEndValues(V_TIME_ELEVATION, ResourceInfo.TIME, startValue, endValue);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(
+                "2014-01-24T13:25:00.000Z/2021-01-01T00:00:00.000Z/PT12H",
+                "//wms:Layer/wms:Dimension",
+                dom);
+    }
+
+    @Test
+    public void testStaticTimeRangeContinuous() throws Exception {
+        String startValue = "2014-01-24T13:25:00.000Z";
+        String endValue = "2021";
+
+        setupVectorDimension(
+                ResourceInfo.TIME,
+                "time",
+                DimensionPresentation.CONTINUOUS_INTERVAL,
+                null,
+                null,
+                null);
+
+        setupVectorStartAndEndValues(V_TIME_ELEVATION, ResourceInfo.TIME, startValue, endValue);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(
+                "2014-01-24T13:25:00.000Z/2021-01-01T00:00:00.000Z/PT1S",
+                "//wms:Layer/wms:Dimension",
+                dom);
+    }
+
+    @Test
+    public void testStaticElevationRange() throws Exception {
+        String startValue = "-11034.0";
+        String endValue = "8848.86";
+
+        setupVectorDimension(
+                ResourceInfo.ELEVATION,
+                "time",
+                DimensionPresentation.DISCRETE_INTERVAL,
+                1.0,
+                null,
+                null);
+
+        setupVectorStartAndEndValues(
+                V_TIME_ELEVATION, ResourceInfo.ELEVATION, startValue, endValue);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("elevation", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("-11034.0/8848.86/1.0", "//wms:Layer/wms:Dimension", dom);
+    }
+
+    @Test
+    public void testStaticElevationRangeContinuous() throws Exception {
+        String startValue = "-11034.0";
+        String endValue = "8848.86";
+
+        setupVectorDimension(
+                ResourceInfo.ELEVATION,
+                "time",
+                DimensionPresentation.CONTINUOUS_INTERVAL,
+                null,
+                null,
+                null);
+
+        setupVectorStartAndEndValues(
+                V_TIME_ELEVATION, ResourceInfo.ELEVATION, startValue, endValue);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("elevation", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("-11034.0/8848.86/0", "//wms:Layer/wms:Dimension", dom);
+    }
+
+    @Test
+    public void testStaticCustomRange() throws Exception {
+        String startValue = "-3";
+        String endValue = "8848.86";
+
+        setupVectorDimension(
+                "dim_custom",
+                "custom",
+                DimensionPresentation.DISCRETE_INTERVAL,
+                1.0,
+                UNITS,
+                UNIT_SYMBOL);
+
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName("TimeElevation");
+        info.getMetadata().get("dim_custom", DimensionInfo.class).setStartValue(startValue);
+        info.getMetadata().get("dim_custom", DimensionInfo.class).setEndValue(endValue);
+        getCatalog().save(info);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("custom", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(UNITS, "//wms:Layer/wms:Dimension/@units", dom);
+        assertXpathEvaluatesTo(UNIT_SYMBOL, "//wms:Layer/wms:Dimension/@unitSymbol", dom);
+        assertXpathEvaluatesTo("-3.0/8848.86/1.0", "//wms:Layer/wms:Dimension", dom);
+    }
+
+    @Test
+    public void testStaticCustomDateRange() throws Exception {
+        String startValue = "2021-01";
+        String endValue = "2022-04-05T01:20:00Z";
+
+        setupVectorDimension(
+                "dim_custom",
+                "custom",
+                DimensionPresentation.DISCRETE_INTERVAL,
+                Double.valueOf(1000 * 60 * 60 * 24),
+                UNITS,
+                UNIT_SYMBOL);
+
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName("TimeElevation");
+        info.getMetadata().get("dim_custom", DimensionInfo.class).setStartValue(startValue);
+        info.getMetadata().get("dim_custom", DimensionInfo.class).setEndValue(endValue);
+        getCatalog().save(info);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("custom", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(UNITS, "//wms:Layer/wms:Dimension/@units", dom);
+        assertXpathEvaluatesTo(UNIT_SYMBOL, "//wms:Layer/wms:Dimension/@unitSymbol", dom);
+        assertXpathEvaluatesTo(
+                "2021-01-01T00:00:00.000Z/2022-04-05T01:20:00.000Z/P1D",
+                "//wms:Layer/wms:Dimension",
+                dom);
+    }
+
     protected TestResourceAccessManager getResourceAccessManager() {
         return (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
     }

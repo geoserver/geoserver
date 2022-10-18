@@ -59,6 +59,12 @@ public class LoggingStartupContextListener implements ServletContextListener {
             return;
         }
 
+        String updateBuiltInLoggingProfiles =
+                GeoServerExtensions.getProperty(
+                        LoggingUtils.UPDATE_BUILT_IN_LOGGING_PROFILES, context);
+
+        LoggingUtils.updateBuiltInLoggingProfiles = Boolean.valueOf(updateBuiltInLoggingProfiles);
+
         try {
             File baseDir = new File(GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
 

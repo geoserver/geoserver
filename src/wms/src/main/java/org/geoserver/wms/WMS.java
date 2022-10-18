@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -55,6 +56,7 @@ import org.geoserver.util.DimensionWarning;
 import org.geoserver.util.NearestMatchFinder;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
+import org.geoserver.wms.capabilities.DimensionHelper;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategyFactory;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
@@ -1273,6 +1275,17 @@ public class WMS implements ApplicationContextAware {
         FeatureCollection collection = getDimensionCollection(typeInfo, time);
 
         TreeSet<Date> result = new TreeSet<>();
+
+        String startValue = time.getStartValue();
+        String endValue = time.getEndValue();
+        if (!StringUtils.isEmpty(startValue)
+                && !StringUtils.isEmpty(endValue)
+                && time.getPresentation() != DimensionPresentation.LIST) {
+            result.add(DimensionHelper.parseTimeRangeValue(startValue));
+            result.add(DimensionHelper.parseTimeRangeValue(endValue));
+            return result;
+        }
+
         if (time.getPresentation() == DimensionPresentation.LIST) {
             final UniqueVisitor visitor = new UniqueVisitor(time.getAttribute());
             collection.accepts(visitor, null);
@@ -1354,6 +1367,16 @@ public class WMS implements ApplicationContextAware {
         FeatureCollection collection = getDimensionCollection(typeInfo, elevation);
 
         TreeSet<Double> result = new TreeSet<>();
+
+        String startValue = elevation.getStartValue();
+        String endValue = elevation.getEndValue();
+        if (!StringUtils.isEmpty(startValue)
+                && !StringUtils.isEmpty(endValue)
+                && elevation.getPresentation() != DimensionPresentation.LIST) {
+            result.add(Double.parseDouble(startValue));
+            result.add(Double.parseDouble(endValue));
+            return result;
+        }
         if (elevation.getPresentation() == DimensionPresentation.LIST
                 || (elevation.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL
                         && elevation.getResolution() == null)) {
@@ -1785,7 +1808,21 @@ public class WMS implements ApplicationContextAware {
         final FeatureCollection fcollection = getDimensionCollection(typeInfo, dimensionInfo);
 
         final TreeSet<Object> result = new TreeSet<>();
-        if (dimensionInfo.getPresentation() == DimensionPresentation.LIST
+
+        String startValue = dimensionInfo.getStartValue();
+        String endValue = dimensionInfo.getEndValue();
+
+        if (dimensionInfo.getPresentation() != DimensionPresentation.LIST
+                && !StringUtils.isEmpty(startValue)
+                && !StringUtils.isEmpty(endValue)) {
+            try {
+                result.add(Double.parseDouble(startValue));
+                result.add(Double.parseDouble(endValue));
+            } catch (NumberFormatException e) {
+                result.add(DimensionHelper.parseTimeRangeValue(startValue));
+                result.add(DimensionHelper.parseTimeRangeValue(endValue));
+            }
+        } else if (dimensionInfo.getPresentation() == DimensionPresentation.LIST
                 || (dimensionInfo.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL
                         && dimensionInfo.getResolution() == null)) {
             final UniqueVisitor uniqueVisitor = new UniqueVisitor(dimensionInfo.getAttribute());

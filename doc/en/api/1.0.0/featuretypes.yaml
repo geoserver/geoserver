@@ -421,6 +421,16 @@ paths:
                       {
                         "@key": "dirName",
                         "$": "DS_poi_poi"
+                      },
+                      {
+                        "@key": "time",
+                        "dimensionInfo": {
+                          "enabled": true,
+                          "attribute": "time",
+                          "presentation": "DISCRETE_INTERVAL",
+                          "startValue": "2020-05-01T00:00:00Z",
+                          "endValue": "2021-06-01T00:00:00Z"
+                        }
                       }
                     ]
                   },
@@ -538,8 +548,11 @@ paths:
                             <entry key="cacheAgeMax">3000</entry>
                             <entry key="time">
                                   <dimensionInfo>
-                                          <enabled>false</enabled>
-                                          <defaultValue/>
+                                          <enabled>true</enabled>
+                                          <attribute>time</attribute>
+                                          <presentation>DISCRETE_INTERVAL</presentation>
+                                          <startValue>2020-05-01T00:00:00Z</startValue>
+                                          <endValue>2021-06-01T00:00:00Z</endValue>
                                   </dimensionInfo>
                             </entry>
                             <entry key="cachingEnabled">true</entry>

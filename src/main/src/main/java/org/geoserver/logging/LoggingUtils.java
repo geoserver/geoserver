@@ -32,7 +32,7 @@ import org.vfny.geoserver.global.ConfigurationException;
  * bridge).
  *
  * <p>To troubleshoot use {@code org.apache.logging.log4j.simplelog.StatusLogger.level=DEBUG}, or
- * adjust {@code log4j2.xml} file &lt;Configuration status=&quote;trace&quote;&gt;.
+ * adjust {@code log4j2.xml} file {@code <Configuration status="trace">}.
  *
  * @see org.geoserver.config.LoggingInfo
  */
@@ -47,10 +47,20 @@ public class LoggingUtils {
      */
     public static final String RELINQUISH_LOG4J_CONTROL = "RELINQUISH_LOG4J_CONTROL";
 
-    // public static String loggingLocation;
-
-    /** Value of loggingRedirection established by {@link LoggingStartupContextListener}. */
+    /** Logging redirection value established by {@link LoggingStartupContextListener}. */
     static boolean relinquishLog4jControl = false;
+
+    /**
+     * Property used to enable update of built-in logging profiles on startup.
+     *
+     * <p>Use {@code -DUPDATE_BUILT_IN_LOGGING_PROFILES=true} to allow GeoServer to update built-in
+     * logging profiles during startup.
+     */
+    public static final String UPDATE_BUILT_IN_LOGGING_PROFILES =
+            "UPDATE_BUILT_IN_LOGGING_PROFILES";
+
+    /** Logging profile update policy established by {@link LoggingStartupContextListener}. */
+    static boolean updateBuiltInLoggingProfiles = false;
 
     /**
      * Property used override Log4J default, and force use of another logging framework.

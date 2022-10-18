@@ -9,13 +9,21 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.regex.Pattern.DOTALL;
 import static org.geoserver.logging.GeoServerXMLConfiguration.attributeGet;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.io.FileUtils;
@@ -57,6 +65,87 @@ public class LoggingStartupContextListenerTest {
     @AfterClass
     public static void reset() {
         Locale.setDefault(systemLocale);
+    }
+
+    @Test
+    public void testUpdateBuiltInLoggingProfile() throws Exception {
+
+        final File TARGET_DIR = new File("./target");
+        final File LOGS_DIR = new File(TARGET_DIR, "logs");
+        final File DEFAULT_LOGGING_FILE = new File(LOGS_DIR, "DEFAULT_LOGGING.xml");
+
+        FileUtils.deleteQuietly(LOGS_DIR);
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(TARGET_DIR);
+
+        // make it copy the log files
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
+        assertTrue("DEFAULT_LOGGING.xml created", DEFAULT_LOGGING_FILE.exists());
+
+        // customize with a comment
+        try (FileWriter fileWriter = new FileWriter(DEFAULT_LOGGING_FILE, true);
+                BufferedWriter buffered = new BufferedWriter(fileWriter);
+                PrintWriter writer = new PrintWriter(buffered)) {
+            writer.println("# Hello World");
+        }
+        try (Stream<String> stream = Files.lines(Paths.get(DEFAULT_LOGGING_FILE.getPath()))) {
+            boolean found = stream.anyMatch(lines -> lines.contains("# Hello World"));
+            assertTrue("default logging customized", found);
+        }
+
+        // Use UPDATE_BUILT_IN_LOGGING_PROFILES policy to restore built-in definition
+        try {
+            LoggingUtils.updateBuiltInLoggingProfiles = true;
+
+            // update built-in DEFAULT_LOGGING.xml
+            LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
+        } finally {
+            LoggingUtils.updateBuiltInLoggingProfiles = false;
+        }
+
+        try (Stream<String> stream = Files.lines(Paths.get(DEFAULT_LOGGING_FILE.getPath()))) {
+            boolean found = stream.anyMatch(lines -> lines.contains("# Hello World"));
+            assertFalse("default logging customized", found);
+        }
+    }
+
+    @Test
+    public void testAvoidCustomizationOverwrite() throws Exception {
+        final File target = new File("./target/logs-customize");
+        File logs = new File(target, "logs");
+        FileUtils.deleteQuietly(logs);
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(target);
+        FileSystemResourceStore store = (FileSystemResourceStore) loader.getResourceStore();
+        store.setLockProvider(new MemoryLockProvider());
+
+        // make it copy the log files
+        LoggingUtils.initLogging(loader, "VERBOSE_LOGGING.xml", false, false, null);
+
+        // customize the verbose logging profile
+        File verbose = new File(logs, "VERBOSE_LOGGING.xml");
+        String xml = FileUtils.readFileToString(verbose, StandardCharsets.UTF_8);
+        String xmlUpdated = xml.replace("trace", "debug");
+        FileUtils.writeStringToFile(verbose, xmlUpdated, StandardCharsets.UTF_8);
+        long lastModified = verbose.lastModified();
+
+        // switch to that logging profile, this will generate some logs
+        LoggingUtils.initLogging(loader, "VERBOSE_LOGGING.xml", false, false, null);
+        try (TestAppender appender = TestAppender.createAppender("override-test", null)) {
+            appender.startRecording("org.geoserver.logging");
+
+            // file was not modified
+            assertEquals(lastModified, verbose.lastModified());
+
+            // two log messages, one above, one below threshold
+            Logger logger = LogManager.getLogger("org.geoserver.logging");
+            logger.debug("Should appear");
+            logger.trace("Should not appear");
+
+            appender.stopRecording("org.geoserver.logging");
+
+            // check the messages have been filtered by level as expected
+            appender.assertTrue("Should appear");
+            appender.assertFalse("Should not appear");
+        }
     }
 
     @Test
@@ -181,18 +270,41 @@ public class LoggingStartupContextListenerTest {
     @Test
     public void testInitLoggingLock() throws Exception {
 
-        final File target = new File("./target");
-        FileUtils.deleteQuietly(new File(target, "logs"));
-        GeoServerResourceLoader loader = new GeoServerResourceLoader(target);
+        final File TARGET_DIR = new File("./target");
+        final File LOGS_DIR = new File(TARGET_DIR, "logs");
+        final File DEFAULT_LOGGING_FILE = new File(LOGS_DIR, "DEFAULT_LOGGING.xml");
+
+        FileUtils.deleteQuietly(LOGS_DIR);
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(TARGET_DIR);
         FileSystemResourceStore store = (FileSystemResourceStore) loader.getResourceStore();
         store.setLockProvider(new MemoryLockProvider());
 
         // make it copy the log files
         LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
+        assertTrue("DEFAULT_LOGGING.xml created", DEFAULT_LOGGING_FILE.exists());
+
         // init once from default logging
         LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
         // init twice, here it used to lock up
         LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
+
+        try (FileWriter fileWriter = new FileWriter(DEFAULT_LOGGING_FILE, true);
+                BufferedWriter buffered = new BufferedWriter(fileWriter);
+                PrintWriter writer = new PrintWriter(buffered)) {
+            writer.println("# Hello World");
+        }
+        try (Stream<String> stream = Files.lines(Paths.get(DEFAULT_LOGGING_FILE.getPath()))) {
+            boolean found = stream.anyMatch(lines -> lines.contains("# Hello World"));
+            assertTrue("default logging customized", found);
+        }
+        try {
+            System.getProperties().put("UPDATE_BUILT_IN_LOGGING_PROFILES", "true");
+
+            // update built-in DEFAULT_LOGGING.xml
+            LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, null);
+        } finally {
+            System.getProperties().remove("UPDATE_BUILT_IN_LOGGING_PROFILES");
+        }
     }
 
     @Test

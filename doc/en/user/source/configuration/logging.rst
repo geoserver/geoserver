@@ -18,8 +18,27 @@ The GeoServer logging profiles assign logging levels to specific server operatio
   * Operational (``INFO``, ``CONFIG``) levels
   * Verbose (``DEBUG``, ``TRACE``, ``FINEST``) levels
 
-
 In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another logging library altogether).
+
+Built-in logging profiles
+-------------------------
+
+GeoServer includes several built-in logging profiles:
+
+* :download:`DEFAULT_LOGGING </../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml>`
+* :download:`GEOSERVER_DEVELOPER_LOGGING </../../../../src/main/src/main/resources/GEOSERVER_DEVELOPER_LOGGING.xml>`
+* :download:`GEOTOOLS_DEVELOPER_LOGGING </../../../../src/main/src/main/resources/GEOTOOLS_DEVELOPER_LOGGING.xml>`
+* :download:`PRODUCTION_LOGGING </../../../../src/main/src/main/resources/PRODUCTION_LOGGING.xml>`
+* :download:`QUIET_LOGGING </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>`
+* :download:`VERBOSE_LOGGING </../../../../src/main/src/main/resources/VERBOSE_LOGGING.xml>`
+
+The built-in logging profiles are installed into your data directory the first time the application is run. If you have customized (see the next section) these files and wish to restore the original contents:
+
+* Use the startup parameter ``-DUPDATE_BUILT_IN_LOGGING_PROFILES=true``, the built-in logging profiles will be checked and updated if required; or
+* Delete the file and restart GeoServer, the missing file will be restored; or
+* Copy the contents from the download links above
+
+For a description of these logging profiles see :ref:`config_globalsettings_log_profile`. Additional built-in logging profiles are supplied by installed extensions (example :download:`IMPORTER_LOGGING </../../../../src/extension/importer/core/src/main/resources/IMPORTER_LOGGING.xml>` profile is built into the importer extension).
 
 Custom logging profiles
 -----------------------
@@ -109,13 +128,15 @@ There are however a few rules to follow:
 
   * Use ``additivity="false"`` to prevent a message collected from one logger from being passed to the next.
   
-  If you end up with double log messages chances check for this common misconfiguration.
+    If you end up with double log messages chances check for this common misconfiguration.
   
   * The ``Root`` logger is last in the list and should collect everything.
 
 
 Example of console only logging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Copy built-in logging profile and customize:
 
 1. Copy an example such as :download:`QUIET_LOGGING.xml </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>` to :file:`CONSOLE_LOGGING.xml`:
 
@@ -201,7 +222,7 @@ If you wish GeoServer not to override the normal Log4J behavior you can set the 
 
   RELINQUISH_LOG4J_CONTROL=true
   
-This can be combined with ``log4j2.configurationFile`` system property to `configure Log4J externally <https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration>`__ :
+This can be combined with ``log4j2.configurationFile`` system property to `configure Log4J externally <https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration>`__ ::
 
   -DRELINQUISH_LOG4J_CONTROL=true -Dlog4j2.configurationFile=logging_configuration.xml
   

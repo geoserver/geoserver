@@ -5,7 +5,41 @@ Advanced log configuration
 
 GeoServer uses the Log4J framework for logging, which is configured by selecting a logging profile (in the :ref:`global settings <config_globalsettings_log_location>`).
 
-In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another another logging library altogether).
+The GeoServer logging profiles assign logging levels to specific server operations:
+
+* GeoServer loggers record server function and the activity of individual services.
+* GeoWebCache loggers record the activity of the tile protocol library used by GeoServer.
+* GeoTools loggers record the activity of the data access and rendering library used by GeoServer.
+* The appender ``stdout`` is setup as a Console appender sending information to standard output, based on :guilabel:`Log to Stdout` :ref:`global settings <config_globalsettings_log_stdout>`.
+* The appender ``geoserverlogfile`` is setup as a FileAppender or RollingFile appender sending information to the :guilabel:`Log location` :ref:`global settings <config_globalsettings_log_location>`.
+* Logging levels range from:
+  
+  * Failure (``FATAL``, ``ERROR``, ``WARN``) levels
+  * Operational (``INFO``, ``CONFIG``) levels
+  * Verbose (``DEBUG``, ``TRACE``, ``FINEST``) levels
+
+
+In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another logging library altogether).
+
+Built-in logging profiles
+-------------------------
+
+GeoServer includes several built-in logging profiles:
+
+* :download:`DEFAULT_LOGGING </../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml>`
+* :download:`GEOSERVER_DEVELOPER_LOGGING </../../../../src/main/src/main/resources/GEOSERVER_DEVELOPER_LOGGING.xml>`
+* :download:`GEOTOOLS_DEVELOPER_LOGGING </../../../../src/main/src/main/resources/GEOTOOLS_DEVELOPER_LOGGING.xml>`
+* :download:`PRODUCTION_LOGGING </../../../../src/main/src/main/resources/PRODUCTION_LOGGING.xml>`
+* :download:`QUIET_LOGGING </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>`
+* :download:`VERBOSE_LOGGING </../../../../src/main/src/main/resources/VERBOSE_LOGGING.xml>`
+
+The built-in logging profiles are installed into your data directory the first time the application is run. If you have customized (see the next section) these files and wish to restore the original contents:
+
+* Use the startup parameter ``-DUPDATE_BUILT_IN_LOGGING_PROFILES=true``, the built-in logging profiles will be checked and updated if required; or
+* Delete the file and restart GeoServer, the missing file will be restored; or
+* Copy the contents from the download links above
+
+For a description of these logging profiles see :ref:`config_globalsettings_log_profile`. Additional built-in logging profiles are supplied by installed extensions (example :download:`IMPORTER_LOGGING </../../../../src/extension/importer/core/src/main/resources/IMPORTER_LOGGING.xml>` profile is built into the importer extension).
 
 Custom logging profiles
 -----------------------
@@ -95,7 +129,7 @@ There are however a few rules to follow:
 
   * Use ``additivity="false"`` to prevent a message collected from one logger from being passed to the next.
   
-  If you end up with double log messages chances check for this common misconfiguration.
+    If you end up with double log messages chances check for this common misconfiguration.
   
   * The ``Root`` logger is last in the list and should collect everything.
 
@@ -103,16 +137,54 @@ There are however a few rules to follow:
 Example of console only logging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Copy :download:`QUIET_LOGGING.xml </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>`
+Copy built-in logging profile and customize:
 
-2. Add appenders for geoserver 
+1. Copy an example such as :download:`QUIET_LOGGING.xml </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>` to :file:`CONSOLE_LOGGING.xml`:
+
+2. Update the initial part of :file:`CONSOLE_LOGGING.xml` with the new name:
+   
+   .. code-block:: xml
+   
+       <?xml version="1.0" encoding="UTF-8"?>
+       <Configuration name="CONSOLE_LOGGING" status="fatal" dest="out">
+
+3. Double check the Console appender configuration:
+   
+   .. code-block:: xml
+   
+      <Appenders>
+          <Console name="stdout" target="SYSTEM_OUT">
+              <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n%"/>
+          </Console>
+      </Appenders>
+    
+3. Add appenders for geoserver (and any others you wish to track):
+
+   .. code-block:: xml
+   
+        <Logger name="org.geoserver" level="ERROR" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+        <Logger name="org.vfny.geoserver" level="ERROR" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+
+4. Double check the root logger:
+   
+   .. code-block:: xml
+   
+      <Root level="FATAL">
+          <AppenderRef ref="stdout"/>
+      </Root>
+
+5. This result provides minimal feedback to the console, only reporting when GeoServer encounters an error.
 
 Overriding the log location setup in the GeoServer configuration
 ----------------------------------------------------------------
 
 When setting up a cluster of GeoServer machines it is common to share a single data directory among all the cluster nodes.
 
-There is however a gotcha, all nodes would end up writing the logs in the same file, which would cause various kinds of troubles depending on the operating system file locking rules (a single server might be able to write, or all togheter in an uncontrolled manner resulting in an unreadable log file).
+There is however a gotcha, all nodes would end up writing the logs in the same file, which would cause various kinds of troubles depending on the operating system file locking rules (a single server might be able to write, or all together in an uncontrolled manner resulting in an unreadable log file).
 
 A common choice could be to use the machine name as a distinction, setting values such as  ``logs/geoserver_node1.log``, ``logs/geoserver_node2.log`` and so on: in this case all the log files would still be contained in the data directory and properly rotated, but each server would have its own separate log file to write on.
 
@@ -151,7 +223,7 @@ If you wish GeoServer not to override the normal Log4J behavior you can set the 
 
   RELINQUISH_LOG4J_CONTROL=true
   
-This can be combined with ``log4j2.configurationFile`` system property to `configure Log4J externally <https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration>`__ :
+This can be combined with ``log4j2.configurationFile`` system property to `configure Log4J externally <https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration>`__ ::
 
   -DRELINQUISH_LOG4J_CONTROL=true -Dlog4j2.configurationFile=logging_configuration.xml
   

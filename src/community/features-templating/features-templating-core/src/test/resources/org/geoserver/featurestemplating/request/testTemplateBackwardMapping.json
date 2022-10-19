@@ -1,0 +1,19 @@
+{
+  "features": [
+    {
+      "root": {
+        "$source": "a/b",
+        "e": "$${xpath('../b/c/d/e')}",
+        "nested": {
+          "$source": "c/d",
+          "d": "$${xpath('../b/c/d')}",
+          "nested2": {
+            "$source": "e",
+            "f": "$${xpath('../../b/e/f')}",
+            "g": "${e/f/g}"
+          }
+        }
+      }
+    }
+  ]
+}

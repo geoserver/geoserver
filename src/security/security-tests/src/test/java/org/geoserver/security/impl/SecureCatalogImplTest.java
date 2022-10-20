@@ -1151,8 +1151,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         Collection<PublishedInfo> filteredPublished =
                 Collections2.filter(publisheds, new PredicateFilter(security));
         assertEquals(4, filteredLayers.size());
-        assertEquals(0, filteredGroups.size());
-        assertEquals(4, filteredPublished.size());
+        assertEquals(2, filteredGroups.size());
+        assertEquals(6, filteredPublished.size());
         // ANON
         Iterator<LayerInfo> it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security));
         // Boolean checking the various layers

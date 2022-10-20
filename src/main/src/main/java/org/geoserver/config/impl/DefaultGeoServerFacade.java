@@ -9,8 +9,16 @@ import java.lang.reflect.Proxy;
 import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.MetadataMap;
@@ -30,9 +38,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     static final Logger LOGGER = Logging.getLogger(DefaultGeoServerFacade.class);
 
     GeoServerInfo global;
-    List<SettingsInfo> settings = new ArrayList<>();
+    SettingsInfoLookup settings = new SettingsInfoLookup();
     LoggingInfo logging;
-    List<ServiceInfo> services = new ArrayList<>();
+    ServiceInfoLookup services = new ServiceInfoLookup();
 
     GeoServer geoServer;
 
@@ -83,12 +91,8 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
 
     @Override
     public SettingsInfo getSettings(WorkspaceInfo workspace) {
-        for (SettingsInfo s : settings) {
-            if (s.getWorkspace().equals(workspace)) {
-                return ModificationProxy.create(s, SettingsInfo.class);
-            }
-        }
-        return null;
+        SettingsInfo s = settings.findByWorkspace(workspace.getId());
+        return s == null ? null : ModificationProxy.create(s, SettingsInfo.class);
     }
 
     @Override
@@ -115,7 +119,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     @Override
     public void remove(SettingsInfo s) {
         s = unwrap(s);
-        settings.remove(s);
+        settings.remove(s.getId());
     }
 
     @Override
@@ -170,37 +174,44 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
 
     @Override
     public void remove(ServiceInfo service) {
-        services.remove(service);
+        services.remove(service.getId());
     }
 
     @Override
     public <T extends ServiceInfo> T getService(Class<T> clazz) {
-        return find(clazz, null, services);
+        return getService((WorkspaceInfo) null, clazz);
     }
 
     @Override
     public <T extends ServiceInfo> T getService(WorkspaceInfo workspace, Class<T> clazz) {
-        return find(clazz, workspace, services);
+        List<ServiceInfo> wsServices = services.findByWorkspace(workspace);
+        Optional<T> found =
+                wsServices.stream()
+                        .filter(clazz::isInstance)
+                        .map(clazz::cast)
+                        .findFirst()
+                        .map(s -> ModificationProxy.create(s, clazz));
+        if (!found.isPresent()) {
+            LOGGER.log(
+                    Level.FINE,
+                    "Could not locate service of type {0} in workspace {1}, available services were {2}",
+                    new Object[] {clazz, workspace, wsServices});
+        }
+        return found.orElse(null);
     }
 
     @Override
     public <T extends ServiceInfo> T getService(String id, Class<T> clazz) {
-        for (ServiceInfo si : services) {
-            if (id.equals(si.getId())) {
-                @SuppressWarnings("unchecked")
-                T cast = (T) si;
-                return ModificationProxy.create(cast, clazz);
-            }
+        ServiceInfo serviceInfo = services.get(id);
+        if (clazz.isInstance(serviceInfo)) {
+            return ModificationProxy.create(clazz.cast(serviceInfo), clazz);
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(
-                    "Could not locate service of type "
-                            + clazz
-                            + " and id '"
-                            + id
-                            + "', available services were "
-                            + services);
+            LOGGER.log(
+                    Level.FINE,
+                    "Could not locate service of type {0} and id {1}, got {2}",
+                    new Object[] {clazz, id, serviceInfo});
         }
 
         return null;
@@ -208,23 +219,40 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
 
     @Override
     public <T extends ServiceInfo> T getServiceByName(String name, Class<T> clazz) {
-        return findByName(name, null, clazz, services);
+        return getServiceByName(name, null, clazz);
     }
 
     @Override
     public <T extends ServiceInfo> T getServiceByName(
             String name, WorkspaceInfo workspace, Class<T> clazz) {
-        return findByName(name, workspace, clazz, services);
+
+        List<ServiceInfo> wsServices = services.findByWorkspace(workspace);
+        Optional<T> found =
+                wsServices.stream()
+                        .filter(s -> name.equals(s.getName()))
+                        .filter(clazz::isInstance)
+                        .map(clazz::cast)
+                        .findFirst()
+                        .map(s -> ModificationProxy.create(s, clazz));
+
+        if (!found.isPresent() && LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(
+                    Level.FINE,
+                    "Could not locate service of type {0} in workspace {1} and name \'{2}\', available services were {3}",
+                    new Object[] {clazz, workspace, name, wsServices});
+        }
+
+        return found.orElse(null);
     }
 
     @Override
     public Collection<? extends ServiceInfo> getServices() {
-        return ModificationProxy.createList(filter(services, null), ServiceInfo.class);
+        return getServices((WorkspaceInfo) null);
     }
 
     @Override
     public Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace) {
-        return ModificationProxy.createList(filter(services, workspace), ServiceInfo.class);
+        return ModificationProxy.createList(services.findByWorkspace(workspace), ServiceInfo.class);
     }
 
     @Override
@@ -251,55 +279,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         }
     }
 
-    <T extends ServiceInfo> T find(
-            Class<T> clazz, WorkspaceInfo workspace, List<ServiceInfo> services) {
-        for (ServiceInfo si : services) {
-            if (clazz.isAssignableFrom(si.getClass()) && wsEquals(workspace, si.getWorkspace())) {
-                @SuppressWarnings("unchecked")
-                T cast = (T) si;
-                return ModificationProxy.create(cast, clazz);
-            }
-        }
-
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(
-                    "Could not locate service of type "
-                            + clazz
-                            + " in workspace "
-                            + workspace
-                            + ", available services were "
-                            + services);
-        }
-
-        return null;
-    }
-
-    <T extends ServiceInfo> T findByName(
-            String name, WorkspaceInfo workspace, Class<T> clazz, List<ServiceInfo> services) {
-        for (ServiceInfo si : services) {
-            if (name.equals(si.getName()) && wsEquals(workspace, si.getWorkspace())) {
-                @SuppressWarnings("unchecked")
-                T cast = (T) si;
-                return ModificationProxy.create(cast, clazz);
-            }
-        }
-
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(
-                    "Could not locate service of type "
-                            + clazz
-                            + " in workspace "
-                            + workspace
-                            + " and name '"
-                            + name
-                            + "', available services were "
-                            + services);
-        }
-
-        return null;
-    }
-
-    public List<ServiceInfo> filter(List<ServiceInfo> services, WorkspaceInfo workspace) {
+    public List<ServiceInfo> filter(Collection<ServiceInfo> services, WorkspaceInfo workspace) {
         List<ServiceInfo> list = new ArrayList<>();
         for (ServiceInfo si : services) {
             if (wsEquals(workspace, si.getWorkspace())) {
@@ -321,6 +301,95 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         if (OwsUtils.get(o, "id") == null) {
             String uid = new UID().toString();
             OwsUtils.set(o, "id", o.getClass().getSimpleName() + "-" + uid);
+        }
+    }
+
+    private static class SettingsInfoLookup {
+        protected ConcurrentMap<String, SettingsInfo> idMap = new ConcurrentHashMap<>();
+        protected ConcurrentMap<String, SettingsInfo> workspaceIdMap = new ConcurrentHashMap<>();
+
+        public SettingsInfo findByWorkspace(String workspaceId) {
+            return workspaceIdMap.get(workspaceId);
+        }
+
+        public void remove(String id) {
+            SettingsInfo s = idMap.remove(id);
+            if (null != s) {
+                WorkspaceInfo ws = s.getWorkspace();
+                if (ws != null) workspaceIdMap.remove(ws.getId());
+            }
+        }
+
+        public void clear() {
+            idMap.clear();
+            workspaceIdMap.clear();
+        }
+
+        public void add(SettingsInfo s) {
+            Objects.requireNonNull(s.getWorkspace());
+            Objects.requireNonNull(s.getWorkspace().getId());
+            idMap.put(s.getId(), s);
+            workspaceIdMap.put(s.getWorkspace().getId(), s);
+        }
+    }
+
+    private static class ServiceInfoLookup {
+        private static final String NULL_WORKSPACE_ID = "";
+        private Map<String, ServiceInfo> idMap = new ConcurrentHashMap<>();
+        private Map<String, Map<String, ServiceInfo>> workspaceIdMap = new ConcurrentHashMap<>();
+        // used by add/remove so remove() can clear an empty entry once all services for a given
+        // workspace are removed and avoid memory leaks
+        private Lock wsLock = new ReentrantLock();
+
+        public void add(ServiceInfo s) {
+            idMap.put(s.getId(), s);
+
+            String wsId = workspaceId(s.getWorkspace());
+            wsLock.lock();
+            try {
+                workspaceIdMap
+                        .computeIfAbsent(wsId, id -> new ConcurrentHashMap<>())
+                        .put(s.getId(), s);
+            } finally {
+                wsLock.unlock();
+            }
+        }
+
+        public void remove(String id) {
+            ServiceInfo s = idMap.remove(id);
+            if (null != s) {
+                String wsid = workspaceId(s.getWorkspace());
+                wsLock.lock();
+                try {
+                    Map<String, ServiceInfo> byWs = workspaceIdMap.get(wsid);
+                    byWs.remove(s.getId());
+                    if (byWs.isEmpty()) {
+                        // remove the entry and avoid memory leaks leaving empty maps
+                        workspaceIdMap.remove(wsid);
+                    }
+                } finally {
+                    wsLock.unlock();
+                }
+            }
+        }
+
+        public ServiceInfo get(String id) {
+            return idMap.get(id);
+        }
+
+        public void clear() {
+            idMap.clear();
+            workspaceIdMap.clear();
+        }
+
+        public List<ServiceInfo> findByWorkspace(WorkspaceInfo workspace) {
+            String workspaceId = workspaceId(workspace);
+            return new ArrayList<>(
+                    workspaceIdMap.getOrDefault(workspaceId, Collections.emptyMap()).values());
+        }
+
+        private String workspaceId(WorkspaceInfo ws) {
+            return ws == null ? NULL_WORKSPACE_ID : ws.getId();
         }
     }
 }

@@ -553,17 +553,6 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
             boolean rootAccess = canAccess(user, root);
             List<Filter> exceptions = new ArrayList<>();
 
-            // get the right ws property name
-            String wsNameProperty;
-            if (LayerGroupInfo.class.isAssignableFrom(clazz)) {
-                // resource.store.workspace.name is not applicable for layergroups
-                wsNameProperty = "workspace.name";
-            } else if (PublishedInfo.class.isAssignableFrom(clazz)) {
-                wsNameProperty = "resource.store.workspace.name";
-            } else {
-                wsNameProperty = "store.workspace.name";
-            }
-
             // workspace exceptions
             for (Map.Entry<String, SecureTreeNode> wsEntry : root.getChildren().entrySet()) {
                 String wsName = wsEntry.getKey();
@@ -595,11 +584,25 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                     }
                 }
 
+                // get the right ws property name
+                Filter wsNamePropertyFilter;
+                if (LayerGroupInfo.class.isAssignableFrom(clazz)) {
+                    // resource.store.workspace.name is not applicable for layergroups
+                    wsNamePropertyFilter = Predicates.equal("workspace.name", wsName);
+                } else if (PublishedInfo.class.isAssignableFrom(clazz)) {
+                    wsNamePropertyFilter =
+                            Predicates.or(
+                                    Predicates.equal("workspace.name", wsName),
+                                    Predicates.equal("resource.store.workspace.name", wsName));
+                } else {
+                    wsNamePropertyFilter = Predicates.equal("store.workspace.name", wsName);
+                }
+
                 Filter wsFilter = null;
                 if (rootAccess && !wsAccess) {
-                    wsFilter = Predicates.notEqual(wsNameProperty, wsName);
+                    wsFilter = Predicates.not(wsNamePropertyFilter);
                 } else if (!rootAccess && wsAccess) {
-                    wsFilter = Predicates.equal(wsNameProperty, wsName);
+                    wsFilter = wsNamePropertyFilter;
                 }
 
                 if (layerExceptions.isEmpty()) {

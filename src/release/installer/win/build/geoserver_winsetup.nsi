@@ -185,9 +185,9 @@ Var GSPassHWND
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
 
 ; ----------------------------------------------------------------------------
-; Convert NOTICE.md into an RTF file using Pandoc
+; Convert NOTICE.txt markdown into an RTF file using Pandoc
 
-  !system 'pandoc -s -f markdown -t rtf "..\source\NOTICE.md" -o license.rtf'
+  !system 'pandoc -s -f markdown -t rtf "..\source\licences\NOTICE.txt" -o license.rtf'
 
 ; ----------------------------------------------------------------------------
 ; Installer pages

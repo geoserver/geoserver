@@ -1,5 +1,5 @@
 GeoServer README
-----------------
+================
 
 For more information about the GeoServer project visit the web site at:
 

@@ -480,7 +480,7 @@
           <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
           <headerHtmlFile>${project.basedir}/target/html-template/header.html</headerHtmlFile>
           <footerHtmlFile>${project.basedir}/target/html-template/footer.html</footerHtmlFile>
-          <pegdownExtensions>TABLES,FENCED_CODE_BLOCKS</pegdownExtensions>
+          <pegdownExtensions>TABLES,FENCED_CODE_BLOCKS,AUTOLINKS,FORCELISTITEMPARA</pegdownExtensions>
           <defaultTitle>true</defaultTitle>
           <inputFileExtensions>md,txt</inputFileExtensions>
         </configuration>

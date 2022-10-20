@@ -797,8 +797,8 @@ public class Resources {
         }
 
         @Override
-        public File file() {
-            return delegate.file();
+        public File file(boolean create) {
+            return delegate.file(create);
         }
 
         @Override

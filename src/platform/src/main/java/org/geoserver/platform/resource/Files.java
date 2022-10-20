@@ -77,7 +77,7 @@ public final class Files {
 
         @Override
         public InputStream in() {
-            final File actualFile = file();
+            final File actualFile = file(false);
             if (!actualFile.exists()) {
                 throw new IllegalStateException("Cannot access " + actualFile);
             }
@@ -90,7 +90,7 @@ public final class Files {
 
         @Override
         public OutputStream out() {
-            final File actualFile = file();
+            final File actualFile = file(true);
             if (!actualFile.exists()) {
                 throw new IllegalStateException("Cannot access " + actualFile);
             }
@@ -157,12 +157,13 @@ public final class Files {
         }
 
         @Override
-        public File file() {
+        public File file(boolean create) {
             if (file.isDirectory()) {
                 throw new IllegalStateException("Cannot create file: is already a directory.");
             }
             try {
-                if (!file.exists()
+                if (create
+                        && !file.exists()
                         && !((file.getParentFile() == null
                                         || file.getParentFile().exists()
                                         || file.getParentFile().mkdirs())

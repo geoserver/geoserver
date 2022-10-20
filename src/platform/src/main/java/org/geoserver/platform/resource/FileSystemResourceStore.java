@@ -201,7 +201,7 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public InputStream in() {
-            File actualFile = file();
+            File actualFile = file(false);
             if (!actualFile.exists()) {
                 throw new IllegalStateException("File not found " + actualFile);
             }
@@ -232,7 +232,7 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public OutputStream out() {
-            final File actualFile = file();
+            final File actualFile = file(true);
             if (!actualFile.exists()) {
                 throw new IllegalStateException("Cannot access " + actualFile);
             }
@@ -297,8 +297,8 @@ public class FileSystemResourceStore implements ResourceStore {
         }
 
         @Override
-        public File file() {
-            if (!file.exists()) {
+        public File file(boolean create) {
+            if (create && !file.exists()) {
                 try {
                     File parent = file.getParentFile();
                     if (!parent.exists()) {
@@ -513,7 +513,7 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public void setContents(byte[] byteArray) throws IOException {
-            final File actualFile = file();
+            final File actualFile = file(true);
             if (!actualFile.exists()) {
                 throw new IllegalStateException("Cannot access " + actualFile);
             }

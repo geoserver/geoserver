@@ -63,7 +63,7 @@ final class NullResourceStore implements ResourceStore {
             }
 
             @Override
-            public File file() {
+            public File file(boolean create) {
                 throw new IllegalStateException("No file access to ResourceStore.EMPTY");
             }
 

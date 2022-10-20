@@ -108,9 +108,20 @@ public interface Resource {
      * <p>The resource may need to be unpacked into the GeoServer data directory prior to use. Do
      * not assume the file exists before calling this method.
      *
+     * @param create if true, the file must exist or is created.
      * @return file access to resource contents.
      */
-    File file();
+    File file(boolean create);
+
+    /**
+     * File access to resource contents. This does not create any missing file. The file may be
+     * created by calling out().
+     *
+     * @return the File path.
+     */
+    default File file() {
+        return file(false);
+    }
 
     /**
      * Directory access to resource contents.

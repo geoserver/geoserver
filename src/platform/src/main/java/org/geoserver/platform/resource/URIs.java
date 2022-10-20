@@ -76,7 +76,7 @@ public final class URIs {
         }
 
         @Override
-        public File file() {
+        public File file(boolean create) {
             return URLs.urlToFile(url);
         }
 

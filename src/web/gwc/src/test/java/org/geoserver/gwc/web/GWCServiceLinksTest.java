@@ -83,8 +83,10 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
 
             if (link.getProtocol().equals("wms")) {
                 assertTrue("version", link.getLink().contains("&version="));
+                assertTrue("service", link.getLink().contains("&service=WMS"));
             } else if (link.getProtocol().equals("wmts")) {
                 assertTrue("version", link.getLink().contains("&version="));
+                assertTrue("service", link.getLink().contains("&service=WMTS"));
             }
         }
     }

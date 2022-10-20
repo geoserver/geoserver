@@ -76,46 +76,46 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     private String createLinkWMSC(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         if ((workspaceInfo == null) && (layerInfo == null)) {
-            return "../gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
+            return "../gwc/service/wms?service=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
         }
         if ((workspaceInfo != null) && (layerInfo != null)) {
             return "../"
                     + workspaceInfo.getName()
                     + "/"
                     + layerInfo.getName()
-                    + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
+                    + "/gwc/service/wms?service=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
         }
         if ((workspaceInfo != null)) {
             return "../"
                     + workspaceInfo.getName()
-                    + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
+                    + "/gwc/service/wms?service=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
         }
 
         // workspaceInfo will be null
         return "../"
                 + layerInfo.getName()
-                + "/gwc/service/wms?services=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
+                + "/gwc/service/wms?service=WMS&version=1.1.1&request=GetCapabilities&tiled=true";
     }
 
     private String createLinkWMTS(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         if ((workspaceInfo == null) && (layerInfo == null)) {
-            return "../gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
+            return "../gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
         }
         if ((workspaceInfo != null) && (layerInfo != null)) {
             return "../"
                     + workspaceInfo.getName()
                     + "/"
                     + layerInfo.getName()
-                    + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
+                    + "/gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
         }
         if ((workspaceInfo != null)) {
             return "../"
                     + workspaceInfo.getName()
-                    + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
+                    + "/gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
         }
         return "../"
                 + layerInfo.getName()
-                + "/gwc/service/wmts?services=WMTS&version=1.1.1&request=GetCapabilities";
+                + "/gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
     }
 
     private String createLinkTMS(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {

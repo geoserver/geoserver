@@ -1,141 +1,158 @@
-               Running The GeoServer Binary Distribution
-               =========================================
+Running The GeoServer Binary Distribution
+=========================================
 
 The binary distribution of GeoServer comes with a built-in Jetty servlet
 container so that it can be run directly without the need for additional
 software.  For information on other distributions on GeoServer, please
 see the website:
 
-    http://geoserver.org
-
+https://geoserver.org
 
 In order to install and run this application, follow these steps:
 
-(0) Download and install a Java Development Kit
+1. Download and install a Java Development Kit
 
-* Download a Java Runtime Environment (Java 8 or Java 11) from:
+    * Download a Java Runtime Environment (Java 8 or Java 11) from:
 
-    http://openjdk.java.net/
-    
-     or 
+        https://adoptium.net
+      
+        or:
+      
+        http://openjdk.java.net/
+
+    * Install the JRE according to the instructions included with the release.
+
+    * Set an environment variable ``JAVA_HOME`` to the pathname of the directory
+      into which you installed the JDK.
+
+2. Download and install the GeoServer binary 
+
+    * Download a binary distribution of GeoServer from:
+
+        https://geoserver.org/download/
      
-    https://adoptopenjdk.net
+        or:
+     
+        https://sourceforge.net/projects/geoserver
 
-* Install the JRE according to the instructions included with the release.
+    * The file should be of the form:
 
-* Set an environment variable JAVA_HOME to the pathname of the directory
-  into which you installed the JDK.
+        geoserver-a.b.c-bin.zip
 
-(1) Download and install the GeoServer binary
+        Where a.b.c is the version number you are downloading.
 
-There is more help available at the GeoServer home page (http://geoserver.org) 
+    * Unpack the binary distribution into a convenient location so that the
+      distribution resides in its own directory (conventionally named
+      ``geoserver``).  For the purposes of the remainder of this document,
+      the symbolic name ``GEOSERVER_HOME`` is used to refer to the directory
+      where GeoServer resides.
 
-* Download a binary distribution of GeoServer from:
+    There is more help available at the GeoServer home page: https://geoserver.org
 
-    http://geoserver.org/download/
-     or
-    http://sourceforge.net/projects/geoserver
+3. Start Up GeoServer
 
-  The file should be of the form:
+    There are two techniques by which GeoServer can be started:
 
-    geoserver-a.b.c-bin.zip
+    Use an environment variable:
+   
+    * Set an environment variable ``GEOSERVER_HOME`` to the path of the directory
+      into which you have installed GeoServer.
+     
+    * Windows terminal command:
+     
+        ```bash
+        %GEOSERVER_HOME%\bin\startup
+        ```
+   
+    * Linux shell command:
+   
+        ```bash
+        $GEOSERVER_HOME/bin/startup.sh
+        ```
 
-  where a.b.c is the version number you are downloading
+    Modify your current working directory:
+   
+    * Windows terminal command: 
+     
+        ```bash
+        cd %GEOSERVER_HOME%\bin
+        startup
+        ```    
+     
+    * Unix shell command:
+      
+        ```bash
+        cd $GEOSERVER_HOME/bin
+        ./startup.sh
+        ```
 
-* Unpack the binary distribution into a convenient location so that the
-  distribution resides in its own directory (conventionally named
-  "geoserver").  For the purposes of the remainder of this document,
-  the symbolic name GEOSERVER_HOME is used to refer to the directory
-  where GeoServer resides.
+    After startup, the default web administration tool included with GeoServer 
+    will be available by browsing:
+   
+    http://localhost:8080/geoserver
 
+4. Shut Down GeoServer
 
-(2) Start Up GeoServer
+    There are two techniques by which GeoServer can be stopped:
 
-There are two techniques by which GeoServer can be started:
+    Use an environment variable:
+    
+    * Set an environment variable ``GEOSERVER_HOME`` to the path of the directory
+      into which you have installed GeoServer.
+      
+    * Windows terminal command:
+      
+        ```bash
+        %GEOSERVER_HOME%\bin\shutdown
+        ```
 
-* Use an environment variable:
-  - Set an environment variable GEOSERVER_HOME to the path of the directory
-    into which you have installed GeoServer.
-  - Execute the shell command:
+    * Linux shell command:
+    
+        ```bash
+        $GEOSERVER_HOME/bin/shutdown.sh
+        ````
 
-      Windows:
-      %GEOSERVER_HOME%\bin\startup
+    Modify your current working directory:
+    
+    * Windows terminal command:
+      
+        ```bash
+        cd %GEOSERVER_HOME%\bin
+        shutdown
+        ```
 
-      UNIX:
-      $GEOSERVER_HOME/bin/startup.sh
+    * Linux shell command:
+    
+        ```bash
+        cd $GEOSERVER_HOME/bin
+        ./shutdown.sh
+        ````
 
-* Modify your current working directory:
-  - Execute the following shell commands:
+5. Troubleshooting
 
-      Windows:
-      cd %GEOSERVER_HOME%\bin
-      startup
+    There are two common problems encountered when attempting to use the binary
+    distribution of GeoServer:
 
-      UNIX:
-      cd $GEOSERVER_HOME/bin
-      ./startup.sh
+    * Another web server (or other process) is already using port 8080.  This
+      is the default HTTP port that GeoServer attempts to bind to at startup.
+      
+        To change this port, open the file: ``$GEOSERVER_HOME/start.ini``
 
-After startup, the default web administration tool included with GeoServer 
-will be available by browsing:
+        Search for ``jetty.port`` or ``8080``. Change this to a port that isn't
+        in use, but is greater than ``1024`` (such as ``8090``).  Save this file and
+        restart GeoServer.
+      
+        Access GeoServer on the new port: ``http://localhost:####`` (where #### is the new port).
 
-      http://localhost:8080/geoserver
-
-(3) Shut Down GeoServer
-
-There are two techniques by which GeoServer can be stopped:
-
-* Use an environment variable:
-  - Set an environment variable GEOSERVER_HOME to the path of the directory
-    into which you have installed GeoServer.
-  - Execute the shell command:
-
-      Windows:
-      %GEOSERVER_HOME%\bin\shutdown
-
-      UNIX:
-      $GEOSERVER_HOME/bin/shutdown.sh
-
-* Modify your current working directory:
-  - Execute the following shell commands:
-
-      Windows:
-      cd %GEOSERVER_HOME%\bin
-      shutdown
-
-      UNIX:
-      cd $GEOSERVER_HOME/bin
-      ./shutdown.sh
-
-
-(4) Troubleshooting
-
-There are two common problems encountered when attempting to use the binary
-distribution of GeoServer:
-
- 1) Another web server (or other process) is already using port 8080.  This
-    is the default HTTP port that GeoServer attempts to bind to at startup.
-    To change this port, open the file:
-
-       $GEOSERVER_HOME/start.ini
-
-    and search for 'jetty.port' or '8080'.  Change it to a port that isn't
-    in use, but is greater than 1024 (such as 8090).  Save this file and
-    restart GeoServer.
-    Make sure, of course, that you try to access GeoServer on the new port:
-
-       http://localhost:####
-
-    where #### is the new port.
-
- 2) The "localhost" address can't be found.  This could happen if you're
-    behind a proxy.  If so, make sure the proxy configuration for your
-    browser knows to not travel through the proxy to access the "localhost"
-    address.  Please see your browser's documentation for how to check this.
+    * The "localhost" address can't be found.  This could happen if you're
+      behind a proxy.  If so, make sure the proxy configuration for your
+      browser knows to not travel through the proxy to access the "localhost"
+      address.  Please see your browser's documentation for how to check this.
 
 
-(5) Further information
+6. Further information
 
-For more information about configuring and running GeoServer, please see the 
-GeoServer documentation:
+    For more information about configuring and running GeoServer, please see the 
+    GeoServer documentation:
 
-    https://docs.geoserver.org
+        https://docs.geoserver.org

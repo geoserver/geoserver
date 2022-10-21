@@ -589,11 +589,19 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 if (LayerGroupInfo.class.isAssignableFrom(clazz)) {
                     // resource.store.workspace.name is not applicable for layergroups
                     wsNamePropertyFilter = Predicates.equal("workspace.name", wsName);
+                } else if (LayerInfo.class.isAssignableFrom(clazz)) {
+                    wsNamePropertyFilter =
+                            Predicates.equal("resource.store.workspace.name", wsName);
                 } else if (PublishedInfo.class.isAssignableFrom(clazz)) {
                     wsNamePropertyFilter =
                             Predicates.or(
-                                    Predicates.equal("workspace.name", wsName),
-                                    Predicates.equal("resource.store.workspace.name", wsName));
+                                    Predicates.and(
+                                            Predicates.isInstanceOf(LayerInfo.class),
+                                            Predicates.equal(
+                                                    "resource.store.workspace.name", wsName)),
+                                    Predicates.and(
+                                            Predicates.isInstanceOf(PublishedInfo.class),
+                                            Predicates.equal("workspace.name", wsName)));
                 } else {
                     wsNamePropertyFilter = Predicates.equal("store.workspace.name", wsName);
                 }

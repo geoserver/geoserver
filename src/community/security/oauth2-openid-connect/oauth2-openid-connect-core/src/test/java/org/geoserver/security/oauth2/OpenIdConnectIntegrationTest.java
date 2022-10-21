@@ -141,6 +141,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         filterConfig.setCheckTokenEndpointUrl(authService + "/userinfo");
         filterConfig.setLoginEndpoint("/j_spring_oauth2_openid_connect_login");
         filterConfig.setLogoutEndpoint("/j_spring_oauth2_openid_connect_logout");
+        filterConfig.setLogoutUri(authService + "/endSession");
         filterConfig.setScopes("openid profile email phone address");
         filterConfig.setEnableRedirectAuthenticationEntryPoint(true);
         filterConfig.setPrincipalKey("email");
@@ -238,6 +239,40 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("CPURR33RUz-secret", oauth2Context.getAccessToken().getValue());
         assertNotNull(auth);
         assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
+    }
+
+    @Test
+    public void testIdTokenHintInEndSessionURI() throws Exception {
+        GeoServerSecurityManager manager = getSecurityManager();
+        OpenIdConnectFilterConfig config =
+                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect");
+        config.setSendClientSecret(true);
+        manager.saveFilter(config);
+
+        // make believe we authenticated and got the redirect back, with the code
+        MockHttpServletRequest codeRequest = createRequest("web/?code=" + CODE);
+        MockHttpServletResponse codeResponse = executeOnSecurityFilters(codeRequest);
+
+        // should have authenticated and given roles, and they have been saved in the session
+        SecurityContext context =
+                new HttpSessionSecurityContextRepository()
+                        .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
+        Authentication auth = context.getAuthentication();
+        OAuth2ClientContext oauth2Context =
+                GeoServerExtensions.bean(ValidatingOAuth2RestTemplate.class)
+                        .getOAuth2ClientContext();
+        assertEquals("CPURR33RUz-secret", oauth2Context.getAccessToken().getValue());
+        assertNotNull(auth);
+        assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
+        assertNotNull(oauth2Context.getAccessToken().getAdditionalInformation());
+        assertNotNull(oauth2Context.getAccessToken().getAdditionalInformation().get("id_token"));
+
+        final String idToken =
+                (String) oauth2Context.getAccessToken().getAdditionalInformation().get("id_token");
+
+        assertEquals(
+                config.buildEndSessionUrl(idToken).toString(),
+                config.getLogoutUri() + "?id_token_hint=" + idToken);
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)

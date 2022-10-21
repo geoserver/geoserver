@@ -54,8 +54,7 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
         if (Resources.exists(file = directory.get(getFilename()))) {
             // xstream it in
             try (BufferedInputStream in = new BufferedInputStream(file.in())) {
-                XStreamPersister xp = xpf.createXMLPersister();
-                initXStreamPersister(xp, gs);
+                XStreamPersister xp = getXstreamPersister(gs);
                 return initialize(xp.load(in, getServiceClass()));
             }
         } else {
@@ -63,6 +62,25 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
             T service = createServiceFromScratch(gs);
             return initialize(service);
         }
+    }
+
+    private volatile GeoServer geoserver;
+    private volatile XStreamPersister persister;
+
+    /**
+     * Creates and initializes a new {@link XStreamPersister} only if it wasn't created before or
+     * it's been called for a different {@link GeoServer} instance, and then caches it as an
+     * instance variable; thus avoiding the overhead on each call to load(), which can be
+     * significant when the number of services is large (e.g. 3 seconds instead of 35 seconds to
+     * load about 17k service files)
+     */
+    private XStreamPersister getXstreamPersister(GeoServer gs) {
+        if (this.geoserver != gs) {
+            this.geoserver = gs;
+            this.persister = xpf.createXMLPersister();
+            initXStreamPersister(persister, gs);
+        }
+        return persister;
     }
 
     /**
@@ -112,8 +130,7 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
 
         // using resource output stream makes sure we write on a temp file and them move
         try (OutputStream out = resource.out()) {
-            XStreamPersister xp = xpf.createXMLPersister();
-            initXStreamPersister(xp, gs);
+            XStreamPersister xp = getXstreamPersister(gs);
             xp.save(service, out);
         }
     }

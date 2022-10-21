@@ -20,14 +20,17 @@ import net.sf.json.JSONSerializer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geoserver.security.oauth2.services.OpenIdConnectTokenServices;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.token.DefaultRequestEnhancer;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
@@ -118,5 +121,32 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         RoleCalculator calc = new RoleCalculator(getSecurityManager().getActiveRoleService());
         calc.addInheritedRoles(roles);
         calc.addMappedSystemRoles(roles);
+    }
+
+    @Override
+    public void logout(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication) {
+
+        String idToken = null;
+        if (request.getAttribute(OpenIdConnectAuthenticationFilter.ID_TOKEN_VALUE) != null) {
+            idToken =
+                    (String) request.getAttribute(OpenIdConnectAuthenticationFilter.ID_TOKEN_VALUE);
+        } else {
+            OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
+            if (token != null && token.getAdditionalInformation() != null) {
+                Object maybeIdToken = token.getAdditionalInformation().get("id_token");
+                if (maybeIdToken instanceof String) {
+                    idToken = (String) maybeIdToken;
+                }
+            }
+        }
+
+        final String endSessionUrl =
+                ((OpenIdConnectFilterConfig) filterConfig).buildEndSessionUrl(idToken).toString();
+        super.logout(request, response, authentication);
+
+        request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, endSessionUrl);
     }
 }

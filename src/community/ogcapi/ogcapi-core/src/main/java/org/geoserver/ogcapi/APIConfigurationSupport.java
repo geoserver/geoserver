@@ -10,13 +10,10 @@ import java.util.logging.Logger;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.format.FormatterRegistry;
+import org.geoserver.rest.RestConfiguration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
@@ -28,7 +25,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHan
 // Not @Configuration on purpose, or it will interfere with the REST API.
 // @Component is good enough to allow auto-wiring.
 @Component
-public class APIConfigurationSupport extends DelegatingWebMvcConfiguration {
+public class APIConfigurationSupport extends RestConfiguration {
 
     static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.ogcapi");
@@ -52,6 +49,7 @@ public class APIConfigurationSupport extends DelegatingWebMvcConfiguration {
         @Override
         protected Object doInvoke(Object... args) throws Exception {
             Request request = Dispatcher.REQUEST.get();
+            if (request == null) return super.doInvoke(args);
             Operation operation =
                     new Operation(
                             request.getRequest(),
@@ -90,11 +88,6 @@ public class APIConfigurationSupport extends DelegatingWebMvcConfiguration {
 
     public void setCallbacks(List<DispatcherCallback> callbacks) {
         this.callbacks = callbacks;
-    }
-
-    @Override
-    protected void addFormatters(FormatterRegistry registry) {
-        GeoServerExtensions.extensions(Converter.class).forEach(c -> registry.addConverter(c));
     }
 
     // SHARE (or move to a callback handler/list class of sort?)

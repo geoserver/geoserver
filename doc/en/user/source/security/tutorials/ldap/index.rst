@@ -4,7 +4,7 @@ Authentication with LDAP
 ========================
 
 This tutorial introduces GeoServer LDAP support and walks through the process of
-setting up authentication aganist an LDAP server. It is recommended that the 
+setting up authentication against an LDAP server. It is recommended that the 
 :ref:`security_auth_provider_ldap` section be read before proceeding.
 
 LDAP server setup
@@ -31,7 +31,7 @@ The output of which should look like the following::
 
     Server running on port 10389
 
-The following diagram illustrates the hierachy of the LDAP datatabse:
+The following diagram illustrates the hierarchy of the LDAP datatabse:
 
   .. figure:: images/acme_ldap.png
      :align: center 
@@ -91,7 +91,7 @@ Test a LDAP login
 -----------------
 
 #. Navigate to the GeoServer home page and log out of the admin account. 
-#. Login as the user "bob" with the with the password "secret".
+#. Login as the user "bob" with the password "secret".
 
    .. figure:: images/ldap6.jpg
       :align: center
@@ -105,7 +105,7 @@ Map LDAP groups to GeoServer roles
 When using LDAP for authentication GeoServer maps LDAP groups to GeoServer roles
 by prefixing the group name with ``ROLE_`` and converting the result to 
 uppercase. For example bob and alice are members of the ``user`` group so after 
-authentication they would be assigned a role named ``ROLE_USER``. Similarily 
+authentication they would be assigned a role named ``ROLE_USER``. Similarly 
 bill is a member of the ``admin`` group so he would be assigned a role named 
 ``ROLE_ADMIN``. 
 
@@ -198,9 +198,9 @@ If we want Hierarchical groups working we need:
 
 #. Click the ``ldaprs`` role service item under the  ``Role Services`` section.
 
-#. Select ``ROLE_ADMIN`` from the ``Administrator role`` combobox.
+#. Select ``ROLE_ADMIN`` from the ``Administrator role`` combo-box.
 
-#. Select ``ROLE_ADMIN`` from the ``Group administrator role`` combobox.
+#. Select ``ROLE_ADMIN`` from the ``Group administrator role`` combo-box.
 
 #. Save again.
 

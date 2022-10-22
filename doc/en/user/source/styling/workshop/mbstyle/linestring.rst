@@ -17,7 +17,7 @@ Review of line symbology:
 
 * SLD uses a **LineSymbolizer** to record how the shape of a line is drawn. The primary characteristic documented is the **Stroke** used to draw each segment between vertices.
 
-* Labeling of line work is anchored to the mid-point of the line. GeoServer provides a vendor option to allow label rotation aligned with line segments.
+* Labeling of line work is anchored to the midpoint of the line. GeoServer provides a vendor option to allow label rotation aligned with line segments.
 
 For our exercises we are going to be using simple MBStyle documents, often consisting of a single layer, in order to focus on the properties used for line symbology.
 
@@ -99,7 +99,7 @@ A line layer is represented by the :kbd:`line` type.
         </sld:NamedLayer>
       </sld:StyledLayerDescriptor>
 
-We only specified the line layer, so all of the boilerplate arround was generated for us.
+We only specified the line layer, so all of the boilerplate around was generated for us.
 
 #. Additional properties cane be used fine-tune appearance. Use **line-color** to specify the colour and width of the line.
 
@@ -348,7 +348,7 @@ This is also our first example making use of a dynamic style (where a value come
         ]
       }
      
-#. The **symbol-placement** property is used to set how the label is placed with respect to the line.  By default it is :kbd:`point` which casues the label to be placed next to the midpoint as it would be for a point feature.  When set to :kbd:`line` it is placed along the line instead.  **text-offset** specifies how far from the anchor the label should be placed, in both the x and y directions.
+#. The **symbol-placement** property is used to set how the label is placed with respect to the line.  By default it is :kbd:`point` which causes the label to be placed next to the midpoint as it would be for a point feature.  When set to :kbd:`line` it is placed along the line instead.  **text-offset** specifies how far from the anchor the label should be placed, in both the x and y directions.
   
    .. code-block:: json
       :emphasize-lines: 20,21

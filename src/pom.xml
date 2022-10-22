@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.22-SNAPSHOT</version>
+  <version>2.23-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>GeoServer</name>
   <inceptionYear>2006</inceptionYear>
@@ -88,9 +88,9 @@
   </distributionManagement>
 
   <properties>
-    <gs.version>2.22-SNAPSHOT</gs.version>
-    <gt.version>28-SNAPSHOT</gt.version>
-    <gwc.version>1.22-SNAPSHOT</gwc.version>
+    <gs.version>2.23-SNAPSHOT</gs.version>
+    <gt.version>29-SNAPSHOT</gt.version>
+    <gwc.version>1.23-SNAPSHOT</gwc.version>
     <jts.version>1.19.0</jts.version>
     <spring.version>5.2.22.RELEASE</spring.version>
     <spring.security.version>5.1.13.RELEASE</spring.security.version>
@@ -101,8 +101,8 @@
     <wicket.version>7.18.0</wicket.version>
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.13</httpclient.version>
-    <imageio-ext.version>1.4.6</imageio-ext.version>
-    <jaiext.version>1.1.23</jaiext.version>
+    <imageio-ext.version>1.4.7</imageio-ext.version>
+    <jaiext.version>1.1.24</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
     <jvm.opts></jvm.opts>
@@ -121,7 +121,7 @@
     <image.tests>true</image.tests>
     <interactive.image>false</interactive.image>
     <windows.leniency>true</windows.leniency>
-    <gf.version>3.5.0</gf.version>
+    <gf.version>3.6.0</gf.version>
     <jasypt.version>1.9.2</jasypt.version>
     <hibernate-version>3.6.9.Final</hibernate-version>
     <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
@@ -135,7 +135,7 @@
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <jackson1.version>1.9.13</jackson1.version>
     <jackson2.version>2.13.2</jackson2.version>
-    <jackson2.databind.version>2.13.2.1</jackson2.databind.version>
+    <jackson2.databind.version>2.13.4.1</jackson2.databind.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <marlin.version>0.9.3</marlin.version>
     <postgresql.jdbc.version>42.4.1</postgresql.jdbc.version>
@@ -162,6 +162,7 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- GeoServer -->
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-platform</artifactId>
@@ -262,6 +263,8 @@
         <artifactId>gs-kml</artifactId>
         <version>${gs.version}</version>
       </dependency>
+
+      <!-- GeoTools -->
       <dependency>
         <groupId>org.geotools</groupId>
         <artifactId>gt-geotools</artifactId>
@@ -554,17 +557,12 @@
         <version>${gt.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.jdom</groupId>
-        <artifactId>jdom2</artifactId>
-        <version>2.0.6.1</version>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-vector-mosaic</artifactId>
+        <version>${gt.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>2.3.1</version>
-      </dependency>
-
+      <!-- GeoWebCache: embeded -->
       <dependency>
         <groupId>org.geowebcache</groupId>
         <artifactId>gwc-core</artifactId>
@@ -675,15 +673,32 @@
         <artifactId>gwc-aws-s3</artifactId>
         <version>${gwc.version}</version>
       </dependency>
+
+      <!-- Third-party -->
       <dependency>
         <groupId>com.oracle.database.jdbc</groupId>
         <artifactId>ojdbc8</artifactId>
         <version>${oracle.jdbc.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.genericdao</groupId>
+        <artifactId>search-jpa-hibernate</artifactId>
+        <version>${hibernate-generic-dao-version}</version>
+      </dependency>
+      <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
         <version>${mysql.jdbc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jdom</groupId>
+        <artifactId>jdom2</artifactId>
+        <version>2.0.6.1</version>
       </dependency>
       <dependency>
         <groupId>org.wkb4j</groupId>
@@ -716,6 +731,27 @@
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-integration</artifactId>
         <version>1.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate-version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${hibernate-version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernatespatial</groupId>
+        <artifactId>hibernate-spatial</artifactId>
+        <version>${hibernate-spatial-version}</version>
+        <!-- fork: https://github.com/geosolutions-it/hibernate-spatial -->
+      </dependency>
+      <dependency>
+        <groupId>org.hibernatespatial</groupId>
+        <artifactId>hibernate-spatial-h2-geodb</artifactId>
+        <version>${hibernate-spatial-version}</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
@@ -755,7 +791,7 @@
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>1.4.1</version>
+        <version>1.5.1</version>
       </dependency>
       <dependency>
         <groupId>lucene</groupId>
@@ -790,7 +826,7 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.3.3</version>
+        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -848,6 +884,11 @@
         <version>4.2</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.10.0</version>
+      </dependency>
+      <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
         <version>1.4</version>
@@ -861,11 +902,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
         <version>1.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-text</artifactId>
-        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>com.jayway.jsonpath</groupId>
@@ -999,16 +1035,6 @@
         <artifactId>spring-ldap-test</artifactId>
         <version>2.3.2.RELEASE</version>
       </dependency>
-
-      <!--
-   <dependency>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-core</artifactId>
-    <version>${spring.security.version}</version>
-    <classifier>tests</classifier>
-    <scope>test</scope>
-   </dependency>
--->
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-web</artifactId>
@@ -1039,6 +1065,8 @@
         <artifactId>bcprov-jdk15on</artifactId>
         <version>1.69</version>
       </dependency>
+
+      <!-- wicket framework -->
       <dependency>
         <groupId>org.apache.wicket</groupId>
         <artifactId>wicket-core</artifactId>
@@ -1069,6 +1097,7 @@
         <artifactId>wicketstuff-select2</artifactId>
         <version>${wicket.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.mapfish.print</groupId>
         <artifactId>print-lib</artifactId>
@@ -1145,6 +1174,7 @@
         <groupId>net.sf.json-lib</groupId>
         <artifactId>json-lib</artifactId>
         <version>2.4.2-geoserver</version>
+        <!-- fork: https://github.com/geosolutions-it/Json-lib -->
       </dependency>
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
@@ -1198,14 +1228,14 @@
         <artifactId>activation</artifactId>
         <version>1.1</version>
       </dependency>
+
+      <!-- restlet: legacy -->
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet</artifactId>
         <version>1.0.8</version>
-
         <!-- Classifier selects a hacked JAR where we've removed a class we don't need and which has a security vulnerability.  This should be removed when we update to A current version of Restlet (2.2 or later)-->
         <classifier>noobjrep</classifier>
-
       </dependency>
       <dependency>
         <groupId>org.restlet</groupId>
@@ -1213,7 +1243,6 @@
         <version>1.0.8</version>
         <scope>provided</scope>
       </dependency>
-
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet.ext.fileupload</artifactId>
@@ -1239,6 +1268,7 @@
         <artifactId>com.noelios.restlet.ext.servlet</artifactId>
         <version>1.0.8</version>
       </dependency>
+
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-core</artifactId>
@@ -1311,9 +1341,6 @@
         <artifactId>jms-api</artifactId>
         <version>1.1-rev-1</version>
       </dependency>
-      <!-- Needed to solve NamespaceHandler class org.apache.xbean.spring.context.v2.XBeanNamespaceHandler 
-	  for namespace [http://activemq.apache.org/schema/core] not found ClassNotFoundException: 
-	  org.apache.xbean.spring.context.v2.XBeanNamespaceHandler<br> ref: http://codebrane.com/blog/?p=823 -->
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-spring</artifactId>
@@ -1324,6 +1351,10 @@
             <groupId>commons-logging</groupId>
           </exclusion>
         </exclusions>
+        <!-- Needed to solve NamespaceHandler class org.apache.xbean.spring.context.v2.XBeanNamespaceHandler 
+             for namespace [http://activemq.apache.org/schema/core] not found ClassNotFoundException: 
+             org.apache.xbean.spring.context.v2.XBeanNamespaceHandler
+        -->
       </dependency>
       <dependency>
         <groupId>it.geosolutions</groupId>
@@ -1366,7 +1397,7 @@
       <dependency>
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
-        <version>1.14.2</version>
+        <version>1.15.3</version>
       </dependency>
       <dependency>
         <groupId>com.github.svenmeier.wicket-dnd</groupId>
@@ -1501,45 +1532,45 @@
   </dependencies>
 
   <repositories>
+    <!-- Please do not add additional repositories as it slows the build down for everyone -->
     <repository>
       <releases>
         <enabled>true</enabled>
       </releases>
-      <!-- contains release (including third-party-dependences)               -->
-      <!-- Restlet maven Repository (http://maven.restlet.org)                             -->
-      <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
       <id>osgeo-releases</id>
       <name>OSGeo Nexus Release Repository</name>
       <url>https://repo.osgeo.org/repository/release/</url>
+      <!-- Access to OSGeo release repos:                                                  -->
+      <!-- geotools-releases                                                               -->
+      <!-- Geoserver-releases                                                              -->
+      <!-- geonetwork-releases                                                             -->
+      <!--                                                                                 -->
+      <!-- Cache of third-party repos (filtered by package):                               -->
+      <!-- Restlet maven Repository (http://maven.restlet.org)                             -->
+      <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
+      <!-- geosolutions (https://maven.geo-solutions.it/)                                  -->
+      <!--                                                                                 -->
+      <!-- How to use:                                                                     -->
+      <!-- https://wiki.osgeo.org/wiki/SAC:Repo                                            -->
+      <!-- https://docs.geotools.org/latest/developer/procedures/add.html                  -->
     </repository>
 
     <repository>
       <releases>
         <enabled>false</enabled>
       </releases>
-      <!-- contains snapshots               -->
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
       <id>osgeo-snapshots</id>
       <name>OSGeo Nexus Snapshot Repository</name>
       <url>https://repo.osgeo.org/repository/snapshot/</url>
+      <!-- Access to OSGeo snapshots repositories                                          -->
     </repository>
 
-    <repository>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>geosolutions</id>
-      <name>geosolutions repository</name>
-      <url>https://maven.geo-solutions.it/</url>
-    </repository>
   </repositories>
 
   <build>
@@ -1635,18 +1666,49 @@
 
     <pluginManagement>
       <plugins>
+        <!-- core org.apache.maven.plugins -->
         <plugin>
-          <artifactId>maven-war-plugin</artifactId>
-          <version>3.3.2</version>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.10.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
           <version>3.3.0</version>
         </plugin>
         <plugin>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <version>2.10</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.10.3</version>
+        </plugin>
+        <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.3.0</version>
         </plugin>
+        <plugin>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.2.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.3.2</version>
+        </plugin>
+
+        <!-- third-party plugins -->
         <plugin>
           <groupId>com.ruleoftech</groupId>
           <artifactId>markdown-page-generator-plugin</artifactId>
@@ -1659,9 +1721,7 @@
 
       <!-- compilation -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -1674,9 +1734,7 @@
 
       <!-- resources -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
         <configuration>
           <encoding>UTF-8</encoding>
         </configuration>
@@ -1685,7 +1743,6 @@
       <!-- unit testing -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.2</version>
         <configuration>
           <runOrder>alphabetical</runOrder>
           <source>1.8</source>
@@ -1714,7 +1771,6 @@
       <!-- artifact assembly -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.2.0</version>
         <configuration>
           <descriptors>
             <descriptor>release/war.xml</descriptor>
@@ -1763,6 +1819,7 @@
             <descriptor>release/ext-sldservice.xml</descriptor>
             <descriptor>release/ext-geofence.xml</descriptor>
             <descriptor>release/ext-geofence-server.xml</descriptor>
+            <descriptor>release/ext-geofence-wps.xml</descriptor>
             <descriptor>release/ext-authkey.xml</descriptor>
             <descriptor>release/ext-web-resource.xml</descriptor>
             <descriptor>release/ext-params-extractor.xml</descriptor>
@@ -1781,7 +1838,6 @@
       <!-- eclipse ide integration -->
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.10</version>
         <configuration>
           <!--downloadSources>true</downloadSources-->
           <additionalProjectnatures>
@@ -1792,7 +1848,6 @@
 
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -1820,9 +1875,7 @@
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.2.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -1880,7 +1933,6 @@
       <!-- ======================================================= -->
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
         <configuration>
           <source>1.8</source>
           <version>false</version>
@@ -2021,7 +2073,6 @@
       <!-- ======================================================= -->
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
         <configuration>
           <source>1.8</source>
           <version>false</version>
@@ -2134,8 +2185,33 @@
   </reporting>
 
   <profiles>
-    <!-- uml graphing -->
     <profile>
+      <!-- optional:geosolutions repo when resolving dependencies      -->
+      <!--                                                             -->
+      <!-- osgeo-releases repo already caches:                         -->
+      <!--   ^/com/oracle/.*                                           -->
+      <!--   ^/it/geosolutions/jaiext/.*                               -->
+      <!--   ^/it/geosolutions/imageio-ext/.*                          -->
+      <!--   ^/me/steinborn/libdeflate-iava-core/.*                    -->
+      <!--   ^/opendap/.*                                              -->
+      <!--   ^/org/hibernatespatial/.*                                 -->
+      <!--   ^/org/libjpegturbo/.*                                     -->
+      <!--   ^/sf/json-lib/.*                                          -->
+      <id>geosolutions</id>
+      <repositories>
+        <repository>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <id>geosolutions</id>
+          <name>geosolutions repository</name>
+          <url>https://maven.geo-solutions.it/</url>
+        </repository>
+      </repositories>
+    </profile>
+
+    <profile>
+      <!-- uml graphing -->
       <id>uml</id>
       <activation>
         <property>
@@ -2214,7 +2290,7 @@
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <tasks>
+                  <target>
                     <loadproperties prefix="gt">
                       <zipentry name="META-INF/MANIFEST.MF" zipfile="target/dependency/gt-main-${gt.version}.jar"></zipentry>
                     </loadproperties>
@@ -2234,7 +2310,7 @@
                         <filter token="build.hudsonId" value="${build.hudsonId}"></filter>
                       </filterset>
                     </copy>
-                  </tasks>
+                  </target>
                 </configuration>
               </execution>
             </executions>
@@ -2427,9 +2503,7 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
             <configuration>
               <fork>false</fork>
               <compilerArgs>
@@ -2465,9 +2539,7 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
             <configuration>
               <fork>true</fork>
               <compilerArgs combine.children="append">

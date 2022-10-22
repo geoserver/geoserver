@@ -37,6 +37,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
@@ -48,6 +49,7 @@ import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xsd.Parser;
@@ -82,6 +84,13 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static final String VERSION = WCS20Const.CUR_VERSION;
 
     protected static final QName UTM11 = new QName(MockData.WCS_URI, "utm11", MockData.WCS_PREFIX);
+
+    /**
+     * Small dataset that sits slightly across the dateline, enough to trigger the "across the
+     * dateline" machinery
+     */
+    protected static final QName DATELINE_CROSS =
+            new QName(MockData.WCS_URI, "dateline_cross", MockData.WCS_PREFIX);
 
     /**
      * Small value for comparaison of sample values. Since most grid coverage implementations in
@@ -232,6 +241,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         testData.setUpWcs10RasterLayers();
         testData.setUpWcs11RasterLayers();
         testData.setUpRasterLayer(UTM11, "/utm11-2.tiff", null, null, WCSTestSupport.class);
+        testData.setUpRasterLayer(
+                DATELINE_CROSS, "/datelinecross.tif", null, null, WCSTestSupport.class);
     }
 
     @Override
@@ -252,6 +263,47 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("wcsgs", "http://www.geoserver.org/wcsgs/2.0");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
+
+        // alter the native BBOX of one raster for at least a pixel to make sure the declared
+        // bounds are used, but also fitted to the grid to avoid resampling.
+        // Compared to the native bbox we are expanding by almost one pixel on both the west and
+        // east sides, and shrinking by one pixel on both the north and south ones:
+        //          1 pixel
+        //             ↓
+        //  1 pixel ←-   -→ 1 pixel
+        //             ↑
+        //          1 pixel
+        CoverageInfo utm11 = getCatalog().getCoverageByName(getLayerId(UTM11));
+        if (utm11 != null) {
+            utm11.setNativeBoundingBox(
+                    new ReferencedEnvelope(
+                            440600.0, 471700.0, 3720700.0, 3751000.0, utm11.getNativeCRS()));
+            getCatalog().save(utm11);
+        }
+
+        // not reprojected, but rotated
+        CoverageInfo cad = getCatalog().getCoverageByName(getLayerId(MockData.ROTATED_CAD));
+        if (cad != null) {
+            cad.setNativeBoundingBox(
+                    new ReferencedEnvelope(1402800, 1402900, 5000000, 5000100, cad.getNativeCRS()));
+            getCatalog().save(cad);
+        }
+
+        // not reprojected, originally crossing the dateline
+        CoverageInfo dateline = getCatalog().getCoverageByName(getLayerId(DATELINE_CROSS));
+        if (dateline != null) {
+            dateline.setNativeBoundingBox(
+                    new ReferencedEnvelope(179.5, 180, -84.272, -82.217, dateline.getNativeCRS()));
+            getCatalog().save(dateline);
+        }
+
+        // forcing envelope + reprojection (changes the envelope, grid to world)
+        CoverageInfo usa = getCatalog().getCoverageByName(getLayerId(MockData.USA_WORLDIMG));
+        if (usa != null) {
+            usa.setSRS("EPSG:3857");
+            usa.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+            getCatalog().save(usa);
+        }
     }
 
     @Override
@@ -323,6 +375,26 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 "1",
                 "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/cubic'])",
                 dom);
+
+        // check that the bbox in the utm11 layer is reported as configured
+        String utm11Bbox =
+                "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='wcs__utm11']/ows:BoundingBox";
+        assertXpathEvaluatesTo("440562.0 3720758.0", utm11Bbox + "/ows:LowerCorner", dom);
+        assertXpathEvaluatesTo("471794.0 3750966.0", utm11Bbox + "/ows:UpperCorner", dom);
+
+        // check that the bbox in the cad layer is reported as configured
+        String cadPath =
+                "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='wcs__RotatedCad']/ows:BoundingBox";
+        assertXpathEvaluatesTo("1402800.0 5000000.0", cadPath + "/ows:LowerCorner", dom);
+        assertXpathEvaluatesTo("1402900.0 5000100.0", cadPath + "/ows:UpperCorner", dom);
+
+        // check that the bbox in the usa layer has been reprojected
+        String usaPath =
+                "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='cdf__usa']/ows:BoundingBox";
+        assertXpathEvaluatesTo(
+                "-1.457024062347863E7 6199732.713729635", usaPath + "/ows:LowerCorner", dom);
+        assertXpathEvaluatesTo(
+                "-1.3790593336628266E7 7197101.83024677", usaPath + "/ows:UpperCorner", dom);
     }
 
     /**
@@ -389,7 +461,9 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         } else {
             tolerance = EPS;
         }
-        assertTrue("The 2 envelopes aren't equal", expected.equals(actual, tolerance, false));
+        assertTrue(
+                "The 2 envelopes aren't equal, expected " + expected + " but got " + actual,
+                expected.equals(actual, tolerance, false));
     }
 
     /**

@@ -30,7 +30,7 @@ Tomcat Hardening
 ----------------
 Hide the Tomcat version in error responses and its error details.
 
-To remove the Tomcat version, create following file with emtpy parameters
+To remove the Tomcat version, create following file with empty parameters
 ::
 
  cd $CATALINA_HOME (where Tomcat binaries are installed)

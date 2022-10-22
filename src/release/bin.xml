@@ -70,9 +70,7 @@
    <directory>release/target/html</directory>
    <outputDirectory></outputDirectory>
    <includes>
-    <include>NOTICE.html</include>
     <include>README.html</include>
-    <include>RELEASE_NOTES.html</include>
     <include>RUNNING.html</include>
    </includes>
   </fileSet>
@@ -80,15 +78,16 @@
     <directory>release/target/html/licenses</directory>
     <outputDirectory>license</outputDirectory>
     <includes>
-         <include>apache-1.1.html</include>
-         <include>apache-2.0.html</include>
-         <include>epl-1.0.html</include>
-         <include>EPSG.html</include>
-         <include>GEOTOOLS_NOTICE.html</include>
-         <include>HSQL.html</include>
-         <include>LGPL.html</include>
-         <include>OGC.html</include>
-         <include>W3C.html</include>
+       <include>NOTICE.html</include>
+       <include>apache-1.1.html</include>
+       <include>apache-2.0.html</include>
+       <include>epl-1.0.html</include>
+       <include>EPSG.html</include>
+       <include>GEOTOOLS_NOTICE.html</include>
+       <include>HSQL.html</include>
+       <include>LGPL.html</include>
+       <include>OGC.html</include>
+       <include>W3C.html</include>
     </includes>
   </fileSet>
   <fileSet>
@@ -114,7 +113,12 @@
  </fileSets>
  <files>
     <file>
-      <source>release/target/dependency/jetty-start-${jetty.version}-shaded.jar </source>
+      <source>../licenses/NOTICE.md</source>
+      <outputDirectory>license</outputDirectory>
+      <destName>NOTICE.txt</destName>
+    </file>
+    <file>
+      <source>release/target/dependency/jetty-start-${jetty.version}-shaded.jar</source>
       <outputDirectory></outputDirectory>
       <destName>start.jar</destName>
     </file>

@@ -8,7 +8,7 @@ feature-styles:
         stroke-color: '#333333'
         stroke-width: 1
         stroke-dasharray: 4 6
-        stroke-graphic-stroke:
+        stroke-graphic:
           size: 4
           symbols:
           - mark:

@@ -1306,6 +1306,23 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPostSLDPackageWithBMPIcon() throws Exception {
+        URL zip = getClass().getResource("parking_bmp.zip");
+        byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/styles?name=parking",
+                        bytes,
+                        "application/zip");
+
+        assertEquals(201, response.getStatus());
+        GeoServerResourceLoader loader = getCatalog().getResourceLoader();
+        assertNotNull("parking.sld not found", loader.find("/styles/parking.sld"));
+        assertNotNull("parking.bmp not found", loader.find("/styles/parking.bmp"));
+    }
+
+    @Test
     public void testPutToWorkspaceSLDPackage() throws Exception {
         testPostAsSLDToWorkspace();
 

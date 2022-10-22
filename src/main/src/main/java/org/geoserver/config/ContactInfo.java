@@ -37,10 +37,18 @@ public interface ContactInfo extends Info {
     /** @uml.property name="addressCountry" */
     void setAddressCountry(String addressCountry);
 
-    /** @uml.property name="addressDeliveryPoint" */
+    /**
+     * Synonym with {@code address}, see {@link #getAddress()}.
+     *
+     * @uml.property name="addressDeliveryPoint"
+     */
     String getAddressDeliveryPoint();
 
-    /** @uml.property name="addressDeliveryPoint" */
+    /**
+     * Synonym with {@code address}, see {@link #setAddress(String)}}.
+     *
+     * @uml.property name="addressDeliveryPoint"
+     */
     void setAddressDeliveryPoint(String addressDeliveryPoint);
 
     /** @uml.property name="addressPostalCode" */
@@ -101,8 +109,21 @@ public interface ContactInfo extends Info {
 
     void setOnlineResource(String onlineResource);
 
-    // i18n fields
+    /**
+     * Introduction message.
+     *
+     * @return introduction message
+     */
+    String getWelcome();
 
+    /**
+     * Define introduction message
+     *
+     * @param welcome Introduction message
+     */
+    void setWelcome(String welcome);
+
+    // i18n fields
     /** @uml.property name="internationalAddress" */
     InternationalString getInternationalAddress();
 
@@ -184,4 +205,8 @@ public interface ContactInfo extends Info {
     InternationalString getInternationalOnlineResource();
 
     void setInternationalOnlineResource(InternationalString onlineResource);
+
+    InternationalString getInternationalWelcome();
+
+    void setInternationalWelcome(InternationalString onlineResource);
 }

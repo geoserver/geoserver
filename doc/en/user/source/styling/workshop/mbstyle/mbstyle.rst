@@ -30,7 +30,7 @@ All MBStyles consist of a JSON document. There are three types of structures in 
 #. Value, the value in a key-value pair, or an entry in an array. Values can be objects, arrays, strings, numbers, `true`, `false`, or `null`.
 
 =========== ========================================================================
-Object      A collection of key-value pairs, enclosed by curly braces and delimited by commas. Keys are surronded by quotes and seperarted from values by a colon.
+Object      A collection of key-value pairs, enclosed by curly braces and delimited by commas. Keys are surrounded by quotes and seperarted from values by a colon.
 Array       A collection values, enclosed by square brackets and delimited by commas.
 String      Text value.  Must be surrounded by quotes.
 Number      Numerical value. Must not be surrounded by quotes.
@@ -127,7 +127,7 @@ Here is the same example as :download:`MBStyle <../files/airports0.json>`:
 
 We use a point symbolizer to indicate we want this content drawn as a **Point** (line 16 in the SLD, line 8 in the MBStyle). The point symbolizer declares an external graphic, which contains the URL :kbd:`airports.svg` indicating the image that should be drawn (line 20 in the SLD, line 10 in the MBStyle).
 
-.. note:: Rather than refer to many diffferent icons seperatly, MBStyles use a single spritesheet containing all the necessary icons for the style. This is defined by the ``sprite`` property at the top-level of the style.
+.. note:: Rather than refer to many diffferent icons separately, MBStyles use a single sprite-sheet containing all the necessary icons for the style. This is defined by the ``sprite`` property at the top-level of the style.
 
 Tour
 ----
@@ -136,7 +136,7 @@ To confirm everything works, let's reproduce the airports style above.
 
 #. Navigate to the **Styles** page.
 
-#. Each time we edit a style, the contents of the associated SLD file are replaced. Rather then disrupt any of our existing styles we will create a new style. Click :guilabel:`Add a new style` and choose the following:
+#. Each time we edit a style, the contents of the associated SLD file are replaced. Rather than disrupt any of our existing styles we will create a new style. Click :guilabel:`Add a new style` and choose the following:
 
    .. list-table:: 
       :widths: 30 70
@@ -149,12 +149,12 @@ To confirm everything works, let's reproduce the airports style above.
       * - Format:
         - :kbd:`MBStyle`
 
-#. Replace the initial MBStyle definition with with our airport MBStyle example and click :guilabel:`Apply`:
+#. Replace the initial MBStyle definition with our airport MBStyle example and click :guilabel:`Apply`:
 
     .. literalinclude:: ../files/airports0.json
        :language: json
 
-#. Click the :guilabel:`Layer Preview` tab to preview the style. We want to preview on the aiports layer, so click the name of the current layer and select :kbd:`ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
+#. Click the :guilabel:`Layer Preview` tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select :kbd:`ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
 
    .. figure:: ../style/img/css_02_choose_data.png
 
@@ -211,7 +211,7 @@ Challenge Compare SLD Generation
 
      curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld?pretty=true
 
-#. Compare the generated SLD differ above with the hand written :download:`SLD file <../files/airports0.sld>` used as an example?
+#. Compare the generated SLD differ above with the handwritten :download:`SLD file <../files/airports0.sld>` used as an example?
    
    **Challenge:** What differences can you spot?
    

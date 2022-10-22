@@ -86,7 +86,7 @@ You should install Sphinx on your local system (see :ref:`install_sphinx`) to bu
 HTML
 ````
 
-#. On a terminal, navigate to your GeoServer source checkout and change to the :file:`doc/en/user` directory (or whichever project you wish to build).
+#. On a terminal, navigate to your GeoServer source checkout and change to the :file:`doc/en` directory (or whichever project you wish to build).
 
 #. Run the following command::
 
@@ -99,7 +99,7 @@ HTML
 PDF
 ```
 
-#. On a terminal, navigate to your GeoServer source checkout and change to the :file:`doc/en/user` directory (or whichever project you wish to build).
+#. On a terminal, navigate to your GeoServer source checkout and change to the :file:`doc/en` directory (or whichever project you wish to build).
 
 #. Run the following command::
 

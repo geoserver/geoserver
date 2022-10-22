@@ -44,4 +44,5 @@
 		</constructor-arg>
 	</bean>
 	
+    <bean id="fileItemCleanupCallback" class="org.geoserver.ows.FileItemCleanupCallback"/>
 </beans>

@@ -77,6 +77,7 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geoserver.platform.GeoServerExtensionsHelper;
@@ -126,6 +127,7 @@ public class XStreamPersisterTest {
         ContactInfo contact = factory.createContact();
         g1.getSettings().setContact(contact);
         contact.setAddress("123");
+        contact.setAddressDeliveryPoint("123"); // synomym with above
         contact.setAddressCity("Victoria");
         contact.setAddressCountry("Canada");
         contact.setAddressPostalCode("V1T3T8");
@@ -137,6 +139,8 @@ public class XStreamPersisterTest {
         contact.setContactPerson("Bob");
         contact.setContactPosition("hacker");
         contact.setContactVoice("+1 250 765 4321");
+        contact.setOnlineResource("https://acme.org/");
+        contact.setWelcome("Welcome to ACME mapping services");
 
         g1.getSettings().setNumDecimals(2);
         g1.getSettings().setOnlineResource("http://acme.org");
@@ -1469,6 +1473,15 @@ public class XStreamPersisterTest {
         XMLAssert.assertXpathEvaluatesTo("key2", "//settings/metadata/map/entry[2]/string[1]", doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "value2", "//settings/metadata/map/entry[2]/string[2]", doc);
+    }
+
+    @Test
+    public void readSettingsMetadataMissingElement() throws Exception {
+        String xml = "<global/>";
+        GeoServerInfo gs =
+                persister.load(new ByteArrayInputStream(xml.getBytes()), GeoServerInfo.class);
+
+        XMLAssert.assertEquals(gs.getSettings(), new SettingsInfoImpl());
     }
 
     @Test

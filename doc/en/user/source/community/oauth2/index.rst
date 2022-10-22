@@ -306,6 +306,53 @@ From UI it is also possible to set the ``Response Mode`` value. The field can be
 
 Finally the admin can allow the sending of the client_secret during an access_token request trough the ``Send Client Secret in Token Request``. Some OpenId implementation requires it for the Authorization Code flow when the client app is a confidential client and can safely store the client_secret.
 
+OpenID Connect With Attached Access Bearer Tokens
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The OpenID Connect plugin allows the use of Attached Bearer Access Tokens. This is typically used by automated (i.e. desktop or external Web Service) to access the Geoserver REST API.
+
+The setup process is as follows:
+
+#. Setup your OAuth2 OpenID Connect configuration as normal
+#. On the OpenID Connect configuration screen (bottom), makes sure "Allow Attached Bearer Tokens" is checked
+#. You can not use ID Tokens as a Role Source for the attached Bearer Tokens (see below)
+
+To Use:
+
+#. Obtain an Access Token from the underlying IDP
+#. Attach the access token to your HTTP request headers
+
+`Authorization: Bearer <token>`
+
+The Access Token (JWT) is validated;
+
+#. The Access Token is used to get the "userinfo" endpoint.  The underlying IDP will verify the token (i.e. signature and expiry)
+#. The Audience of the Token is checked that it is the same as the GeoServer configured Client Id.  This make sure an Access Token for another application is not being inappropriately reused in GeoServer (cf. `AudienceAccessTokenValidator.java`).
+#. The Subject of the `userinfo` and Access Token are verified to be about the same person.  The OpenID specification recommends checking this (cf. `SubjectTokenValidator.java`).
+
+
+For KeyCloak, consider using the "userinfo endpoint" role source and configure Keycloak to put groups in the "userinfo."
+
+For Azure AD, configure Azure to allow access to the MS Graph API (memberOf) and use the "Microsoft Graph API (Azure AD)" role source. 
+
+To configure Azure AD for "memberOf" ("GroupMember.Read.All" permission) access;
+
+#. go to your application in Azure AD (in the portal) 
+#. On the left, go to "API permissions" 
+#. click "Add a permission" 
+#. press "Microsoft Graph" 
+#. press "Delegated permission" 
+#. Scroll down to "GroupMember" 
+#. Choose "GroupMemeber.Read.All" 
+#. press "Add permission" 
+#. on the API Permission screen, press the "Grant admin consent for ..." text
+
+This has been tested with KeyCloak (with groups in the `userinfo` endpoint response), and with MS Azure AD (with the groups from the GraphAPI).  This should work with other IDPs - however, make sure that the Subject and Audience token verification works with their tokens. 
+  
+
+If you do not need Bearer Token functionality, it is recommended to turn this off.
+
+
 Azure AD and ADFS setup
 ^^^^^^^^^^^^^^^^^^^^^^^
 To make the OpenIdConnect filter to work properly with an Azure AD or ADFS server via the OpenId protocol, the user must set, in addition to the other configuration parameters, the ``Response Mode`` to query (otherwise by default ADFS will return a url fragment) and check the checkbox ``Send Client Secret in Token Request`` (the client_secret is mandatory in token request according to the `Microsoft documentation <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/overview/ad-fs-openid-connect-oauth-flows-scenarios#request-an-access-token>`_).

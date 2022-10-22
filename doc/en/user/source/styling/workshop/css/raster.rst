@@ -71,7 +71,7 @@ The **raster-channels** is the **key property** for display of images and raster
 
    .. image:: ../style/img/raster_image_1.png
 
-#. If required a list three band numbers can be supplied (for images recording in several wave lengths) or a single band number can be used to view a grayscale image.
+#. If required a list three band numbers can be supplied (for images recording in several wavelengths) or a single band number can be used to view a grayscale image.
 
    .. code-block:: css
 
@@ -79,7 +79,7 @@ The **raster-channels** is the **key property** for display of images and raster
         raster-channels: 2;
       }
 
-#. Isolating just the green band (it wil be drawn as a grayscale image):
+#. Isolating just the green band (it will be drawn as a grayscale image):
 
    .. image:: ../style/img/raster_image_2.png
 
@@ -88,9 +88,9 @@ DEM
 
 A digital elevation model is an example of raster data made up of measurements, rather than colors information.
 
-The ``usgs:dem`` layer used used for this exercise:
+The ``usgs:dem`` layer used for this exercise:
 
-#. Return to the the **Styles** page.
+#. Return to the **Styles** page.
 
 #. Click :guilabel:`Add a new style` and choose the following:
 
@@ -292,7 +292,7 @@ Challenge Intervals
     * :kbd:`intervals` provides categorization for quantitative data, assigning each range of values a solid color.
     * :kbd:`values` is used for qualitative data, each value is required to have a **color-map-entry** or it will not be displayed.
 
-#. **Chalenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
+#. **Challenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
    
    .. note:: Answer :ref:`provided <ysld.raster.a2>` at the end of the workbook.
 

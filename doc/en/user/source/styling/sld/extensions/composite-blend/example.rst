@@ -12,7 +12,7 @@ This is the destination:
 
    topp:states layer
 
-Using alpha blending, this can be achived by creating a mask around the state borders with a thick
+Using alpha blending, this can be achieved by creating a mask around the state borders with a thick
 stroke, and then using a "destination-in" alpha compositing.
 
 This is the source (mask):

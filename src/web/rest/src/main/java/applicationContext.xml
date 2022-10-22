@@ -11,6 +11,8 @@
     <constructor-arg index="1" value="GeoServer Web UI REST"/>
     <constructor-arg index="2" value="REST Settings"/>
   </bean>
+  <bean id="restServiceDescriptor" class="org.geoserver.web.RESTServiceDescriptionProvider">
+  </bean>
   <bean id="restSettingsPanel" class="org.geoserver.web.data.settings.SettingsPluginPanelInfo">
       <description>This bean adds the necessary form fields to REST Settings</description>
     <property name="id" value="restSettingsPanel"/>

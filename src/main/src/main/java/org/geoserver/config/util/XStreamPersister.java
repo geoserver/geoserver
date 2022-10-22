@@ -2565,10 +2565,28 @@ public class XStreamPersister {
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             GeoServerInfo geoServerInfo = (GeoServerInfo) source;
             SettingsInfo settings = geoServerInfo.getSettings();
-            if (settings.isUseHeadersProxyURL() == null) {
+            if (settings != null && settings.isUseHeadersProxyURL() == null) {
                 settings.setUseHeadersProxyURL(geoServerInfo.isUseHeadersProxyURL());
+                if (geoServerInfo instanceof GeoServerInfoImpl)
+                    ((GeoServerInfoImpl) geoServerInfo).setUseHeadersProxyURLRaw(null);
             }
             super.doMarshal(source, writer, context);
+        }
+
+        @Override
+        @SuppressWarnings("deprecation")
+        public Object doUnmarshal(
+                Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
+            // migrate proxy headers to settings if needed
+            GeoServerInfoImpl info = (GeoServerInfoImpl) super.doUnmarshal(result, reader, context);
+            SettingsInfo settings = info.getSettings();
+            if (settings != null
+                    && settings.isUseHeadersProxyURL() == null
+                    && info.isUseHeadersProxyURL() != null) {
+                settings.setUseHeadersProxyURL(info.isUseHeadersProxyURL());
+                info.setUseHeadersProxyURLRaw(null);
+            }
+            return info;
         }
     }
 

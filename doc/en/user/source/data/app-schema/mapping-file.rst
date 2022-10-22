@@ -120,7 +120,7 @@ Mappings
 typeMappings and FeatureTypeMapping
 ```````````````````````````````````
 
-The ``typeMappings`` section is the heart of the app-schema module. It defines the mapping from simple features to the the nested structure of one or more simple features. It consists of a list of ``FeatureTypeMapping`` elements, which each define one output feature type. For example::
+The ``typeMappings`` section is the heart of the app-schema module. It defines the mapping from simple features to the nested structure of one or more simple features. It consists of a list of ``FeatureTypeMapping`` elements, which each define one output feature type. For example::
 
     <typeMappings>
         <FeatureTypeMapping>
@@ -141,7 +141,7 @@ The ``typeMappings`` section is the heart of the app-schema module. It defines t
     * a table or view name, lowercase for PostGIS, uppercase for Oracle.
     * a property file name (without the .properties suffix)
 
-* ``targetElement`` is the the element name in the target application schema. This is the same as the WFS feature type name.
+* ``targetElement`` is the element name in the target application schema. This is the same as the WFS feature type name.
 
 * ``isDenormalised`` is an optional tag (default true) to indicate whether this type contains denormalised data or not. If data is not denormalised, then app-schema will build a more efficient query to apply the global feature limit.  When combined with a low global feature limit (via `Services --> WFS`), setting this option to false can prevent unnecessary processing and database lookups from taking place.
 
@@ -240,7 +240,7 @@ In this example, ``om:result`` is of ``xs:anyType``, which is abstract. We can u
 
     <AttributeMapping>
           <targetAttribute>om:result</targetAttribute>
-          <targetAttributeNode>gml:MeasureType<targetAttributeNode>
+          <targetAttributeNode>gml:MeasureType</targetAttributeNode>
           <sourceExpression>
               <OCQL>TOPAGE</OCQL>
           </sourceExpression>
@@ -380,7 +380,7 @@ This example of a ``ClientProperty`` element sets the ``codeSpace`` XML attribut
         <value>'urn:ietf:rfc:2141'</value>
     </ClientProperty>
 
-When the GML association pattern is used to encode a property by reference, the ``xlink:href`` attribute is set and the element is empty. This ``ClientProperty`` element sets the ``xlink:href`` XML attribute to to the value of the ``RELATED_FEATURE_URN`` field in the data source (for example, a column in an Oracle database table). This mapping could be applied to any property type, such a ``gml:FeaturePropertyType``, or other type modelled on the GML association pattern::
+When the GML association pattern is used to encode a property by reference, the ``xlink:href`` attribute is set and the element is empty. This ``ClientProperty`` element sets the ``xlink:href`` XML attribute to the value of the ``RELATED_FEATURE_URN`` field in the data source (for example, a column in an Oracle database table). This mapping could be applied to any property type, such a ``gml:FeaturePropertyType``, or other type modelled on the GML association pattern::
 
     <ClientProperty>
         <name>xlink:href</name>

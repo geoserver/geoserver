@@ -5,9 +5,16 @@ on:
       - closed
       - labeled
 
+permissions:
+  contents: read
+
 jobs:
   backport:
-    runs-on: ubuntu-18.04
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    runs-on: ubuntu-20.04
     name: Backport
     steps:
       - name: Backport Bot

@@ -11,7 +11,8 @@
     <constructor-arg index="0" value="gs-web-gwc"/>
     <constructor-arg index="1" value="GeoServer Web UI GeoWebCache"/>
   </bean>
-  <bean id="GWCCapabilitiesHomePageProvider" class="org.geoserver.gwc.web.GWCCapabilitiesHomePageProvider">
+
+  <bean id="wmtsServiceDescriptor" class="org.geoserver.gwc.web.GWCServiceDescriptionProvider">
     <constructor-arg ref="gwcFacade"/>
     <constructor-arg ref="geoServer"/>
   </bean>
@@ -92,4 +93,21 @@
     <property name="category" ref="servicesCategory"/>
     <property name="serviceClass" value="org.geoserver.gwc.wmts.WMTSInfo"/>
   </bean>
+
+  <!-- Used for workspace-based demo requests so the requests to GS stay workspace-based -->
+  <bean id="gwcDemoUrlHandlerMapping" class="org.geoserver.gwc.controller.GwcUrlHandlerMapping">
+    <constructor-arg ref="catalog" />
+    <constructor-arg value="/gwc/demo"/>
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="order" value="10" />
+  </bean>
+
+  <!-- Used for workspace-based web requests (i.e. for rest/web/openlayer/ol.js) -->
+  <bean id="gwcRestWebUrlHandlerMapping" class="org.geoserver.gwc.controller.GwcUrlHandlerMapping">
+    <constructor-arg ref="catalog" />
+    <constructor-arg type="java.lang.String"  value="/gwc/rest/web"/>
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="order" value="10" />
+  </bean>
+
 </beans>

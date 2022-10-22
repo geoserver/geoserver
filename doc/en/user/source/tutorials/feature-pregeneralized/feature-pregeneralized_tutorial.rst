@@ -35,7 +35,7 @@ Within this sub directory, create a directory :file:`streams`.
 
 Within :file:`{GEOSERVER_DATA_DIR}/data/streams` create another sub directory called :file:`0`. ( 0 meaning "no generalized geometries"). 
 
-This tutorial is based on on a shape file, which you can download from here :download:`Streams <streams.zip>`.
+This tutorial is based on a shape file, which you can download from here :download:`Streams <streams.zip>`.
 Unzip this file into :file:`{GEOSERVER_DATA_DIR}/data/streams/0`. 
 
 Look for the :file:`WEB-INF/lib/` directory of your GeoServer installation. There must be a file called :file:`gt-feature-pregeneralized-{version}-jar`. This jar file includes a tool for generalizing shape files. Open a cmd line and execute the following::

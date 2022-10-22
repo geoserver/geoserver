@@ -21,7 +21,7 @@ First let's gather that the data that we'll be publishing.
       createdb nyc
       psql -d nyc -c 'CREATE EXTENSION postgis'
 
-   .. note:: You may need to supply a user name and password with these commands.
+   .. note:: You may need to supply a username and password with these commands.
 
 #. Extract :file:`nyc_buildings.sql` from :file:`nyc_buildings.zip`.
 
@@ -65,7 +65,7 @@ The next step is to create a workspace for the data. A workspace is a container 
 Creating a store
 ----------------
 
-Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the shapefile. 
+Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the database. 
 
 #. Navigate to :menuselection:`Data-->Stores`.
     

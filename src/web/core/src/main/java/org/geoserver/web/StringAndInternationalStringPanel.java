@@ -11,12 +11,31 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.validation.IValidator;
 
 /**
  * A reusable component for values that can be provided both as a TextField and as an i18n editable
  * table.
  */
 public class StringAndInternationalStringPanel extends Panel {
+
+    /**
+     * Create using id to generate labelKey, stringProperty, internationalProperty.
+     *
+     * @param id the component id.
+     * @param model the model of the form object.
+     * @param labelProvider the WebMarkupContainer being the context for labels in properties files.
+     */
+    public StringAndInternationalStringPanel(
+            String id, IModel<?> model, WebMarkupContainer labelProvider) {
+        this(
+                id,
+                model,
+                id,
+                id,
+                "international" + id.substring(0, 1).toUpperCase() + id.substring(1),
+                labelProvider);
+    }
 
     /**
      * @param id the component id.
@@ -33,6 +52,25 @@ public class StringAndInternationalStringPanel extends Panel {
             String stringProperty,
             String internationalProperty,
             WebMarkupContainer labelProvider) {
+        this(id, model, labelKey, stringProperty, internationalProperty, labelProvider, null);
+    }
+
+    /**
+     * @param id the component id.
+     * @param model the model of the form object.
+     * @param labelKey the key of the label to be used for the string and i18n string field.
+     * @param stringProperty the property of the string value.
+     * @param internationalProperty the property of the i18n value.
+     * @param labelProvider the WebMarkupContainer being the context for labels in properties files.
+     */
+    public StringAndInternationalStringPanel(
+            String id,
+            IModel<?> model,
+            String labelKey,
+            String stringProperty,
+            String internationalProperty,
+            WebMarkupContainer labelProvider,
+            IValidator<String> validator) {
         super(id, model);
         WebMarkupContainer container = new WebMarkupContainer("labelContainer");
         add(container);
@@ -40,6 +78,9 @@ public class StringAndInternationalStringPanel extends Panel {
         TextField<String> title =
                 new TextField<>("stringField", new PropertyModel<>(model, stringProperty));
         add(title);
+        if (validator != null) {
+            title.add(validator);
+        }
 
         InternationalStringPanel<TextField<String>> internationalStringField =
                 new InternationalStringPanel<TextField<String>>(
@@ -49,7 +90,11 @@ public class StringAndInternationalStringPanel extends Panel {
                         container) {
                     @Override
                     protected TextField<String> getTextComponent(String id, IModel<String> model) {
-                        return new TextField<>(id, model);
+                        TextField<String> field = new TextField<>(id, model);
+                        if (validator != null) {
+                            field.add(validator);
+                        }
+                        return field;
                     }
                 };
 

@@ -703,6 +703,18 @@ public class SearchTest extends STACTestSupport {
         }
     }
 
+    @Test
+    public void testSearchPropertySelectionTopLevel() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/search?collections=SENTINEL2&fields=-links,-assets&filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=id",
+                        200);
+
+        String featurePath = "features[?(@.id != 'GS_TEST_PRODUCT.01')]";
+        assertEquals(0, doc.read(featurePath + ".assets", List.class).size());
+        assertEquals(0, doc.read(featurePath + ".links", List.class).size());
+    }
+
     public void testIndexOptimizerVisitorConvertsDouble() throws Exception {
         List<String> collections = Arrays.asList("SAS1");
         Filter filter = getStacService().parseFilter(collections, "s1:ipf_version>2", null);

@@ -26,6 +26,7 @@ Encoding of a rule in XML::
 		<layer>..</layer>
 		<service>..</service>
 		<request>..</request>
+		<subfield>..</subfield>
 		<access> ALLOW | DENY | LIMIT </access>
 		
 		<!-- for LIMIT access rules-->
@@ -37,21 +38,13 @@ Encoding of a rule in XML::
 		<!-- for ALLOW access rules with specified layer -->
 		<layerDetails>
 			<layerType> VECTOR | RASTER | LAYERGROUP </layerType>
-
 			<defaultStyle>..</defaultStyle>
-
 			<cqlFilterRead>..</cqlFilterRead>
-
 			<cqlFilterWrite>..</cqlFilterWrite>
-
 			<allowedArea>..</allowedArea>
-
 			<catalogMode> HIDE | CHALLENGE | MIXED </catalogMode>
 
 			<allowedStyle>..</allowedStyle>
-			
-			<allowedStyle>..</allowedStyle>
-			
 			..
 
 			<attribute>
@@ -59,21 +52,14 @@ Encoding of a rule in XML::
 				<datatype>..</datatype>
 				<accessType> NONE | READONLY | READWRITE </accessType>
 			</attribute>			
-
-			<attribute>
-				<name>..</name>
-				<datatype>..</datatype>
-				<accessType> NONE | READONLY | READWRITE </accessType>
-			</attribute>
-			
-			..
+                        ..
 			
 		</layerDetails>
 	</Rule>
 
 Encoding of a rule in JSON::
 
-	{"Rule": {"id":..,"priority":..,"userName":"..","roleName":"..","workspace":"..","layer":"..","service":"..","request":"..","access":".."}}
+	{"Rule": {"id":..,"priority":..,"userName":"..","roleName":"..","workspace":"..","layer":"..","service":"..","request":"..","subfield":"..","access":".."}}
 
 In case a rule that has "any" ("*") for a particular field the field is either not included (default), left empty or specified with a single asterisk 
 (the latter two may be used for updates to distinguish from "do not change this field").

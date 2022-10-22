@@ -1739,7 +1739,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // check that GeoServer service metadata is available
         result =
                 WMTS_XPATH_10.evaluate(
-                        "count(//ows:ServiceProvider/ows:ProviderName[text()='http://geoserver.org'])",
+                        "count(//ows:ServiceProvider/ows:ProviderName[text()='GeoServer'])",
                         document);
         assertThat(Integer.parseInt(result), is(1));
         // check that 0.0 and positive infinite scales are not advertised

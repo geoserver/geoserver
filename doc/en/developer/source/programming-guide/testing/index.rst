@@ -459,6 +459,58 @@ Stores and Layers
    The ``gs`` workspace contains no layers. It is typically used as the 
    workspace for layers that are added by test cases.
 
+Adding custom layers from a datastore
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you need to provide your test with a specific layer from a local datastore, for example to test handling a 
+3D shapefile then you will need code like:
+
+.. code-block:: java
+
+    @Override
+    protected void setUpInternal(SystemTestData data) throws Exception {
+        DataStoreInfo storeInfo =
+                createShapefileDataStore(getCatalog(), "tasmania_roads", "tasmania_roads.shp");
+
+        createShapeLayer(getCatalog(), storeInfo);
+    }
+
+    private static DataStoreInfo createShapefileDataStore(
+            Catalog catalog, String name, String file) {
+        // get the file
+        URL url = MultiDimensionTest.class.getResource(file);
+        assertThat(url, notNullValue());
+        // build the data store
+        CatalogBuilder catalogBuilder = new CatalogBuilder(catalog);
+        DataStoreInfo storeInfo = catalogBuilder.buildDataStore(name);
+        storeInfo.setType("Shapefile");
+        storeInfo.getConnectionParameters().put(ShapefileDataStoreFactory.URLP.key, url);
+        catalog.add(storeInfo);
+        storeInfo = catalog.getStoreByName(name, DataStoreInfo.class);
+        assertThat(storeInfo, notNullValue());
+        return storeInfo;
+    }
+
+    private static LayerInfo createShapeLayer(Catalog catalog, DataStoreInfo storeInfo)
+            throws Exception {
+        CatalogBuilder catalogBuilder = new CatalogBuilder(catalog);
+        catalogBuilder.setStore(storeInfo);
+        Name typeName = storeInfo.getDataStore(null).getNames().get(0);
+        FeatureTypeInfo featureTypeInfo = catalogBuilder.buildFeatureType(typeName);
+        catalog.add(featureTypeInfo);
+        LayerInfo layerInfo = catalogBuilder.buildLayer(featureTypeInfo);
+        catalog.add(layerInfo);
+        layerInfo = catalog.getLayerByName(typeName.getLocalPart());
+        assertThat(layerInfo, notNullValue());
+        return layerInfo;
+    }
+
+Once the set up code has run you can request the layer as a WMS or WFS request using:
+
+.. code-block:: java
+
+  Document dom = getAsDOM("wfs?request=GetFeature&typenames=gs:tasmania_roads&version=2.0.0&service=wfs");
+
 Writing Mock Tests
 ------------------
 

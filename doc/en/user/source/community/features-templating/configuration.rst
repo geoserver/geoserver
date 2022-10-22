@@ -74,11 +74,11 @@ Once the form is filled the user needs to press the :guilabel:`Add` button to ad
 
 The following values can be specified:
 
-* the :guilabel:`Priority` needed to inform GeoServer which rule should be applied if more then one rule matches the GetFeature request.
+* the :guilabel:`Priority` needed to inform GeoServer which rule should be applied if more than one rule matches the GetFeature request.
 * the :guilabel:`Template Name` that indicates which template should be applied. If the template has a global scope the dropdown will present it with the template name value only. If a Workspace has been defined at template configuration time, the format will be {workspace name}:{template name}. If a Layer Name has been specified at template configuration time, the format will be {workspace name}:{layer name}:{template name}.
 * the :guilabel:`Supported Output Formats` dropdown shows the output formats for which a template can be invoked. The user can choose one to indicate which output format the selected template should be applied to. If the GML value is selected, the template will be applied to all GML version output formats. If different GML templates should be applied for different GML versions, it is possible to define a condition on the MIME Type using the mimeType() function.
 * the :guilabel:`Request CQL filter` area allows defining a generic CQL filter to evaluate against the request to determine if the template should be t. The available request functions to be used are listed on the right side of the form.
-* the :guilabel:`Profile CQL Filter` allows defining a CQL filter allowing a content negotiation to be done per profile. The available request functions to be used are listed on the right side of the form. There is several approaches for content negotions per profile, for example one of them is the `W3C recommended approach <https://www.w3.org/TR/dx-prof-conneg/>`_ where the profile is provided as an HTTP header. This will translate in a CQL filter similar to this one ``header('Accept-Profile')='http://my-profile/geo+json'``. 
+* the :guilabel:`Profile CQL Filter` allows defining a CQL filter allowing a content negotiation to be done per profile. The available request functions to be used are listed on the right side of the form. There is several approaches for content negotiations per profile, for example one of them is the `W3C recommended approach <https://www.w3.org/TR/dx-prof-conneg/>`_ where the profile is provided as an HTTP header. This will translate in a CQL filter similar to this one ``header('Accept-Profile')='http://my-profile/geo+json'``. 
 
 
 An example CQL filter might be the following:

@@ -75,8 +75,15 @@ public class WCSEnvelope extends AbstractEnvelope {
             ordinates[dimension + ordinates.length / 2] = maximum;
             ordinates[dimension] = minimum;
         } else if (dimension >= 0 && dimension < ordinates.length / 2) {
-            ordinates[dimension + ordinates.length / 2] = maximum;
-            ordinates[dimension] = minimum;
+            if (longitudeDimension != LONGIDUTE_NOT_FOUND
+                    && dimension == longitudeDimension
+                    && maximum - minimum > 360) {
+                ordinates[dimension + ordinates.length / 2] = 180;
+                ordinates[dimension] = -180;
+            } else {
+                ordinates[dimension + ordinates.length / 2] = maximum;
+                ordinates[dimension] = minimum;
+            }
         } else {
             throw indexOutOfBounds(dimension);
         }

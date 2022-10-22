@@ -129,7 +129,7 @@ As we can see, depending on the choice we have a variation on the image quality,
 Legend:
 
 * ``GT``: map generation time on the same box
-* ``TT <speed>``: total time needed for a client to show the image, assuming an internet connection of the given speed. This time is a sum of of the image generation time and the transfer time, that is, ``GT + sizeInKbytes * 8/ speedInKbits``.
+* ``TT <speed>``: total time needed for a client to show the image, assuming an internet connection of the given speed. This time is a sum of the image generation time and the transfer time, that is, ``GT + sizeInKbytes * 8/ speedInKbits``.
 
 As the table shows, the full color PNG image takes usually a lot more time than other formats, unless it's being served over a fast network (and even in this case, one should consider network congestion as well). The png8 output format proves to be a good choice if the connection is slow, whilst the extra work done in looking up an optimal palette always pays back in faster map delivery.
 

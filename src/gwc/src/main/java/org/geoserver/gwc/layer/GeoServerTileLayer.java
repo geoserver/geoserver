@@ -49,6 +49,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
@@ -346,6 +347,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     }
 
     /**
+     * LayerInfo or LayerGroupInfo being drawn as a tile.
+     *
      * @return the {@link LayerInfo} or {@link LayerGroupInfo} this tile layer is associated with
      * @throws IllegalStateException if this {@code GeoServerTileLayer} was created with a {@link
      *     PublishedInfo} id but such object does not exist in the {@link Catalog}
@@ -751,6 +754,27 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         params.put("STYLES", "");
         params.put("TRANSPARENT", "true");
         params.put(GWC_SEED_INTERCEPT_TOKEN, "true");
+
+        // we have the layer's ID (the one with a GUID), use the catalog to get its workspace name
+        GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
+        // gs might be null in test case runs.
+        if ((gs != null) && !gs.getGlobal().isGlobalServices()) {
+            PublishedInfo publishedInfo = getPublishedInfo();
+            if (publishedInfo instanceof LayerInfo) {
+                LayerInfo layerInfo = (LayerInfo) publishedInfo;
+                params.put("WORKSPACE", layerInfo.getResource().getNamespace().getName());
+            } else if (publishedInfo instanceof LayerGroupInfo) {
+                LayerGroupInfo groupInfo = (LayerGroupInfo) publishedInfo;
+                WorkspaceInfo workspace = groupInfo.getWorkspace();
+                if (workspace == null) {
+                    throw new ParameterException(
+                            "Global web services are disabled, global LayerGroup "
+                                    + groupInfo.getName()
+                                    + " inaccessible");
+                }
+                params.put("WORKSPACE", workspace.getName());
+            }
+        }
 
         Map<String, String> filteredParams = tile.getFilteringParameters();
         if (filteredParams.isEmpty()) {

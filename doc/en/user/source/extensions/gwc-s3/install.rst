@@ -16,7 +16,7 @@ The installation process is similar to other GeoServer extensions:
 
 #. Restart GeoServer.
 
-To verify the installation was successful, to to "Tile Caching", "Blobstores" and create
+To verify the installation was successful, to "Tile Caching", "Blobstores" and create
 a new blobstore, the S3 option show be available: 
 
 .. figure:: img/newBlobstore.png

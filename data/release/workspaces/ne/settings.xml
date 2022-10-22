@@ -1,0 +1,59 @@
+<settings>
+  <id>SettingsInfoImpl-1c443fee:182c0f3f209:-7ffc</id>
+  <workspace>
+    <id>WorkspaceInfoImpl-1c443fee:182c0f3f209:-7ffe</id>
+    <name>ne</name>
+    <isolated>false</isolated>
+    <dateCreated>2022-08-21 15:10:28.234 UTC</dateCreated>
+    <dateModified>2022-08-21 18:08:06.389 UTC</dateModified>
+  </workspace>
+  <contact>
+    <id>contact</id>
+    <address>North American Cartographic Information Society</address>
+    <addressCity>Milwaukee</addressCity>
+    <addressCountry>USA</addressCountry>
+    <addressDeliveryPoint>2311 E. Hartford Ave</addressDeliveryPoint>
+    <addressPostalCode>53211</addressPostalCode>
+    <addressState>WI</addressState>
+    <addressType>Work</addressType>
+    <contactFacsimile>(414) 229-6282</contactFacsimile>
+    <contactOrganization>Natural Earth</contactOrganization>
+    <contactPerson>Volunteers</contactPerson>
+    <contactPosition>Volunteers</contactPosition>
+    <contactVoice>(414) 229-6282</contactVoice>
+    <onlineResource>https://www.naturalearthdata.com</onlineResource>
+    <welcome>Natural Earth is a public domain map dataset available at 1:10m, 1:50m, and 1:110 million scales. Featuring tightly integrated vector and raster data, with Natural Earth you can make a variety of visually pleasing, well-crafted maps with cartography or GIS software.</welcome>
+    <internationalAddress class="org.geotools.util.GrowableInternationalString"/>
+    <internationalAddressCity class="org.geotools.util.GrowableInternationalString"/>
+    <internationalAddressCountry class="org.geotools.util.GrowableInternationalString"/>
+    <internationalAddressDeliveryPoint class="org.geotools.util.GrowableInternationalString"/>
+    <internationalAddressPostalCode class="org.geotools.util.GrowableInternationalString"/>
+    <internationalAddressState class="org.geotools.util.GrowableInternationalString"/>
+    <internationalAddressType class="org.geotools.util.GrowableInternationalString"/>
+    <internationalContactEmail class="org.geotools.util.GrowableInternationalString"/>
+    <internationalContactFacsimile class="org.geotools.util.GrowableInternationalString"/>
+    <internationalContactOrganization class="org.geotools.util.GrowableInternationalString"/>
+    <internationalContactPerson class="org.geotools.util.GrowableInternationalString"/>
+    <internationalContactPosition class="org.geotools.util.GrowableInternationalString"/>
+    <internationalContactVoice class="org.geotools.util.GrowableInternationalString"/>
+    <internationalOnlineResource class="org.geotools.util.GrowableInternationalString"/>
+    <internationalWelcome class="org.geotools.util.GrowableInternationalString"/>
+  </contact>
+  <charset>UTF-8</charset>
+  <numDecimals>8</numDecimals>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <verbose>false</verbose>
+  <verboseExceptions>false</verboseExceptions>
+  <metadata>
+    <map>
+      <entry>
+        <string>quietOnNotFound</string>
+        <boolean>false</boolean>
+      </entry>
+    </map>
+  </metadata>
+  <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
+  <showCreatedTimeColumnsInAdminList>false</showCreatedTimeColumnsInAdminList>
+  <showModifiedTimeColumnsInAdminList>false</showModifiedTimeColumnsInAdminList>
+  <useHeadersProxyURL>false</useHeadersProxyURL>
+</settings>

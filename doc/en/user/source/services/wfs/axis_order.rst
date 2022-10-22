@@ -491,7 +491,7 @@ http://localhost:8080/geoserver/ows?service=wfs&version=2.0.0&request=GetCapabil
    
 WFS 2.0 describes the ``WGS84BoundingBox`` as a lower and upper corner in x/y order.
 
-.. warning:: This combination is inconsistent with ``DefaultSRS`` definition definition and the ``LowerCorner`` and ``UpperCorner`` coordinate order and may confuse client applications.
+.. warning:: This combination is inconsistent with ``DefaultSRS`` definition and the ``LowerCorner`` and ``UpperCorner`` coordinate order and may confuse client applications.
    
    The result matches the WFS 2.0 GetCapabilities examples.
 

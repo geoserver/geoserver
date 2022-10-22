@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -21,6 +23,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * Authentication provider that delegates to a {@link GeoServerUserGroupService}.
@@ -49,7 +52,11 @@ public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticat
 
         // create delegate auth provider
         authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(ugService);
+        UserDetailsService userDetailsService = ugService;
+        GeoServerEnvironment environment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        if (GeoServerEnvironment.allowEnvParametrization() && environment != null)
+            userDetailsService = new EnvironmentUserDetailService(ugService, environment);
+        authProvider.setUserDetailsService(userDetailsService);
 
         // set up the password encoder
         // multiplex password encoder actually allows us to handle all types of passwords for

@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.22-SNAPSHOT</version>
+    <version>2.23-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-release</artifactId>
@@ -416,6 +416,16 @@
       <artifactId>gt-stac-store</artifactId>
       <version>${gt.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-vector-mosaic</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-vector-mosaic</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -441,11 +451,11 @@
             </goals>
             <configuration>
               <!-- remove some unwanted dependencies that get pulled over -->
-              <tasks>
+              <target>
                 <delete>
                   <fileset dir="${project.build.directory}/dependency" includes="servlet-api-*.jar,core*.jar"></fileset>
                 </delete>
-              </tasks>
+              </target>
             </configuration>
           </execution>
         </executions>

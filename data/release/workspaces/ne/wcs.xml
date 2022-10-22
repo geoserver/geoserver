@@ -1,0 +1,47 @@
+<wcs>
+  <id>WCSInfoImpl-1c443fee:182c0f3f209:-7f96</id>
+  <workspace>
+    <id>WorkspaceInfoImpl-1c443fee:182c0f3f209:-7ffe</id>
+  </workspace>
+  <enabled>true</enabled>
+  <name>WCS</name>
+  <title>GeoServer Natural Earth Raster data and imagery</title>
+  <internationalTitle/>
+  <maintainer>http://geoserver.org/comm</maintainer>
+  <abstrct>Direct access to Natural Earth raster data and imagery.</abstrct>
+  <internationalAbstract/>
+  <accessConstraints>NONE</accessConstraints>
+  <fees>NONE</fees>
+  <versions>
+    <org.geotools.util.Version>
+      <version>1.0.0</version>
+    </org.geotools.util.Version>
+    <org.geotools.util.Version>
+      <version>1.1.1</version>
+    </org.geotools.util.Version>
+    <org.geotools.util.Version>
+      <version>2.0.1</version>
+    </org.geotools.util.Version>
+  </versions>
+  <keywords>
+    <string>WCS</string>
+    <string>GEOSERVER</string>
+  </keywords>
+  <metadataLink>
+    <type>undef</type>
+    <about>http://geoserver.sourceforge.net/html/index.php</about>
+    <metadataType>other</metadataType>
+  </metadataLink>
+  <citeCompliant>false</citeCompliant>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <verbose>false</verbose>
+  <gmlPrefixing>false</gmlPrefixing>
+  <latLon>false</latLon>
+  <maxInputMemory>0</maxInputMemory>
+  <maxOutputMemory>0</maxOutputMemory>
+  <defaultDeflateCompressionLevel>9</defaultDeflateCompressionLevel>
+  <subsamplingEnabled>true</subsamplingEnabled>
+  <overviewPolicy>IGNORE</overviewPolicy>
+  <maxRequestedDimensionValues>100</maxRequestedDimensionValues>
+</wcs>

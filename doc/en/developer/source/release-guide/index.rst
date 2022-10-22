@@ -73,7 +73,7 @@ If you are cutting the first RC of a series, create the stable branch
 
 When creating the first release candidate of a series, there are some extra steps to create the new stable branch and update the version on the main development branch.
 
-* Checkout the the main development branch and make sure it is up to date and that there are no changes in your local workspace::
+* Checkout the main development branch and make sure it is up to date and that there are no changes in your local workspace::
 
     git checkout main
     git pull
@@ -86,7 +86,7 @@ When creating the first release candidate of a series, there are some extra step
 
 * Enable `GitHub branch protection <https://github.com/geoserver/geoserver/settings/branches>`_ for the new stable branch: tick "Protect this branch" (only) and press "Save changes".
 
-* Checkout the the main development branch branch::
+* Checkout the main development branch::
 
     git checkout main
     
@@ -143,7 +143,7 @@ When creating the first release candidate of a series, there are some extra step
       <td><a href="2.12.x/en/developer/">Developer Manual</a></td>
     </tr>
 
-* Commit the changes and push to the the main development branch branch on GitHub::
+* Commit the changes and push to the main development branch on GitHub::
 
       git commit -am "Updated version to 2.12-SNAPSHOT, updated GeoTools dependency to 18-SNAPSHOT, updated GeoWebCache dependency to 1.12-SNAPSHOT, and related changes"
       git push geoserver main
@@ -298,7 +298,7 @@ Publish JIRA markdown release notes to github tag:
 Create the download page
 ------------------------
 
-The `GeoServer web site <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a download page for the release. This requires the url of the blog post announcing the release, so wait until after you have posted the announcement to do this.
+The `GeoServer website <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a download page for the release. This requires the url of the blog post announcing the release, so wait until after you have posted the announcement to do this.
 
 Post the Documentation
 ----------------------
@@ -381,7 +381,7 @@ GeoServer Blog
          <li>Thanks to <a href="http://www.warwickshire.gov.uk/">Warwickshire County Council</a>
              for some great GeoWebCache integration work:
             <ul>
-               <li>GeoWebCache tile layer HTTP cache headers are now taken from GeoServer layer configration</li>
+               <li>GeoWebCache tile layer HTTP cache headers are now taken from GeoServer layer configuration</li>
                <li>GeoWebCache settings are now correctly saved on Windows</li>
             </ul>
          </li>

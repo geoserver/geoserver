@@ -229,7 +229,7 @@ Available Options are:
 
 #. ``exclude.file.path``: A ``;`` separated list of paths relative to the ``GEOSERVER_DATA_DIR`` 
    (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`.
-   WARNING: ``security`` and ``workspaces`` are threated differently. This option should be used only for custom external resources located under the ``GEOSERVER_DATA_DIR``.
+   WARNING: ``security`` and ``workspaces`` are treated differently. This option should be used only for custom external resources located under the ``GEOSERVER_DATA_DIR``.
 
 
 Also an optional ``Filter`` can be passed to restrict the scope of the restore operation to a list of workspaces.

@@ -320,6 +320,8 @@
     <constructor-arg ref="geoServer"/>
   </bean>
   
+  <bean id="fileItemCleanupCallback" class="org.geoserver.ows.FileItemCleanupCallback"/>
+
   <bean id="serviceResourceProvider" class="org.geoserver.catalog.ServiceResourceProvider">
   	<constructor-arg ref="geoServer"/>
   </bean>

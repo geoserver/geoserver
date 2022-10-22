@@ -1,0 +1,24 @@
+<assembly>
+  <id>geofence-wps-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>*geofence-wps*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+        <directory>release/target/html/licenses</directory>
+        <outputDirectory></outputDirectory>
+        <includes>
+            <include>GPL.html</include>
+            <include>NOTICE.html</include>
+        </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

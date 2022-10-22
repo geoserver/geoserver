@@ -1,0 +1,8 @@
+{
+  "id" : "f83352cd-37aa-47bb-97c4-48a1e2d27a51",
+  "name" : "test-create",
+  "description" : "${role-test-create}",
+  "composite" : false,
+  "clientRole" : false,
+  "containerId" : "d7a7e795-974a-41b1-9a0d-0cc5fcf94a31"
+}

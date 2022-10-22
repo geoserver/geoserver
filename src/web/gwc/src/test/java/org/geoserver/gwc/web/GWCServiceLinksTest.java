@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -13,8 +14,11 @@ import java.util.Map;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.ServiceDescription;
+import org.geoserver.web.ServiceLinkDescription;
 import org.junit.Test;
 
 public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
@@ -60,5 +64,30 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
         assertTrue(services.contains("wmts"));
         assertTrue(services.contains("wms"));
         assertTrue(services.contains("tms/1.0.0"));
+    }
+
+    @Test
+    public void serviceDescriptorAndLinks() {
+        GWCServiceDescriptionProvider provider =
+                GeoServerExtensions.bean(GWCServiceDescriptionProvider.class);
+
+        List<ServiceDescription> services = provider.getServices(null, null);
+        List<ServiceLinkDescription> links = provider.getServiceLinks(null, null);
+
+        assertEquals(1, services.size());
+        ServiceDescription wfs = services.get(0);
+
+        for (ServiceLinkDescription link : links) {
+            // All links should match wfs service description
+            assertEquals("crosslink", wfs.getService(), link.getService());
+
+            if (link.getProtocol().equals("wms")) {
+                assertTrue("version", link.getLink().contains("&version="));
+                assertTrue("service", link.getLink().contains("&service=WMS"));
+            } else if (link.getProtocol().equals("wmts")) {
+                assertTrue("version", link.getLink().contains("&version="));
+                assertTrue("service", link.getLink().contains("&service=WMTS"));
+            }
+        }
     }
 }

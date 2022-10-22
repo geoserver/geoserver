@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.geom.AffineTransform;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
@@ -43,6 +44,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetCoverageKvpTest extends WCSKVPTestSupport {
@@ -433,5 +435,184 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         int[] pixel = new int[3];
         raster.getPixel(0, 0, pixel);
         assertThat(pixel, equalTo(expected));
+    }
+
+    @Test
+    public void testImposedBBOX() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__utm11");
+        // got back a tiff
+        assertEquals("image/tiff", response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("utm11", "utm11.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        // check the tiff structure is the one requested
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D coverage = null;
+        try {
+            CoordinateReferenceSystem crs = CRS.decode("EPSG:26711");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+
+            coverage = reader.read(null);
+            assertNotNull(coverage);
+
+            // resolution is the native one
+            final double scale = getScale(coverage);
+            assertEquals(256, scale, 0d);
+
+            // expect the fitted bounding box
+            GeneralEnvelope expected =
+                    new GeneralEnvelope(
+                            new double[] {440562, 3720758}, new double[] {471794, 3750966});
+            expected.setCoordinateReferenceSystem(crs);
+            assertEnvelopeEquals(expected, scale, (GeneralEnvelope) coverage.getEnvelope(), scale);
+
+            // fitting adds a pixel left and right, removes one top and bottom
+            assertEquals(122, reader.getOriginalGridRange().getSpan(0));
+            assertEquals(118, reader.getOriginalGridRange().getSpan(1));
+
+            // the added "nodata" (zero in this case) in the first and last cols
+            Raster raster = coverage.getRenderedImage().getData();
+            int[] px = new int[1];
+            for (int j = 0; j < 118; j++) {
+                raster.getPixel(0, j, px);
+                assertEquals(0, px[0]);
+                raster.getPixel(121, j, px);
+                assertEquals(0, px[0]);
+            }
+        } finally {
+            clean(reader, coverage);
+        }
+    }
+
+    @Test
+    public void testImposedBBOXRotated() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__RotatedCad");
+        // got back a tiff
+        assertEquals("image/tiff", response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("rotatedCad", "rotatedCad.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        // check the tiff structure is the one requested
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D coverage = null;
+        try {
+            CoordinateReferenceSystem crs = CRS.decode("EPSG:3003");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+            coverage = reader.read(null);
+            assertNotNull(coverage);
+
+            GeneralEnvelope expected =
+                    new GeneralEnvelope(
+                            new double[] {5000000, 1402800}, new double[] {5000100, 1402900});
+            expected.setCoordinateReferenceSystem(crs);
+            assertEnvelopeEquals(expected, 1, (GeneralEnvelope) coverage.getEnvelope(), 1);
+
+            // check scale more or less preserved
+            double scale = getScale(coverage);
+            assertEquals(0.11285131, scale, EPS);
+
+            // square pixel area
+            assertEquals(886, reader.getOriginalGridRange().getSpan(0));
+            assertEquals(886, reader.getOriginalGridRange().getSpan(1));
+        } finally {
+            clean(reader, coverage);
+        }
+    }
+
+    @Test
+    @SuppressWarnings("PMD.SimplifiableTestAssertion")
+    public void testDatelineCross() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__dateline_cross");
+        // got back a tiff
+        assertEquals("image/tiff", response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("dateline", "dateline.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        // check the tiff structure is the one requested
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D coverage = null;
+        try {
+            CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+
+            coverage = reader.read(null);
+            assertNotNull(coverage);
+
+            // resolution is the native one
+            final double scale = getScale(coverage);
+            assertEquals(0.005, scale, 1e-4);
+
+            // expect the fitted bounding box
+            GeneralEnvelope expected =
+                    new GeneralEnvelope(new double[] {179.5, -84.272}, new double[] {180, -82.217});
+            expected.setCoordinateReferenceSystem(crs);
+            assertTrue(
+                    "Equality failed, actual envelope was " + coverage.getEnvelope2D(),
+                    expected.equals(coverage.getEnvelope2D(), 1e-4, false));
+
+            // fitting adds a pixel left and right, removes one top and bottom
+            assertEquals(100, reader.getOriginalGridRange().getSpan(0));
+            assertEquals(411, reader.getOriginalGridRange().getSpan(1));
+
+        } finally {
+            clean(reader, coverage);
+        }
+    }
+
+    @Test
+    @SuppressWarnings("PMD.SimplifiableTestAssertion")
+    public void testReprojected() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=cdf__usa");
+        // got back a tiff
+        assertEquals("image/tiff", response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("usa", "usa.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        // check the tiff structure is the one requested
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D coverage = null;
+        try {
+            CoordinateReferenceSystem crs = CRS.decode("EPSG:3857");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+            coverage = reader.read(null);
+            assertNotNull(coverage);
+
+            GeneralEnvelope expected =
+                    new GeneralEnvelope(
+                            new double[] {-14570240, 6199732}, new double[] {-13790593, 7197101});
+            expected.setCoordinateReferenceSystem(crs);
+            assertTrue(expected.equals(coverage.getEnvelope(), 1, false));
+
+            // check scale more or less preserved
+            AffineTransform affineTransform = getAffineTransform(coverage);
+            assertEquals(7796, affineTransform.getScaleX(), 1d);
+            assertEquals(-9973, affineTransform.getScaleY(), 1d);
+
+            // square pixel area
+            assertEquals(100, reader.getOriginalGridRange().getSpan(0));
+            assertEquals(100, reader.getOriginalGridRange().getSpan(1));
+        } finally {
+            clean(reader, coverage);
+        }
     }
 }

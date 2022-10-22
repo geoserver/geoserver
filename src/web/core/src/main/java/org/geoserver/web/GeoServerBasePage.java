@@ -96,9 +96,17 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     public static final String VERSION_3 = "jquery/jquery-3.5.1.js";
 
-    @SuppressWarnings("serial")
-    public GeoServerBasePage() {
+    protected GeoServerBasePage(final PageParameters parameters) {
+        super(parameters);
+        commonBaseInit();
+    }
 
+    @SuppressWarnings("serial")
+    protected GeoServerBasePage() {
+        commonBaseInit();
+    }
+
+    private void commonBaseInit() {
         // lookup for a pluggable favicon
         PackageResourceReference faviconReference = null;
         List<HeaderContribution> cssContribs =
@@ -231,7 +239,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         // logout form
         WebMarkupContainer loggedInAsForm = new WebMarkupContainer("loggedinasform");
-        loggedInAsForm.add(new Label("loggedInUsername", anonymous ? "Nobody" : user.getName()));
+        loggedInAsForm.add(new Label("loggedInUsername", GeoServerSession.get().getUsername()));
         loggedInAsForm.setVisible(!anonymous);
         add(loggedInAsForm);
 
@@ -334,7 +342,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                 return getTitle();
                             }
                         }));
-        add(
+        Label gbpDescription =
                 new Label(
                         "gbpDescription",
                         new LoadableDetachableModel<String>() {
@@ -343,7 +351,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                             protected String load() {
                                 return getDescription();
                             }
-                        }));
+                        });
+        gbpDescription.setEscapeModelStrings(false);
+
+        add(gbpDescription);
 
         // node id handling
         WebMarkupContainer container = new WebMarkupContainer("nodeIdContainer");

@@ -24,6 +24,7 @@
         <property name="componentClass" value="org.geoserver.web.data.store.cog.panel.CogSettingsPluginPanel"/>
         <property name="priority" value="100"/>
     </bean>
+    <bean id="ImageIOExtCachesCleaner" class="org.geoserver.jai.ImageIOExtCachesCleaner" />
     <bean id="cogSettingsInitializer" class="org.geoserver.cog.CogSettingsInitializer" />
     <bean id="cogSettingsXStreamInitializer" class="org.geoserver.cog.CogSettingsXStreamInitializer" />
     <bean id="cogEncryptedFieldsProvider" class=" org.geoserver.cog.CogEncryptedFieldsProvider" />

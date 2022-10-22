@@ -8,7 +8,7 @@ Starting with GeoServer 2.1.0, layers can also be defined as SQL Views.
 SQL Views allow executing a custom SQL query on each request to the layer.  
 This avoids the need to create a database view for complex queries.  
 
-Even more usefully, SQL View queries can be parameterized via string substitution. 
+Even more usefuly, SQL View queries can be parameterized via string substitution. 
 Parameter values can be supplied in both WMS and WFS requests.  
 Default values can be supplied for parameters, and input values can be validated by Regular Expressions 
 to eliminate the risk of SQL injection attacks.

@@ -100,7 +100,7 @@ Finds all templates in the ``featuretype`` directory or creates a new template i
 
 ``/rest/featurestemplates/<template name>``
 
-If the template with the specified name exisits in the global  (``features-templating``) directory, returns the template or replaces the template content with the one in the request body.
+If the template with the specified name exists in the global  (``features-templating``) directory, returns the template or replaces the template content with the one in the request body.
 
 .. list-table::
    :header-rows: 1
@@ -131,7 +131,7 @@ If the template with the specified name exisits in the global  (``features-templ
 ``/rest/workspaces/<workspace name>/featurestemplates/<template name>``
 
 
-If the template with the specified name exisits in the ``workspace`` directory, returns the template or replaces the template content with the one in the request body.
+If the template with the specified name exists in the ``workspace`` directory, returns the template or replaces the template content with the one in the request body.
 
 .. list-table::
    :header-rows: 1
@@ -150,7 +150,7 @@ If the template with the specified name exisits in the ``workspace`` directory, 
    * - PUT
      - application/xml, text/xml, application/json, text/json, application/xhtml+xml, application/zip.
      - text/plain.
-     - replace the exisiting template, if found in the ``workspace`` directory with the template in the request body (text or zip file).
+     - replace the existing template, if found in the ``workspace`` directory with the template in the request body (text or zip file).
      - 201.
    * - DELETE
      -
@@ -162,7 +162,7 @@ If the template with the specified name exisits in the ``workspace`` directory, 
 ``/rest/workspaces/<workspace name>/featuretypes/<featureType name>``
 ``/featurestemplates/<template name>``
 
-If the template with the specified name exisits in the ``featuretype`` directory, returns the template or replaces the template content with the one in the request body.
+If the template with the specified name exists in the ``featuretype`` directory, returns the template or replaces the template content with the one in the request body.
 
 .. list-table::
    :header-rows: 1
@@ -181,7 +181,7 @@ If the template with the specified name exisits in the ``featuretype`` directory
    * - PUT
      - application/xml, text/xml, application/json, text/json, application/xhtml+xml, application/zip.
      - text/plain.
-     - replace the exisiting template, if found in the ``featuretype`` directory with the template in the request body (text or zip file).
+     - replace the existing template, if found in the ``featuretype`` directory with the template in the request body (text or zip file).
      - 201.
    * - DELETE
      -

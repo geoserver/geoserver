@@ -39,8 +39,8 @@ import org.vfny.geoserver.global.ConfigurationException;
  * Used to manage GeoServer logging facilities.
  *
  * <p>GeoTools logging is configured following {@link GeoToolsLoggingRedirection} policy, mapping
- * {@link #GT2_LOGGING_REDIRECTION} policy to appropriate LoggingFactory responsible for routing
- * java util logging api.
+ * {@link LoggingUtils#GT2_LOGGING_REDIRECTION} policy to appropriate LoggingFactory responsible for
+ * routing java util logging api.
  *
  * <p>Use {@code -DGT2_LOGGING_REDIRECTION=Log4j} {@code -DRELINQUISH_LOG4J_CONTROL=true} {@code
  * -Dlog4j.configuration=log4j.properties} to redirect GeoServer to use LOG4J API with
@@ -616,33 +616,38 @@ class LoggingUtilsDelegate {
 
         File target = new File(logsDirectory.getAbsolutePath(), logConfigXml);
         if (target.exists()) {
-            try (FileInputStream targetContents = new FileInputStream(target);
-                    InputStream template = getStreamFromResource(logConfigXml)) {
-                if (!IOUtils.contentEquals(targetContents, template)) {
-                    String logConfigBackup = logConfigFile + ".xml.bak";
-                    File backup = new File(logsDirectory.getAbsolutePath(), logConfigBackup);
-                    boolean renamed = target.renameTo(backup);
-                    if (renamed) {
+            if (LoggingUtils.updateBuiltInLoggingProfiles) {
+                try (FileInputStream targetContents = new FileInputStream(target);
+                        InputStream template = getStreamFromResource(logConfigXml)) {
+                    if (!IOUtils.contentEquals(targetContents, template)) {
+                        String logConfigBackup = logConfigFile + ".xml.bak";
+                        File backup = new File(logsDirectory.getAbsolutePath(), logConfigBackup);
+                        boolean renamed = target.renameTo(backup);
+                        if (renamed) {
+                            LoggingStartupContextListener.getLogger()
+                                    .finer(
+                                            "Check '"
+                                                    + logConfigXml
+                                                    + "' logging configuration - outdated and renamed to '"
+                                                    + logConfigBackup
+                                                    + "'");
+                        }
                         LoggingStartupContextListener.getLogger()
                                 .finer(
                                         "Check '"
                                                 + logConfigXml
-                                                + "' logging configuration - outdated and renamed to '"
-                                                + logConfigBackup
-                                                + "'");
+                                                + "' logging configuration, outdated");
+                        resourceLoader.copyFromClassPath(logConfigXml, target);
                     }
+                } catch (IOException e) {
                     LoggingStartupContextListener.getLogger()
-                            .finer("Check '" + logConfigXml + "' logging configuration, outdated");
-                    resourceLoader.copyFromClassPath(logConfigXml, target);
+                            .log(
+                                    Level.WARNING,
+                                    "Check '"
+                                            + logConfigXml
+                                            + "' logging configuration - unable to check against template",
+                                    e);
                 }
-            } catch (IOException e) {
-                LoggingStartupContextListener.getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Check '"
-                                        + logConfigXml
-                                        + "' logging configuration - unable to check against template",
-                                e);
             }
         } else {
             try {

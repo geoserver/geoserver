@@ -95,7 +95,7 @@ Details
 ~~~~~~~
 
 
-This example is similar to the :ref:`sld_cookbook_raster_twocolorgradient` example save for the addition of **line 4**, which sets the opacity of the layer to 0.3 (or 30% opaque).  An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is rendered as completely transparent.  The value of 0.3 means that the the raster partially takes on the color and style of whatever is drawn beneath it.  Since the background is white in this example, the colors generated from the ``<ColorMap>`` look lighter, but were the raster imposed on a dark background the resulting colors would be darker.
+This example is similar to the :ref:`sld_cookbook_raster_twocolorgradient` example save for the addition of **line 4**, which sets the opacity of the layer to 0.3 (or 30% opaque).  An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is rendered as completely transparent.  The value of 0.3 means that the raster partially takes on the color and style of whatever is drawn beneath it.  Since the background is white in this example, the colors generated from the ``<ColorMap>`` look lighter, but were the raster imposed on a dark background the resulting colors would be darker.
 
 
 Brightness and contrast

@@ -217,7 +217,7 @@ The ``offset`` parameter instructs GeoServer to skip the specified number of fir
 ``limit``
 ^^^^^^^^^^^
 
-The ``limit`` parameter instructs GeoServer to return at most the specified number of granules when returining the data.
+The ``limit`` parameter instructs GeoServer to return at most the specified number of granules when returning the data.
 
 .. _rest_api_coverages_filter:
 

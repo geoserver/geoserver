@@ -3,7 +3,7 @@
 Configuring X.509 Certificate Authentication
 ============================================
 
-Certificate authentication involves the usage of public/private keys to identify oneself. This represents a much more secure alternative to basic user name and password schemes.
+Certificate authentication involves the usage of public/private keys to identify oneself. This represents a much more secure alternative to basic username and password schemes.
 
 `X.509 <http://en.wikipedia.org/wiki/X.509>`_ is a well defined standard for the format of public key certificates. This tutorial walks through the process of setting up X.509 certificate authentication.
 
@@ -115,7 +115,7 @@ Configure Tomcat for SSL
 
    This enables SSL on port 8443.
 
-#. By default, Tomcat has APR enabled. To disable it so the above configuration can work, remove or comment out the following line in the server.xml configration file
+#. By default, Tomcat has APR enabled. To disable it so the above configuration can work, remove or comment out the following line in the server.xml configuration file
 
     .. code-block:: xml
 
@@ -149,7 +149,7 @@ Test certificate login
 
     .. figure:: images/cert12.jpg
 
-#. When warned about the self-signed server certificate, click :guilabel:`Add Excception` to add a security exception.
+#. When warned about the self-signed server certificate, click :guilabel:`Add Exception` to add a security exception.
 
     .. figure:: images/cert13.jpg
 

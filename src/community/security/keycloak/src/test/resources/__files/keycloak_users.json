@@ -1,0 +1,15 @@
+[
+  {
+    "id": "0e72c14e-53d8-4619-a05a-a605dc2102b9",
+    "createdTimestamp": 1654599284064,
+    "username": "admin",
+    "enabled": true,
+    "totp": false,
+    "emailVerified": false,
+    "attributes": {
+      "id": [
+        "1"
+      ]
+    }
+  }
+  ]

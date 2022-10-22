@@ -46,7 +46,7 @@ To view or edit a layer group, click the layer group name.  A layer group config
 
 .. note:: A layer group can contain layers with dissimilar bounds and projections. GeoServer automatically reprojects all layers to the projection of the layer group.
 
-The new :guilabel:`Enabled` checkbox, if disabled, will cause the layer group to just show up at configuration time (and in REST config), while the new :guilabel:`Advertised` checkbox, if unchecked, will make it to not be available in GetCapabilities request and in the layer preview. The behaviuor of layer group regarding both checkboxes will not affect the behaviour of any of the layers being grouped, which will follow respectively that specified  in the corresponding edit page.
+The new :guilabel:`Enabled` checkbox, if disabled, will cause the layer group to just show up at configuration time (and in REST config), while the new :guilabel:`Advertised` checkbox, if unchecked, will make it to not be available in GetCapabilities request and in the layer preview. The behaviour of layer group regarding both checkboxes will not affect the behaviour of any of the layers being grouped, which will follow respectively that specified  in the corresponding edit page.
 
 .. figure:: img/data_layergroups_edit.png
 
@@ -99,7 +99,7 @@ Security tab allows to set data access rules at layer group level.
 
 .. figure:: img/data_layergroups_security.png
 
-To create/edit layergroup's data access rules simply check/uncheck checkboxes according to desidered access mode and role. 
+To create/edit layergroup's data access rules simply check/uncheck checkboxes according to desired access mode and role. 
 The Grant access to any role checkbox grant each role for each access mode.
 
 Layer Group Styles
@@ -107,7 +107,7 @@ Layer Group Styles
 
 The user can also define styles for a Layer Group. By style in this context we mean a different group definition that, while carrying the same meaning, uses a different set of styles, or even a different set of layers (e.g., night versus day style, or full versus simplified). The styles are named and can be thus be referenced through the styles parameter in the various WMS operations (GetMap, GetLegendGraphic, GetFeatureInfo), while the usual Layer Group configuration is kept as the default style.
 
-To add a new style on the :guilabel:`Data` tab scroll down untill reaching the :guilabel:`Layer Group Styles` section and click on :guilabel:`Add new`.
+To add a new style on the :guilabel:`Data` tab scroll down until reaching the :guilabel:`Layer Group Styles` section and click on :guilabel:`Add new`.
 
 .. figure:: img/add-group-style.png
 

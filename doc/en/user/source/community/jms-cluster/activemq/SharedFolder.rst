@@ -53,7 +53,7 @@ If the primary looses the exclusive lock then it immediately shuts down. If a pr
 .. figure:: images/MasterFailed.png
    :align: center
 
-One of the other other replicas immediately grabs the exclusive lock on the file system to them commences becoming the primary, starting all of its transport connectors.
+One of the other replicas immediately grabs the exclusive lock on the file system to them commences becoming the primary, starting all of its transport connectors.
 Clients lose connection to the stopped primary and then the failover transport tries to connect to the available brokers - of which the only one available is the new primary.
 
 Primary restart

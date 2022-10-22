@@ -33,12 +33,12 @@ Here is the general structure:
     - {HOST_WHITELIST_DEFINITION}
     {...}
 
-  ?localHostForward: # For request on map.example.com we build an http request on localhost with the header Host=map.example.com, this is to don't pass throw the proxy.
+  ?localHostForward: # For request on map.example.com we build an http request on localhost with the header Host=map.example.com, this is to not pass the request through the proxy.
   ?  from:
   ?    - map.example.com
   ?  https2http: True # For above hosts on request on https we build a request on http
 
-  ?headers: ['Cookie', 'Referer'] # The header that will be copyed to the tiles http requests
+  ?headers: ['Cookie', 'Referer'] # The header that will be copied to the tiles http requests
 
   ?keys:
   ?  - !key
@@ -516,7 +516,7 @@ The type can be:
 
 The bar and/or text orientation can be set to ``up``, ``down``, ``left`` or ``right``.
 
-The `align` attribute is for placing the whole scalebar withing the surrounding column or page. The `vertAlign` attribute is used only when placed in a column.
+The `align` attribute is for placing the whole scalebar within the surrounding column or page. The `vertAlign` attribute is used only when placed in a column.
 
 Labels are always centered on the graduation, at a distance specified by labelDistance.
 
@@ -639,7 +639,7 @@ if **maxWidth** is set the whole legend gets a maximum width, just like other bl
 
 if **maxHeight** is set the whole legend gets a maximum height. This forces more than one column to appear if the legend is higher than the specified value. This can be used to enable the multi-column layout. 0 makes the maxHeight= max value, i.e. the equivalent of infinity.
 
-if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space. This can be overriden for individual classes in the spec JSON sent to the print module by adding an attribute called 'scale' and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height. If **defaultScale** equals 1, one pixel is scaled to one point (1/72 inch) in generated PDF. By default, as GeoServer legends are generated with ~90 dpi resolution (exactly 25.4/0.28), setting **defaultScale** value to 0.7937 (72*0.28/25.4) produces legend icons of same size as corresponding map icons. As the :ref:`LEGEND_OPTIONS/dpi GeoServer parameter <get_legend_graphic_options>` is not handled by MapFish, the resolution will necessary be ~91 dpi, which may cause visual quality difference with the map.
+if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space. This can be overridden for individual classes in the spec JSON sent to the print module by adding an attribute called 'scale' and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height. If **defaultScale** equals 1, one pixel is scaled to one point (1/72 inch) in generated PDF. By default, as GeoServer legends are generated with ~90 dpi resolution (exactly 25.4/0.28), setting **defaultScale** value to 0.7937 (72*0.28/25.4) produces legend icons of same size as corresponding map icons. As the :ref:`LEGEND_OPTIONS/dpi GeoServer parameter <get_legend_graphic_options>` is not handled by MapFish, the resolution will necessary be ~91 dpi, which may cause visual quality difference with the map.
 
 For this to work, you need to set the **layerTree** config option on MF print widgets,
 more precisely the legends should be present in the print.pdf JSON request.

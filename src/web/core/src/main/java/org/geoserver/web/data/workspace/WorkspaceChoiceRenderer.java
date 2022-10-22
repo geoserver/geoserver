@@ -14,12 +14,12 @@ public class WorkspaceChoiceRenderer extends ChoiceRenderer<WorkspaceInfo> {
     private static final long serialVersionUID = 9065816461497078542L;
 
     @Override
-    public Object getDisplayValue(WorkspaceInfo object) {
-        return object.getName();
+    public Object getDisplayValue(WorkspaceInfo workspace) {
+        return workspace.getName();
     }
 
     @Override
-    public String getIdValue(WorkspaceInfo object, int index) {
-        return object.getId();
+    public String getIdValue(WorkspaceInfo workspace, int index) {
+        return workspace.getId();
     }
 }

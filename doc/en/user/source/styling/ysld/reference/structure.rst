@@ -96,7 +96,7 @@ The ``<property>`` is a string denoting the property name, while the ``<value>``
    * - Text
      - Quotes
      - ``Title``
-     - Spaces, colons, and other special characters are allowed. If value is amiguous, use single quotes.
+     - Spaces, colons, and other special characters are allowed. If value is ambiguous, use single quotes.
    * - Color
      - * '# + six digits' (hex)
        * rgb(r,g,b) (decimal)

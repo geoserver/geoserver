@@ -18,8 +18,27 @@ The GeoServer logging profiles assign logging levels to specific server operatio
   * Operational (``INFO``, ``CONFIG``) levels
   * Verbose (``DEBUG``, ``TRACE``, ``FINEST``) levels
 
+In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another logging library altogether).
 
-In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another another logging library altogether).
+Built-in logging profiles
+-------------------------
+
+GeoServer includes several built-in logging profiles:
+
+* :download:`DEFAULT_LOGGING </../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml>`
+* :download:`GEOSERVER_DEVELOPER_LOGGING </../../../../src/main/src/main/resources/GEOSERVER_DEVELOPER_LOGGING.xml>`
+* :download:`GEOTOOLS_DEVELOPER_LOGGING </../../../../src/main/src/main/resources/GEOTOOLS_DEVELOPER_LOGGING.xml>`
+* :download:`PRODUCTION_LOGGING </../../../../src/main/src/main/resources/PRODUCTION_LOGGING.xml>`
+* :download:`QUIET_LOGGING </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>`
+* :download:`VERBOSE_LOGGING </../../../../src/main/src/main/resources/VERBOSE_LOGGING.xml>`
+
+The built-in logging profiles are installed into your data directory the first time the application is run. If you have customized (see the next section) these files and wish to restore the original contents:
+
+* Use the startup parameter ``-DUPDATE_BUILT_IN_LOGGING_PROFILES=true``, the built-in logging profiles will be checked and updated if required; or
+* Delete the file and restart GeoServer, the missing file will be restored; or
+* Copy the contents from the download links above
+
+For a description of these logging profiles see :ref:`config_globalsettings_log_profile`. Additional built-in logging profiles are supplied by installed extensions (example :download:`IMPORTER_LOGGING </../../../../src/extension/importer/core/src/main/resources/IMPORTER_LOGGING.xml>` profile is built into the importer extension).
 
 Custom logging profiles
 -----------------------
@@ -38,7 +57,7 @@ Any custom configuration can be setup to enable specific packages to emit logs a
 
 There are however a few rules to follow:
 
-* Custom levels are are available for ``CONFIG`` and ``FINEST`` levels.
+* Custom levels are available for ``CONFIG`` and ``FINEST`` levels.
   
 * Appenders are used to output logging information, with GeoServer providing external configuration for appenders named ``geoserverlogfile`` and ``stdout``.
 
@@ -94,8 +113,8 @@ There are however a few rules to follow:
     Level   Description
     ======= ===========
     OFF     Turn off all logging
-    FATAL   A serious problem has occured, application may be crashing or in need of restart
-    ERROR   Problem has occured, application unable to perform requested operation
+    FATAL   A serious problem has occurred, application may be crashing or in need of restart
+    ERROR   Problem has occurred, application unable to perform requested operation
     WARN    Potential problem, application will try and continue
     INFO    Normal function indicating what application is doing.
     CONFIG  Normal application function during application startup and configuration
@@ -109,13 +128,15 @@ There are however a few rules to follow:
 
   * Use ``additivity="false"`` to prevent a message collected from one logger from being passed to the next.
   
-  If you end up with double log messages chances check for this common misconfiguration.
+    If you end up with double log messages chances check for this common misconfiguration.
   
   * The ``Root`` logger is last in the list and should collect everything.
 
 
 Example of console only logging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Copy built-in logging profile and customize:
 
 1. Copy an example such as :download:`QUIET_LOGGING.xml </../../../../src/main/src/main/resources/QUIET_LOGGING.xml>` to :file:`CONSOLE_LOGGING.xml`:
 
@@ -162,17 +183,17 @@ Overriding the log location setup in the GeoServer configuration
 
 When setting up a cluster of GeoServer machines it is common to share a single data directory among all the cluster nodes.
 
-There is however a gotcha, all nodes would end up writing the logs in the same file, which would cause various kinds of troubles depending on the operating system file locking rules (a single server might be able to write, or all togheter in an uncontrolled manner resulting in an unreadable log file).
+There is however a gotcha, all nodes would end up writing the logs in the same file, which would cause various kinds of troubles depending on the operating system file locking rules (a single server might be able to write, or all together in an uncontrolled manner resulting in an unreadable log file).
 
 A common choice could be to use the machine name as a distinction, setting values such as  ``logs/geoserver_node1.log``, ``logs/geoserver_node2.log`` and so on: in this case all the log files would still be contained in the data directory and properly rotated, but each server would have its own separate log file to write on.
 
 In this case it is convenient to set a separate log location for each GeoServer node:
 
-* The ``GEOSERVER_LOG_LOCATION`` parameter can be set as system property, enviroment variables, or servlet context parameters::
+* The ``GEOSERVER_LOG_LOCATION`` parameter can be set as system property, environment variables, or servlet context parameters::
 
       GEOSERVER_LOG_LOCATION=<the location of the file>
   
-  This setting overides global setting, and is applied to ``geoserverlogfile`` appender as a template for filename and filePattern.
+  This setting overrides global setting, and is applied to ``geoserverlogfile`` appender as a template for filename and filePattern.
   
 * This same effect may be obtained using Log4J `property substitution <https://logging.apache.org/log4j/2.x/manual/configuration.html#PropertySubstitution>`__, where a wide range of `property lookups <https://logging.apache.org/log4j/2.x/manual/lookups.html>`__ are available.
 
@@ -195,13 +216,13 @@ In this case it is convenient to set a separate log location for each GeoServer 
 Forcing GeoServer to relinquish Log4J control
 ---------------------------------------------
 
-GeoServer internally overrides the Log4J configuration by using the current logging configuration as a template and appling the log location and standard output settings configured by the administrator.
+GeoServer internally overrides the Log4J configuration by using the current logging configuration as a template and applying the log location and standard output settings configured by the administrator.
 
-If you wish GeoServer not to override the normal Log4J behavior you can set the following parameter among the JVM system variables, enviroment variables, or servlet context parameters::
+If you wish GeoServer not to override the normal Log4J behavior you can set the following parameter among the JVM system variables, environment variables, or servlet context parameters::
 
   RELINQUISH_LOG4J_CONTROL=true
   
-This can be combined with ``log4j2.configurationFile`` system property to `configure Log4J externally <https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration>`__ :
+This can be combined with ``log4j2.configurationFile`` system property to `configure Log4J externally <https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration>`__ ::
 
   -DRELINQUISH_LOG4J_CONTROL=true -Dlog4j2.configurationFile=logging_configuration.xml
   
@@ -212,7 +233,7 @@ GeoServer uses the GeoTools logging framework, which in turn is based on Java Lo
 
 By default GeoServer setups a Log4J redirection, but it is possible to configure GeoServer to use plain Java Logging, or Commons Logging instead (support for other loggers is also possible by using some extra programming).
 
-If you wish to force GeoServer to use a different logging mechanism set the following parameters among the JVM system variables, enviroment variables, or servlet context parameters::
+If you wish to force GeoServer to use a different logging mechanism set the following parameters among the JVM system variables, environment variables, or servlet context parameters::
 
   GT2_LOGGING_REDIRECTION=[CommonsLogging,JavaLogging,Log4J,Log4J2,LogBack]
   RELINQUISH_LOG4J_CONTROL=true

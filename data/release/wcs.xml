@@ -3,9 +3,10 @@
   <enabled>true</enabled>
   <name>WCS</name>
   <title>Web Coverage Service</title>
+  <internationalTitle/>
   <maintainer>http://geoserver.org/comm</maintainer>
-  <abstrct>This server implements the WCS specification 1.0 and 1.1.1, it&apos;s reference implementation of WCS 1.1.1. All layers published by this service are available on WMS also.
-     </abstrct>
+  <abstrct>This server implements the WCS specification 1.0 and 1.1.1, it&apos;s reference implementation of WCS 1.1.1. All layers published by this service are available on WMS also.</abstrct>
+  <internationalAbstract/>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
   <versions>
@@ -21,7 +22,6 @@
   </versions>
   <keywords>
     <string>WCS</string>
-    <string>WMS</string>
     <string>GEOSERVER</string>
   </keywords>
   <metadataLink>

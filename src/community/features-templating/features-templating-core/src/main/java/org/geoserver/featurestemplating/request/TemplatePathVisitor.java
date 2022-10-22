@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -34,12 +35,17 @@ import org.opengis.filter.expression.PropertyName;
 public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     protected int currentEl;
-    protected String currentSource;
+    protected Stack<String> currentSource = new Stack<>();
+    private int contextPos = 0;
     boolean isSimple;
     private List<Filter> filters = new ArrayList<>();
 
     public TemplatePathVisitor(FeatureType type) {
-        this.isSimple = type instanceof SimpleFeatureType;
+        this(type instanceof SimpleFeatureType);
+    }
+
+    TemplatePathVisitor(boolean isSimple) {
+        this.isSimple = isSimple;
     }
 
     @Override
@@ -71,10 +77,10 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         }
 
         try {
-            currentSource = null;
+            currentSource = new Stack<>();
             currentEl = 0;
-            Expression newExpression = findFunction(builder, Arrays.asList(elements));
-            newExpression = (Expression) findXpathArg(newExpression);
+            Expression expression = findFunction(builder, Arrays.asList(elements));
+            Expression newExpression = findXpathArg(expression);
             if (newExpression != null) {
                 return newExpression;
             }
@@ -87,14 +93,14 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         return null;
     }
 
-    private Object findXpathArg(Object newExpression) {
+    private Expression findXpathArg(Expression expression) {
         PropertyNameCompleterVisitor completerVisitor = new PropertyNameCompleterVisitor();
-        if (newExpression instanceof Expression) {
-            return ((Expression) newExpression).accept(completerVisitor, null);
-        } else if (newExpression instanceof Filter) {
-            return ((Filter) newExpression).accept(completerVisitor, null);
-        }
-        return null;
+        return (Expression) expression.accept(completerVisitor, null);
+    }
+
+    private Filter findXpathArg(Filter expression) {
+        PropertyNameCompleterVisitor completerVisitor = new PropertyNameCompleterVisitor();
+        return (Filter) expression.accept(completerVisitor, null);
     }
 
     /**
@@ -124,6 +130,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
                 addFilter(dvb.getFilter());
+                this.contextPos = dvb.getContextPos();
                 if (dvb.getXpath() != null) return (PropertyName) super.visit(dvb.getXpath(), null);
                 else {
                     return super.visit(dvb.getCql(), null);
@@ -212,12 +219,8 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
     private void pickSourceAndFilter(SourceBuilder sb) {
         String source = sb.getStrSource();
         if (source != null) {
-            if (currentSource != null) {
-                source = "/" + source;
-                currentSource += source;
-            } else {
-                currentSource = source;
-            }
+            if (source.indexOf(".") != -1) source = source.replace(".", "/");
+            currentSource.add(source);
         }
         addFilter(sb.getFilter());
     }
@@ -271,7 +274,11 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
          * Features only
          */
         private String completeXPath(String xpath) {
-            if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
+            if (!currentSource.isEmpty() && !isSimple) {
+                Stack<String> sourceParts = new Stack<>();
+                sourceParts.addAll(currentSource);
+                xpath = completeXpath(sourceParts, xpath);
+            }
             return xpath;
         }
 
@@ -286,6 +293,21 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
                     || (extradata instanceof Boolean && ((Boolean) extradata).booleanValue());
         }
 
+        private String completeXpath(Stack<String> source, String xpath) {
+            String result = null;
+            int ctxPos = contextPos;
+            while (!source.isEmpty()) {
+                String sourcePart = source.pop();
+                if (ctxPos <= 0)
+                    if (result == null) result = sourcePart.concat("/");
+                    else result = sourcePart.concat("/").concat(result);
+                ctxPos--;
+            }
+            if (result == null) result = xpath;
+            else result = result.concat(xpath);
+            return result;
+        }
+
         @Override
         public Object visit(Function expression, Object extraData) {
             // Stream Function is a special case since after the first property name
@@ -294,11 +316,16 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
                 StreamFunction streamFunction = (StreamFunction) expression;
                 List<Expression> expressions = streamFunction.getParameters();
                 int size = expressions.size();
+                int pnCounter = 0;
                 for (int i = 0; i < size; i++) {
                     Expression e = expressions.get(i);
-                    if (e instanceof PropertyName) visit((PropertyName) e, i == 0);
-                    else visit(e, extraData);
+                    if (e instanceof PropertyName) {
+                        e = (Expression) visit((PropertyName) e, pnCounter == 0);
+                        pnCounter++;
+                    } else e = visit(e, extraData);
+                    expressions.set(i, e);
                 }
+                return expression;
             }
             return super.visit(expression, extraData);
         }

@@ -1,0 +1,41 @@
+[{
+  "id" : "0e72c14e-53d8-4619-a05a-a605dc2102b9",
+  "createdTimestamp" : 1655903731184,
+  "username" : "user1",
+  "enabled" : true,
+  "totp" : false,
+  "emailVerified" : false,
+  "firstName" : "Marco",
+  "lastName" : "Volpini",
+  "email" : "mail@mail.com",
+  "disableableCredentialTypes" : [ ],
+  "requiredActions" : [ ],
+  "notBefore" : 0,
+  "access" : {
+    "manageGroupMembership" : true,
+    "view" : true,
+    "mapRoles" : true,
+    "impersonate" : true,
+    "manage" : true
+  }
+}, {
+  "id" : "0e72c14e-53d8-4619-a05a-a605dc2102b9",
+  "createdTimestamp" : 1655903783995,
+  "username" : "user2",
+  "enabled" : true,
+  "totp" : false,
+  "emailVerified" : false,
+  "firstName" : "Marco",
+  "lastName" : "Volpini2",
+  "email" : "mail@mail.com",
+  "disableableCredentialTypes" : [ ],
+  "requiredActions" : [ ],
+  "notBefore" : 0,
+  "access" : {
+    "manageGroupMembership" : true,
+    "view" : true,
+    "mapRoles" : true,
+    "impersonate" : true,
+    "manage" : true
+  }
+} ]

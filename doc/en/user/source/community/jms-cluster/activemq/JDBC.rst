@@ -23,7 +23,7 @@ If the primary looses connection to the database or looses the exclusive lock th
 .. figure:: images/MasterFailed.png
    :align: center
 
-One of the other other replicas immediately grabs the exclusive lock on the database to then commences becoming the primary, starting all of its transport connectors.
+One of the other replicas immediately grabs the exclusive lock on the database to then commences becoming the primary, starting all of its transport connectors.
 Clients lose connection to the stopped primary and then the failover transport tries to connect to the available brokers - of which the only one available is the new primary.
 Primary restart
 At any time you can restart other brokers which join the cluster and start as replicas waiting to become a primary if the primary is shutdown or a failure occurs. So the following topology is created after a restart of an old primary...

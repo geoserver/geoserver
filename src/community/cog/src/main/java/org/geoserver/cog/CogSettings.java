@@ -4,6 +4,7 @@
  */
 package org.geoserver.cog;
 
+import it.geosolutions.imageioimpl.plugins.cog.AzureRangeReader;
 import it.geosolutions.imageioimpl.plugins.cog.GSRangeReader;
 import it.geosolutions.imageioimpl.plugins.cog.HttpRangeReader;
 import it.geosolutions.imageioimpl.plugins.cog.S3RangeReader;
@@ -49,7 +50,16 @@ public class CogSettings implements Serializable {
             String getRangeReaderClassName() {
                 return GSRangeReader.class.getName();
             }
+        },
+        /** Reader using the Azure API (again, with security support) */
+        Azure {
+
+            @Override
+            String getRangeReaderClassName() {
+                return AzureRangeReader.class.getName();
+            }
         };
+        ;
 
         abstract String getRangeReaderClassName();
     };

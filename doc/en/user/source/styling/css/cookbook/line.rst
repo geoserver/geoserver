@@ -396,7 +396,7 @@ Code
 Details
 ~~~~~~~
 
-This example is line by line identical to the previous one, but it add a new attribute "label-offset", which in the case of lines, when having a single value, is intepreted as a perpendicular
+This example is line by line identical to the previous one, but it add a new attribute "label-offset", which in the case of lines, when having a single value, is interpreted as a perpendicular
 offset from the line. The label is painted along a straight line, parallel to the line orientation in the center point of the label.
 
 .. _css_cookbook_lines_labelfollowingline:

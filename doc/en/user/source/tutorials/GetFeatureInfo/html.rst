@@ -25,7 +25,7 @@ The *header template* is invoked just once, and usually contains the start of th
 	<#-- 
 	Header section of the GetFeatureInfo HTML output. Should have the <head> section, and
 	a starter of the <body>. It is advised that eventual css uses a special class for featureInfo,
-	since the generated HTML may blend with another page changing its aspect when usign generic classes
+	since the generated HTML may blend with another page changing its aspect when using generic classes
 	like td, tr, and so on. 
 	-->
 	<html>
@@ -158,8 +158,8 @@ With this additional template, the output is:
 	
 As you can see, roads are still using the generic template, whilst POI is using its own custom template.
 
-Advanced Formating
-``````````````````
+Advanced Formatting
+```````````````````
 The ``value`` property of Feature attribute values are given by geoserver in ``String`` form, using a sensible default depending on the actual type of the attribute value.  If you need to access the raw attribute value in order to apply a custom format (for example, to output ``"Enabled"`` or ``"Disabled"`` for a given boolean property, instead of the default ``true/false``, you can just use the ``rawValue`` property instead of ``value``.  For example: ``${attribute.rawValue?string("Enabled", "Disabled")}`` instead of just ``${attribute.value}``.
 
 Accessing static methods

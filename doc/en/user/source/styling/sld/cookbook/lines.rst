@@ -204,7 +204,7 @@ to be 5 pixels, and in **line 7** a ``stroke-linecap`` parameter of ``round``
 renders the ends of the line as rounded instead of flat.  
 (When working with bordered lines using a round line cap ensures that the border connects properly at the ends of the lines.)
 
-**Lines 12-22** comprise the second ``<FeatureTypeStyle>``, which is the the inner line (or "fill").  **Line 16**
+**Lines 12-22** comprise the second ``<FeatureTypeStyle>``, which is the inner line (or "fill").  **Line 16**
 specifies the color of the line to be a medium blue (``#6699FF``), **line 17** specifies the width of this line to be 3
 pixels, and **line 18** again renders the edges of the line to be rounded instead of flat.
 
@@ -289,7 +289,7 @@ Details
 ~~~~~~~
 
 In this example, the first line symbolizer just paints the lines black.
-**line 8** begines a second lines symbolizer, sets the color of the lines to be red (``#FF0000``) at line 10 and
+**line 8** begins a second lines symbolizer, sets the color of the lines to be red (``#FF0000``) at line 10 and
 determines the composition of the line dashes at **Line 11**. 
 **Line 13** finally specifies a perpendicular offset of 5 pixels (positive, thus on the left side). 
 

@@ -323,7 +323,7 @@ The following table enumerates the available property collectors
        ResolutionYExtractorSPI
      - Returns the native resolution of the raster being harvested. ResolutionExtractorSPI and ResolutionXExtractorSPI return the x resolution of the raster, ResolutionYExtractorSPI returns the resolution on the Y axis instead
    * - CRSExtractorSPI
-     - Returns the code of the the raster coordinate reference system, as a string, e.g. "EPSG:4326" 
+     - Returns the code of the raster coordinate reference system, as a string, e.g. "EPSG:4326" 
 
 The ``PropertyCollectors`` parameter in the example above indicates two additional ``.properties`` files used to populate the ``ingestion`` and ``elevation`` attributes:
 
@@ -359,7 +359,7 @@ In case the temporal information is spread along the whole file path, an additio
 
 | Example:
 | /data/20120202/Temperature.T1800.tif
-| an hourly Temperature tif file with Year,Month and Day specified in the parent folder (20120202) and time value embeeded in the name (Temperature.T1800.tif)
+| an hourly Temperature tif file with Year,Month and Day specified in the parent folder (20120202) and time value embedded in the name (Temperature.T1800.tif)
 |
 | In that case, the timeregex.properties file should be like this:
 

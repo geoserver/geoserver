@@ -74,7 +74,7 @@ Test a LDAP login
 -----------------
 
 #. Navigate to the GeoServer home page and log out of the admin account. 
-#. Login as the user "GISUSER" with the with the password "secret".
+#. Login as the user "GISUSER" with the password "secret".
 
    .. figure:: images/ad3.jpg
       :align: center
@@ -85,7 +85,7 @@ GeoServer will be configured to map groups from the LDAP database to roles.
 Now we will login with a user having administrative rights.
 
 #. Navigate to the GeoServer home page and log out of the account. 
-#. Login as the user "GISADMIN" with the with the password "secret".
+#. Login as the user "GISADMIN" with the password "secret".
 
 Once logged in full administrative functionality should be available.
 
@@ -128,9 +128,9 @@ Then we need to a choose a user to authenticate on the server (many LDAP server 
 
 #. Click the ``ldapadrs`` role service item under the  ``Role Services`` section.
 
-#. Select ``ROLE_DOMAIN ADMINS`` from the ``Administrator role`` combobox.
+#. Select ``ROLE_DOMAIN ADMINS`` from the ``Administrator role`` combo-box.
 
-#. Select ``ROLE_DOMAIN ADMINS`` from the ``Group administrator role`` combobox.
+#. Select ``ROLE_DOMAIN ADMINS`` from the ``Group administrator role`` combo-box.
 
 #. Save again.
 

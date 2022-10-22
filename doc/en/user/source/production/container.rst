@@ -22,7 +22,7 @@ Set the following performance settings in the Java virtual machine (JVM) for you
    * - ``-XX:SoftRefLRUPolicyMSPerMB=36000``
      - Increases the lifetime of "soft references" in GeoServer.  GeoServer uses soft references to cache datastore, spatial reference systems, and other data structures. By increasing this value to ``36000`` (which is 36 seconds) these values will stay in memory longer increasing the effectiveness of the cache.
    * - ``-XX:+UseParallelGC``
-     - The default garbage collector up to Java 8, **pauses the application while using several threads to recover memory**. Recommended if your GeoServer will be under light load and can tolerate pauses to clean up memory.
+     - This garbage collector **pauses the application while using several threads to recover memory**. Recommended if your GeoServer will be under light load and can tolerate pauses to clean up memory.
    * - ``-XX:+UseParNewGC``
      - Enables use of the concurrent mark sweep (CMS) garbage collector **uses multiple threads to recover memory while the application is running**. Recommended for GeoServer under continuous use, with heap sizes of less than 6GB.
    * - ``–XX:+UseG1GC``
@@ -32,7 +32,7 @@ For more information about JVM configuration, see the article `Performance tunin
 
 .. note::
 
-   You can only use one garbage collector at a time. Please refrain from combining garbage collectors at runtime. 
+   You can only use one garbage collector at a time. Please refrain from combining garbage collectors at runtime.
 
 .. note:: 
    
@@ -58,13 +58,13 @@ For more information about JVM configuration, see the article `Performance tunin
 
 .. _production_container.marlin:
 
-Enable the Marlin rasterizer
+Use newer Marlin rasterizer
 ----------------------------
 
-In order to enable Marlin on Java 8, or to use a newer version than that provided by your JVM, add the following to the JVM startup options::
+To use a newer version of Marlin than that provided by your JVM, add the following to the JVM startup options::
 
-     -Xbootclasspath/a:$MARLIN_JAR 
-     -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine 
+     -Xbootclasspath/a:$MARLIN_JAR
+     -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine
 
 where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory or downloaded from the `Marlin project <https://github.com/bourgesl/marlin-renderer/>`_.
 

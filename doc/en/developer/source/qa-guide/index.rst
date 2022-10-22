@@ -108,26 +108,16 @@ name is included in the prefix, so some uninformity in variable names is require
 Error Prone
 -----------
 
-The `Error Prone <https://errorprone.info/>`_ checker runs a compiler plugin, requiring at least a 
-JDK 9 to run (hence the suggestion to use JDK 11, as the supported JDKs are currently only JDK 8 and JDK 11).
-Mind, running the profile with a JDK8 will result in a generic compile error!
+The `Error Prone <https://errorprone.info/>`_ checker runs a compiler plugin.
 
-In order to activate the Error Prone checks, use the "-Perrorprone" for JDK 11 builds.
+In order to activate the Error Prone checks, use the "-Perrorprone":
 
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
    :start-at: <id>errorprone</id>
    :end-before: </profile>
    :dedent: 6
-   
-Or "-Perrorprone8" for JDK 8 builds.
-
-.. literalinclude:: /../../../../src/pom.xml
-   :language: xml
-   :start-at: <id>errorprone8</id>
-   :end-before: </profile>
-   :dedent: 6
-   
+      
 Any failure to comply with the "Error Prone" rules will show up as a compile error in the build output, e.g. (example taken from GeoTools)::
 
         9476 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.0:compile (default-compile) on project gt-coverage: Compilation failure

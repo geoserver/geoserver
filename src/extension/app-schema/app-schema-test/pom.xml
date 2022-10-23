@@ -292,6 +292,7 @@
                 <exclude>${test.exclude.pattern}</exclude>
                 <exclude>**/GetFeatureNumberMatchedGMLTest.java</exclude>
                 <exclude>**/GetFeatureNumberMatchedGeoJSONTest.java</exclude>
+                <exclude>**/GetFeatureNumberMatchedWithoutPrimaryKeyGMLTest.java</exclude>
                 <exclude>**/FeatureChainingWfsTest.java</exclude>
                 <exclude>**/NoIdExpressionTest.java</exclude>
               </excludes>

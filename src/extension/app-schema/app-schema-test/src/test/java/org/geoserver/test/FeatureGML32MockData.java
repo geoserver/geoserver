@@ -17,6 +17,10 @@ import org.geoserver.data.test.MockData;
  */
 public class FeatureGML32MockData extends AbstractAppSchemaMockData {
 
+    public FeatureGML32MockData(boolean createPrimaryKey) {
+        super(GML32_NAMESPACES, createPrimaryKey);
+    }
+
     public FeatureGML32MockData() {
         super(GML32_NAMESPACES);
     }

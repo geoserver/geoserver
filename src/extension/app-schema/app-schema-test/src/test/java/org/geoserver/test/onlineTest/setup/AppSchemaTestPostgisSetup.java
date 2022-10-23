@@ -86,7 +86,18 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
      */
     public static AppSchemaTestPostgisSetup getInstance(Map<String, File> propertyFiles)
             throws Exception {
-        return new AppSchemaTestPostgisSetup(propertyFiles);
+        return new AppSchemaTestPostgisSetup(propertyFiles, true);
+    }
+
+    /**
+     * Ensure the app-schema properties file is loaded with the database parameters. Also create
+     * corresponding tables on the database based on data from properties files.
+     *
+     * @param propertyFiles Property file name and its feature type directory map
+     */
+    public static AppSchemaTestPostgisSetup getInstance(
+            Map<String, File> propertyFiles, boolean createPrimaryKey) throws Exception {
+        return new AppSchemaTestPostgisSetup(propertyFiles, createPrimaryKey);
     }
 
     /**
@@ -94,9 +105,10 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
      *
      * @param propertyFiles Property file name and its parent directory map
      */
-    public AppSchemaTestPostgisSetup(Map<String, File> propertyFiles) throws Exception {
+    public AppSchemaTestPostgisSetup(Map<String, File> propertyFiles, boolean createPrimaryKey)
+            throws Exception {
         configureFixture();
-        createTables(propertyFiles);
+        createTables(propertyFiles, createPrimaryKey);
     }
 
     /**
@@ -104,7 +116,7 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
      *
      * @param propertyFiles Property files from app-schema-test suite.
      */
-    private void createTables(Map<String, File> propertyFiles)
+    private void createTables(Map<String, File> propertyFiles, boolean createPrimaryKey)
             throws IllegalAttributeException, NoSuchElementException, IOException {
         StringBuffer buf = new StringBuffer();
         // drop schema if exists to start clean
@@ -124,7 +136,7 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                         .append("\"(");
                 List<GeometryDescriptor> geoms = new ArrayList<>();
                 // +pkey
-                int size = schema.getAttributeCount() + 1;
+                int size = schema.getAttributeCount() + (createPrimaryKey ? 1 : 0);
                 String[] fieldNames = new String[size];
                 List<String> createParams = new ArrayList<>();
                 int j = 0;
@@ -149,20 +161,24 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 }
                 // Add numeric PK for sorting
                 String pkFieldName = schema.getTypeName() + "_PKEY";
-                fieldNames[j] = pkFieldName;
-                createParams.add("\"" + pkFieldName + "\" TEXT");
+                if (createPrimaryKey) {
+                    fieldNames[j] = pkFieldName;
+                    createParams.add("\"" + pkFieldName + "\" TEXT");
+                }
                 buf.append(StringUtils.join(createParams.iterator(), ", "));
                 buf.append(");\n");
-                buf.append(
-                        "ALTER TABLE "
-                                + ONLINE_DB_SCHEMA
-                                + ".\""
-                                + tableName
-                                + "\" ADD CONSTRAINT "
-                                + tableName
-                                + "_PK PRIMARY KEY (\""
-                                + pkFieldName
-                                + "\")\n");
+                if (createPrimaryKey) {
+                    buf.append(
+                            "ALTER TABLE "
+                                    + ONLINE_DB_SCHEMA
+                                    + ".\""
+                                    + tableName
+                                    + "\" ADD CONSTRAINT "
+                                    + tableName
+                                    + "_PK PRIMARY KEY (\""
+                                    + pkFieldName
+                                    + "\")\n");
+                }
 
                 // add geometry columns
                 for (GeometryDescriptor geom : geoms) {
@@ -231,7 +247,9 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
 
                     id = feature.getIdentifier();
                     // insert primary key
-                    values[valueIndex] = "'" + id.toString() + "'";
+                    if (createPrimaryKey) {
+                        values[valueIndex] = "'" + id.toString() + "'";
+                    }
                     buf.append(StringUtils.join(values, ","));
                     buf.append(");\n");
                 }

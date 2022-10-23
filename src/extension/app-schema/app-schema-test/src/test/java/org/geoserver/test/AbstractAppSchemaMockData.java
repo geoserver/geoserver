@@ -130,6 +130,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
 
     private File appschema;
 
+    private final boolean createPrimaryKey;
+
     private File styles;
 
     private String geopkgDir;
@@ -158,6 +160,11 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         this(NAMESPACES);
     }
 
+    /** Constructor with the default namespaces, schema directory, and catalog file. */
+    public AbstractAppSchemaMockData(boolean createPrimaryKey) {
+        this(NAMESPACES, createPrimaryKey);
+    }
+
     static File newRandomDirectory() {
         try {
             return IOUtils.createRandomDirectory("target", "app-schema-mock", "data");
@@ -167,8 +174,13 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     }
 
     public AbstractAppSchemaMockData(Map<String, String> namespaces) {
+        this(namespaces, true);
+    }
+
+    public AbstractAppSchemaMockData(Map<String, String> namespaces, boolean createPrimaryKey) {
         super(newRandomDirectory());
         this.namespaces = new LinkedHashMap<>(namespaces);
+        this.createPrimaryKey = createPrimaryKey;
 
         // create a featureTypes directory
         featureTypesBaseDir = new File(data, "featureTypes");
@@ -567,7 +579,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             setup.setUp();
             setup.tearDown();
         } else if (isPostgisOnlineTest()) {
-            setup = AppSchemaTestPostgisSetup.getInstance(propertiesFiles);
+            setup = AppSchemaTestPostgisSetup.getInstance(propertiesFiles, createPrimaryKey);
             // Run the sql script through setup
             setup.setUp();
             setup.tearDown();

@@ -5,6 +5,9 @@
  */
 package org.geoserver.wfs.xml;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.mock;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -16,14 +19,20 @@ import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.feature.AttributeTypeBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gml2.GML;
 import org.geotools.xsd.Schemas;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 
 public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
@@ -86,5 +95,44 @@ public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
         assertEquals(
                 "1",
                 (xpath.evaluate("count(//xsd:element[@name='uuid' and @type='xsd:string'])", dom)));
+    }
+
+    /**
+     * Tests that FeatureTypeSchemaBuilder converts AttributeDescriptor description text into
+     * xsd:documentation
+     *
+     * @throws Exception if any error occurs
+     */
+    @Test
+    public void testDocumentation() throws Exception {
+        DataStoreInfo dataStore = new DataStoreInfoImpl(getCatalog());
+        dataStore.setEnabled(false);
+        dataStore.setName(UUID_TEST.getPrefix());
+        dataStore.setType("dataStore-Type");
+        dataStore.setDescription("dataStore-Description");
+        dataStore.setWorkspace(getCatalog().getDefaultWorkspace());
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        AttributeTypeBuilder ab = new AttributeTypeBuilder();
+        AttributeDescriptor ad =
+                ab.binding(String.class)
+                        .nillable(false)
+                        .description("comments")
+                        .buildDescriptor("name");
+
+        tb.add(ad);
+        tb.setName(UUID_TEST.getLocalPart());
+        FeatureType ft = tb.buildFeatureType();
+        FeatureTypeInfo ftInfo = mock(FeatureTypeInfo.class);
+        expect(ftInfo.getNamespace()).andReturn(getCatalog().getDefaultNamespace()).anyTimes();
+        expect(ftInfo.getStore()).andReturn(dataStore).anyTimes();
+        expect(ftInfo.getFeatureType()).andReturn(ft).anyTimes();
+        expect(ftInfo.getName()).andReturn(UUID_TEST.getLocalPart()).anyTimes();
+        expect(ftInfo.isCircularArcPresent()).andReturn(false).anyTimes();
+        replay(ftInfo);
+
+        FeatureTypeSchemaBuilder builder = new FeatureTypeSchemaBuilder.GML2(getGeoServer());
+        XSDSchema xsdSchema = builder.build(ftInfo, null);
+
+        assertEquals("comments", xpath.evaluate("//xsd:documentation", xsdSchema.getDocument()));
     }
 }

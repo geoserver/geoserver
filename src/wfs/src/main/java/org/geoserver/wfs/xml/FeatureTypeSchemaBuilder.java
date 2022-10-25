@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.xsd.XSDAnnotation;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDCompositor;
 import org.eclipse.xsd.XSDDerivationMethod;
@@ -72,6 +73,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.Schema;
+import org.w3c.dom.Element;
 
 /**
  * Builds a {@link org.eclipse.xsd.XSDSchema} from {@link FeatureTypeInfo} metadata objects.
@@ -808,9 +810,15 @@ public abstract class FeatureTypeSchemaBuilder {
         xsdComplexType.setDerivationMethod(XSDDerivationMethod.EXTENSION_LITERAL);
         xsdComplexType.setBaseTypeDefinition(
                 resolveTypeInSchema(schema, new NameImpl(gmlNamespace, baseType)));
-
+        // adding the type to the schema and the particle to the group up here
+        // because the schema linkage is required before createUserInformation is called to populate
+        // the annotation
+        schema.getContents().add(xsdComplexType);
         XSDModelGroup group = factory.createXSDModelGroup();
         group.setCompositor(XSDCompositor.SEQUENCE_LITERAL);
+        XSDParticle particle = factory.createXSDParticle();
+        particle.setContent(group);
+        xsdComplexType.setContent(particle);
 
         for (PropertyDescriptor pd : complexType.getDescriptors()) {
             if (pd instanceof AttributeDescriptor) {
@@ -826,8 +834,25 @@ public abstract class FeatureTypeSchemaBuilder {
                 XSDElementDeclaration element = factory.createXSDElementDeclaration();
                 element.setName(attribute.getLocalName());
                 element.setNillable(attribute.isNillable());
+                particle = factory.createXSDParticle();
+                particle.setMinOccurs(attribute.getMinOccurs());
+                particle.setMaxOccurs(attribute.getMaxOccurs());
+                particle.setContent(element);
+                group.getContents().add(particle);
+                // if the attributeDescriptor description is populated, use it as the annotation
+                AttributeType attributeType = attribute.getType();
+                if (attributeType.getDescription() != null) {
+                    XSDAnnotation annotation = factory.createXSDAnnotation();
+                    element.setAnnotation(annotation);
+                    Element documentation = annotation.createUserInformation(null);
+                    documentation.appendChild(
+                            documentation
+                                    .getOwnerDocument()
+                                    .createTextNode(attributeType.getDescription().toString()));
+                    annotation.getElement().appendChild(documentation);
+                }
 
-                Name typeName = attribute.getType().getName();
+                Name typeName = attributeType.getName();
                 // skip if it's XS.AnyType. It's not added to XS.Profile, because
                 // a lot of types extend XS.AnyType causing it to be the returned
                 // binding.. I could make it so that it checks against all profiles
@@ -835,7 +860,7 @@ public abstract class FeatureTypeSchemaBuilder {
                 // first matching one, so it doesn't go through all profiles.
                 if (!(typeName.getLocalPart().equals(XS.ANYTYPE.getLocalPart())
                         && typeName.getNamespaceURI().equals(XS.NAMESPACE))) {
-                    if (attribute.getType() instanceof ComplexType) {
+                    if (attributeType instanceof ComplexType) {
                         // If non-simple complex property not in schema, recurse.
                         // Note that abstract types will of course not be resolved; these must be
                         // configured at global level, so they can be found by the
@@ -843,11 +868,10 @@ public abstract class FeatureTypeSchemaBuilder {
                         if (schema.resolveTypeDefinition(
                                         typeName.getNamespaceURI(), typeName.getLocalPart())
                                 == null) {
-                            buildComplexSchemaContent(
-                                    (ComplexType) attribute.getType(), schema, factory);
+                            buildComplexSchemaContent((ComplexType) attributeType, schema, factory);
                         }
                     } else {
-                        Class<?> binding = attribute.getType().getBinding();
+                        Class<?> binding = attributeType.getBinding();
                         typeName = findTypeName(binding);
                         if (typeName == null) {
                             // Fallback on String
@@ -866,26 +890,10 @@ public abstract class FeatureTypeSchemaBuilder {
                         }
                     }
                 }
-
-                // XSDTypeDefinition type = schema.resolveTypeDefinition(typeName.getNamespaceURI(),
-                //        typeName.getLocalPart());
                 XSDTypeDefinition type = resolveTypeInSchema(schema, typeName);
                 element.setTypeDefinition(type);
-
-                XSDParticle particle = factory.createXSDParticle();
-                particle.setMinOccurs(attribute.getMinOccurs());
-                particle.setMaxOccurs(attribute.getMaxOccurs());
-                particle.setContent(element);
-                group.getContents().add(particle);
             }
         }
-
-        XSDParticle particle = factory.createXSDParticle();
-        particle.setContent(group);
-
-        xsdComplexType.setContent(particle);
-
-        schema.getContents().add(xsdComplexType);
         return xsdComplexType;
     }
 

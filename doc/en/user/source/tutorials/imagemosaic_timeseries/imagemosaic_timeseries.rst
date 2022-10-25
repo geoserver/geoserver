@@ -233,7 +233,7 @@ We create a new data store of type raster data and choose ImageMosaic.
    :align: center
 
 
-.. note:: Be aware that GeoServer creates a table which is identical with the name of your layer. If the table already exists, it will not be dropped from the DB and the following error message will appear. The same message wwill appear if the generated property file already exists in the directory or there are incorrect connection parameters in datastore.properties file.
+.. note:: Be aware that GeoServer creates a table which is identical with the name of your layer. If the table already exists, it will not be dropped from the DB and the following error message will appear. The same message will appear if the generated property file already exists in the directory or there are incorrect connection parameters in datastore.properties file.
 
 .. figure:: img/errormessage.png
    :align: center

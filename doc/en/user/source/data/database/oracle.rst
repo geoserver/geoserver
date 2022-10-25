@@ -65,7 +65,11 @@ Configuring an Oracle datastore
    * - ``Loose bbox``
      - 	Controls how bounding box filters are made against geometries in the database. See the :ref:`oracle_loose_bbox` section below.
    * - ``Metadata bbox``
-     - 	Flag controlling the use of MDSYS.USER_SDO_GEOM_METADATA or MDSYS.ALL_SDO_GEOM_METADATA table for bounding box calculations, this brings a better performance if the views access is fast and the bounds are configured right in the tables default is false  
+     - 	Flag controlling the use of MDSYS.USER_SDO_GEOM_METADATA or MDSYS.ALL_SDO_GEOM_METADATA table for bounding box calculations, this brings a better performance if the views access is fast and the bounds are configured right in the tables default is false
+   * -  ``Get remarks``
+     -  Boolean flag specifies whether REMARKS metadata will be returned. Note that this parameter is not available in the JNDI version of the DataStore. Instead you can set a Connection Property called remarksReporting as described in the Oracle `documentation`_.
+
+.. _documentation: https://docs.oracle.com/en/database/oracle/oracle-database/19/jjdbc/performance-extensions.html#GUID-15865071-39F2-430F-9EDA-EB34D0B2D560
 
 Connecting to an Oracle cluster
 -------------------------------

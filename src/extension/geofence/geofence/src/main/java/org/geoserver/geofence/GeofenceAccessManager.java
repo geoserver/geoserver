@@ -373,7 +373,7 @@ public class GeofenceAccessManager
                                     info,
                                     layer,
                                     workspace,
-                                    configurationManager.getConfiguration().getInstanceName(),
+                                    configurationManager.getConfiguration(),
                                     ipAddress,
                                     user,
                                     null,
@@ -387,7 +387,7 @@ public class GeofenceAccessManager
                             info,
                             layer,
                             workspace,
-                            configurationManager.getConfiguration().getInstanceName(),
+                            configurationManager.getConfiguration(),
                             ipAddress,
                             user,
                             containers,
@@ -669,7 +669,7 @@ public class GeofenceAccessManager
             CatalogInfo resourceInfo,
             String layer,
             String workspace,
-            String instanceName,
+            GeoFenceConfiguration configuration,
             String callerIp,
             Authentication user,
             List<LayerGroupInfo> containers,
@@ -684,7 +684,7 @@ public class GeofenceAccessManager
                             layer,
                             workspace,
                             callerIp,
-                            instanceName);
+                            configuration);
         else
             resolver =
                     new ContainerLimitResolver(
@@ -694,7 +694,7 @@ public class GeofenceAccessManager
                             layer,
                             workspace,
                             callerIp,
-                            instanceName);
+                            configuration);
 
         ContainerLimitResolver.ProcessingResult result = resolver.resolveResourceInGroupLimits();
         Geometry intersect = result.getIntersectArea();
@@ -759,46 +759,13 @@ public class GeofenceAccessManager
     // Builds a rule filter to retrieve the AccessInfo for the resource
     private RuleFilter buildRuleFilter(
             String workspace, String layer, Authentication user, String ipAddress) {
-        // get the request infos
-        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.DEFAULT);
-        setRuleFilterUserAndRole(user, ruleFilter);
-        ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
-        // get info from the current request
-        String service = null;
-        String request = null;
-        Request owsRequest = Dispatcher.REQUEST.get();
-        if (owsRequest != null) {
-            service = owsRequest.getService();
-            request = owsRequest.getRequest();
-        }
-        if (service != null) {
-            if ("*".equals(service)) {
-                ruleFilter.setService(RuleFilter.SpecialFilterType.ANY);
-            } else {
-                ruleFilter.setService(service);
-            }
-        }
-
-        if (request != null) {
-            if ("*".equals(request)) {
-                ruleFilter.setRequest(RuleFilter.SpecialFilterType.ANY);
-            } else {
-                ruleFilter.setRequest(request);
-            }
-        }
-
-        ruleFilter.setWorkspace(workspace);
-        ruleFilter.setLayer(layer);
-        String sourceAddress = ipAddress;
-        if (sourceAddress != null) {
-            ruleFilter.setSourceAddress(sourceAddress);
-        } else {
-            LOGGER.log(Level.WARNING, "No source IP address found");
-        }
-
-        LOGGER.log(Level.FINE, "ResourceInfo filter: {0}", ruleFilter);
-
-        return ruleFilter;
+        RuleFilterBuilder builder = new RuleFilterBuilder(configurationManager.getConfiguration());
+        return builder.withRequest(Dispatcher.REQUEST.get())
+                .withIpAddress(ipAddress)
+                .withWorkspace(workspace)
+                .withLayer(layer)
+                .withUser(user)
+                .build();
     }
 
     private MultiPolygon toMultiPoly(Geometry reprojArea) {

@@ -7,75 +7,62 @@ package org.geoserver.params.extractor;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.io.InputStream;
 import java.util.List;
 import org.junit.Test;
 
 public final class EchoParametersDaoTest extends TestSupport {
 
-    @Test
-    public void testParsingEmptyFile() throws Exception {
-        doWork(
-                "data/echoParameters1.xml",
-                (InputStream inputStream) -> {
-                    List<EchoParameter> echoParameters =
-                            EchoParametersDao.getEchoParameters(inputStream);
-                    assertThat(echoParameters.size(), is(0));
-                });
+    static List<EchoParameter> getEchoParameters() {
+        return EchoParametersDao.getEchoParameters();
+    }
+
+    static List<EchoParameter> getEchoParameters(String path) {
+        return EchoParametersDao.getEchoParameters(getResource(path));
     }
 
     @Test
-    public void testParsingEmptyEchoParameters() throws Exception {
-        doWork(
-                "data/echoParameters2.xml",
-                (InputStream inputStream) -> {
-                    List<EchoParameter> echoParameters =
-                            EchoParametersDao.getEchoParameters(inputStream);
-                    assertThat(echoParameters.size(), is(0));
-                });
+    public void testParsingEmptyFile() {
+        List<EchoParameter> echoParameters = getEchoParameters("data/echoParameters1.xml");
+        assertThat(echoParameters.size(), is(0));
     }
 
     @Test
-    public void testParsingEchoParameter() throws Exception {
-        doWork(
-                "data/echoParameters3.xml",
-                (InputStream inputStream) -> {
-                    List<EchoParameter> echoParameters =
-                            EchoParametersDao.getEchoParameters(inputStream);
-                    assertThat(echoParameters.size(), is(1));
-                    checkEchoParameter(
-                            echoParameters.get(0),
-                            new EchoParameterBuilder()
-                                    .withId("1")
-                                    .withParameter("CQL_FILTER")
-                                    .withActivated(true)
-                                    .build());
-                });
+    public void testParsingEmptyEchoParameters() {
+        List<EchoParameter> echoParameters = getEchoParameters("data/echoParameters2.xml");
+        assertThat(echoParameters.size(), is(0));
     }
 
     @Test
-    public void testParsingMultipleEchoParameters() throws Exception {
-        doWork(
-                "data/echoParameters4.xml",
-                (InputStream inputStream) -> {
-                    List<EchoParameter> echoParameters =
-                            EchoParametersDao.getEchoParameters(inputStream);
-                    assertThat(echoParameters.size(), is(2));
-                    checkEchoParameter(
-                            findEchoParameter("0", echoParameters),
-                            new EchoParameterBuilder()
-                                    .withId("0")
-                                    .withParameter("CQL_FILTER")
-                                    .withActivated(true)
-                                    .build());
-                    checkEchoParameter(
-                            findEchoParameter("1", echoParameters),
-                            new EchoParameterBuilder()
-                                    .withId("1")
-                                    .withParameter("BBOX")
-                                    .withActivated(false)
-                                    .build());
-                });
+    public void testParsingEchoParameter() {
+        List<EchoParameter> echoParameters = getEchoParameters("data/echoParameters3.xml");
+        assertThat(echoParameters.size(), is(1));
+        checkEchoParameter(
+                echoParameters.get(0),
+                new EchoParameterBuilder()
+                        .withId("1")
+                        .withParameter("CQL_FILTER")
+                        .withActivated(true)
+                        .build());
+    }
+
+    @Test
+    public void testParsingMultipleEchoParameters() {
+        List<EchoParameter> echoParameters = getEchoParameters("data/echoParameters4.xml");
+        assertThat(echoParameters.size(), is(2));
+        checkEchoParameter(
+                findEchoParameter("0", echoParameters),
+                new EchoParameterBuilder()
+                        .withId("0")
+                        .withParameter("CQL_FILTER")
+                        .withActivated(true)
+                        .build());
+        checkEchoParameter(
+                findEchoParameter("1", echoParameters),
+                new EchoParameterBuilder()
+                        .withId("1")
+                        .withParameter("BBOX")
+                        .withActivated(false)
+                        .build());
     }
 
     @Test
@@ -101,24 +88,24 @@ public final class EchoParametersDaoTest extends TestSupport {
                         .withParameter("bbox")
                         .build();
         // get the existing echo parameters, this should return an empty list
-        List<EchoParameter> echoParameters = EchoParametersDao.getEchoParameters();
+        List<EchoParameter> echoParameters = getEchoParameters();
         assertThat(echoParameters.size(), is(0));
         // we save echo parameters A and B
         EchoParametersDao.saveOrUpdateEchoParameter(echoParameterA);
         EchoParametersDao.saveOrUpdateEchoParameter(echoParameterB);
-        echoParameters = EchoParametersDao.getEchoParameters();
+        echoParameters = getEchoParameters();
         assertThat(echoParameters.size(), is(2));
         checkEchoParameter(echoParameterA, findEchoParameter("0", echoParameters));
         checkEchoParameter(echoParameterB, findEchoParameter("1", echoParameters));
         // we update echo parameter B using rule C
         EchoParametersDao.saveOrUpdateEchoParameter(echoParameterC);
-        echoParameters = EchoParametersDao.getEchoParameters();
+        echoParameters = getEchoParameters();
         assertThat(echoParameters.size(), is(2));
         checkEchoParameter(echoParameterA, findEchoParameter("0", echoParameters));
         checkEchoParameter(echoParameterC, findEchoParameter("1", echoParameters));
         // we delete echo parameter A
         EchoParametersDao.deleteEchoParameters("0");
-        echoParameters = EchoParametersDao.getEchoParameters();
+        echoParameters = getEchoParameters();
         assertThat(echoParameters.size(), is(1));
     }
 }

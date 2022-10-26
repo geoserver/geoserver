@@ -65,8 +65,8 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
         if (dataDirectory != null) {
             Utils.info(LOGGER, "Initiating parameters extractor rules.");
             Resource resource = dataDirectory.get(RulesDao.getRulesPath());
-            rules = RulesDao.getRules(() -> resource.in());
-            resource.addListener(notify -> rules = RulesDao.getRules(() -> resource.in()));
+            rules = RulesDao.getRules(resource);
+            resource.addListener(notify -> rules = RulesDao.getRules(resource));
         } else {
             // no rules were loaded
             Utils.info(
@@ -85,7 +85,7 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
      * this happens the related instance will be used instead of the one initialized by Spring.
      */
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         GeoServerDataDirectory dataDirectory =
                 GeoServerExtensions.bean(GeoServerDataDirectory.class);
         Utils.info(LOGGER, "Initiating parameters extractor as a standard web container filter.");

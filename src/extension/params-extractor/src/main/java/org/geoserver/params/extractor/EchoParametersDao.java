@@ -4,7 +4,6 @@
  */
 package org.geoserver.params.extractor;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
@@ -50,27 +48,36 @@ public final class EchoParametersDao {
 
     public static List<EchoParameter> getEchoParameters() {
         Resource echoParameters = getDataDirectory().get(getEchoParametersPath());
-        return getEchoParameters(echoParameters.in());
+        return getEchoParameters(echoParameters);
     }
 
     private static GeoServerDataDirectory getDataDirectory() {
         return (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
     }
 
-    @SuppressWarnings("PMD.UseTryWithResources") // cannot use try-with-resources here
-    public static List<EchoParameter> getEchoParameters(InputStream inputStream) {
-        try {
-            if (inputStream.available() == 0) {
-                Utils.debug(LOGGER, "Echo parameters file seems to be empty.");
-                return new ArrayList<>();
+    /**
+     * Read a list of EchoParameter from a resource. Return an empty list if the resource does not
+     * exist. This prevents Resource.in() from creating the file or throwing an exception.
+     *
+     * @param resource to read.
+     * @return a list of EchoParameter or an empty list if the resource does not exist.
+     */
+    public static List<EchoParameter> getEchoParameters(Resource resource) {
+        if (resource.getType() == Resource.Type.RESOURCE) {
+            try (InputStream inputStream = resource.in()) {
+                if (inputStream.available() == 0) {
+                    Utils.debug(LOGGER, "Echo parameters file seems to be empty.");
+                } else {
+                    EchoParametersList list = (EchoParametersList) xStream.fromXML(inputStream);
+                    return list.parameters == null ? new ArrayList<>() : list.parameters;
+                }
+            } catch (Exception exception) {
+                throw Utils.exception(exception, "Error parsing echo parameters files.");
             }
-            EchoParametersList list = (EchoParametersList) xStream.fromXML(inputStream);
-            return list.parameters == null ? new ArrayList<>() : list.parameters;
-        } catch (Exception exception) {
-            throw Utils.exception(exception, "Error parsing echo parameters files.");
-        } finally {
-            Utils.closeQuietly(inputStream);
+        } else {
+            Utils.info(LOGGER, "Echo parameters file does not exist.");
         }
+        return new ArrayList<>();
     }
 
     public static void saveOrUpdateEchoParameter(EchoParameter echoParameter) {
@@ -83,52 +90,44 @@ public final class EchoParametersDao {
 
     public static void saveOrUpdateEchoParameter(
             EchoParameter echoParameter, Resource input, Resource output) {
-        try (InputStream inputStream = input.in();
-                OutputStream outputStream = output.out()) {
-            List<EchoParameter> echoParameters = getEchoParameters(inputStream);
-            boolean exists = false;
-            for (int i = 0; i < echoParameters.size() && !exists; i++) {
-                if (echoParameters.get(i).getId().equals(echoParameter.getId())) {
-                    echoParameters.set(i, echoParameter);
-                    exists = true;
-                }
+        List<EchoParameter> echoParameters = getEchoParameters(input);
+        boolean exists = false;
+        for (int i = 0; i < echoParameters.size() && !exists; i++) {
+            if (echoParameters.get(i).getId().equals(echoParameter.getId())) {
+                echoParameters.set(i, echoParameter);
+                exists = true;
             }
-            if (!exists) {
-                echoParameters.add(echoParameter);
-            }
-            writeEchoParameters(echoParameters, outputStream);
-        } catch (IOException e) {
-            LOGGER.log(Level.FINER, "Failed to cleanly close resources", e);
         }
+        if (!exists) {
+            echoParameters.add(echoParameter);
+        }
+
+        writeEchoParameters(echoParameters, output);
     }
 
     public static void deleteEchoParameters(String... echoParametersIds) {
         Resource echoParameters = getDataDirectory().get(getEchoParametersPath());
         Resource tmpEchoParameters = getDataDirectory().get(getTmpEchoParametersPath());
-        try (InputStream in = echoParameters.in();
-                OutputStream os = tmpEchoParameters.out()) {
-            deleteEchoParameters(in, os, echoParametersIds);
-        } catch (IOException e) {
-            LOGGER.log(Level.FINER, "Failed to cleanly close param files", e);
-        }
+        deleteEchoParameters(echoParameters, tmpEchoParameters, echoParametersIds);
         echoParameters.delete();
         tmpEchoParameters.renameTo(echoParameters);
     }
 
     public static void deleteEchoParameters(
-            InputStream inputStream, OutputStream outputStream, String... forwardParameterIds) {
-        writeEchoParameters(
-                getEchoParameters(inputStream).stream()
+            Resource inputResource, Resource outputResource, String... forwardParameterIds) {
+
+        List<EchoParameter> collect =
+                getEchoParameters(inputResource).stream()
                         .filter(p -> !ArrayUtils.contains(forwardParameterIds, p.getId()))
-                        .collect(Collectors.toList()),
-                outputStream);
+                        .collect(Collectors.toList());
+
+        writeEchoParameters(collect, outputResource);
     }
 
-    private static void writeEchoParameters(
-            List<EchoParameter> echoParameters, OutputStream outputStream) {
-        try {
+    private static void writeEchoParameters(List<EchoParameter> echoParameters, Resource output) {
+        try (OutputStream outputStream = output.out()) {
             xStream.toXML(new EchoParametersList(echoParameters), outputStream);
-        } catch (Exception exception) {
+        } catch (Throwable exception) {
             throw Utils.exception(exception, "Something bad happen when writing echo parameters.");
         }
     }

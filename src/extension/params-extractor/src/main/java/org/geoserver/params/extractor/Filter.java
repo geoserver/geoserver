@@ -65,8 +65,8 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
         if (dataDirectory != null) {
             Utils.info(LOGGER, "Initiating parameters extractor rules.");
             Resource resource = dataDirectory.get(RulesDao.getRulesPath());
-            rules = RulesDao.getRules(() -> resource.in());
-            resource.addListener(notify -> rules = RulesDao.getRules(() -> resource.in()));
+            rules = RulesDao.getRules(resource);
+            resource.addListener(notify -> rules = RulesDao.getRules(resource));
         } else {
             // no rules were loaded
             Utils.info(

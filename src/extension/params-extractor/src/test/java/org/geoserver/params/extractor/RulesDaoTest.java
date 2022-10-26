@@ -4,11 +4,12 @@
  */
 package org.geoserver.params.extractor;
 
+import static org.geoserver.params.extractor.RulesDao.getRules;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.io.InputStream;
 import java.util.List;
+import org.geoserver.platform.resource.Resource;
 import org.junit.Test;
 
 public final class RulesDaoTest extends TestSupport {
@@ -17,8 +18,8 @@ public final class RulesDaoTest extends TestSupport {
     public void testParsingEmptyFile() throws Exception {
         doWork(
                 "data/rules1.xml",
-                (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
+                (Resource input) -> {
+                    List<Rule> rules = getRules(input);
                     assertThat(rules.size(), is(0));
                 });
     }
@@ -27,8 +28,8 @@ public final class RulesDaoTest extends TestSupport {
     public void testParsingEmptyRules() throws Exception {
         doWork(
                 "data/rules2.xml",
-                (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
+                (Resource input) -> {
+                    List<Rule> rules = getRules(input);
                     assertThat(rules.size(), is(0));
                 });
     }
@@ -37,8 +38,8 @@ public final class RulesDaoTest extends TestSupport {
     public void testParsingPositionRule() throws Exception {
         doWork(
                 "data/rules3.xml",
-                (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
+                (Resource input) -> {
+                    List<Rule> rules = getRules(input);
                     assertThat(rules.size(), is(1));
                     checkRule(
                             rules.get(0),
@@ -56,8 +57,8 @@ public final class RulesDaoTest extends TestSupport {
     public void testParsingMatchRule() throws Exception {
         doWork(
                 "data/rules4.xml",
-                (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
+                (Resource input) -> {
+                    List<Rule> rules = getRules(input);
                     assertThat(rules.size(), is(1));
                     checkRule(
                             rules.get(0),
@@ -75,8 +76,8 @@ public final class RulesDaoTest extends TestSupport {
     public void testParsingMultipleRules() throws Exception {
         doWork(
                 "data/rules5.xml",
-                (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
+                (Resource input) -> {
+                    List<Rule> rules = getRules(input);
                     assertThat(rules.size(), is(3));
                     checkRule(
                             findRule("0", rules),
@@ -112,8 +113,8 @@ public final class RulesDaoTest extends TestSupport {
     public void testParsingCombineRepeatRule() throws Exception {
         doWork(
                 "data/rules6.xml",
-                (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
+                (Resource input) -> {
+                    List<Rule> rules = getRules(input);
                     assertThat(rules.size(), is(1));
                     checkRule(
                             rules.get(0),
@@ -163,24 +164,24 @@ public final class RulesDaoTest extends TestSupport {
                         .withCombine("$1 OR $2")
                         .build();
         // get the existing rules, this should return an empty list
-        List<Rule> rules = RulesDao.getRules();
+        List<Rule> rules = getRules();
         assertThat(rules.size(), is(0));
         // we save rules A and B
         RulesDao.saveOrUpdateRule(ruleA);
         RulesDao.saveOrUpdateRule(ruleB);
-        rules = RulesDao.getRules();
+        rules = getRules();
         assertThat(rules.size(), is(2));
         checkRule(ruleA, findRule("0", rules));
         checkRule(ruleB, findRule("1", rules));
         // we update rule B using rule C
         RulesDao.saveOrUpdateRule(ruleC);
-        rules = RulesDao.getRules();
+        rules = getRules();
         assertThat(rules.size(), is(2));
         checkRule(ruleA, findRule("0", rules));
         checkRule(ruleC, findRule("1", rules));
         // we delete rule A
         RulesDao.deleteRules("0");
-        rules = RulesDao.getRules();
+        rules = getRules();
         assertThat(rules.size(), is(1));
         checkRule(ruleC, findRule("1", rules));
     }

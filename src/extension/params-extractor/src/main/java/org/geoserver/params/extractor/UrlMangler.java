@@ -4,6 +4,9 @@
  */
 package org.geoserver.params.extractor;
 
+import static org.geoserver.params.extractor.EchoParametersDao.getEchoParameters;
+import static org.geoserver.params.extractor.EchoParametersDao.getEchoParametersPath;
+
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -26,10 +29,9 @@ public class UrlMangler implements URLMangler {
     private List<EchoParameter> echoParameters;
 
     public UrlMangler(GeoServerDataDirectory dataDirectory) {
-        Resource resource = dataDirectory.get(EchoParametersDao.getEchoParametersPath());
-        echoParameters = EchoParametersDao.getEchoParameters(resource.in());
-        resource.addListener(
-                notify -> echoParameters = EchoParametersDao.getEchoParameters(resource.in()));
+        Resource resource = dataDirectory.get(getEchoParametersPath());
+        echoParameters = getEchoParameters(resource);
+        resource.addListener(notify -> echoParameters = getEchoParameters(resource));
     }
 
     private HttpServletRequest getHttpRequest(Request request) {

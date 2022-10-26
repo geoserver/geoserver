@@ -10,14 +10,14 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.util.IOUtils;
 import org.junit.After;
@@ -59,18 +59,13 @@ public abstract class TestSupport {
         }
     }
 
-    protected static void doWork(String resourcePath, Consumer<InputStream> consumer)
+    protected static void doWork(String resourcePath, Consumer<Resource> consumer)
             throws Exception {
         URL resource = EchoParametersDaoTest.class.getClassLoader().getResource(resourcePath);
         assertThat(resource, notNullValue());
         File file = new File(resource.getFile());
         assertThat(file.exists(), is(true));
-        try (InputStream inputStream = new FileInputStream(file)) {
-            if (inputStream.available() == 0) {
-                return;
-            }
-            consumer.accept(inputStream);
-        }
+        consumer.accept(Files.asResource(file));
     }
 
     protected void checkRule(Rule ruleA, Rule ruleB) {

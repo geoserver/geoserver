@@ -10,14 +10,13 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.util.IOUtils;
 import org.junit.After;
@@ -41,7 +40,7 @@ public abstract class TestSupport {
     protected ResourceStore resourceStore;
 
     @Before
-    public void voidSetup() throws IOException {
+    public void voidSetup() {
         deleteTestDirectoryQuietly();
         TEST_DIRECTORY.mkdir();
         resourceStore = new FileSystemResourceStore(TEST_DIRECTORY);
@@ -59,18 +58,12 @@ public abstract class TestSupport {
         }
     }
 
-    protected static void doWork(String resourcePath, Consumer<InputStream> consumer)
-            throws Exception {
+    protected static Resource getResource(String resourcePath) {
         URL resource = EchoParametersDaoTest.class.getClassLoader().getResource(resourcePath);
         assertThat(resource, notNullValue());
         File file = new File(resource.getFile());
         assertThat(file.exists(), is(true));
-        try (InputStream inputStream = new FileInputStream(file)) {
-            if (inputStream.available() == 0) {
-                return;
-            }
-            consumer.accept(inputStream);
-        }
+        return Files.asResource(file);
     }
 
     protected void checkRule(Rule ruleA, Rule ruleB) {
@@ -106,8 +99,8 @@ public abstract class TestSupport {
         }
     }
 
-    protected EchoParameter findEchoParameter(String id, List<EchoParameter> rules) {
-        return rules.stream()
+    protected EchoParameter findEchoParameter(String id, List<EchoParameter> echoParameters) {
+        return echoParameters.stream()
                 .filter(echoParameter -> echoParameter.getId().equals(id))
                 .findFirst()
                 .orElse(null);

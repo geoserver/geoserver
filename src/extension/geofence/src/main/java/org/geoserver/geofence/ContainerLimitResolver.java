@@ -14,6 +14,8 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.geofence.config.GeoFenceConfiguration;
+import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.CatalogModeDTO;
@@ -48,11 +50,20 @@ class ContainerLimitResolver {
 
     private String callerIp;
 
-    private String instanceName;
+    private GeoFenceConfiguration configuration;
 
     private GeoFenceAreaHelper areasHelper;
 
     private static final Logger LOGGER = Logging.getLogger(ContainerLimitResolver.class);
+
+    private enum RestrictionType {
+        GROUP_INTERSECT, // after intersection found group spatial filter intersects
+        GROUP_CLIP, // after intersection found group spatial filter clip
+        GROUP_BOTH, // after intersection found group spatial filter both types
+        LAYER_INTERSECT,
+        LAYER_CLIP,
+        LAYER_BOTH // no group spatial filter, might present a layer spatial filter
+    }
 
     /**
      * @param groups the layer groups containing the resource in the context of a WMS request
@@ -62,7 +73,7 @@ class ContainerLimitResolver {
      * @param layer the layer being requested.
      * @param workspace the workspace of the layer being requested.
      * @param callerIp the ip of the user.
-     * @param instanceName the instance name.
+     * @param configuration the geofence configuration.
      */
     ContainerLimitResolver(
             List<LayerGroupInfo> groups,
@@ -71,8 +82,8 @@ class ContainerLimitResolver {
             String layer,
             String workspace,
             String callerIp,
-            String instanceName) {
-        this(ruleService, authentication, layer, workspace, callerIp, instanceName);
+            GeoFenceConfiguration configuration) {
+        this(ruleService, authentication, layer, workspace, callerIp, configuration);
         this.groupList = groups;
     }
 
@@ -84,7 +95,7 @@ class ContainerLimitResolver {
      * @param layer the layer being requested.
      * @param workspace the workspace of the layer being requested.
      * @param callerIp the ip of the user.
-     * @param instanceName the instance name.
+     * @param configuration the geofence configuration.
      */
     ContainerLimitResolver(
             Collection<LayerGroupContainmentCache.LayerGroupSummary> groups,
@@ -93,8 +104,8 @@ class ContainerLimitResolver {
             String layer,
             String workspace,
             String callerIp,
-            String instanceName) {
-        this(ruleService, authentication, layer, workspace, callerIp, instanceName);
+            GeoFenceConfiguration configuration) {
+        this(ruleService, authentication, layer, workspace, callerIp, configuration);
         this.groupSummaries = groups;
     }
 
@@ -104,13 +115,13 @@ class ContainerLimitResolver {
             String layer,
             String workspace,
             String callerIp,
-            String instanceName) {
+            GeoFenceConfiguration configuration) {
         this.areasHelper = new GeoFenceAreaHelper();
         this.ruleService = ruleService;
         this.authentication = authentication;
         this.layer = layer;
         this.workspace = workspace;
-        this.instanceName = instanceName;
+        this.configuration = configuration;
         this.callerIp = callerIp;
     }
 
@@ -124,14 +135,14 @@ class ContainerLimitResolver {
         Map<String, AccessInfo> publishedAccessByRole = new HashMap<>();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (GrantedAuthority authority : authorities) {
-            RuleFilter filter =
-                    ruleFilterByRole(authority, instanceName, workspace, layer, callerIp);
+            RuleFilter filter = ruleFilterByRole(authority, workspace, layer, callerIp);
+            if (filter == null) continue;
             AccessInfo accessInfo = ruleService.getAccessInfo(filter);
-            if (accessInfo != null) publishedAccessByRole.put(authority.getAuthority(), accessInfo);
+            if (accessInfo != null && !isDeny(accessInfo))
+                publishedAccessByRole.put(authority.getAuthority(), accessInfo);
         }
         // retrieve the AccessInfo grouped by role
-        ListMultimap<String, AccessInfo> groupsByRoleAccess =
-                collectContainersAccessInfoByRole(authorities);
+        ListMultimap<String, AccessInfo> groupsByRoleAccess = collectContainersAccessInfoByRole();
         // first we restrict the access
         ListMultimap<RestrictionType, ProcessingResult> restrictionResults =
                 intersectAccesses(publishedAccessByRole, groupsByRoleAccess);
@@ -141,57 +152,87 @@ class ContainerLimitResolver {
 
     private ProcessingResult unionAccesses(
             ListMultimap<RestrictionType, ProcessingResult> restrictionResults) {
-        // get all the results
-        List<ProcessingResult> both = restrictionResults.get(RestrictionType.GROUP_BOTH);
-        List<ProcessingResult> intersectsOnly =
+
+        // groups results
+        List<ProcessingResult> bothGroup = restrictionResults.get(RestrictionType.GROUP_BOTH);
+        List<ProcessingResult> intersectsGroup =
                 restrictionResults.get(RestrictionType.GROUP_INTERSECT);
-        List<ProcessingResult> clipOnly = restrictionResults.get(RestrictionType.GROUP_CLIP);
-        List<ProcessingResult> none = restrictionResults.get(RestrictionType.NONE);
+        List<ProcessingResult> clipGroup = restrictionResults.get(RestrictionType.GROUP_CLIP);
+
+        // layers results
+        List<ProcessingResult> bothLayer = restrictionResults.get(RestrictionType.LAYER_BOTH);
+        List<ProcessingResult> intersectsLayer =
+                restrictionResults.get(RestrictionType.LAYER_INTERSECT);
+        List<ProcessingResult> clipLayer = restrictionResults.get(RestrictionType.LAYER_CLIP);
 
         // enlarge each result type separately
-        ProcessingResult intersectProcess = enlargeGroupProcessingResult(intersectsOnly);
-        ProcessingResult clipProcess = enlargeGroupProcessingResult(clipOnly);
-        ProcessingResult bothProcess = enlargeGroupProcessingResult(both);
-        ProcessingResult noneProcess = enlargeGroupProcessingResult(none);
+        ProcessingResult intersectProcessG = enlargeGroupProcessingResult(intersectsGroup);
+        ProcessingResult clipProcessG = enlargeGroupProcessingResult(clipGroup);
+        ProcessingResult bothProcessG = enlargeGroupProcessingResult(bothGroup);
+
+        ProcessingResult intersectProcessL = enlargeGroupProcessingResult(intersectsLayer);
+        ProcessingResult clipProcessL = enlargeGroupProcessingResult(clipLayer);
+        ProcessingResult bothProcessL = enlargeGroupProcessingResult(bothLayer);
 
         // do the final merge
         Geometry intersectArea = null;
         Geometry clipArea = null;
         CatalogModeDTO catalogModeDTO = null;
-        if (intersectProcess != null) {
-            intersectArea = intersectProcess.getIntersectArea();
-            catalogModeDTO = getLarger(null, intersectProcess.getCatalogModeDTO());
+        if (intersectProcessG != null) {
+            LOGGER.fine(() -> "Processing group areas with intersect type");
+            intersectArea = intersectProcessG.getIntersectArea();
+            clipArea = intersectProcessG.getClipArea();
+            catalogModeDTO = getLarger(null, intersectProcessG.getCatalogModeDTO());
         }
-        if (clipProcess != null) {
-            clipArea = clipProcess.getClipArea();
-            catalogModeDTO = getLarger(catalogModeDTO, clipProcess.getCatalogModeDTO());
-        }
-        // if we are in context of direct access to a layer
-        // we apply limit only if none of the group has null limits.
-        boolean lessRestrictive = groupSummaries != null;
-        if (bothProcess != null) {
+        if (clipProcessG != null) {
+            LOGGER.fine(() -> "Processing group areas with clip type");
+            clipArea = unionOrReturnIfNull(() -> clipProcessG.getClipArea(), clipArea, false);
             intersectArea =
                     unionOrReturnIfNull(
-                            () -> bothProcess.getIntersectArea(), intersectArea, lessRestrictive);
-            clipArea =
-                    unionOrReturnIfNull(() -> bothProcess.getClipArea(), clipArea, lessRestrictive);
-            catalogModeDTO = getLarger(catalogModeDTO, bothProcess.getCatalogModeDTO());
+                            () -> clipProcessG.getIntersectArea(), intersectArea, false);
+            catalogModeDTO = getLarger(catalogModeDTO, clipProcessG.getCatalogModeDTO());
         }
-        if (noneProcess != null) {
+
+        if (bothProcessG != null) {
+            LOGGER.fine(() -> "Processing group areas with both intersects and clip types");
+            // if in context of a direct access to the layer, we apply the container limits
+            // only if there is no group with null limits.
+            boolean favourNull = groupSummaries != null;
             intersectArea =
                     unionOrReturnIfNull(
-                            () -> noneProcess.getIntersectArea(), intersectArea, lessRestrictive);
-            clipArea =
-                    unionOrReturnIfNull(() -> noneProcess.getClipArea(), clipArea, lessRestrictive);
-            catalogModeDTO = getLarger(catalogModeDTO, noneProcess.getCatalogModeDTO());
+                            () -> bothProcessG.getIntersectArea(), intersectArea, favourNull);
+            clipArea = unionOrReturnIfNull(() -> bothProcessG.getClipArea(), clipArea, favourNull);
+            catalogModeDTO = getLarger(catalogModeDTO, bothProcessG.getCatalogModeDTO());
         }
+
+        if (intersectProcessL != null) {
+            LOGGER.fine(() -> "Processing layer intersect areas if present");
+            intersectArea =
+                    unionOrReturnIfNull(
+                            () -> intersectProcessL.getIntersectArea(), intersectArea, false);
+            catalogModeDTO = getLarger(catalogModeDTO, intersectProcessL.getCatalogModeDTO());
+        }
+        if (clipProcessL != null) {
+            LOGGER.fine(() -> "Processing layer clip areas if present");
+            clipArea = unionOrReturnIfNull(() -> clipProcessL.getClipArea(), clipArea, false);
+            catalogModeDTO = getLarger(catalogModeDTO, clipProcessL.getCatalogModeDTO());
+        }
+
+        if (bothProcessL != null) {
+            LOGGER.fine(() -> "Processing layer areas with both intersects and clip types");
+            intersectArea =
+                    unionOrReturnIfNull(
+                            () -> bothProcessL.getIntersectArea(), intersectArea, false);
+            clipArea = unionOrReturnIfNull(() -> bothProcessL.getClipArea(), clipArea, false);
+            catalogModeDTO = getLarger(catalogModeDTO, bothProcessL.getCatalogModeDTO());
+        }
+
         return new ProcessingResult(intersectArea, clipArea, catalogModeDTO);
     }
 
     private Geometry unionOrReturnIfNull(
-            Supplier<Geometry> supplier, Geometry area, boolean lessRestrictive) {
-        if (area != null)
-            area = this.areasHelper.reprojectAndUnion(supplier.get(), area, lessRestrictive);
+            Supplier<Geometry> supplier, Geometry area, boolean favourNull) {
+        if (area != null) area = areasHelper.reprojectAndUnion(supplier.get(), area, favourNull);
         else area = supplier.get();
         return area;
     }
@@ -202,7 +243,7 @@ class ContainerLimitResolver {
         CatalogModeDTO catalogModeDTO = null;
         Geometry intersectArea = null;
         Geometry clipArea = null;
-        boolean lessRestrictive = groupSummaries != null;
+        boolean favourNull = groupSummaries != null;
         for (int i = 0; i < processingResult.size(); i++) {
             ProcessingResult pr = processingResult.get(i);
             catalogModeDTO = getLarger(catalogModeDTO, pr.getCatalogModeDTO());
@@ -213,9 +254,8 @@ class ContainerLimitResolver {
                 clipArea = allowedAreaClip;
             } else {
                 intersectArea =
-                        areasHelper.reprojectAndUnion(intersectArea, allowedArea, lessRestrictive);
-                clipArea =
-                        areasHelper.reprojectAndUnion(clipArea, allowedAreaClip, lessRestrictive);
+                        areasHelper.reprojectAndUnion(intersectArea, allowedArea, favourNull);
+                clipArea = areasHelper.reprojectAndUnion(clipArea, allowedAreaClip, favourNull);
             }
         }
 
@@ -260,6 +300,8 @@ class ContainerLimitResolver {
         boolean groupOnIntersect = false;
         boolean groupOnClip = false;
         boolean lessRestrictive = groupSummaries != null;
+        Geometry groupsIntersectArea = null;
+        Geometry groupClipArea = null;
         if (groupsAccessInfo != null && !groupsAccessInfo.isEmpty()) {
             for (int i = 0; i < groupsAccessInfo.size(); i++) {
                 AccessInfo accessInfo = groupsAccessInfo.get(i);
@@ -273,26 +315,22 @@ class ContainerLimitResolver {
 
                 if (i == 0) {
                     // be sure we have an initial value.
-                    if (resIntersectArea == null) resIntersectArea = area;
-                    else
-                        resIntersectArea =
-                                areasHelper.reprojectAndIntersect(
-                                        resIntersectArea, area, lessRestrictive);
-                    if (resClipArea == null) resClipArea = clipArea;
-                    else
-                        resClipArea =
-                                areasHelper.reprojectAndIntersect(
-                                        resClipArea, clipArea, lessRestrictive);
+                    groupsIntersectArea = area;
+                    groupClipArea = clipArea;
                 } else {
-                    resIntersectArea =
+                    groupsIntersectArea =
                             areasHelper.reprojectAndIntersect(
-                                    resIntersectArea, area, lessRestrictive);
-                    resClipArea =
+                                    groupsIntersectArea, area, lessRestrictive);
+                    groupClipArea =
                             areasHelper.reprojectAndIntersect(
-                                    resClipArea, clipArea, lessRestrictive);
+                                    groupClipArea, clipArea, lessRestrictive);
                 }
             }
         }
+        resIntersectArea =
+                areasHelper.reprojectAndIntersect(resIntersectArea, groupsIntersectArea, false);
+        resClipArea = areasHelper.reprojectAndIntersect(resClipArea, groupClipArea, false);
+
         ProcessingResult result = new ProcessingResult(resIntersectArea, resClipArea, catalogMode);
         // dived the results according to the fact that an intersect or clip, or both or none
         // were found in the layer group. This is needed to properly handle the enlarging of access
@@ -300,18 +338,21 @@ class ContainerLimitResolver {
         if (groupOnClip && groupOnIntersect) multiMap.put(RestrictionType.GROUP_BOTH, result);
         else if (groupOnClip) multiMap.put(RestrictionType.GROUP_CLIP, result);
         else if (groupOnIntersect) multiMap.put(RestrictionType.GROUP_INTERSECT, result);
-        else multiMap.put(RestrictionType.NONE, result);
+        else if (resIntersectArea != null && resClipArea != null)
+            multiMap.put(RestrictionType.LAYER_BOTH, result);
+        else if (resIntersectArea != null) multiMap.put(RestrictionType.LAYER_INTERSECT, result);
+        else if (resClipArea != null) multiMap.put(RestrictionType.LAYER_CLIP, result);
     }
 
     // collect the containers area by role.
-    private ListMultimap<String, AccessInfo> collectContainersAccessInfoByRole(
-            Collection<? extends GrantedAuthority> authorities) {
+    private ListMultimap<String, AccessInfo> collectContainersAccessInfoByRole() {
         ListMultimap<String, AccessInfo> groupAccessInfoByRole = ArrayListMultimap.create();
         if (groupSummaries == null)
-            collectGroupAccessInfoByRole(groupList, authorities, groupAccessInfoByRole);
+            collectGroupAccessInfoByRole(groupList, authentication, groupAccessInfoByRole);
         else
             // in context of a direct access to a layer contained in some tree group
-            collectGroupSummaryAccessInfoByRole(groupSummaries, authorities, groupAccessInfoByRole);
+            collectGroupSummaryAccessInfoByRole(
+                    groupSummaries, authentication.getAuthorities(), groupAccessInfoByRole);
         return groupAccessInfoByRole;
     }
 
@@ -329,21 +370,15 @@ class ContainerLimitResolver {
                 // temporary map to do additional checks before adding access info
                 // to multimap.
                 Map<String, AccessInfo> map = new HashMap<>(authorities.size());
-                int wktCounter = 0;
                 for (GrantedAuthority authority : authorities) {
-                    RuleFilter filter =
-                            ruleFilterByRole(authority, instanceName, workspace, layer, callerIp);
+                    RuleFilter filter = ruleFilterByRole(authority, workspace, layer, callerIp);
+                    if (filter == null) continue;
                     AccessInfo accessInfo = ruleService.getAccessInfo(filter);
-                    if (accessInfo.getAreaWkt() != null || accessInfo.getClipAreaWkt() != null)
-                        wktCounter++;
-                    map.put(authority.getAuthority(), accessInfo);
+                    if (!isDeny(accessInfo)) {
+                        map.put(authority.getAuthority(), accessInfo);
+                    }
                 }
-                // if not all the access info had a wkt area of any type
-                // we remove the one without the area to allow the enlarging of access
-                // when one of the named tree involved doesn't have any area defined
-                if (wktCounter != 0 && wktCounter < map.size())
-                    map.values()
-                            .removeIf(v -> v.getClipAreaWkt() == null && v.getAreaWkt() == null);
+
                 map.keySet().forEach(k -> groupAccessInfoByRole.put(k, map.get(k)));
             }
         }
@@ -352,7 +387,7 @@ class ContainerLimitResolver {
     // collects group AccessInfo by Role (when layer group is requested)
     private void collectGroupAccessInfoByRole(
             List<LayerGroupInfo> groupList,
-            Collection<? extends GrantedAuthority> authorities,
+            Authentication user,
             ListMultimap<String, AccessInfo> groupAccessInfoByRole) {
         for (LayerGroupInfo group : groupList) {
             String[] nameParts = group.prefixedName().split(":");
@@ -364,11 +399,8 @@ class ContainerLimitResolver {
                 workspace = nameParts[0];
                 layer = nameParts[1];
             }
-            for (GrantedAuthority authority : authorities) {
-                RuleFilter filter =
-                        ruleFilterByRole(authority, instanceName, workspace, layer, callerIp);
-                AccessInfo accessInfo = ruleService.getAccessInfo(filter);
-                groupAccessInfoByRole.put(authority.getAuthority(), accessInfo);
+            if (!isUserAllowed(layer, workspace)) {
+                addAccessInfoByRole(groupAccessInfoByRole, user.getAuthorities(), layer, workspace);
             }
         }
     }
@@ -396,6 +428,52 @@ class ContainerLimitResolver {
         if (CatalogModeDTO.MIXED == m1 || CatalogModeDTO.MIXED == m2) return CatalogModeDTO.MIXED;
 
         return CatalogModeDTO.HIDE;
+    }
+
+    private boolean isUserAllowed(String layer, String workspace) {
+        if (!configuration.isUseRolesToFilter() || configuration.getRoles().isEmpty()) {
+            // if this query result in allowing the user no need to go on with the
+            // limit enlargement/restriction for this group.
+            RuleFilterBuilder builder = new RuleFilterBuilder(configuration);
+            RuleFilter filter =
+                    builder.withUser(authentication)
+                            .withIpAddress(callerIp)
+                            .withWorkspace(workspace)
+                            .withLayer(layer)
+                            .withRequest(Dispatcher.REQUEST.get())
+                            .build();
+            AccessInfo accessInfo = ruleService.getAccessInfo(filter);
+            LOGGER.log(
+                    Level.FINE,
+                    () ->
+                            "User allowed for the entire layer group. No limit processing is needed.");
+            return isAllow(accessInfo)
+                    && accessInfo.getAreaWkt() == null
+                    && accessInfo.getClipAreaWkt() == null;
+        }
+        return false;
+    }
+
+    private void addAccessInfoByRole(
+            ListMultimap<String, AccessInfo> multimap,
+            Collection<? extends GrantedAuthority> authorities,
+            String layer,
+            String workspace) {
+        for (GrantedAuthority authority : authorities) {
+            RuleFilter filter = ruleFilterByRole(authority, workspace, layer, callerIp);
+            if (filter == null) continue;
+            AccessInfo accessInfo = ruleService.getAccessInfo(filter);
+            // we have at least one allow. No limits will be taken in consideration.
+            multimap.put(authority.getAuthority(), accessInfo);
+        }
+    }
+
+    private boolean isAllow(AccessInfo accessInfo) {
+        return accessInfo != null && accessInfo.getGrant().equals(GrantType.ALLOW);
+    }
+
+    private boolean isDeny(AccessInfo accessInfo) {
+        return accessInfo != null && accessInfo.getGrant().equals(GrantType.DENY);
     }
 
     /** Data class meant to return a result for the whole limit resolution. */
@@ -431,61 +509,37 @@ class ContainerLimitResolver {
         }
     }
 
-    private enum RestrictionType {
-        GROUP_INTERSECT,
-        GROUP_CLIP,
-        GROUP_BOTH,
-        NONE
+    private RuleFilter ruleFilterByRole(
+            GrantedAuthority grantedAuthority, String workspace, String layer, String ipAddress) {
+        RuleFilterBuilder builder = new RuleFilterBuilder(configuration);
+        Request request = Dispatcher.REQUEST.get();
+        builder =
+                builder.withLayer(layer)
+                        .withWorkspace(workspace)
+                        .withIpAddress(ipAddress)
+                        .withRequest(request);
+        RuleFilter filter = builder.build();
+        // filter is invalid if the role name is not among configured one
+        // use roles to filter option is set.
+        if (filterIsInValid(builder, grantedAuthority.getAuthority())) {
+            LOGGER.log(
+                    Level.FINE,
+                    () ->
+                            "Skipping layegroup limits resolution for role "
+                                    + grantedAuthority.getAuthority()
+                                    + " because not among allowed ones");
+            return null;
+        }
+        // is valid then we set role and user name.
+        filter.setUser(authentication.getName());
+        filter.setRole(grantedAuthority.getAuthority());
+        return filter;
     }
 
-    private RuleFilter ruleFilterByRole(
-            GrantedAuthority grantedAuthority,
-            String instanceName,
-            String workspace,
-            String layer,
-            String ipAddress) {
-        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
-        ruleFilter.setRole(grantedAuthority.getAuthority());
-        ruleFilter.setInstance(instanceName);
-        ruleFilter.setUser(RuleFilter.SpecialFilterType.ANY);
-        // get info from the current request
-        String service = null;
-        String request = null;
-        Request owsRequest = Dispatcher.REQUEST.get();
-        if (owsRequest != null) {
-            service = owsRequest.getService();
-            request = owsRequest.getRequest();
-        }
-        if (service != null) {
-            if ("*".equals(service)) {
-                ruleFilter.setService(RuleFilter.SpecialFilterType.ANY);
-            } else {
-                ruleFilter.setService(service);
-            }
-        } else {
-            ruleFilter.setService(RuleFilter.SpecialFilterType.DEFAULT);
-        }
-
-        if (request != null) {
-            if ("*".equals(request)) {
-                ruleFilter.setRequest(RuleFilter.SpecialFilterType.ANY);
-            } else {
-                ruleFilter.setRequest(request);
-            }
-        } else {
-            ruleFilter.setRequest(RuleFilter.SpecialFilterType.DEFAULT);
-        }
-        ruleFilter.setWorkspace(workspace);
-        ruleFilter.setLayer(layer);
-        if (ipAddress != null) {
-            ruleFilter.setSourceAddress(ipAddress);
-        } else {
-            LOGGER.log(Level.WARNING, "No source IP address found");
-            ruleFilter.setSourceAddress(RuleFilter.SpecialFilterType.DEFAULT);
-        }
-
-        LOGGER.log(Level.FINE, "ResourceInfo filter: {0}", ruleFilter);
-
-        return ruleFilter;
+    private boolean filterIsInValid(RuleFilterBuilder builder, String authority) {
+        builder.withUser(authentication);
+        return configuration.isUseRolesToFilter()
+                && !configuration.getRoles().isEmpty()
+                && !builder.getFilteredRoles().contains(authority);
     }
 }

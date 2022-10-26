@@ -68,7 +68,7 @@ class GeoFenceAreaHelper {
      */
     Geometry reprojectAndUnion(Geometry first, Geometry second, boolean lessRestrictive) {
         BiFunction<Geometry, Geometry, Geometry> union = (g1, g2) -> g1.union(g2);
-        if (lessRestrictive) return reprojectAndApplyOpLessRestrictive(first, second, union);
+        if (lessRestrictive) return reprojectAndApplyOpFavourNull(first, second, union);
         else return reprojectAndApplyOperation(first, second, union);
     }
 
@@ -77,13 +77,13 @@ class GeoFenceAreaHelper {
      *
      * @param first the first geometry to merge.
      * @param second the other geometry as a WKT.
-     * @param lessRestrictive if true when one of the geometry is null, null will be returned.
-     *     Otherwise the other geometry will be returned.
+     * @param favourNull if true when one of the geometry is null, null will be returned. Otherwise
+     *     the other geometry will be returned.
      * @return the result of intersection.
      */
-    Geometry reprojectAndIntersect(Geometry first, Geometry second, boolean lessRestrictive) {
+    Geometry reprojectAndIntersect(Geometry first, Geometry second, boolean favourNull) {
         BiFunction<Geometry, Geometry, Geometry> intersection = (g1, g2) -> g1.intersection(g2);
-        if (lessRestrictive) return reprojectAndApplyOpLessRestrictive(first, second, intersection);
+        if (favourNull) return reprojectAndApplyOpFavourNull(first, second, intersection);
         else return reprojectAndApplyOperation(first, second, intersection);
     }
 
@@ -95,7 +95,7 @@ class GeoFenceAreaHelper {
      * @param operation a bifunction with the operation to apply to the geometries.
      * @return the result of intersection.
      */
-    Geometry reprojectAndApplyOpLessRestrictive(
+    Geometry reprojectAndApplyOpFavourNull(
             Geometry first, Geometry second, BiFunction<Geometry, Geometry, Geometry> operation) {
         if (first == null || second == null) return null;
         return reprojectAndApplyOperation(first, second, operation);

@@ -4,7 +4,11 @@
  */
 package org.geoserver.config;
 
+import static org.geoserver.platform.resource.Resource.Type.RESOURCE;
+import static org.geoserver.platform.resource.Resource.Type.UNDEFINED;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -54,6 +58,9 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
 
     @Override
     public InputStream getInputStream() throws IOException {
+        if (resource.getType() != RESOURCE) {
+            throw new FileNotFoundException(resource.path());
+        }
         return resource.in();
     }
 
@@ -63,8 +70,13 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
     }
 
     @Override
+    public boolean isFile() {
+        return resource != null && resource.getType() == RESOURCE;
+    }
+
+    @Override
     public boolean isReadable() {
-        return Resources.canRead(resource);
+        return resource.getType() != UNDEFINED && Resources.canRead(resource);
     }
 
     @Override
@@ -74,22 +86,30 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
 
     @Override
     public URL getURL() throws IOException {
-        return Resources.find(resource).toURI().toURL();
+        return getFile().toURI().toURL();
     }
 
     @Override
     public URI getURI() throws IOException {
-        return Resources.find(resource).toURI();
+        return getFile().toURI();
     }
 
+    /**
+     * @return a File handle for this resource.
+     * @throws FileNotFoundException if the resource is UNDEFINED.
+     */
     @Override
     public File getFile() throws IOException {
-        return Resources.find(resource);
+        File file = Resources.find(resource);
+        if (file == null) {
+            throw new FileNotFoundException(resource.path());
+        }
+        return file;
     }
 
     @Override
     public long contentLength() throws IOException {
-        return Resources.find(resource).length();
+        return getFile().length();
     }
 
     @Override

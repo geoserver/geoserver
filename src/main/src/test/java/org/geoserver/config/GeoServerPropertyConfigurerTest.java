@@ -8,7 +8,9 @@ package org.geoserver.config;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
@@ -33,6 +35,17 @@ public class GeoServerPropertyConfigurerTest {
     @After
     public void tearDown() throws Exception {
         ctx.close();
+    }
+
+    @Test
+    public void testConfigFileCreated() throws IOException {
+        Properties p = new Properties();
+        try (FileInputStream is = new FileInputStream("target/foo.properties")) {
+            p.load(is);
+        }
+        assertEquals(p.size(), 2);
+        assertEquals(p.get("prop1"), "value1");
+        assertEquals(p.get("prop2"), "value2");
     }
 
     @Test

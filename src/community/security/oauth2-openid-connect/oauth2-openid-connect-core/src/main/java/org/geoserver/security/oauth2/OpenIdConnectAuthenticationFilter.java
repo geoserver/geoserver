@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import org.geoserver.platform.GeoServerExtensions;

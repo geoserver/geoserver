@@ -5,13 +5,24 @@
 package org.geoserver.web.data.layer;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import org.apache.wicket.Component;
+import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.SQLDialect;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.junit.Test;
+import org.locationtech.jts.geom.Polygon;
+import org.mockito.Mockito;
 
 public class SqlViewEditPageTest extends AbstractSqlViewPageTest {
 
@@ -49,5 +60,42 @@ public class SqlViewEditPageTest extends AbstractSqlViewPageTest {
         Component component =
                 tester.getComponentFromLastRenderedPage("form:parameters:listContainer:items:49");
         assertNotNull(component);
+    }
+
+    @Test
+    public void testSqlViewConnectionLeak() throws IOException, SQLException {
+        login();
+
+        // build a virtual table
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName("Forests");
+        VirtualTable vt = new VirtualTable("test", "SELECT * FROM \"Forests\"");
+        info.getMetadata().put(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, vt);
+        FeatureTypeInfo ft = info;
+
+        // this assumes the resource pool will not drop the store, which it shuld not indeed
+        JDBCDataStore store = (JDBCDataStore) ft.getStore().getDataStore(null);
+        SQLDialect spy = spy(store.getSQLDialect());
+        doReturn(Polygon.class)
+                .when(spy)
+                .getMapping("VARBINARY"); // work around lack of geometry metadata
+        store.setSQLDialect(spy);
+
+        // start the tester page
+        tester.startPage(new SQLViewEditPage(ft, null));
+        tester.assertRenderedPage(SQLViewEditPage.class);
+        tester.assertNoErrorMessage();
+
+        FormTester formTester = tester.newFormTester("form");
+        formTester.setValue("guessGeometrySrid", true);
+
+        // loop enough times on the refresh that the connection pool should exhaust connections
+        // if not released properly
+        final int LOOPS = 100;
+        for (int i = 0; i < LOOPS; i++) {
+            tester.executeAjaxEvent("form:refresh", "click");
+        }
+
+        // check the createCRS has been called 50 times with a valid connection
+        verify(spy, Mockito.atLeast(50)).createCRS(anyInt(), notNull());
     }
 }

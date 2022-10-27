@@ -6,10 +6,9 @@
 package org.geoserver.wfs;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.Predicates;
-import org.geoserver.catalog.util.CloseableIterator;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** NamespaceContext based on GeoServer catalog. */
@@ -30,16 +29,13 @@ public class CatalogNamespaceSupport extends NamespaceSupport {
 
     @Override
     public Enumeration getPrefixes() {
-        @SuppressWarnings("PMD.CloseResource") // best effort closing
-        final CloseableIterator<NamespaceInfo> it =
-                catalog.list(NamespaceInfo.class, Predicates.acceptAll());
+        final Iterator<NamespaceInfo> it = catalog.getNamespaces().iterator();
         return new Enumeration() {
             @Override
             public boolean hasMoreElements() {
                 if (it.hasNext()) {
                     return true;
                 } else {
-                    it.close();
                     return false;
                 }
             }

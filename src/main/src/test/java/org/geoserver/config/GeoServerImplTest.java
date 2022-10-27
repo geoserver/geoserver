@@ -20,12 +20,20 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
@@ -282,5 +290,91 @@ public class GeoServerImplTest {
         geoServer.save(logging);
 
         assertEquals(logging, geoServer.getLogging());
+    }
+
+    @Test
+    public void testWorkspaceSettingsThreadSafety() throws Exception {
+        final int parallelism = 8;
+        ExecutorService executor = new ForkJoinPool(parallelism);
+        List<WorkspaceInfo> workspaces = addWorkspaces(1_000);
+
+        executor.submit(() -> workspaces.stream().parallel().forEach(this::testWorkspaceSettings))
+                .get();
+    }
+
+    private void testWorkspaceSettings(WorkspaceInfo ws) {
+        SettingsInfo settings = geoServer.getFactory().createSettings();
+        settings.setNumDecimals(7);
+        settings.setWorkspace(ws);
+        geoServer.add(settings);
+        SettingsInfo s = geoServer.getSettings(ws);
+        assertEquals(settings, s);
+        s.setCharset("ISO-8859-1");
+        ContactInfoImpl contact = new ContactInfoImpl();
+        contact.setContactEmail("john.doe@test.com");
+        s.setContact(contact);
+        geoServer.save(s);
+        assertEquals(s, geoServer.getSettings(ws));
+        geoServer.remove(settings);
+        assertNull(geoServer.getSettings(ws));
+    }
+
+    private List<WorkspaceInfo> addWorkspaces(int count) {
+        return IntStream.range(0, count)
+                .mapToObj(this::createWorkspace)
+                .collect(Collectors.toList());
+    }
+
+    private WorkspaceInfo createWorkspace(int i) {
+        Catalog catalog = geoServer.getCatalog();
+        WorkspaceInfo ws = catalog.getFactory().createWorkspace();
+        String name = "testws-" + i;
+        ws.setName(name);
+        catalog.add(ws);
+        return catalog.getWorkspaceByName(name);
+    }
+
+    @Test
+    public void testWorkspaceServicesThreadSafety() throws Exception {
+        final int parallelism = 8;
+        ExecutorService executor = new ForkJoinPool(parallelism);
+        List<WorkspaceInfo> workspaces = addWorkspaces(1_000);
+
+        executor.submit(() -> workspaces.stream().parallel().forEach(this::testWorkspaceServices))
+                .get();
+    }
+
+    private void testWorkspaceServices(WorkspaceInfo ws) {
+        ServiceInfo s1 = geoServer.getFactory().createService();
+        s1.setWorkspace(ws);
+        ((ServiceInfoImpl) s1).setId(ws.getName() + "-s1");
+        s1.setName("s1");
+        s1.setTitle("foo");
+
+        ServiceInfo s2 = geoServer.getFactory().createService();
+        s2.setWorkspace(ws);
+        ((ServiceInfoImpl) s2).setId(ws.getName() + "-s2");
+        s2.setName("s2");
+        s2.setTitle("bar");
+
+        geoServer.add(s1);
+        geoServer.add(s2);
+
+        s1 = geoServer.getServiceByName(ws, "s1", ServiceInfo.class);
+        assertNotNull(s1);
+        s1.setTitle("changed");
+        geoServer.save(s1);
+
+        s2 = geoServer.getServiceByName(ws, "s2", ServiceInfo.class);
+        assertNotNull(s2);
+        s2.setTitle("changed");
+        geoServer.save(s2);
+
+        Collection<? extends ServiceInfo> services = geoServer.getServices(ws);
+        assertEquals(new HashSet<>(Arrays.asList(s1, s2)), new HashSet<>(services));
+
+        geoServer.remove(s1);
+        geoServer.remove(s2);
+        assertEquals(0, geoServer.getServices(ws).size());
     }
 }

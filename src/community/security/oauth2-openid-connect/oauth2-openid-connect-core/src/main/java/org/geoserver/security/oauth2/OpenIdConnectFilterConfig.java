@@ -89,4 +89,12 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
             sb.append("&response_mode=").append(responseMode);
         return sb;
     }
+
+    protected StringBuilder buildEndSessionUrl(final String idToken) {
+        final StringBuilder logoutUri = new StringBuilder(getLogoutUri());
+        if (idToken != null) {
+            logoutUri.append("?").append("id_token_hint=").append(idToken);
+        }
+        return logoutUri;
+    }
 }

@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Files;
@@ -41,7 +40,7 @@ public abstract class TestSupport {
     protected ResourceStore resourceStore;
 
     @Before
-    public void voidSetup() throws IOException {
+    public void voidSetup() {
         deleteTestDirectoryQuietly();
         TEST_DIRECTORY.mkdir();
         resourceStore = new FileSystemResourceStore(TEST_DIRECTORY);
@@ -59,13 +58,12 @@ public abstract class TestSupport {
         }
     }
 
-    protected static void doWork(String resourcePath, Consumer<Resource> consumer)
-            throws Exception {
+    protected static Resource getResource(String resourcePath) {
         URL resource = EchoParametersDaoTest.class.getClassLoader().getResource(resourcePath);
         assertThat(resource, notNullValue());
         File file = new File(resource.getFile());
         assertThat(file.exists(), is(true));
-        consumer.accept(Files.asResource(file));
+        return Files.asResource(file);
     }
 
     protected void checkRule(Rule ruleA, Rule ruleB) {
@@ -101,8 +99,8 @@ public abstract class TestSupport {
         }
     }
 
-    protected EchoParameter findEchoParameter(String id, List<EchoParameter> rules) {
-        return rules.stream()
+    protected EchoParameter findEchoParameter(String id, List<EchoParameter> echoParameters) {
+        return echoParameters.stream()
                 .filter(echoParameter -> echoParameter.getId().equals(id))
                 .findFirst()
                 .orElse(null);

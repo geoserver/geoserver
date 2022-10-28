@@ -4,75 +4,66 @@
  */
 package org.geoserver.params.extractor;
 
-import static org.geoserver.params.extractor.EchoParametersDao.getEchoParameters;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
-import org.geoserver.platform.resource.Resource;
 import org.junit.Test;
 
 public final class EchoParametersDaoTest extends TestSupport {
 
-    @Test
-    public void testParsingEmptyFile() throws Exception {
-        doWork(
-                "data/echoParameters1.xml",
-                (Resource input) -> {
-                    List<EchoParameter> echoParameters = getEchoParameters(input);
-                    assertThat(echoParameters.size(), is(0));
-                });
+    static List<EchoParameter> getEchoParameters() {
+        return EchoParametersDao.getEchoParameters();
+    }
+
+    static List<EchoParameter> getEchoParameters(String path) {
+        return EchoParametersDao.getEchoParameters(getResource(path));
     }
 
     @Test
-    public void testParsingEmptyEchoParameters() throws Exception {
-        doWork(
-                "data/echoParameters2.xml",
-                (Resource input) -> {
-                    List<EchoParameter> echoParameters = getEchoParameters(input);
-                    assertThat(echoParameters.size(), is(0));
-                });
+    public void testParsingEmptyFile() {
+        List<EchoParameter> echoParameters = getEchoParameters("data/echoParameters1.xml");
+        assertThat(echoParameters.size(), is(0));
     }
 
     @Test
-    public void testParsingEchoParameter() throws Exception {
-        doWork(
-                "data/echoParameters3.xml",
-                (Resource input) -> {
-                    List<EchoParameter> echoParameters = getEchoParameters(input);
-                    assertThat(echoParameters.size(), is(1));
-                    checkEchoParameter(
-                            echoParameters.get(0),
-                            new EchoParameterBuilder()
-                                    .withId("1")
-                                    .withParameter("CQL_FILTER")
-                                    .withActivated(true)
-                                    .build());
-                });
+    public void testParsingEmptyEchoParameters() {
+        List<EchoParameter> echoParameters = getEchoParameters("data/echoParameters2.xml");
+        assertThat(echoParameters.size(), is(0));
     }
 
     @Test
-    public void testParsingMultipleEchoParameters() throws Exception {
-        doWork(
-                "data/echoParameters4.xml",
-                (Resource input) -> {
-                    List<EchoParameter> echoParameters = getEchoParameters(input);
-                    assertThat(echoParameters.size(), is(2));
-                    checkEchoParameter(
-                            findEchoParameter("0", echoParameters),
-                            new EchoParameterBuilder()
-                                    .withId("0")
-                                    .withParameter("CQL_FILTER")
-                                    .withActivated(true)
-                                    .build());
-                    checkEchoParameter(
-                            findEchoParameter("1", echoParameters),
-                            new EchoParameterBuilder()
-                                    .withId("1")
-                                    .withParameter("BBOX")
-                                    .withActivated(false)
-                                    .build());
-                });
+    public void testParsingEchoParameter() {
+        List<EchoParameter> echoParameters = getEchoParameters("data/echoParameters3.xml");
+        assertThat(echoParameters.size(), is(1));
+        checkEchoParameter(
+                echoParameters.get(0),
+                new EchoParameterBuilder()
+                        .withId("1")
+                        .withParameter("CQL_FILTER")
+                        .withActivated(true)
+                        .build());
+        ;
+    }
+
+    @Test
+    public void testParsingMultipleEchoParameters() {
+        List<EchoParameter> echoParameters = getEchoParameters("data/echoParameters4.xml");
+        assertThat(echoParameters.size(), is(2));
+        checkEchoParameter(
+                findEchoParameter("0", echoParameters),
+                new EchoParameterBuilder()
+                        .withId("0")
+                        .withParameter("CQL_FILTER")
+                        .withActivated(true)
+                        .build());
+        checkEchoParameter(
+                findEchoParameter("1", echoParameters),
+                new EchoParameterBuilder()
+                        .withId("1")
+                        .withParameter("BBOX")
+                        .withActivated(false)
+                        .build());
     }
 
     @Test

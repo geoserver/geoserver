@@ -1,16 +1,15 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2022 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.platform.resource;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.function.IOFunction;
 
 /**
  * Resource used for configuration storage.
@@ -24,7 +23,7 @@ import org.apache.commons.io.IOUtils;
  */
 public interface Resource {
     /** Enumeration indicating kind of resource used. */
-    public enum Type {
+    enum Type {
         /**
          * Resource directory (contents available using {@link Resource#list()}).
          *
@@ -46,9 +45,9 @@ public interface Resource {
     }
 
     /** Token used to reserve resource for use. */
-    public interface Lock {
+    interface Lock {
         /** Releases the lock on the specified key */
-        public void release();
+        void release();
     }
 
     /**
@@ -194,6 +193,44 @@ public interface Resource {
     default byte[] getContents() throws IOException {
         try (InputStream in = in()) {
             return org.apache.commons.io.IOUtils.toByteArray(in);
+        }
+    }
+
+    /**
+     * Read and convert this resource into a result T using a converter function. The Reader
+     * function may (but does not need to) throw an IOException. Returns null if this resource does
+     * not exist. Reading a {@code TYPE.DIRECTORY} resource will raise an IOException.
+     *
+     * @param reader converter function to read the data.
+     * @return T or null, if the resource does not exist.
+     * @param <T> type of expected result.
+     * @throws IOException if an IOException occurred during read.
+     */
+    default <T> T read(IOFunction<InputStream, T> reader) throws IOException {
+        if (getType() != Type.UNDEFINED) {
+            try (InputStream in = in()) {
+                return reader.apply(in);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Read and convert this resource into an {@code Optional} result T using a converter function.
+     * The Reader function may (but does not need to) throw an IOException. Returns an empty {@code
+     * Optional} if this resource does not exist.
+     *
+     * @param reader converter function to read the data.
+     * @return an {@code Optional} or an empty {@code Optional}.
+     * @param <T> type of expected result.
+     * @throws UncheckedIOException if an IOException occurred during read.
+     */
+    default <T> Optional<T> optionalRead(IOFunction<InputStream, T> reader) {
+        try {
+            return Optional.ofNullable(read(reader));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 

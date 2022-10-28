@@ -4,6 +4,7 @@
  */
 package org.geoserver.params.extractor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -63,21 +64,25 @@ public final class EchoParametersDao {
      * @return a list of EchoParameter or an empty list if the resource does not exist.
      */
     public static List<EchoParameter> getEchoParameters(Resource resource) {
-        if (resource.getType() == Resource.Type.RESOURCE) {
-            try (InputStream inputStream = resource.in()) {
-                if (inputStream.available() == 0) {
-                    Utils.debug(LOGGER, "Echo parameters file seems to be empty.");
-                } else {
-                    EchoParametersList list = (EchoParametersList) xStream.fromXML(inputStream);
-                    return list.parameters == null ? new ArrayList<>() : list.parameters;
-                }
-            } catch (Exception exception) {
-                throw Utils.exception(exception, "Error parsing echo parameters files.");
+        return resource.optionalRead(EchoParametersDao::read).orElseGet(ArrayList::new);
+    }
+
+    /**
+     * Read a list of EchoParameter from an InputStream.
+     *
+     * @param inputStream to read from.
+     * @return a list of EchoParameter or null.
+     * @throws IOException if reading went wrong.
+     */
+    public static List<EchoParameter> read(InputStream inputStream) throws IOException {
+        if (inputStream.available() != 0) {
+            EchoParametersList list = (EchoParametersList) xStream.fromXML(inputStream);
+            if (list != null && list.parameters != null) {
+                return list.parameters;
             }
-        } else {
-            Utils.info(LOGGER, "Echo parameters file does not exist.");
         }
-        return new ArrayList<>();
+        Utils.debug(LOGGER, "Echo parameters file seems to be empty.");
+        return null;
     }
 
     public static void saveOrUpdateEchoParameter(EchoParameter echoParameter) {

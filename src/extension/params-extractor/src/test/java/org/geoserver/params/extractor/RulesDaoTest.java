@@ -9,125 +9,108 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
-import org.geoserver.platform.resource.Resource;
 import org.junit.Test;
 
 public final class RulesDaoTest extends TestSupport {
 
-    @Test
-    public void testParsingEmptyFile() throws Exception {
-        doWork(
-                "data/rules1.xml",
-                (Resource input) -> {
-                    List<Rule> rules = getRules(input);
-                    assertThat(rules.size(), is(0));
-                });
+    static List<Rule> getRules() {
+        return RulesDao.getRules();
+    }
+
+    static List<Rule> getRules(String path) {
+        return RulesDao.getRules(getResource(path));
     }
 
     @Test
-    public void testParsingEmptyRules() throws Exception {
-        doWork(
-                "data/rules2.xml",
-                (Resource input) -> {
-                    List<Rule> rules = getRules(input);
-                    assertThat(rules.size(), is(0));
-                });
+    public void testParsingEmptyFile() {
+        List<Rule> rules = getRules("data/rules1.xml");
+        assertThat(rules.size(), is(0));
     }
 
     @Test
-    public void testParsingPositionRule() throws Exception {
-        doWork(
-                "data/rules3.xml",
-                (Resource input) -> {
-                    List<Rule> rules = getRules(input);
-                    assertThat(rules.size(), is(1));
-                    checkRule(
-                            rules.get(0),
-                            new RuleBuilder()
-                                    .withId("0")
-                                    .withPosition(3)
-                                    .withParameter("cql_filter")
-                                    .withRemove(1)
-                                    .withTransform("seq='$2'")
-                                    .build());
-                });
+    public void testParsingEmptyRules() {
+        List<Rule> rules = getRules("data/rules2.xml");
+        assertThat(rules.size(), is(0));
     }
 
     @Test
-    public void testParsingMatchRule() throws Exception {
-        doWork(
-                "data/rules4.xml",
-                (Resource input) -> {
-                    List<Rule> rules = getRules(input);
-                    assertThat(rules.size(), is(1));
-                    checkRule(
-                            rules.get(0),
-                            new RuleBuilder()
-                                    .withId("0")
-                                    .withMatch("^.*?(/([^/]+?))/[^/]+$")
-                                    .withParameter("cql_filter")
-                                    .withRemove(1)
-                                    .withTransform("seq='$2'")
-                                    .build());
-                });
+    public void testParsingPositionRule() {
+        List<Rule> rules = getRules("data/rules3.xml");
+        assertThat(rules.size(), is(1));
+        checkRule(
+                rules.get(0),
+                new RuleBuilder()
+                        .withId("0")
+                        .withPosition(3)
+                        .withParameter("cql_filter")
+                        .withRemove(1)
+                        .withTransform("seq='$2'")
+                        .build());
     }
 
     @Test
-    public void testParsingMultipleRules() throws Exception {
-        doWork(
-                "data/rules5.xml",
-                (Resource input) -> {
-                    List<Rule> rules = getRules(input);
-                    assertThat(rules.size(), is(3));
-                    checkRule(
-                            findRule("0", rules),
-                            new RuleBuilder()
-                                    .withId("0")
-                                    .withPosition(3)
-                                    .withParameter("cql_filter")
-                                    .withRemove(1)
-                                    .withTransform("seq='$2'")
-                                    .build());
-                    checkRule(
-                            findRule("1", rules),
-                            new RuleBuilder()
-                                    .withId("1")
-                                    .withMatch("^.*?(/([^/]+?))/[^/]+$")
-                                    .withParameter("cql_filter")
-                                    .withRemove(2)
-                                    .withTransform("seq='$2'")
-                                    .build());
-                    checkRule(
-                            findRule("2", rules),
-                            new RuleBuilder()
-                                    .withId("2")
-                                    .withPosition(4)
-                                    .withParameter("cql_filter")
-                                    .withRemove(null)
-                                    .withTransform("seq='$2'")
-                                    .build());
-                });
+    public void testParsingMatchRule() {
+        List<Rule> rules = getRules("data/rules4.xml");
+        assertThat(rules.size(), is(1));
+        checkRule(
+                rules.get(0),
+                new RuleBuilder()
+                        .withId("0")
+                        .withMatch("^.*?(/([^/]+?))/[^/]+$")
+                        .withParameter("cql_filter")
+                        .withRemove(1)
+                        .withTransform("seq='$2'")
+                        .build());
     }
 
     @Test
-    public void testParsingCombineRepeatRule() throws Exception {
-        doWork(
-                "data/rules6.xml",
-                (Resource input) -> {
-                    List<Rule> rules = getRules(input);
-                    assertThat(rules.size(), is(1));
-                    checkRule(
-                            rules.get(0),
-                            new RuleBuilder()
-                                    .withId("0")
-                                    .withMatch("^.*?(/([^/]+?))/[^/]+$")
-                                    .withParameter("cql_filter")
-                                    .withRemove(1)
-                                    .withTransform("seq='$2'")
-                                    .withCombine("$1;$2")
-                                    .withRepeat(true)
-                                    .build());
-                });
+    public void testParsingMultipleRules() {
+        List<Rule> rules = getRules("data/rules5.xml");
+        assertThat(rules.size(), is(3));
+        checkRule(
+                findRule("0", rules),
+                new RuleBuilder()
+                        .withId("0")
+                        .withPosition(3)
+                        .withParameter("cql_filter")
+                        .withRemove(1)
+                        .withTransform("seq='$2'")
+                        .build());
+        checkRule(
+                findRule("1", rules),
+                new RuleBuilder()
+                        .withId("1")
+                        .withMatch("^.*?(/([^/]+?))/[^/]+$")
+                        .withParameter("cql_filter")
+                        .withRemove(2)
+                        .withTransform("seq='$2'")
+                        .build());
+        checkRule(
+                findRule("2", rules),
+                new RuleBuilder()
+                        .withId("2")
+                        .withPosition(4)
+                        .withParameter("cql_filter")
+                        .withRemove(null)
+                        .withTransform("seq='$2'")
+                        .build());
+    }
+
+    @Test
+    public void testParsingCombineRepeatRule() {
+        List<Rule> rules = getRules("data/rules6.xml");
+        assertThat(rules.size(), is(1));
+        checkRule(
+                rules.get(0),
+                new RuleBuilder()
+                        .withId("0")
+                        .withMatch("^.*?(/([^/]+?))/[^/]+$")
+                        .withParameter("cql_filter")
+                        .withRemove(1)
+                        .withTransform("seq='$2'")
+                        .withCombine("$1;$2")
+                        .withRepeat(true)
+                        .build());
     }
 
     @Test

@@ -4,6 +4,7 @@
  */
 package org.geoserver.params.extractor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -57,23 +58,26 @@ public final class RulesDao {
      * @return a list of Rule or an empty list if the resource does not exist.
      */
     public static List<Rule> getRules(Resource resource) {
-        if (resource.getType() == Resource.Type.RESOURCE) {
-            try (InputStream inputStream = resource.in()) {
-                if (inputStream.available() == 0) {
-                    Utils.info(LOGGER, "Parameters extractor rules file seems to be empty.");
-                } else {
-                    RuleList list = (RuleList) xStream.fromXML(inputStream);
-                    List<Rule> rules = list.rules == null ? new ArrayList<>() : list.rules;
-                    Utils.info(LOGGER, "Parameters extractor loaded %d rules.", rules.size());
-                    return rules;
-                }
-            } catch (Exception exception) {
-                throw Utils.exception(exception, "Error parsing rules files.");
+        return resource.optionalRead(RulesDao::read).orElseGet(ArrayList::new);
+    }
+
+    /**
+     * Read a list of Rule from an InputStream.
+     *
+     * @param inputStream to read from.
+     * @return a list of Rule or null.
+     * @throws IOException if reading went wrong.
+     */
+    public static List<Rule> read(InputStream inputStream) throws IOException {
+        if (inputStream.available() != 0) {
+            RuleList list = (RuleList) xStream.fromXML(inputStream);
+            if (list != null && list.rules != null) {
+                Utils.info(LOGGER, "Parameters extractor loaded %d rules.", list.rules.size());
+                return list.rules;
             }
-        } else {
-            Utils.info(LOGGER, "Rule file does not exist.");
         }
-        return new ArrayList<>();
+        Utils.info(LOGGER, "Parameters extractor rules file seems to be empty.");
+        return null;
     }
 
     public static void saveOrUpdateRule(Rule rule) {

@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -107,9 +107,16 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
         return file;
     }
 
+    /**
+     * {@link org.springframework.core.io.Resource#contentLength()} suggests to throw an IOException
+     * while {@link java.io.File#length()} suggests to return 0L instead, which is used here to
+     * kinder the client code. Directory resources also return 0L.
+     *
+     * @return the content length for this resource or 0L if it is not a file.
+     */
     @Override
-    public long contentLength() throws IOException {
-        return getFile().length();
+    public long contentLength() {
+        return resource.getType() == RESOURCE ? resource.file().length() : 0;
     }
 
     @Override
@@ -118,8 +125,7 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
     }
 
     @Override
-    public org.springframework.core.io.Resource createRelative(String relativePath)
-            throws IOException {
+    public org.springframework.core.io.Resource createRelative(String relativePath) {
         return new SpringResourceAdaptor(resource.get(relativePath));
     }
 

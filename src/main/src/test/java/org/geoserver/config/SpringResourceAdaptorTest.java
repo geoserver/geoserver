@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -25,6 +26,8 @@ public class SpringResourceAdaptorTest {
     Resource missingResource;
     Resource existingResource;
 
+    static final String CONTENT = "content";
+
     @Before
     public void setUp() throws Exception {
 
@@ -35,6 +38,7 @@ public class SpringResourceAdaptorTest {
 
         existingResource = target.get("existingFile");
         Resources.createNewFile(existingResource);
+        existingResource.setContents(CONTENT.getBytes(StandardCharsets.UTF_8));
         assertTrue(Resources.exists(existingResource));
 
         directoryResource = existingResource.parent();
@@ -56,10 +60,14 @@ public class SpringResourceAdaptorTest {
         SpringResourceAdaptor springResource = new SpringResourceAdaptor(existingResource);
 
         assertTrue(springResource.isReadable());
+        assertEquals(springResource.contentLength(), CONTENT.length());
+
         assertNotNull(springResource.getFile());
 
         try (InputStream is = springResource.getInputStream()) {
             assertNotNull(is);
+            String content = org.apache.commons.io.IOUtils.toString(is, StandardCharsets.UTF_8);
+            assertEquals(content, CONTENT);
         }
     }
 
@@ -72,8 +80,9 @@ public class SpringResourceAdaptorTest {
         SpringResourceAdaptor springResource = new SpringResourceAdaptor(directoryResource);
 
         assertFalse(springResource.isReadable());
-        assertNotNull(springResource.getFile());
+        assertEquals(springResource.contentLength(), 0);
 
+        assertNotNull(springResource.getFile());
         assertThrows(FileNotFoundException.class, () -> springResource.getInputStream().close());
     }
 
@@ -86,6 +95,8 @@ public class SpringResourceAdaptorTest {
         SpringResourceAdaptor springResource = new SpringResourceAdaptor(missingResource);
 
         assertFalse(springResource.isReadable());
+        assertEquals(springResource.contentLength(), 0);
+
         assertThrows(FileNotFoundException.class, springResource::getFile);
         assertThrows(FileNotFoundException.class, () -> springResource.getInputStream().close());
 

@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.impl;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +18,7 @@ import org.junit.Test;
 
 public abstract class AbstractAccesRuleDAOConcurrencyTest<D extends AbstractAccessRuleDAO> {
 
-    private static final int LOOPS = 10000;
+    protected static final int DEFAULT_LOOPS = 10000;
     private static final int THREADS = 4;
     D dao;
     private ExecutorService executors;
@@ -45,7 +46,7 @@ public abstract class AbstractAccesRuleDAOConcurrencyTest<D extends AbstractAcce
     public void testConcurrentModifications() throws Exception {
         // REST operations change the contents of the DAO by using
         List<Callable<Void>> manipulators =
-                IntStream.range(1, LOOPS)
+                IntStream.range(1, getLoops())
                         .mapToObj(c -> (Callable<Void>) () -> manipulate(c))
                         .collect(Collectors.toList());
 
@@ -56,11 +57,16 @@ public abstract class AbstractAccesRuleDAOConcurrencyTest<D extends AbstractAcce
         }
     }
 
+    protected int getLoops() {
+        // go a little easier, this is writing on the file system
+        return DEFAULT_LOOPS;
+    }
+
     /**
      * Performs a read/write manipulation on the DAO contents
      *
      * @param c
      * @return
      */
-    protected abstract Void manipulate(int c);
+    protected abstract Void manipulate(int c) throws IOException;
 }

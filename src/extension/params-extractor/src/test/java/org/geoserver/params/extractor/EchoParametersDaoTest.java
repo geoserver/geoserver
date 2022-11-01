@@ -43,7 +43,6 @@ public final class EchoParametersDaoTest extends TestSupport {
                         .withParameter("CQL_FILTER")
                         .withActivated(true)
                         .build());
-        ;
     }
 
     @Test

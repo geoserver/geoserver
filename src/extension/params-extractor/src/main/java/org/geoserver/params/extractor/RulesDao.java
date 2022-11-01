@@ -52,12 +52,12 @@ public final class RulesDao {
 
     /**
      * Read a list of Rule from a resource. Return an empty list if the resource does not exist.
-     * This prevents Resource.in() from creating the file or throwing an exception.
      *
      * @param resource to read.
      * @return a list of Rule or an empty list if the resource does not exist.
      */
     public static List<Rule> getRules(Resource resource) {
+        // This prevents Resource.in() from creating the file or throwing an exception.
         return resource.optionalRead(RulesDao::read).orElseGet(ArrayList::new);
     }
 

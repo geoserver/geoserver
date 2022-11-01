@@ -28,6 +28,11 @@
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>30.1-jre</version>
+    </dependency>
   </dependencies>
 
 </project>

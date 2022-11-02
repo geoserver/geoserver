@@ -453,8 +453,6 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
      * creates its patterns. The specified {@code mode} parameter defines what kind of patterns
      * these string expressions do represent:
      *
-     * <p>
-     *
      * <ul>
      *   <li><b>{@code text}</b>: interpret specified string expressions as literal text
      *   <li><b>{@code glob}</b>: interpret specified string expressions as glob pattern
@@ -477,8 +475,6 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
         /**
          * Converts a collection of patterns (character sequences) to a collection of Patterns. The
          * specified {@code mode} parameter defines how to convert each pattern.
-         *
-         * <p>
          *
          * <ul>
          *   <li><b>{@code text}</b>: interpret each element as literal text
@@ -515,8 +511,6 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
          * Converts the specified glob pattern to an equivalent Java Regular Expression Pattern.
          *
          * <p>Supports some basic glob pattern syntax only:
-         *
-         * <p>
          *
          * <table>
          * <tr>
@@ -558,18 +552,14 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
          *
          * <p>However, glob pattern character classes do <em>not</em> support:
          *
-         * <p>
-         *
          * <ul>
          *   <li>predefined character classes
          *   <li>escaping characters with a backslash
          *   <li>nested character classes (like union, intersection or subtraction)
          * </ul>
          *
-         * Basically, all characters in a character class are interpreted literally. The only
+         * <p>Basically, all characters in a character class are interpreted literally. The only
          * exceptions are:
-         *
-         * <p>
          *
          * <ul>
          *   <li>negation indicated by {@code !} (must be the first character)

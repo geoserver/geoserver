@@ -282,8 +282,10 @@ option, these additional rules apply:
 
 - Commas in property names (really?) may be escaped with a backslash character `\`.
 - The prefix `re:` may be prepended to the list in order to designate each item a *Java Regular Expression*: (e. g. `format_options=sharedstrings:re:adm_.*,\d\d_[a-z]+$`). See Java [Pattern](https://docs.oracle.com/javase/8/docs/api/index.html?java/util/regex/Pattern.html) class.
+
   Specifying an invalid regular expression results in a Service Exception.
 - The prefix `glob:` may be prepended to the list in order to designate each item a *glob pattern*: (e. g. `format_options=sharedstrings:glob:adm_*,[0-9][0-9]_*name`). See [glob](https://en.wikipedia.org/wiki/Glob_(programming)) patterns.
+
   Specifying an invalid glob pattern results in a Service Exception.
 
 Although the SpatialJSON Shared String Table feature works fine and typically saves a moderate

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.impl;
 
+import java.io.IOException;
 import java.util.Properties;
 import org.geoserver.catalog.Catalog;
 import org.vfny.geoserver.global.ConfigurationException;
@@ -22,5 +23,10 @@ class MemoryDataAccessRuleDAO extends DataAccessRuleDAO {
     protected void checkPropertyFile(boolean force) {
         // skip checking
         lastModified = Long.MAX_VALUE;
+    }
+
+    @Override
+    public synchronized void storeRules() throws IOException {
+        // nothing to do, not resource based
     }
 }

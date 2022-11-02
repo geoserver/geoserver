@@ -8,14 +8,19 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.security.AccessMode;
+import org.geoserver.security.CatalogMode;
 
 public class DataAccesRuleDAOConcurrencyTest
         extends AbstractAccesRuleDAOConcurrencyTest<DataAccessRuleDAO> {
@@ -41,7 +46,7 @@ public class DataAccesRuleDAOConcurrencyTest
     }
 
     @Override
-    protected Void manipulate(int c) {
+    protected Void manipulate(int c) throws IOException {
         // prepare
         String customRole = "R_TEST_" + c;
         String ws = "w" + c;
@@ -52,13 +57,29 @@ public class DataAccesRuleDAOConcurrencyTest
         // add rule
         DataAccessRule rule =
                 new DataAccessRule(ws, layer, AccessMode.READ, "R_READ", "R_WRITE", customRole);
-        dao.addRule(rule);
-        // check it's there
+
+        // simulate REST/GUI locks, writes cannot happen concurrently
+        synchronized (dao) {
+            dao.addRule(rule);
+            dao.storeRules();
+        }
+
+        // however reads can, as the security system is triggered by OGC requests, so no lock there
         assertEquals(Collections.singleton(rule), dao.getRulesAssociatedWithRole(customRole));
         // another read access
         dao.getRules();
-        // remove the rule
-        dao.removeRule(rule);
+
+        // remove the rule (sequential access again)
+        synchronized (dao) {
+            dao.removeRule(rule);
+            dao.storeRules();
+        }
+
+        // check it has been removed
+        assertThat(dao.getRules(), not(hasItem(rule)));
+
+        // check the catalog mode did not go back to HIDE
+        assertEquals(CatalogMode.CHALLENGE, dao.getMode());
 
         return null;
     }

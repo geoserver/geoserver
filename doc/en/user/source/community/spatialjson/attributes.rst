@@ -6,7 +6,7 @@ Opt. 2: Removing Redundant Attribute Values
 Shared String Table
 -------------------
 
-A SpatilJSON response **may** contain a *Shared String Table*, which **may** contain strings that
+A SpatialJSON response **may** contain a *Shared String Table*, which **may** contain strings that
 are referenced by some features' properties. Only properties expressed as JSON strings can be stored
 in a shared string table (at current, temporal values, like Dates and Timestamps, which are
 expressed as strings as well, are not stored in a shared string table).

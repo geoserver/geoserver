@@ -7,7 +7,7 @@ The SpatialJSON format is still a playground for implementing several optimizati
 even huge amounts of spatial data from the server to the client efficiently:
 
 #. **Opt. 1: Removing redundant schema information**, see :doc:`topic <schema>`
-#. Opt. 2: Removing redundant attribute values (e. g. shared string table)
+#. **Opt. 2: Removing redundant attribute values (e. g. shared string table)**, see :doc:`topic <attributes>`
 #. Opt. 3: Handling sparse rows (most values are NULL) more efficiently
 #. Opt. 4: Reducing space required for geometries (e. g. differential coordinates)
 

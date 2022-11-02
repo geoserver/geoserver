@@ -27,3 +27,4 @@ format:
     installation
     development
     schema
+    attributes

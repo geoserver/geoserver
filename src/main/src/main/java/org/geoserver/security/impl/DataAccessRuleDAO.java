@@ -18,6 +18,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
@@ -34,6 +35,9 @@ import org.geotools.util.logging.Logging;
  * testing)
  */
 public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
+
+    private static Pattern DOT = Pattern.compile("\\.");
+
     private static final Logger LOGGER = Logging.getLogger(DataAccessRuleDAO.class);
 
     /** property file name */
@@ -72,7 +76,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     @Override
     protected void loadRules(Properties props) {
         SortedSet<DataAccessRule> result = new ConcurrentSkipListSet<>();
-        catalogMode = CatalogMode.HIDE;
+        CatalogMode catalogMode = CatalogMode.HIDE;
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String ruleKey = (String) entry.getKey();
             String ruleValue = (String) entry.getValue();
@@ -109,7 +113,8 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
             result.add(new DataAccessRule(DataAccessRule.WRITE_ALL));
         }
 
-        rules = result;
+        this.catalogMode = catalogMode;
+        this.rules = result;
     }
 
     /**
@@ -203,9 +208,10 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         Properties props = new Properties();
         props.put("mode", catalogMode.toString());
         for (DataAccessRule rule : rules) {
-            StringBuilder sbKey = new StringBuilder(rule.getRoot().replaceAll("\\.", "\\\\."));
+            StringBuilder sbKey =
+                    new StringBuilder(DOT.matcher(rule.getRoot()).replaceAll("\\\\."));
             if (!rule.isGlobalGroupRule()) {
-                sbKey.append(".").append(rule.getLayer().replaceAll("\\.", "\\\\."));
+                sbKey.append(".").append(DOT.matcher(rule.getLayer()).replaceAll("\\\\."));
             }
             sbKey.append(".").append(rule.getAccessMode().getAlias());
             props.put(sbKey.toString(), rule.getValue());

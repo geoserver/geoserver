@@ -1721,6 +1721,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>spatialjson</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-spatialjson</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>smart-data-loader</id>
       <dependencies>
         <dependency>

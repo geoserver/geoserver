@@ -52,6 +52,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  *
  * @author Simone Giannecchini, GeoSolutions
  * @author Carlo Cancellieri - GeoSolutions
+ * @author Carsten Klein, DataGis
  */
 public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         implements ComplexFeatureAwareFormat {
@@ -63,6 +64,17 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     public GeoJSONGetFeatureResponse(GeoServer gs, String format) {
         super(gs, format);
         jsonp = JSONType.isJsonpMimeType(format);
+    }
+
+    /**
+     * Constructor to be used by subclasses.
+     *
+     * @param format The well-known name of the format, not {@code null}
+     * @param jsonp {@code true} if specified format uses JSONP
+     */
+    protected GeoJSONGetFeatureResponse(GeoServer gs, String format, boolean jsonp) {
+        super(gs, format);
+        this.jsonp = jsonp;
     }
 
     /** capabilities output format string. */
@@ -334,13 +346,13 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {}
 
     /** Container class for information related with a group of features. */
-    private class FeaturesInfo {
+    protected class FeaturesInfo {
 
         final CoordinateReferenceSystem crs;
         final boolean hasGeometry;
         public long featureCount;
 
-        private FeaturesInfo(
+        protected FeaturesInfo(
                 CoordinateReferenceSystem crs, boolean hasGeometry, long featureCount) {
             this.crs = crs;
             this.hasGeometry = hasGeometry;

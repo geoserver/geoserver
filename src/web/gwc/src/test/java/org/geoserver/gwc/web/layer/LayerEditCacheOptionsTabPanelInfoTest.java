@@ -18,6 +18,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.GWCSynchEnv;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
@@ -35,6 +36,8 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
 
     GWC gwc;
 
+    GWCSynchEnv synchEnv;
+
     IModel<? extends ResourceInfo> resourceModel;
 
     LayerInfo layer;
@@ -45,7 +48,8 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
     public void setUpInternal() throws Exception {
         panelInfo = new LayerEditCacheOptionsTabPanelInfo();
         gwc = mock(GWC.class);
-        GWC.set(gwc);
+        synchEnv = mock(GWCSynchEnv.class);
+        GWC.set(gwc, synchEnv);
 
         defaults = GWCConfig.getOldDefaults();
         when(gwc.getConfig()).thenReturn(defaults);
@@ -63,7 +67,7 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
 
     @After
     public void tearDown() {
-        GWC.set(null);
+        GWC.set(null, null);
     }
 
     @Test

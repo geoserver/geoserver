@@ -192,6 +192,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private final GridSetBroker gridSetBroker;
 
+    private GWCSynchEnv gwcSynchEnv;
+
     private DiskQuotaMonitor monitor;
 
     private CatalogLayerEventListener catalogLayerEventListener;
@@ -234,6 +236,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @param jdbcConfigurationStorage GeoServer integrator for GeoWebCache DiskQuota {@link
      *     JDBCConfiguration}
      * @param blobStoreAggregator GeoWebCache BlobStore Aggregator
+     * @param gwcSynchEnv GeoServer integrator for GeoWebCache environment synchronization
      */
     public GWC(
             final GWCConfigPersister gwcConfigPersister,
@@ -247,7 +250,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             final Catalog rawCatalog,
             final DefaultStorageFinder storageFinder,
             final JDBCConfigurationStorage jdbcConfigurationStorage,
-            final BlobStoreAggregator blobStoreAggregator) {
+            final BlobStoreAggregator blobStoreAggregator,
+            final GWCSynchEnv gwcSynchEnv) {
 
         this.gwcConfigPersister = gwcConfigPersister;
         this.tld = tld;
@@ -269,6 +273,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         this.jdbcConfigurationStorage = jdbcConfigurationStorage;
         this.blobStoreAggregator = blobStoreAggregator;
+        this.gwcSynchEnv = gwcSynchEnv;
     }
 
     /** Updates the configurable lock provider to use the specified bean */
@@ -297,30 +302,44 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     /**
+     * Gets the singleton instance of the GeoServer GWC environment synchronizer
+     *
+     * @return the singleton instance of the GeoServer GWC environment synchronizer
+     */
+    public GWCSynchEnv getGwcSynchEnv() {
+        return gwcSynchEnv;
+    }
+
+    /**
      * Retrieves the GWC mediator bean, if registered in the spring context or set via {@link
-     * #set(GWC)}.
+     * #set(GWC,GWCSynchEnv)}.
      *
      * @return The {@link GWC} mediator bean
      * @throws IllegalStateException if no {@link GWC} instance was found.
      */
     public static GWC get() {
-        GWC.INSTANCE.syncEnv();
+        GWC.INSTANCE.gwcSynchEnv.syncEnv();
         return GWC.INSTANCE;
     }
 
     /**
-     * Only to aid in unit testing for the places where a mock GWC mediator is needed and {@link
-     * GWC#get()} is used; set it to {@code null} at each {@code tearDown} methed for each test that
-     * sets it through {@link GWC#set(GWC)} at its {@code setUp} method
+     * Only to aid in unit testing for the places where a mock GWC mediator and GeoServer
+     * environment synchhronizer are needed
+     *
+     * @param instance the GWC mediator instance
+     * @param gwcSynchEnv the GeoServer environment synchronizer instance
      */
-    public static void set(GWC instance) {
+    public static void set(GWC instance, GWCSynchEnv gwcSynchEnv) {
+        if (instance != null) {
+            instance.gwcSynchEnv = gwcSynchEnv;
+        }
         GWC.INSTANCE = instance;
     }
 
     /** @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet() */
     @Override
     public void afterPropertiesSet() throws Exception {
-        GWC.set(this);
+        GWC.set(this, gwcSynchEnv);
     }
 
     /** @see org.springframework.beans.factory.DisposableBean#destroy() */
@@ -333,7 +352,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (this.catalogStyleChangeListener != null) {
             catalog.removeListener(this.catalogStyleChangeListener);
         }
-        GWC.set(null);
+        GWC.set(null, null);
     }
 
     public Catalog getCatalog() {
@@ -2378,36 +2397,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.gwcEnvironment = GeoServerExtensions.bean(GeoWebCacheEnvironment.class);
         GWC.INSTANCE = GeoServerExtensions.bean(GWC.class);
 
-        syncEnv();
-    }
-
-    /**
-     * Synchronizes environment properties between the {@link GeoServerEnvironment} and the {@link
-     * GeoWebCacheEnvironment}. (GeoServer properties will override GeoWebCache properties)
-     */
-    public void syncEnv() throws IllegalArgumentException {
-        if (needsSynchronization()) {
-            synchronized (this) {
-                if (needsSynchronization()) {
-                    Properties gwcProps = gwcEnvironment.getProps();
-
-                    if (gwcProps == null) {
-                        gwcProps = new Properties();
-                    }
-                    gwcProps.putAll(gsEnvironment.getProps());
-
-                    gwcEnvironment.setProps(gwcProps);
-                }
-            }
-        }
-    }
-
-    private boolean needsSynchronization() {
-        return GeoServerEnvironment.allowEnvParametrization()
-                && gsEnvironment != null
-                && gsEnvironment.getProps() != null
-                && gwcEnvironment != null
-                && (gsEnvironment.isStale() || gwcEnvironment.getProps() == null);
+        GWC.INSTANCE.gwcSynchEnv.syncEnv();
     }
 
     /**

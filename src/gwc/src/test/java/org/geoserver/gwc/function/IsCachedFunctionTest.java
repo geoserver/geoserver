@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.GWCSynchEnv;
 import org.geotools.filter.FilterFactoryImpl;
 import org.junit.After;
 import org.junit.Before;
@@ -22,12 +23,15 @@ public class IsCachedFunctionTest {
 
     private GWC mockGWC;
 
+    private GWCSynchEnv mockGWCSynchEnv;
+
     private LayerInfo layerInfo;
 
     @Before
     public void setUp() throws Exception {
         mockGWC = mock(GWC.class);
-        GWC.set(mockGWC);
+        mockGWCSynchEnv = mock(GWCSynchEnv.class);
+        GWC.set(mockGWC, mockGWCSynchEnv);
         layerInfo = mock(LayerInfo.class);
 
         when(mockGWC.hasTileLayer(eq(layerInfo))).thenReturn(true);
@@ -35,7 +39,7 @@ public class IsCachedFunctionTest {
 
     @After
     public void tearDown() throws Exception {
-        GWC.set(null);
+        GWC.set(null, null);
     }
 
     @Test

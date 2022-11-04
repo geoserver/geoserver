@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.GWCSynchEnv;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geowebcache.config.ConfigurationException;
@@ -83,8 +84,10 @@ public class CachedLayerProviderTest extends GeoServerTestSupport {
     @Test
     public void testAdvertised() {
         GWC oldGWC = GWC.get();
+        GWCSynchEnv oldGWCSynchEnv = GWC.get().getGwcSynchEnv();
         GWC gwc = mock(GWC.class);
-        GWC.set(gwc);
+        GWCSynchEnv synchEnv = mock(GWCSynchEnv.class);
+        GWC.set(gwc, synchEnv);
         // Adding a few Mocks for an Unadvertised Layer
         TileLayer l = mock(TileLayer.class);
         when(l.isAdvertised()).thenReturn(false);
@@ -106,7 +109,7 @@ public class CachedLayerProviderTest extends GeoServerTestSupport {
         // Ensure that the two numbers are equal
         assertEquals(gwcSize, providerSize);
 
-        // Set the old GWC
-        GWC.set(oldGWC);
+        // Set the old GWC and GWCSynchEnv
+        GWC.set(oldGWC, oldGWCSynchEnv);
     }
 }

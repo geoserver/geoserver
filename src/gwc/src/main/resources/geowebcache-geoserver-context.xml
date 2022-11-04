@@ -28,6 +28,11 @@
     <constructor-arg ref="rawCatalog" />
     <constructor-arg ref="gwcDefaultStorageFinder"/>
     <constructor-arg ref="gwcJdbcConfigurationStorage"/>
+    <constructor-arg ref="gwcSynchEnv"/>
+  </bean>
+
+  <bean id="gwcSynchEnv" class="org.geoserver.gwc.GWCSynchEnv" depends-on="geoWebCacheExtensions" lazy-init="false">
+    <constructor-arg ref="environments" />
   </bean>
 
   <bean id="gwcWMSExtendedCapabilitiesProvider" class="org.geoserver.gwc.wms.CachingExtendedCapabilitiesProvider">

@@ -47,6 +47,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.GWCSynchEnv;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.ows.LocalWorkspace;
 import org.geowebcache.config.DefaultGridsets;
@@ -76,6 +77,7 @@ public class CatalogConfigurationTest {
     private GeoServerTileLayerInfo layerInfo1, layerInfo2, groupInfo1, groupInfo2;
 
     private GWC mockMediator;
+    private GWCSynchEnv mockGWCSynchEnv;
 
     private GWCConfig defaults;
 
@@ -178,14 +180,15 @@ public class CatalogConfigurationTest {
         config = new CatalogConfiguration(catalog, tileLayerCatalog, gridSetBroker);
 
         mockMediator = mock(GWC.class);
-        GWC.set(mockMediator);
+        mockGWCSynchEnv = mock(GWCSynchEnv.class);
+        GWC.set(mockMediator, mockGWCSynchEnv);
         when(mockMediator.getConfig()).thenReturn(defaults);
         when(mockMediator.getCatalog()).thenReturn(catalog);
     }
 
     @After
     public void tearDown() {
-        GWC.set(null);
+        GWC.set(null, null);
     }
 
     @Test

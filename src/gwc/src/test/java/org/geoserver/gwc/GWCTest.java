@@ -198,6 +198,8 @@ public class GWCTest {
 
     private JDBCConfigurationStorage jdbcStorage;
 
+    private GWCSynchEnv synchEnv;
+
     static Resource tmpDir() throws IOException {
         Resource root = Files.asResource(new File(System.getProperty("java.io.tmpdir", ".")));
         Resource directory = Resources.createRandom("tmp", "", root);
@@ -247,6 +249,7 @@ public class GWCTest {
         jdbcStorage = createMock(JDBCConfigurationStorage.class);
         xmlConfig = mock(XMLConfiguration.class);
         blobStoreAggregator = mock(BlobStoreAggregator.class);
+        synchEnv = mock(GWCSynchEnv.class);
 
         gridSetBroker =
                 new GridSetBroker(Arrays.asList(new DefaultGridsets(true, true), xmlConfig));
@@ -323,7 +326,8 @@ public class GWCTest {
                                 catalog,
                                 storageFinder,
                                 jdbcStorage,
-                                blobStoreAggregator)
+                                blobStoreAggregator,
+                                synchEnv)
                         .createMock();
 
         expect(appContext.getBeanNamesForType(GWC.class))
@@ -400,18 +404,19 @@ public class GWCTest {
                         catalog,
                         storageFinder,
                         jdbcStorage,
-                        blobStoreAggregator);
+                        blobStoreAggregator,
+                        synchEnv);
         mediator.setApplicationContext(appContext);
 
         mediator = spy(mediator);
-        GWC.set(mediator);
+        GWC.set(mediator, synchEnv);
     }
 
     @After
     public void tearDown() {
         System.clearProperty("ALLOW_ENV_PARAMETRIZATION");
         System.clearProperty("TEST_ENV_PROPERTY");
-        GWC.set(null);
+        GWC.set(null, null);
     }
 
     private void mockCatalog() {

@@ -176,7 +176,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
 
     private GWC getGWC() {
         final GWC gwc = (GWC) getGeoServerApplication().getBean("gwcFacade");
-        gwc.syncEnv();
+        gwc.getGwcSynchEnv().syncEnv();
         return gwc;
     }
 

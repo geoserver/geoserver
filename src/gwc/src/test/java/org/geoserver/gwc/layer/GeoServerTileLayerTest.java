@@ -89,6 +89,7 @@ import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.GWCSynchEnv;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
 import org.geoserver.ows.Dispatcher;
@@ -161,22 +162,26 @@ public class GeoServerTileLayerTest {
 
     private GWC mockGWC;
 
+    private GWCSynchEnv mockGWCSynchEnv;
+
     private FeatureTypeInfoImpl resource;
 
     private NamespaceInfoImpl ns;
 
     @After
     public void tearDown() throws Exception {
-        GWC.set(null);
+        GWC.set(null, null);
         Dispatcher.REQUEST.remove();
     }
 
     @Before
     public void setUp() throws Exception {
         mockGWC = mock(GWC.class);
+        mockGWCSynchEnv = mock(GWCSynchEnv.class);
+
         MemoryLockProvider lockProvider = new MemoryLockProvider();
         when(mockGWC.getLockProvider()).thenReturn(lockProvider);
-        GWC.set(mockGWC);
+        GWC.set(mockGWC, mockGWCSynchEnv);
 
         final String layerInfoId = "mock-layer-info";
 

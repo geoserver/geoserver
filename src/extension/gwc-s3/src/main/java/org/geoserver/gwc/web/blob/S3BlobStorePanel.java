@@ -6,7 +6,6 @@ package org.geoserver.gwc.web.blob;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.form.TextField;
@@ -15,6 +14,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.geoserver.web.data.store.PasswordTextFieldWriteOnlyModel;
 import org.geowebcache.s3.Access;
 import org.geowebcache.s3.S3BlobStoreInfo;
 
@@ -36,7 +36,9 @@ public class S3BlobStorePanel extends Panel {
                         .setRequired(false)
                         .add(titleModifier("awsAccessKey.title")));
         add(
-                new PasswordTextField("awsSecretKey")
+                new PasswordTextFieldWriteOnlyModel(
+                                "awsSecretKey",
+                                new PropertyModel<String>(configModel, "awsSecretKey"))
                         .setRequired(false)
                         .add(titleModifier("awsSecretKey.title")));
         add(new TextField<>("prefix").add(titleModifier("prefix.title")));

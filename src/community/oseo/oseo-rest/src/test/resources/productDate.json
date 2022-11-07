@@ -1,0 +1,124 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -150.8008710713139,
+          68.12934410141477
+        ],
+        [
+          -148.2811991826019,
+          68.12934410141477
+        ],
+        [
+          -148.2811991826019,
+          69.01857994332495
+        ],
+        [
+          -150.8008710713139,
+          69.01857994332495
+        ],
+        [
+          -150.8008710713139,
+          68.12934410141477
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "enabled": true,
+    "timeStart": "2009-08-29T22:39:40Z",
+    "timeEnd": "2009-08-29T22:40:05Z",
+    "thumbnailURL": "/geotest/repository/imagery/resa/RE-L1B/2009-08-29T223949_RE4_1B-NAC_1678843_48007_thumbnail.png",
+    "quicklookURL": "/geotest/repository/imagery/resa/RE-L1B/2009-08-29T223949_RE4_1B-NAC_1678843_48007_overview.png",
+    "eop:identifier": "2009-08-29T223949_RE4_1B-NAC_1678843_48007",
+    "eop:parentIdentifier": "gsTestCollection",
+    "eop:processorName": "DPS",
+    "assets": {
+      "cog": {
+        "href": "https://tuamotu.eoc.dlr.de:8001/re_l1b/files/2009-08-29T223949_RE4_1B-NAC_1678843_48007_cog.tif",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "title": "cloud-optimized",
+        "description": "Cloud-optimized GeoTIFF derived from original NITF data.",
+        "roles": [
+          "data"
+        ]
+      },
+      "band1": {
+        "href": "/geotest/repository/tmp/imagery/resa/RE-L1B/dims_nz_pl_dfd_XXXXB00000000212839120951/dims_nz_pl_dfd_XXXXB00000000212839120952/2009-08-29T223949_RE4_1B-NAC_1678843_48007_band1.ntf",
+        "type": "application/nitf",
+        "title": "Band 1",
+        "description": "Original NITF band1 data",
+        "roles": [
+          "data",
+          "quality"
+        ]
+      },
+      "band2": {
+        "href": "/geotest/repository/tmp/imagery/resa/RE-L1B/dims_nz_pl_dfd_XXXXB00000000212839120951/dims_nz_pl_dfd_XXXXB00000000212839120952/2009-08-29T223949_RE4_1B-NAC_1678843_48007_band2.ntf",
+        "type": "application/nitf",
+        "title": "Band 2",
+        "description": "Original NITF band2 data",
+        "roles": [
+          "data"
+        ]
+      },
+      "band3": {
+        "href": "/geotest/repository/tmp/imagery/resa/RE-L1B/dims_nz_pl_dfd_XXXXB00000000212839120951/dims_nz_pl_dfd_XXXXB00000000212839120952/2009-08-29T223949_RE4_1B-NAC_1678843_48007_band3.ntf",
+        "type": "application/nitf",
+        "title": "Band 3",
+        "description": "Original NITF band3 data",
+        "roles": [
+          "data"
+        ]
+      },
+      "band4": {
+        "href": "/geotest/repository/tmp/imagery/resa/RE-L1B/dims_nz_pl_dfd_XXXXB00000000212839120951/dims_nz_pl_dfd_XXXXB00000000212839120952/2009-08-29T223949_RE4_1B-NAC_1678843_48007_band4.ntf",
+        "type": "application/nitf",
+        "title": "Band 4",
+        "description": "Original NITF band4 data",
+        "roles": [
+          "data"
+        ]
+      },
+      "band5": {
+        "href": "/geotest/repository/tmp/imagery/resa/RE-L1B/dims_nz_pl_dfd_XXXXB00000000212839120951/dims_nz_pl_dfd_XXXXB00000000212839120952/2009-08-29T223949_RE4_1B-NAC_1678843_48007_band5.ntf",
+        "type": "application/nitf",
+        "title": "Band 5",
+        "description": "Original NITF band5 data",
+        "roles": [
+          "data"
+        ]
+      },
+      "metadata": {
+        "href": "/geotest/repository/tmp/imagery/resa/RE-L1B/dims_nz_pl_dfd_XXXXB00000000212839120951/dims_nz_pl_dfd_XXXXB00000000212839120952/2009-08-29T223949_RE4_1B-NAC_1678843_48007_metadata.xml",
+        "type": "application/xml",
+        "title": "Metadata",
+        "description": "Original Metadata File",
+        "roles": [
+          "metadata"
+        ]
+      },
+      "thumbnail": {
+        "href": "/geotest/repository/imagery/resa/RE-L1B/2009-08-29T223949_RE4_1B-NAC_1678843_48007_thumbnail.png",
+        "type": "image/png",
+        "title": "Thumbnail",
+        "description": "Thumbnail",
+        "roles": [
+          "thumbnail"
+        ]
+      },
+      "overview": {
+        "href": "/geotest/repository/imagery/resa/RE-L1B/2009-08-29T223949_RE4_1B-NAC_1678843_48007_overview.png",
+        "type": "image/png",
+        "title": "Overview",
+        "description": "Overview",
+        "roles": [
+          "overview"
+        ]
+      }
+    }
+  }
+}

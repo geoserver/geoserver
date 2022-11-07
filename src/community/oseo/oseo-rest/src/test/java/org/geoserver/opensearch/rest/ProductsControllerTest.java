@@ -228,6 +228,30 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertProduct("2018-01-01T00:00:00.000Z", "2018-01-01T00:00:00.000Z");
     }
 
+    /**
+     * Creates a product whose id looks like a timestamp. Used to fail as the GeoJSON reader was
+     * parsing that id as a Date
+     */
+    @Test
+    public void testCreateProductPostDateId() throws Exception {
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        "rest/oseo/collections/gsTestCollection/products",
+                        getTestData("/productDate.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+        String productId = "2009-08-29T223949_RE4_1B-NAC_1678843_48007";
+        assertEquals(
+                "http://localhost:8080/geoserver/rest/oseo/collections/gsTestCollection/products/"
+                        + productId,
+                response.getHeader("location"));
+
+        // check it's really there
+        DocumentContext json =
+                getAsJSONPath("/rest/oseo/collections/gsTestCollection/products/" + productId, 200);
+        assertEquals(productId, json.read("$.id"));
+    }
+
     @Test
     public void testCreateProductPut() throws Exception {
         MockHttpServletResponse response =

@@ -5,12 +5,12 @@
  */
 package org.geoserver.web.data.store.panel;
 
-import java.util.UUID;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.geoserver.web.data.store.PasswordTextFieldWriteOnlyModel;
 
 /**
  * A label with a password field
@@ -32,14 +32,11 @@ public class PasswordParamPanel extends Panel implements ParamPanel<String> {
         String requiredMark = required ? " *" : "";
         add(new Label("paramName", paramLabelModel.getObject() + requiredMark));
 
-        passwordField = new PasswordTextField("paramValue", new WriteOnlyModel(model));
+        passwordField = new PasswordTextFieldWriteOnlyModel("paramValue", model);
         passwordField.setRequired(required);
         // set the label to be the paramLabelModel otherwise a validation error would look like
         // "Parameter 'paramValue' is required"
         passwordField.setLabel(paramLabelModel);
-
-        // keep the password value
-        passwordField.setResetPassword(false);
 
         FormComponentFeedbackBorder requiredFieldFeedback =
                 new FormComponentFeedbackBorder("border");
@@ -52,35 +49,5 @@ public class PasswordParamPanel extends Panel implements ParamPanel<String> {
     @Override
     public PasswordTextField getFormComponent() {
         return passwordField;
-    }
-
-    /**
-     * Used so that someone with access to the browser cannot read the HTML source of the page and
-     * get the password. It replaces it with random text but updates the original value on write.
-     */
-    static class WriteOnlyModel implements IModel<String> {
-        String fakePass = "_gs_pwd_" + UUID.randomUUID();
-        IModel<String> delegate;
-
-        public WriteOnlyModel(IModel<String> delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public String getObject() {
-            return fakePass;
-        }
-
-        @Override
-        public void setObject(String object) {
-            if (!fakePass.equals(object)) {
-                delegate.setObject(object);
-            }
-        }
-
-        @Override
-        public void detach() {
-            // nothing to do here
-        }
     }
 }

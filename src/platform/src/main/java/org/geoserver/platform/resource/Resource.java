@@ -13,6 +13,7 @@ import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.function.IOFunction;
 
 /**
@@ -237,12 +238,22 @@ public interface Resource {
     }
 
     /**
+     * Write data to a resource using an output stream to write to and close it hereafter.
+     *
+     * @param consumer to perform the writing.
+     * @throws IOException thrown if something went wrong.
+     */
+    default void write(IOConsumer<OutputStream> consumer) throws IOException {
+        try (OutputStream out = this.out()) {
+            consumer.accept(out);
+        }
+    }
+
+    /**
      * Writes a resource contents as a byte array. Usage is suggested only if the resource is known
      * to be small (e.g. a configuration file).
      */
     default void setContents(byte[] byteArray) throws IOException {
-        try (OutputStream os = out()) {
-            IOUtils.write(byteArray, os);
-        }
+        write(out -> IOUtils.write(byteArray, out));
     }
 }

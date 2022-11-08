@@ -6,7 +6,11 @@
  */
 package org.geoserver.security.oauth2;
 
+import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
+import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * Filter configuration for OpenId Connect. This is completely freeform, so adding only the basic
@@ -35,7 +39,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     };
 
     public OpenIdConnectFilterConfig() {
-        this.redirectUri = "http://localhost:8080/geoserver";
+        this.redirectUri = baseRedirectUri();
         this.scopes = "user";
         this.enableRedirectAuthenticationEntryPoint = false;
         this.forceAccessTokenUriHttps = true;
@@ -43,6 +47,21 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         this.loginEndpoint = "/j_spring_oauth2_openid_connect_login";
         this.logoutEndpoint = "/j_spring_oauth2_openid_connect_logout";
     };
+
+    /**
+     * we add "/" at the end since not having it will SOMETIME cause issues. This will either use
+     * the proxyBaseURL (if set), or from ServletUriComponentsBuilder.fromCurrentContextPath().
+     *
+     * @return
+     */
+    String baseRedirectUri() {
+        String proxbaseUrl =
+                GeoServerExtensions.bean(GeoServer.class).getSettings().getProxyBaseUrl();
+        if (StringUtils.hasText(proxbaseUrl)) {
+            return proxbaseUrl + "/";
+        }
+        return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + "/";
+    }
 
     public String getPrincipalKey() {
         return principalKey == null ? "email" : principalKey;
@@ -93,7 +112,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     }
 
     @Override
-    protected StringBuilder buildAuthorizationUrl() {
+    public StringBuilder buildAuthorizationUrl() {
         StringBuilder sb = super.buildAuthorizationUrl();
         String responseMode = getResponseMode();
         if (responseMode != null && !"".equals(responseMode.trim()))

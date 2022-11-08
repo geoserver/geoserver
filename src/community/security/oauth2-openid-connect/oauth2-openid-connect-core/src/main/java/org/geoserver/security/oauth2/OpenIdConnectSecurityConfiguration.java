@@ -60,7 +60,8 @@ class OpenIdConnectSecurityConfiguration extends GeoServerOAuth2SecurityConfigur
             return new ValidatingOAuth2RestTemplate(
                     geoServerOAuth2Resource(),
                     new DefaultOAuth2ClientContext(getAccessTokenRequest()),
-                    jwkUri);
+                    jwkUri,
+                    config);
         }
         return super.getOAuth2RestTemplate();
     }

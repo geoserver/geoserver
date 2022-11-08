@@ -144,6 +144,10 @@ public class OpenIdConnectAuthProviderPanel
         add(new TextField<String>("responseMode"));
         add(new HelpLink("sendClientSecretHelp", this).setDialog(dialog));
         add(new CheckBox("sendClientSecret"));
+
+        add(new HelpLink("allowUnSecureLoggingHelp", this).setDialog(dialog));
+        add(new CheckBox("allowUnSecureLogging"));
+
         add(new HelpLink("allowBearerTokensHelp", this).setDialog(dialog));
         add(new CheckBox("allowBearerTokens"));
     }

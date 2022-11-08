@@ -102,4 +102,10 @@ public interface OAuth2FilterConfig {
      * @return {@link AuthenticationEntryPoint}
      */
     public AuthenticationEntryPoint getAuthenticationEntryPoint();
+
+    public boolean isAllowUnSecureLogging();
+
+    public void setAllowUnSecureLogging(boolean allowUnSecureLogging);
+
+    StringBuilder buildAuthorizationUrl();
 }

@@ -430,6 +430,16 @@ public abstract class GeoServerOAuthAuthenticationFilter
                         || req.getRequestURI().endsWith(filterConfig.getLoginEndpoint())) {
                     // Intercepting a "UserRedirectRequiredException" and redirect to the OAuth2
                     // Provider login URI
+                    if (filterConfig.isAllowUnSecureLogging()) {
+                        LOGGER.log(
+                                Level.FINE,
+                                "OIDC: redirecting to identity provider for user login: "
+                                        + this.filterConfig.buildAuthorizationUrl());
+                        LOGGER.log(
+                                Level.FINE,
+                                "OIDC: When complete, identity provider will redirect to: "
+                                        + this.filterConfig.getRedirectUri());
+                    }
                     this.aep.commence(req, resp, null);
                 } else {
                     if (resp.getStatus() != 302) {

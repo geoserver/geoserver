@@ -52,9 +52,23 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
 
     protected String logoutEndpoint;
 
+    /**
+     * Add extra logging. NOTE: this might spill confidential information to the log - do not turn
+     * on in normal operation!
+     */
+    boolean allowUnSecureLogging = false;
+
     @Override
     public boolean providesAuthenticationEntryPoint() {
         return true;
+    }
+
+    public boolean isAllowUnSecureLogging() {
+        return allowUnSecureLogging;
+    }
+
+    public void setAllowUnSecureLogging(boolean allowUnSecureLogging) {
+        this.allowUnSecureLogging = allowUnSecureLogging;
     }
 
     /** @return the cliendId */
@@ -189,7 +203,7 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
         };
     }
 
-    protected StringBuilder buildAuthorizationUrl() {
+    public StringBuilder buildAuthorizationUrl() {
         final StringBuilder loginUri = new StringBuilder(getUserAuthorizationUri());
         loginUri.append("?")
                 .append("response_type=code")

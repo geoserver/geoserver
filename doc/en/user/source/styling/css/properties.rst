@@ -532,6 +532,15 @@ Raster symbology
       * string
       * Controls how the color map entries are interpreted, the possible values are "ramp", "intervals" and "values", with ramp being the default if no "raster-color-map-type" is provided. The default "ramp" behavior is to linearly interpolate color between the provided values, and assign the lowest color to all values below the lowest value, and the highest color to all values above the highest value. The "intervals" behavior instead assigns solid colors between values, whilst "values" only assigns colors to the specified values, every other value in the raster is not painted at all
       * no
+    - * ``raster-label-fi``
+      * string
+      * Controls if and how color map entry labels are included, as attributes, in the GetFeatureInfo output. Valid values are ``add``, adding the labels as extra attributes, ``replace``, using the labels in place of the actual value, or ``none`` (the default) which does not include the labels in the output.
+      * no
+    - * ``raster-label-name``
+      * string
+      * If color map entry labels are included in the GetFeatureInfo output, this property controls then name of the attribute that will contain them.
+      * no
+
  
 .. _css_properties_shared:
 

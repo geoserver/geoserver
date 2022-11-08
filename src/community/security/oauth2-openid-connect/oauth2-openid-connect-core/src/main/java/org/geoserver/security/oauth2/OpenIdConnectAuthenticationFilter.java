@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geoserver.security.oauth2.bearer.TokenValidator;
 import org.geoserver.security.oauth2.services.OpenIdConnectTokenServices;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
@@ -42,6 +44,8 @@ import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
 /** Authenticate using OpenID Connect. */
 public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticationFilter {
+
+    private static final Logger LOGGER = Logging.getLogger(OpenIdConnectAuthenticationFilter.class);
 
     static final String ID_TOKEN_VALUE = "OpenIdConnect-IdTokenValue";
     TokenValidator bearerTokenValidator;
@@ -119,38 +123,43 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             throws IOException {
         RoleSource rs = getRoleSource();
 
-        // todo remove - security violation, but necessary for debugging
-        // If you're having issues, uncomment this to see more details of the tokens being sent
-        // These tokens are PRIVATE so ONLY do this when necessary!
-
-        //        LOGGER.log(Level.FINE, "OPEN ID CONNECT ---- ===== info for getRoles");
-        //        try {
-        //            LOGGER.log(Level.FINE, "principal: " + principal);
-        //        } catch (Exception e) {
-        //        }
-        //        try {
-        //            LOGGER.log(Level.FINE,"access token: " +
-        //                   (String)
-        // request.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
-        //        } catch (Exception e) {
-        //        }
-        //        try {
-        //            LOGGER.log(Level.FINE, "ID token: " + (String)
-        // request.getAttribute(ID_TOKEN_VALUE));
-        //        } catch (Exception e) {
-        //        }
+        if (filterConfig.isAllowUnSecureLogging()) {
+            String rolesAttributePath =
+                    ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
+            LOGGER.log(
+                    Level.FINE,
+                    "OIDC: Getting Roles from " + rs + ", location=" + rolesAttributePath);
+        }
+        Collection<GeoServerRole> result = null;
 
         if (AccessToken.equals(rs)) {
-            return getRolesFromToken(
-                    (String) request.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
+            result =
+                    getRolesFromToken(
+                            (String)
+                                    request.getAttribute(
+                                            OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
         } else if (IdToken.equals(rs)) {
-            return getRolesFromToken((String) request.getAttribute(ID_TOKEN_VALUE));
+            result = getRolesFromToken((String) request.getAttribute(ID_TOKEN_VALUE));
         } else if (UserInfo.equals(rs)) {
-            return getRolesFromUserInfo(request);
+            result = getRolesFromUserInfo(request);
         } else if (MSGraphAPI.equals(rs)) {
-            return getRolesFromMSGraphAPI(request);
+            result = getRolesFromMSGraphAPI(request);
+        } else {
+            result = super.getRoles(request, principal);
         }
-        return super.getRoles(request, principal);
+        if (filterConfig.isAllowUnSecureLogging()) {
+            if (result == null) {
+                LOGGER.log(Level.FINE, "OIDC: roles returned null (unexpected)");
+            } else if (result.isEmpty()) {
+                LOGGER.log(Level.FINE, "OIDC: roles returned NO ROLES");
+            } else {
+                for (GeoServerRole role : result) {
+                    LOGGER.log(Level.FINE, "OIDC: Geoserver Roles: " + role.getAuthority());
+                }
+            }
+        }
+
+        return result;
     }
 
     private Collection<GeoServerRole> getRolesFromMSGraphAPI(HttpServletRequest request)

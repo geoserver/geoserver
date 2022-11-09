@@ -128,11 +128,6 @@
       <artifactId>gt-geopkg</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.wicket</groupId>
-      <artifactId>wicket-datetime</artifactId>
-      <version>${wicket.version}</version>
-    </dependency>
-    <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>

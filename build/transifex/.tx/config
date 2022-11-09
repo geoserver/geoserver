@@ -110,14 +110,14 @@ type         = PROPERTIES
 minimum_perc = 10
 
 [o:GeoServer:p:geoserver-github-integration:r:src-extension-geofence-src-main-resources-geoserverapplication-properties--main]
-file_filter  = ../../src/extension/geofence/src/main/resources/GeoServerApplication_<lang>.properties
-source_file  = ../../src/extension/geofence/src/main/resources/GeoServerApplication.properties
+file_filter  = ../../src/extension/geofence/geofence/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/geofence/geofence/src/main/resources/GeoServerApplication.properties
 type         = PROPERTIES
 minimum_perc = 10
 
 [o:GeoServer:p:geoserver-github-integration:r:src-extension-geofence-server-src-main-resources-geoserverapplication-properties--main]
-file_filter  = ../../src/extension/geofence-server/src/main/resources/GeoServerApplication_<lang>.properties
-source_file  = ../../src/extension/geofence-server/src/main/resources/GeoServerApplication.properties
+file_filter  = ../../src/extension/geofence/geofence-server/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/geofence/geofence-server/src/main/resources/GeoServerApplication.properties
 type         = PROPERTIES
 minimum_perc = 10
 

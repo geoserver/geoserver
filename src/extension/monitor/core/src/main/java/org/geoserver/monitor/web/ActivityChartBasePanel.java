@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.NonCachingImage;
 import org.apache.wicket.markup.html.image.resource.BufferedDynamicImageResource;
@@ -23,6 +22,7 @@ import org.geoserver.monitor.Query;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestDataVisitor;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.DateField;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -58,24 +58,8 @@ public abstract class ActivityChartBasePanel extends Panel {
         from = new Date(range[0].getTime());
         to = new Date(range[1].getTime());
 
-        form.add(
-                new DateTimeField("from", new PropertyModel<>(this, "from")) {
-                    private static final long serialVersionUID = -6541833048507323265L;
-
-                    @Override
-                    protected boolean use12HourFormat() {
-                        return false;
-                    }
-                });
-        form.add(
-                new DateTimeField("to", new PropertyModel<>(this, "to")) {
-                    private static final long serialVersionUID = 1306927761884039503L;
-
-                    @Override
-                    protected boolean use12HourFormat() {
-                        return false;
-                    }
-                });
+        form.add(new DateField("from", new PropertyModel<>(this, "from"), true));
+        form.add(new DateField("to", new PropertyModel<>(this, "to"), true));
 
         form.add(
                 new AjaxButton("refresh") {

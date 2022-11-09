@@ -20,7 +20,8 @@ import org.geotools.util.Version;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public final class Service {
-    /** Identifier for the service. */
+
+    /** Identifier for the service */
     final String id;
 
     /** Namespace for the service */

@@ -6,4 +6,9 @@ package org.geoserver.ogcapi.tiles;
 
 import org.geoserver.config.impl.ServiceInfoImpl;
 
-public class TilesServiceInfoImpl extends ServiceInfoImpl implements TilesServiceInfo {}
+public class TilesServiceInfoImpl extends ServiceInfoImpl implements TilesServiceInfo {
+    @Override
+    public String getType() {
+        return "Tiles";
+    }
+}

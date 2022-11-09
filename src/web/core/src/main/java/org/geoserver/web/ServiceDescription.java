@@ -28,7 +28,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     /** Layer name for virtual web service, may be null for workspace or global services. */
     private final String layer;
 
-    /** Service name. */
+    /** Service type. */
     private final String service;
 
     /** Service title. */
@@ -93,7 +93,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     /**
      * Layer or LayerGroup service description, with associated availability or admin restrictions.
      *
-     * @param service Service identifier, example {@code wps}
+     * @param serviceType Service type, example {@code wps}
      * @param title Service title
      * @param description Service description
      * @param available {@code true} if service is available, {@code false} if service is disabled
@@ -103,14 +103,14 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
      * @param layer Layer name, or LayerGroup name, or {@code null} for workspace or global service
      */
     public ServiceDescription(
-            String service,
+            String serviceType,
             InternationalString title,
             InternationalString description,
             boolean available,
             boolean admin,
             String workspace,
             String layer) {
-        this.service = service.toLowerCase();
+        this.service = serviceType.toLowerCase();
         this.workspace = workspace;
         this.layer = layer;
         this.available = available;
@@ -130,9 +130,9 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     }
 
     /**
-     * Service name, example wfs, wms, ogcapi-features.
+     * Service type, example {@code wfs}, {@code wms}, {@code features}.
      *
-     * @return service name, forced to lower case for ease of comparison.
+     * @return service type, forced to lower case for ease of comparison.
      */
     public String getService() {
         return service;
@@ -141,7 +141,8 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     /**
      * Service title as localized text.
      *
-     * <p>If not provided uppercase service name, example WMS, WFS, OGCAPI-FEATURES.
+     * <p>If not provided uppercase service name, example {@code WMS}, {@code WFS}, {@code
+     * OGCAPI-FEATURES}.
      *
      * @return service title
      */
@@ -195,7 +196,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     }
 
     /**
-     * Service links.
+     * Service link descriptions as matched by service type.
      *
      * @return service links
      */

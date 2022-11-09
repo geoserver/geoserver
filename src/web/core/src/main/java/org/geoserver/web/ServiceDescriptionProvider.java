@@ -9,11 +9,13 @@ import java.util.List;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ServiceResourceProvider;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
+import org.geoserver.security.DisabledServiceResourceFilter;
 import org.geoserver.util.InternationalStringUtils;
 import org.opengis.util.InternationalString;
 
@@ -80,20 +82,31 @@ public abstract class ServiceDescriptionProvider {
      * Is this service/layer available? This works for standard GS services like WMS/WFS - GWC-based
      * ones will need to re-implement.
      *
+     * @param service Service identifier, example {@code wps}, to cross reference with service links
      * @param info - Info about the service (service can be on/off)
      * @param layerInfo - Info about the layer (layer can not have this service enabled)
-     * @return
+     * @return true of service is available for this layer
      */
-    protected boolean isAvailable(ServiceInfo info, PublishedInfo layerInfo) {
+    protected boolean isAvailable(String service, ServiceInfo info, PublishedInfo layerInfo) {
+        if (layerInfo != null && !layerInfo.isEnabled()) {
+            return false;
+        }
         if (layerInfo instanceof LayerInfo) {
+            ResourceInfo resourceInfo = ((LayerInfo) layerInfo).getResource();
+
+            // check what services are available for this kind of resource
             ServiceResourceProvider provider =
                     GeoServerExtensions.bean(ServiceResourceProvider.class);
-            List<String> layerServices =
-                    provider.getServicesForResource(((LayerInfo) layerInfo).getResource());
 
-            return layerServices.contains(info.getName().toUpperCase());
+            List<String> layerServices = provider.getServicesForResource(resourceInfo);
+
+            // Remove any services that were disabled for this layer
+            List<String> dsiabledServices =
+                    DisabledServiceResourceFilter.disabledServices(resourceInfo);
+            layerServices.removeAll(dsiabledServices);
+
+            return layerServices.contains(service.toUpperCase());
         }
-
         return info.isEnabled();
     }
 
@@ -102,25 +115,23 @@ public abstract class ServiceDescriptionProvider {
      *
      * <p>Subclasses may use when implementing {@link #getServices(WorkspaceInfo, PublishedInfo)}.
      *
-     * @param service Service identifier, example {@code wps}, to cross reference with service links
+     * @param serviceType Service type, example {@code wps}, to cross-reference with service links
      * @param info ServiceInfo providing customer configured description
      * @param workspaceInfo workspace context for info lookup
      * @param layerInfo layer or layergroup context for info lookup
      * @return ServiceDescription
      */
     protected ServiceDescription description(
-            String service,
+            String serviceType,
             ServiceInfo info,
             WorkspaceInfo workspaceInfo,
             PublishedInfo layerInfo) {
-        boolean available = isAvailable(info, layerInfo);
+        boolean available = isAvailable(serviceType, info, layerInfo);
 
         InternationalString title =
                 InternationalStringUtils.growable(
                         info.getInternationalTitle(),
-                        Strings.isEmpty(info.getTitle())
-                                ? info.getName().toUpperCase()
-                                : info.getTitle());
+                        Strings.isEmpty(info.getTitle()) ? info.getName() : info.getTitle());
 
         InternationalString description =
                 InternationalStringUtils.growable(
@@ -128,7 +139,7 @@ public abstract class ServiceDescriptionProvider {
                         Strings.isEmpty(info.getAbstract()) ? null : info.getAbstract());
 
         return new ServiceDescription(
-                service,
+                serviceType,
                 title,
                 description,
                 available,

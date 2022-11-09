@@ -34,7 +34,7 @@ public class CapabilitiesHomePagePanel extends Panel {
      */
     public static class CapsInfo implements Serializable {
 
-        /** Service name. */
+        /** Service type. */
         String service;
 
         /** Service version */

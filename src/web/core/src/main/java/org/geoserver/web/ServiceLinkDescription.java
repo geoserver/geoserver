@@ -16,7 +16,7 @@ import org.geotools.util.Version;
 public class ServiceLinkDescription implements Serializable, Comparable<ServiceLinkDescription> {
     private static final long serialVersionUID = -5600492358023139816L;
 
-    /** Service name. */
+    /** Service type. */
     private final String service;
 
     /** Protocol */
@@ -35,18 +35,18 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     private final String layer;
 
     public ServiceLinkDescription(
-            String service, Version version, String link, String workspace, String layer) {
-        this(service, version, link, workspace, layer, null);
+            String serviceType, Version version, String link, String workspace, String layer) {
+        this(serviceType, version, link, workspace, layer, null);
     }
 
     public ServiceLinkDescription(
-            String service,
+            String serviceType,
             Version version,
             String link,
             String workspace,
             String layer,
             String protocol) {
-        this.service = service.toLowerCase();
+        this.service = serviceType.toLowerCase();
         this.version = version;
         this.link = link;
         this.workspace = workspace;
@@ -55,7 +55,10 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     }
 
     /**
-     * Service name, example wfs, wms, ogcapi-features.
+     * Service type, example {@code wfs}, {@code wms}, {@code features}.
+     *
+     * <p>Service type is internal to GeoServer codebase, the title is used to identify the service
+     * to users.
      *
      * <p>A given service may support several protocols and versions (see below).
      *
@@ -66,7 +69,9 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     }
 
     /**
-     * Web service protocol, example "wms", "wmc-c", "wmts", "rest".
+     * Web service protocol, example {@code wmts}, {@code tms}, {@code wms-c}.
+     *
+     * <p>Service protocol is publicly shown to users when describing a service end-point.
      *
      * @return service protocol
      */

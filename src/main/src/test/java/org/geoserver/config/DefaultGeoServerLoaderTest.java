@@ -42,7 +42,12 @@ public class DefaultGeoServerLoaderTest {
 
     static interface HelloServiceInfo extends ServiceInfo {}
 
-    static final class HelloServiceInfoImpl extends ServiceInfoImpl implements HelloServiceInfo {}
+    static final class HelloServiceInfoImpl extends ServiceInfoImpl implements HelloServiceInfo {
+        @Override
+        public String getType() {
+            return "Hello";
+        }
+    }
 
     static final class HelloServiceXStreamLoader extends XStreamServiceLoader<HelloServiceInfo> {
 

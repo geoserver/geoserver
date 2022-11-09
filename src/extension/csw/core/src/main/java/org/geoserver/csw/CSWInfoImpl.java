@@ -20,7 +20,10 @@ public class CSWInfoImpl extends ServiceInfoImpl implements CSWInfo {
 
     boolean canonicalSchemaLocation;
 
-    public CSWInfoImpl() {}
+    @Override
+    public String getType() {
+        return "CSW";
+    }
 
     @Override
     public boolean isCanonicalSchemaLocation() {

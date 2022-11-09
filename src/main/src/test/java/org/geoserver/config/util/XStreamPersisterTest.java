@@ -208,6 +208,11 @@ public class XStreamPersisterTest {
 
         String foo;
 
+        @Override
+        public String getType() {
+            return "My";
+        }
+
         String getFoo() {
             return foo;
         }

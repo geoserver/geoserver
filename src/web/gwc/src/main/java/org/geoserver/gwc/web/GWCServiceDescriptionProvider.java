@@ -25,7 +25,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     /** Service used to cross-link between service description and service link description. */
-    public static final String SERVICE = "gwc";
+    public static final String SERVICE = "wmts";
 
     private final GWC gwc;
     GeoServer geoserver;
@@ -57,7 +57,10 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     /** GWC-bases services don't have layer-specific enabling... */
     @Override
-    protected boolean isAvailable(ServiceInfo info, PublishedInfo layerInfo) {
+    protected boolean isAvailable(String service, ServiceInfo info, PublishedInfo layerInfo) {
+        if (layerInfo != null && !layerInfo.isEnabled()) {
+            return false;
+        }
         return info.isEnabled();
     }
 

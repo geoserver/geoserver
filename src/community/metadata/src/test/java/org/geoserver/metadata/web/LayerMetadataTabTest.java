@@ -6,6 +6,7 @@ package org.geoserver.metadata.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -33,6 +34,7 @@ import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.metadata.web.panel.attribute.CheckBoxPanel;
 import org.geoserver.metadata.web.panel.attribute.DateTimeFieldPanel;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.geoserver.web.wicket.DateField;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
@@ -324,11 +326,11 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component")
                         .isEnabled());
-        Assert.assertTrue(
+        assertTrue(
                 tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:3:itemProperties:0:component")
                         .isEnabled());
-        Assert.assertTrue(
+        assertTrue(
                 tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component")
                         .isEnabled());
@@ -446,11 +448,11 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:textfield",
                 "reflist-second");
 
-        Assert.assertTrue(
+        assertTrue(
                 tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component")
                         .isEnabled());
-        Assert.assertTrue(
+        assertTrue(
                 tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component")
                         .isEnabled());
@@ -749,5 +751,29 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertModelValue(
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component",
                 "Alabama");
+    }
+
+    /** test special types * */
+    @Test
+    public void testDatePickerIsPresent() {
+        String lastPage = tester.getLastResponseAsString();
+        DateField dField =
+                (DateField)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:dateTimeField");
+        DateField dField2 =
+                (DateField)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:9:itemProperties:1:component:dateTimeField");
+        assertTrue(
+                lastPage.contains(
+                        "initJQDatepicker('"
+                                + dField.getMarkupId()
+                                + "',false,'yyyy-MM-dd',' ');"));
+        assertTrue(
+                lastPage.contains(
+                        "initJQDatepicker('"
+                                + dField2.getMarkupId()
+                                + "',true,'yyyy-MM-dd HH:mm',' ');"));
     }
 }

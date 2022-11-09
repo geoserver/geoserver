@@ -2167,6 +2167,11 @@ public class ResourcePool {
         if (styleResource == null) {
             throw new IOException("No such resource: " + style.getFilename());
         }
+
+        // return an empty content if the file is missing.
+        if (styleResource.getType() == Resource.Type.UNDEFINED)
+            return new BufferedReader(new org.apache.commons.io.input.NullReader());
+
         return new BufferedReader(new InputStreamReader(styleResource.in()));
     }
 

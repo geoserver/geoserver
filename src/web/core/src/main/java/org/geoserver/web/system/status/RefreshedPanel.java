@@ -15,7 +15,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -29,6 +28,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.system.status.MetricValue;
 import org.geoserver.system.status.Metrics;
 import org.geoserver.system.status.SystemInfoCollector;
+import org.geoserver.web.wicket.DateLabel;
 import org.geotools.util.logging.Logging;
 
 /** Panel displaying system resources monitoring values that is refreshed periodically. */
@@ -47,7 +47,6 @@ public class RefreshedPanel extends Panel {
 
         final SystemInfoCollector systemInfoCollector =
                 GeoServerExtensions.bean(SystemInfoCollector.class);
-        final IModel<Date> timeMdl = Model.of(new Date());
         final IModel<List<MetricValue>> metricMdl = Model.ofList(Collections.emptyList());
         final IModel<Boolean> statisticsIModel =
                 Model.of(systemInfoCollector.getStatisticsStatus());
@@ -64,7 +63,7 @@ public class RefreshedPanel extends Panel {
         statisticsCheckBox.setOutputMarkupId(true);
         add(statisticsCheckBox);
 
-        Label time = DateLabel.forDatePattern("time", timeMdl, datePattern);
+        DateLabel time = new DateLabel("time", Model.of(new Date()), datePattern);
         time.setOutputMarkupId(true);
         add(time);
 
@@ -122,7 +121,7 @@ public class RefreshedPanel extends Panel {
                     public void onConfigure(Component component) {
                         Metrics metrics = systemInfoCollector.retrieveAllSystemInfo();
                         metricMdl.setObject(metrics.getMetrics());
-                        timeMdl.setObject(new Date());
+                        time.setDefaultModel(Model.of(new Date()));
                     }
                 });
     }

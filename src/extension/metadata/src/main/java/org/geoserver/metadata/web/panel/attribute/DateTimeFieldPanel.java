@@ -5,10 +5,9 @@
 package org.geoserver.metadata.web.panel.attribute;
 
 import java.util.Date;
-import org.apache.wicket.extensions.yui.calendar.DateField;
-import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.geoserver.web.wicket.DateField;
 
 public class DateTimeFieldPanel extends Panel {
 
@@ -16,10 +15,7 @@ public class DateTimeFieldPanel extends Panel {
 
     public DateTimeFieldPanel(String id, IModel<Date> model, boolean time) {
         super(id, model);
-        DateTimeField dateTimeField =
-                time
-                        ? new DateTimeField("dateTimeField", model)
-                        : new DateField("dateTimeField", model);
+        DateField dateTimeField = new DateField("dateTimeField", model, time);
         dateTimeField.setModel(model);
         add(dateTimeField);
     }

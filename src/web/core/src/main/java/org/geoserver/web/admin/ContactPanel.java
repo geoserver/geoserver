@@ -5,10 +5,16 @@
  */
 package org.geoserver.web.admin;
 
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.web.EmailAddressValidator;
+import org.geoserver.web.InternationalStringPanel;
 import org.geoserver.web.StringAndInternationalStringPanel;
 
 public class ContactPanel extends Panel {
@@ -17,7 +23,28 @@ public class ContactPanel extends Panel {
         super(id, model);
         add(new StringAndInternationalStringPanel("contactOrganization", model, this));
         add(new StringAndInternationalStringPanel("onlineResource", model, this));
-        add(new StringAndInternationalStringPanel("welcome", model, this));
+
+        // setup the "welcome" text as either a textarea (non-international)
+        // or as a set of textareas (international).
+        WebMarkupContainer abstractLabelContainer = new WebMarkupContainer("welcomeLabel");
+        abstractLabelContainer.add(
+                new Label("welcomeLabel", new StringResourceModel("welcome", this)));
+        add(abstractLabelContainer);
+        TextArea<String> area = new TextArea<>("welcome", new PropertyModel<>(model, "welcome"));
+        add(area);
+        InternationalStringPanel<TextArea<String>> internationalStringPanelAbstract =
+                new InternationalStringPanel<TextArea<String>>(
+                        "internationalWelcome",
+                        new PropertyModel<>(model, "internationalWelcome"),
+                        area,
+                        abstractLabelContainer) {
+                    @Override
+                    protected TextArea<String> getTextComponent(String id, IModel<String> model) {
+                        return new TextArea<>(id, model);
+                    }
+                };
+        add(internationalStringPanelAbstract);
+
         add(new StringAndInternationalStringPanel("contactPerson", model, this));
         add(new StringAndInternationalStringPanel("contactPosition", model, this));
         add(new StringAndInternationalStringPanel("addressType", model, this));

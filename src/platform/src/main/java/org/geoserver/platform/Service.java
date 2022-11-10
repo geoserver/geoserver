@@ -9,19 +9,22 @@ import java.util.List;
 import org.geotools.util.Version;
 
 /**
- * A service descriptor which provides metadata such as id, and version.
+ * A service descriptor which provides metadata, primarily service {@code id}, and {@code version}.
  *
- * <p>Service descriptors are identified by an id, version pair. Two service descriptors are
- * considered equal if they have the same id, and version.
+ * <p>Service descriptors are identified by an {@code id}, version pair. Two service descriptors are
+ * considered equal if they have the same {@code id}, and {@code version}.
  *
  * <p>The underlying service implementation is a plain old java object, available via {@link
  * #service}.
+ *
+ * <p>The {@code id} is treated as a service type by ServiceDescriptor for presentation, and by
+ * ServiceResourceProvider for service enablement.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public final class Service {
 
-    /** Identifier for the service */
+    /** Service type identifying the service */
     final String id;
 
     /** Namespace for the service */
@@ -42,7 +45,7 @@ public final class Service {
     /**
      * Creates a new global (no workspace) service descriptor.
      *
-     * @param id A string identifing the service.
+     * @param id service type used to identify the service.
      * @param service The object implementing the service.
      * @param version The version of the service.
      */
@@ -53,7 +56,7 @@ public final class Service {
     /**
      * Creates a new service descriptor.
      *
-     * @param id A string identifying the service.
+     * @param id service type used to identify the service.
      * @param namespace The namespace of the service, may be <code>null</code> for global.
      * @param service The object implementing the service.
      * @param version The version of the service.
@@ -71,6 +74,16 @@ public final class Service {
         }
     }
 
+    /**
+     * Service type used to identify the service.
+     *
+     * <p>This is required to tbe the service type, example {@code WMS}, {@code WFS}, {@code
+     * Features} allowing ServiceDescription and
+     * ServiceResourceProvider.getServicesForResource(layer) to manage user interaction with web
+     * services.
+     *
+     * @return service type used to identify the service
+     */
     public String getId() {
         return id;
     }

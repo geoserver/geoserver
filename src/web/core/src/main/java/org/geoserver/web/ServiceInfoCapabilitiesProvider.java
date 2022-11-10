@@ -89,7 +89,7 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
             for (ServiceDescriptionProvider provider :
                     GeoServerExtensions.extensions(ServiceDescriptionProvider.class)) {
                 for (ServiceDescription service : provider.getServices(workspaceInfo, null)) {
-                    skip.add(service.getService());
+                    skip.add(service.getServiceType());
                 }
                 for (ServiceLinkDescription link : provider.getServiceLinks(workspaceInfo, null)) {
                     skip.add(link.getProtocol().toLowerCase());

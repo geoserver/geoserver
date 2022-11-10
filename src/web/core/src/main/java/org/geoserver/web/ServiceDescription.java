@@ -28,8 +28,8 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     /** Layer name for virtual web service, may be null for workspace or global services. */
     private final String layer;
 
-    /** Service type. */
-    private final String service;
+    /** Service type, example {@code WMS}, {@code WFS}, {@code Features}, ... */
+    private final String serviceType;
 
     /** Service title. */
     private final InternationalString title;
@@ -44,11 +44,14 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     private final boolean admin;
 
     /**
-     * Order to present common web services to highlight visual services such as WMS and WMTS ahead
-     * of data acess and processing.
+     * User interface order to present common web services to highlight visual services such as WMS
+     * and WMTS ahead of data access and processing.
+     *
+     * <p>Order has no real significance it is for display, see {@link
+     * #compareTo(ServiceDescription)}.
      */
     private static List<String> OGC_SERVICE_ORDER =
-            Collections.unmodifiableList(Arrays.asList("wms", "wmts", "wfs", "wcs", "wps"));
+            Collections.unmodifiableList(Arrays.asList("WMS", "WMTS", "WFS", "WCS", "WPS"));
 
     /** Service links. */
     Set<ServiceLinkDescription> links = new HashSet<>();
@@ -56,46 +59,47 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     /**
      * Service description based on service identifier, when no further details are available.
      *
-     * @param service Service identifier, example {@code wps}
+     * @param serviceType Service identifier, example {@code WPS}
      */
-    public ServiceDescription(String service) {
-        this(service, null, null);
+    public ServiceDescription(String serviceType) {
+        this(serviceType, null, null);
     }
 
     /**
      * Service description.
      *
-     * @param service Service identifier, example {@code wps}
+     * @param serviceType Service identifier, example {@code WPS}
      * @param title Service title
      * @param description Service description
      */
     public ServiceDescription(
-            String service, InternationalString title, InternationalString description) {
-        this(service, title, description, true, false, null, null);
+            String serviceType, InternationalString title, InternationalString description) {
+        this(serviceType, title, description, true, false, null, null);
     }
 
     /**
      * Workspace service description.
      *
-     * @param service Service identifier, example {@code wps}
+     * @param serviceType Service identifier, example {@code WPS}
      * @param title Service title
      * @param description Service description
      * @param workspace Workspace prefix, or {@code null} for global service
      */
     public ServiceDescription(
-            String service,
+            String serviceType,
             InternationalString title,
             InternationalString description,
             String workspace) {
-        this(service, title, description, true, false, workspace, null);
+        this(serviceType, title, description, true, false, workspace, null);
     }
 
     /**
      * Layer or LayerGroup service description, with associated availability or admin restrictions.
      *
-     * @param serviceType Service type, example {@code wps}
-     * @param title Service title
-     * @param description Service description
+     * @param serviceType Service type, example {@code WPS}
+     * @param title Service title, will default to serviceType if not provided
+     * @param description Service description, will default to empty InternationalString if not
+     *     provided
      * @param available {@code true} if service is available, {@code false} if service is disabled
      * @param admin {@code true} if service requires admin access (example REST services for
      *     configuration)
@@ -110,7 +114,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
             boolean admin,
             String workspace,
             String layer) {
-        this.service = serviceType.toLowerCase();
+        this.serviceType = serviceType;
         this.workspace = workspace;
         this.layer = layer;
         this.available = available;
@@ -119,7 +123,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
         if (title != null) {
             this.title = title;
         } else {
-            this.title = Text.text(service.toUpperCase());
+            this.title = Text.text(this.serviceType);
         }
 
         if (description != null) {
@@ -130,19 +134,19 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     }
 
     /**
-     * Service type, example {@code wfs}, {@code wms}, {@code features}.
+     * Service type, {@code WMS}, {@code WFS}, {@code Features}.
      *
      * @return service type, forced to lower case for ease of comparison.
      */
-    public String getService() {
-        return service;
+    public String getServiceType() {
+        return serviceType;
     }
 
     /**
      * Service title as localized text.
      *
-     * <p>If not provided uppercase service name, example {@code WMS}, {@code WFS}, {@code
-     * OGCAPI-FEATURES}.
+     * <p>If not provided service type is filled-in as a default, example {@code WMS}, {@code WFS},
+     * {@code Features}.
      *
      * @return service title
      */
@@ -211,12 +215,12 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
         ServiceDescription that = (ServiceDescription) o;
         return Objects.equals(workspace, that.workspace)
                 && Objects.equals(layer, that.layer)
-                && service.equals(that.service);
+                && serviceType.equals(that.serviceType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(workspace, layer, service);
+        return Objects.hash(workspace, layer, serviceType);
     }
 
     /**
@@ -225,15 +229,17 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
      *
      * <p>Comparison falls back string comparison to compare other services.
      *
+     * <p>Order has no real significance it is for display.
+     *
      * @param other the object to be compared.
-     * @return service description order highlight visual * web services ahead of data access and
+     * @return service description order highlight visual web services ahead of data access and
      *     processing
      */
     @Override
     public int compareTo(ServiceDescription other) {
 
-        int serviceOrder = OGC_SERVICE_ORDER.indexOf(this.service);
-        int serviceOrderOther = OGC_SERVICE_ORDER.indexOf(other.service);
+        int serviceOrder = OGC_SERVICE_ORDER.indexOf(this.serviceType);
+        int serviceOrderOther = OGC_SERVICE_ORDER.indexOf(other.serviceType);
 
         if (serviceOrder == -1 && serviceOrderOther != -1) {
             return 1;
@@ -243,14 +249,14 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
             return Integer.compare(serviceOrder, serviceOrderOther);
         } else {
             // fall back to string compare for non-ogc services
-            return this.service.compareTo(other.service);
+            return this.serviceType.compareTo(other.serviceType);
         }
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ServiceDescription{");
-        sb.append("service='").append(service).append('\'');
+        sb.append("service='").append(serviceType).append('\'');
         sb.append(", available=").append(available);
         sb.append(", workspace='").append(workspace).append('\'');
         sb.append(", layer='").append(layer).append('\'');

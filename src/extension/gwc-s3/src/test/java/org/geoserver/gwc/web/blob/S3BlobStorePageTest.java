@@ -5,6 +5,7 @@
 package org.geoserver.gwc.web.blob;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
@@ -79,7 +80,8 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(page);
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "1");
-
+        tester.assertComponent(
+                "blobConfigContainer:blobStoreForm:blobSpecificPanel", S3BlobStorePanel.class);
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("name", "myblobstore");
         formTester.setValue("enabled", false);
@@ -87,6 +89,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.setValue("blobSpecificPanel:awsAccessKey", "myaccesskey");
         formTester.setValue("blobSpecificPanel:awsSecretKey", "mysecretkey");
         formTester.select("blobSpecificPanel:accessType", 1);
+        formTester.setValue("blobSpecificPanel:prefix", "myprefix");
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
         List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
@@ -96,6 +99,12 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals("mybucket", ((S3BlobStoreInfo) config).getBucket());
         assertEquals("myaccesskey", ((S3BlobStoreInfo) config).getAwsAccessKey());
         assertEquals("mysecretkey", ((S3BlobStoreInfo) config).getAwsSecretKey());
+        assertNotEquals(
+                "mysecretkey",
+                formTester
+                        .getForm()
+                        .get("blobSpecificPanel:awsSecretKey")
+                        .getDefaultModelObject()); // check if is stored as a fake in HTML
         assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
         assertEquals("PRIVATE", ((S3BlobStoreInfo) config).getAccess().toString());
 

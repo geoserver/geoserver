@@ -146,8 +146,9 @@ public class WMSMockData {
         mockGeoServer.setGlobal(geoserverInfo);
 
         WMSInfoImpl wmsInfo = new WMSInfoImpl();
-        wmsInfo.setId("wms");
-        wmsInfo.setName("WMS");
+        wmsInfo.setId("test-wms");
+        wmsInfo.setName("Test WMS");
+        wmsInfo.setTitle("Test Web Map Service");
         wmsInfo.setEnabled(true);
         mockGeoServer.add(wmsInfo);
 

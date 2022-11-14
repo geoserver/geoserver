@@ -53,12 +53,6 @@
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
     </dependency>
-    <!--Date picker-->
-    <dependency>
-      <groupId>org.apache.wicket</groupId>
-      <artifactId>wicket-datetime</artifactId>
-      <version>7.6.0</version>
-    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.geoserver</groupId>

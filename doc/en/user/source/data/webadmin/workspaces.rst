@@ -137,10 +137,10 @@ Clients accessing this workspace as a virtual service will be provided the addre
 
 If this information is not provided the address information from the global :ref:`config_contact` page is used.
 
-Global Settings Override
-''''''''''''''''''''''''
+Other
+'''''
 
-Select :ref:`config_globalsettings` can be overriden on a workspace-by-workspace basis.
+Other additional :ref:`config_globalsettings` can be overriden on a workspace-by-workspace basis.
 
 .. figure:: img/workspace_setting_override.png
 

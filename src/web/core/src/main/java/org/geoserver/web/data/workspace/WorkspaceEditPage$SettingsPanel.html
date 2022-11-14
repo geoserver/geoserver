@@ -1,52 +1,64 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-   <ul>
-     <li>
-       <label for="enabled"><wicket:message key="enabled">Enabled</wicket:message></label>
-       <input name="enabled" type="checkbox" wicket:id="enabled"/>
-     </li>
-     <div wicket:id="settingsContainer" style="margin-top: 2.8em">
-         <li>
-           <div wicket:id="contact"></div>
-         </li>
-         <div wicket:id="otherSettings">
-             <li class="choiceItem">
-              <input id="verbose" type="checkbox" wicket:id="verbose" />
-              <label for="verbose"><wicket:message key="verboseMessaging">Enable Verbose Messaging</wicket:message></label>
-            </li>
-            <li class="choiceItem">
-              <input id="verboseExceptions" type="checkbox" wicket:id="verboseExceptions" />
-              <label for="verboseExceptions"><wicket:message key="verboseExceptions">Enable Verbose Exceptions</wicket:message></label>
-            </li>
-		    <li class="choiceItem">
-		      <input id="localWorkspaceIncludesPrefix" type="checkbox" wicket:id="localWorkspaceIncludesPrefix" />
-		      <label for="localWorkspaceIncludesPrefix"><wicket:message key="localWorkspaceIncludesPrefix">Remove Layer Prefix from Local Workspace Capabilities</wicket:message></label>
-		    </li>
-            <li>
-              <label for="numDecimals"><wicket:message key="numDecimals">Number of Decimals</wicket:message></label>
-              <input id="numDecimals" class="field text" type="text" wicket:id="numDecimals" />
-            </li>
-            <li>
-              <label for="charset"><wicket:message key="charset">Character Set</wicket:message></label>
-              <select id="charset" class="field" wicket:id="charset" />
-            </li>
-            <li>
-              <label for="proxyBaseUrl"><wicket:message key="proxyBaseUrl">Proxy Base URL</wicket:message></label>
-              <input id="proxyBaseUrl" class="field text" type="text" wicket:id="proxyBaseUrl" />
-            </li>
-            <li class="choiceItem">
-              <input id="useHeadersProxyURL" type="checkbox" wicket:id="useHeadersProxyURL" />
-              <label for="useHeadersProxyURL"><wicket:message key="useHeadersProxyURL">Use headers for Proxy URL</wicket:message></label>
-            </li>
-            <li>
-                <div wicket:id="extensions">
-     			 <div wicket:id="content"></div>
-    			</div>
-    		</li>
-          </div>
-      </div>
-   </ul>
+  <fieldset>
+    <legend>
+      <span><wicket:message key="settingsSpan">Settings</wicket:message></span>
+      <a href="#" wicket:id="settingsHelp" class="help-link"></a>
+    </legend>
+    <ul>
+      <li>
+        <label for="enabled"><wicket:message key="enabled">Enabled</wicket:message></label>
+        <input name="enabled" type="checkbox" wicket:id="enabled"/>
+      </li>
+    </ul>
+  </fieldset>
+  <div wicket:id="settingsContainer">
+     <h3 wicket:id="contactHeading">Contact Information</h3>
+     <div wicket:id="contact"></div>
+
+     <h3 wicket:id="otherHeading">Service Settings</h3>
+     <div wicket:id="otherSettings">
+       <fieldset>
+         <legend><span><wicket:message key="GlobalSettingsPage.otherSettings">Other Settings</wicket:message></span></legend>
+         <ul>
+           <li class="choiceItem">
+            <input id="verbose" type="checkbox" wicket:id="verbose" />
+            <label for="verbose"><wicket:message key="verboseMessaging">Enable Verbose Messaging</wicket:message></label>
+          </li>
+          <li class="choiceItem">
+            <input id="verboseExceptions" type="checkbox" wicket:id="verboseExceptions" />
+            <label for="verboseExceptions"><wicket:message key="verboseExceptions">Enable Verbose Exceptions</wicket:message></label>
+          </li>
+          <li class="choiceItem">
+            <input id="localWorkspaceIncludesPrefix" type="checkbox" wicket:id="localWorkspaceIncludesPrefix" />
+            <label for="localWorkspaceIncludesPrefix"><wicket:message key="localWorkspaceIncludesPrefix">Remove Layer Prefix from Local Workspace Capabilities</wicket:message></label>
+          </li>
+          <li>
+            <label for="numDecimals"><wicket:message key="numDecimals">Number of Decimals</wicket:message></label>
+            <input id="numDecimals" class="field text" type="text" wicket:id="numDecimals" />
+          </li>
+          <li>
+            <label for="charset"><wicket:message key="charset">Character Set</wicket:message></label>
+            <select id="charset" class="field" wicket:id="charset" />
+          </li>
+          <li>
+            <label for="proxyBaseUrl"><wicket:message key="proxyBaseUrl">Proxy Base URL</wicket:message></label>
+            <input id="proxyBaseUrl" class="field text" type="text" wicket:id="proxyBaseUrl" />
+          </li>
+          <li class="choiceItem">
+            <input id="useHeadersProxyURL" type="checkbox" wicket:id="useHeadersProxyURL" />
+            <label for="useHeadersProxyURL"><wicket:message key="useHeadersProxyURL">Use headers for Proxy URL</wicket:message></label>
+          </li>
+          <li>
+            <div wicket:id="extensions">
+              <div wicket:id="content"></div>
+            </div>
+          </li>
+         </ul>
+       </fieldset>
+     </div>
+  </div>
 </wicket:panel>
 </body>
 </html>

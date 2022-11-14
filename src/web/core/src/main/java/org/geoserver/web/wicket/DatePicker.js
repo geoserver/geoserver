@@ -1,3 +1,8 @@
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 // below some variable and functions to map date format tokens from java to moment js eg. d -> D for day of month.
 var javaFormatMapping = {
     d: 'D',

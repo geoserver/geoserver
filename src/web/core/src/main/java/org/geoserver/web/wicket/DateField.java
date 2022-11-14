@@ -97,14 +97,15 @@ public class DateField extends DateTextField {
         // add package resources
         response.render(
                 JavaScriptHeaderItem.forReference(
-                        new PackageResourceReference(getClass(), "moment.min.js")));
+                        new PackageResourceReference(getClass(), "js/datepicker/moment.min.js")));
         response.render(
                 JavaScriptHeaderItem.forReference(
                         new PackageResourceReference(
-                                getClass(), "jquery.datetimepicker.full.min.js")));
+                                getClass(), "js/datepicker/jquery.datetimepicker.full.min.js")));
         response.render(
                 CssHeaderItem.forReference(
-                        new PackageResourceReference(getClass(), "jquery.datetimepicker.min.css")));
+                        new PackageResourceReference(
+                                getClass(), "js/datepicker/jquery.datetimepicker.min.css")));
         // add custom file JQDatePicker.js. Reference JQDatePickerRef is a static field
         response.render(
                 JavaScriptHeaderItem.forReference(

@@ -33,6 +33,17 @@ public class QueryablesBuilder {
             "https://geojson.org/schema/MultiPolygon.json";
     public static final String GEOMETRY_SCHEMA_REF = "https://geojson.org/schema/Geometry.json";
 
+    public static final String POINT = "Point";
+    public static final String MULTIPOINT = "MultiPoint";
+    public static final String LINESTRING = "LineString";
+    public static final String MULTILINESTRING = "MultiLineString";
+    public static final String POLYGON = "Polygon";
+    public static final String MULTIPOLYGON = "MultiPolygon";
+    public static final String GENERIC_GEOMETRY = "Generic geometry";
+    public static final String DATE = "Date";
+    public static final String DATE_TIME = "DateTime";
+    public static final String TIME = "Time";
+
     Queryables queryables;
 
     public QueryablesBuilder(String id) {
@@ -80,25 +91,25 @@ public class QueryablesBuilder {
         String description;
         if (Point.class.isAssignableFrom(binding)) {
             ref = POINT_SCHEMA_REF;
-            description = "Point";
+            description = POINT;
         } else if (MultiPoint.class.isAssignableFrom(binding)) {
             ref = MULTIPOINT_SCHEMA_REF;
-            description = "MultiPoint";
+            description = MULTIPOINT;
         } else if (LineString.class.isAssignableFrom(binding)) {
             ref = LINESTRING_SCHEMA_REF;
-            description = "LineString";
+            description = LINESTRING;
         } else if (MultiLineString.class.isAssignableFrom(binding)) {
             ref = MULTILINESTRING_SCHEMA_REF;
-            description = "MultiLineString";
+            description = MULTILINESTRING;
         } else if (Polygon.class.isAssignableFrom(binding)) {
             ref = POLYGON_SCHEMA_REF;
-            description = "Polygon";
+            description = POLYGON;
         } else if (MultiPolygon.class.isAssignableFrom(binding)) {
             ref = MULTIPOLYGON_SCHEMA_REF;
-            description = "MultiPolygon";
+            description = MULTIPOLYGON;
         } else {
             ref = GEOMETRY_SCHEMA_REF;
-            description = "Generic geometry";
+            description = GENERIC_GEOMETRY;
         }
 
         schema.set$ref(ref);
@@ -113,13 +124,13 @@ public class QueryablesBuilder {
         schema.setDescription(schema.getType());
         if (java.sql.Date.class.isAssignableFrom(binding)) {
             schema.setFormat("date");
-            schema.setDescription("Date");
+            schema.setDescription(DATE);
         } else if (java.sql.Time.class.isAssignableFrom(binding)) {
             schema.setFormat("time");
-            schema.setDescription("Time");
+            schema.setDescription(TIME);
         } else if (java.util.Date.class.isAssignableFrom(binding)) {
             schema.setFormat("date-time");
-            schema.setDescription("DateTime");
+            schema.setDescription(DATE_TIME);
         }
         return schema;
     }

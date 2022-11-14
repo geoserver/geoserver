@@ -126,9 +126,11 @@ public abstract class AbstractAclController<
         }
 
         try {
-            ruleDAO.removeRule(rule);
-            ruleDAO.storeRules();
-
+            // required since the DAO can reload the rules from disk independently
+            synchronized (ruleDAO) {
+                ruleDAO.removeRule(rule);
+                ruleDAO.storeRules();
+            }
         } catch (Exception e) {
             throw createRestException(e);
         }
@@ -234,11 +236,14 @@ public abstract class AbstractAclController<
             throw new RestException(msg, HttpStatus.CONFLICT);
         }
 
-        for (Entry<String, String> entry : map.entrySet()) {
-            R rule = convertEntryToRule(entry);
-            ruleDAO.addRule(rule);
+        // required since the DAO can reload the rules from disk independently
+        synchronized (ruleDAO) {
+            for (Entry<String, String> entry : map.entrySet()) {
+                R rule = convertEntryToRule(entry);
+                ruleDAO.addRule(rule);
+            }
+            ruleDAO.storeRules();
         }
-        ruleDAO.storeRules();
     }
 
     protected void putMap(Map<String, String> map) throws Exception {
@@ -250,13 +255,16 @@ public abstract class AbstractAclController<
             throw new RestException(msg, HttpStatus.CONFLICT);
         }
 
-        for (Entry<String, String> entry : map.entrySet()) {
-            R rule = convertEntryToRule(entry);
-            // TODO, will not work for REST
-            ruleDAO.removeRule(rule);
-            ruleDAO.addRule(rule);
+        // required since the DAO can reload the rules from disk independently
+        synchronized (ruleDAO) {
+            for (Entry<String, String> entry : map.entrySet()) {
+                R rule = convertEntryToRule(entry);
+                // TODO, will not work for REST
+                ruleDAO.removeRule(rule);
+                ruleDAO.addRule(rule);
+            }
+            ruleDAO.storeRules();
         }
-        ruleDAO.storeRules();
     }
 
     /**

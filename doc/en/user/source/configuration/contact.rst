@@ -16,7 +16,7 @@ Complete this form with the organization details.
    
    Contact Information Organization
 
-The welcome message is displayed in the welcome page header as an introduction to the GeoServer web services. The organization name and online resource, if provided, are used in the welcome page header to for the :guilabel:`For more information visit` link.
+The welcome message is displayed in the welcome page header as an introduction to the GeoServer web services. The organization name and online resource, if provided, are used in the welcome page header for the :guilabel:`For more information visit` link.
 
 Contact information fields:
 

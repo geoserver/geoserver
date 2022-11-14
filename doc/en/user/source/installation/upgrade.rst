@@ -30,6 +30,29 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+Log4J Upgrade (GeoServer 2.21 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.21, the logging system used by GeoServer has been upgraded from Log4J 1.2 to Log4J 2.
+
+* GeoServer now uses :file:`xml` files for the built-in logging profiles (previously :file:`properties` files were used).
+
+* The built-in logging profiles are upgraded with :file:`xml` files:
+
+  | :file:`DEFAULT_LOGGING.xml`
+  | :file:`DEFAULT_LOGGING.properties.bak`
+  
+  
+* A backup of the prior :file:`properties` files are created during the upgrade process. If you had previously made any customizations to a built-in profiles these backup files may be used as a reference when customizing the xml file.
+
+* Log4J 2 does have the ability to read Log4j 1.2 properties files although not all features are supported.
+
+  Any custom :file:`properties` files you created will continue to be available for use.
+  
+* If necessary you can recover a customization you performed to a built-in logging profile by restoring to a different filename. To recover a customization from :file:`PRODUCTION_LOGGING.properties.bak` rename the file to  :file:`PRODUCTION_LOGGING.properties.bak` to :file:`CUSTOM_LOGGING.properties`.
+
+* If you never plan to customize the built-in logging profiles the ``UPDATE_BUILT_IN_LOGGING_PROFILES=true`` system property will always ensure you have our latest recommendation.
+
 JTS Type Bindings (GeoServer 2.14 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

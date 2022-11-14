@@ -1,14 +1,20 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-   <ul>
-     <li wicket:id="services" class="nav-administer-service">
-       <input type="checkbox" wicket:id="enabled" style="float:left; margin-right: 1em;"/>
-       <a wicket:id="link">
-        <img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span>
-       </a>
-     </li>
-   </ul>
+  <fieldset>
+    <legend>
+      <span><wicket:message key="servicesSpan">Services</wicket:message></span>
+      <a href="#" wicket:id="servicesHelp" class="help-link"></a>
+    </legend>
+    <ul>
+      <li wicket:id="services" class="nav-administer-service">
+        <input type="checkbox" wicket:id="enabled" style="float:left; margin-right: 1em;"/>
+        <a wicket:id="link">
+         <img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span>
+        </a>
+      </li>
+    </ul>
+  </fieldset>
 </wicket:panel>
 </body>
 </html>

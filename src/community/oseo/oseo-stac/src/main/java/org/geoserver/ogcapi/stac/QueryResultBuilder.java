@@ -434,14 +434,23 @@ class QueryResultBuilder {
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         TemplateBuilder builder;
-        if (collectionIds == null || collectionIds.size() > 1) {
+        STACSortablesMapper mapper = null;
+        STACQueryablesBuilder stacQueryablesBuilder = null;
+        String collectionId = null;
+        if (collectionIds != null && !collectionIds.isEmpty()) {
             // right now assuming multiple collections means using search, where the
             // sortables are generic
-            builder = templates.getItemTemplate(null);
-        } else {
-            builder = templates.getItemTemplate(collectionIds.get(0));
+            collectionId = collectionIds.get(0);
         }
-        STACSortablesMapper mapper = new STACSortablesMapper(builder, itemsSchema);
+        mapper =
+                STACSortablesMapper.getSortablesMapper(
+                        collectionId,
+                        templates,
+                        sampleFeatures,
+                        collectionsCache,
+                        itemsSchema,
+                        geoServer);
+
         return mapper.map(sortby);
     }
 

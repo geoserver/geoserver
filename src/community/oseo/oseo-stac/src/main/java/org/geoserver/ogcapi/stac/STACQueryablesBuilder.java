@@ -48,6 +48,10 @@ public class STACQueryablesBuilder {
     private static Set<String> SKIP_PROPERTIES = new HashSet<>();
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    public static final String ID = "ID";
+    public static final String COLLECTION = "Collection";
+    public static final String GEOMETRY = "Geometry";
+    public static final String DATETIME = "Datetime";
 
     static final Map<String, String> WELL_KNOWN_PROPERTIES;
 
@@ -125,10 +129,10 @@ public class STACQueryablesBuilder {
             }
         }
         // force in the extra properties not found under properties
-        properties.put("id", getSchema("ID", ID_SCHEMA_REF));
-        properties.put("collection", getSchema("Collection", COLLECTION_SCHEMA_REF));
-        properties.put("geometry", getSchema("Geometry", GEOMETRY_SCHEMA_REF));
-        properties.put("datetime", getSchema("Datetime", DATETIME_SCHEMA_REF));
+        properties.put("id", getSchema(ID, ID_SCHEMA_REF));
+        properties.put("collection", getSchema(COLLECTION, COLLECTION_SCHEMA_REF));
+        properties.put("geometry", getSchema(GEOMETRY, GEOMETRY_SCHEMA_REF));
+        properties.put("datetime", getSchema(DATETIME, DATETIME_SCHEMA_REF));
 
         return this.queryables;
     }

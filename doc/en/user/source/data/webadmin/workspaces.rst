@@ -85,7 +85,7 @@ Once enabled clicking on the service link will open the settings page for the se
    
    Workspace WMS Settings
 
-Clients accessing this workspace as a :ref:`virtual_services` will use the service description provided here.
+Clients accessing this workspace as a :ref:`virtual_services` will use the service metadata and settings provided here.
 
 .. _workspace_settings:
 
@@ -98,10 +98,12 @@ Use :guilabel:`Enabled` checkbox to override the global configuration and contac
    
    Enable workspace settings to provide default contact information
 
-Organization
-''''''''''''
+Contact Information
+'''''''''''''''''''
 
-Clients accessing this workspace as a :ref:`virtual_services` will use the organization description provided here:
+Clients accessing this workspace as a :ref:`virtual_services` will use the contact information provided here.
+
+Organization contact information:
 
 * The :guilabel:`Welcome` message is used as an introduction in the welcome page header for this workspace.
 
@@ -111,38 +113,26 @@ Clients accessing this workspace as a :ref:`virtual_services` will use the organ
    
    Workspace Organization
 
-If this information is not provided the global :ref:`config_contact` page contact organization details are used.
-
-Primary Contact
-'''''''''''''''
-
-Clients accessing this workspace as a virtual service, or via the welcome page, will use the contact information provided here:
+Primary contact information:
 
 * The :guilabel:`email` address if provided, will be used as the administrator contact in the welcome page footer for this workspace.
 
-.. figure:: img/workspace_contaxt.png
+.. figure:: img/workspace_contact.png
    
    Workspace Primary Contact
 
-If this information is not provided the global :ref:`config_contact` page contact information is used.
-
-Address
-'''''''
-
-Clients accessing this workspace as a virtual service will be provided the address details provided here.
+Address contact information:
 
 .. figure:: img/workspace_address.png
    
    Workspace address
 
-If this information is not provided the address information from the global :ref:`config_contact` page is used.
+If this information is not provided the contact information from the global :ref:`config_contact` page is used.
 
-Other
-'''''
+Service Settings
+''''''''''''''''
 
-Other additional :ref:`config_globalsettings` can be overriden on a workspace-by-workspace basis.
-
-.. figure:: img/workspace_setting_override.png
+Other settings provide additional :ref:`config_globalsettings` can be overriden on a workspace-by-workspace basis.
 
 * :guilabel:`Include Layer Prefix in Local Workspace Capabilities`: Enable this setting to force the inclusion of the workspace name as a prefix when accessing workspace contents as a virtual web service. The layer ``ne:countries`` is always referenced as ``ne:countries`` with this setting enabled.
   
@@ -154,7 +144,11 @@ Other additional :ref:`config_globalsettings` can be overriden on a workspace-by
 
   .. note:: This parameter is only used when the **Enabled** parameter of the *Settings* section is checked. 
 
-For details on other settings see :ref:`config_globalsettings`.
+.. figure:: img/workspace_settings_other.png
+
+   Other Settings
+
+If this information is not provided the global settings will be used. For details on other settings see :ref:`config_globalsettings`.
 
 .. _workspace_security:
 

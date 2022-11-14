@@ -457,8 +457,10 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             settingsContainer.setOutputMarkupId(true);
             add(settingsContainer);
 
-            contactHeading = new Label("contactHeading",
-                    new StringResourceModel("ContactPage.title", null, null));
+            contactHeading =
+                    new Label(
+                            "contactHeading",
+                            new StringResourceModel("ContactPage.title", null, null));
             contactHeading.setVisible(set.enabled);
             settingsContainer.add(contactHeading);
 
@@ -470,8 +472,11 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             contactPanel.setVisible(set.enabled);
             settingsContainer.add(contactPanel);
 
-            otherHeading = new Label("otherHeading",
-              new StringResourceModel("ContactPage.title", null, null));
+            otherHeading =
+                    new Label(
+                            "otherHeading",
+                            new StringResourceModel(
+                                    "GlobalSettingsPage.serviceSettings", null, null));
             otherHeading.setVisible(set.enabled);
             settingsContainer.add(otherHeading);
 

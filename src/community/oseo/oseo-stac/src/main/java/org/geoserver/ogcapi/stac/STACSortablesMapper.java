@@ -18,16 +18,20 @@ package org.geoserver.ogcapi.stac;
 
 import static org.geoserver.ogcapi.QueryablesBuilder.getSchema;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderUtils;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.ogcapi.APIException;
+import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -48,20 +52,115 @@ public class STACSortablesMapper {
     private final TemplateBuilder template;
     private final FeatureType itemsSchema;
     private final String id;
+    private final STACQueryablesBuilder queryablesBuilder;
 
-    public STACSortablesMapper(TemplateBuilder template, FeatureType itemsSchema) {
-        this(template, itemsSchema, null);
+    /**
+     * Generates Sortables for a given template
+     *
+     * @param template the template to generate sortables for
+     * @param itemsSchema the schema of the items in the collection
+     * @param queryablesBuilder the queryables builder to use get a configurable list of attributes
+     */
+    public STACSortablesMapper(
+            TemplateBuilder template,
+            FeatureType itemsSchema,
+            STACQueryablesBuilder queryablesBuilder) {
+        this(template, itemsSchema, null, queryablesBuilder);
     }
 
-    public STACSortablesMapper(TemplateBuilder template, FeatureType itemsSchema, String id) {
+    /**
+     * Generates Sortables for a given template
+     *
+     * @param template the template to generate sortables for
+     * @param itemsSchema the schema of the items in the collection
+     * @param id the id of the sortables document
+     * @param queryablesBuilder the queryables builder to use get a configurable list of attributes
+     */
+    public STACSortablesMapper(
+            TemplateBuilder template,
+            FeatureType itemsSchema,
+            String id,
+            STACQueryablesBuilder queryablesBuilder) {
         this.id = id;
         this.template = template;
         this.itemsSchema = itemsSchema;
+        this.queryablesBuilder = queryablesBuilder;
     }
 
-    public Sortables getSortables() {
+    /**
+     * Returns the sortables for the template
+     *
+     * @param collectionId the collection id to use to filter the queryables
+     * @param templates the templates to use to filter the queryables
+     * @param sampleFeatures the sample features to use to filter the queryables
+     * @param collectionsCache the collections cache to use to filter the queryables
+     * @param itemsSchema the items schema to use to filter the queryables
+     * @param geoServer the GeoServer instance to use to filter the queryables
+     * @param itemTemplate the item template to use to filter the queryables
+     * @param id the id of the sortables document
+     * @return the sortables for the template
+     * @throws IOException if an error occurs while reading the queryables
+     */
+    public static STACSortablesMapper getSortablesMapper(
+            String collectionId,
+            STACTemplates templates,
+            SampleFeatures sampleFeatures,
+            CollectionsCache collectionsCache,
+            FeatureType itemsSchema,
+            GeoServer geoServer,
+            TemplateBuilder itemTemplate,
+            String id)
+            throws IOException {
+        STACQueryablesBuilder stacQueryablesBuilder =
+                new STACQueryablesBuilder(
+                        null,
+                        templates.getItemTemplate(collectionId),
+                        sampleFeatures.getSchema(),
+                        sampleFeatures.getSample(collectionId),
+                        collectionsCache.getCollection(collectionId),
+                        geoServer.getService(OSEOInfo.class));
+        return new STACSortablesMapper(itemTemplate, itemsSchema, id, stacQueryablesBuilder);
+    }
+    /**
+     * Builds the SortablesMapper for the STAC API
+     *
+     * @param collectionId the collection id
+     * @param templates the templates
+     * @param sampleFeatures the sample features
+     * @param collectionsCache the collections cache
+     * @param itemsSchema the items schema
+     * @param geoServer the GeoServer instance
+     * @return the SortablesMapper
+     * @throws IOException if an error occurs while reading the templates
+     */
+    public static STACSortablesMapper getSortablesMapper(
+            String collectionId,
+            STACTemplates templates,
+            SampleFeatures sampleFeatures,
+            CollectionsCache collectionsCache,
+            FeatureType itemsSchema,
+            GeoServer geoServer)
+            throws IOException {
+        STACQueryablesBuilder stacQueryablesBuilder =
+                new STACQueryablesBuilder(
+                        null,
+                        templates.getItemTemplate(collectionId),
+                        sampleFeatures.getSchema(),
+                        sampleFeatures.getSample(collectionId),
+                        collectionsCache.getCollection(collectionId),
+                        geoServer.getService(OSEOInfo.class));
+        TemplateBuilder builder = templates.getItemTemplate(collectionId);
+        return new STACSortablesMapper(builder, itemsSchema, stacQueryablesBuilder);
+    }
+    /**
+     * Returns the sortables document for the template
+     *
+     * @return the sortables document
+     * @throws IOException if an error occurs while reading the template
+     */
+    public Sortables getSortables() throws IOException {
         Sortables result = new Sortables(id);
-
+        Queryables queryables = queryablesBuilder.getQueryables();
         // force in the extra well known sortables
         result.setProperties(new LinkedHashMap<>());
         result.getProperties().put("id", getSchema(String.class));
@@ -76,7 +175,7 @@ public class STACSortablesMapper {
                             properties,
                             null,
                             (path, vb) -> {
-                                if (isSortable(vb))
+                                if (isSortable(vb) && queryables.getProperties().containsKey(path))
                                     result.getProperties().put(path, getSchema(getClass(vb)));
                             });
             visitor.visit();
@@ -86,7 +185,8 @@ public class STACSortablesMapper {
     }
 
     /** Maps sortable properties to source properties */
-    public Map<String, String> getSortablesMap() {
+    public Map<String, String> getSortablesMap() throws IOException {
+        Queryables queryables = queryablesBuilder.getQueryables();
         Map<String, String> result = new HashMap<>();
         TemplateBuilder properties =
                 TemplateBuilderUtils.getBuilderFor(template, "features", "properties");
@@ -96,7 +196,7 @@ public class STACSortablesMapper {
                             properties,
                             null, // no sample feature, cannot sort on a jsonPointer anyways
                             (path, vb) -> {
-                                if (isSortable(vb))
+                                if (isSortable(vb) && queryables.getProperties().containsKey(path))
                                     result.put(path, vb.getXpath().getPropertyName());
                             });
             visitor.visit();
@@ -130,7 +230,7 @@ public class STACSortablesMapper {
     }
 
     /** Maps a SortBy[] using public sortables back to source property names */
-    public SortBy[] map(SortBy[] sortby) {
+    public SortBy[] map(SortBy[] sortby) throws IOException {
         Map<String, String> sortables = getSortablesMap();
         return Arrays.stream(sortby)
                 .map(sb -> mapSortable(sb, sortables))

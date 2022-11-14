@@ -74,7 +74,7 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
      * ServiceDescriptionProvider's are willing to participate. In this case we check each workspace
      * to see what services are available for the application as a whole.
      *
-     * @return list of services to skip
+     * @return list of services to skip, in lowercase (for case-insensitive matching)
      */
     protected Set<String> skipServiceDescriptionProviders() {
         GeoServer geoServer = GeoServerApplication.get().getGeoServer();
@@ -89,9 +89,10 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
             for (ServiceDescriptionProvider provider :
                     GeoServerExtensions.extensions(ServiceDescriptionProvider.class)) {
                 for (ServiceDescription service : provider.getServices(workspaceInfo, null)) {
-                    skip.add(service.getServiceType());
+                    skip.add(service.getServiceType().toLowerCase());
                 }
                 for (ServiceLinkDescription link : provider.getServiceLinks(workspaceInfo, null)) {
+                    skip.add(link.getServiceType().toLowerCase());
                     skip.add(link.getProtocol().toLowerCase());
                 }
             }

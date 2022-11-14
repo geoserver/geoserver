@@ -46,40 +46,34 @@ To view or edit a workspace, click the workspace name. A workspace configuration
    
    Workspace named "topp"
    
-A workspace is defined by a name and a Namespace URI (Uniform Resource Identifier). The workspace name is limited to ten characters and may not contain space. A URI is similar to a URL, except URIs do not need to point to a actual location on the web, and only need to be a unique identifier. For a Workspace URI, we recommend using a URL associated with your project, with perhaps a different trailing identifier. For example, ``http://www.openplans.org/topp`` is the URI for the "topp" workspace. 
+A workspace is defined by a name and a Namespace URI (Uniform Resource Identifier).
 
-Root Directory for REST PathMapper 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* :guilabel:`Name`: The workspace name is limited to ten characters and may not contain space.
+  
+  The workspace name is used as an XML prefix for the Namespace URI when generating xml documents.
+  
+  The workspace name is used as a prefix when naming individual layers (unless :guilabel:`Default workspace` is used as described below).
 
-.. figure:: img/data_workspaces_ROOT.png
-   
-   Workspace Root Directory parameter
-   
-This parameter is used by the RESTful API as the `Root Directory` for uploaded files, following the structure::
+* :guilabel:`Namespace URI`: A URI is similar to a URL, except URIs do not need to point to a actual location on the web, and only need to be a unique identifier.
 
-	${rootDirectory}/workspace/store[/<file>]
+  For a Workspace URI, we recommend using a URL associated with your project, with perhaps a different trailing identifier. For example, ``http://www.openplans.org/topp`` is the URI for the "topp" workspace. 
+  
+* :guilabel:`Default Workspace`: One workspace can me nominated as the default.
+  
+  Layers belonging to the default workspace can be accessed directly, and do not require the workspace name as a prefix.
+  
+  A GeoServer configured with one workspace can use this setting to avoid using the workspace name when referencing layers. Keep in mind the workspace name will still be used in the generation of xml documents (where the name is used as an XML prefix to reference the workspace Namespace URI).
 
-.. note:: This parameter is visible only when the **Enabled** parameter of the *Settings* section is checked. 
+* :guilabel:`Isolated workspace`: Isolated workspaces content so they are not included as part of global web services.
 
-.. _workspace_settings:
-
-Workspace Settings
-^^^^^^^^^^^^^^^^^^
-
-Use :guilabel:`Enabled` checkbox to override the global contact information for this workspace.
-
-.. figure:: img/workspace_settings.png
-   
-   Enable workspace settings to provide default contact information
-   
-Clients accessing this workspace as a :ref:`virtual_services` will use the contact information provided here.
+  The worksapce contents will only visible and queryable in the context of a :ref:`virtual_services` as described below :ref:`workspace_isolated`.
 
 .. _workspace_services:
 
 Workspace Services
 ^^^^^^^^^^^^^^^^^^
 
-Use the checkbox located next to each service to override the global settings for the associated service.
+Use the checkbox located next to each service to override the global service definition for the associated service.
 
 .. figure:: img/workspace_services.png
    
@@ -93,6 +87,77 @@ Once enabled clicking on the service link will open the settings page for the se
 
 Clients accessing this workspace as a :ref:`virtual_services` will use the service description provided here.
 
+.. _workspace_settings:
+
+Workspace Settings
+^^^^^^^^^^^^^^^^^^
+
+Use :guilabel:`Enabled` checkbox to override the global configuration and contact information for this workspace.
+
+.. figure:: img/workspace_settings.png
+   
+   Enable workspace settings to provide default contact information
+
+Organization
+''''''''''''
+
+Clients accessing this workspace as a :ref:`virtual_services` will use the organization description provided here:
+
+* The :guilabel:`Welcome` message is used as an introduction in the welcome page header for this workspace.
+
+* The :guilabel:`Organization` name and :guilabel:`Online Resource` are combined to form a organization link in the welcome page header for this workspace.
+
+.. figure:: img/workspace_orgaization.png
+   
+   Workspace Organization
+
+If this information is not provided the global :ref:`config_contact` page contact organization details are used.
+
+Primary Contact
+'''''''''''''''
+
+Clients accessing this workspace as a virtual service, or via the welcome page, will use the contact information provided here:
+
+* The :guilabel:`email` address if provided, will be used as the administrator contact in the welcome page footer for this workspace.
+
+.. figure:: img/workspace_contaxt.png
+   
+   Workspace Primary Contact
+
+If this information is not provided the global :ref:`config_contact` page contact information is used.
+
+Address
+'''''''
+
+Clients accessing this workspace as a virtual service will be provided the address details provided here.
+
+.. figure:: img/workspace_address.png
+   
+   Workspace address
+
+If this information is not provided the address information from the global :ref:`config_contact` page is used.
+
+Global Settings Override
+''''''''''''''''''''''''
+
+Select :ref:`config_globalsettings` can be overriden on a workspace-by-workspace basis.
+
+.. figure:: img/workspace_setting_override.png
+
+* :guilabel:`Include Layer Prefix in Local Workspace Capabilities`: Enable this setting to force the inclusion of the workspace name as a prefix when accessing workspace contents as a virtual web service. The layer ``ne:countries`` is always referenced as ``ne:countries`` with this setting enabled.
+  
+  With this setting disabled layers may be referenced directly (with no prefix) when accessed by a virtual web service. The layer ``ne:countries`` can be referenced as ``countries`` when this setting is disabled (and the layer is being accessed via a ``ne`` virtual web service).
+
+* :guilabel:`Root Directory for REST PathMapper`: setting used by the RESTful API as the `Root Directory` for uploaded files, following the structure::
+
+    ${rootDirectory}/workspace/store[/<file>]
+
+  .. note:: This parameter is only used when the **Enabled** parameter of the *Settings* section is checked. 
+
+For details on other settings see :ref:`config_globalsettings`.
+
+.. _workspace_security:
+
 Security
 ^^^^^^^^
 
@@ -105,59 +170,3 @@ The Security tab allows to set data access rules at workspace level.
 To create/edit the workspace's data access rules, check/uncheck checkboxes according to the desired role. 
 The Grant access to any role checkbox grant each role for any access mode.
 
-Isolated Workspaces
-^^^^^^^^^^^^^^^^^^^
-
-Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Is worth mentioning that those restrictions don't apply to the REST API.
-
-A workspace can be made isolated by checking the :guilabel:`Isolated Workspace` checkbox when creating or editing a workspace.
-
-.. figure:: img/isolated_workspace.png
-
-   Making a workspace isolated
-
-An isolated workspace will be able to reuse a namespace already used by another workspace, but its resources (layers, styles, etc ...) can only be retrieved when using that workspace virtual services and will only show up in those virtual services capabilities documents.
-
-It is only possible to create two or more workspaces with the same namespace in GeoServer if only one of them is non isolated, i.e. isolated workspaces have no restrictions in namespaces usage but two non isolated workspaces can't use the same namespace.
-
-The following situation will be valid:
-
-  - Prefix: st1 Namespace: http://www.stations.org/1.0 Isolated: false
-
-  - Prefix: st2 Namespace: http://www.stations.org/1.0 Isolated: true
-
-  - Prefix: st3 Namespace: http://www.stations.org/1.0 Isolated: true
-
-But not the following one:
-
-  - Prefix: st1 Namespace: http://www.stations.org/1.0 Isolated: false
-
-  - **Prefix: st2 Namespace: http://www.stations.org/1.0 Isolated: false**
-
-  - Prefix: st3 Namespace: http://www.stations.org/1.0 Isolated: true
-
-At most only one non isolated workspace can use a certain namespace.
-
-Consider the following image which shows to workspaces (st1 and st2) that use the same namespace (http://www.stations.org/1.0) and several layers contained by them:
-
-.. figure:: img/workspaces_example.png
-
-   Two workspaces using the same namespace, one of them is isolated.
-
-In the example above st2 is the isolated workspace. Consider the following WFS GetFeature requests:
-
-  1. http://localhost:8080/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=layer2
-
-  2. http://localhost:8080/geoserver/st2/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=layer2
-
-  3. http://localhost:8080/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=st1:layer2
-
-  4. http://localhost:8080/geoserver/st2/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=st2:layer2
-
-  5. http://localhost:8080/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=st2:layer2
-
-  6. http://localhost:8080/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=layer5
-
-The first request is targeting WFS global service and requesting layer2, this request will use layer2 contained by workspace st1. The second request is targeting st2 workspace WFS virtual service, layer2 belonging to workspace st2 will be used. Request three and four will use layer2 belonging to workspace, respectively, st1 and st2. The last two requests will fail saying that the feature type was not found, isolated workspaces content is not visible globally.
-
-**The rule of thumb is that resources (layers, styles, etc ...) belonging to an isolated workspace can only be retrieved when using that workspaces virtual services and will only show up in those virtual services capabilities documents.**

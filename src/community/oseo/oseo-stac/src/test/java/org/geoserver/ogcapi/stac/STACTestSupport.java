@@ -63,7 +63,8 @@ public class STACTestSupport extends OGCApiTestSupport {
         GeoServer gs = getGeoServer();
         OSEOInfo service = gs.getService(OSEOInfo.class);
         service.setTitle(STAC_TITLE);
-        service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
+        service.getGlobalQueryables()
+                .addAll(Arrays.asList("id", "geometry", "collection", "eo:cloud_cover"));
         gs.save(service);
 
         setupBasicOpenSearch(testData, getCatalog(), gs, false);

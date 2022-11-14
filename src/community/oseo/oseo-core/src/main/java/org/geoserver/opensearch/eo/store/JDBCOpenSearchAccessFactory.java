@@ -86,6 +86,7 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
         return new Param[] {DBTYPE, REPOSITORY_PARAM, STORE_PARAM, NAMESPACE};
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean canProcess(Map<String, ?> params) {
         // copied from AbstractDataStoreFactory... really, this code should be somewhere

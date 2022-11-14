@@ -476,6 +476,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName) throws IOException {
         if (collectionFeatureType.getName().equals(typeName)) {

@@ -124,7 +124,7 @@ Turning off global services
 
 It is possible to completely restrict access to the global OWS services by setting a configuration flag. When global access is disabled OWS services may only occur through a virtual service. Any client that tries to access a service globally will receive an exception.
 
-To disable global services log into the GeoServer web administration interface and navigate to "Global Settings". Uncheck the "Enable Global Services" check box.
+To disable global services, log into the GeoServer web administration interface and navigate to "Global Settings". Uncheck the "Enable Global Services" check box.
 
    .. figure:: img/global-services.jpg
 
@@ -133,7 +133,7 @@ To disable global services log into the GeoServer web administration interface a
 Isolated Workspaces
 ^^^^^^^^^^^^^^^^^^^
 
-Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Is worth mentioning that those restrictions don't apply to the REST API.
+Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Note that these restrictions do not apply to the REST API.
 
 A workspace can be made isolated by checking the :guilabel:`Isolated Workspace` checkbox when creating or editing a workspace.
 

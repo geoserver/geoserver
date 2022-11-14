@@ -66,7 +66,7 @@ A workspace is defined by a name and a Namespace URI (Uniform Resource Identifie
 
 * :guilabel:`Isolated workspace`: Isolated workspaces content so they are not included as part of global web services.
 
-  The worksapce contents will only visible and queryable in the context of a :ref:`virtual_services` as described below :ref:`workspace_isolated`.
+  The workspace contents will only be visible and queryable in the context of a :ref:`virtual_services` as described below :ref:`workspace_isolated`.
 
 .. _workspace_services:
 

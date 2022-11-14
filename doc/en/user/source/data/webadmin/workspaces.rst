@@ -48,7 +48,7 @@ To view or edit a workspace, click the workspace name. A workspace configuration
    
 A workspace is defined by a name and a Namespace URI (Uniform Resource Identifier).
 
-* :guilabel:`Name`: The workspace name is limited to ten characters and may not contain space.
+* :guilabel:`Name`: The workspace name, may not contain whitespace.
   
   The workspace name is used as an XML prefix for the Namespace URI when generating xml documents.
   

@@ -12,7 +12,7 @@ public class ImagesServiceInfoImpl extends ServiceInfoImpl implements ImagesServ
 
     @Override
     public String getType() {
-        return "ImagesService";
+        return "Images";
     }
 
     @Override

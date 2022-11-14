@@ -94,7 +94,7 @@ public class ServiceInfoImpl implements ServiceInfo {
             return simpleName.substring(0, truncate);
         } else {
             // this default, while incorrect, has the greatest chance of
-            // success acorss data directories
+            // success across data directories
             return getName().toUpperCase();
         }
     }

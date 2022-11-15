@@ -47,9 +47,9 @@ public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
 
         // super.print(page, false, true);
 
-        tester.assertLabel("capsList:services:0:link:service", "FAKESERVICE1");
-        tester.assertLabel("capsList:services:1:link:service", "FAKESERVICE1");
-        tester.assertLabel("capsList:services:2:link:service", "FAKESERVICE2");
+        tester.assertLabel("capsList:services:0:link:service", "FakeService1");
+        tester.assertLabel("capsList:services:1:link:service", "FakeService1");
+        tester.assertLabel("capsList:services:2:link:service", "FakeService2");
 
         tester.assertLabel("capsList:services:0:link:version", "1.1.0");
         tester.assertLabel("capsList:services:1:link:version", "1.0.0");

@@ -165,7 +165,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             }
         }
         if (service.getName() == null) {
-            service.setName("WPS");
+            service.setName(service.getType());
         }
 
         return service;

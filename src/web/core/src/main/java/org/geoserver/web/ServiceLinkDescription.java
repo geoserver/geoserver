@@ -11,13 +11,16 @@ import org.geotools.util.Version;
 /**
  * A complete reference to a GetCapabilities, REST API, or other service description document.
  *
+ * <p>ServiceLinkDescription is associated with a {@link ServiceDescription} by service type {@link
+ * #getServiceType()}.
+ *
  * <p>This description is a model object for the {@link ServicesPanel}.
  */
 public class ServiceLinkDescription implements Serializable, Comparable<ServiceLinkDescription> {
     private static final long serialVersionUID = -5600492358023139816L;
 
-    /** Service name. */
-    private final String service;
+    /** Service type, example {@code WMS}, {@code WFS}, {@code Features}, ... */
+    private final String serviceType;
 
     /** Protocol */
     private final String protocol;
@@ -35,38 +38,44 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     private final String layer;
 
     public ServiceLinkDescription(
-            String service, Version version, String link, String workspace, String layer) {
-        this(service, version, link, workspace, layer, null);
+            String serviceType, Version version, String link, String workspace, String layer) {
+        this(serviceType, version, link, workspace, layer, null);
     }
 
     public ServiceLinkDescription(
-            String service,
+            String serviceType,
             Version version,
             String link,
             String workspace,
             String layer,
             String protocol) {
-        this.service = service.toLowerCase();
+        this.serviceType = serviceType;
         this.version = version;
         this.link = link;
         this.workspace = workspace;
         this.layer = layer;
-        this.protocol = protocol != null ? protocol : service.toUpperCase();
+        this.protocol = protocol != null ? protocol : this.serviceType;
     }
 
     /**
-     * Service name, example wfs, wms, ogcapi-features.
+     * Service type, example {@code WFS}, {@code WMS}, {@code Features}.
      *
-     * <p>A given service may support several protocols and versions (see below).
+     * <p>Service type is internal to GeoServer codebase, while the title is used to identify the
+     * service to users.
+     *
+     * <p>A given internal service type may support several external protocols and versions (see
+     * below).
      *
      * @return service name, forced to lower case for ease of comparison.
      */
-    public String getService() {
-        return service;
+    public String getServiceType() {
+        return serviceType;
     }
 
     /**
-     * Web service protocol, example "wms", "wmc-c", "wmts", "rest".
+     * Web service protocol, example {@code WMTS}, {@code TMS}, {@code WMS-C}.
+     *
+     * <p>Service protocol is publicly shown to users when describing a service end-point.
      *
      * @return service protocol
      */
@@ -84,7 +93,7 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     }
 
     /**
-     * Service link, often a GetCapabilities document.
+     * Service link, for OGC OpenWebServices this a GetCapabilities document.
      *
      * @return service link, if {@code null} open web service capabilities document assumed
      */
@@ -117,7 +126,7 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
         ServiceLinkDescription that = (ServiceLinkDescription) o;
         return Objects.equals(workspace, that.workspace)
                 && Objects.equals(layer, that.layer)
-                && service.equals(that.service)
+                && serviceType.equals(that.serviceType)
                 && version.equals(that.version)
                 && Objects.equals(link, that.link)
                 && protocol.equals(that.protocol);
@@ -125,7 +134,7 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
 
     @Override
     public int hashCode() {
-        return Objects.hash(workspace, layer, service, version, link, protocol);
+        return Objects.hash(workspace, layer, serviceType, version, link, protocol);
     }
 
     @Override
@@ -138,7 +147,7 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ServiceLinkDescription{");
-        sb.append("service='").append(service).append('\'');
+        sb.append("service='").append(serviceType).append('\'');
         sb.append(", version=").append(version);
         sb.append(", protocol='").append(protocol).append('\'');
         sb.append(", workspace='").append(workspace).append('\'');

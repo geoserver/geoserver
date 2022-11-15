@@ -5,8 +5,10 @@
 package org.geoserver.catalog;
 
 /**
- * Allows to verify if a given layer is suitable for publishing on a given service. A single
- * negative vote will make the service disappear from the selective service layer UI
+ * Allows to verify if a given layer is suitable for publishing for a given service type.
+ *
+ * <p>A single negative vote will make the service disappear from the selective service layer UI and
+ * welcome page.
  *
  * @author Andrea Aime, Geosolutions
  * @author Fernando Mino, Geosolutions
@@ -14,8 +16,12 @@ package org.geoserver.catalog;
 public interface ServiceResourceVoter {
 
     /**
-     * Returns true if the services is not considered suitable for the given layer. In case the
-     * answer is unknown by this voter, false will be returned
+     * Returns {@code true} if the services is not considered suitable for the given layer. In case
+     * the answer is unknown by this voter, false will be returned
+     *
+     * @param serviceType Service type
+     * @param resource
+     * @return true if voter knows the resource is not suitable for use with service type
      */
-    boolean hideService(String service, ResourceInfo resource);
+    boolean hideService(String serviceType, ResourceInfo resource);
 }

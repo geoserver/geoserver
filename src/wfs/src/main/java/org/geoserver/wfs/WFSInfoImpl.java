@@ -33,6 +33,11 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     public WFSInfoImpl() {}
 
     @Override
+    public String getType() {
+        return "WFS";
+    }
+
+    @Override
     public Map<Version, GMLInfo> getGML() {
         return gml;
     }

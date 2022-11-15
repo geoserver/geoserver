@@ -80,6 +80,25 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.id = id;
     }
 
+    /**
+     * Default implementation attempts to determine service type based on class naming convention.
+     * Subclasses are encouraged to override.
+     *
+     * @return service type based on class name, truncating ServiceInfo.
+     */
+    @Override
+    public String getType() {
+        String simpleName = getClass().getSimpleName();
+        int truncate = simpleName.indexOf("ServiceInfo");
+        if (truncate > 0) {
+            return simpleName.substring(0, truncate);
+        } else {
+            // this default, while incorrect, has the greatest chance of
+            // success across data directories
+            return getName() != null ? getName().toUpperCase() : null;
+        }
+    }
+
     @Override
     public WorkspaceInfo getWorkspace() {
         return workspace;

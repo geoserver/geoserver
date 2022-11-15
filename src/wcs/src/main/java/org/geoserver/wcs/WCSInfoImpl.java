@@ -41,6 +41,11 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
     public WCSInfoImpl() {}
 
     @Override
+    public String getType() {
+        return "WCS";
+    }
+
+    @Override
     public boolean isGMLPrefixing() {
         return gmlPrefixing;
     }

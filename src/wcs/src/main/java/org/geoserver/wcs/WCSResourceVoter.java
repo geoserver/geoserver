@@ -11,8 +11,9 @@ import org.geoserver.catalog.ServiceResourceVoter;
 public class WCSResourceVoter implements ServiceResourceVoter {
 
     @Override
-    public boolean hideService(String service, ResourceInfo resource) {
-        if (!"WCS".equalsIgnoreCase(service)) return false;
+    public boolean hideService(String serviceType, ResourceInfo resource) {
+        if (!"WCS".equalsIgnoreCase(serviceType)) return false;
+
         return !(resource instanceof CoverageInfo);
     }
 }

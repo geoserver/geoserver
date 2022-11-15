@@ -18,8 +18,8 @@ import org.opengis.util.InternationalString;
 /** Describe REST services, which requires admin access to be listed in the user interface. */
 public class RESTServiceDescriptionProvider extends org.geoserver.web.ServiceDescriptionProvider {
 
-    /** Service used to cross-link between service description and service link description. */
-    public static final String SERVICE = "rest";
+    /** Service type to cross-link between service description and service link description. */
+    public static final String SERVICE_TYPE = "REST";
 
     @Override
     public List<ServiceDescription> getServices(
@@ -46,7 +46,7 @@ public class RESTServiceDescriptionProvider extends org.geoserver.web.ServiceDes
 
         ServiceDescription restDescription =
                 new ServiceDescription(
-                        SERVICE,
+                        SERVICE_TYPE,
                         title,
                         description,
                         true,
@@ -66,11 +66,11 @@ public class RESTServiceDescriptionProvider extends org.geoserver.web.ServiceDes
         if (workspaceInfo == null) {
             links.add(
                     new ServiceLinkDescription(
-                            "rest", new Version("1.0.0"), "../rest", null, null, "REST"));
+                            SERVICE_TYPE, new Version("1.0.0"), "../rest", null, null, "REST"));
         } else {
             links.add(
                     new ServiceLinkDescription(
-                            SERVICE,
+                            SERVICE_TYPE,
                             new Version("1.0.0"),
                             "../rest/workspaces/" + workspaceInfo.getName(),
                             workspaceInfo != null ? workspaceInfo.getName() : null,

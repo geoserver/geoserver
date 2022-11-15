@@ -90,6 +90,11 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     }
 
     @Override
+    public String getType() {
+        return "WMS";
+    }
+
+    @Override
     public int getMaxRequestMemory() {
         return maxRequestMemory;
     }

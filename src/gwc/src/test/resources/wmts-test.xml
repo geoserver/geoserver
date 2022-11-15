@@ -1,7 +1,7 @@
 <wmts>
     <id>WMTS-TEST</id>
     <enabled>false</enabled>
-    <name>WMTS</name>
+    <name>GeoServer WMTS</name>
     <title>GeoServer Web Map Tile Service</title>
     <maintainer>geoserver</maintainer>
     <abstrct>Testing the WMTS service.</abstrct>

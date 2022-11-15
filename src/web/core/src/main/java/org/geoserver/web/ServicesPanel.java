@@ -107,12 +107,12 @@ public class ServicesPanel extends Panel {
         final Map<String, ServiceDescription> serviceMap = new HashMap<>();
 
         for (ServiceDescription service : services) {
-            String serviceName = service.getService();
+            String serviceName = service.getServiceType();
             serviceMap.put(serviceName, service);
             service.getLinks().clear();
         }
         for (ServiceLinkDescription link : links) {
-            String serviceName = link.getService();
+            String serviceName = link.getServiceType();
             if (serviceMap.containsKey(serviceName)) {
                 ServiceDescription service = serviceMap.get(serviceName);
                 service.getLinks().add(link);

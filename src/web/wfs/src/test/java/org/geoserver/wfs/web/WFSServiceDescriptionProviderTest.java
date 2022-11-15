@@ -29,7 +29,7 @@ public class WFSServiceDescriptionProviderTest extends GeoServerSystemTestSuppor
 
         for (ServiceLinkDescription link : links) {
             // All links should match wfs service description
-            assertEquals("crosslink", wfs.getService(), link.getService());
+            assertEquals("crosslink", wfs.getServiceType(), link.getServiceType());
 
             if (link.getVersion().getMajor().equals(2)) {
                 assertTrue("acceptversions", link.getLink().contains("&acceptversions="));

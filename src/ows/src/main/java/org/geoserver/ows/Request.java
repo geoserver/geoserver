@@ -160,7 +160,7 @@ public class Request {
         return input;
     }
 
-    /** The service requested */
+    /** The service type requested */
     public String getService() {
         return service;
     }

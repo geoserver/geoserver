@@ -11,6 +11,11 @@ public class ImagesServiceInfoImpl extends ServiceInfoImpl implements ImagesServ
     int maxImages = 1000;
 
     @Override
+    public String getType() {
+        return "Images";
+    }
+
+    @Override
     public int getMaxImages() {
         return maxImages;
     }

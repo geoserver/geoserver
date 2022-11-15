@@ -12,6 +12,11 @@ public class DGGSInfoImpl extends ServiceInfoImpl implements DGGSInfo {
     Integer maxNeighborDistance = DEFAULT_MAX_NEIGHBOR_DISTANCE;
 
     @Override
+    public String getType() {
+        return "DGGS";
+    }
+
+    @Override
     public int getMaxNumberOfZonesForPreview() {
         return maxNumberOfZonesForPreview == null
                 ? DEFAULT_MAX_ZONES_PREVIEW

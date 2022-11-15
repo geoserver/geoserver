@@ -100,7 +100,10 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     /** The flag indicating whether remote inputs are enabled. */
     boolean remoteInputDisabled;
 
-    public WPSInfoImpl() {}
+    @Override
+    public String getType() {
+        return "WPS";
+    }
 
     /**
      * Returns the connection timeout (in seconds). It represents the timeout to be used during WPS

@@ -96,7 +96,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         }
 
         if (loader == null) {
-            throw new IllegalArgumentException("No loader for " + service.getName());
+            throw new IllegalArgumentException("No loader for " + service.getType());
         }
         @SuppressWarnings("unchecked")
         XStreamServiceLoader<T> result = loader;

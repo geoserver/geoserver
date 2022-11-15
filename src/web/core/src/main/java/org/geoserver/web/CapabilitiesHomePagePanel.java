@@ -34,7 +34,7 @@ public class CapabilitiesHomePagePanel extends Panel {
      */
     public static class CapsInfo implements Serializable {
 
-        /** Service name. */
+        /** Service type. */
         String service;
 
         /** Service version */
@@ -122,7 +122,7 @@ public class CapabilitiesHomePagePanel extends Panel {
                         String capsLink = capsInfo.getCapsLink();
                         ExternalLink link = new ExternalLink("link", capsLink);
 
-                        link.add(new Label("service", capsInfo.getService().toUpperCase()));
+                        link.add(new Label("service", capsInfo.getService()));
                         link.add(new Label("version", version.toString()));
 
                         captItem.add(link);

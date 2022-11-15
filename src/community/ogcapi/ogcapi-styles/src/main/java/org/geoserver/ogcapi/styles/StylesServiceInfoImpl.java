@@ -6,4 +6,9 @@ package org.geoserver.ogcapi.styles;
 
 import org.geoserver.config.impl.ServiceInfoImpl;
 
-public class StylesServiceInfoImpl extends ServiceInfoImpl implements StylesServiceInfo {}
+public class StylesServiceInfoImpl extends ServiceInfoImpl implements StylesServiceInfo {
+    @Override
+    public String getType() {
+        return "Styles";
+    }
+}

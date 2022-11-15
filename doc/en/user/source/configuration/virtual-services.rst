@@ -117,11 +117,72 @@ The part of interest is the "states" prefix to the wfs service. The above url re
      
   <wfs:WFS_Capabilities>
 
+.. _global_services_off:
+
 Turning off global services
 ---------------------------
 
 It is possible to completely restrict access to the global OWS services by setting a configuration flag. When global access is disabled OWS services may only occur through a virtual service. Any client that tries to access a service globally will receive an exception.
 
-To disable global services log into the GeoServer web administration interface and navigate to "Global Settings". Uncheck the "Enable Global Services" check box.
+To disable global services, log into the GeoServer web administration interface and navigate to "Global Settings". Uncheck the "Enable Global Services" check box.
 
    .. figure:: img/global-services.jpg
+
+.. _workspace_isolated:
+
+Isolated Workspaces
+^^^^^^^^^^^^^^^^^^^
+
+Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Note that these restrictions do not apply to the REST API.
+
+A workspace can be made isolated by checking the :guilabel:`Isolated Workspace` checkbox when creating or editing a workspace.
+
+.. figure:: img/isolated_workspace.png
+
+   Making a workspace isolated
+
+An isolated workspace will be able to reuse a namespace already used by another workspace, but its resources (layers, styles, etc ...) can only be retrieved when using that workspace virtual services and will only show up in those virtual services capabilities documents.
+
+It is only possible to create two or more workspaces with the same namespace in GeoServer if only one of them is non isolated, i.e. isolated workspaces have no restrictions in namespaces usage but two non isolated workspaces can't use the same namespace.
+
+The following situation will be valid:
+
+  - Prefix: st1 Namespace: http://www.stations.org/1.0 Isolated: false
+
+  - Prefix: st2 Namespace: http://www.stations.org/1.0 Isolated: true
+
+  - Prefix: st3 Namespace: http://www.stations.org/1.0 Isolated: true
+
+But not the following one:
+
+  - Prefix: st1 Namespace: http://www.stations.org/1.0 Isolated: false
+
+  - **Prefix: st2 Namespace: http://www.stations.org/1.0 Isolated: false**
+
+  - Prefix: st3 Namespace: http://www.stations.org/1.0 Isolated: true
+
+At most only one non isolated workspace can use a certain namespace.
+
+Consider the following image which shows to workspaces (st1 and st2) that use the same namespace (http://www.stations.org/1.0) and several layers contained by them:
+
+.. figure:: img/workspaces_example.png
+
+   Two workspaces using the same namespace, one of them is isolated.
+
+In the example above st2 is the isolated workspace. Consider the following WFS GetFeature requests:
+
+  1. http://localhost:8080/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=layer2
+
+  2. http://localhost:8080/geoserver/st2/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=layer2
+
+  3. http://localhost:8080/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=st1:layer2
+
+  4. http://localhost:8080/geoserver/st2/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=st2:layer2
+
+  5. http://localhost:8080/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=st2:layer2
+
+  6. http://localhost:8080/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=layer5
+
+The first request is targeting WFS global service and requesting layer2, this request will use layer2 contained by workspace st1. The second request is targeting st2 workspace WFS virtual service, layer2 belonging to workspace st2 will be used. Request three and four will use layer2 belonging to workspace, respectively, st1 and st2. The last two requests will fail saying that the feature type was not found, isolated workspaces content is not visible globally.
+
+**The rule of thumb is that resources (layers, styles, etc ...) belonging to an isolated workspace can only be retrieved when using that workspaces virtual services and will only show up in those virtual services capabilities documents.**

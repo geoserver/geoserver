@@ -10,7 +10,17 @@
       <div wicket:id="onlineResource"/>
     </li>
     <li>
-      <div wicket:id="welcome"/>
+            <span wicket:id="welcomeLabel">
+               <label class="leftwise" for="welcome" wicket:id="welcomeLabel" />
+               <input class="leftwise" type="checkbox" wicket:id="welcomeLabel_i18nCheckbox" />
+               <wicket:message key="i18nCheckBox">i18n</wicket:message>
+            </span>
+    </li>
+    <li>
+      <textarea wicket:id="welcome" class="field textarea" rows="10" cols="30" />
+    </li>
+    <li>
+      <div wicket:id="internationalWelcome" />
     </li>
   </fieldset>
   <fieldset>

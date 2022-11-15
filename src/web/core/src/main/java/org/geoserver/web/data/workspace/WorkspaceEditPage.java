@@ -401,13 +401,11 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
             add(dialog = new GeoServerDialog("dialog"));
 
-            // local settings
-            add(settingsPanel = new SettingsPanel("settings", wsModel));
-            add(new HelpLink("settingsHelp").setDialog(dialog));
-
             // local services
             add(servicesPanel = new ServicesPanel("services", wsModel));
-            add(new HelpLink("servicesHelp").setDialog(dialog));
+
+            // local settings
+            add(settingsPanel = new SettingsPanel("settings", wsModel));
         }
     }
 
@@ -416,12 +414,18 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         private static final long serialVersionUID = -1580928887379954134L;
 
         WebMarkupContainer settingsContainer;
+
+        Label contactHeading;
         ContactPanel contactPanel;
+
+        Label otherHeading;
         WebMarkupContainer otherSettingsPanel;
         Settings set;
 
         public SettingsPanel(String id, IModel<WorkspaceInfo> model) {
             super(id, new Model<>());
+
+            add(new HelpLink("settingsHelp").setDialog(dialog));
 
             SettingsInfo settings = getGeoServer().getSettings(model.getObject());
 
@@ -441,7 +445,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                                         @Override
                                         protected void onUpdate(AjaxRequestTarget target) {
+                                            contactHeading.setVisible(set.enabled);
                                             contactPanel.setVisible(set.enabled);
+                                            otherHeading.setVisible(set.enabled);
                                             otherSettingsPanel.setVisible(set.enabled);
                                             target.add(settingsContainer);
                                         }
@@ -451,6 +457,13 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             settingsContainer.setOutputMarkupId(true);
             add(settingsContainer);
 
+            contactHeading =
+                    new Label(
+                            "contactHeading",
+                            new StringResourceModel("ContactPage.title", null, null));
+            contactHeading.setVisible(set.enabled);
+            settingsContainer.add(contactHeading);
+
             contactPanel =
                     new ContactPanel(
                             "contact",
@@ -458,6 +471,14 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             contactPanel.setOutputMarkupId(true);
             contactPanel.setVisible(set.enabled);
             settingsContainer.add(contactPanel);
+
+            otherHeading =
+                    new Label(
+                            "otherHeading",
+                            new StringResourceModel(
+                                    "GlobalSettingsPage.serviceSettings", null, null));
+            otherHeading.setVisible(set.enabled);
+            settingsContainer.add(otherHeading);
 
             otherSettingsPanel =
                     new WebMarkupContainer("otherSettings", new CompoundPropertyModel<>(set.model));
@@ -565,6 +586,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
         public ServicesPanel(String id, final IModel<WorkspaceInfo> wsModel) {
             super(id, new Model<>());
+
+            add(new HelpLink("servicesHelp").setDialog(dialog));
 
             services = services(wsModel);
             ListView<Service> serviceList =

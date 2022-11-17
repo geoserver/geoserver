@@ -48,7 +48,7 @@ This will run the container with a local data directory.  The data directory wil
 
 #. Run the container
 
-      docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|release|
+      docker run --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|release|
 
 
 #. In a web browser, navigate to ``http://localhost:8080/geoserver``.

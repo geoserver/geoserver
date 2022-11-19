@@ -20,10 +20,9 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>release/html</directory>
+      <directory>release/target/html</directory>
       <outputDirectory></outputDirectory>
       <includes>
-         <include>NOTICE.html</include>
          <include>README.html</include>
       </includes>
     </fileSet>
@@ -31,6 +30,7 @@
       <directory>release/target/html/licenses</directory>
       <outputDirectory>license</outputDirectory>
       <includes>
+         <include>NOTICE.html</include>
          <include>apache-1.1.html</include>
          <include>apache-2.0.html</include>
          <include>epl-1.0.html</include>
@@ -43,4 +43,11 @@
       </includes>
     </fileSet>
   </fileSets>
+  <files>
+     <file>
+       <source>../licenses/NOTICE.md</source>
+       <outputDirectory>license</outputDirectory>
+       <destName>NOTICE.txt</destName>
+     </file>
+  </files>
 </assembly>

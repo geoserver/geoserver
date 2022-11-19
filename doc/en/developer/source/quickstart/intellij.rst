@@ -25,7 +25,7 @@ Import modules into Intellij
    .. image:: img/intellij_import_project.png
       :width: 600
 
-#. Click ``Next``, selecting the Java 8 JDK of your choice.
+#. Click ``Next``, selecting the Java 11 JDK of your choice.
 
    .. image:: img/intellij_import_jdk.png
       :width: 600
@@ -63,7 +63,7 @@ Run GeoServer from Intellij
 
 #. While you have the ``Edit Configurations`` dialog open, you can fine tune your launch environment (including setting a GEOSERVER_DATA_DIR). When you are happy with your settings, click ``OK``.
 #. If there are errors such as "cannot find symbol class ASTAxisId", some generated code is not being included in the build.  Using wcs1_1 as the working directory, run a ``mvn clean install``.
-#. If you get a compiler error like java.lang.NoSuchMethodError, it is most likely due to ``Error Prone`` tool which doesn't support Java 8. This tool is switched off by default, but sometimes it turns on after import to IntelliJ. There are two options to fix it:
+#. If you get a compiler error like ``java.lang.NoSuchMethodError``, it might be due to ``Error Prone``. This tool is switched off by default, but sometimes it turns on after import to IntelliJ. There are two options to fix it:
     #. Go to Maven tool window and uncheck the ``errorprone`` profile, then click ``Reimport All Maven Projects``:
 
        .. image:: img/intellij_maven_errorprone.png

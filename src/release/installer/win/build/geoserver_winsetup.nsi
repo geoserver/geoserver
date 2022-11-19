@@ -26,10 +26,10 @@
 !define UNINNAME "${APPNAME}-uninstall.exe"                     ; uninstaller exe name
 !define HOMEPAGE "https://geoserver.org"                        ; resource URL
 !define TIMESTAMPURL "http://timestamp.comodoca.com/rfc3161"    ; URL used to timestamp certificates
-!define REQJREVERSION "1.8.0"                                   ; required Java runtime version (i.e. 1.8.0)
-!define REQJREVERSIONNAME "8"                                   ; required Java runtime display version (i.e. 8)
-!define ALTJREVERSION "11.0"                                    ; alternative Java runtime version (i.e. 11.0)
-!define ALTJREVERSIONNAME "11"                                  ; alternative Java runtime display version (i.e. 11)
+!define REQJREVERSION "11.0"                                   ; required Java runtime version (i.e. 11.0)
+!define REQJREVERSIONNAME "11"                                   ; required Java runtime display version (i.e. 11)
+!define ALTJREVERSION "17.0"                                    ; alternative Java runtime version (i.e. 17.0)
+!define ALTJREVERSIONNAME "17"                                  ; alternative Java runtime display version (i.e. 17)
 !define JDKNAME "Adoptium OpenJDK"                              ; Name of the OpenJDK provider (e.g. AdoptOpenJDK)
 !define JDKURL "https://adoptium.net"                           ; OpenJDK URL
 !define EMAIL "geoserver-users@lists.sourceforge.net"           ; support email address
@@ -424,17 +424,17 @@ Function ValidateJava
     Pop $R1         ; Read stdout 
 
     ${StrStr} $R2 $R1 "64-Bit"              ; Find "64-Bit" substring in Java version info
-    ${StrStr} $R3 $R1 "${REQJREVERSION}"    ; Find "1.8.0" substring in Java version info
-    ${StrStr} $R4 $R1 "${ALTJREVERSION}"    ; Find "11.0" substring in Java version info
+    ${StrStr} $R3 $R1 "${REQJREVERSION}"    ; Find "11.0" substring in Java version info
+    ${StrStr} $R4 $R1 "${ALTJREVERSION}"    ; Find "17.0" substring in Java version info
 
     ${If} $R2 != ""
     ${AndIf} $R3 != ""
-      Goto ReqVersionFound      ; "64-Bit" and "1.8.0" substring found
+      Goto ReqVersionFound      ; "64-Bit" and "11.0" substring found
     ${EndIf}
 
     ${If} $R2 != ""
     ${AndIf} $R4 != ""
-      Goto AltVersionFound      ; "64-Bit" and "11.0" substring found
+      Goto AltVersionFound      ; "64-Bit" and "17.0" substring found
     ${EndIf}
 
   Errors:

@@ -280,8 +280,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
      */
     private Object unmarshal(Source source)
             throws TransformerException, XMLStreamException, UnsupportedEncodingException {
-        TransformerFactory tf =
-                new com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl();
+        TransformerFactory tf = TransformerFactory.newInstance();
         Transformer t = tf.newTransformer();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Result result = new StreamResult(os);

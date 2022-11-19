@@ -7,24 +7,19 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory>..</directory>
+      <directory>target/html</directory>
       <includes>
-        <include>README*</include>
-        <include>LICENSE*</include>
-        <include>NOTICE*</include>
+        <include>README.html</include>
+        <include>LICENSE.html</include>
       </includes>
-    </fileSet>
-    <fileSet>
-      <directory></directory>
-      <includes>
-        <include>LICENSE.md</include> <!-- CC -->
-      </includes>
+      <outputDirectory></outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target</directory>
       <includes>
-        <include>VERSION*</include>
+        <include>VERSION.txt</include>
       </includes>
+      <outputDirectory></outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target/api</directory>
@@ -33,7 +28,7 @@
   </fileSets>
   <files>
     <file>
-      <source>release/rest.html</source>
+      <source>target/html/rest.html</source>
       <outputDirectory></outputDirectory>
       <destName>index.html</destName>
     </file>

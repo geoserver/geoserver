@@ -15,12 +15,80 @@
       <url>https://creativecommons.org/licenses/by/4.0/</url>
     </license>
   </licenses>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <target>full</target>
+    <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+    <copyright.year>${maven.build.timestamp}</copyright.year>
+  </properties>
   
   <dependencies>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/target/html-template</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/../../src/release/src/markdown/html</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.ruleoftech</groupId>
+        <artifactId>markdown-page-generator-plugin</artifactId>
+        <version>2.4.0</version>
+        <executions>
+          <execution>
+            <id>html</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <recursiveInput>false</recursiveInput>
+              <inputDirectory>${project.basedir}</inputDirectory>
+              <outputDirectory>${project.build.directory}/html</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>readme</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <applyFiltering>true</applyFiltering>
+              <inputDirectory>${project.basedir}/release</inputDirectory>
+              <outputDirectory>${project.build.directory}/html</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
+          <headerHtmlFile>${project.basedir}/target/html-template/header.html</headerHtmlFile>
+          <footerHtmlFile>${project.basedir}/target/html-template/footer.html</footerHtmlFile>
+          <pegdownExtensions>TABLES,FENCED_CODE_BLOCKS,AUTOLINKS,FORCELISTITEMPARA</pegdownExtensions>
+          <defaultTitle>true</defaultTitle>
+          <inputFileExtensions>md</inputFileExtensions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>io.swagger</groupId>
         <artifactId>swagger-codegen-maven-plugin</artifactId>
@@ -535,7 +603,6 @@
       </plugin>
       
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.2.0</version>
         <configuration>
@@ -608,9 +675,6 @@
   </build>
   
   <!-- sphinx build targets - default to full -->
-  <properties>
-     <target>full</target>
-  </properties>
   <profiles>
     <profile>
       <id>docguide</id>

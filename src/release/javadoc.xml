@@ -13,11 +13,11 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>release/html</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-         <include>README.html</include>
-      </includes>
+     <directory>release/target/html</directory>
+     <outputDirectory></outputDirectory>
+     <includes>
+      <include>README.html</include>
+     </includes>
     </fileSet>
     <fileSet>
       <directory>release/target/html/licenses</directory>

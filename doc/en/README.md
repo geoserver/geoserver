@@ -13,10 +13,6 @@ To build:
 
     mvn clean install
 
-To package documentation into zip archives:
-
-    mvn assembly:single
-
 ### REST API
 
 To generate the REST API documentation:

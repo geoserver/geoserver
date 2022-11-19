@@ -7,18 +7,21 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory></directory>
+      <directory>target/html</directory>
       <includes>
-        <include>LICENSE.md</include> <!-- CC -->
+        <include>README.html</include>
+        <include>LICENSE.html</include>
       </includes>
+      <outputDirectory></outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target</directory>
       <includes>
-        <include>VERSION*</include>
+        <include>VERSION.txt</include>
       </includes>
       <outputDirectory></outputDirectory>
     </fileSet>
+    <!-- content -->
     <fileSet>
       <directory>target/user/html</directory>
       <outputDirectory></outputDirectory>
@@ -30,8 +33,8 @@
   </fileSets>
   <files>
     <file>
-      <source>release/rest.html</source>
-      <outputDirectory>api</outputDirectory>
+      <source>target/html/rest.html</source>
+      <outputDirectory></outputDirectory>
       <destName>index.html</destName>
     </file>
   </files>

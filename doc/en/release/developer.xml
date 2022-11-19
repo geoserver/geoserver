@@ -7,24 +7,21 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory></directory>
+      <directory>target/html</directory>
       <includes>
-        <include>LICENSE.md</include> <!-- CC -->
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>target</directory>
-      <includes>
-        <include>VERSION*</include>
+        <include>README.html</include>
+        <include>LICENSE.html</include>
       </includes>
       <outputDirectory></outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target</directory>
       <includes>
-        <include>VERSION*</include>
+        <include>VERSION.txt</include>
       </includes>
+      <outputDirectory></outputDirectory>
     </fileSet>
+    <!-- content -->
     <fileSet>
       <directory>target/developer/html</directory>
       <outputDirectory></outputDirectory>

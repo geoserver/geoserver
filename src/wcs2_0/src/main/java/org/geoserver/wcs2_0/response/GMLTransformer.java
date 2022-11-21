@@ -9,6 +9,7 @@ import it.geosolutions.jaiext.range.NoDataContainer;
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -346,10 +347,7 @@ class GMLTransformer extends TransformerBase {
                 WCSDimensionsHelper helper)
                 throws IOException {
             Utilities.ensureNonNull("helper", helper);
-            final String startTag =
-                    initStartMetadataTag(TAG.ADDITIONAL_DIMENSION, name, dimension, helper);
-
-            start(startTag);
+            startMetadataTag(TAG.ADDITIONAL_DIMENSION, name, dimension, helper);
             // Custom dimension only supports List presentation
             final List<String> domain = helper.getDomain(name);
             // TODO: check if we are in the list of instants case, or in the list of periods case
@@ -405,28 +403,33 @@ class GMLTransformer extends TransformerBase {
          * @param dimension the custom dimension {@link DimensionInfo} instance
          * @param helper the {@link WCSDimensionsHelper} instance used to parse default values
          */
-        private String initStartMetadataTag(
+        private void startMetadataTag(
                 final String dimensionTag,
                 final String name,
                 final DimensionInfo dimension,
                 final WCSDimensionsHelper helper)
                 throws IOException {
-            final String uom = dimension.getUnitSymbol();
+            List<String> pairs = new ArrayList<>();
             String defaultValue = null;
-            String prolog = null;
             if (dimensionTag.equals(TAG.ADDITIONAL_DIMENSION)) {
-                prolog = TAG.ADDITIONAL_DIMENSION + " name = \"" + name + "\"";
+                pairs.add("name");
+                pairs.add(name);
                 defaultValue = helper.getDefaultValue(name);
             } else if (dimensionTag.equals(TAG.ELEVATION_DOMAIN)) {
-                prolog = TAG.ELEVATION_DOMAIN;
                 defaultValue = helper.getBeginElevation();
             } else if (dimensionTag.equals(TAG.TIME_DOMAIN)) {
-                prolog = TAG.TIME_DOMAIN;
                 defaultValue = helper.getEndTime();
             }
-            return prolog
-                    + (uom != null ? (" uom=\"" + uom + "\"") : "")
-                    + (defaultValue != null ? (" default=\"" + defaultValue + "\"") : "");
+            String uom = dimension.getUnitSymbol();
+            if (uom != null) {
+                pairs.add("uom");
+                pairs.add(uom);
+            }
+            if (defaultValue != null) {
+                pairs.add("default");
+                pairs.add(defaultValue);
+            }
+            start(dimensionTag, createAttributes(pairs.toArray(new String[pairs.size()])));
         }
 
         /** Set the timeDomain metadata in case the dimensionsHelper instance has a timeDimension */
@@ -434,7 +437,7 @@ class GMLTransformer extends TransformerBase {
             Utilities.ensureNonNull("helper", helper);
             final DimensionInfo timeDimension = helper.getTimeDimension();
             if (timeDimension != null) {
-                start(initStartMetadataTag(TAG.TIME_DOMAIN, null, timeDimension, helper));
+                startMetadataTag(TAG.TIME_DOMAIN, null, timeDimension, helper);
                 final DimensionPresentation presentation = timeDimension.getPresentation();
                 final String id = helper.getCoverageId();
                 switch (presentation) {
@@ -484,7 +487,7 @@ class GMLTransformer extends TransformerBase {
             // Null check has been performed in advance
             final DimensionInfo elevationDimension = helper.getElevationDimension();
             if (elevationDimension != null) {
-                start(initStartMetadataTag(TAG.ELEVATION_DOMAIN, null, elevationDimension, helper));
+                startMetadataTag(TAG.ELEVATION_DOMAIN, null, elevationDimension, helper);
                 final DimensionPresentation presentation = elevationDimension.getPresentation();
                 switch (presentation) {
                         // Where _er_ means elevation range

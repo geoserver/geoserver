@@ -204,7 +204,7 @@ Now that we have connected to the GeoPackage, we can publish the layer.
       
       Coordinate Reference Systems
 
-#. Locate :guilabel:`Bounding Boces` and generate the layer's bounding boxes by clicking the :guilabel:`Compute from data` and then :guilabel:`Compute from native bounds` links.
+#. Locate :guilabel:`Bounding Boxes` and generate the layer's bounding boxes by clicking the :guilabel:`Compute from data` and then :guilabel:`Compute from native bounds` links.
 
    .. figure:: images/layer_bbox.png
 

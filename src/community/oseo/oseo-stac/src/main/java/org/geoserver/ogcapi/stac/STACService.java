@@ -597,14 +597,22 @@ public class STACService {
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         TemplateBuilder builder;
-        if (collectionIds == null || collectionIds.size() > 1) {
+        STACSortablesMapper mapper = null;
+        STACQueryablesBuilder stacQueryablesBuilder = null;
+        String collectionId = null;
+        if (collectionIds != null && !collectionIds.isEmpty()) {
             // right now assuming multiple collections means using search, where the
             // sortables are generic
-            builder = templates.getItemTemplate(null);
-        } else {
-            builder = templates.getItemTemplate(collectionIds.get(0));
+            collectionId = collectionIds.get(0);
         }
-        STACSortablesMapper mapper = new STACSortablesMapper(builder, itemsSchema);
+        mapper =
+                STACSortablesMapper.getSortablesMapper(
+                        collectionId,
+                        templates,
+                        sampleFeatures,
+                        collectionsCache,
+                        itemsSchema,
+                        geoServer);
         return mapper.map(sortby);
     }
 
@@ -746,7 +754,17 @@ public class STACService {
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         RootBuilder template = this.templates.getItemTemplate(collectionId);
-        Sortables sortables = new STACSortablesMapper(template, itemsSchema, id).getSortables();
+        STACSortablesMapper sortablesMapper =
+                STACSortablesMapper.getSortablesMapper(
+                        collectionId,
+                        templates,
+                        sampleFeatures,
+                        collectionsCache,
+                        itemsSchema,
+                        geoServer,
+                        template,
+                        id);
+        Sortables sortables = sortablesMapper.getSortables();
         sortables.setCollectionId(collectionId);
         return sortables;
     }
@@ -788,8 +806,17 @@ public class STACService {
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         RootBuilder template = this.templates.getItemTemplate(null);
-        Sortables sortables = new STACSortablesMapper(template, itemsSchema, id).getSortables();
-        return sortables;
+        STACSortablesMapper sortablesMapper =
+                STACSortablesMapper.getSortablesMapper(
+                        null,
+                        templates,
+                        sampleFeatures,
+                        collectionsCache,
+                        itemsSchema,
+                        geoServer,
+                        template,
+                        id);
+        return sortablesMapper.getSortables();
     }
 
     private boolean supportsFieldsSelection(HttpServletRequest request)

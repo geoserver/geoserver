@@ -1,14 +1,14 @@
 .. _quickstart_intellij:
 
-Intellij Quickstart
+IntelliJ QuickStart
 ===================
 
 .. include:: checkout.txt
 
-Import modules into Intellij
+Import modules into IntelliJ
 ----------------------------
 
-#. Run the Intellij IDE
+#. Run the IntelliJ IDE
 #. Select ``File -> New -> Project from Existing Sources...``. 
 #. Navigate to the ``geoserver/src/pom.xml`` directory and click ``Open``.
 
@@ -35,17 +35,17 @@ Import modules into Intellij
    .. image:: img/intellij_import_finish.png
       :width: 600
 
-Before Running Geoserver
+Before Running GeoServer
 ---------------------------
 
-GeoServer relies on other libraries that are mantained in parallel under the same project umbrella. These are Geotools and GeoWebCache. So for easier installation and setup of the GeoServer development environment, you may want to apply the following:
+GeoServer relies on other libraries that are maintained in parallel under the same project umbrella. These are GeoTools and GeoWebCache. So, for easier installation and setup of the GeoServer development environment, you may want to apply the following:
 
 #. Download the code of both and execute ``mvn clean install`` into them.
-    `Geotools <https://github.com/geotools/geotools>`_
+    `GeoTools <https://github.com/geotools/geotools>`_
     `GeoWebCache <https://github.com/geowebcache/geowebcache>`_
-#. Afterwards do the same in the geoserver src folder
+#. Afterwards do the same in the GeoServer src folder
 
-Run GeoServer from Intellij
+Run GeoServer from IntelliJ
 ---------------------------
 
 #. From the Project browser select the ``web-app`` module
@@ -55,7 +55,7 @@ Run GeoServer from Intellij
    .. image:: img/intellij_run.png
       :width: 400
 
-#. The first time you do this, geoserver will fail to start. Navigate to the ``Run`` menu, and click ``Edit Configurations...``.
+#. The first time you do this, GeoServer will fail to start. Navigate to the ``Run`` menu, and click ``Edit Configurations...``.
 #. Select the ``Start`` configuration, and append ``web/app`` to the ``Working Directory``.
 
    .. image:: img/intellij_run_config.png
@@ -71,7 +71,7 @@ Run GeoServer from Intellij
 
     #. If you want to use ``errorprone``, notably to perform the QA checks, install the ``Error Prone Compiler`` plugin, restart the IDE and set ``Javac with error-prone`` as a default compiler for the project. Please note that this will slower the build.
 #. If there are errors such as "cannot find symbol AbstractUserGroupServiceTest", rebuild the ``security-tests`` project in the security module.  Right-click on the ``security-tests`` project and click Rebuild.
-#. In the last versions of Intellij Annotations processors are enabled. If there are errors because of this uncheck this options from compiler settings.
+#. In the last versions of IntelliJ Annotations processors are enabled. If there are errors because of this uncheck this option from compiler settings.
 
    .. image:: img/intellij_disable_annotation_processors.jpg
       :width: 800
@@ -97,7 +97,7 @@ Access GeoServer front page
 * After a few seconds, GeoServer should be accessible at: `<http://localhost:8080/geoserver>`_
 * The default ``admin`` password is ``geoserver``.
 
-Run GeoServer from Intellij on Windows
+Run GeoServer from IntelliJ on Windows
 --------------------------------------
 
-#. Add bash to your Windows environment path and restart Intellij.  
+#. Add bash to your Windows environment path and restart IntelliJ.  

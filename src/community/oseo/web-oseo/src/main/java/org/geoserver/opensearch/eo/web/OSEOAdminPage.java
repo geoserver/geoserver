@@ -96,9 +96,10 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
                         "globalQueryables",
                         LiveCollectionModel.list(new PropertyModel(info, "globalQueryables"))) {
                     @Override
-                    protected IConverter<?> createConverter(Class<?> type) {
-                        if (List.class.equals(type)) return new QueryablesConverter();
-                        return super.createConverter(type);
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        if (type.isAssignableFrom(ArrayList.class))
+                            return (IConverter<C>) new QueryablesConverter();
+                        return super.getConverter(type);
                     }
                 };
         globalQueryables.setType(List.class);

@@ -1344,6 +1344,14 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
             handleMetadataList(metadataLinks);
 
+            if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup))
+                handleLayerGroupDefaultStyle(layerName);
+
+            if (isSingleOrOpaque(layerGroup))
+                handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
+
+            handleScaleHint(layerGroup);
+
             // handle children layers and groups
             if (!LayerGroupInfo.Mode.OPAQUE_CONTAINER.equals(layerGroup.getMode())
                     && !LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
@@ -1358,13 +1366,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     }
                 }
             }
-            if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup))
-                handleLayerGroupDefaultStyle(layerName);
-
-            if (isSingleOrOpaque(layerGroup))
-                handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
-
-            handleScaleHint(layerGroup);
 
             end("Layer");
         }

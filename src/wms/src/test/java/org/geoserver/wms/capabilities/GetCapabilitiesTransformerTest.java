@@ -13,14 +13,25 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Strings;
+import com.google.common.io.Resources;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -59,6 +70,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -413,6 +429,88 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
                         "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement/TestSubElement",
                         dom);
         assertEquals(1, list.getLength());
+    }
+
+    /**
+     * Gets a capabilities document as an XML string Also, adds: <!DOCTYPE WMT_MS_Capabilities
+     * SYSTEM "WMS_MS_Capabilities.dtd"> at the top of the document.
+     */
+    String getCapabilitiesXML() throws Exception {
+        // WMS wms = new WMS(getGeoServer());
+        WMS wms = (WMS) applicationContext.getBean("wms");
+
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
+
+        Document dom = WMSTestSupport.transform(req, tr);
+        TransformerFactory ttf = TransformerFactory.newInstance();
+        Transformer trans = ttf.newTransformer();
+        StringWriter sw = new StringWriter();
+        trans.transform(new DOMSource(dom), new StreamResult(sw));
+
+        String xml = sw.toString();
+        xml =
+                xml.replace(
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                                + "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"WMS_MS_Capabilities.dtd\">");
+
+        return xml;
+    }
+
+    @Test
+    public void testValidatesAgainstDTD() throws Exception {
+        // get a capabilities document
+        String getCapXML = getCapabilitiesXML();
+
+        // get the wms 1.1.1 DTD
+        URL dtdURL =
+                GetCapabilitiesTransformer.class.getResource(
+                        "/schemas/wms/1.1.1/wms_ms_capabilities.dtd");
+        String dtd = Resources.toString(dtdURL, StandardCharsets.UTF_8);
+
+        try (InputStream dtdInputStream = new ByteArrayInputStream(dtd.getBytes())) {
+
+            // parse and validate the capabilities document against the DTD
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setValidating(true);
+            factory.setNamespaceAware(true);
+
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // Normally, the DTD would downloaded from the internet.  We don't want to do that, so
+            // we tell the parse to use our DTD instead of downloading it.
+            builder.setEntityResolver(
+                    new EntityResolver() {
+                        public InputSource resolveEntity(String publicId, String systemId)
+                                throws SAXException, IOException {
+                            if (systemId.endsWith("WMS_MS_Capabilities.dtd")) {
+                                return new InputSource(dtdInputStream);
+                            }
+                            return null;
+                        }
+                    });
+
+            // make sure sax throws an error when it finds an error
+            builder.setErrorHandler(
+                    new ErrorHandler() {
+                        @Override
+                        public void warning(SAXParseException exception) throws SAXException {}
+
+                        @Override
+                        public void error(SAXParseException exception) throws SAXException {
+                            throw new SAXException("SAX ERROR OCCURRED!", exception);
+                        }
+
+                        @Override
+                        public void fatalError(SAXParseException exception) throws SAXException {
+                            throw new SAXException("SAX ERROR OCCURRED!", exception);
+                        }
+                    });
+
+            // this will parse and validate - if there are parse issues the ErrorHandler will throw.
+            Document document = builder.parse(new ByteArrayInputStream(getCapXML.getBytes()));
+        }
     }
 
     @Test

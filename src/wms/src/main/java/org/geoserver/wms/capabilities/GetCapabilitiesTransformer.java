@@ -1146,6 +1146,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         }
 
         private void handleCommonStyleElements(StyleInfo defaultStyle) {
+            element("Name", defaultStyle.prefixedName());
             Style ftStyle;
             try {
                 ftStyle = defaultStyle.getStyle();
@@ -1153,7 +1154,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            element("Name", defaultStyle.prefixedName());
         }
 
         private void handleStyleTitleAndAbstract(String prefixedName, Style ftStyle) {

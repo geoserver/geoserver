@@ -1146,6 +1146,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         }
 
         private void handleCommonStyleElements(StyleInfo defaultStyle) {
+            element("Name", defaultStyle.prefixedName());
             Style ftStyle;
             try {
                 ftStyle = defaultStyle.getStyle();
@@ -1153,7 +1154,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            element("Name", defaultStyle.prefixedName());
         }
 
         private void handleStyleTitleAndAbstract(String prefixedName, Style ftStyle) {
@@ -1340,6 +1340,14 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
             handleMetadataList(metadataLinks);
 
+            if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup))
+                handleLayerGroupDefaultStyle(layerName);
+
+            if (isSingleOrOpaque(layerGroup))
+                handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
+
+            handleScaleHint(layerGroup);
+
             // handle children layers and groups
             if (!LayerGroupInfo.Mode.OPAQUE_CONTAINER.equals(layerGroup.getMode())
                     && !LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
@@ -1354,13 +1362,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     }
                 }
             }
-            if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup))
-                handleLayerGroupDefaultStyle(layerName);
-
-            if (isSingleOrOpaque(layerGroup))
-                handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
-
-            handleScaleHint(layerGroup);
 
             end("Layer");
         }

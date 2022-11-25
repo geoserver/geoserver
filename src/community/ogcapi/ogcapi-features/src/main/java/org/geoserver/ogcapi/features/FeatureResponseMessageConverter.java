@@ -17,7 +17,6 @@ import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
@@ -72,7 +71,7 @@ public class FeatureResponseMessageConverter
                         .orElse(null);
         if (crs != null) {
             try {
-                String crsURI = getCRSURI(crs);
+                String crsURI = FeatureService.getCRSURI(crs);
                 String orderSpec = getOrderSpecification(crs);
                 if (crsURI != null && orderSpec != null) {
                     message.getHeaders()
@@ -85,14 +84,6 @@ public class FeatureResponseMessageConverter
                         e);
             }
         }
-    }
-
-    private String getCRSURI(CoordinateReferenceSystem crs) throws FactoryException {
-        if (CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
-            return FeatureService.DEFAULT_CRS;
-        }
-        Integer code = CRS.lookupEpsgCode(crs, false);
-        return FeatureService.CRS_PREFIX + code;
     }
 
     private String getOrderSpecification(CoordinateReferenceSystem crs) {

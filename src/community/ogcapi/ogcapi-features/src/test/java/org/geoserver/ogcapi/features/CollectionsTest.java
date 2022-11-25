@@ -70,7 +70,8 @@ public class CollectionsTest extends FeaturesTestSupport {
         int expected = getCatalog().getFeatureTypes().size();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
 
-        // check we have the expected number of links and they all use the right "rel" relation
+        // check we have the expected number of links and they all use the right "rel"
+        // relation
         Collection<MediaType> formats =
                 GeoServerExtensions.bean(
                                 APIDispatcher.class, GeoServerSystemTestSupport.applicationContext)
@@ -179,6 +180,9 @@ public class CollectionsTest extends FeaturesTestSupport {
         assertEquals(
                 BASIC_POLYGONS_DESCRIPTION,
                 document.select("#" + basicPolygonsHtmlId + "_description").text());
+        assertEquals(
+                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                document.select("#" + basicPolygonsHtmlId + "_storageCrs").text());
     }
 
     @Test

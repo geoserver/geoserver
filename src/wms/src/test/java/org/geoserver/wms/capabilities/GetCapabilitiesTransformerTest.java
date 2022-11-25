@@ -466,7 +466,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         // get the wms 1.1.1 DTD
         URL dtdURL =
                 GetCapabilitiesTransformer.class.getResource(
-                        "/schemas/wms/1.1.1/wms_ms_capabilities.dtd");
+                        "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd");
         String dtd = Resources.toString(dtdURL, StandardCharsets.UTF_8);
 
         try (InputStream dtdInputStream = new ByteArrayInputStream(dtd.getBytes())) {

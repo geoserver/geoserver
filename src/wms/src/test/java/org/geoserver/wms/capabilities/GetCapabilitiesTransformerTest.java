@@ -482,6 +482,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
             // we tell the parse to use our DTD instead of downloading it.
             builder.setEntityResolver(
                     new EntityResolver() {
+                        @Override
                         public InputSource resolveEntity(String publicId, String systemId)
                                 throws SAXException, IOException {
                             if (systemId.endsWith("WMS_MS_Capabilities.dtd")) {
@@ -509,7 +510,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
                     });
 
             // this will parse and validate - if there are parse issues the ErrorHandler will throw.
-            Document document = builder.parse(new ByteArrayInputStream(getCapXML.getBytes()));
+            builder.parse(new ByteArrayInputStream(getCapXML.getBytes()));
         }
     }
 

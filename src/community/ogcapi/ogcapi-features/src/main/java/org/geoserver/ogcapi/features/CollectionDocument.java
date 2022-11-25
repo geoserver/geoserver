@@ -31,6 +31,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
@@ -42,6 +44,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
     FeatureTypeInfo featureType;
     String mapPreviewURL;
     List<String> crs;
+    String storageCrs;
 
     public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType, List<String> crs)
             throws IOException {
@@ -56,6 +59,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         setExtent(new CollectionExtents(bbox, timeExtent));
         this.featureType = featureType;
         this.crs = crs;
+        this.storageCrs = lookupStorageCrs();
 
         // links
         Collection<MediaType> formats =
@@ -123,6 +127,30 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         return si != null;
     }
 
+    private String lookupStorageCrs() {
+        CoordinateReferenceSystem crs = getSchemaCRS();
+
+        if (crs != null) {
+            try {
+                return FeatureService.getCRSURI(crs);
+            } catch (FactoryException e) {
+                LOGGER.log(Level.FINER, "Error looking up epsg code", e);
+            }
+        }
+
+        return null;
+    }
+
+    private CoordinateReferenceSystem getSchemaCRS() {
+        FeatureType schema = getSchema();
+
+        if (schema != null) {
+            return schema.getCoordinateReferenceSystem();
+        }
+
+        return null;
+    }
+
     @JsonIgnore
     public FeatureType getSchema() {
         try {
@@ -140,5 +168,9 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
 
     public List<String> getCrs() {
         return crs;
+    }
+
+    public String getStorageCrs() {
+        return storageCrs;
     }
 }

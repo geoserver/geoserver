@@ -103,6 +103,10 @@ public class CollectionTest extends FeaturesTestSupport {
                     c + " is not using a numeric code",
                     c.substring("http://www.opengis.net/def/crs/EPSG/0/".length()).matches("\\d+"));
         }
+
+        // check the storage CRS
+        String storageCrs = json.read("storageCrs");
+        assertEquals("http://www.opengis.net/def/crs/OGC/1.3/CRS84", storageCrs);
     }
 
     @Test

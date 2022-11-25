@@ -69,6 +69,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -134,6 +135,21 @@ public class FeatureService {
             return result;
         }
         return defaultCRS;
+    }
+
+    /**
+     * Returns the CRS-URI for a given CRS.
+     *
+     * @param crs the CRS
+     * @return
+     * @throws FactoryException
+     */
+    public static String getCRSURI(CoordinateReferenceSystem crs) throws FactoryException {
+        if (CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
+            return FeatureService.DEFAULT_CRS;
+        }
+        Integer code = CRS.lookupEpsgCode(crs, false);
+        return FeatureService.CRS_PREFIX + code;
     }
 
     protected List<String> getServiceCRSList() {

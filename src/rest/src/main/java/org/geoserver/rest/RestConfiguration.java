@@ -36,15 +36,27 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.UrlPathHelper;
 import org.xml.sax.EntityResolver;
 
-/** Configure various aspects of Spring MVC, in particular message converters */
+/**
+ * Configure various aspects of Spring MVC, in particular message converters
+ *
+ * @implNote this class extends {@link DelegatingWebMvcConfiguration} in order to allow other
+ *     modules to extend the WebMvc configuration by contributing a {@link WebMvcConfigurer} to the
+ *     application context. {@link DelegatingWebMvcConfiguration} is a subclass of {@code
+ *     WebMvcConfigurationSupport} that detects and delegates to all beans of type {@link
+ *     WebMvcConfigurer} allowing them to customize the configuration provided by {@code
+ *     WebMvcConfigurationSupport}. This is the class actually imported by {@link
+ *     EnableWebMvc @EnableWebMvc}.
+ */
 @Configuration
-public class RestConfiguration extends WebMvcConfigurationSupport {
+public class RestConfiguration extends DelegatingWebMvcConfiguration {
 
     private ContentNegotiationManager contentNegotiationManager;
 
@@ -126,12 +138,16 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
 
         // use the default ones as lowest priority
         super.addDefaultHttpMessageConverters(converters);
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.configureMessageConverters(converters);
     }
 
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new RestInterceptor());
         registry.addInterceptor(new CallbackInterceptor());
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.addInterceptors(registry);
     }
 
     @Override
@@ -169,6 +185,9 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
         // todo properties files are only supported for test cases. should try to find a way to
         // support them without polluting prod code with handling
         //        configurer.mediaType("properties", MediaType.valueOf("application/prs.gs.psl"));
+
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.configureContentNegotiation(configurer);
     }
 
     @Override
@@ -178,6 +197,8 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
         GeoServerUrlPathHelper helper = new GeoServerUrlPathHelper();
         helper.setAlwaysUseFullPath(true);
         configurer.setUrlPathHelper(helper);
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.configurePathMatch(configurer);
     }
 
     @Override
@@ -186,6 +207,8 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
         for (Converter converter : GeoServerExtensions.extensions(Converter.class)) {
             registry.addConverter(converter);
         }
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.addFormatters(registry);
     }
 
     static class GeoServerUrlPathHelper extends UrlPathHelper {

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.UUID;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.geofence.GeofenceBaseTest;
@@ -770,6 +771,44 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 rule.getLimits().getAllowedArea());
 
         assertEquals("HIDDEN", rule.getLimits().getCatalogMode());
+    }
+
+    @Test
+    public void testRulesXMLPayload() throws Exception {
+
+        this.adminService.getAll().stream()
+                .mapToLong(ShortRule::getId)
+                .peek(id -> LOGGER.warning("deleting " + id))
+                .forEach(adminService::delete);
+
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(7L);
+        rule.setWorkspace("workspace");
+        rule.setLayer("layer");
+        rule.setAccess("ALLOW");
+        rule.setRoleName("ROLE_EDITOR");
+        rule.setLayerDetails(new JaxbRule.LayerDetails());
+        final long id = prepareGeoFenceTestRules(rule);
+
+        final String expected =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" //
+                        + "<Rules count=\"1\">" //
+                        + "<Rule id=\""
+                        + id
+                        + "\">" //
+                        + "<access>ALLOW</access>" //
+                        + "<layer>layer</layer>" //
+                        + "<layerDetails>" //
+                        + "<spatialFilterType>INTERSECT</spatialFilterType>" //
+                        + "</layerDetails>" //
+                        + "<priority>7</priority>" //
+                        + "<roleName>ROLE_EDITOR</roleName>" //
+                        + "<workspace>workspace</workspace>" //
+                        + "</Rule>" //
+                        + "</Rules>";
+
+        String response = super.getAsString("/rest/geofence/rules");
+        XMLAssert.assertXMLEqual(expected, response);
     }
 
     /**

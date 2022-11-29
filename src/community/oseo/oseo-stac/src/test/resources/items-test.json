@@ -20,10 +20,10 @@
         "start_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeStart}",
         "end_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeEnd}",
         "datetime": "$filter{timeStart is not null and (timeEnd is null or timeStart = timeEnd)},${timeStart}",
+        "platform": "$${if_then_else(isNull(eop:productPlatform), \"eop:productPlatform\", eop:productPlatform)}",
         "missing": "${eo:wavelength}",
         "created": "${eop:creationDate}",
         "updated": "${eop:modificationDate}",
-        "platform": "${eop:productPlatform}",
         "instruments": [
           "${eo:collection/eo:instrument}"
         ],

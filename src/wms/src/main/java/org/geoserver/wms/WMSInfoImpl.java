@@ -366,12 +366,12 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
         this.allowedURLsForAuthForwarding = allowedURLsForAuthForwarding;
     }
 
-    /** @return whether to enable auto-escaping HTML FreeMarker template values */
+    @Override
     public boolean isAutoEscapeTemplateValues() {
         return autoEscapeTemplateValues;
     }
 
-    /** Sets whether to enable auto-escaping HTML FreeMarker template values */
+    @Override
     public void setAutoEscapeTemplateValues(boolean autoEscapeTemplateValues) {
         this.autoEscapeTemplateValues = autoEscapeTemplateValues;
     }

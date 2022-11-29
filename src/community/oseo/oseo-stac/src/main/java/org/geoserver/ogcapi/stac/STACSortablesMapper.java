@@ -24,6 +24,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderUtils;
@@ -33,8 +36,12 @@ import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geotools.filter.AttributeExpressionImpl;
+import org.geotools.filter.FilterAttributeExtractor;
+import org.geotools.filter.visitor.ExpressionTypeVisitor;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.http.HttpStatus;
 
@@ -48,6 +55,8 @@ import org.springframework.http.HttpStatus;
  * </ul>
  */
 public class STACSortablesMapper {
+
+    static final Logger LOGGER = Logging.getLogger(STACSortablesMapper.class);
 
     private final TemplateBuilder template;
     private final FeatureType itemsSchema;
@@ -190,14 +199,41 @@ public class STACSortablesMapper {
         Map<String, String> result = new HashMap<>();
         TemplateBuilder properties =
                 TemplateBuilderUtils.getBuilderFor(template, "features", "properties");
+        FilterAttributeExtractor extractor = new FilterAttributeExtractor();
         if (properties != null) {
             TemplatePropertyVisitor visitor =
                     new TemplatePropertyVisitor(
                             properties,
                             null, // no sample feature, cannot sort on a jsonPointer anyways
                             (path, vb) -> {
-                                if (isSortable(vb) && queryables.getProperties().containsKey(path))
-                                    result.put(path, vb.getXpath().getPropertyName());
+                                if (isSortable(vb)
+                                        && queryables.getProperties().containsKey(path)) {
+                                    if (vb.getXpath() != null) {
+                                        result.put(path, vb.getXpath().getPropertyName());
+                                    } else if (vb.getCql() != null) {
+                                        vb.getCql().accept(extractor, null);
+                                        Set<PropertyName> propertiesNames =
+                                                extractor.getPropertyNameSet();
+                                        // if there is more than one property name in the
+                                        // expression, we cannot determine which to use
+                                        if (propertiesNames.size() == 1) {
+                                            result.put(
+                                                    path,
+                                                    propertiesNames
+                                                            .iterator()
+                                                            .next()
+                                                            .getPropertyName());
+                                        } else {
+                                            LOGGER.log(
+                                                    Level.WARNING,
+                                                    "Cannot determine the property name to use for sorting on "
+                                                            + path
+                                                            + " because the expression "
+                                                            + vb.getCql()
+                                                            + " contains more than one property name");
+                                        }
+                                    }
+                                }
                             });
             visitor.visit();
         }
@@ -211,12 +247,17 @@ public class STACSortablesMapper {
 
     private Class getClass(DynamicValueBuilder db) {
         AttributeExpressionImpl xpath = db.getXpath();
-        if (xpath != null && !xpath.getPropertyName().contains("/")) {
-            Object result = xpath.evaluate(itemsSchema);
-            if (result instanceof PropertyDescriptor) {
-                PropertyDescriptor pd = (PropertyDescriptor) result;
-                return pd.getType().getBinding();
+        if (xpath != null) {
+            if (!xpath.getPropertyName().contains("/")) {
+                Object result = xpath.evaluate(itemsSchema);
+                if (result instanceof PropertyDescriptor) {
+                    PropertyDescriptor pd = (PropertyDescriptor) result;
+                    return pd.getType().getBinding();
+                }
             }
+        } else if (db.getCql() != null) {
+            ExpressionTypeVisitor visitor = new ExpressionTypeVisitor(itemsSchema);
+            return (Class<?>) db.getCql().accept(visitor, null);
         }
         return null;
     }

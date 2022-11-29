@@ -7,6 +7,7 @@ package org.geoserver.wms.featureinfo;
 import static org.geoserver.wms.featureinfo.FreemarkerStaticsAccessRule.fromPattern;
 
 import freemarker.cache.NullCacheStorage;
+import freemarker.core.HTMLOutputFormat;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
@@ -273,6 +274,10 @@ public abstract class FreeMarkerTemplateManager {
             }
             templateLoader.setResource(ri);
             templateConfig.setTemplateLoader(templateLoader);
+            templateConfig.unsetOutputFormat();
+            if (format.equals(OutputFormat.HTML) && wms.isAutoEscapeTemplateValues()) {
+                templateConfig.setOutputFormat(HTMLOutputFormat.INSTANCE);
+            }
             Template t = null;
             try {
                 t = templateConfig.getTemplate(templateFileName);

@@ -187,6 +187,15 @@ By default GetFeatureInfo results are reproject to the map coordinate reference 
 
 When the flag is checked, GetFeatureInfo requests results will not be reprojected and will instead used the layer coordinate reference system.
 
+Enabling GetFeatureInfo requests results HTML auto-escaping
+-----------------------------------------------------------
+
+By default GetFeatureInfo results are printed in the HTML templates without any automatic escaping, which could result in incorrect and potentially malicious results. This behavior can be activated on a global or per virtual service basis in the **GetFeatureInfo results auto-escaping** section.
+
+.. figure:: img/service_WMS_autoEscaping.png
+
+When the flag is checked, values that are printed in the HTML templates for GetFeatureInfo requests results will be automatically escaped. The default FreeMarker templates can be overridden to enable or disable auto-escaping on a per template, per block or per value basis.
+
 Setting Remote Style max connection and request time
 ----------------------------------------------------
 

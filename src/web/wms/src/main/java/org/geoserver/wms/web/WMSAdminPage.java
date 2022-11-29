@@ -359,6 +359,10 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 new CheckBox(
                         "disableFeaturesReproject",
                         new PropertyModel<>(info, WMS.FEATURES_REPROJECTION_DISABLED)));
+        form.add(
+                new CheckBox(
+                        "autoEscapeTemplateValues",
+                        new PropertyModel<>(info, "autoEscapeTemplateValues")));
         TextField<Integer> cacheMaxExtries = new TextField<>("cacheConfiguration.maxEntries");
         cacheMaxExtries.add(RangeValidator.minimum(1));
         form.add(cacheMaxExtries);

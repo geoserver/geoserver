@@ -228,4 +228,10 @@ public interface WMSInfo extends ServiceInfo {
 
     /** Sets the international title of the root layer */
     void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract);
+
+    /** @return whether to enable auto-escaping HTML FreeMarker template values */
+    boolean isAutoEscapeTemplateValues();
+
+    /** Sets whether to enable auto-escaping HTML FreeMarker template values */
+    void setAutoEscapeTemplateValues(boolean autoEscapeTemplateValues);
 }

@@ -162,6 +162,10 @@ Advanced Formatting
 ```````````````````
 The ``value`` property of Feature attribute values are given by geoserver in ``String`` form, using a sensible default depending on the actual type of the attribute value.  If you need to access the raw attribute value in order to apply a custom format (for example, to output ``"Enabled"`` or ``"Disabled"`` for a given boolean property, instead of the default ``true/false``, you can just use the ``rawValue`` property instead of ``value``.  For example: ``${attribute.rawValue?string("Enabled", "Disabled")}`` instead of just ``${attribute.value}``.
 
+Auto-Escaping
+`````````````
+Auto-escaping can be used to escape special characters so that they are displayed correctly in clients and to prevent injection. GeoServer administrators can enable or disable auto-escaping for FreeMarker template values for the HTML output format on a global or per virtual service basis. Template authors are able to override the WMS service setting to enable or disable escaping on a per template, per block or per value basis. See `Auto-escaping <https://freemarker.apache.org/docs/dgui_misc_autoescaping.html>` for more information.
+
 Accessing static methods
 ````````````````````````
 It is possible to call static methods and variables from within Freemarker templates to enable more sophisticated templates. 

@@ -6,6 +6,8 @@
 
 package org.geoserver.wms.featureinfo;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -43,6 +45,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -409,6 +412,38 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         // then: assert template was processed as expected
         assertTrue(result.contains("Type: PrimitiveGeoFeature"));
         assertTrue(result.contains("Type: World"));
+    }
+
+    @Test
+    public void testAutoEscaping() throws Exception {
+        currentTemplate = "test_resource_content.ftl";
+        String decoded = "<foo>bar</foo>";
+        String encoded = "&lt;foo&gt;bar&lt;/foo&gt;";
+        ResourceInfo resource = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
+        resource.getKeywords().set(0, new Keyword(decoded));
+        getCatalog().save(resource);
+
+        // test with auto-escaping disabled
+        ByteArrayOutputStream outStream1 = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream1);
+        String result1 = new String(outStream1.toByteArray());
+        assertThat(result1, containsString(decoded));
+        assertThat(result1, not(containsString(encoded)));
+
+        // test with auto-escaping enabled
+        WMSInfo info = getGeoServer().getService(WMSInfo.class);
+        info.setAutoEscapeTemplateValues(true);
+        getGeoServer().save(info);
+        try {
+            ByteArrayOutputStream outStream2 = new ByteArrayOutputStream();
+            outputFormat.write(fcType, getFeatureInfoRequest, outStream2);
+            String result2 = new String(outStream2.toByteArray());
+            assertThat(result2, not(containsString(decoded)));
+            assertThat(result2, containsString(encoded));
+        } finally {
+            info.setAutoEscapeTemplateValues(false);
+            getGeoServer().save(info);
+        }
     }
 
     /** Restore FreeMarkerTemplateManager default state */

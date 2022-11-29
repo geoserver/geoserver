@@ -157,6 +157,16 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testAutoEscapeTemplateValues() throws Exception {
+        assertFalse(wms.isAutoEscapeTemplateValues());
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("autoEscapeTemplateValues", true);
+        ft.submit("submit");
+        assertTrue(wms.isAutoEscapeTemplateValues());
+    }
+
+    @Test
     public void testIncludeDefaultGroupStyleInCapabilitiesDisabled() throws Exception {
         assertTrue(wms.isDefaultGroupStyleEnabled());
         tester.startPage(WMSAdminPage.class);

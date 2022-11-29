@@ -84,6 +84,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     private Boolean defaultGroupStyleEnabled;
 
+    private boolean autoEscapeTemplateValues;
+
     public WMSInfoImpl() {
         authorityURLs = new ArrayList<>(2);
         identifiers = new ArrayList<>(2);
@@ -362,5 +364,15 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     public void setAllowedURLsForAuthForwarding(List<String> allowedURLsForAuthForwarding) {
         this.allowedURLsForAuthForwarding = allowedURLsForAuthForwarding;
+    }
+
+    /** @return whether to enable auto-escaping HTML FreeMarker template values */
+    public boolean isAutoEscapeTemplateValues() {
+        return autoEscapeTemplateValues;
+    }
+
+    /** Sets whether to enable auto-escaping HTML FreeMarker template values */
+    public void setAutoEscapeTemplateValues(boolean autoEscapeTemplateValues) {
+        this.autoEscapeTemplateValues = autoEscapeTemplateValues;
     }
 }

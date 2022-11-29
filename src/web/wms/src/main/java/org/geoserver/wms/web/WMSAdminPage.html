@@ -260,6 +260,21 @@
     </li>
     <li>
       <fieldset>
+        <legend><span><wicket:message key="autoEscapeTemplateValuesTitle"></wicket:message></span></legend>
+        <ul class="choiceList">
+          <li>
+            <input type="checkbox" wicket:id="autoEscapeTemplateValues"></input>
+            <label for="autoEscapeTemplateValues">
+              <wicket:message key="autoEscapeTemplateValues">
+                Enable auto-escaping for HTML GetFeatureInfo template values
+              </wicket:message>
+            </label>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
         <legend><span><wicket:message key="remoteStylesCache">Remote Styles Cache</wicket:message></span></legend>
         <ul>
           <li class="choiceItem">

@@ -40,9 +40,15 @@ public class HitsOutputFormat extends WFSResponse {
         this.configuration = configuration;
     }
 
-    /** @return "text/xml"; */
+    /**
+     * for WFS 1.1.1 - returns "text/xml; subtype=gml/3.1.1" - as required by WFS 1.1.0 Spec
+     * otherwise "text/xml"
+     */
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
+        if (operation.getService().getVersion().toString().equals("1.1.0")) {
+            return "text/xml; subtype=gml/3.1.1";
+        }
         return "text/xml";
     }
 

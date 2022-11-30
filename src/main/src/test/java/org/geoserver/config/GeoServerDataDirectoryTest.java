@@ -45,6 +45,7 @@ public class GeoServerDataDirectoryTest {
 
     @AfterClass
     public static void afterClass() {
+        GeoServerExtensionsHelper.init(null);
         factory = null;
     }
 

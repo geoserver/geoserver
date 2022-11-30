@@ -1307,7 +1307,9 @@ public class ResourcePool {
         SimpleFeatureSource fs = dataStore.getFeatureSource(nativeName);
 
         // if feature type customization is there, apply it first
-        if (info.getAttributes() != null && !info.getAttributes().isEmpty()) {
+        if (info.getAttributes() != null
+                && !info.getAttributes().isEmpty()
+                && !info.getFeatureType().equals(fs.getSchema())) {
             fs = (SimpleFeatureSource) transformer.wrapFeatureSource(info, fs);
         }
         // then check name, and other customizations (e.g., projection policy)

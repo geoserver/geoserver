@@ -120,7 +120,7 @@ paths:
                         ]
                       }
                     }
-  /workspaces/{workspaceName}/layers/{layerName}.:
+  /workspaces/{workspaceName}/layers/{layerName}:
     parameters:
     - name: workspaceName
       in: path

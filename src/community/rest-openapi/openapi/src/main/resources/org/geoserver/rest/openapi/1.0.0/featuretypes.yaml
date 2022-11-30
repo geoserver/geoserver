@@ -140,7 +140,7 @@ paths:
               description: The location of the newly created feature type.
               schema:
                 type: string
-  "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}.":
+  "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}":
     parameters:
       - name: workspaceName
         in: path

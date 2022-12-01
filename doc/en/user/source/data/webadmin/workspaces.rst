@@ -54,11 +54,11 @@ A workspace is defined by a name and a Namespace URI (Uniform Resource Identifie
   
   The workspace name is used as a prefix when naming individual layers (unless :guilabel:`Default workspace` is used as described below).
 
-* :guilabel:`Namespace URI`: A URI is similar to a URL, except URIs do not need to point to a actual location on the web, and only need to be a unique identifier.
+* :guilabel:`Namespace URI`: A URI is similar to a URL, except URIs do not need to point to an actual location on the web, and only need to be a unique identifier.
 
   For a Workspace URI, we recommend using a URL associated with your project, with perhaps a different trailing identifier. For example, ``http://www.openplans.org/topp`` is the URI for the "topp" workspace. 
   
-* :guilabel:`Default Workspace`: One workspace can me nominated as the default.
+* :guilabel:`Default Workspace`: One workspace can be nominated as the default.
   
   Layers belonging to the default workspace can be accessed directly, and do not require the workspace name as a prefix.
   
@@ -107,7 +107,7 @@ Organization contact information:
 
 * The :guilabel:`Welcome` message is used as an introduction in the welcome page header for this workspace.
 
-* The :guilabel:`Organization` name and :guilabel:`Online Resource` are combined to form a organization link in the welcome page header for this workspace.
+* The :guilabel:`Organization` name and :guilabel:`Online Resource` are combined to form an organization link in the welcome page header for this workspace.
 
 .. figure:: img/workspace_orgaization.png
    
@@ -132,7 +132,7 @@ If this information is not provided the contact information from the global :ref
 Service Settings
 ''''''''''''''''
 
-Other settings provide additional :ref:`config_globalsettings` can be overriden on a workspace-by-workspace basis.
+Other settings provide additional :ref:`config_globalsettings` can be overridden on a workspace-by-workspace basis.
 
 * :guilabel:`Include Layer Prefix in Local Workspace Capabilities`: Enable this setting to force the inclusion of the workspace name as a prefix when accessing workspace contents as a virtual web service. The layer ``ne:countries`` is always referenced as ``ne:countries`` with this setting enabled.
   

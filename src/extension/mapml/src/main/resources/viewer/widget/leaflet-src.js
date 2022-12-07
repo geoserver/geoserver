@@ -1,5 +1,5 @@
 /* @preserve
-/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  * Leaflet 1.7.1, a JS library for interactive maps. http://leafletjs.com

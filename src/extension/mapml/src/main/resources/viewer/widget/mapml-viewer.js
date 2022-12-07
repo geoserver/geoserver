@@ -1,4 +1,4 @@
-/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  * Copyright © 2019 World Wide Web Consortium, (Massachusetts Institute of Technology, 
@@ -225,13 +225,11 @@ export class MapViewer extends HTMLElement {
           });
           this._addToHistory();
           // the attribution control is not optional
-          this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
-          this._attributionControl.getContainer().setAttribute("role","group");
-          this._attributionControl.getContainer().setAttribute("aria-label","Map data attribution");
+          M.attributionControl(this);
 
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);
-          
+          if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
           // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
           this.setAttribute('role', 'application');
           // Make the Leaflet container element programmatically identifiable

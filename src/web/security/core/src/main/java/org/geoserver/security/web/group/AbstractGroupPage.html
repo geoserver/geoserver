@@ -4,33 +4,38 @@
 	xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
- <form wicket:id="form">
-   <ul>
-     <li>
-       <fieldset>
-        <ul>
-          <li>
-            <label for="groupname"><wicket:message key="groupname">groupname</wicket:message></label>
-            <input type="text" wicket:id="groupname" id="groupname" class="text"/>
-          </li>
-          <li class="choiceItem">
-            <input type="checkbox" wicket:id="enabled" id="enabled"/>
-            <label for="enabled"><wicket:message key="enabled">enabled</wicket:message></label>
-          </li>
-        </ul>
-       </fieldset>
-     </li>
-     <li>
-        <div wicket:id="roles" />
-     </li>
-     <li>
-       <wicket:child></wicket:child>
-     </li>
-   </ul>
-   <div class="button-group toolbar-sticky selfclear">
-     <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-     <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
-   </div>
+  <form wicket:id="form">
+
+    <fieldset>
+      <div class="py-1">
+        <label for="groupname">
+          <wicket:message key="groupname">groupname</wicket:message>
+        </label>
+        <input type="text" wicket:id="groupname" id="groupname" class="text"/>
+      </div>
+      <div class="choiceItem py-1">
+        <input type="checkbox" wicket:id="enabled" id="enabled"/>
+        <label for="enabled">
+          <wicket:message key="enabled">enabled</wicket:message>
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="py-1">
+      <div wicket:id="roles"/>
+    </div>
+    <div class="py-1">
+      <wicket:child></wicket:child>
+    </div>
+
+    <div class="button-group toolbar-sticky selfclear">
+      <a href="#" class="form-button-save" wicket:id="save">
+        <wicket:message key="save">Save</wicket:message>
+      </a>
+      <a href="#" class="form-button-cancel" wicket:id="cancel">
+        <wicket:message key="cancel">Cancel</wicket:message>
+      </a>
+    </div>
   </form>
   
 </wicket:extend>

@@ -14,7 +14,7 @@
       <div wicket:id="configs">
         <ul>
           <li>
-            <div style="width: 50%">
+            <div class="w-50">
               <label><wicket:message key="GWCSettingsPage.lockProvider">lockProvider:</wicket:message></label>
             </div>
             <div>
@@ -29,7 +29,7 @@
             </label>
           </li>
           <li>
-            <div style="width: 50%">
+            <div class="w-50">
               <label><wicket:message key="GWCSettingsPage.metaTiling">Default meta tiling factors:</wicket:message></label>
             </div>
             <div>
@@ -40,7 +40,7 @@
             </div>
           </li>
           <li>
-            <div style="width: 50%">
+            <div class="w-50">
               <label><wicket:message key="GWCSettingsPage.gutter">Default gutter size:</wicket:message></label>
             </div>
             <div>
@@ -55,7 +55,7 @@
               <td>
               <div wicket:id="vectorFormatsGroup" class="choiceItem">
                 <span class="fieldname"><wicket:message key="GWCSettingsPage.defaultCacheFormatsVector">Vector Layers</wicket:message></span>
-                <div wicket:id="vectorFromats" style="padding: 2px;">
+                <div wicket:id="vectorFromats" class="choiceItem">
                   <input wicket:id="vectorFormatsOption" type="checkbox"/>
                   <label wicket:id="name" for="vectorFormatsOption">[this is where name will be]</label>
                 </div>
@@ -64,7 +64,7 @@
               <td>
               <div wicket:id="rasterFormatsGroup" class="choiceItem">
                 <span class="fieldname"><wicket:message key="GWCSettingsPage.defaultCacheFormatsRaster">Raster Layers</wicket:message></span>
-                <div wicket:id="rasterFromats" style="padding: 2px;">
+                <div wicket:id="rasterFromats" class="choiceItem">
                   <input wicket:id="rasterFormatsOption" type="checkbox"/>
                   <label wicket:id="name" for="rasterFormatsOption">[this is where name will be]</label>
                 </div>
@@ -73,7 +73,7 @@
               <td>
               <div wicket:id="otherFormatsGroup" class="choiceItem">
                 <span class="fieldname"><wicket:message key="GWCSettingsPage.defaultCacheFormatsOther">Other Layers</wicket:message></span>
-                <div wicket:id="otherFromats" style="padding: 2px;">
+                <div wicket:id="otherFromats" class="choiceItem">
                   <input wicket:id="otherFormatsOption" type="checkbox"/>
                   <label wicket:id="name" for="otherFormatsOption">[this is where name will be]</label>
                 </div>

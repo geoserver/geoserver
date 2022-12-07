@@ -4,23 +4,23 @@
 </head>
 <body>
 <wicket:panel>
-    <!--  the pager/filter top block -->
-	<form wicket:id="filterForm">
-	        <div class="leftwise">
-	            <span wicket:id="navigatorTop">1|2|3|...</span>
-            </div>
-            <div class="rightwise">
-                <input id="filter" wicket:id="filter" class="rigthwise search" type="text" size="35" title="Search" placeholder="Search" wicket:message="placeholder:Search"/>
-	            <input wicket:id="submit" class="noshow" type="submit" value="Search"/>
-	            <script type="text/javascript">
-                    $('input, textarea').placeholder();
-	            </script>
-	            <a href="#" id="clear" wicket:id="clear" class="rigthwise" title="clear the filter">Clear</a>
-            </div>
+	<!--  the pager/filter top block -->
+	<form wicket:id="filterForm" class="clearfix">
+		<div class="float-start">
+			<span wicket:id="navigatorTop">1|2|3|...</span>
+		</div>
+		<div class="float-end">
+			<input id="filter" wicket:id="filter" class="me-1 search" type="text" size="35" title="Search" placeholder="Search" wicket:message="placeholder:Search"/>
+			<input wicket:id="submit" class="d-none" type="submit" value="Search"/>
+			<script type="text/javascript">
+				$('input, textarea').placeholder();
+			</script>
+			<a href="#" id="clear" wicket:id="clear" class="float-end" title="clear the filter">Clear</a>
+		</div>
 	</form>
 
 	<!--  the table -->
-	<table wicket:id="listContainer" class="clearBoth" style="empty-cells: show" cellspacing="0">
+	<table wicket:id="listContainer">
 		<thead>
 			<tr>
 			  <!-- The select all checkbox -->
@@ -40,7 +40,7 @@
 	</table>
 
 	<!-- the bottom pager -->
-    <span wicket:id="navigatorBottom">1|2|3|...</span>
+	<span wicket:id="navigatorBottom">1|2|3|...</span>
 
 	<!-- Sortable header fragments -->
 	<wicket:fragment wicket:id="sortableHeader">

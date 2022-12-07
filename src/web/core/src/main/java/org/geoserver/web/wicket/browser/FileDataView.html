@@ -4,24 +4,24 @@
 	<table wicket:id="fileTable">
 		<thead>
 			<tr>
-				<th style="width:30em" wicket:id="nameHeader" align="left"><wicket:message
+				<th class="w-30-em text-start" wicket:id="nameHeader"><wicket:message
 					key="name">Name</wicket:message></th>
-				<th style="width:15em" wicket:id="lastModifiedHeader" align="right"><wicket:message
+				<th class="w-15-em text-end" wicket:id="lastModifiedHeader"><wicket:message
 					key="lastModified">Last modified</wicket:message></th>
-				<th style="width:10em" wicket:id="sizeHeader" align="right"><wicket:message
+				<th class="w-10-em text-end" wicket:id="sizeHeader"><wicket:message
 					key="size">Size</wicket:message></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td colspan="3" style="padding:0px">
+				<td colspan="3" class="p-0">
 				<div wicket:id="fileContent">
 					<table>
 						<tr wicket:id="files">
-							<td style="width:30em" align="left"><a href="#" wicket:id="nameLink"><span
+							<td class="w-30-em text-start"><a href="#" wicket:id="nameLink"><span
 								wicket:id="name"></span></a></td>
-							<td style="width:15em" wicket:id="lastModified" align="right"></td>
-							<td style="width:10em" wicket:id="size" align="right"></td>
+							<td class="w-15-em text-end" style="width:15em" wicket:id="lastModified"></td>
+							<td class="w-10-em text-end" style="width:10em" wicket:id="size"></td>
 						</tr>
 					</table>
 				</div>

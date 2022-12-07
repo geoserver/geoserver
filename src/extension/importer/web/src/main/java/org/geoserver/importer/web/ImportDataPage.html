@@ -25,38 +25,29 @@
 <wicket:extend>
   <form wicket:id="form">
     <fieldset>
-      <legend><span class="no-border">1. <wicket:message key="chooseDataSource">chooseDataSource</wicket:message></span></legend>
+      <legend class="border-0">1. <wicket:message key="chooseDataSource">chooseDataSource</wicket:message></legend>
       <div wicket:id="sources" id="sources">
       </div>
     </fieldset>
     <fieldset>
-      <legend><span class="no-border">2. <wicket:message key="configureDataSource">configureDataSource</wicket:message></span></legend>
-      <ul>
-      <li>
-        <div wicket:id="panel">
-          <div wicket:id="content"></div>
-        </div>
-      </li>
-      </ul>
+      <legend class="border-0">2. <wicket:message key="configureDataSource">configureDataSource</wicket:message></legend>
+      <div wicket:id="panel">
+        <div wicket:id="content"></div>
+      </div>
     </fieldset>
     <fieldset>
-      <legend><span class="no-border">3. <wicket:message key="specifyTarget">specifyTarget</wicket:message></span></legend>
-      <ul>
+      <legend class="border-0">3. <wicket:message key="specifyTarget">specifyTarget</wicket:message></legend>
         <div>
-        <li>
           <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
           <select id="workspace" wicket:id="workspace"></select>
-          <span wicket:id="workspaceNameContainer"><input type="text" class="text" wicket:id="workspaceName" style="width:10em;"></input></span>
-        </li>
-        <li>
+          <span wicket:id="workspaceNameContainer"><input type="text" class="text w-10-em" wicket:id="workspaceName"></input></span>
+        </div>
+        <div>
           <label for="store"><wicket:message key="store">Store</wicket:message></label>
           <select id="store" wicket:id="store"></select>
-          <!--label for="storeName"><wicket:message key="storeName">Name</wicket:message></label>
-          <input type="text" id="storeName" wicket:id="storeName"></input-->
-        </li>
         </div>
-      </ul>
     </fieldset>
+
     <div class="button-group selfclear">
       <a href="#" wicket:id="next">
         <span>Next</span>
@@ -65,24 +56,20 @@
         <span><wicket:message key="cancel"></wicket:message></span>
       </a>
       <span wicket:id="status">Working</span>
-      
     </div>
+
     <fieldset>
-      <span class="rightwise" style="margin-top: -1.5em;">
-        <ul class="plain horizontal">
-          <li><a href="#" wicket:id="remove" class="remove-link"><wicket:message key="remove"></wicket:message></a></li>
-          <li style="border-left: none;"><a href="#" wicket:id="jobs"><wicket:message key="jobs"></wicket:message>...</a></li>
-        </ul>
-      </span>
-      <legend>
-        <span class="no-border"><wicket:message key="recentImports">recentImports</wicket:message></span>
+      <legend class="clearfix border-0">
+        <span class="float-start"><wicket:message key="recentImports">recentImports</wicket:message></span>
+        <span class="float-end">
+          <ul class="plain horizontal">
+            <li><a href="#" wicket:id="remove" class="remove-link"><wicket:message key="remove"></wicket:message></a></li>
+            <li class="border-start-0"><a href="#" wicket:id="jobs"><wicket:message key="jobs"></wicket:message>...</a></li>
+          </ul>
+        </span>
       </legend>
 
-      <ul>
-        <li>
-          <div wicket:id="imports"></div>
-        </li>
-      </ul>
+      <div wicket:id="imports"></div>
     </fieldset>
   </form>
   

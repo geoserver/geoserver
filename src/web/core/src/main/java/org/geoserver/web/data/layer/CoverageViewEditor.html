@@ -1,25 +1,25 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
   <wicket:panel>
-      <ul>
-        <li>
-          <fieldset style="margin-top: 3em">
-          <legend ><span><wicket:message key="bandSelection">definition</wicket:message></span></legend>
-          <table cellspacing="0" cellpadding="2">
+        <fieldset class="mt-5">
+          <legend>
+            <wicket:message key="bandSelection">definition</wicket:message>
+          </legend>
+          <table>
             <tr>
-              <td style="vertical-align:top">
+              <td class="align-top">
                 <label for="coverages"><wicket:message key="availableCoverages">Available coverages</wicket:message></label>
-                <select id="coveragesChoice" class="select" wicket:id="coveragesChoice" multiple="multiple" style="width:25em;"></select>
+                <select id="coveragesChoice" class="select w-25-em" wicket:id="coveragesChoice" multiple="multiple"></select>
               </td>
-              <td align="center">
+              <td class="text-center">
                 <button wicket:id="addBand" type="submit"><wicket:message key="addBand">Add Band</wicket:message></button>
               </td>
-              <td style="vertical-align:top">
-                <table cellspacing="0" cellpadding="2">
+              <td class="align-top">
+                <table>
                   <tr>
                     <td>
                       <label for="outputBandsChoice"><wicket:message key="outputBandsChoice">outputBandsChoice</wicket:message></label>
-                      <select id="outputBandsChoice" class="select" wicket:id="outputBandsChoice" multiple="multiple" style="width:25em;"></select>
+                      <select id="outputBandsChoice" class="select w-25-em" wicket:id="outputBandsChoice" multiple="multiple"></select>
                     </td>
                   </tr>
                   <tr>
@@ -31,73 +31,23 @@
                 </table>
               </td>
             </tr>
-            <!--
-            <tr>
-              <td style="vertical-align:top">
-                <table cellspacing="0" cellpadding="2">
-                  <tr>
-                    <td>
-                      <label for="compositionType"><wicket:message key="compositionType">compositionType</wicket:message></label>
-                    </td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <select id="compositionType" class="text" type="text" wicket:id="compositionType"></select>
-                    </td>
-                    <td align="left">
-                      <button wicket:id="addBand" type="submit"><wicket:message key="addBand">Add Band</wicket:message></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <label for="definition"><wicket:message key="definition">definition</wicket:message></label>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <input type="text" wicket:id="definition"/>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-              <td style="vertical-align:top">
-                <table cellspacing="0" cellpadding="2">
-                  <tr>
-                    <td>
-                      <label for="outputBandsChoice"><wicket:message key="outputBandsChoice">outputBandsChoice</wicket:message></label>
-                      <select id="outputBandsChoice" class="select" wicket:id="outputBandsChoice" multiple="multiple" style="width:25em;"></select>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <button wicket:id="removeBands" type="submit"><wicket:message key="removeBands">Remove selected bands</wicket:message></button>
-                      <button wicket:id="removeAllBands" type="submit"><wicket:message key="removeAllBands">Remove all bands</wicket:message></button>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-             </tr>
-            -->
           </table>
           </fieldset>
-        </li>
-        <li wicket:id="heterogeneousControlsContainer" style="margin-top: 3em">
+        <div wicket:id="heterogeneousControlsContainer">
           <fieldset wicket:id="heterogeneousControls">
-          <legend><span><wicket:message key="heterogeneousControls">Heterogeneous bands settings</wicket:message></span></legend>
-          <ul>
-            <li>
+            <legend>
+              <wicket:message key="heterogeneousControls">Heterogeneous bands settings</wicket:message>
+            </legend>
+            <div class="mb-3">
               <label for="envelopeCompositionType"><wicket:message key="envelopeCompositionType">envelopePolicy</wicket:message></label>
               <select id="envelopeCompositionType" wicket:id="envelopeCompositionType"></select>
-            </li>
-            <li>
+            </div>
+            <div class="mb-3">
               <label for="selectedResolution"><wicket:message key="selectedResolution">selectedResolution</wicket:message></label>
               <select id="selectedResolution" wicket:id="selectedResolution"></select>
-            </li>
-          </ul>
-        </fieldset>
-        </li>
-      </ul>
+            </div>
+          </fieldset>
+        </div>
    </wicket:panel>
 </body>
 </html>

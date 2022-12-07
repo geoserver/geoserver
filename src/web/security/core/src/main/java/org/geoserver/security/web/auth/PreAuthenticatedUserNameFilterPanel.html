@@ -11,25 +11,25 @@
 </style>
 </wicket:head>
 <wicket:extend>
-    <li>
-       <wicket:child></wicket:child>
-    </li>                  
-      <li>
-        <fieldset>
-        <legend>
-		  <span><wicket:message key="roleSource"></wicket:message></span>
-		   <a href="#" wicket:id="roleSourceHelp" class="help-link"></a>
-		 </legend>
-        <ul id="roleSource" class="horizontal">          		 		  	          
-           <li><select wicket:id="roleSource"></select></li>
-	      <li>
-	        <div wicket:id="container">
-	          <div wicket:id="panel"/>
-	        </div>
-	      </li>                 
-        </ul>  
-        </fieldset>
-      </li>
+  <div>
+    <wicket:child></wicket:child>
+  </div>
+
+  <fieldset>
+    <legend>
+      <span><wicket:message key="roleSource"></wicket:message></span>
+      <a href="#" wicket:id="roleSourceHelp" class="help-link"></a>
+    </legend>
+    <div id="roleSource" class="horizontal">
+      <div class="py-1"><select wicket:id="roleSource"></select></div>
+
+      <div wicket:id="container">
+        <div wicket:id="panel"/>
+      </div>
+
+    </div>
+  </fieldset>
+
 </wicket:extend>
 </body>
 </html>

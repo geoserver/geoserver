@@ -3,99 +3,94 @@
 <body>
 <form name="theForm">
   <wicket:panel>
-  <h3><wicket:message key="defaultTitle">WMS Settings</wicket:message></h3>
-  <ul>
-    <li>
-      <fieldset>
-        <legend><span><wicket:message key="layerSettings">Layer Settings</wicket:message></span></legend>
-        <ul class="choiceList">
-          <li>
-            <input id="queryableEnabled" type="checkbox" wicket:id="queryableEnabled"></input>
-            <label for="queryableEnabled"><wicket:message key="queryable">Queryable</wicket:message></label>
-          </li>
-        </ul>
-        <ul class="choiceList">
-          <li>
-            <input id="opaqueEnabled" type="checkbox" wicket:id="opaqueEnabled"></input>
-            <label for="opaqueEnabled"><wicket:message key="opaque">Opaque</wicket:message></label>
-          </li>
-        </ul>
-        <ul wicket:id="styles">
-          <li>
-            <label for="defaultStyle"><wicket:message key="defaultStyle">Default Style</wicket:message></label>
-            <select id="defaultStyle" class="select" wicket:id="defaultStyle"></select>
-          </li>
-          <li>
-			<img wicket:id="defaultStyleLegendGraphic"></img>
-          </li>
-          <li> 
-            <label><wicket:message key="additionalStyles">Additional Styles</wicket:message></label>
-            <span wicket:id="extraStyles"></span>
-          </li>
-          <li>
-            <label for="buffer"><wicket:message key="defaultRenderingBuffer">def. rendering buffer</wicket:message></label>
-            <input id="buffer" class="text" wicket:id="renderingBuffer" type="text"></input> 
-          </li>
-        </ul>
-        <ul>
-          <li>
-            <label for="wmsPath"><wicket:message key="defaultWmsPath">Default WMS Path</wicket:message></label>
-            <input id="wmsPath" class="text" wicket:id="wmsPath" type="text"></input> 
-          </li>
-        </ul>
-        <ul>
-          <li>
-            <label for="defaultInterpolationMethod"><wicket:message key="interpolationLabel">Default Interpolation Method</wicket:message></label>
-            <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod" class="text"/>
-          </li>
-        </ul>
-        <ul id="remotestyles" wicket:id="remotestyles">
-        <h3><wicket:message key="remoteDefaultTitle">Cascaded WMS Settings</wicket:message></h3>          
-          <li>
-            <label for="remoteStylesDropDown"><wicket:message key="remoteStylesLabel">Default Remote Style</wicket:message></label>
-            <select id="remoteStylesDropDown" wicket:id="remoteStylesDropDown" class="text"/>
-          </li>
-          <li>
-            <label for="extraRemoteStyles"><wicket:message key="extraRemoteStylesLabel">Additional Remote Styles</wicket:message></label>
-            <span id="extraRemoteStyles" wicket:id="extraRemoteStyles"></span>
-          </li>
-        </ul>
-        <ul id="remoteformats" wicket:id="remoteformats">
-          <li>
-            <label for="remoteFormatsDropDown"><wicket:message key="remoteFormatsDropDownLabel">Default Remote Format</wicket:message></label>
-            <select id="remoteFormatsDropDown" wicket:id="remoteFormatsDropDown" class="text"/>
-          </li>
-          <li>
-            <label for="remoteFormatsPalette"><wicket:message key="remoteFormatsPaeletteLabel">Additional Remote Formats</wicket:message></label>
-            <span wicket:id="remoteFormatsPalette"></span>
-          </li>
-        </ul>        
-      </fieldset>
-    </li>
-  </ul>
-  <ul>
-    <li>
-      <fieldset>        
-        <ul id="scaleDenominatorContainer" wicket:id="scaleDenominatorContainer">
-           <legend><span><wicket:message key="MinMaxTitle">Minimum and Maximum Scale Denominators</wicket:message></span></legend>
-           <li>
-            <label for="minScale"><wicket:message key="minScaleLabel">Minimum</wicket:message></label>            
-            <input id="minScale" type="text" wicket:id="minScale"></input>            
-          </li>        
-          <li>
-            <label for="maxScale"><wicket:message key="maxScaleLabel">Maximum</wicket:message></label>
-            <input id="maxScale" type="text" wicket:id="maxScale"></input>            
-          </li>
-        </ul>        
-        <ul id="metaDataCheckBoxContainer" wicket:id="metaDataCheckBoxContainer"  class="choiceList">
-          <li>
-            <input id="respectMetadataBBoxChkBox" type="checkbox" wicket:id="respectMetadataBBoxChkBox"></input>
-            <label for="respectMetadataBBoxChkBox"><wicket:message key="respectMetadataBBoxLabel"> Do not send requests if requested map area is outside of the layer bounds</wicket:message></label>
-          </li>
-        </ul>
-      </fieldset>
-     </li>
-    </ul>  
+    <h3><wicket:message key="defaultTitle">WMS Settings</wicket:message></h3>
+
+    <fieldset>
+      <legend><span><wicket:message key="layerSettings">Layer Settings</wicket:message></span></legend>
+      <ul class="choiceList">
+        <li>
+          <input id="queryableEnabled" type="checkbox" wicket:id="queryableEnabled"></input>
+          <label for="queryableEnabled"><wicket:message key="queryable">Queryable</wicket:message></label>
+        </li>
+      </ul>
+      <ul class="choiceList">
+        <li>
+          <input id="opaqueEnabled" type="checkbox" wicket:id="opaqueEnabled"></input>
+          <label for="opaqueEnabled"><wicket:message key="opaque">Opaque</wicket:message></label>
+        </li>
+      </ul>
+      <ul wicket:id="styles">
+        <li>
+          <label for="defaultStyle"><wicket:message key="defaultStyle">Default Style</wicket:message></label>
+          <select id="defaultStyle" class="select" wicket:id="defaultStyle"></select>
+        </li>
+        <li>
+          <img wicket:id="defaultStyleLegendGraphic"></img>
+        </li>
+        <li>
+          <label><wicket:message key="additionalStyles">Additional Styles</wicket:message></label>
+          <span wicket:id="extraStyles"></span>
+        </li>
+        <li>
+          <label for="buffer"><wicket:message key="defaultRenderingBuffer">def. rendering buffer</wicket:message></label>
+          <input id="buffer" class="text" wicket:id="renderingBuffer" type="text"></input>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          <label for="wmsPath"><wicket:message key="defaultWmsPath">Default WMS Path</wicket:message></label>
+          <input id="wmsPath" class="text" wicket:id="wmsPath" type="text"></input>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          <label for="defaultInterpolationMethod"><wicket:message key="interpolationLabel">Default Interpolation Method</wicket:message></label>
+          <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod" class="text"/>
+        </li>
+      </ul>
+      <ul id="remotestyles" wicket:id="remotestyles">
+      <h3><wicket:message key="remoteDefaultTitle">Cascaded WMS Settings</wicket:message></h3>
+        <li>
+          <label for="remoteStylesDropDown"><wicket:message key="remoteStylesLabel">Default Remote Style</wicket:message></label>
+          <select id="remoteStylesDropDown" wicket:id="remoteStylesDropDown" class="text"/>
+        </li>
+        <li>
+          <label for="extraRemoteStyles"><wicket:message key="extraRemoteStylesLabel">Additional Remote Styles</wicket:message></label>
+          <span id="extraRemoteStyles" wicket:id="extraRemoteStyles"></span>
+        </li>
+      </ul>
+      <ul id="remoteformats" wicket:id="remoteformats">
+        <li>
+          <label for="remoteFormatsDropDown"><wicket:message key="remoteFormatsDropDownLabel">Default Remote Format</wicket:message></label>
+          <select id="remoteFormatsDropDown" wicket:id="remoteFormatsDropDown" class="text"/>
+        </li>
+        <li>
+          <label for="remoteFormatsPalette"><wicket:message key="remoteFormatsPaeletteLabel">Additional Remote Formats</wicket:message></label>
+          <span wicket:id="remoteFormatsPalette"></span>
+        </li>
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <ul id="scaleDenominatorContainer" wicket:id="scaleDenominatorContainer">
+         <legend><span><wicket:message key="MinMaxTitle">Minimum and Maximum Scale Denominators</wicket:message></span></legend>
+         <li>
+          <label for="minScale"><wicket:message key="minScaleLabel">Minimum</wicket:message></label>
+          <input id="minScale" type="text" wicket:id="minScale"></input>
+        </li>
+        <li>
+          <label for="maxScale"><wicket:message key="maxScaleLabel">Maximum</wicket:message></label>
+          <input id="maxScale" type="text" wicket:id="maxScale"></input>
+        </li>
+      </ul>
+      <ul id="metaDataCheckBoxContainer" wicket:id="metaDataCheckBoxContainer"  class="choiceList">
+        <li>
+          <input id="respectMetadataBBoxChkBox" type="checkbox" wicket:id="respectMetadataBBoxChkBox"></input>
+          <label for="respectMetadataBBoxChkBox"><wicket:message key="respectMetadataBBoxLabel"> Do not send requests if requested map area is outside of the layer bounds</wicket:message></label>
+        </li>
+      </ul>
+    </fieldset>
+
   </wicket:panel>
 </form>
 </body>

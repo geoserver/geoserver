@@ -4,8 +4,6 @@
 <form>
   <wicket:panel>
     <h3><wicket:message key="title">Basic Settings</wicket:message></h3>
-    <ul>
-      <li>
         <fieldset>
           <legend><span><wicket:message key="basicResourceInfo">Basic Resource Info</wicket:message></span></legend>
           <ul>
@@ -38,14 +36,10 @@
             </li>
           </ul>
         </fieldset>
-      </li>
-      <li>
         <fieldset>
           <legend><span><wicket:message key="keywords">Keywords</wicket:message></span></legend>
           <div wicket:id="keywords"></div>
         </fieldset>
-      </li>
-      <li>
         <fieldset>
           <legend><span><wicket:message key="metadataLinks">Metadata links</wicket:message></span></legend>
           <ul>
@@ -54,8 +48,6 @@
             </li>
           </ul>
         </fieldset>
-      </li>
-      <li>
         <fieldset>
           <legend><span><wicket:message key="dataLinks">Data links</wicket:message></span></legend>
           <ul>
@@ -64,9 +56,9 @@
             </li>
           </ul>
         </fieldset>
-      </li>
+
       <form wicket:id="referencingForm">
-      <li>
+
         <fieldset>
           <legend><span><wicket:message key="coordinateReferenceSystems">Coordinate Reference Systems</wicket:message></span></legend>
           <ul>
@@ -84,8 +76,6 @@
             </li>
           </ul>
         </fieldset>
-      </li>
-      <li>
         <fieldset>
           <legend><span><wicket:message key="boundingBoxes">Bounding Boxes</wicket:message></span></legend>
           <ul>
@@ -109,9 +99,7 @@
             </li>
           </ul>
         </fieldset>
-      </li>
-      </form>
-  	</ul>
+       </form>
     </wicket:panel>
     <div class="button-group toolbar-sticky selfclear">
       <input class="form-button-save" wicket:id="submit" type="submit"/><wicket:message key="save"/>

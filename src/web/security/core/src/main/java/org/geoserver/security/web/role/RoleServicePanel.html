@@ -4,25 +4,26 @@
     xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
-    <ul>
-      <li>
-        <fieldset class="noTitle">
-          <ul>
-            <li>
-              <label for="adminRoleName"><wicket:message key="adminRole"></wicket:message></label>
-              <select wicket:id="adminRoleName"/>
-            </li>
-            <li>
-              <label for="groupAdminRoleName"><wicket:message key="groupAdminRole"></wicket:message></label>
-              <select wicket:id="groupAdminRoleName"/>
-            </li>            
-          </ul>
-        </fieldset>
-      </li>
-      <li>
-        <wicket:child></wicket:child>
-      </li>
-    </ul>
+
+  <fieldset class="border-0">
+
+    <div class="py-1">
+      <label for="adminRoleName">
+        <wicket:message key="adminRole"></wicket:message>
+      </label>
+      <select wicket:id="adminRoleName"/>
+    </div>
+    <div class="py-1">
+      <label for="groupAdminRoleName">
+        <wicket:message key="groupAdminRole"></wicket:message>
+      </label>
+      <select wicket:id="groupAdminRoleName"/>
+    </div>
+
+  </fieldset>
+
+  <wicket:child></wicket:child>
+
 </wicket:extend>
 </body>
 </html>

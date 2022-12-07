@@ -1,4 +1,4 @@
-/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  * Copyright © 2019 World Wide Web Consortium, (Massachusetts Institute of Technology, 
@@ -378,7 +378,6 @@
           };
         }
         return {
-          'moveend':this._removeCSS
         };
       },
 
@@ -1097,7 +1096,20 @@
                 pcrs2tilematrix(pcrsBounds.max,z)) :
                         L.bounds(L.point([-1,-1]),L.point([-1,-1])));
         }
-      }
+      },
+      _clampZoom: function (zoom) {
+          let clamp = L.GridLayer.prototype._clampZoom.call(this, zoom);
+          if(this._template.step > this.zoomBounds.maxNativeZoom) this._template.step = this.zoomBounds.maxNativeZoom;
+
+          if(zoom !== clamp){
+              zoom = clamp;
+          } else {
+              if(zoom % this._template.step !== 0){
+                  zoom = Math.floor(zoom / this._template.step) * this._template.step;
+              }
+          }
+          return zoom;
+      },
   });
   var templatedTileLayer = function(template, options) {
     return new TemplatedTileLayer(template, options);
@@ -1390,9 +1402,7 @@
       },
       onAdd: function () {
         this._map._addZoomLimit(this);
-        var mapml, headers = new Headers({'Accept': 'text/mapml'});
-            var parser = new DOMParser(),
-            opacity = this.options.opacity || 1,
+        var opacity = this.options.opacity || 1,
             container = this._container,
             map = this._map;
         if (!this._features) {
@@ -1415,45 +1425,51 @@
             }
           });
         }
-        // this was tricky...recursion alwasy breaks my brain
-        var features = this._features,
-            _pullFeatureFeed = function (url, limit) {
-              return (fetch (url,{redirect: 'follow',headers: headers})
-                      .then( function (response) {return response.text();})
-                      .then( function (text) {
-                mapml = parser.parseFromString(text,"application/xml");
-                var base = (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : url)).href;
-                url = mapml.querySelector('map-link[rel=next]')? mapml.querySelector('map-link[rel=next]').getAttribute('href') : null;
-                url =  url ? (new URL(url, base)).href: null;
-                let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
-                  +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
-                let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
-                        M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
-                features.addData(mapml, nativeCS, nativeZoom);
-                if (url && --limit) {
-                  return _pullFeatureFeed(url, limit);
-                }
-              }));
-            };
-        _pullFeatureFeed(this._getfeaturesUrl(), 10)
-          .then(function() { 
-                map.addLayer(features);
-                map.fire('moveend');  // TODO: replace with moveend handler for layer and not entire map
-          })
-          .catch(function (error) { console.log(error);});
+
+        map.fire('moveend');  // TODO: replace with moveend handler for layer and not entire map
       },
       redraw: function() {
           this._onMoveEnd();
       },
 
+      _removeCSS: function () {
+          let toDelete = this._container.querySelectorAll("link[rel=stylesheet],style");
+          for(let i = 0; i < toDelete.length;i++){
+              let parent = toDelete[i].parentNode;
+              parent.removeChild(toDelete[i]);
+          }
+      },
+
       _onMoveEnd: function() {
+        let history = this._map.options.mapEl._history;
+        let current = history[history.length - 1];
+        let previous = history[history.length - 2] ?? current;
+        let step = this._template.step;
         let mapZoom = this._map.getZoom();
+        let steppedZoom = mapZoom;
+        //If zooming out from one step interval into a lower one or panning, set the stepped zoom
+        if (((step !== "1") && ((mapZoom + 1) % step === 0) && current.zoom === previous.zoom - 1) ||
+            (current.zoom === previous.zoom) ||
+            (Math.floor(mapZoom / step) * step !== Math.floor(previous.zoom / step) * step)) {
+            steppedZoom = Math.floor(mapZoom / step) * step;
+        }
+        //No request needed if in a step interval (unless panning)
+        else if(mapZoom % this._template.step !== 0) return;
+
+        let scaleBounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
+        let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
+        //No request needed if the current template url is the same as the url to request
+        if(url === this._url) return;
+
         let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
         this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
                           this.extentBounds.overlaps(mapBounds);
         
         this._features.clearLayers();
-        if(!(this.isVisible)){
+        this._removeCSS();
+        //Leave the layers cleared if the layer is not visible
+        if(!(this.isVisible) && steppedZoom === mapZoom){
+          this._url = "";
           return;
         }
 
@@ -1484,9 +1500,13 @@
               }
             }));
           };
-        _pullFeatureFeed(this._getfeaturesUrl(), MAX_PAGES)
+
+        this._url = url;
+        _pullFeatureFeed(url, MAX_PAGES)
           .then(function() { 
             map.addLayer(features);
+            //Fires event for feature index overlay
+            map.fire("templatedfeatureslayeradd");
             M.TemplatedFeaturesLayer.prototype._updateTabIndex(context);
           })
           .catch(function (error) { console.log(error);});
@@ -1522,10 +1542,12 @@
       onRemove: function () {
         this._map.removeLayer(this._features);
       },
-      _getfeaturesUrl: function() {
+      _getfeaturesUrl: function(zoom, bounds) {
+          if(zoom === undefined) zoom = this._map.getZoom();
+          if(bounds === undefined) bounds = this._map.getPixelBounds();
           var obj = {};
           if (this.options.feature.zoom) {
-            obj[this.options.feature.zoom] = this._map.getZoom();
+            obj[this.options.feature.zoom] = zoom;
           }
           if (this.options.feature.width) {
             obj[this.options.feature.width] = this._map.getSize().x;
@@ -1534,16 +1556,16 @@
             obj[this.options.feature.height] = this._map.getSize().y;
           }
           if (this.options.feature.bottom) {
-            obj[this.options.feature.bottom] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).y;
+            obj[this.options.feature.bottom] = this._TCRSToPCRS(bounds.max, zoom).y;
           }
           if (this.options.feature.left) {
-            obj[this.options.feature.left] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).x;
+            obj[this.options.feature.left] = this._TCRSToPCRS(bounds.min, zoom).x;
           }
           if (this.options.feature.top) {
-            obj[this.options.feature.top] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).y;
+            obj[this.options.feature.top] = this._TCRSToPCRS(bounds.min, zoom).y;
           }
           if (this.options.feature.right) {
-            obj[this.options.feature.right] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).x;
+            obj[this.options.feature.right] = this._TCRSToPCRS(bounds.max, zoom).x;
           }
           // hidden and other variables that may be associated
           for (var v in this.options.feature) {
@@ -1660,7 +1682,7 @@
       onAdd: function () {
           this._map._addZoomLimit(this);  //used to set the zoom limit of the map
           this.setZIndex(this.options.zIndex);
-          this._onMoveEnd();
+          this._onAdd();
       },
       redraw: function() {
           this._onMoveEnd();
@@ -1673,26 +1695,90 @@
         }
       },
 
-      _onMoveEnd: function() {
-        let mapZoom = this._map.getZoom();
-        let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
-        this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
-                          this.extentBounds.overlaps(mapBounds);
-        if(!(this.isVisible)){
-          this._clearLayer();
-          return;
-        }
-        var map = this._map,
-          loc = map.getPixelBounds().min.subtract(map.getPixelOrigin()),
-          size = map.getSize(),
-          src = this.getImageUrl(),
-          overlayToRemove = this._imageOverlay;
-          this._imageOverlay = M.imageOverlay(src,loc,size,0,this._container);
-            
-        this._imageOverlay.addTo(map);
-        if (overlayToRemove) {
-          this._imageOverlay.on('load error', function () {map.removeLayer(overlayToRemove);});
-        }
+      _addImage: function (bounds, zoom, loc) {
+          let map = this._map;
+          let overlayToRemove = this._imageOverlay;
+          let src = this.getImageUrl(bounds, zoom);
+          let size = map.getSize();
+          this._imageOverlay = M.imageOverlay(src, loc, size, 0, this._container);
+          this._imageOverlay._step = this._template.step;
+          this._imageOverlay.addTo(map);
+          if (overlayToRemove) {
+              this._imageOverlay._overlayToRemove = overlayToRemove._url;
+              this._imageOverlay.on('load error', function () {map.removeLayer(overlayToRemove);});
+          }
+      },
+
+      _scaleImage: function (bounds, zoom) {
+          let obj = this;
+          setTimeout(function () {
+              let step = obj._template.step;
+              let steppedZoom = Math.floor(zoom / step) * step;
+              let scale = obj._map.getZoomScale(zoom, steppedZoom);
+              let translate = bounds.min.multiplyBy(scale)
+                  .subtract(obj._map._getNewPixelOrigin(obj._map.getCenter(), zoom)).round();
+              L.DomUtil.setTransform(obj._imageOverlay._image, translate, scale);
+          });
+      },
+
+      _onAdd: function () {
+          let zoom = this._map.getZoom();
+          let steppedZoom = zoom;
+          let step = this._template.step;
+
+          if (zoom % step !== 0) steppedZoom = Math.floor(zoom / step) * step;
+          let bounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
+          this._addImage(bounds, steppedZoom, L.point(0,0));
+          this._pixelOrigins = {};
+          this._pixelOrigins[steppedZoom] = bounds.min;
+          if(zoom !== steppedZoom) {
+              this._scaleImage(bounds, zoom);
+          }
+      },
+
+      _onMoveEnd: function(e) {
+          let mapZoom = this._map.getZoom();
+          let history = this._map.options.mapEl._history;
+          let current = history[history.length - 1];
+          let previous = history[history.length - 2];
+          if(!previous) previous = current;
+          let step = this._template.step;
+          let steppedZoom =   Math.floor(mapZoom / step) * step;
+          let bounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
+          //Zooming from one step increment into a lower one
+          if((step !== "1") && ((mapZoom + 1) % step === 0) &&
+              current.zoom === previous.zoom - 1){
+              this._addImage(bounds, steppedZoom, L.point(0,0));
+              this._scaleImage(bounds, mapZoom);
+          //Zooming or panning within a step increment
+          } else if (e && mapZoom % step !== 0) {
+              this._imageOverlay._overlayToRemove = this._imageOverlay._url;
+              if (current.zoom !== previous.zoom) {
+                  //Zoomed from within one step increment into another
+                  if(steppedZoom !== Math.floor(previous.zoom / step) * step){
+                      this._addImage(bounds, steppedZoom, L.point(0,0));
+                      this._pixelOrigins[steppedZoom] = bounds.min;
+                  }
+                  this._scaleImage(bounds, mapZoom);
+              } else {
+                  let pixelOrigin = this._pixelOrigins[steppedZoom];
+                  let loc = bounds.min.subtract(pixelOrigin);
+                  if(this.getImageUrl(bounds, steppedZoom) === this._imageOverlay._url) return;
+                  this._addImage(bounds, steppedZoom, loc);
+                  this._scaleImage(bounds, mapZoom);
+              }
+          } else {
+              let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
+              this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom &&
+              this.extentBounds.overlaps(mapBounds);
+              if(!(this.isVisible)){
+                  this._clearLayer();
+                  return;
+              }
+              var map = this._map, loc = map.getPixelBounds().min.subtract(map.getPixelOrigin());
+              this._addImage(map.getPixelBounds(), mapZoom, loc);
+              this._pixelOrigins[mapZoom] = map.getPixelOrigin();
+          }
       },
       setZIndex: function (zIndex) {
           this.options.zIndex = zIndex;
@@ -1710,14 +1796,14 @@
         map._removeZoomLimit(this);
         this._container = null;
       },
-      getImageUrl: function() {
+      getImageUrl: function(pixelBounds, zoom) {
           var obj = {};
           obj[this.options.extent.width] = this._map.getSize().x;
           obj[this.options.extent.height] = this._map.getSize().y;
-          obj[this.options.extent.bottom] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).y;
-          obj[this.options.extent.left] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).x;
-          obj[this.options.extent.top] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).y;
-          obj[this.options.extent.right] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).x;
+          obj[this.options.extent.bottom] = this._TCRSToPCRS(pixelBounds.max, zoom).y;
+          obj[this.options.extent.left] = this._TCRSToPCRS(pixelBounds.min, zoom).x;
+          obj[this.options.extent.top] = this._TCRSToPCRS(pixelBounds.min, zoom).y;
+          obj[this.options.extent.right] = this._TCRSToPCRS(pixelBounds.max, zoom).x;
           // hidden and other variables that may be associated
           for (var v in this.options.extent) {
               if (["width","height","left","right","top","bottom"].indexOf(v) < 0) {
@@ -1822,7 +1908,7 @@
   			viewreset: this._reset
   		};
 
-  		if (this._zoomAnimated) {
+  		if (this._zoomAnimated && this._step <= 1) {
   			events.zoomanim = this._animateZoom;
   		}
 
@@ -1867,18 +1953,21 @@
   			L.DomUtil.setPosition(this._image, translate);
   		}
   	},
-          _reset: function () {
+      _reset: function (e) {
   		var image = this._image,
   		    location = this._location,
                       size = this._size;
+  		// TBD use the angle to establish the image rotation in CSS
 
-                  // TBD use the angle to establish the image rotation in CSS
-
+  		if(e && this._step > 1 &&
+  			(this._overlayToRemove === undefined || this._url === this._overlayToRemove)) {
+  			return;
+  		}
   		L.DomUtil.setPosition(image, location);
 
   		image.style.width  = size.x + 'px';
   		image.style.height = size.y + 'px';
-          },
+      },
   	_updateOpacity: function () {
   		if (!this._map) { return; }
 
@@ -2873,6 +2962,8 @@
                 if(!includesZoom && zoomInput) {
                   inputs.push(zoomInput);
                 }
+                let step = zoomInput ? zoomInput.getAttribute("step") : 1;
+                if(!step || step === "0" || isNaN(step)) step = 1;
                 // template has a matching input for every variable reference {varref}
                 templateVars.push({
                   template:decodeURI(new URL(template, base)), 
@@ -2886,6 +2977,7 @@
                   projectionMatch: projectionMatch,
                   projection:serverExtent.getAttribute("units") || FALLBACK_PROJECTION,
                   tms:tms,
+                  step:step,
                 });
               }
             }
@@ -3218,7 +3310,7 @@
         
         content.focus();
 
-        if(group) {
+        if(group && !M.options.featureIndexOverlayOption) {
           // e.target = this._map
           // Looks for keydown, more specifically tab and shift tab
           group.setAttribute("aria-expanded", "true");
@@ -3253,15 +3345,15 @@
 
           if((focusEvent.originalEvent.keyCode === 13 && path[0].classList.contains("leaflet-popup-close-button")) || focusEvent.originalEvent.keyCode === 27 ){
             L.DomEvent.stopPropagation(focusEvent);
-            map._container.focus();
             map.closePopup(popup);
+            map._container.focus();
             if(focusEvent.originalEvent.keyCode !== 27)map._popupClosed = true;
           } else if (isTab && path[0].classList.contains("leaflet-popup-close-button")){
             map.closePopup(popup);
           } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+            map.closePopup(popup);
             setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
               L.DomEvent.stop(focusEvent);
-              map.closePopup(popup);
               map._container.focus();
             }, 0);
           }
@@ -3843,6 +3935,10 @@
           callback:this._copyMapML,
         },
         {
+          text: M.options.locale.cmPasteLayer + " (<kbd>P</kbd>)",
+          callback:this._pasteLayer,
+        },
+        {
           text: M.options.locale.cmViewSource + " (<kbd>V</kbd>)",
           callback:this._viewSource,
         },
@@ -3856,6 +3952,10 @@
         {
           text: M.options.locale.lmCopyExtent + " (<kbd>C</kbd>)",
           callback:this._copyLayerExtent
+        },
+        {
+          text: M.options.locale.lmCopyLayer + " (<kbd>L</kbd>)",
+          callback:this._copyLayer
         },
       ];
       this._mapMenuVisible = false;
@@ -3881,6 +3981,7 @@
       this._items[6].el = this._createItem(this._container, this._items[6]);
       this._items[7].el = this._createItem(this._container, this._items[7]);
       this._items[8].el = this._createItem(this._container, this._items[8]);
+      this._items[9].el = this._createItem(this._container, this._items[9]);
 
       this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
       this._layerMenu.setAttribute('hidden', '');
@@ -3950,6 +4051,12 @@
       context._layerClicked.layer._layerEl.focus();
     },
 
+    _copyLayer: function (e) {
+      let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
+        layerElem = context._layerClicked.layer._layerEl;
+      context._copyData(layerElem.outerHTML);
+    },
+
     _goForward: function(e){
       let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
       mapEl.forward();
@@ -3974,6 +4081,22 @@
       let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
         mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
       context._copyData(mapEl.outerHTML.replace(/<div class="mapml-web-map">.*?<\/div>|<style>\[is="web-map"].*?<\/style>|<style>mapml-viewer.*?<\/style>/gm, ""));
+    },
+
+    // Add support for pasting GeoJSON in the future
+    _pasteLayer: function(e){
+      let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
+        mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
+      navigator.clipboard
+        .readText()
+        .then(
+            (layer) => {
+              layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
+              if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
+                mapEl.insertAdjacentHTML("beforeend", layer);
+              }
+          }
+        );
     },
 
     _viewSource: function(e){
@@ -4308,7 +4431,7 @@
         } else {
           this._layerMenuTabs += 1;
         }
-        if(this._layerMenuTabs === 0 || this._layerMenuTabs === 3 || key === 27){
+        if(this._layerMenuTabs === 0 || this._layerMenuTabs === 4 || key === 27){
           L.DomEvent.stop(e);
           this._focusOnLayerControl();
         } 
@@ -4341,6 +4464,13 @@
           break;
         case 70: //F KEY
           this._goForward(e);
+          break;
+        case 76: //L KEY
+          if(this._layerClicked)
+            this._copyLayer(e);
+          break;
+        case 80: //P KEY
+          this._pasteLayer(e);
           break;
         case 82: //R KEY
           this._reload(e);
@@ -5036,6 +5166,24 @@
       var fullscreenButton = function (options) {
           return new FullscreenButton(options);
       };
+
+  var attributionControl = function (map) {
+      map._attributionControl = map._map.attributionControl.setPrefix(`<button onclick="this.closest(\'.leaflet-container\').querySelector(\'.shortcuts-dialog\').showModal()" class="shortcuts-button mapml-button">${M.options.locale.kbdShortcuts}</button> | <a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <img src="data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTIiIGhlaWdodD0iOCI+PHBhdGggZmlsbD0iIzRDN0JFMSIgZD0iTTAgMGgxMnY0SDB6Ii8+PHBhdGggZmlsbD0iI0ZGRDUwMCIgZD0iTTAgNGgxMnYzSDB6Ii8+PHBhdGggZmlsbD0iI0UwQkMwMCIgZD0iTTAgN2gxMnYxSDB6Ii8+PC9zdmc+" style="padding-right: 0.3em;" alt="Slava Ukraini"> <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>`);
+
+      let dialog = document.createElement("dialog");
+      dialog.setAttribute("class", "shortcuts-dialog");
+      dialog.setAttribute("autofocus", "");
+      dialog.onclick = function (e) {
+          e.stopPropagation();
+      };
+      dialog.innerHTML = `<b>${M.options.locale.kbdShortcuts} </b><button aria-label="Close" onclick='this.parentElement.close()'>X</button>` +
+          `<ul><b>${M.options.locale.kbdMovement}</b><li><kbd>&#8593</kbd> ${M.options.locale.kbdPanUp}</li><li><kbd>&#8595</kbd> ${M.options.locale.kbdPanDown}</li><li><kbd>&#8592</kbd> ${M.options.locale.kbdPanLeft}</li><li><kbd>&#8594</kbd> ${M.options.locale.kbdPanRight}</li><li><kbd>+</kbd> ${M.options.locale.btnZoomIn}</li><li><kbd>-</kbd> ${M.options.locale.btnZoomOut}</li><li><kbd>shift</kbd> + <kbd>&#8592/&#8593/&#8594/&#8595</kbd> 3x ${M.options.locale.kbdPanIncrement}</li><li><kbd>ctrl</kbd> + <kbd>&#8592/&#8593/&#8594/&#8595</kbd> 0.2x ${M.options.locale.kbdPanIncrement}</li><li><kbd>shift</kbd> + <kbd>+/-</kbd> ${M.options.locale.kbdZoom}</li></ul>` +
+          `<ul><b>${M.options.locale.kbdFeature}</b><li><kbd>&#8592/&#8593</kbd> ${M.options.locale.kbdPrevFeature}</li><li><kbd>&#8594/&#8595</kbd> ${M.options.locale.kbdNextFeature}</li></ul>`;
+      map._container.appendChild(dialog);
+
+      map._attributionControl.getContainer().setAttribute("role","group");
+      map._attributionControl.getContainer().setAttribute("aria-label","Map data attribution");
+  };
 
   var Crosshair = L.Layer.extend({
     onAdd: function (map) {
@@ -5836,33 +5984,48 @@
      * @private
      */
     _handleFocus: function(e) {
-      if((e.keyCode === 9 || e.keyCode === 16) && e.type === "keydown"){
+      if(([9, 16, 27, 37, 38, 39, 40].includes(e.keyCode)) && e.type === "keydown"){
         let index = this._map.featureIndex.currentIndex;
-        if(e.keyCode === 9 && e.shiftKey) {
-          if(index === this._map.featureIndex.inBoundFeatures.length - 1)
-            this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
-          if(index !== 0){
-            L.DomEvent.stop(e);
+        // Down/right arrow keys replicate tabbing through the feature index
+        // Up/left arrow keys replicate shift-tabbing through the feature index
+        if(e.keyCode === 37 || e.keyCode === 38) {
+          L.DomEvent.stop(e);
+          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
+          if(index === 0) {
+            this._map.featureIndex.inBoundFeatures[this._map.featureIndex.inBoundFeatures.length - 1].path.focus();
+            this._map.featureIndex.currentIndex = this._map.featureIndex.inBoundFeatures.length - 1;
+          } else {
             this._map.featureIndex.inBoundFeatures[index - 1].path.focus();
             this._map.featureIndex.currentIndex--;
           }
-        } else if (e.keyCode === 9) {
-          if(index !== this._map.featureIndex.inBoundFeatures.length - 1) {
-            L.DomEvent.stop(e);
+        } else if (e.keyCode === 39 || e.keyCode === 40) {
+          L.DomEvent.stop(e);
+          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
+          if(index === this._map.featureIndex.inBoundFeatures.length - 1) {
+            this._map.featureIndex.inBoundFeatures[0].path.focus();
+            this._map.featureIndex.currentIndex = 0;
+          } else {
             this._map.featureIndex.inBoundFeatures[index + 1].path.focus();
             this._map.featureIndex.currentIndex++;
-          } else {
-            this._map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", -1);
-            this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", 0);
           }
+        } else if(e.keyCode === 27){
+          let shadowRoot = this._map.options.mapEl.shadowRoot ? this._map.options.mapEl.shadowRoot :
+              this._map.options.mapEl.querySelector(".mapml-web-map").shadowRoot;
+          if(shadowRoot.activeElement.nodeName !== "g") return;
+          this._map._container.focus();
+        } else if (e.keyCode === 9) {
+          let obj = this;
+          setTimeout(function () {
+            obj._map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", 0);
+          }, 0);
         }
-      } else if (!([9, 16, 13, 27].includes(e.keyCode))){
+      } else if (!([9, 16, 13, 27, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode))){
         this._map.featureIndex.currentIndex = 0;
         this._map.featureIndex.inBoundFeatures[0].path.focus();
       }
 
       if(e.target.tagName.toUpperCase() !== "G") return;
-      if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup") {
+      if(([9, 13, 16, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode)) && e.type === "keyup") {
         this.openTooltip();
       } else if (e.keyCode === 13 || e.keyCode === 32){
         this.closeTooltip();
@@ -6159,7 +6322,6 @@
         b.dist = Math.sqrt(Math.pow(bc.x - mc.x, 2) + Math.pow(bc.y - mc.y, 2));
         return a.dist - b.dist;
       });
-
       this.inBoundFeatures[0].path.setAttribute("tabindex", 0);
     },
 
@@ -6178,6 +6340,7 @@
   });
 
   var Options = {
+    featureIndexOverlayOption: false,
     announceMovement: false,
     locale: {
       cmBack: "Back",
@@ -6187,10 +6350,12 @@
       cmCopyCoords: "Copy Coordinates",
       cmToggleDebug: "Toggle Debug Mode",
       cmCopyMapML: "Copy MapML",
+      cmPasteLayer: "Paste",
       cmViewSource: "View Map Source",
       cmCopyAll: "All",
       lmZoomToLayer: "Zoom To Layer",
       lmCopyExtent: "Copy Extent",
+      lmCopyLayer: "Copy Layer",
       lcOpacity: "Opacity",
       btnZoomIn: "Zoom in",
       btnZoomOut: "Zoom out",
@@ -6205,7 +6370,18 @@
       amEastBound: "Reached east bound, panning east disabled",
       amWestBound: "Reached west bound, panning west disabled",
       amNorthBound: "Reached north bound, panning north disabled",
-      amSouthBound: "Reached south bound, panning south disabled"
+      amSouthBound: "Reached south bound, panning south disabled",
+      kbdShortcuts: "Keyboard shortcuts",
+      kbdMovement: "Movement keys",
+      kbdFeature: "Feature navigation keys",
+      kbdPanUp: "Pan up",
+      kbdPanDown: "Pan down",
+      kbdPanLeft: "Pan left",
+      kbdPanRight: "Pan right",
+      kbdPanIncrement: "pan increment",
+      kbdZoom: "Zoom in/out 3 levels",
+      kbdPrevFeature: "Previous feature",
+      kbdNextFeature: "Next feature",
     }
   };
 
@@ -6262,6 +6438,217 @@
           L.DomEvent.stop(e);
       }
   });
+
+  var FeatureIndexOverlay = L.Layer.extend({
+      onAdd: function (map) {
+          let svgInnerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 100 100"><path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M0 0h100v100H0z" color="#000" overflow="visible"/></svg>`;
+
+          this._container = L.DomUtil.create("div", "mapml-feature-index-box", map._container);
+          this._container.innerHTML = svgInnerHTML;
+
+          this._output = L.DomUtil.create("output", "mapml-feature-index", map._container);
+          this._output.setAttribute("role", "status");
+          this._output.setAttribute("aria-live", "polite");
+          this._output.setAttribute("aria-atomic", "true");
+          this._body = L.DomUtil.create("span", "mapml-feature-index-content", this._output);
+          this._body.index = 0;
+          this._output.initialFocus = false;
+          map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
+          map.on('moveend focus templatedfeatureslayeradd', this._checkOverlap, this);
+          map.on("keydown", this._onKeyDown, this);
+          this._addOrRemoveFeatureIndex();
+      },
+
+      _calculateReticleBounds: function () {
+          let bounds = this._map.getPixelBounds();
+          let center = bounds.getCenter();
+          let wRatio = Math.abs(bounds.min.x - bounds.max.x) / (this._map.options.mapEl.width);
+          let hRatio = Math.abs(bounds.min.y - bounds.max.y) / (this._map.options.mapEl.height);
+
+          let reticleDimension = (getComputedStyle(this._container).width).replace(/[^\d.]/g,'');
+          if((getComputedStyle(this._container).width).slice(-1) === "%") {
+              reticleDimension = reticleDimension * this._map.options.mapEl.width / 100;
+          }
+          let w = wRatio * reticleDimension / 2;
+          let h = hRatio * reticleDimension / 2;
+          let minPoint = L.point(center.x - w, center.y + h);
+          let maxPoint = L.point(center.x + w, center.y - h);
+          let b = L.bounds(minPoint, maxPoint);
+          return M.pixelToPCRSBounds(b,this._map.getZoom(),this._map.options.projection);
+      },
+
+      _checkOverlap: function (e) {
+          if(e.type === "focus") this._output.initialFocus = true;
+          if(!this._output.initialFocus) return;
+          if(this._output.popupClosed) {
+              this._output.popupClosed = false;
+              return;
+          }
+
+          this._map.fire("mapkeyboardfocused");
+
+          let featureIndexBounds = this._calculateReticleBounds();
+          let features = this._map.featureIndex.inBoundFeatures;
+          let index = 1;
+          let keys = Object.keys(features);
+          let body = this._body;
+
+          body.innerHTML = "";
+          body.index = 0;
+
+          body.allFeatures = [];
+          keys.forEach(i => {
+              let layer = features[i].layer;
+              let layers = features[i].layer._layers;
+              let bounds = L.bounds();
+
+              if(layers) {
+                  let keys = Object.keys(layers);
+                  keys.forEach(j => {
+                      if(!bounds) bounds = L.bounds(layer._layers[j]._bounds.min, layer._layers[j]._bounds.max);
+                      bounds.extend(layer._layers[j]._bounds.min);
+                      bounds.extend(layer._layers[j]._bounds.max);
+                  });
+              } else if(layer._bounds){
+                  bounds = L.bounds(layer._bounds.min, layer._bounds.max);
+              }
+
+              if(featureIndexBounds.overlaps(bounds)){
+                  let label = features[i].path.getAttribute("aria-label");
+
+                  if (index < 8){
+                      body.appendChild(this._updateOutput(label, index, index));
+                  }
+                  if (index % 7 === 0 || index === 1) {
+                      body.allFeatures.push([]);
+                  }
+                  body.allFeatures[Math.floor((index - 1) / 7)].push({label, index, layer});
+                  if (body.allFeatures[1] && body.allFeatures[1].length === 1){
+                      body.appendChild(this._updateOutput("More results", 0, 9));
+                  }
+                  index += 1;
+              }
+          });
+          this._addToggleKeys();
+      },
+
+      _updateOutput: function (label, index, key) {
+          let span = document.createElement("span");
+          span.setAttribute("data-index", index);
+          //", " adds a brief auditory pause when a screen reader is reading through the feature index
+          //also prevents names with numbers + key from being combined when read
+          span.innerHTML =  `<kbd>${key}</kbd>` + " " + label + "<span>, </span>";
+          return span;
+      },
+
+      _addToggleKeys: function () {
+          let allFeatures = this._body.allFeatures;
+          for(let i = 0; i < allFeatures.length; i++){
+              if(allFeatures[i].length === 0) return;
+              if(allFeatures[i - 1]){
+                  let label = "Previous results";
+                  allFeatures[i].push({label});
+              }
+
+              if(allFeatures[i + 1] && allFeatures[i + 1].length > 0){
+                  let label = "More results";
+                  allFeatures[i].push({label});
+              }
+          }
+      },
+
+      _onKeyDown: function (e){
+          let body = this._body;
+          let key = e.originalEvent.keyCode;
+          if (key >= 49 && key <= 55){
+              if(!body.allFeatures[body.index]) return;
+              let feature = body.allFeatures[body.index][key - 49];
+              if (!feature) return;
+              let layer = feature.layer;
+              if (layer) {
+                  this._map.featureIndex.currentIndex = feature.index - 1;
+                  if (layer._popup){
+                      this._map.closePopup();
+                      layer.openPopup();
+                  }
+                  else layer.options.group.focus();
+              }
+          } else if(key === 56){
+              this._newContent(body, -1);
+          } else if(key === 57){
+              this._newContent(body, 1);
+          }
+      },
+
+      _newContent: function (body, direction) {
+          let index = body.firstChild.getAttribute("data-index");
+          let newContent = body.allFeatures[Math.floor(((index - 1) / 7) + direction)];
+          if(newContent && newContent.length > 0){
+              body.innerHTML = "";
+              body.index += direction;
+              for(let i = 0; i < newContent.length; i++){
+                  let feature = newContent[i];
+                  let index = feature.index ? feature.index : 0;
+                  let key = i + 1;
+                  if (feature.label === "More results") key = 9;
+                  if (feature.label === "Previous results") key = 8;
+                  body.appendChild(this._updateOutput(feature.label, index, key));
+              }
+          }
+      },
+
+      _toggleEvents: function (){
+          this._map.on("viewreset move moveend focus blur popupclose", this._addOrRemoveFeatureIndex, this);
+
+      },
+
+      _addOrRemoveFeatureIndex: function (e) {
+          let features = this._body.allFeatures ? this._body.allFeatures.length : 0;
+          //Toggle aria-hidden attribute so screen reader rereads the feature index on focus
+          if (!this._output.initialFocus) {
+              this._output.setAttribute("aria-hidden", "true");
+          } else if(this._output.hasAttribute("aria-hidden")){
+              let obj = this;
+              setTimeout(function () {
+                  obj._output.removeAttribute("aria-hidden");
+              }, 100);
+          }
+
+          if(e && e.type === "popupclose") {
+              this._output.setAttribute("aria-hidden", "true");
+              this._output.popupClosed = true;
+          } else if (e && e.type === "focus") {
+              this._container.removeAttribute("hidden");
+              if (features !== 0) this._output.classList.remove("mapml-screen-reader-output");
+          } else if (e && e.originalEvent && e.originalEvent.type === 'pointermove') {
+              this._container.setAttribute("hidden", "");
+              this._output.classList.add("mapml-screen-reader-output");
+          } else if (e && e.target._popup) {
+              this._container.setAttribute("hidden", "");
+          } else if (e && e.type === "blur") {
+              this._container.setAttribute("hidden", "");
+              this._output.classList.add("mapml-screen-reader-output");
+              this._output.initialFocus = false;
+              this._addOrRemoveFeatureIndex();
+          } else if (this._map.isFocused && e) {
+              this._container.removeAttribute("hidden");
+              if (features !== 0) {
+                  this._output.classList.remove("mapml-screen-reader-output");
+              } else {
+                  this._output.classList.add("mapml-screen-reader-output");
+              }
+          } else {
+              this._container.setAttribute("hidden", "");
+              this._output.classList.add("mapml-screen-reader-output");
+          }
+
+      },
+
+  });
+
+  var featureIndexOverlay = function (options) {
+      return new FeatureIndexOverlay(options);
+  };
 
   /* 
    * Copyright 2015-2016 Canada Centre for Mapping and Earth Observation, 
@@ -6888,6 +7275,8 @@
   M.FullscreenButton = FullscreenButton;
   M.fullscreenButton = fullscreenButton;
 
+  M.attributionControl = attributionControl;
+
   M.MapMLStaticTileLayer = MapMLStaticTileLayer;
   M.mapMLStaticTileLayer = mapMLStaticTileLayer;
 
@@ -6896,6 +7285,9 @@
 
   M.Crosshair = Crosshair;
   M.crosshair = crosshair;
+
+  M.FeatureIndexOverlay = FeatureIndexOverlay;
+  M.featureIndexOverlay = featureIndexOverlay;
 
   M.Feature = Feature;
   M.feature = feature;

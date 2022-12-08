@@ -77,7 +77,6 @@
             <descriptor>release/ext-wmts-styles.xml</descriptor>
             <descriptor>release/ext-ogr-datastore.xml</descriptor>
             <descriptor>release/ext-ogcapi.xml</descriptor>
-            <descriptor>release/ext-geostyler.xml</descriptor>
             <descriptor>release/ext-importer-jdbc.xml</descriptor>
             <descriptor>release/ext-features-templating.xml</descriptor>
             <descriptor>release/ext-gsr.xml</descriptor>
@@ -188,12 +187,6 @@
       </modules>
     </profile>
     <profile>
-      <id>geostyler</id>
-      <modules>
-        <module>geostyler</module>
-      </modules>
-    </profile>
-    <profile>
       <id>communityRelease</id>
       <modules>
         <module>dds</module>
@@ -220,7 +213,6 @@
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>gwc-sqlite</module>
-        <module>geostyler</module>
         <module>security</module>
         <module>wmts-styles</module>
         <module>saml</module>

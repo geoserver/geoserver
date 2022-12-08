@@ -34,7 +34,6 @@ officially part of the GeoServer releases. They are however built along with the
    gdal/index
    geomesa/index
    geopkg/index
-   geostyler/index
    gsr/index
    gwc-azure-blob/index
    gwc-distributed/index

@@ -18,7 +18,7 @@ officially part of the GeoServer releases. They are however built along with the
 
    If you need a community module for an official release, the only way is to build it with the sources of the GitHub tag matching the release.
 
-.. please keep the following list sorted alphabetically 
+.. please keep the following list sorted alphabetically
 
 .. toctree::
    :maxdepth: 1

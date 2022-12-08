@@ -19,6 +19,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DataBindingException;
@@ -410,7 +411,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         + MockData.ROAD_SEGMENTS.getLocalPart()
                         + "/osmtile/";
 
-        org.w3c.dom.Document doc = getMapML(path);
+        org.w3c.dom.Document doc = getLocalizedMapML(path, Locale.FRENCH);
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
         URL url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
@@ -427,6 +428,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("height").equalsIgnoreCase("{h}"));
         assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
         assertTrue(vars.get("styles").equalsIgnoreCase(""));
+        assertTrue(vars.get("language").equalsIgnoreCase(Locale.FRENCH.getLanguage()));
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
         url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
@@ -446,6 +448,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("y").equalsIgnoreCase("{j}"));
         assertTrue(vars.get("info_format").equalsIgnoreCase("text/mapml"));
         assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
+        assertTrue(vars.get("language").equalsIgnoreCase(Locale.FRENCH.getLanguage()));
 
         // make sure there's an input for each template variable
         assertXpathEvaluatesTo(
@@ -498,7 +501,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         layerMeta.getMetadata().put("mapml.useTiles", true);
         catalog.save(layerMeta);
 
-        doc = getMapML(path);
+        doc = getLocalizedMapML(path, Locale.ITALIAN);
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='tile'][@tref])", doc);
         URL url = new URL(xpath.evaluate("//html:map-link[@rel='tile']/@tref", doc));
@@ -515,6 +518,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("height").equalsIgnoreCase("256"));
         assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
         assertTrue(vars.get("styles").equalsIgnoreCase(""));
+        assertTrue(vars.get("language").equalsIgnoreCase(Locale.ITALIAN.getLanguage()));
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
         url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
@@ -534,6 +538,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("y").equalsIgnoreCase("{j}"));
         assertTrue(vars.get("info_format").equalsIgnoreCase("text/mapml"));
         assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
+        assertTrue(vars.get("language").equalsIgnoreCase(Locale.ITALIAN.getLanguage()));
 
         // make sure there's an input for each template variable
         String xpath =
@@ -591,7 +596,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         String wmtsLayerName =
                 MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart();
 
-        doc = getMapML(path);
+        doc = getLocalizedMapML(path, Locale.JAPANESE);
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='tile'][@tref])", doc);
         URL url = new URL(xpath.evaluate("//html:map-link[@rel='tile']/@tref", doc));
         HashMap<String, String> vars = parseQuery(url);
@@ -605,6 +610,8 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("TileRow").equalsIgnoreCase("{y}"));
         assertTrue(vars.get("TileCol").equalsIgnoreCase("{x}"));
         assertTrue(vars.get("style").equalsIgnoreCase(""));
+        assertNull(vars.get("language"));
+        //        assertTrue(vars.get("language").equalsIgnoreCase(Locale.ENGLISH.getLanguage()));
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
         url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
@@ -623,6 +630,8 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("j").equalsIgnoreCase("{j}"));
         assertTrue(vars.get("infoformat").equalsIgnoreCase("text/mapml"));
         assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
+        assertNull(vars.get("language"));
+        //        assertTrue(vars.get("language").equalsIgnoreCase(Locale.ENGLISH.getLanguage()));
 
         // make sure there's an input for each template variable
         assertXpathEvaluatesTo(
@@ -706,7 +715,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         .toString()
                         .equalsIgnoreCase(featureCaptionTemplate));
 
-        org.w3c.dom.Document doc = getMapML(path);
+        org.w3c.dom.Document doc = getLocalizedMapML(path, Locale.ENGLISH);
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
@@ -727,6 +736,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("y").equalsIgnoreCase("{j}"));
         assertTrue(vars.get("info_format").equalsIgnoreCase("text/mapml"));
         assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
+        assertTrue(vars.get("language").equalsIgnoreCase(Locale.ENGLISH.getLanguage()));
         vars.put(
                 "bbox",
                 "-967387.0299771908,-118630.26789859355,884223.543202919,920913.3167798058");
@@ -756,6 +766,23 @@ public class MapMLControllerTest extends WMSTestSupport {
             throws Exception {
         MockHttpServletRequest request = createRequest(path, query);
         request.addHeader("Accept", "text/mapml");
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        String resp = dispatch(request, "UTF-8").getContentAsString();
+        return dom(new ByteArrayInputStream(resp.getBytes()), true);
+    }
+    /**
+     * Executes a request using the GET method and returns the result as an MapML document.
+     *
+     * @param path The portion of the request after the context, example:
+     * @param locale A locale to use for the Accept-Language header
+     * @return A result of the request parsed into a dom.
+     */
+    protected org.w3c.dom.Document getLocalizedMapML(final String path, Locale locale)
+            throws Exception {
+        MockHttpServletRequest request = createRequest(path, false);
+        request.addHeader("Accept", "text/mapml");
+        request.addHeader("Accept-Language", locale.getLanguage());
         request.setMethod("GET");
         request.setContent(new byte[] {});
         String resp = dispatch(request, "UTF-8").getContentAsString();

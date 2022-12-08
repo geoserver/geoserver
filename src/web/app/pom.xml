@@ -1591,16 +1591,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>geostyler</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-geostyler</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>ogcapi</id>
       <dependencies>
         <dependency>

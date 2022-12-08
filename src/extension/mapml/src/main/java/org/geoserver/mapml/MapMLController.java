@@ -127,12 +127,13 @@ public class MapMLController {
         LayerGroupInfo layerGroupInfo = null;
         boolean isLayerGroup = (layerInfo == null);
         String layerName = "";
-        String styleName = style.orElse("");
+        String styleName =
+                geoServer.getCatalog().getStyleByName(style.orElse("")) != null ? style.get() : "";
         if (isLayerGroup) {
             layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer);
             if (layerGroupInfo == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return "Invalid layer or layer group name: " + layer;
+                return "Invalid layer or layer group name";
             }
             for (LayerInfo li : layerGroupInfo.layers()) {
                 bbox.expandToInclude(li.getResource().getLatLonBoundingBox());
@@ -158,7 +159,7 @@ public class MapMLController {
             projType = ProjType.fromValue(proj.toUpperCase());
         } catch (IllegalArgumentException iae) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return "Invalid TCRS name: " + proj;
+            return "Invalid TCRS name";
         }
         TiledCRS TCRS = previewTcrsMap.get(projType.value());
 

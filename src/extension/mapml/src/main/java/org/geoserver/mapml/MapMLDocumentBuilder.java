@@ -161,9 +161,8 @@ public class MapMLDocumentBuilder {
             if (layerGroupInfo == null) {
                 try {
                     response.sendError(
-                            HttpServletResponse.SC_NOT_FOUND,
-                            "Invalid layer or layer group name: " + layer);
-                    throw new RuntimeException("Invalid layer or layer group name: " + layer);
+                            HttpServletResponse.SC_NOT_FOUND, "Invalid layer or layer group name");
+                    throw new RuntimeException("Invalid layer or layer group name");
                 } catch (IOException ioe) {
                 }
                 return;
@@ -194,14 +193,14 @@ public class MapMLDocumentBuilder {
             projType = ProjType.fromValue(proj.toUpperCase());
         } catch (IllegalArgumentException iae) {
             try {
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST, "Invalid TCRS name: " + proj);
-                throw new RuntimeException("Invalid TCRS name: " + proj);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid TCRS name");
+                throw new RuntimeException("Invalid TCRS name");
             } catch (IOException ioe) {
             }
             return;
         }
-        styleName = style.orElse("");
+        styleName =
+                geoServer.getCatalog().getStyleByName(style.orElse("")) != null ? style.get() : "";
         imageFormat = format.orElse("image/png");
         baseUrl =
                 ResponseUtils.buildURL(
@@ -627,6 +626,7 @@ public class MapMLDocumentBuilder {
         params.put("request", "GetMap");
         params.put("crs", previewTcrsMap.get(projType.value()).getCode());
         params.put("layers", layerName);
+        params.put("language", this.request.getLocale().getLanguage());
         params.put("styles", styleName);
         if (timeEnabled) {
             params.put("time", "{time}");
@@ -775,6 +775,7 @@ public class MapMLDocumentBuilder {
         params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
         params.put("format", imageFormat);
         params.put("transparent", Boolean.toString(isTransparent));
+        params.put("language", this.request.getLocale().getLanguage());
         params.put("width", "{w}");
         params.put("height", "{h}");
         String urlTemplate = "";
@@ -872,6 +873,7 @@ public class MapMLDocumentBuilder {
         params.put("request", "GetFeatureInfo");
         params.put("feature_count", "50");
         params.put("crs", previewTcrsMap.get(projType.value()).getCode());
+        params.put("language", this.request.getLocale().getLanguage());
         params.put("layers", layerName);
         params.put("query_layers", layerName);
         params.put("styles", styleName);

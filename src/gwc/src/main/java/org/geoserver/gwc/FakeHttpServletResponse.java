@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import org.geotools.util.logging.Logging;
@@ -39,6 +40,14 @@ public class FakeHttpServletResponse implements HttpServletResponse {
         public byte[] getBytes() {
             return outputStream.toByteArray();
         }
+
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {}
     }
 
     private FakeServletOutputStream fos = new FakeServletOutputStream();
@@ -240,6 +249,9 @@ public class FakeHttpServletResponse implements HttpServletResponse {
     public void setContentLength(int arg0) {
         throw new ServletDebugException();
     }
+
+    @Override
+    public void setContentLengthLong(long l) {}
 
     @Override
     public void setContentType(String arg0) {

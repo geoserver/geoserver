@@ -74,7 +74,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
                 content.contains(
                         "<!DOCTYPE ServiceExceptionReport SYSTEM \"http://localhost:8080/geoserver/schemas/wms/1.1.1/WMS_exception_1_1_1.dtd\">"));
 
-        assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+        assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
         Document dom = dom(new ByteArrayInputStream(content.getBytes()));
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
         assertEquals("1.1.1", dom.getDocumentElement().getAttribute("version"));
@@ -92,7 +92,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
                 content.contains(
                         "xsi:schemaLocation=\"http://www.opengis.net/ogc http://localhost:8080/geoserver/schemas/wms/1.3.0/exceptions_1_3_0.xsd\""));
 
-        assertEquals("text/xml", response.getContentType());
+        assertEquals("text/xml", getBaseMimeType(response.getContentType()));
         Document dom = dom(new ByteArrayInputStream(content.getBytes()));
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
         assertEquals("1.3.0", dom.getDocumentElement().getAttribute("version"));

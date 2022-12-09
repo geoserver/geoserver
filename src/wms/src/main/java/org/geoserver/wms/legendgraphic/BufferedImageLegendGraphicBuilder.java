@@ -387,7 +387,8 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             graphics.dispose();
         }
         int labelMargin = 3;
-        if (!StringUtils.isEmpty(request.getLegendOptions().get("labelMargin"))) {
+        if (request.getLegendOptions().get("labelMargin") != null
+                && StringUtils.hasText(request.getLegendOptions().get("labelMargin").toString())) {
             labelMargin =
                     Integer.parseInt(request.getLegendOptions().get("labelMargin").toString());
         }

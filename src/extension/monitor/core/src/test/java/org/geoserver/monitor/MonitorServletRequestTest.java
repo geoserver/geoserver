@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.monitor.MonitorServletRequest.MonitorInputStream;
@@ -37,6 +38,19 @@ public class MonitorServletRequestTest {
             checkCalled();
             final ByteArrayInputStream bis = new ByteArrayInputStream(BUFFER);
             return new ServletInputStream() {
+
+                @Override
+                public boolean isFinished() {
+                    return bis.available() == 0;
+                }
+
+                @Override
+                public boolean isReady() {
+                    return bis.available() > 0;
+                }
+
+                @Override
+                public void setReadListener(ReadListener readListener) {}
 
                 @Override
                 public int read() throws IOException {

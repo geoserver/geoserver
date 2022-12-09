@@ -13,10 +13,11 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.UrlPathHelper;
 
 /**
  * Specific URL mapping handler for GWC WMTS REST API. The main goal of this handler id to handle
@@ -41,11 +42,14 @@ public class GwcUrlHandlerMapping extends RequestMappingHandlerMapping
     protected void registerHandlerMethod(
             Object handler, Method method, RequestMappingInfo mapping) {
         // this handler is only interested on GWC WMTS REST API URLs
-        for (String pattern : mapping.getPatternsCondition().getPatterns()) {
-            if (pattern.contains(GWC_URL_PATTERN)) {
-                // this is an handler for GWC WMTS REST API
-                super.registerHandlerMethod(handler, method, mapping);
-                break;
+        PatternsRequestCondition patternsRequestCondition = mapping.getPatternsCondition();
+        if (patternsRequestCondition != null && patternsRequestCondition.getPatterns() != null) {
+            for (String pattern : patternsRequestCondition.getPatterns()) {
+                if (pattern.contains(GWC_URL_PATTERN)) {
+                    // this is an handler for GWC WMTS REST API
+                    super.registerHandlerMethod(handler, method, mapping);
+                    break;
+                }
             }
         }
     }
@@ -92,10 +96,10 @@ public class GwcUrlHandlerMapping extends RequestMappingHandlerMapping
         Wrapper(HttpServletRequest request, Catalog catalog, String workspaceName) {
             super(request);
 
-            // Adjust LOOKUP_PATH used by spring to remove workspace
+            // Adjust PATH_ATTRIBUTE used by spring to remove workspace
             request.setAttribute(
-                    HandlerMapping.LOOKUP_PATH,
-                    ((String) request.getAttribute(HandlerMapping.LOOKUP_PATH))
+                    UrlPathHelper.PATH_ATTRIBUTE,
+                    ((String) request.getAttribute(UrlPathHelper.PATH_ATTRIBUTE))
                             .replace(workspaceName + "/", ""));
 
             // remove the virtual service workspace from the URL

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.geoserver.data.test.MockData.TASMANIA_DEM;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -126,10 +127,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         JSONType.setJsonpEnabled(false);
 
         // MimeType
-        assertEquals(JSONType.jsonp, response.getContentType());
+        assertEquals(JSONType.jsonp, getBaseMimeType(response.getContentType()));
 
         // Check if the character encoding is the one expected
-        assertEquals("UTF-8", response.getCharacterEncoding());
+        assertEquals(UTF_8.name(), response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -172,10 +173,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         JSONType.setJsonpEnabled(false);
 
         // MimeType
-        assertEquals(JSONType.jsonp, response.getContentType());
+        assertEquals(JSONType.jsonp, getBaseMimeType(response.getContentType()));
 
         // Check if the character encoding is the one expected
-        assertEquals("UTF-8", response.getCharacterEncoding());
+        assertEquals(UTF_8.name(), response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -214,10 +215,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         MockHttpServletResponse response = getAsServletResponse(request, "");
 
         // MimeType
-        assertEquals(JSONType.json, response.getContentType());
+        assertEquals(JSONType.json, getBaseMimeType(response.getContentType()));
 
         // Check if the character encoding is the one expected
-        assertEquals("UTF-8", response.getCharacterEncoding());
+        assertEquals(UTF_8.name(), response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -249,10 +250,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         MockHttpServletResponse response = getAsServletResponse(request, "");
 
         // MimeType
-        assertEquals(JSONType.json, response.getContentType());
+        assertEquals(JSONType.json, getBaseMimeType(response.getContentType()));
 
         // Check if the character encoding is the one expected
-        assertEquals("UTF-8", response.getCharacterEncoding());
+        assertEquals(UTF_8.name(), response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -356,10 +357,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             MockHttpServletResponse response = getAsServletResponse(request, "");
 
             // MimeType
-            assertEquals(JSONType.json, response.getContentType());
+            assertEquals(JSONType.json, getBaseMimeType(response.getContentType()));
 
             // Check if the character encoding is the one expected
-            assertEquals("UTF-8", response.getCharacterEncoding());
+            assertEquals(UTF_8.name(), response.getCharacterEncoding());
 
             // Content
             String result = response.getContentAsString();
@@ -402,10 +403,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             MockHttpServletResponse response = getAsServletResponse(request, "");
 
             // MimeType
-            assertEquals(JSONType.json, response.getContentType());
+            assertEquals(JSONType.json, getBaseMimeType(response.getContentType()));
 
             // Check if the character encoding is the one expected
-            assertEquals("UTF-8", response.getCharacterEncoding());
+            assertEquals(UTF_8.name(), response.getCharacterEncoding());
 
             // Content
             String result = response.getContentAsString();

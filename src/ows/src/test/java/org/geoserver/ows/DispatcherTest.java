@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -295,6 +296,21 @@ public class DispatcherTest {
                             final ServletInputStream stream = super.getInputStream();
                             return new ServletInputStream() {
                                 @Override
+                                public boolean isFinished() {
+                                    return stream.isFinished();
+                                }
+
+                                @Override
+                                public boolean isReady() {
+                                    return stream.isReady();
+                                }
+
+                                @Override
+                                public void setReadListener(ReadListener readListener) {
+                                    stream.setReadListener(readListener);
+                                }
+
+                                @Override
                                 public int read() throws IOException {
                                     return stream.read();
                                 }
@@ -359,6 +375,19 @@ public class DispatcherTest {
                         public ServletInputStream getInputStream() {
                             final ServletInputStream stream = super.getInputStream();
                             return new ServletInputStream() {
+                                @Override
+                                public boolean isFinished() {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean isReady() {
+                                    return false;
+                                }
+
+                                @Override
+                                public void setReadListener(ReadListener readListener) {}
+
                                 @Override
                                 public int read() throws IOException {
                                     return stream.read();

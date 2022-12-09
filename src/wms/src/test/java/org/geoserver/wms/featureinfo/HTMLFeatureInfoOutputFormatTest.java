@@ -6,6 +6,7 @@
 
 package org.geoserver.wms.featureinfo;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -262,10 +263,10 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         MockHttpServletResponse response = getAsServletResponse(request, "");
 
         // MimeType
-        assertEquals("text/html", response.getContentType());
+        assertEquals("text/html", getBaseMimeType(response.getContentType()));
 
         // Check if the character encoding is the one expected
-        assertEquals("UTF-8", response.getCharacterEncoding());
+        assertEquals(UTF_8.name(), response.getCharacterEncoding());
     }
 
     @SuppressWarnings("unchecked")

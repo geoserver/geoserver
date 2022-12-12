@@ -1133,8 +1133,8 @@ public class TransactionTest extends WFSTestSupport {
     }
 
     /**
-     * This tests the situation where a Polygon-based FeatureType is updated with a LineString value.
-     * Since these are different dimensions, this should be disallowed.  This test is based on
+     * This tests the situation where a Polygon-based FeatureType is updated with a LineString
+     * value. Since these are different dimensions, this should be disallowed. This test is based on
      * CITE test "wfs:wfs-1.1.0-Transaction-tc10.1".
      */
     @Test
@@ -1160,11 +1160,14 @@ public class TransactionTest extends WFSTestSupport {
                         + "</wfs:Update>"
                         + "</wfs:Transaction>";
         Document resp = postAsDOM("wfs", update);
-        //response is an OWS Exception of type "InvalidValue", with locator "the_geom"
+        // response is an OWS Exception of type "InvalidValue", with locator "the_geom"
         // ie.   <ows:Exception exceptionCode="InvalidValue" locator="the_geom">
         checkOws10Exception(resp);
         Node exceptionNode = resp.getElementsByTagName("ows:Exception").item(0);
-        assertEquals("InvalidValue",exceptionNode.getAttributes().getNamedItem("exceptionCode").getTextContent());
-        assertEquals("the_geom",exceptionNode.getAttributes().getNamedItem("locator").getTextContent());
+        assertEquals(
+                "InvalidValue",
+                exceptionNode.getAttributes().getNamedItem("exceptionCode").getTextContent());
+        assertEquals(
+                "the_geom", exceptionNode.getAttributes().getNamedItem("locator").getTextContent());
     }
 }

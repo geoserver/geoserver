@@ -100,6 +100,30 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         }
     }
 
+    /**
+     * According to WFS 1.1 spec, the store parameter must be "True" or "False". CITE test
+     * "GetCoverage_Store_Bogus" tests that an exception is thrown. This test does the same - makes
+     * a request with a bad "store" parameter and expects a WcsException.
+     */
+    @Test
+    public void testWrongStoreParameter() throws Exception {
+        Map<String, Object> raw = baseMap();
+        final String layerId = getLayerId(TASMANIA_BM);
+        raw.put("identifier", layerId);
+        raw.put("format", "image/tiff");
+        raw.put("BoundingBox", "-45,146,-42,147");
+        raw.put("store", "BAD_BAD_BAD");
+        raw.put("GridBaseCRS", "urn:ogc:def:crs:EPSG:6.6:4326");
+        try {
+            GetCoverageType getCoverage =
+                    (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+            fail("GetCoverage worked with a bad 'store' parameter");
+        } catch (WcsException e) {
+            assertEquals(InvalidParameterValue.toString(), e.getCode());
+            assertEquals("store", e.getLocator());
+        }
+    }
+
     @Test
     public void testBasic() throws Exception {
         Map<String, Object> raw = baseMap();

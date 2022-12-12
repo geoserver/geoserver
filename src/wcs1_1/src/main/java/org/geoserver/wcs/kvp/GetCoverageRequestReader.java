@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs.kvp;
 
+import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.MissingParameterValue;
 
 import java.util.Map;
@@ -17,6 +18,7 @@ import net.opengis.wcs11.TimeSequenceType;
 import net.opengis.wcs11.Wcs111Factory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
+import org.geoserver.ows.util.KvpUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
@@ -44,6 +46,17 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
 
         // build output element
         getCoverage.setOutput(parseOutputElement(kvp));
+
+        String store = KvpUtils.caseInsensitiveParam(rawKvp, "store", null);
+        if (store != null) {
+            if (!store.equalsIgnoreCase("TRUE") && !store.equalsIgnoreCase("FALSE")) {
+                // OGC Specification says that STORE must be either True or False
+                throw new WcsException(
+                        "store parameter has an invalid value - must be True or False",
+                        InvalidParameterValue,
+                        "store");
+            }
+        }
 
         return getCoverage;
     }

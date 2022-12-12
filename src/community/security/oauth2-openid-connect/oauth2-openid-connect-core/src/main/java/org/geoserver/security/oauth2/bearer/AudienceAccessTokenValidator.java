@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.oauth2.bearer;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
@@ -41,9 +42,13 @@ public class AudienceAccessTokenValidator implements TokenValidator {
     public void verifyToken(OpenIdConnectFilterConfig config, Map claimsJWT, Map userInfoClaims)
             throws Exception {
         String clientId = config.getCliendId();
-        if ((claimsJWT.get(AUDIENCE_CLAIM_NAME) != null)
-                && claimsJWT.get(AUDIENCE_CLAIM_NAME).equals(clientId)) {
-            return;
+        if ((claimsJWT.get(AUDIENCE_CLAIM_NAME) != null)) {
+            if (claimsJWT.get(AUDIENCE_CLAIM_NAME).equals(clientId)) {
+                return;
+            } else if (claimsJWT.get(AUDIENCE_CLAIM_NAME) instanceof Collection
+                    && ((Collection) claimsJWT.get(AUDIENCE_CLAIM_NAME)).contains(clientId)) {
+                return;
+            }
         }
 
         if ((claimsJWT.get(APPID_CLAIM_NAME) != null)

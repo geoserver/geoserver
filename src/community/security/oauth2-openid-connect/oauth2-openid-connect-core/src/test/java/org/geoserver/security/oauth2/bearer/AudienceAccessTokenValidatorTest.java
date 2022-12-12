@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.oauth2.bearer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
@@ -50,6 +51,17 @@ public class AudienceAccessTokenValidatorTest {
     public void testSelfCreatedGood() throws Exception {
         Map claims = new HashMap();
         claims.put("aud", clientId);
+
+        AudienceAccessTokenValidator validator = getValidator();
+        OpenIdConnectFilterConfig config = getConfig();
+
+        validator.verifyToken(config, claims, null);
+    }
+
+    @Test
+    public void testAudListGood() throws Exception {
+        Map claims = new HashMap();
+        claims.put("aud", Arrays.asList(clientId, "other-client"));
 
         AudienceAccessTokenValidator validator = getValidator();
         OpenIdConnectFilterConfig config = getConfig();

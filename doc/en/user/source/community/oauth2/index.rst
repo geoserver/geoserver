@@ -327,7 +327,7 @@ To Use:
 The Access Token (JWT) is validated;
 
 #. The Access Token is used to get the "userinfo" endpoint.  The underlying IDP will verify the token (i.e. signature and expiry)
-#. The Audience of the Token is checked that it is the same as the GeoServer configured Client Id.  This make sure an Access Token for another application is not being inappropriately reused in GeoServer (cf. `AudienceAccessTokenValidator.java`).
+#. The Audience of the Token is checked that it contains the GeoServer configured Client Id.  This make sure an Access Token for another application is not being inappropriately reused in GeoServer (cf. `AudienceAccessTokenValidator.java`).
 #. The Subject of the `userinfo` and Access Token are verified to be about the same person.  The OpenID specification recommends checking this (cf. `SubjectTokenValidator.java`).
 
 

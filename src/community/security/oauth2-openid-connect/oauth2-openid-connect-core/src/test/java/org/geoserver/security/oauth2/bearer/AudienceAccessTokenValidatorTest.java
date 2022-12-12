@@ -57,11 +57,11 @@ public class AudienceAccessTokenValidatorTest {
 
         validator.verifyToken(config, claims, null);
     }
-    
+
     @Test
     public void testAudListGood() throws Exception {
         Map claims = new HashMap();
-        claims.put("aud", Arrays.asList(clientId,"other-client"));
+        claims.put("aud", Arrays.asList(clientId, "other-client"));
 
         AudienceAccessTokenValidator validator = getValidator();
         OpenIdConnectFilterConfig config = getConfig();

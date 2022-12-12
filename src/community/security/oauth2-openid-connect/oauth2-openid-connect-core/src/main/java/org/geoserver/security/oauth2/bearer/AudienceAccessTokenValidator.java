@@ -43,10 +43,10 @@ public class AudienceAccessTokenValidator implements TokenValidator {
             throws Exception {
         String clientId = config.getCliendId();
         if ((claimsJWT.get(AUDIENCE_CLAIM_NAME) != null)) {
-            if(claimsJWT.get(AUDIENCE_CLAIM_NAME).equals(clientId)) {
+            if (claimsJWT.get(AUDIENCE_CLAIM_NAME).equals(clientId)) {
                 return;
-            } else if(claimsJWT.get(AUDIENCE_CLAIM_NAME) instanceof Collection
-                && ((Collection)claimsJWT.get(AUDIENCE_CLAIM_NAME)).contains(clientId)) {
+            } else if (claimsJWT.get(AUDIENCE_CLAIM_NAME) instanceof Collection
+                    && ((Collection) claimsJWT.get(AUDIENCE_CLAIM_NAME)).contains(clientId)) {
                 return;
             }
         }

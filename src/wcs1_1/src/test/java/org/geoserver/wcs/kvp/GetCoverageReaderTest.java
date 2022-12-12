@@ -115,8 +115,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("store", "BAD_BAD_BAD");
         raw.put("GridBaseCRS", "urn:ogc:def:crs:EPSG:6.6:4326");
         try {
-            GetCoverageType getCoverage =
-                    (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+            reader.read(reader.createRequest(), parseKvp(raw), raw);
             fail("GetCoverage worked with a bad 'store' parameter");
         } catch (WcsException e) {
             assertEquals(InvalidParameterValue.toString(), e.getCode());

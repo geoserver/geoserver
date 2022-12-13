@@ -61,7 +61,13 @@ case the environment parameters for the decoration will be provided using ``dwn:
 Map Download Process
 --------------------
 
-The map download process has only the basic inputs described above, the ``time`` parameter is optional.
+In addition to the common parameters, the MapDownloadProcess sports an
+extra boolean parameter, ``transparent``, which can be either true or false, determining if
+the output map has a transparent or a solid background (animation lacks this parameter, as videos
+need solid background). The ``transparent`` parameter defaults to ``false`` [#f1]_.
+
+Also, unlike animation, in the map download process the ``time`` parameter is optional.
+
 The map download process uses the WMS machinery to produce the output, but it's not subject to the WMS service
 limits (width and height in this process can be limited using the WPS process security).
 
@@ -435,3 +441,7 @@ available time, resulting in a ``NearestFail``. The frame is still present in th
 will likely be blank.
 In case multiple time based layers are requested in the animation, there might be multiple warnings
 for each frame.
+
+.. rubric:: Footnotes
+
+.. [#f1] The default value of ``transparent`` can be flipped using a system variable, e.g. ``-DDOWNLOAD_MAP_TRANSPARENT=true``

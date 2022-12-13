@@ -226,6 +226,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                     height,
                                     headerHeight,
                                     layers,
+                                    false,
                                     "image/png",
                                     new DefaultProgressListener(),
                                     serverCache);

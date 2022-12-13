@@ -12,8 +12,10 @@ import static org.junit.Assert.assertNull;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -44,7 +46,10 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
     public void testDescribeProcess() throws Exception {
         Document d =
                 getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:DownloadMap");
-        // print(d);
+        print(d);
+        assertXpathEvaluatesTo("0", "//Input[ows:Identifier='transparent']/@minOccurs", d);
+        assertXpathEvaluatesTo(
+                "xs:boolean", "//Input[ows:Identifier='transparent']/LiteralData/ows:DataType", d);
         assertXpathExists("//ComplexOutput/Supported/Format[MimeType='image/png']", d);
         assertXpathExists("//ComplexOutput/Supported/Format[MimeType='image/jpeg']", d);
         assertXpathExists(
@@ -54,7 +59,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testExecuteSingleLayer() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("mapSimple.xml"), UTF_8);
+        String xml = getTestRequest("mapSimple.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -64,18 +69,29 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testExecuteSingleLayerFilter() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("mapSimpleFilter.xml"), UTF_8);
+        String xml = getTestRequest("mapSimpleFilter.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
                 ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertEquals(ColorModel.OPAQUE, image.getColorModel().getTransparency());
         ImageAssert.assertEquals(new File(SAMPLES + "mapSimpleFilter.png"), image, 100);
     }
 
     @Test
+    public void testExecuteTransparent() throws Exception {
+        String xml = getTestRequest("mapSimpleFilterTransparent.xml");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertEquals(ColorModel.TRANSLUCENT, image.getColorModel().getTransparency());
+        ImageAssert.assertEquals(new File(SAMPLES + "mapSimpleFilterTransparent.png"), image, 100);
+    }
+
+    @Test
     public void testExecuteSingleDecorated() throws Exception {
-        String xml =
-                IOUtils.toString(getClass().getResourceAsStream("mapSimpleDecorated.xml"), UTF_8);
+        String xml = getTestRequest("mapSimpleDecorated.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -84,8 +100,22 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
     }
 
     @Test
+    public void testExecuteSingleDecoratedTransparent() throws Exception {
+        String xml = getTestRequest("mapSimpleDecoratedTransparent.xml");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ImageAssert.assertEquals(new File(SAMPLES + "watermarkedTx.png"), image, 100);
+    }
+
+    private String getTestRequest(String name) throws IOException {
+        return IOUtils.toString(getClass().getResourceAsStream(name), UTF_8);
+    }
+
+    @Test
     public void testExecuteMultiName() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("mapMultiName.xml"), UTF_8);
+        String xml = getTestRequest("mapMultiName.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         assertEquals("inline; filename=result.png", response.getHeader("Content-disposition"));
@@ -96,7 +126,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testExecuteMultiLayer() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"), UTF_8);
+        String xml = getTestRequest("mapMultiLayer.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -117,8 +147,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testExecuteGeotiff() throws Exception {
-        String request =
-                IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"), UTF_8);
+        String request = getTestRequest("mapMultiLayer.xml");
         request = request.replaceAll("image/png", "image/geotiff");
         MockHttpServletResponse response = postAsServletResponse("wps", request);
         assertEquals("image/geotiff", response.getContentType());
@@ -126,8 +155,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
     }
 
     protected void testExecutMultiLayerKmz(String mime) throws Exception {
-        String request =
-                IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"), UTF_8);
+        String request = getTestRequest("mapMultiLayer.xml");
         request = request.replaceAll("image/png", mime);
         MockHttpServletResponse response = postAsServletResponse("wps", request);
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
@@ -162,7 +190,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testTimeFilter() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("mapTimeFilter.xml"), UTF_8);
+        String xml = getTestRequest("mapTimeFilter.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -178,9 +206,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testTimeFilterTimestamped() throws Exception {
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("mapTimeFilterTimestamped.xml"), UTF_8);
+        String xml = getTestRequest("mapTimeFilterTimestamped.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -190,10 +216,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testTimeFilterFormattedTimestamp() throws Exception {
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("mapTimeFilterFormattedTimestamp.xml"),
-                        UTF_8);
+        String xml = getTestRequest("mapTimeFilterFormattedTimestamp.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -204,7 +227,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void downloadMapGif() throws Exception {
-        String request = IOUtils.toString(getClass().getResourceAsStream("mapSimple.xml"), UTF_8);
+        String request = getTestRequest("mapSimple.xml");
         request = request.replaceAll("image/png", "image/gif");
         MockHttpServletResponse response = postAsServletResponse("wps", request);
         assertEquals("image/gif", response.getContentType());
@@ -215,9 +238,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void downloadRemoteSimple11() throws Exception {
-        String request =
-                IOUtils.toString(getClass().getResourceAsStream("mapRemoteSimple11.xml"), UTF_8);
-        String caps111 = IOUtils.toString(getClass().getResourceAsStream("caps111.xml"), UTF_8);
+        String request = getTestRequest("mapRemoteSimple11.xml");
+        String caps111 = getTestRequest("caps111.xml");
         byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
         MockHttpClient client = new MockHttpClient();
@@ -250,9 +272,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void downloadRemoteSimple13() throws Exception {
-        String request =
-                IOUtils.toString(getClass().getResourceAsStream("mapRemoteSimple13.xml"), UTF_8);
-        String caps130 = IOUtils.toString(getClass().getResourceAsStream("caps130.xml"), UTF_8);
+        String request = getTestRequest("mapRemoteSimple13.xml");
+        String caps130 = getTestRequest("caps130.xml");
         byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
         MockHttpClient client = new MockHttpClient();
@@ -284,9 +305,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void downloadLocalRemote() throws Exception {
-        String request =
-                IOUtils.toString(getClass().getResourceAsStream("mapLocalRemote.xml"), UTF_8);
-        String caps111 = IOUtils.toString(getClass().getResourceAsStream("caps111.xml"), UTF_8);
+        String request = getTestRequest("mapLocalRemote.xml");
+        String caps111 = getTestRequest("caps111.xml");
         byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "lakes.png"));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
         MockHttpClient client = new MockHttpClient();
@@ -322,10 +342,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         File layouts = getDataDirectory().findOrCreateDir("layouts");
         URL layout = getClass().getResource("legend_decoration.xml");
         FileUtils.copyURLToFile(layout, new File(layouts, "legend_decoration.xml"));
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("mapSingleLayerWithLegendDecoration.xml"),
-                        UTF_8);
+        String xml = getTestRequest("mapSingleLayerWithLegendDecoration.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -346,12 +363,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         URL headerBackground = getClass().getResource("header.jpg");
         FileUtils.copyURLToFile(headerBackground, new File(layouts, "header.jpg"));
 
-        String xml =
-                IOUtils.toString(
-                        getClass()
-                                .getResourceAsStream(
-                                        "mapSingleLayerWithLegendAndHeaderDecoration.xml"),
-                        UTF_8);
+        String xml = getTestRequest("mapSingleLayerWithLegendAndHeaderDecoration.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -374,12 +386,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         URL headerBackground = getClass().getResource("header.jpg");
         FileUtils.copyURLToFile(headerBackground, new File(layouts, "header.jpg"));
 
-        String xml =
-                IOUtils.toString(
-                        getClass()
-                                .getResourceAsStream(
-                                        "mapMultiLayerWithLegendAndHeaderDecoration.xml"),
-                        UTF_8);
+        String xml = getTestRequest("mapMultiLayerWithLegendAndHeaderDecoration.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -396,10 +403,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         FileUtils.copyURLToFile(leftLayout, new File(layouts, "legend_left_decoration.xml"));
         URL rightLayout = getClass().getResource("legend_right_decoration.xml");
         FileUtils.copyURLToFile(rightLayout, new File(layouts, "legend_right_decoration.xml"));
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("mapMultiLayerWithLegendDecoration.xml"),
-                        UTF_8);
+        String xml = getTestRequest("mapMultiLayerWithLegendDecoration.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -410,9 +414,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testMapBmTimeMetadata() throws Exception {
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("mapBlueMarbleMetadata.xml"), UTF_8);
+        String xml = getTestRequest("mapBlueMarbleMetadata.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("application/xml", response.getContentType());
         Document dom = dom(response, true);
@@ -443,9 +445,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testMapBmTimeMetadataWarnings() throws Exception {
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("mapBlueMarbleMetadataWarnings.xml"), UTF_8);
+        String xml = getTestRequest("mapBlueMarbleMetadataWarnings.xml");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("application/xml", response.getContentType());
         Document dom = dom(response, true);

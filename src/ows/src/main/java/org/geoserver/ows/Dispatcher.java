@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,7 +48,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import net.opengis.ows11.AcceptVersionsType;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -513,16 +513,15 @@ public class Dispatcher extends AbstractController {
         if (req.getService().isEmpty() || !req.getRequest().equalsIgnoreCase("getCapabilities")) {
             return;
         }
-        AcceptVersionsType acceptVersions = (AcceptVersionsType) req.getKvp().get("AcceptVersions");
+        String acceptVersions = (String) req.getRawKvp().get("AcceptVersions");
         if (acceptVersions == null) {
             return;
         }
-        @SuppressWarnings(value = "unchecked")
+
         List<Version> acceptVersionsList =
-                ((List<String>) acceptVersions.getVersion())
-                        .stream()
-                                .map(x -> new Version(normalizeVersion(x)))
-                                .collect(Collectors.toList());
+                Arrays.asList(acceptVersions.split(",")).stream()
+                        .map(x -> new Version(normalizeVersion(x)))
+                        .collect(Collectors.toList());
 
         req.setAcceptVersions(acceptVersionsList);
     }

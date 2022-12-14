@@ -7,12 +7,14 @@ package org.geoserver.ows;
 
 import java.io.BufferedReader;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
+import org.geotools.util.Version;
 
 /**
  * A collection of the informations collected and parsed by the {@link Dispatcher} while doing its
@@ -53,6 +55,9 @@ public class Request {
 
     /** OWS protocol version (combined with service and request) */
     protected String version;
+
+    /** For GetCapabilities Requests, the versions the client says it can handle */
+    private List<Version> acceptVersions;
 
     /**
      * xml namespace used in request body, only relevant for post requests and when request body
@@ -111,6 +116,7 @@ public class Request {
         this.service = other.service;
         this.request = other.request;
         this.version = other.version;
+        this.acceptVersions = other.acceptVersions;
         this.namespace = other.namespace;
         this.serviceDescriptor = other.serviceDescriptor;
         this.context = other.context;
@@ -173,6 +179,11 @@ public class Request {
     /** The service version */
     public String getVersion() {
         return version;
+    }
+
+    /** The service versions the client can handle (for GetCapabilities Negotiation) */
+    public List<Version> getAcceptVersions() {
+        return acceptVersions;
     }
 
     /** The request namespace */
@@ -330,6 +341,11 @@ public class Request {
      */
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    /** @param versions Versions the client can accept (GetCapabilities Negotiation) */
+    public void setAcceptVersions(List<Version> versions) {
+        this.acceptVersions = versions;
     }
 
     /** Sets the request namespace */

@@ -259,7 +259,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
             StoreInfo store,
             StoreType storeType,
             String storeName,
-            TaskContext ctx)
+            TaskContext ctx,
+            boolean recurse)
             throws TaskException {
         FileReference fileRef = (FileReference) ctx.getParameterValues().get(PARAM_FILE);
         URI uri = fileRef == null ? null : fileRef.getService().getURI(fileRef.getLatestVersion());
@@ -278,14 +279,14 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
             // get parent dir
             path = FilenameUtils.getPath(path);
             if (path.startsWith(REMOTE_DIR)) {
-                if (!super.cleanStore(restManager, store, storeType, storeName, ctx)) {
+                if (!super.cleanStore(restManager, store, storeType, storeName, ctx, recurse)) {
                     return false;
                 }
                 return restManager.getResourceManager().delete(path);
             }
         }
 
-        return super.cleanStore(restManager, store, storeType, storeName, ctx);
+        return super.cleanStore(restManager, store, storeType, storeName, ctx, recurse);
     }
 
     private boolean isUpload(URI uri) {

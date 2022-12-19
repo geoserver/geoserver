@@ -323,7 +323,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 if (!actualStoreName.equals(storeName)) {
                     // remove old store if exists
                     if (existsStore) {
-                        if (!cleanStore(restManager, store, storeType, storeName, ctx)) {
+                        if (!cleanStore(restManager, store, storeType, storeName, ctx, true)) {
                             throw new TaskException(
                                     "Failed to remove old store " + ws + ":" + storeName);
                         }
@@ -380,7 +380,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 }
 
                 if (createStore) {
-                    if (!cleanStore(restManager, store, storeType, actualStoreName, ctx)) {
+                    if (!cleanStore(restManager, store, storeType, actualStoreName, ctx, true)) {
                         throw new TaskException(
                                 "Failed to remove store " + ws + ":" + actualStoreName);
                     }
@@ -441,7 +441,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                             .removeResource(ws, storeType, storeName, resource.getName())) {
                 throw new TaskException("Failed to remove layer " + ws + ":" + resource.getName());
             }
-            if (!cleanStore(restManager, store, storeType, storeName, ctx)) {
+            if (!cleanStore(restManager, store, storeType, storeName, ctx, false)) {
                 if (neverReuseStore()) {
                     throw new TaskException("Failed to remove store " + ws + ":" + storeName);
                 } // else store is still in use
@@ -470,12 +470,13 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             StoreInfo store,
             StoreType storeType,
             String storeName,
-            TaskContext ctx)
+            TaskContext ctx,
+            boolean recurse)
             throws TaskException {
         return restManager
                 .getPublisher()
                 .removeStore(
-                        store.getWorkspace().getName(), storeName, storeType, true, Purge.NONE);
+                        store.getWorkspace().getName(), storeName, storeType, recurse, Purge.NONE);
     }
 
     protected void postProcess(

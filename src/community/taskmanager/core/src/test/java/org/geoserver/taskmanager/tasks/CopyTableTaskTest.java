@@ -271,7 +271,7 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
             assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_FROM_VIEW_NAME));
         }
     }
-    
+
     @Test
     public void testCopyPostgisTable() throws SchedulerException, SQLException {
         DbSource source = dbSources.get(SOURCEDB_PG_NAME);
@@ -288,12 +288,11 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         } catch (SQLException e) {
             Assume.assumeTrue(false);
         }
-        
+
         dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_PG_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TARGET_DB, TARGETDB_PG_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
-        dataUtil.setConfigurationAttribute(
-                config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_NAME);
         config = dao.save(config);
 
         Trigger trigger =
@@ -318,7 +317,6 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         assertEquals(
                 getNumberOfColumns(SOURCEDB_PG_NAME, TABLE_NAME),
                 getNumberOfColumns(TARGETDB_PG_NAME, TARGET_TABLE_NAME));
-
 
         assertTrue(taskUtil.cleanup(config));
 

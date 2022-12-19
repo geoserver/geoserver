@@ -14,6 +14,12 @@ import org.junit.Rule;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.rules.TemporaryFolder;
 
+/**
+ * Test handling of file wrapper (Files.ResourceAdaptor) which works with absolute paths internally.
+ *
+ * <p>This ResourceAdaptor is intended to allow GeoServer to work with absolute paths outside of the
+ * data direct. As a result stores an absolute file internally.
+ */
 public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
 
     @Rule public TemporaryFolder folder = new TemporaryFolder();
@@ -25,21 +31,16 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
         };
     }
 
+    /**
+     * Resource, relative to temporary folder above.
+     *
+     * @param path resource path
+     * @return Resource
+     * @throws Exception
+     */
     @Override
     protected Resource getResource(String path) throws Exception {
-        File file = Paths.toFile(null, path);
-        if (!file.isAbsolute()) {
-            // in linux, an absolute path might appear relative if the root slash has been removed.
-            // This can also occur with the root path if java.io.tmpdir is relative.
-            String rootPath = folder.getRoot().getPath();
-            String rootPathWithoutSlash =
-                    rootPath.startsWith("/") ? rootPath.substring(1) : rootPath;
-            if (path.contains(rootPathWithoutSlash)) {
-                file = Paths.toFile(new File("/"), path);
-            } else {
-                file = Paths.toFile(folder.getRoot(), path);
-            }
-        }
+        File file = Paths.toFile(folder.getRoot(), path);
         return Files.asResource(file);
     }
 

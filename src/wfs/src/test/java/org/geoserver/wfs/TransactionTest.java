@@ -1131,4 +1131,43 @@ public class TransactionTest extends WFSTestSupport {
                         .getAttribute("exceptionCode");
         assertEquals("InvalidParameterValue", code);
     }
+
+    /**
+     * This tests the situation where a Polygon-based FeatureType is updated with a LineString
+     * value. Since these are different dimensions, this should be disallowed. This test is based on
+     * CITE test "wfs:wfs-1.1.0-Transaction-tc10.1".
+     */
+    @Test
+    public void testBadGeometryTypeUpdate() throws Exception {
+        // perform an update to the_geom property (type is Polygon) with a LineString value
+        String update =
+                "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+                        + "xmlns:cgf=\"cite\" "
+                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                        + "xmlns:gml=\"http://www.opengis.net/gml\"> "
+                        + "<wfs:Update typeName=\"cgf:BasicPolygons\" > "
+                        + "<wfs:Property>"
+                        + "<wfs:Name>the_geom</wfs:Name>"
+                        + "<wfs:Value>"
+                        + "<gml:LineString>"
+                        + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                        + "494475.71056415,5433016.8189323 494982.70115662,5435041.95096618"
+                        + "</gml:coordinates>"
+                        + "</gml:LineString>"
+                        + "</wfs:Value>"
+                        + "</wfs:Property>"
+                        + "</wfs:Update>"
+                        + "</wfs:Transaction>";
+        Document resp = postAsDOM("wfs", update);
+        // response is an OWS Exception of type "InvalidValue", with locator "the_geom"
+        // ie.   <ows:Exception exceptionCode="InvalidValue" locator="the_geom">
+        checkOws10Exception(resp);
+        Node exceptionNode = resp.getElementsByTagName("ows:Exception").item(0);
+        assertEquals(
+                "InvalidValue",
+                exceptionNode.getAttributes().getNamedItem("exceptionCode").getTextContent());
+        assertEquals(
+                "the_geom", exceptionNode.getAttributes().getNamedItem("locator").getTextContent());
+    }
 }

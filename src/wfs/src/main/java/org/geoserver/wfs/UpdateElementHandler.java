@@ -41,6 +41,13 @@ import org.geotools.referencing.operation.projection.PointOutsideEnvelopeExcepti
 import org.geotools.util.Converters;
 import org.geotools.util.factory.GeoTools;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -177,6 +184,19 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             return;
         }
 
+        // check geometry dimension (as converter is too forgiving for cite tests)
+        if (value != null && value instanceof Geometry) {
+            if (!checkConsistentGeometryDimensions((Geometry) value, binding)) {
+                String propertyName = property.getName().getLocalPart();
+                WFSException e =
+                        new WFSException(
+                                element,
+                                "Incorrect geometry dimension for property " + propertyName,
+                                WFSException.INVALID_VALUE);
+                e.setLocator(propertyName);
+                throw e;
+            }
+        }
         // see if the datastore machinery will be able to convert
         Object converted = Converters.convert(value, binding);
         if (converted == null) {
@@ -188,6 +208,36 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                             WFSException.INVALID_VALUE);
             e.setLocator(propertyName);
             throw e;
+        }
+    }
+
+    /**
+     * This will check that the geometry is the same dimension as the binding. i.e. a Polygon value
+     * with a binding of MultiPolygon is ok (both dimension 2) i.e. a LineString value with a
+     * binding of Polygon is bad (1 vs 2 dimensions)
+     *
+     * @param value
+     * @param binding
+     * @return
+     */
+    static boolean checkConsistentGeometryDimensions(Geometry value, Class<?> binding) {
+        if ((value == null)
+                || (binding == Geometry.class)
+                || (binding == GeometryCollection.class)) {
+            return true;
+        }
+        switch (value.getDimension()) {
+            case 0:
+                return (binding.isAssignableFrom(Point.class)
+                        || binding.isAssignableFrom(MultiPoint.class));
+            case 1:
+                return (binding.isAssignableFrom(LineString.class)
+                        || binding.isAssignableFrom(MultiLineString.class));
+            case 2:
+                return (binding.isAssignableFrom(Polygon.class)
+                        || binding.isAssignableFrom(MultiPolygon.class));
+            default:
+                return false;
         }
     }
 

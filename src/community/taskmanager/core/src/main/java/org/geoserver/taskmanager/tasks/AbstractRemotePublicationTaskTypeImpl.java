@@ -139,10 +139,10 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 .put(layer.prefixedName(), resource.getNamespace().getPrefix() + ":" + tempName);
         final String actualStoreName = neverReuseStore() && createStore ? tempName : storeName;
 
-
-        final GSResourceEncoder finalRe = resource instanceof CoverageInfo
-                ? new GSCoverageEncoder(false)
-                : new GSFeatureTypeEncoder(false);
+        final GSResourceEncoder finalRe =
+                resource instanceof CoverageInfo
+                        ? new GSCoverageEncoder(false)
+                        : new GSFeatureTypeEncoder(false);
         finalRe.setName(resource.getName());
         finalRe.setAdvertised(true);
         final Finalizer finalizer =

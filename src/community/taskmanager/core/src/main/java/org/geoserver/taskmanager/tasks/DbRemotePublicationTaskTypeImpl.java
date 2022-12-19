@@ -99,41 +99,43 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
         final DbTable originalTable = (DbTable) ctx.getParameterValues().get(PARAM_TABLE_NAME);
         if (originalTable != null) {
             final DbTable table =
-                (DbTable)
-                        ctx.getBatchContext()
-                                .get(
-                                        originalTable,
-                                        new BatchContext.Dependency() {
-                                            @Override
-                                            public void revert() throws TaskException {
-                                                if (resource.getMetadata()
-                                                        .containsKey(
-                                                                FeatureTypeInfo
-                                                                        .JDBC_VIRTUAL_TABLE)) {
-                                                    // virtual table, resource must be attached to
-                                                    // SQL query
-                                                    // in metadata, rather than just table name
-                                                    finalizer
-                                                            .getEncoder()
-                                                            .setNativeName(
-                                                                    resource.getNativeName());
-                                                } else {
-                                                    DbTable table =
-                                                            (DbTable)
-                                                                    ctx.getBatchContext()
-                                                                            .get(
-                                                                                    ctx.getParameterValues()
-                                                                                            .get(
-                                                                                                    PARAM_TABLE_NAME));
-                                                    finalizer
-                                                            .getEncoder()
-                                                            .setNativeName(
-                                                                    SqlUtil.notQualified(
-                                                                            table.getTableName()));
+                    (DbTable)
+                            ctx.getBatchContext()
+                                    .get(
+                                            originalTable,
+                                            new BatchContext.Dependency() {
+                                                @Override
+                                                public void revert() throws TaskException {
+                                                    if (resource.getMetadata()
+                                                            .containsKey(
+                                                                    FeatureTypeInfo
+                                                                            .JDBC_VIRTUAL_TABLE)) {
+                                                        // virtual table, resource must be attached
+                                                        // to
+                                                        // SQL query
+                                                        // in metadata, rather than just table name
+                                                        finalizer
+                                                                .getEncoder()
+                                                                .setNativeName(
+                                                                        resource.getNativeName());
+                                                    } else {
+                                                        DbTable table =
+                                                                (DbTable)
+                                                                        ctx.getBatchContext()
+                                                                                .get(
+                                                                                        ctx.getParameterValues()
+                                                                                                .get(
+                                                                                                        PARAM_TABLE_NAME));
+                                                        finalizer
+                                                                .getEncoder()
+                                                                .setNativeName(
+                                                                        SqlUtil.notQualified(
+                                                                                table
+                                                                                        .getTableName()));
+                                                    }
+                                                    finalizer.run();
                                                 }
-                                                finalizer.run();
-                                            }
-                                        });
+                                            });
             finalizer.setFinalizeAtCommit(table != null && table.equals(originalTable));
 
             ((GSFeatureTypeEncoder) re).setNativeName(SqlUtil.notQualified(table.getTableName()));

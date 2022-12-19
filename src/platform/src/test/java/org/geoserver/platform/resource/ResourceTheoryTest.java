@@ -407,9 +407,7 @@ public abstract class ResourceTheoryTest {
         assertThat(result, equalTo(testFile));
     }
 
-    // This is the behaviour of the file based implementation. Should this be required or left
-    // undefined with clear documentation indicating that it's implementation dependent?
-    // @Ignore
+    // This is the behaviour of the file based implementation is required
     @Theory
     public void theoryAddingFileToDirectoryAddsResource(String path) throws Exception {
         Resource res = getResource(path);
@@ -422,7 +420,7 @@ public abstract class ResourceTheoryTest {
 
         assumeTrue(file.createNewFile());
 
-        Resource child = getResource(Paths.path(res.path(), "newFileCreatedDirectly"));
+        Resource child = getResource(Paths.path(res.name(), "newFileCreatedDirectly"));
         Collection<Resource> children = res.list();
 
         assertThat(child, is(defined()));

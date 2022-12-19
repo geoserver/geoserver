@@ -139,6 +139,34 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 .put(layer.prefixedName(), resource.getNamespace().getPrefix() + ":" + tempName);
         final String actualStoreName = neverReuseStore() && createStore ? tempName : storeName;
 
+
+        final GSResourceEncoder finalRe = resource instanceof CoverageInfo
+                ? new GSCoverageEncoder(false)
+                : new GSFeatureTypeEncoder(false);
+        finalRe.setName(resource.getName());
+        finalRe.setAdvertised(true);
+        final Finalizer finalizer =
+                new Finalizer(
+                        finalRe,
+                        new TaskRunnable<GSResourceEncoder>() {
+                            @Override
+                            public void run(GSResourceEncoder re) throws TaskException {
+                                if (!restManager
+                                        .getPublisher()
+                                        .configureResource(
+                                                ws, storeType, storeName, tempName, re)) {
+                                    throw new TaskException(
+                                            "Failed to rename/reconfigure resource "
+                                                    + ws
+                                                    + ":"
+                                                    + tempName
+                                                    + " to "
+                                                    + resource.getName());
+                                }
+                                ctx.getBatchContext().delete(layer.prefixedName());
+                            }
+                        });
+
         try {
 
             for (String newWs : createWorkspaces) { // workspace doesn't exist yet, publish
@@ -190,23 +218,8 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                         .setNativeCoverageName(((CoverageInfo) resource).getNativeCoverageName());
             }
             re.setAdvertised(false);
-            postProcess(
-                    storeType,
-                    resource,
-                    re,
-                    ctx,
-                    new TaskRunnable<GSResourceEncoder>() {
-                        @Override
-                        public void run(GSResourceEncoder re) throws TaskException {
-                            if (!restManager
-                                    .getPublisher()
-                                    .configureResource(
-                                            ws, storeType, storeName, resource.getName(), re)) {
-                                throw new TaskException(
-                                        "Failed to configure resource " + ws + ":" + re.getName());
-                            }
-                        }
-                    });
+
+            postProcess(storeType, resource, re, ctx, finalizer);
 
             // -- disable old store to avoid conflicts
             if (createStore && existsStore) {
@@ -269,6 +282,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
 
             // config layer
             final GSLayerEncoder layerEncoder = new GSLayerEncoder();
+            catalogUtil.syncMetadata(layer, layerEncoder);
             if (layer.getDefaultStyle() != null) {
                 layerEncoder.setDefaultStyle(
                         CatalogUtil.wsName(layer.getDefaultStyle().getWorkspace()),
@@ -348,25 +362,9 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 }
 
                 // set proper name resource
-                final GSResourceEncoder re =
-                        resource instanceof CoverageInfo
-                                ? new GSCoverageEncoder(false)
-                                : new GSFeatureTypeEncoder(false);
-                re.setName(resource.getName());
-                re.setAdvertised(true);
-                if (!restManager
-                        .getPublisher()
-                        .configureResource(ws, storeType, storeName, tempName, re)) {
-                    throw new TaskException(
-                            "Failed to rename resource "
-                                    + ws
-                                    + ":"
-                                    + tempName
-                                    + " to "
-                                    + resource.getName());
+                if (finalizer.isFinalizeAtCommit()) {
+                    finalizer.run();
                 }
-
-                ctx.getBatchContext().delete(layer.prefixedName());
             }
 
             @Override
@@ -484,6 +482,33 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             ResourceInfo resource,
             GSResourceEncoder re,
             TaskContext ctx,
-            TaskRunnable<GSResourceEncoder> update)
+            Finalizer finalizer)
             throws TaskException {}
+
+    protected class Finalizer {
+        private GSResourceEncoder encoder;
+        private TaskRunnable<GSResourceEncoder> runnable;
+        private boolean finalizeAtCommit = true;
+
+        public Finalizer(GSResourceEncoder encoder, TaskRunnable<GSResourceEncoder> runnable) {
+            this.runnable = runnable;
+            this.encoder = encoder;
+        }
+
+        public boolean isFinalizeAtCommit() {
+            return finalizeAtCommit;
+        }
+
+        public void setFinalizeAtCommit(boolean finalizeAtCommit) {
+            this.finalizeAtCommit = finalizeAtCommit;
+        }
+
+        public GSResourceEncoder getEncoder() {
+            return encoder;
+        }
+
+        public void run() throws TaskException {
+            runnable.run(encoder);
+        }
+    }
 }

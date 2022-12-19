@@ -6,11 +6,14 @@
 package org.geoserver.taskmanager.util;
 
 import com.thoughtworks.xstream.io.xml.JDomWriter;
+import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
 import it.geosolutions.geoserver.rest.encoder.GSStyleEncoder;
+import it.geosolutions.geoserver.rest.encoder.authorityurl.GSAuthorityURLInfoEncoder;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
+import it.geosolutions.geoserver.rest.encoder.identifier.GSIdentifierInfoEncoder;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,10 +33,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.wicket.util.io.IOUtils;
+import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.LayerIdentifierInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -67,6 +73,22 @@ public class CatalogUtil {
     @Autowired protected XStreamPersisterFactory persisterFactory;
 
     private CatalogUtil() {}
+
+    public void syncMetadata(LayerInfo layer, GSLayerEncoder layerEncoder) {
+        for (AuthorityURLInfo authorityURL : layer.getAuthorityURLs()) {
+            GSAuthorityURLInfoEncoder authorityURLEncoder = new GSAuthorityURLInfoEncoder();
+            authorityURLEncoder.setHref(authorityURL.getHref());
+            authorityURLEncoder.setName(authorityURL.getName());
+            layerEncoder.addAuthorityURL(authorityURLEncoder);
+        }
+
+        for (LayerIdentifierInfo layerIdentifier : layer.getIdentifiers()) {
+            GSIdentifierInfoEncoder identifierEncoder = new GSIdentifierInfoEncoder();
+            identifierEncoder.setAuthority(layerIdentifier.getAuthority());
+            identifierEncoder.setIdentifier(layerIdentifier.getIdentifier());
+            layerEncoder.addIdentifier(identifierEncoder);
+        }
+    }
 
     public GSResourceEncoder syncMetadata(ResourceInfo resource) {
         return syncMetadata(resource, resource.getName());
@@ -129,7 +151,7 @@ public class CatalogUtil {
                     resource.getNativeBoundingBox().getMinY(),
                     resource.getNativeBoundingBox().getMaxX(),
                     resource.getNativeBoundingBox().getMaxY(),
-                    resource.getSRS());
+                    CRS.toSRS(resource.getNativeBoundingBox().getCoordinateReferenceSystem()));
         }
         if (resource.getLatLonBoundingBox() != null) {
             re.setLatLonBoundingBox(
@@ -137,7 +159,7 @@ public class CatalogUtil {
                     resource.getLatLonBoundingBox().getMinY(),
                     resource.getLatLonBoundingBox().getMaxX(),
                     resource.getLatLonBoundingBox().getMaxY(),
-                    resource.getSRS());
+                    CRS.toSRS(resource.getLatLonBoundingBox().getCoordinateReferenceSystem()));
         }
 
         // dimensions, must happen after setName or strange things happen (gs-man bug)

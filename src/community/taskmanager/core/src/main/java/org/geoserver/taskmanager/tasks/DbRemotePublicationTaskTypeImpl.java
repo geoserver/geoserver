@@ -20,7 +20,6 @@ import org.geoserver.taskmanager.schedule.BatchContext;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
-import org.geoserver.taskmanager.schedule.TaskRunnable;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.springframework.stereotype.Component;
 
@@ -95,19 +94,18 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
             ResourceInfo resource,
             GSResourceEncoder re,
             TaskContext ctx,
-            TaskRunnable<GSResourceEncoder> update)
+            Finalizer finalizer)
             throws TaskException {
-        final DbTable table =
+        final DbTable originalTable = (DbTable) ctx.getParameterValues().get(PARAM_TABLE_NAME);
+        if (originalTable != null) {
+            final DbTable table =
                 (DbTable)
                         ctx.getBatchContext()
                                 .get(
-                                        ctx.getParameterValues().get(PARAM_TABLE_NAME),
+                                        originalTable,
                                         new BatchContext.Dependency() {
                                             @Override
                                             public void revert() throws TaskException {
-                                                GSFeatureTypeEncoder re =
-                                                        new GSFeatureTypeEncoder(false);
-
                                                 if (resource.getMetadata()
                                                         .containsKey(
                                                                 FeatureTypeInfo
@@ -115,7 +113,10 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
                                                     // virtual table, resource must be attached to
                                                     // SQL query
                                                     // in metadata, rather than just table name
-                                                    re.setNativeName(resource.getNativeName());
+                                                    finalizer
+                                                            .getEncoder()
+                                                            .setNativeName(
+                                                                    resource.getNativeName());
                                                 } else {
                                                     DbTable table =
                                                             (DbTable)
@@ -124,14 +125,17 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
                                                                                     ctx.getParameterValues()
                                                                                             .get(
                                                                                                     PARAM_TABLE_NAME));
-                                                    re.setNativeName(
-                                                            SqlUtil.notQualified(
-                                                                    table.getTableName()));
+                                                    finalizer
+                                                            .getEncoder()
+                                                            .setNativeName(
+                                                                    SqlUtil.notQualified(
+                                                                            table.getTableName()));
                                                 }
-                                                update.run(re);
+                                                finalizer.run();
                                             }
                                         });
-        if (table != null) {
+            finalizer.setFinalizeAtCommit(table != null && table.equals(originalTable));
+
             ((GSFeatureTypeEncoder) re).setNativeName(SqlUtil.notQualified(table.getTableName()));
         }
     }

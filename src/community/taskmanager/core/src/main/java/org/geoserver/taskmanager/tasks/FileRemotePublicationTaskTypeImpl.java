@@ -11,7 +11,6 @@ import it.geosolutions.geoserver.rest.decoder.RESTDataStore;
 import it.geosolutions.geoserver.rest.encoder.GSGenericStoreEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
-import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -36,7 +35,7 @@ import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.ParameterType;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
-import org.geoserver.taskmanager.schedule.TaskRunnable;
+import org.geoserver.taskmanager.tasks.AbstractRemotePublicationTaskTypeImpl.Finalizer;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -210,40 +209,45 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
             ResourceInfo resource,
             GSResourceEncoder re,
             TaskContext ctx,
-            TaskRunnable<GSResourceEncoder> update)
+            Finalizer finalizer)
             throws TaskException {
         if (storeType == StoreType.COVERAGESTORES) {
-            FileReference fileRef =
-                    (FileReference)
-                            ctx.getBatchContext()
-                                    .get(
-                                            ctx.getParameterValues().get(PARAM_FILE),
-                                            new BatchContext.Dependency() {
-                                                @Override
-                                                public void revert() throws TaskException {
-                                                    FileReference fileRef =
-                                                            (FileReference)
-                                                                    ctx.getBatchContext()
-                                                                            .get(
-                                                                                    ctx.getParameterValues()
-                                                                                            .get(
-                                                                                                    PARAM_FILE));
-                                                    String nativeName =
-                                                            FilenameUtils.getBaseName(
-                                                                    fileRef.getLatestVersion());
-                                                    GSResourceEncoder updateRe;
-                                                    if (re instanceof GSCoverageEncoder) {
-                                                        updateRe = new GSCoverageEncoder(false);
-                                                        ((GSCoverageEncoder) updateRe)
-                                                                .setNativeCoverageName(nativeName);
-                                                    } else {
-                                                        updateRe = new GSFeatureTypeEncoder(false);
+            FileReference originalFileRef =
+                    (FileReference) ctx.getParameterValues().get(PARAM_FILE);
+            if (originalFileRef != null) {
+                FileReference fileRef =
+                        (FileReference)
+                                ctx.getBatchContext()
+                                        .get(
+                                                originalFileRef,
+                                                new BatchContext.Dependency() {
+                                                    @Override
+                                                    public void revert() throws TaskException {
+                                                        FileReference fileRef =
+                                                                (FileReference)
+                                                                        ctx.getBatchContext()
+                                                                                .get(
+                                                                                        ctx.getParameterValues()
+                                                                                                .get(
+                                                                                                        PARAM_FILE));
+                                                        String nativeName =
+                                                                FilenameUtils.getBaseName(
+                                                                        fileRef.getLatestVersion());
+                                                        if (finalizer.getEncoder()
+                                                                instanceof GSCoverageEncoder) {
+                                                            ((GSCoverageEncoder)
+                                                                            finalizer.getEncoder())
+                                                                    .setNativeCoverageName(
+                                                                            nativeName);
+                                                        }
+                                                        finalizer
+                                                                .getEncoder()
+                                                                .setNativeName(nativeName);
+                                                        finalizer.run();
                                                     }
-                                                    updateRe.setNativeName(nativeName);
-                                                    update.run(updateRe);
-                                                }
-                                            });
-            if (fileRef != null) {
+                                                });
+                finalizer.setFinalizeAtCommit(fileRef.equals(originalFileRef));
+
                 String nativeName = FilenameUtils.getBaseName(fileRef.getLatestVersion());
                 re.setNativeName(nativeName);
                 if (re instanceof GSCoverageEncoder) {

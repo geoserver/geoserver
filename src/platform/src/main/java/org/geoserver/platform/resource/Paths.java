@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
  * Utility class for handling Resource paths in a consistent fashion.
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
  *
  * <p>Resource paths are consistent with file URLs. The base location is represented with "",
  * relative paths are not supported.
+ *
+ * <p>Absolute paths are supported, with Linux systems using a leading {@code /}, and windows using
+ * {@code L:}.
  *
  * @author Jody Garnett
  */
@@ -177,6 +181,7 @@ public class Paths {
      * These characters can cause problems for different protocols.
      */
     static final Pattern WARN = Pattern.compile("^[^:*,\'&?\"<>|]*$");
+
     /** Set of invalid resource names (currently used to quickly identify relative paths). */
     static final Set<String> INVALID = new HashSet<>(Arrays.asList(new String[] {"..", "."}));
 
@@ -203,7 +208,9 @@ public class Paths {
                 return reportInvalidPath(names, item);
             }
             if (!WARN.matcher(item).matches()) {
-                if (strictPath) {
+                if (strictPath && !(i == 0 && isAbsolute(item))) {
+                    // issue warnings on ill-advised characters
+                    // (while allowing initial item to express an absolute path)
                     return reportInvalidPath(names, item);
                 }
             }
@@ -266,6 +273,26 @@ public class Paths {
         return path;
     }
 
+    /**
+     * Path components listed into absolute prefix, directory names, and final file name or
+     * directory name.
+     *
+     * <p><b>Relative</b>: Relative paths are represented in a straight forward fashion with: {@code
+     * Paths.names("data/tasmania/roads.shp"} --> {"data","tasmania","roads.shp"}}.
+     *
+     * <p><b>Absolute path</b>: When working with an absolute path the list starts with a special
+     * marker.
+     *
+     * <p>Linux absolute paths are start with leading slash character ({@code / } ). <br>
+     * {@code names("/srv/gis/cadaster/district.geopkg) --> {"/", "srv","gis", "cadaster",
+     * "district.geopkg"}} Windows absolute drive letter and slash ( {@code C:\ } ). <br>
+     * {@code names("D://gis/cadaster/district.geopkg") --> {"D:/", "gis", "cadaster",
+     * "district.geopkg"}}
+     *
+     * @param path Path used for reference lookup
+     * @return List of path components divided into absolute prefix, directory names, and final file
+     *     name or directory name.
+     */
     public static List<String> names(String path) {
         if (path == null || path.length() == 0) {
             return Collections.emptyList();
@@ -278,9 +305,13 @@ public class Paths {
         ArrayList<String> names = new ArrayList<>(3);
         String item;
         do {
-            item = path.substring(index, split);
-            if (item.length() != 0 && item != "/") {
-                names.add(item);
+            if (index == 0 && split == 0 && !SystemUtils.IS_OS_WINDOWS) {
+                names.add("/");
+            } else {
+                item = path.substring(index, split);
+                if (item.length() != 0) {
+                    names.add(item);
+                }
             }
             index = split + 1;
             split = path.indexOf('/', index);
@@ -436,13 +467,18 @@ public class Paths {
         if (path == null) {
             throw new NullPointerException("Initial path required to handle relative filenames");
         }
-        List<String> folderPath = names(path);
-        List<String> filePath = names(convert(filename));
+        String filePath = convert(filename);
+        if (isAbsolute(filePath)) {
+            throw new IllegalArgumentException(
+                    "File location " + filename + " absolute, must be relative to " + path);
+        }
+        List<String> folderPathNames = names(path);
+        List<String> filePathNames = names(filePath);
 
-        List<String> resolvedPath = new ArrayList<>(folderPath.size() + filePath.size());
-        resolvedPath.addAll(folderPath);
+        List<String> resolvedPath = new ArrayList<>(folderPathNames.size() + filePathNames.size());
+        resolvedPath.addAll(folderPathNames);
 
-        for (String item : filePath) {
+        for (String item : filePathNames) {
             if (item == null) continue;
             if (item.equals(".")) continue;
             if (item.equals("..")) {
@@ -460,11 +496,59 @@ public class Paths {
     }
 
     /**
+     * Pattern used to recognize absolute path in Windows, as indicated by driver letter reference
+     * (included {@code :}), followed by as slash character.
+     *
+     * <p>Aside: A drive letter reference on its own results in a relative path (relative to the
+     * current directory for that drive).
+     */
+    static final Pattern WINDOWS_DRIVE_LETTER = Pattern.compile("^\\w\\:/.*$");
+
+    /**
+     * While paths are primarily intended as paths relative to the GeoServer data directory, there
+     * is some support for absolute paths.
+     *
+     * <p><b>Linux</b>: Linux absolute paths start with a leading {@code /} character. As this slash
+     * character is also used as the path separator special handling is required. Notably {@link
+     * #names(String)} will represent an absolute path as: {@code { "/", "srv" "gis", "cadaster",
+     * "district.geopkg"}}
+     *
+     * <p><b>Windows</b>: Windows absolute paths start with a drive letter, colon, and slash
+     * characters.{@link #names(String)} will represent an absolute path on windows as: {@code {
+     * "D:/, "gis", "cadaser", "district.geopkg"}}
+     *
+     * <p>Aside: A drive letter reference on its own results in a relative path (relative to the
+     * current directory for that drive).
+     *
+     * <p><b>Guidance</b>: On both platforms an absolute path should agree with the file URL
+     * representation while dropping the {@code file:/} prefix
+     *
+     * @param path Resource path reference
+     * @return {@code true} if path forms an absolute reference to a location outside the data
+     *     directory.
+     */
+    public static boolean isAbsolute(String path) {
+        return isAbsolute(path, SystemUtils.IS_OS_WINDOWS);
+    }
+
+    // package visibility for test case coverage on all platforms
+    static boolean isAbsolute(String path, boolean isWindows) {
+        if (isWindows) return WINDOWS_DRIVE_LETTER.matcher(path).matches();
+        else return path.startsWith("/");
+    }
+
+    /**
      * Convert a Resource path to file reference for provided base directory.
      *
      * <p>This method requires the base directory of the ResourceStore. Note ResourceStore
-     * implementations may not create the file until needed. In the case of an absolute path, base
-     * should be null.
+     * implementations may not create the file until needed.
+     *
+     * <p>In the case of an absolute path, base should be null. Both linux {@code /} and windows
+     * {@code Z:\} absolute paths are supported.
+     *
+     * <p>Relative paths when {@code base} is null, are not supported. Note that the windows path
+     * {@code Z:} on its own is a relative path (relative to current directory for the drive
+     * letter).
      *
      * @param base Base directory, often GeoServer Data Directory
      * @param path Resource path reference
@@ -473,6 +557,28 @@ public class Paths {
     public static File toFile(File base, String path) {
         for (String item : Paths.names(path)) {
             base = new File(base, item);
+            /*
+            if (base == null) {
+                // absolute path
+                if (SystemUtils.IS_OS_WINDOWS) {
+                    if (item.matches("\\w\\:")) {
+                        // absolute path, driver letter reference
+                        base = new File(item + "\\");
+                    } else {
+                        base = new File(new File(System.getenv("SystemDrive")), item);
+                    }
+                } else {
+                    if (item.equals("/")) {
+                        base = new File(item);
+                    } else {
+                        base = new File("/" + item);
+                    }
+                }
+            } else {
+                // relative path
+                base = new File(base, item);
+            }
+            */
         }
         return base;
     }

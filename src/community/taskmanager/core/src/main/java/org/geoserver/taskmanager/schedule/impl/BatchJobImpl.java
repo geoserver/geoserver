@@ -221,8 +221,7 @@ public class BatchJobImpl implements Job {
         }
 
         // send the report
-        Report report =
-                beans.getReportBuilder().buildBatchRunReport(beans.getDao().reload(batchRun));
+        Report report = beans.getReportBuilder().buildBatchRunReport(beans.getDao().init(batchRun));
         for (ReportService reportService : beans.getReportServices()) {
             if (reportService.getFilter().matches(report.getType())) {
                 reportService.sendReport(report);

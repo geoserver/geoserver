@@ -52,5 +52,5 @@ public interface Batch extends SoftRemove, Serializable, Identifiable {
                         + getName());
     }
 
-    BatchRun getLatestBatchRun();
+    LatestBatchRun getLatestBatchRun();
 }

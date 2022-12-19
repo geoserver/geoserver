@@ -5,16 +5,20 @@
 package org.geoserver.platform.resource;
 
 import static org.geoserver.platform.resource.Paths.extension;
+import static org.geoserver.platform.resource.Paths.isAbsolute;
 import static org.geoserver.platform.resource.Paths.name;
 import static org.geoserver.platform.resource.Paths.names;
 import static org.geoserver.platform.resource.Paths.parent;
 import static org.geoserver.platform.resource.Paths.path;
 import static org.geoserver.platform.resource.Paths.sidecar;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import org.junit.Test;
 
 public class PathsTest {
@@ -32,6 +36,16 @@ public class PathsTest {
     final String SUBFOLDER = "directory/folder";
 
     final String FILE3 = "directory/folder/file3.txt";
+
+    @Test
+    public void isAbsolutePath() {
+        assertFalse("data directory relative", Paths.isAbsolute("data/tasmania/roads.shp"));
+        assertTrue("linux absolute", Paths.isAbsolute("/srv/gis/cadaster/district.geopkg", false));
+        assertTrue(
+                "windows drive absolute",
+                Paths.isAbsolute("D:/gis/cadaster/district.geopkg", true));
+        assertFalse("windows drive relative", Paths.isAbsolute("D:fail.shp", true));
+    }
 
     @Test
     public void pathTest() {
@@ -148,16 +162,24 @@ public class PathsTest {
     }
 
     @Test
-    public void naming() {
+    public void naming() throws IOException {
         assertEquals("file.txt", name("directory/file.txt"));
         assertEquals("txt", extension("directory/file.txt"));
 
         assertEquals("directory/file.txt", sidecar("directory/file", "txt"));
         assertEquals("directory/file.prj", sidecar("directory/file.txt", "prj"));
+
+        File home = new File(System.getProperty("user.home")).getCanonicalFile();
+        String absolutePath = Paths.convert(home.getPath());
+
+        assertTrue("home", Paths.isAbsolute(absolutePath));
+        String root = Paths.names(absolutePath).get(0);
+        assertTrue("system root", Paths.isAbsolute(root));
     }
 
     @Test
-    public void convert1() {
+    public void convert1() throws IOException {
+        // relative paths
         File folder = new File("folder");
         File file1 = new File("file1");
         File file2 = new File(folder, "file2");
@@ -165,6 +187,10 @@ public class PathsTest {
         assertEquals("folder", Paths.convert(folder.getPath()));
         assertEquals("folder/file2", Paths.convert(file2.getPath()));
         assertEquals("file1", Paths.convert(file1.getPath()));
+
+        // absolute paths
+        File home = new File(System.getProperty("user.home")).getCanonicalFile();
+        assertTrue(isAbsolute(Paths.convert(home.getPath())));
     }
 
     @Test

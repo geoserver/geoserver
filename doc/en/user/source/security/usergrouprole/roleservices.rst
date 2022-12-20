@@ -10,7 +10,10 @@ A **role service** provides the following information for roles:
 * Mapping of a role to the system role ``ROLE_ADMINISTRATOR``
 * Mapping of a role to the system role ``ROLE_GROUP_ADMIN``
 
-When a user/group service loads information about a user or a group, it delegates to the role service to determine which roles should be assigned to the user or group.  Unlike :ref:`security_rolesystem_usergroupservices`, only one role service is active at any given time.
+When a user/group service loads information about a user or a group, it delegates to the role service to 
+determine which roles should be assigned to the user or group.  Unlike 
+:ref:`security_rolesystem_usergroupservices`, only one role service is active at any given time. The default 
+role service is set on the :ref:`security_webadmin_settings` page.
 
 By default, GeoServer supports two types of role services:
 

@@ -225,7 +225,7 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         if (split.length == 2) {
             assertFalse(tableExists(TARGETDB_NAME, split[0], split[1]));
         } else {
-            assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME));
+            assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_FROM_VIEW_NAME));
         }
     }
 
@@ -268,7 +268,62 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         if (split.length == 2) {
             assertFalse(tableExists(TARGETDB_NAME, split[0], split[1]));
         } else {
-            assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME));
+            assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_FROM_VIEW_NAME));
+        }
+    }
+
+    @Test
+    public void testCopyPostgisTable() throws SchedulerException, SQLException {
+        DbSource source = dbSources.get(SOURCEDB_PG_NAME);
+        try (Connection conn = source.getDataSource().getConnection()) {
+            try (ResultSet res =
+                    conn.getMetaData()
+                            .getTables(
+                                    null,
+                                    SqlUtil.schema(TABLE_NAME),
+                                    SqlUtil.notQualified(TABLE_NAME),
+                                    null)) {
+                Assume.assumeTrue(res.next());
+            }
+        } catch (SQLException e) {
+            Assume.assumeTrue(false);
+        }
+
+        dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_PG_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TARGET_DB, TARGETDB_PG_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_NAME);
+        config = dao.save(config);
+
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        scheduler.scheduleJob(trigger);
+
+        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
+            // waiting to be done.
+        }
+
+        String[] split = TARGET_TABLE_NAME.split("\\.", 2);
+        if (split.length == 2) {
+            assertFalse(tableExists(TARGETDB_PG_NAME, split[0], "_temp%"));
+            assertTrue(tableExists(TARGETDB_PG_NAME, split[0], split[1]));
+        } else {
+            assertFalse(tableExists(TARGETDB_PG_NAME, null, "_temp%"));
+            assertTrue(tableExists(TARGETDB_PG_NAME, null, TARGET_TABLE_NAME));
+        }
+        int numberOfRecordsSource = getNumberOfRecords(SOURCEDB_PG_NAME, TABLE_NAME);
+        int numberOfRecordsTarget = getNumberOfRecords(TARGETDB_PG_NAME, TARGET_TABLE_NAME);
+        assertEquals(numberOfRecordsSource, numberOfRecordsTarget);
+        assertEquals(
+                getNumberOfColumns(SOURCEDB_PG_NAME, TABLE_NAME),
+                getNumberOfColumns(TARGETDB_PG_NAME, TARGET_TABLE_NAME));
+
+        assertTrue(taskUtil.cleanup(config));
+
+        if (split.length == 2) {
+            assertFalse(tableExists(TARGETDB_PG_NAME, split[0], split[1]));
+        } else {
+            assertFalse(tableExists(TARGETDB_PG_NAME, null, TARGET_TABLE_NAME));
         }
     }
 

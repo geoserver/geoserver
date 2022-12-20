@@ -22,6 +22,9 @@ import javax.xml.namespace.QName;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.impl.AuthorityURL;
+import org.geoserver.catalog.impl.LayerIdentifier;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
 import org.geoserver.taskmanager.data.Batch;
@@ -164,6 +167,25 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         ci.getKeywords().add(new Keyword("demmiedem"));
         geoServer.getCatalog().save(ci);
 
+        LayerInfo li = geoServer.getCatalog().getLayerByName("mydem");
+        LayerIdentifier lid1 = new LayerIdentifier();
+        lid1.setAuthority("auth1");
+        lid1.setIdentifier("id1");
+        li.getIdentifiers().add(lid1);
+        LayerIdentifier lid2 = new LayerIdentifier();
+        lid2.setAuthority("auth2");
+        lid2.setIdentifier("id2");
+        li.getIdentifiers().add(lid2);
+        AuthorityURL url1 = new AuthorityURL();
+        url1.setName("name1");
+        url1.setHref("href1");
+        li.getAuthorityURLs().add(url1);
+        AuthorityURL url2 = new AuthorityURL();
+        url2.setName("name2");
+        url2.setHref("href2");
+        li.getAuthorityURLs().add(url2);
+        geoServer.getCatalog().save(li);
+
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "mydem");
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
@@ -188,6 +210,18 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
                 ci.getDimensions().get(0).getName(),
                 cov.getEncodedDimensionsInfoList().get(0).getName());
         assertTrue(cov.getKeywords().contains("demmiedem"));
+
+        RESTLayer layer = restManager.getReader().getLayer("wcs", "mydem");
+        assertEquals(2, layer.getEncodedAuthorityURLInfoList().size());
+        assertEquals("name1", layer.getEncodedAuthorityURLInfoList().get(0).getName());
+        assertEquals("href1", layer.getEncodedAuthorityURLInfoList().get(0).getHref());
+        assertEquals("name2", layer.getEncodedAuthorityURLInfoList().get(1).getName());
+        assertEquals("href2", layer.getEncodedAuthorityURLInfoList().get(1).getHref());
+        assertEquals(2, layer.getEncodedIdentifierInfoList().size());
+        assertEquals("auth1", layer.getEncodedIdentifierInfoList().get(0).getAuthority());
+        assertEquals("id1", layer.getEncodedIdentifierInfoList().get(0).getIdentifier());
+        assertEquals("auth2", layer.getEncodedIdentifierInfoList().get(1).getAuthority());
+        assertEquals("id2", layer.getEncodedIdentifierInfoList().get(1).getIdentifier());
 
         assertTrue(taskUtil.cleanup(config));
 

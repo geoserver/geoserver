@@ -26,6 +26,8 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.impl.AuthorityURL;
+import org.geoserver.catalog.impl.LayerIdentifier;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
@@ -187,6 +189,24 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         si.setLegend(legendInfo);
         si.setFormatVersion(new Version("1.1"));
         geoServer.getCatalog().save(si);
+
+        LayerIdentifier lid1 = new LayerIdentifier();
+        lid1.setAuthority("auth1");
+        lid1.setIdentifier("id1");
+        li.getIdentifiers().add(lid1);
+        LayerIdentifier lid2 = new LayerIdentifier();
+        lid2.setAuthority("auth2");
+        lid2.setIdentifier("id2");
+        li.getIdentifiers().add(lid2);
+        AuthorityURL url1 = new AuthorityURL();
+        url1.setName("name1");
+        url1.setHref("href1");
+        li.getAuthorityURLs().add(url1);
+        AuthorityURL url2 = new AuthorityURL();
+        url2.setName("name2");
+        url2.setHref("href2");
+        li.getAuthorityURLs().add(url2);
+
         geoServer.getCatalog().save(li);
 
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");
@@ -267,6 +287,17 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
 
         RESTStyle style = restManager.getStyleManager().getStyle(STYLE);
         assertEquals("1.1", style.getVersion());
+
+        assertEquals(2, layer.getEncodedAuthorityURLInfoList().size());
+        assertEquals("name1", layer.getEncodedAuthorityURLInfoList().get(0).getName());
+        assertEquals("href1", layer.getEncodedAuthorityURLInfoList().get(0).getHref());
+        assertEquals("name2", layer.getEncodedAuthorityURLInfoList().get(1).getName());
+        assertEquals("href2", layer.getEncodedAuthorityURLInfoList().get(1).getHref());
+        assertEquals(2, layer.getEncodedIdentifierInfoList().size());
+        assertEquals("auth1", layer.getEncodedIdentifierInfoList().get(0).getAuthority());
+        assertEquals("id1", layer.getEncodedIdentifierInfoList().get(0).getIdentifier());
+        assertEquals("auth2", layer.getEncodedIdentifierInfoList().get(1).getAuthority());
+        assertEquals("id2", layer.getEncodedIdentifierInfoList().get(1).getIdentifier());
 
         String sld = restManager.getStyleManager().getSLD(STYLE);
         assertTrue(sld.indexOf("CHANGED VERSION") > 0);

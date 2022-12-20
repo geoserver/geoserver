@@ -17,14 +17,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Configuration;
+import org.geoserver.taskmanager.data.LatestBatchRun;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 
@@ -89,7 +90,9 @@ public class BatchImpl extends BaseImpl implements Batch {
     @XStreamOmitField
     private List<BatchRun> batchRuns = new ArrayList<BatchRun>();
 
-    @Transient @XStreamOmitField private BatchRun latestBatchRun;
+    @OneToOne(fetch = FetchType.LAZY, targetEntity = LatestBatchRunImpl.class, mappedBy = "batch")
+    @XStreamOmitField
+    private LatestBatchRun latestBatchRun;
 
     @Override
     public Long getId() {
@@ -188,12 +191,11 @@ public class BatchImpl extends BaseImpl implements Batch {
         return removeStamp;
     }
 
-    @Override
-    public BatchRun getLatestBatchRun() {
+    public LatestBatchRun getLatestBatchRun() {
         return latestBatchRun;
     }
 
-    public void setLatestBatchRun(BatchRun latestBatchRun) {
+    public void setLatestBatchRun(LatestBatchRun latestBatchRun) {
         this.latestBatchRun = latestBatchRun;
     }
 }

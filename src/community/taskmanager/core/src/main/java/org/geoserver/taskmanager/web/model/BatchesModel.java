@@ -65,7 +65,7 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
                 public Object getPropertyValue(Batch batch) {
                     if (batch.getId() != null) {
                         if (batch.getLatestBatchRun() != null) {
-                            return batch.getLatestBatchRun().getStart();
+                            return batch.getLatestBatchRun().getBatchRun().getStart();
                         }
                     }
                     return null;
@@ -81,7 +81,7 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
                 public Object getPropertyValue(Batch batch) {
                     if (batch.getId() != null) {
                         if (batch.getLatestBatchRun() != null) {
-                            return batch.getLatestBatchRun().getStatus();
+                            return batch.getLatestBatchRun().getBatchRun().getStatus();
                         }
                     }
                     return null;
@@ -142,11 +142,6 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
             if (configurationModel == null) {
                 list = TaskManagerBeans.get().getDao().getViewableBatches();
             } else {
-                if (configurationModel.getObject().getId() != null) {
-                    TaskManagerBeans.get()
-                            .getDao()
-                            .loadLatestBatchRuns(configurationModel.getObject());
-                }
                 list = new ArrayList<>(configurationModel.getObject().getBatches().values());
             }
 

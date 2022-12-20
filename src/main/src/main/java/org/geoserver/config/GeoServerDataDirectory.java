@@ -819,7 +819,7 @@ public class GeoServerDataDirectory {
                             final Expression wellKnownName = mark.getWellKnownName();
                             if (wellKnownName instanceof Literal) {
                                 final String name = wellKnownName.evaluate(null, String.class);
-                                if (name.startsWith("resource:/")) {
+                                if (name.startsWith("resource:")) {
                                     try {
                                         Resource r = resourceLoader.fromURL(name);
 

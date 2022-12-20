@@ -174,7 +174,7 @@ public class PathsTest {
 
         assertTrue("home", Paths.isAbsolute(absolutePath));
         String root = Paths.names(absolutePath).get(0);
-        assertTrue("system root", Paths.isAbsolute(root));
+        assertTrue("system root '" + root + "'", Paths.isAbsolute(root));
     }
 
     @Test

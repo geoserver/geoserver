@@ -5,7 +5,8 @@ Programming Guide
 
 .. toctree::
    :maxdepth: 1
-
+   
+   config/index.rst
    ows-services/index.rst
    rest-services/index.rst
    web-ui/index.rst

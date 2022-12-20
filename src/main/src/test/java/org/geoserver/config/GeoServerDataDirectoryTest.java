@@ -102,7 +102,7 @@ public class GeoServerDataDirectoryTest {
         GraphicalSymbol graphic =
                 ((PointSymbolizer) symbolizer).getGraphic().graphicalSymbols().get(0);
         assertTrue(graphic instanceof ExternalGraphic);
-        assertEquals(((ExternalGraphic) graphic).getLocation(), iconFile.toURI().toURL());
+        assertEquals(iconFile.toURI().toURL(), ((ExternalGraphic) graphic).getLocation());
 
         // GEOS-7025: verify the icon file is not created if it doesn't already exist
         assertFalse(iconFile.exists());

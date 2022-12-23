@@ -27,6 +27,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
@@ -98,6 +99,7 @@ public class MapMLDocumentBuilder {
     private boolean queryable = false;
     private String workspace = "";
     private String layerName = "";
+    private String layerTitle = "Layer";
     private String styleName;
     private String imageFormat;
     private String baseUrl;
@@ -151,6 +153,38 @@ public class MapMLDocumentBuilder {
         prepareDocument();
         return this.mapml;
     }
+    /**
+     * Get the localized title for a MapML layer or layer group
+     *
+     * @param p LayerInfo or LayerGroupInfo
+     * @param defaultTitle the default value for title, usually layer name
+     * @return potentially localized title string
+     */
+    public String getTitle(PublishedInfo p, String defaultTitle) {
+        if (p instanceof LayerGroupInfo) {
+            LayerGroupInfo li = (LayerGroupInfo) p;
+            if (li.getInternationalTitle() != null
+                    && li.getInternationalTitle().toString(request.getLocale()) != null) {
+                // use international title per request or default locale
+                return li.getInternationalTitle().toString(request.getLocale()).trim();
+            } else if (li.getTitle() != null && !li.getTitle().trim().isEmpty()) {
+                return li.getTitle().trim();
+            } else {
+                return li.getName().trim().isEmpty() ? defaultTitle : li.getName().trim();
+            }
+        } else {
+            LayerInfo li = (LayerInfo) p;
+            if (li.getInternationalTitle() != null
+                    && li.getInternationalTitle().toString(request.getLocale()) != null) {
+                // use international title per request or default locale
+                return li.getInternationalTitle().toString(request.getLocale()).trim();
+            } else if (li.getTitle() != null && !li.getTitle().trim().isEmpty()) {
+                return li.getTitle().trim();
+            } else {
+                return li.getName().trim().isEmpty() ? defaultTitle : li.getName().trim();
+            }
+        }
+    }
     /** Init all the private fields used while generating MapML document */
     private void initialize() {
         layerInfo = geoServer.getCatalog().getLayerByName(this.layer);
@@ -177,6 +211,7 @@ public class MapMLDocumentBuilder {
                             : "");
             queryable = !layerGroupInfo.isQueryDisabled();
             layerName = layerGroupInfo.getName();
+            layerTitle = getTitle(layerGroupInfo, layerName);
         } else {
             resourceInfo = layerInfo.getResource();
             bbox = layerInfo.getResource().getLatLonBoundingBox();
@@ -187,7 +222,8 @@ public class MapMLDocumentBuilder {
                             : "");
             queryable = layerInfo.isQueryable();
             isTransparent = transparent.orElse(!layerInfo.isOpaque());
-            layerName = layerInfo.getName();
+            layerName = layerInfo.getName().isEmpty() ? layer : layerInfo.getName();
+            layerTitle = getTitle(layerInfo, layerName);
         }
         try {
             projType = ProjType.fromValue(proj.toUpperCase());
@@ -244,7 +280,7 @@ public class MapMLDocumentBuilder {
     private HeadContent prepareHead() {
         // build the head
         HeadContent head = new HeadContent();
-        head.setTitle(layerName);
+        head.setTitle(layerTitle);
         Base base = new Base();
         base.setHref(ResponseUtils.buildURL(baseUrl, "mapml/", null, URLMangler.URLType.EXTERNAL));
         head.setBase(base);

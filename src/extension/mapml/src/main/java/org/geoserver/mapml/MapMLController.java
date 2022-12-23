@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.mapml.tcrs.Bounds;
@@ -126,7 +127,7 @@ public class MapMLController {
         ResourceInfo resourceInfo = null;
         LayerGroupInfo layerGroupInfo = null;
         boolean isLayerGroup = (layerInfo == null);
-        String layerName = "";
+        String layerLabel = "Layer";
         String styleName =
                 geoServer.getCatalog().getStyleByName(style.orElse("")) != null ? style.get() : "";
         if (isLayerGroup) {
@@ -138,21 +139,11 @@ public class MapMLController {
             for (LayerInfo li : layerGroupInfo.layers()) {
                 bbox.expandToInclude(li.getResource().getLatLonBoundingBox());
             }
-            // if the layerGroupInfo.getName() is empty, the layer group isn't
-            // available to a getMap request, so we should probably throw in
-            // that case, or perhaps let the mapML method deal with iterating
-            // the child layers.
-            layerName =
-                    layerGroupInfo.getTitle() == null || layerGroupInfo.getTitle().isEmpty()
-                            ? layerGroupInfo.getName().isEmpty() ? layer : layerGroupInfo.getName()
-                            : layerGroupInfo.getTitle();
+            layerLabel = getLabel(layerGroupInfo, layer, request);
         } else {
             resourceInfo = layerInfo.getResource();
-            bbox = layerInfo.getResource().getLatLonBoundingBox();
-            layerName =
-                    resourceInfo.getTitle().isEmpty()
-                            ? layerInfo.getName().isEmpty() ? layer : layerInfo.getName()
-                            : resourceInfo.getTitle();
+            bbox = resourceInfo.getLatLonBoundingBox();
+            layerLabel = getLabel(layerInfo, layer, request);
         }
         ProjType projType;
         try {
@@ -195,7 +186,7 @@ public class MapMLController {
                         "/mapml/viewer/widget/mapml-viewer.js",
                         null,
                         URLMangler.URLType.RESOURCE);
-        String title = "GeoServer MapML preview " + layerName;
+        String title = layerLabel;
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>\n")
                 .append("<html>\n")
@@ -233,7 +224,7 @@ public class MapMLController {
                 .append(longitude)
                 .append("\" controls>\n")
                 .append("<layer- label=\"")
-                .append(layerName)
+                .append(layerLabel)
                 .append("\" ")
                 .append("src=\"")
                 .append(request.getContextPath())
@@ -284,5 +275,38 @@ public class MapMLController {
                 new MapMLDocumentBuilder(
                         this, request, response, layer, proj, style, transparent, format);
         return mb.getMapMLDocument();
+    }
+    /**
+     * Get the potentially localized label string for a layer or layer group
+     *
+     * @param p LayerInfo or LayerGroupInfo object
+     * @param def default label string, usually pass in the layer name
+     * @param request the localized servlet request
+     * @return the potentially localized label string for a layer or layer group
+     */
+    String getLabel(PublishedInfo p, String def, HttpServletRequest request) {
+        if (p instanceof LayerGroupInfo) {
+            LayerGroupInfo li = (LayerGroupInfo) p;
+            if (li.getInternationalTitle() != null
+                    && li.getInternationalTitle().toString(request.getLocale()) != null) {
+                // use international title per request or default locale
+                return li.getInternationalTitle().toString(request.getLocale());
+            } else if (li.getTitle() != null && !li.getTitle().trim().isEmpty()) {
+                return li.getTitle().trim();
+            } else {
+                return li.getName().trim().isEmpty() ? def : li.getName().trim();
+            }
+        } else {
+            LayerInfo li = (LayerInfo) p;
+            if (li.getInternationalTitle() != null
+                    && li.getInternationalTitle().toString(request.getLocale()) != null) {
+                // use international title per request or default locale
+                return li.getInternationalTitle().toString(request.getLocale());
+            } else if (li.getTitle() != null && !li.getTitle().trim().isEmpty()) {
+                return li.getTitle().trim();
+            } else {
+                return li.getName().trim().isEmpty() ? def : li.getName().trim();
+            }
+        }
     }
 }

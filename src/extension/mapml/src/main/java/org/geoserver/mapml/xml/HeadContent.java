@@ -55,6 +55,10 @@ public class HeadContent {
         this.title = title;
     }
 
+    public String getTitle() {
+        return this.title;
+    }
+
     public void setBase(Base base) {
         this.base = base;
     }

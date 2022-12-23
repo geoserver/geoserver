@@ -54,6 +54,7 @@ import org.geoserver.mapml.xml.RelType;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.GrowableInternationalString;
 import org.geowebcache.grid.GridSubset;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -111,6 +112,12 @@ public class MapMLControllerTest extends WMSTestSupport {
         CatalogBuilder cb = new CatalogBuilder(catalog);
         ResourceInfo ri =
                 catalog.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()).getResource();
+
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "A i18n title for polygons");
+        title.add(Locale.CANADA_FRENCH, "Le titre français");
+        ri.setInternationalTitle(title);
+
         cb.setupBounds(ri);
         catalog.save(ri);
         cb.setupBounds(catalog.getLayerByName(points).getResource());
@@ -129,6 +136,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         catalog.add(lg);
 
         LayerGroupInfo lgi = catalog.getLayerGroupByName(NATURE_GROUP);
+        lgi.setInternationalTitle(title);
         CoordinateReferenceSystem webMerc = MapMLController.previewTcrsMap.get("OSMTILE").getCRS();
         Bounds webMercBounds = MapMLController.previewTcrsMap.get("OSMTILE").getBounds();
         double x1 = webMercBounds.getMin().x;
@@ -144,41 +152,66 @@ public class MapMLControllerTest extends WMSTestSupport {
     public void testMapML() throws Exception {
 
         Catalog cat = getCatalog();
+        MockHttpServletRequest request;
 
         LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
         ResourceInfo layerMeta = li.getResource();
         layerMeta.getMetadata().put("mapml.useTiles", true);
         cat.save(layerMeta);
-        testLayersAndGroupsMapML(li);
+        request = createRequest("mapml/" + li.getName() + "/osmtile/");
+        Mapml m = testLayersAndGroupsMapML(li, request);
+        String title = m.getHead().getTitle();
+        assertTrue(title.equalsIgnoreCase(li.getName()));
 
         li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
         layerMeta = li.getResource();
         layerMeta.getMetadata().put("mapml.useTiles", false);
         cat.save(layerMeta);
-        testLayersAndGroupsMapML(li);
+        request = createRequest("mapml/" + li.getName() + "/osmtile/");
+        m = testLayersAndGroupsMapML(li, request);
+        title = m.getHead().getTitle();
+        assertTrue(title.equalsIgnoreCase(li.getName()));
 
         LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
         assertSame(DefaultGeographicCRS.WGS84, lgi.getBounds().getCoordinateReferenceSystem());
-        testLayersAndGroupsMapML(lgi);
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        m = testLayersAndGroupsMapML(lgi, request);
+        title = m.getHead().getTitle();
+        assertTrue(title.equalsIgnoreCase(lgi.getName()));
 
         lgi = cat.getLayerGroupByName("layerGroup");
         lgi.getMetadata().put("mapml.useTiles", true);
         cat.save(lgi);
-        testLayersAndGroupsMapML(lgi);
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        request.addPreferredLocale(Locale.CANADA_FRENCH);
+        m = testLayersAndGroupsMapML(lgi, request);
+        title = m.getHead().getTitle();
+        assertTrue(title.equalsIgnoreCase(lgi.getName()));
 
         lgi = cat.getLayerGroupByName(NATURE_GROUP);
         assertSame(
                 MapMLController.previewTcrsMap.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
-        testLayersAndGroupsMapML(lgi);
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        m = testLayersAndGroupsMapML(lgi, request);
+        title = m.getHead().getTitle();
+        String expectedInternationalTitle = lgi.getInternationalTitle().toString();
+        assertTrue("A i18n title for polygons".equalsIgnoreCase(expectedInternationalTitle));
+        assertTrue(title.equalsIgnoreCase(expectedInternationalTitle));
 
         lgi = cat.getLayerGroupByName(NATURE_GROUP);
         lgi.getMetadata().put("mapml.useTiles", true);
         cat.save(lgi);
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        request.addPreferredLocale(Locale.CANADA_FRENCH);
         assertSame(
                 MapMLController.previewTcrsMap.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
-        testLayersAndGroupsMapML(lgi);
+        m = testLayersAndGroupsMapML(lgi, request);
+        title = m.getHead().getTitle();
+        expectedInternationalTitle = lgi.getInternationalTitle().toString(Locale.CANADA_FRENCH);
+        assertTrue("Le titre français".equalsIgnoreCase(expectedInternationalTitle));
+        assertTrue(title.equalsIgnoreCase(expectedInternationalTitle));
     }
 
     @Test
@@ -187,10 +220,27 @@ public class MapMLControllerTest extends WMSTestSupport {
         Catalog cat = getCatalog();
 
         LayerInfo li = cat.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
-        testLayersAndGroupsHTML(li);
+        MockHttpServletRequest request = createRequest("mapml/" + li.getName() + "/osmtile/");
+        request.addPreferredLocale(Locale.CANADA_FRENCH);
+        Document d = testLayersAndGroupsHTML(li, request);
+
+        assertTrue(
+                "HTML layer title must be internationalized",
+                "Le titre français".equalsIgnoreCase(d.title()));
 
         LayerGroupInfo lgi = cat.getLayerGroupByName(NATURE_GROUP);
-        testLayersAndGroupsHTML(lgi);
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        d = testLayersAndGroupsHTML(lgi, request);
+        assertTrue(
+                "HTML layer group title must be internationalized",
+                "A i18n title for polygons".equalsIgnoreCase(d.title()));
+
+        LayerGroupInfo noTitleLG = cat.getLayerGroupByName("layerGroup");
+        MockHttpServletRequest r = createRequest("mapml/" + noTitleLG.getName() + "/osmtile/");
+        d = testLayersAndGroupsHTML(noTitleLG, r);
+        assertTrue(
+                "HTML layer group title must NOT be internationalized",
+                "layerGroup".equalsIgnoreCase(d.title()));
     }
 
     @Test
@@ -250,16 +300,25 @@ public class MapMLControllerTest extends WMSTestSupport {
     }
 
     @SuppressWarnings("PMD.SimplifiableTestAssertion")
-    private void testLayersAndGroupsHTML(Object l) throws Exception {
-        MockHttpServletRequest request =
-                createRequest("mapml/" + ((PublishedInfo) l).getName() + "/osmtile/");
+    private Document testLayersAndGroupsHTML(Object l, MockHttpServletRequest request)
+            throws Exception {
         MockHttpServletResponse response = new MockHttpServletResponse();
-
+        String layerName;
+        String layerLabel;
+        LayerInfo lyrInfo = getCatalog().getLayerByName(((PublishedInfo) l).getName());
+        LayerGroupInfo lyrGpInfo = getCatalog().getLayerGroupByName(((PublishedInfo) l).getName());
+        if (lyrInfo != null) { // layer...
+            layerName = lyrInfo.getName();
+            layerLabel = mc.getLabel(lyrInfo, layerName, request);
+        } else { // layer group...
+            layerName = lyrGpInfo.getName();
+            layerLabel = mc.getLabel(lyrGpInfo, layerName, request);
+        }
         String htmlResponse =
                 mc.Html(
                         request,
                         response,
-                        ((PublishedInfo) l).getName(),
+                        layerName,
                         "osmtile",
                         Optional.empty(),
                         Optional.empty(),
@@ -273,15 +332,26 @@ public class MapMLControllerTest extends WMSTestSupport {
         Element map = doc.body().select("mapml-viewer").first();
         Element layer = map.getElementsByTag("layer-").first();
         assertTrue(
-                "Layer must have label equal to string ",
-                layer.attr("label").equalsIgnoreCase(((PublishedInfo) l).getName()));
-        assertTrue(!"0".equalsIgnoreCase(doc.select("mapml-viewer").attr("zoom")));
+                "Layer must have label equal to title or layer name if no title",
+                layer.attr("label").equalsIgnoreCase(layerLabel));
+        assertTrue(
+                "HTML title and layer- label attribute should be equal",
+                layer.attr("label").equalsIgnoreCase(doc.title()));
+        String zoom = doc.select("mapml-viewer").attr("zoom");
+        // zoom is calculated based on a display size and the extent of the
+        // layer.  In the case of the test layer group "layerGroup", the extent is the
+        // maximum extent, so zoom should be 0;
+        if (layerName.equalsIgnoreCase("layerGroup")) {
+            assertTrue("0".equalsIgnoreCase(zoom));
+        } else {
+            assertTrue(!"0".equalsIgnoreCase(zoom));
+        }
+        return doc;
     }
 
-    private void testLayersAndGroupsMapML(Object l) throws Exception {
+    private Mapml testLayersAndGroupsMapML(Object l, MockHttpServletRequest request)
+            throws Exception {
 
-        MockHttpServletRequest request =
-                createRequest("mapml/" + ((PublishedInfo) l).getName() + "/osmtile/");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         Mapml mapml =
@@ -301,10 +371,25 @@ public class MapMLControllerTest extends WMSTestSupport {
             fail("DataBindingException while reading MapML JAXB object");
         }
 
+        String layerName = "";
+        String layerTitle = "";
+        LayerInfo lyrInfo = getCatalog().getLayerByName(((PublishedInfo) l).getName());
+        LayerGroupInfo lyrGpInfo = getCatalog().getLayerGroupByName(((PublishedInfo) l).getName());
+        if (lyrInfo != null) { // layer...
+            layerName = lyrInfo.getName();
+            layerTitle = mc.getLabel(lyrInfo, layerName, request);
+        } else { // layer group...
+            layerName = lyrGpInfo.getName();
+            layerTitle = mc.getLabel(lyrGpInfo, layerName, request);
+        }
+
         String result = sw.toString();
         // this tests that the result has had namespaces mapped to minimum possible cruft
         assertTrue(result.matches("<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">.*"));
 
+        String title = mapml.getHead().getTitle();
+        assertTrue(
+                "MapML document title must equal layer title", title.equalsIgnoreCase(layerTitle));
         BodyContent b = mapml.getBody();
         assertNotNull("mapML method must return MapML body in response", b);
         Extent e = b.getExtent();
@@ -356,6 +441,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                 fail("Unrecognized test object type:" + o.getClass().getTypeName());
             }
         }
+        return mapml;
     }
 
     @Test

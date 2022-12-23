@@ -14,7 +14,7 @@ Rather than make direct use of files GeoServer has introduced a Resource API to 
 Reference:
 
 * `GSIP-137 - ResourceStore Rest API <https://github.com/geoserver/geoserver/wiki/GSIP-137>`__
-* `GSIP-136 - Resource Notification Dispatcher<https://github.com/geoserver/geoserver/wiki/GSIP-136>`__
+* `GSIP-136 - Resource Notification Dispatcher <https://github.com/geoserver/geoserver/wiki/GSIP-136>`__
 * `GSIP-132 - GSIP 132 - Resource Store changes <https://github.com/geoserver/geoserver/wiki/GSIP-132>`__
 
 Before we start
@@ -133,7 +133,7 @@ There is an important method ``Resources.fromURL( baseDirectory, url)`` that is 
 * ``Resources.fromURL( null, "/src/gis/cadaster/district.geopgk")`` - absolute file path (linux)
 * ``Resources.fromURL( baseDirectory, "D:\\gis\\cadaster\\district.geopkg")`` - absolute file path (windows)
 * ``Resources.fromURL( baseDirectory, "file:///D:/gis/cadaster/district.geopkg")`` - absolute file url (windows)
-* ``Resources.fromURL( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/") - null (external reference)
+* ``Resources.fromURL( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/")`` - null (external reference)
 
 For the absolute file references above, see the next section on ``Files``.
 
@@ -158,8 +158,8 @@ The other key method is ``Files.url( baseDirectory, url)`` which is used to look
 * ``Files.fromURL( null, "/src/gis/cadaster/district.geopgk")`` - absolute file path (linux)
 * ``Files.fromURL( baseDirectory, "D:\\gis\\cadaster\\district.geopkg")`` - absolute file path (windows)
 * ``Files.fromURL( baseDirectory, "file:///D:/gis/cadaster/district.geopkg")`` - absolute file url (windows)
-* ``Files.fromURL( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/") - null (external reference ignored as we cannot determine a file)
-* ``Files.fromURL( baseDirectory, "sde://user:pass@server:port") - null (custom strings are ignored as we cannot determine a file)
+* ``Files.fromURL( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/")`` - null (external reference ignored as we cannot determine a file)
+* ``Files.fromURL( baseDirectory, "sde://user:pass@server:port")`` - null (custom strings are ignored as we cannot determine a file)
 
 GeoServerDataDirectory
 ----------------------
@@ -191,7 +191,8 @@ The use of ``location`` parameters here can reference a relative location in the
 
 Each method here can be expressed using the utility classes:
 
-.. code-block:: 
+.. code-block:: java
+
    // Using GeoServerResourceLoader
    File configuration = loader.createFile(ogrConfigruationName);
    xstream.toXML(ogrConfiguration, new FileOutputStream(configuration));

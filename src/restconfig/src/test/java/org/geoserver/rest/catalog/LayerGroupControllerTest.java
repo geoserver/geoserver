@@ -1045,4 +1045,87 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
             catalog.save(lg);
         }
     }
+
+    @Test
+    public void testPostJSONWithContainedGroupStyleNull() throws Exception {
+        LayerGroupInfo lg = null;
+        try {
+            String json =
+                    "{\n"
+                            + "  \"layerGroup\": {\n"
+                            + "    \"name\": \"layerGroupNullStyle\",\n"
+                            + "    \"publishables\": {\n"
+                            + "  \"published\": [\n"
+                            + "    {\n"
+                            + "      \"name\": \"sfLayerGroup\",\n"
+                            + "      \"@type\": \"layerGroup\"\n"
+                            + "    },"
+                            + "    {\n"
+                            + "      \"name\": \"citeLayerGroup\",\n"
+                            + "      \"@type\": \"layerGroup\"\n"
+                            + "    }"
+                            + "  ]\n"
+                            + "},\n"
+                            + "    \"styles\": null"
+                            + "  }\n"
+                            + "}";
+            MockHttpServletResponse response =
+                    postAsServletResponse(
+                            RestBaseController.ROOT_PATH + "/layergroups",
+                            json,
+                            "application/json");
+            assertEquals(201, response.getStatus());
+            assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
+
+            assertNotNull(response.getHeader("Location"));
+            assertTrue(response.getHeader("Location").endsWith("/layergroups/layerGroupNullStyle"));
+
+            lg = catalog.getLayerGroupByName("layerGroupNullStyle");
+            assertNotNull(lg);
+
+            assertEquals(2, lg.getLayers().size());
+            assertEquals("sfLayerGroup", lg.getLayers().get(0).getName());
+            assertNull(lg.getStyles().get(0));
+            assertEquals("citeLayerGroup", lg.getLayers().get(1).getName());
+            assertNull(lg.getStyles().get(0));
+        } finally {
+            if (lg != null) catalog.remove(lg);
+        }
+    }
+
+    @Test
+    public void testPostXMLWithContainedGroupStyleNull() throws Exception {
+        LayerGroupInfo lg = null;
+        try {
+            String xml =
+                    "<layerGroup>"
+                            + "<name>layerGroupNullStyle2</name>"
+                            + "<publishables>"
+                            + "<published type=\"layerGroup\">sfLayerGroup</published>"
+                            + "<published type=\"layerGroup\">citeLayerGroup</published>"
+                            + "</publishables>"
+                            + "<styles/>"
+                            + "</layerGroup>";
+            MockHttpServletResponse response =
+                    postAsServletResponse(
+                            RestBaseController.ROOT_PATH + "/layergroups", xml, "text/xml");
+            assertEquals(201, response.getStatus());
+            assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
+
+            assertNotNull(response.getHeader("Location"));
+            assertTrue(
+                    response.getHeader("Location").endsWith("/layergroups/layerGroupNullStyle2"));
+
+            lg = catalog.getLayerGroupByName("layerGroupNullStyle2");
+            assertNotNull(lg);
+
+            assertEquals(2, lg.getLayers().size());
+            assertEquals("sfLayerGroup", lg.getLayers().get(0).getName());
+            assertNull(lg.getStyles().get(0));
+            assertEquals("citeLayerGroup", lg.getLayers().get(1).getName());
+            assertNull(lg.getStyles().get(0));
+        } finally {
+            if (lg != null) catalog.remove(lg);
+        }
+    }
 }

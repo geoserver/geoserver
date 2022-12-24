@@ -112,7 +112,7 @@ The ``Resources`` facade provides lots of common activities for working with Res
 
 Most of these perform common activities or check on resource status ``exists(resource)``, ``hidden(resource)``.
 
-Resources methods provide the flexibility to work with with Resource while not getting caught out in the dfferene between DIRECTORY and RESOURCE type.
+Resources methods provide the flexibility to work with with Resource while not getting caught out in the dfference between DIRECTORY and RESOURCE type.
 
 .. code-block:: java
     

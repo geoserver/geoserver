@@ -515,7 +515,7 @@ public class Paths {
      *
      * <p><b>Windows</b>: Windows absolute paths start with a drive letter, colon, and slash
      * characters.{@link #names(String)} will represent an absolute path on windows as: {@code {
-     * "D:/, "gis", "cadaser", "district.geopkg"}}
+     * "D:/, "gis", "cadaster", "district.geopkg"}}
      *
      * <p>Aside: A drive letter reference on its own results in a relative path (relative to the
      * current directory for that drive).

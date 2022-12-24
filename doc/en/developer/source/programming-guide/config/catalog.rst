@@ -12,7 +12,7 @@ The following types of information are stored:
 * coverages and feature resoures
 * styles
 
-The Catalog can be acquired from from GeoServer:
+The Catalog can be acquired from GeoServer:
 
 .. code-block:: java
 
@@ -38,9 +38,9 @@ specific type. For instance, the following would obtain all datstores from the c
 The methods ``getDataStores()`` and ``getCoverageStores()`` provide a convenience for
 the two well known types.
 
-A store is contained within a workspace (see  StoreInfo#getWorkspace()``). The 
-#getStoresByWorkspace(WorkspaceInfo, Class)`` method for only stores contained with a specific
-workspace. For instance, the following would obtain all datastores store within a particular
+A store is contained within a workspace (see  ``StoreInfo#getWorkspace()``). The 
+``#getStoresByWorkspace(WorkspaceInfo, Class)`` method for only stores contained with a specific
+workspace. For instance, the following would obtain all datastores contained within a particular
 workspace:
 
 .. code-block:: java
@@ -67,7 +67,7 @@ A resource is contained within a namespace, therefore it is identified by a name
 local name pair. The ``getResourceByName(String, String, Class)`` method provides access to
 a resource by its namespace qualified name. The method ``getResourceByName(String, Class)``
 provides access to a resource by its unqualified name. The latter method will do an exhaustive
-search of all namespaces for a resource with the specified name. If only a single resoure with
+search of all namespaces for a resource with the specified name. If only a single resource with
 the name is found it is returned. Some examples:
 
 .. code-block:: java
@@ -85,10 +85,10 @@ the name is found it is returned. Some examples:
 
 ## Layers
 
-A layers is used to publish a resource. The ``getLayers()`` provides access to all layers
+A layer is used to publish a resource. The ``getLayers()`` method provides access to all layers
 in the catalog. A layer is uniquely identified by its name. The ``getLayerByName(String)``
 method provides access to a layer by its name. The ``getLayers(ResourceInfo)`` return all
-the layers publish a specific resource. Some examples:
+the layers published from a specific resource. Some examples:
 
 .. code-block:: java
    
@@ -118,6 +118,6 @@ following example of modifying a feature type:
 
 ## Isolated Workspaces
 
-Is possible to request a catalog object using its workspace prefix or its namespace URI, the last
+It is possible to request a catalog object using its workspace prefix or its namespace URI, the last
 method will not work to retrieve the content of an isolated workspace unless in the context of a
 virtual service belonging to that workspace.

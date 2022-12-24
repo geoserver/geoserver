@@ -3,7 +3,7 @@
 Configuration
 =============
 
-This section provides an overview of GeoSer er configuration including the data directory, catalogue, and resources.
+This section provides an overview of GeoServer configuration including the data directory, catalogue, and resources.
 
 .. toctree::
    :maxdepth: 1

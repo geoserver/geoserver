@@ -54,6 +54,7 @@ import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xsd.Parser;
 import org.junit.After;
+import org.locationtech.jts.geom.CoordinateXY;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridGeometry;
@@ -379,22 +380,31 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         // check that the bbox in the utm11 layer is reported as configured
         String utm11Bbox =
                 "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='wcs__utm11']/ows:BoundingBox";
-        assertXpathEvaluatesTo("440562.0 3720758.0", utm11Bbox + "/ows:LowerCorner", dom);
-        assertXpathEvaluatesTo("471794.0 3750966.0", utm11Bbox + "/ows:UpperCorner", dom);
+
+        assertXpathCoordinate(
+                new CoordinateXY(440562.0, 3720758.0), utm11Bbox + "/ows:LowerCorner", dom);
+        assertXpathCoordinate(
+                new CoordinateXY(471794.0, 3750966.0), utm11Bbox + "/ows:UpperCorner", dom);
 
         // check that the bbox in the cad layer is reported as configured
         String cadPath =
                 "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='wcs__RotatedCad']/ows:BoundingBox";
-        assertXpathEvaluatesTo("1402800.0 5000000.0", cadPath + "/ows:LowerCorner", dom);
-        assertXpathEvaluatesTo("1402900.0 5000100.0", cadPath + "/ows:UpperCorner", dom);
+        assertXpathCoordinate(
+                new CoordinateXY(1402800.0, 5000000.0), cadPath + "/ows:LowerCorner", dom);
+        assertXpathCoordinate(
+                new CoordinateXY(1402900.0, 5000100.0), cadPath + "/ows:UpperCorner", dom);
 
         // check that the bbox in the usa layer has been reprojected
         String usaPath =
                 "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='cdf__usa']/ows:BoundingBox";
-        assertXpathEvaluatesTo(
-                "-1.457024062347863E7 6199732.713729635", usaPath + "/ows:LowerCorner", dom);
-        assertXpathEvaluatesTo(
-                "-1.3790593336628266E7 7197101.83024677", usaPath + "/ows:UpperCorner", dom);
+        assertXpathCoordinate(
+                new CoordinateXY(-1.457024062347863E7, 6199732.713729635),
+                usaPath + "/ows:LowerCorner",
+                dom);
+        assertXpathCoordinate(
+                new CoordinateXY(-1.3790593336628266E7, 7197101.83024677),
+                usaPath + "/ows:UpperCorner",
+                dom);
     }
 
     /**

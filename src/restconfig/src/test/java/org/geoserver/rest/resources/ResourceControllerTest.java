@@ -128,7 +128,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                                 + "/resource/mydir/myres?operation=mEtAdATa&format=xml");
         // print(doc);
         XMLAssert.assertXpathEvaluatesTo("myres", "/ResourceMetadata/name", doc);
-        XMLAssert.assertXpathEvaluatesTo("/mydir", "/ResourceMetadata/parent/path", doc);
+        XMLAssert.assertXpathEvaluatesTo("mydir", "/ResourceMetadata/parent/path", doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "http://localhost:8080/geoserver"
                         + RestBaseController.ROOT_PATH
@@ -150,7 +150,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                 "{\"ResourceMetadata\": {"
                         + "  \"name\": \"myres\","
                         + "  \"parent\":   {"
-                        + "    \"path\": \"/mydir\","
+                        + "    \"path\": \"mydir\","
                         + "    \"link\": {"
                         + "       \"href\": \"http://localhost:8080/geoserver"
                         + RestBaseController.ROOT_PATH
@@ -292,7 +292,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
         Document doc = getAsDOM(RestBaseController.ROOT_PATH + "/resource/mydir?format=xml");
         print(doc);
         XMLAssert.assertXpathEvaluatesTo("mydir", "/ResourceDirectory/name", doc);
-        XMLAssert.assertXpathEvaluatesTo("/", "/ResourceDirectory/parent/path", doc);
+        XMLAssert.assertXpathEvaluatesTo("", "/ResourceDirectory/parent/path", doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "http://localhost:8080/geoserver" + RestBaseController.ROOT_PATH + "/resource/",
                 "/ResourceDirectory/parent/atom:link/@href",
@@ -320,7 +320,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                 "{'ResourceDirectory': {\n"
                         + "  'name': 'emptyDir',\n"
                         + "  'parent':   {\n"
-                        + "    'path': '/',\n"
+                        + "    'path': '',\n"
                         + "    'link':     {\n"
                         + "      'href': 'http://localhost:8080/geoserver/rest/resource/',\n"
                         + "      'rel': 'alternate',\n"
@@ -342,7 +342,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                 "{'ResourceDirectory': {"
                         + "'name': 'mydir',"
                         + "'parent':   {"
-                        + "  'path': '/',"
+                        + "  'path': '',"
                         + "    'link':     {"
                         + "      'href': 'http://localhost:8080/geoserver/rest/resource/',"
                         + "      'rel': 'alternate',"
@@ -375,7 +375,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                 "{'ResourceDirectory': {\n"
                         + "  'name': 'mydir2',\n"
                         + "  'parent':   {\n"
-                        + "    'path': '/',\n"
+                        + "    'path': '',\n"
                         + "    'link':     {\n"
                         + "      'href': 'http://localhost:8080/geoserver/rest/resource/',\n"
                         + "      'rel': 'alternate',\n"

@@ -35,7 +35,7 @@ Access to ``GeoServer`` configuration is available to spring beans during applic
    GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
 
 
-Also available for via wicket (via ``GeoServerApplication`` web application):
+Also available for use via wicket (via ``GeoServerApplication`` web application):
 
 .. code-block:: java
    
@@ -46,7 +46,7 @@ Also available for via wicket (via ``GeoServerApplication`` web application):
 Info
 ----
 
-All ``Info`` objects have an ``getId()`` identier used during during persistance.
+All ``Info`` objects have an ``getId()`` identifier used during persistance.
 
 GeoServerInfo
 -------------
@@ -57,7 +57,7 @@ Manages some of the global configuration options:
 * ``CoverageAccessInfo`` image access settings
 * Admin username and password
 * resourceErrorHandling: Policy for handling misconfigured layers
-* updateSequence: Used via WMS protocols to communicate configuration change to clients
+* updateSequence: Used via WMS protocols to communicate configuration changes to clients
 * featureTypeCacheSize
 * globalServices
 * xmlExternalEntitiesEnabled
@@ -67,7 +67,7 @@ Manages some of the global configuration options:
 * webUIMode: how to handle redirection
 * allowStoredQueriesPerWorkspace
 
-Both ``clientProperties`` and ``metadata`` can be used to communicate between modules and are intended to experiment with ideas during development. Once established this information can  be recored as ``GeoServerInfo`` property. Settings such as ``webUIMode`` and ``allowStoredQueriesPerWorkspace`` are examples of this progression.
+Both ``clientProperties`` and ``metadata`` can be used to communicate between modules and are intended to experiment with ideas during development. Once established this information can  be recoded as ``GeoServerInfo`` property. Settings such as ``webUIMode`` and ``allowStoredQueriesPerWorkspace`` are examples of this progression.
 
 .. _config_settings:
 

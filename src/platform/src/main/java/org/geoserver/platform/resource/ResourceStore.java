@@ -38,8 +38,8 @@ package org.geoserver.platform.resource;
  * </code>
  * </pre>
  *
- * The base directory is available using {@link Paths#BASE} (as {@code ""}) but relative paths ({@code "."} and
- * {@code ".."}) are not supported.
+ * The base directory is available using {@link Paths#BASE} (as {@code ""}) but relative paths
+ * ({@code "."} and {@code ".."}) are not supported.
  *
  * <p>This abstraction assumes a unix like file system, all paths are relative and use forward slash
  * {@code /} as the separator.

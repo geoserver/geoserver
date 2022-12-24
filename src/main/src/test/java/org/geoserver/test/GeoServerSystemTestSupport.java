@@ -63,6 +63,9 @@ import javax.xml.validation.Validator;
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.codec.binary.Base64;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -124,6 +127,7 @@ import org.geotools.util.logging.Logging;
 import org.geotools.xsd.XSD;
 import org.junit.After;
 import org.junit.Before;
+import org.locationtech.jts.geom.Coordinate;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -2336,6 +2340,24 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return getFirstElementByTagName(dom.getDocumentElement(), name);
     }
 
+    /**
+     * Check coordinate at xpathExpression against provided coordiante. Coordinate values are
+     * compared as doubles (with small delta) rather than as strings to account for floating point
+     * differences.
+     *
+     * @param expected Expected coordinate
+     * @param xpathExpression XPath expression
+     * @param document Document
+     * @throws XpathException
+     */
+    public static void assertXpathCoordinate(
+            Coordinate expected, String xpathExpression, Document document) throws XpathException {
+        XpathEngine simpleXpathEngine = XMLUnit.newXpathEngine();
+        String value = simpleXpathEngine.evaluate(xpathExpression, document);
+
+        assertEquals(xpathExpression + " x", expected.x, Double.valueOf(value.split(" ")[0]), 1E-9);
+        assertEquals(xpathExpression + " y", expected.y, Double.valueOf(value.split(" ")[1]), 1E-9);
+    }
     /**
      * Subclasses needed to do integration tests with servlet filters can override this method and
      * return the list of filters to be used during mocked requests

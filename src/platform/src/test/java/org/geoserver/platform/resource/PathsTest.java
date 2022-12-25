@@ -19,6 +19,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import org.junit.Test;
 
 public class PathsTest {
@@ -208,5 +209,52 @@ public class PathsTest {
 
         String relativePath = relative.getPath();
         assertEquals("file1", Paths.convert(directory, folder, relativePath));
+    }
+
+    @Test
+    public void roundTripFileTests() throws IOException {
+        File home = new File(System.getProperty("user.home")).getCanonicalFile();
+        File directory = new File(home, "directory");
+        File file = new File(directory, "file");
+
+        // absolute paths
+        absolutePathCheck(home);
+        absolutePathCheck(directory);
+        absolutePathCheck(file);
+
+        // relative paths
+        File base = new File(home, "data");
+        relativePathCheck(base, new File("folder"));
+        relativePathCheck(base, new File(new File("folder"), "file"));
+    }
+
+    public void absolutePathCheck(File file) {
+        String filePath = file.getPath();
+        String path1 = Paths.convert(filePath);
+        assertTrue("absolute: " + path1, isAbsolute(path1));
+
+        List<String> names = Paths.names(path1);
+        assertTrue("absolute: " + names.get(0), isAbsolute(names.get(0)));
+
+        String path2 = Paths.toPath(true, names);
+        assertTrue("absolute:" + path2, isAbsolute(path2));
+
+        File file2 = Paths.toFile(null, path2);
+        assertEquals(file2.getName(), file, file2);
+    }
+
+    public void relativePathCheck(File base, File file) {
+        String path1 = Paths.convert(base, file);
+        assertFalse("absolute: " + path1, isAbsolute(path1));
+
+        List<String> names = Paths.names(path1);
+        assertFalse("absolute: " + names.get(0), isAbsolute(names.get(0)));
+
+        String path2 = Paths.toPath(true, names);
+        assertFalse("absolute:" + path2, isAbsolute(path2));
+
+        File file2 = Paths.toFile(base, path2);
+        assertTrue("absolute:" + file2.getPath(), file2.isAbsolute());
+        assertEquals(file2.getName(), new File(base, file.getPath()), file2);
     }
 }

@@ -17,6 +17,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Paths;
 
 /** Same as {@link DataAccessRuleDAOTest} but using an actual property file */
 public class DataAccesRuleDAOFileConcurrencyTest extends DataAccesRuleDAOConcurrencyTest {
@@ -47,7 +48,7 @@ public class DataAccesRuleDAOFileConcurrencyTest extends DataAccesRuleDAOConcurr
         }
 
         FileSystemResourceStore store = new FileSystemResourceStore(dir);
-        return new DataAccessRuleDAO(catalog, store.get("/"));
+        return new DataAccessRuleDAO(catalog, store.get(Paths.BASE));
     }
 
     @Override

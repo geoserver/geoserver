@@ -193,7 +193,7 @@ public class Paths {
      * @return resource path composed of provided names
      * @throws IllegalArgumentException If names includes any {@link #INVALID} chracters
      */
-    private static String toPath(boolean strictPath, List<String> names) {
+    static String toPath(boolean strictPath, List<String> names) {
         StringBuilder buf = new StringBuilder();
         final int LIMIT = names.size();
         for (int i = 0; i < LIMIT; i++) {
@@ -215,7 +215,7 @@ public class Paths {
                 }
             }
             buf.append(item);
-            if (i < LIMIT - 1) {
+            if (i < LIMIT - 1 && !isAbsolute(item)) {
                 buf.append("/");
             }
         }
@@ -284,10 +284,16 @@ public class Paths {
      * marker.
      *
      * <p>Linux absolute paths are start with leading slash character ({@code / } ). <br>
+     * {@code convert("/srv/gis/cadaster/district.geopg") --> "/srv/gis/cadaster/district.geopg" <br>
      * {@code names("/srv/gis/cadaster/district.geopkg) --> {"/", "srv","gis", "cadaster",
-     * "district.geopkg"}} Windows absolute drive letter and slash ( {@code C:\ } ). <br>
-     * {@code names("D://gis/cadaster/district.geopkg") --> {"D:/", "gis", "cadaster",
-     * "district.geopkg"}}
+     * "district.geopkg"}}. <br>
+     * This agrees with URL representation of
+     * {@code file:///srv/gis/cadaster/district.geopkg}.
+     *
+     * <p>Windows absolute drive letter and slash ( {@code C:\ } ). <br>
+     * {@code names("D:\\gis\cadaster\district.geopkg") --> {"D:", "gis", "cadaster",
+     * "district.geopkg"}}. This agrees with URL representation of
+     * {@code file:///D:/gis/cadaster/district.geopkg}.
      *
      * @param path Path used for reference lookup
      * @return List of path components divided into absolute prefix, directory names, and final file
@@ -304,14 +310,20 @@ public class Paths {
         }
         ArrayList<String> names = new ArrayList<>(3);
         String item;
+
+        if (isAbsolute(path)) {
+            item = path.substring(0, split + 1);
+        }
         do {
-            if (index == 0 && split == 0 && !SystemUtils.IS_OS_WINDOWS) {
-                names.add("/");
+            if (index == 0 && isAbsolute(path)) {
+                item = path.substring(0, split + 1);
             } else {
                 item = path.substring(index, split);
-                if (item.length() != 0) {
-                    names.add(item);
-                }
+            }
+            // ignoring zero length items resulting from double slash
+            // path breaks (occasionally produced when concatenating paths witout due care).
+            if (item.length() != 0) {
+                names.add(item);
             }
             index = split + 1;
             split = path.indexOf('/', index);
@@ -544,42 +556,48 @@ public class Paths {
      * implementations may not create the file until needed.
      *
      * <p>In the case of an absolute path, base should be null. Both linux {@code /} and windows
-     * {@code Z:\} absolute paths are supported.
+     * {@code Z:/} absolute resource paths are supported.
      *
-     * <p>Relative paths when {@code base} is null, are not supported. Note that the windows path
-     * {@code Z:} on its own is a relative path (relative to current directory for the drive
-     * letter).
+     * <p>Relative paths when base is {@code null}, are not supported.
      *
      * @param base Base directory, often GeoServer Data Directory
      * @param path Resource path reference
-     * @return File reference
+     * @return File reference (will be an absolute file reference)
      */
     public static File toFile(File base, String path) {
-        for (String item : Paths.names(path)) {
-            base = new File(base, item);
-            /*
-            if (base == null) {
-                // absolute path
-                if (SystemUtils.IS_OS_WINDOWS) {
-                    if (item.matches("\\w\\:")) {
-                        // absolute path, driver letter reference
-                        base = new File(item + "\\");
-                    } else {
-                        base = new File(new File(System.getenv("SystemDrive")), item);
-                    }
+        if (isAbsolute(path)) {
+            if (base != null) {
+                // this is not supportive, but to be forgiving we will ignore duplicate slash
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
                 } else {
-                    if (item.equals("/")) {
-                        base = new File(item);
-                    } else {
-                        base = new File("/" + item);
-                    }
+                    base = null;
                 }
+            }
+        }
+        for (String item : Paths.names(path)) {
+            if (base == null && Paths.isAbsolute(item)) {
+                base = root(item.replace('/', File.separatorChar));
             } else {
-                // relative path
                 base = new File(base, item);
             }
-            */
         }
         return base;
+    }
+
+    /**
+     * Carefully look up a filesytem root directory (matching {@code /} or {@code C:\} as
+     * appropriate).
+     *
+     * @param name
+     * @return filesystem root directory matching name, or {@code null} if not found.
+     */
+    private static File root(String name) {
+        for (File root : File.listRoots()) {
+            if (root.getPath().equalsIgnoreCase(name)) {
+                return root;
+            }
+        }
+        return null;
     }
 }

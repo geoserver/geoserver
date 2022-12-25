@@ -1318,8 +1318,8 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
         assertEquals(201, response.getStatus());
         GeoServerResourceLoader loader = getCatalog().getResourceLoader();
-        assertNotNull("parking.sld not found", loader.find("/styles/parking.sld"));
-        assertNotNull("parking.bmp not found", loader.find("/styles/parking.bmp"));
+        assertNotNull("parking.sld not found", loader.find("styles/parking.sld"));
+        assertNotNull("parking.bmp not found", loader.find("styles/parking.bmp"));
     }
 
     @Test

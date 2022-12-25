@@ -92,6 +92,14 @@ public class FileSystemResourceStore implements ResourceStore {
             throw new IllegalArgumentException(
                     "Directory required, file present at this location " + resourceDirectory);
         }
+        if (!resourceDirectory.isAbsolute()) {
+            try {
+                resourceDirectory = resourceDirectory.getCanonicalFile();
+            } catch (IOException e) {
+                throw new IllegalArgumentException(
+                        "Unable to resolve " + resourceDirectory + " to an absolute location");
+            }
+        }
         if (!resourceDirectory.exists()) {
             boolean create = resourceDirectory.mkdirs();
             if (!create) {

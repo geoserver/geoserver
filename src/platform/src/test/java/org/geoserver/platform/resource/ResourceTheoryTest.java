@@ -32,7 +32,6 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.platform.resource.Resource.Type;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -486,10 +485,11 @@ public abstract class ResourceTheoryTest {
     }
 
     @Theory
-    public void theoryRootSlashIsAbsoluteOnLinux(String path) throws Exception {
-        if (!SystemUtils.IS_OS_WINDOWS) {
-            final Resource res = getResource("/" + path);
-            assertTrue(Paths.isAbsolute(res.path()));
-        }
+    public void theoryRootIsAbsolute(String path) throws Exception {
+        File home = new File(System.getProperty("user.home")).getCanonicalFile();
+        File file = Paths.toFile(home, path);
+
+        final Resource res = getResource(Paths.convert(file.getPath()));
+        assertTrue(Paths.isAbsolute(res.path()));
     }
 }

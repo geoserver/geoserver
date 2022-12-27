@@ -18,14 +18,16 @@ The Catalog can be acquired from GeoServer:
 
    Catalog catalog = geoServer.getCatalog();
 
-## Workspaces
+Workspaces
+----------
 
 A workspace is a container for any number of stores. All workspaces can be obtained with the
 ``getWorkspaces()``. A workspace is identified by its name (
-WorkspaceInfo#getName()``). A workspace can be looked up by its name with the 
-#getWorkspaceByName(String)`` method.
+WorkspaceInfo.getName()``). A workspace can be looked up by its name with the 
+``getWorkspaceByName(String)`` method.
 
-## Stores
+Stores
+------
 
 The ``getStores(Class)`` method provides access to all the stores in the catalog of a
 specific type. For instance, the following would obtain all datstores from the catalog:
@@ -38,8 +40,8 @@ specific type. For instance, the following would obtain all datstores from the c
 The methods ``getDataStores()`` and ``getCoverageStores()`` provide a convenience for
 the two well known types.
 
-A store is contained within a workspace (see  ``StoreInfo#getWorkspace()``). The 
-``#getStoresByWorkspace(WorkspaceInfo, Class)`` method for only stores contained with a specific
+A store is contained within a workspace (see ``StoreInfo.getWorkspace()``). The 
+``Catalog.getStoresByWorkspace(WorkspaceInfo, Class)`` method for only stores contained with a specific
 workspace. For instance, the following would obtain all datastores contained within a particular
 workspace:
 
@@ -51,7 +53,8 @@ workspace:
    //get all datastores in that workspace
    List<DataStoreInfo> dataStores = catalog.getStoresByWorkspace( workspace, DataStoreInfo.class );
 
-## Resources
+Resources
+---------
 
 The ``getResources(Class)`` method provides access to all resources in the catalog of a
 particular type. For instance, to acess all feature types in the catalog:
@@ -83,7 +86,8 @@ the name is found it is returned. Some examples:
    NamespaceInfo ns = catalog.getNamespaceByURI( "http://myNamespace.org" );
    List<FeatureTypeInfo> featureTypes = catalog.getResourcesByNamespace( ns, FeatureTypeINfo.class );
 
-## Layers
+Layers
+------
 
 A layer is used to publish a resource. The ``getLayers()`` method provides access to all layers
 in the catalog. A layer is uniquely identified by its name. The ``getLayerByName(String)``
@@ -99,7 +103,8 @@ the layers published from a specific resource. Some examples:
    FeatureTypeInfo ft = catalog.getFeatureType( "http://myNamespace", "myFeatureType" );
    List<LayerInfo> layers = catalog.getLayers( ft );
 
-## Modifing the Catalog
+Modifing the Catalog
+--------------------
 
 Catalog objects such as stores and resoures are mutable and can be modified. However, any
 modifications made on an object do not apply until they are saved. For instance, consider the
@@ -116,7 +121,8 @@ following example of modifying a feature type:
    //save it
    catalog.save( featureType );
 
-## Isolated Workspaces
+Isolated Workspaces
+-------------------
 
 It is possible to request a catalog object using its workspace prefix or its namespace URI, the last
 method will not work to retrieve the content of an isolated workspace unless in the context of a

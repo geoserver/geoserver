@@ -9,6 +9,7 @@ import java.util.Base64;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.wicket.model.IModel;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.treeview.TreeNode;
@@ -29,6 +30,11 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
     private String uniqueId;
 
     public ResourceNode(Resource resource, ResourceExpandedStates expandedStates) {
+        if (Paths.isAbsolute(resource.path())) {
+            // double check resource browser cannot be used to edit
+            // absolute path locations
+            throw new IllegalStateException("Path location not supported by Resource Browser");
+        }
         this.resource = Resources.serializable(resource);
         this.expandedStates = expandedStates;
         this.uniqueId = getUniqueId(this.resource.path());
@@ -36,17 +42,19 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
 
     public static String getUniqueId(String path) {
         if (path.isEmpty()) {
+            // top-level unique id used for wicket selection, not intended as a path
             return "/";
-        } else if (!path.contains(":") && !path.contains("~")) {
+        } else if (path.contains(":") || path.contains("~")) {
+            // Base64 encode the file path to replace special characters that are
+            // not allowed in Wicket component IDs.
+            byte[] bytes = path.getBytes(StandardCharsets.UTF_8);
+            return Base64.getUrlEncoder().encodeToString(bytes);
+        } else {
             // Helps prevent duplicate Wicket IDs if there is a filename that
             // is the Base64 encoded path of a file that has to be encoded
             // without having to unnecessarily encode everything.
-            return "/" + path;
+            return path;
         }
-        // Base64 encode the file path to replace special characters that are
-        // not allowed in Wicket component IDs.
-        byte[] bytes = path.getBytes(StandardCharsets.UTF_8);
-        return Base64.getUrlEncoder().encodeToString(bytes);
     }
 
     @Override
@@ -118,5 +126,10 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
     @Override
     public int hashCode() {
         return getUniqueId().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceNode " + "'" + uniqueId + "'";
     }
 }

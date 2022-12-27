@@ -21,10 +21,10 @@ public class ResourceExpandedStatesTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testExpandedStates() throws Exception {
-        try (OutputStream os = store().get("/temp/dir/something").out()) {
+        try (OutputStream os = store().get("temp/dir/something").out()) {
             os.write("unimportant".getBytes());
         }
-        Resource res = store().get("/temp/dir");
+        Resource res = store().get("temp/dir");
 
         ResourceNode nodeOne = new ResourceNode(res, expandedStates);
         ResourceNode nodeTwo = new ResourceNode(res, expandedStates);
@@ -43,7 +43,7 @@ public class ResourceExpandedStatesTest extends GeoServerWicketTestSupport {
 
         // automatic removal
         CountDownLatch lock = new CountDownLatch(1);
-        store().get("/temp")
+        store().get("temp")
                 .addListener(
                         notify -> {
                             lock.countDown();

@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,7 +38,10 @@ import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
- * The ResourceBrowser page.
+ * The ResourceBrowser page, allows user access to ResourceStore.
+ *
+ * <p>Only access to ResourceStore contents is provided (absolute and relative paths are not
+ * supported).
  *
  * @author Niels Charlier
  */
@@ -242,7 +246,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
         }
         StringBuilder builder = new StringBuilder();
         for (Resource res : resources) {
-            builder.append("/" + res.path());
+            builder.append(res.path());
             builder.append(", ");
         }
         builder.setLength(builder.length() - 2);
@@ -259,15 +263,9 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
         if (resource.getType() != Resource.Type.RESOURCE) {
             return false;
         }
-        int i = resource.name().lastIndexOf(".");
-        if (i >= 0) {
-            String ext = resource.name().substring(i + 1).toLowerCase();
-            for (String t : TEXTUAL_EXTENSIONS) {
-                if (ext.equals(t)) {
-                    return true;
-                }
-            }
-            return false;
+        String ext = Paths.extension(resource.name());
+        if (ext != null) {
+            return Arrays.stream(TEXTUAL_EXTENSIONS).anyMatch(ext::equals);
         }
         return true; // no extension, assume textual
     }
@@ -293,8 +291,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                         protected Component getContents(String id) {
                             uploadPanel =
                                     new PanelUpload(
-                                            id,
-                                            "/" + treeView.getSelectedNode().getObject().path());
+                                            id, treeView.getSelectedNode().getObject().path());
                             return uploadPanel;
                         }
 
@@ -311,7 +308,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                                     uploadPanel.error(
                                             new ParamResourceModel("resourceExists", getPage())
                                                     .getString()
-                                                    .replace("%", "/" + dest.path()));
+                                                    .replace("%", dest.path()));
                                 } else {
                                     try (OutputStream os = dest.out()) {
                                         IOUtils.copy(
@@ -369,43 +366,54 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                         }
 
                         private String getIthPath(int i) {
-                            return "/"
-                                    + Paths.path(
-                                            treeView.getSelectedNode().getObject().path(),
-                                            "new." + i + ".txt");
+                            return Paths.path(
+                                    treeView.getSelectedNode().getObject().path(),
+                                    "new." + i + ".txt");
                         }
 
                         private String getPath() {
-                            return "/"
-                                    + Paths.path(
-                                            treeView.getSelectedNode().getObject().path(),
-                                            "new.txt");
+                            return Paths.path(
+                                    treeView.getSelectedNode().getObject().path(), "new.txt");
                         }
 
                         @Override
                         protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                             editPanel.getFeedbackMessages().clear();
-                            Resource dest = store().get(editPanel.getResource());
-                            if (Resources.exists(dest)) {
-                                editPanel.error(
-                                        new ParamResourceModel("resourceExists", getPage())
-                                                .getString()
-                                                .replace("%", "/" + dest.path()));
+                            String resourcePath = editPanel.getResource();
+                            if (Paths.isAbsolute(resourcePath)) {
+                                // although ResourceStore.get(path) is limited to relative paths
+                                // out of an abundance of caution we will reject
+                                error(getLocalizer().getString("pathUnsupported", getPage()));
+                            } else if (!Paths.isValid(resourcePath)) {
+                                try {
+                                    Paths.valid(resourcePath);
+                                } catch (IllegalArgumentException reason) {
+                                    error(reason.getMessage());
+                                    return false;
+                                }
                             } else {
-                                try (OutputStream os = dest.out()) {
-                                    String newContents = editPanel.getContents();
-                                    if (newContents != null) {
-                                        os.write(newContents.getBytes());
-                                        if (!newContents.endsWith("\n")) {
-                                            os.write(System.lineSeparator().getBytes());
+                                Resource dest = store().get(resourcePath);
+                                if (Resources.exists(dest)) {
+                                    editPanel.error(
+                                            new ParamResourceModel("resourceExists", getPage())
+                                                    .getString()
+                                                    .replace("%", dest.path()));
+                                } else {
+                                    try (OutputStream os = dest.out()) {
+                                        String newContents = editPanel.getContents();
+                                        if (newContents != null) {
+                                            os.write(newContents.getBytes());
+                                            if (!newContents.endsWith("\n")) {
+                                                os.write(System.lineSeparator().getBytes());
+                                            }
                                         }
+                                        // select newly created node
+                                        treeView.setSelectedNode(
+                                                new ResourceNode(dest, expandedStates), target);
+                                        return true;
+                                    } catch (IOException | IllegalStateException e) {
+                                        error(e.getMessage());
                                     }
-                                    // select newly created node
-                                    treeView.setSelectedNode(
-                                            new ResourceNode(dest, expandedStates), target);
-                                    return true;
-                                } catch (IOException | IllegalStateException e) {
-                                    error(e.getMessage());
                                 }
                             }
                             target.add(editPanel.getFeedbackPanel());
@@ -457,8 +465,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
 
                             @Override
                             protected Component getContents(String id) {
-                                editPanel =
-                                        new PanelEdit(id, "/" + resource.path(), false, contents);
+                                editPanel = new PanelEdit(id, resource.path(), false, contents);
                                 return editPanel;
                             }
 
@@ -520,7 +527,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                                     new PanelPaste(
                                             id,
                                             listResources(sources),
-                                            "/" + treeView.getSelectedNode().getObject().path(),
+                                            treeView.getSelectedNode().getObject().path(),
                                             clipBoard.isCopy());
                             return pastePanel;
                         }
@@ -570,7 +577,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                                 pastePanel.error(
                                         new ParamResourceModel("resourceExists", getPage())
                                                 .getString()
-                                                .replace("%", "/" + dest.path()));
+                                                .replace("%", dest.path()));
                             } else {
                                 try {
                                     if (clipBoard.isCopy()) {
@@ -592,7 +599,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                             throw new IOException(
                                     new ParamResourceModel("moveFailed", getPage())
                                             .getString()
-                                            .replace("%", "/" + dest.path()));
+                                            .replace("%", dest.path()));
                         }
 
                         private String getPath(String dir, Resource src, int i) {
@@ -684,7 +691,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                                 renamePanel.error(
                                         new ParamResourceModel("resourceExists", getPage())
                                                 .getString()
-                                                .replace("%", "/" + dest.path()));
+                                                .replace("%", dest.path()));
                             } else {
                                 Boolean expandedModel =
                                         expandedStates.getResourceExpandedState(src).getObject();

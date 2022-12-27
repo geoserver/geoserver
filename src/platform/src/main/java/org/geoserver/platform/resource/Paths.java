@@ -130,7 +130,14 @@ public class Paths {
      * @return path Path used to identify a Resource
      */
     public static String path(String... path) {
-        return path(STRICT_PATH, path);
+        if (path == null || (path.length == 1 && path[0] == null)) {
+            return null;
+        }
+        ArrayList<String> names = new ArrayList<>();
+        for (String item : path) {
+            names.addAll(names(item));
+        }
+        return toPath(names);
     }
 
     /**
@@ -139,20 +146,11 @@ public class Paths {
      * @param strictPath whether problematic characters are an error
      * @param path Items defining a Path
      * @return path Path used to identify a Resource
+     * @deprecated Please use {@link #path(String...)} as strictPath no longer supported
      */
     public static String path(boolean strictPath, String... path) {
-        if (path == null || (path.length == 1 && path[0] == null)) {
-            return null;
-        }
-        ArrayList<String> names = new ArrayList<>();
-        for (String item : path) {
-            names.addAll(names(item));
-        }
-        return toPath(strictPath, names);
+        return path(path);
     }
-
-    // runtime flag which, if true, throws an error for the WARN characters
-    static final boolean STRICT_PATH = Boolean.valueOf(System.getProperty("STRICT_PATH", "false"));
 
     /**
      * Pattern used to check for invalid file characters.
@@ -160,8 +158,12 @@ public class Paths {
      * <ul>
      *   <li>backslash
      * </ul>
+     *
+     * Paths agree with file URL representation of a relative file path, which uses forward slashes
+     * as a path seperator.
      */
     static final Pattern VALID = Pattern.compile("^[^\\\\]*$");
+
     /**
      * Pattern used to check for ill-advised file characters:
      *
@@ -188,12 +190,11 @@ public class Paths {
     /**
      * Internal method used to convert a list of names to a normal Resource path.
      *
-     * @param strictPath whether problematic characters are an error
      * @param names List of resource names forming a path
      * @return resource path composed of provided names
      * @throws IllegalArgumentException If names includes any {@link #INVALID} chracters
      */
-    static String toPath(boolean strictPath, List<String> names) {
+    static String toPath(List<String> names) {
         StringBuilder buf = new StringBuilder();
         final int LIMIT = names.size();
         for (int i = 0; i < LIMIT; i++) {
@@ -206,13 +207,6 @@ public class Paths {
             }
             if (!VALID.matcher(item).matches()) {
                 return reportInvalidPath(names, item);
-            }
-            if (!WARN.matcher(item).matches()) {
-                if (strictPath && !(i == 0 && isAbsolute(item))) {
-                    // issue warnings on ill-advised characters
-                    // (while allowing initial item to express an absolute path)
-                    return reportInvalidPath(names, item);
-                }
             }
             buf.append(item);
             if (i < LIMIT - 1 && !isAbsolute(item)) {
@@ -239,38 +233,52 @@ public class Paths {
     }
 
     /**
-     * Quick check of path for invalid characters
+     * True if path is valid.
      *
-     * @return path
-     * @throws IllegalArgumentException If path fails {@link #VALID} check
+     * <p>For details see {@link #valid(boolean, String)} which will provide an IllegalArgument
+     * describing validation problem detected.
+     *
+     * @param path Resource path
+     * @return True if path is valid
      */
-    public static String valid(String path) {
-        return path(STRICT_PATH, path);
+    public static boolean isValid(String path) {
+        if (path == null) {
+            return false;
+        } else if (path.isEmpty()) {
+            return true; // Paths.BASE
+        } else {
+            for (String component : Paths.names(path)) {
+                if (INVALID.contains(component)) {
+                    return false;
+                } else if (!VALID.matcher(component).matches()) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     /**
-     * Quick check of path for invalid characters
+     * Quick in-line check of path for invalid characters (will throw exception if needed).
      *
-     * @param strictPath whether problematic characters are an error
-     * @return path
+     * @return path Resource path
      * @throws IllegalArgumentException If path fails {@link #VALID} check
      */
-    static String valid(boolean strictPath, String path) {
+    public static String valid(String path) {
         if (path == null) {
             throw new NullPointerException("Resource path required");
-        }
-        if (path.contains("..") || ".".equals(path)) {
-            throw new IllegalArgumentException("Relative paths not supported " + path);
-        }
-        if (!VALID.matcher(path).matches()) {
-            throw new IllegalArgumentException("Contains invalid characters " + path);
-        }
-        if (!WARN.matcher(path).matches()) {
-            if (strictPath) {
-                throw new IllegalArgumentException("Contains invalid characters " + path);
+        } else if (path.isEmpty()) {
+            return Paths.BASE;
+        } else {
+            for (String component : Paths.names(path)) {
+                if (INVALID.contains(component)) {
+                    throw new IllegalArgumentException("Relative paths not supported " + path);
+                } else if (!VALID.matcher(component).matches()) {
+                    throw new IllegalArgumentException("Path contains invalid characters " + path);
+                }
             }
+            return path;
         }
-        return path;
     }
 
     /**
@@ -321,7 +329,7 @@ public class Paths {
                 item = path.substring(index, split);
             }
             // ignoring zero length items resulting from double slash
-            // path breaks (occasionally produced when concatenating paths witout due care).
+            // path breaks (occasionally produced when concatenating paths without due care).
             if (item.length() != 0) {
                 names.add(item);
             }
@@ -400,7 +408,7 @@ public class Paths {
             }
             resolvedPath.add(item);
         }
-        return toPath(STRICT_PATH, resolvedPath);
+        return toPath(resolvedPath);
     }
 
     /**
@@ -436,7 +444,7 @@ public class Paths {
             }
             resolvedPath.add(item);
         }
-        return toPath(STRICT_PATH, resolvedPath);
+        return toPath(resolvedPath);
     }
 
     /**
@@ -504,7 +512,7 @@ public class Paths {
             }
             resolvedPath.add(item);
         }
-        return toPath(STRICT_PATH, resolvedPath);
+        return toPath(resolvedPath);
     }
 
     /**
@@ -546,7 +554,7 @@ public class Paths {
     // package visibility for test case coverage on all platforms
     static boolean isAbsolute(String path, boolean isWindows) {
         if (isWindows) return WINDOWS_DRIVE_LETTER.matcher(path).matches();
-        else return path.startsWith("/");
+        else return path != null && path.startsWith("/");
     }
 
     /**
@@ -567,7 +575,7 @@ public class Paths {
     public static File toFile(File base, String path) {
         if (isAbsolute(path)) {
             if (base != null) {
-                // this is not supportive, but to be forgiving we will ignore duplicate slash
+                // To be forgiving we will ignore duplicate slash between base and relative path
                 if (path.startsWith("/")) {
                     path = path.substring(1);
                 } else {
@@ -586,7 +594,7 @@ public class Paths {
     }
 
     /**
-     * Carefully look up a filesytem root directory (matching {@code /} or {@code C:\} as
+     * Carefully look up a filesystem root directory (matching {@code /} or {@code C:\} as
      * appropriate).
      *
      * @param name

@@ -13,6 +13,7 @@ import static org.geoserver.platform.resource.Paths.path;
 import static org.geoserver.platform.resource.Paths.sidecar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -77,19 +78,12 @@ public class PathsTest {
 
         // test path elements that are always valid regardless of strictPath
         for (String name : new String[] {"foo", "foo.txt", "directory/bar"}) {
-            assertEquals(name, Paths.path(true, name));
-            assertEquals(name, Paths.path(false, name));
+            assertEquals(name, Paths.path(name));
         }
         // test path elements that are always invalid regardless of strictPath
         for (String name : new String[] {".", "..", "foo\\"}) {
             try {
-                assertEquals(name, Paths.path(true, name));
-                fail("invalid: " + name);
-            } catch (IllegalArgumentException expected) {
-                // ignore
-            }
-            try {
-                assertEquals(name, Paths.path(false, name));
+                assertEquals(name, Paths.path(name));
                 fail("invalid: " + name);
             } catch (IllegalArgumentException expected) {
                 // ignore
@@ -100,13 +94,7 @@ public class PathsTest {
             for (String prefix : new String[] {"foo", ""}) {
                 for (String suffix : new String[] {"bar", ""}) {
                     String name = prefix + c + suffix;
-                    try {
-                        assertEquals(name, Paths.path(true, name));
-                        fail("invalid: " + name);
-                    } catch (IllegalArgumentException expected) {
-                        // ignore
-                    }
-                    assertEquals(name, Paths.path(false, name));
+                    assertEquals(name, Paths.path(name));
                 }
             }
         }
@@ -116,19 +104,12 @@ public class PathsTest {
     public void validTest() {
         // test path elements that are always valid regardless of strictPath
         for (String name : new String[] {"foo", "foo.txt", "directory/bar"}) {
-            assertEquals(name, Paths.valid(true, name));
-            assertEquals(name, Paths.valid(false, name));
+            assertEquals(name, Paths.valid(name));
         }
         // test path elements that are always invalid regardless of strictPath
         for (String name : new String[] {".", "..", "foo\\"}) {
             try {
-                assertEquals(name, Paths.valid(true, name));
-                fail("invalid: " + name);
-            } catch (IllegalArgumentException expected) {
-                // ignore
-            }
-            try {
-                assertEquals(name, Paths.valid(false, name));
+                assertEquals(name, Paths.valid(name));
                 fail("invalid: " + name);
             } catch (IllegalArgumentException expected) {
                 // ignore
@@ -139,13 +120,7 @@ public class PathsTest {
             for (String prefix : new String[] {"foo", ""}) {
                 for (String suffix : new String[] {"bar", ""}) {
                     String name = prefix + c + suffix;
-                    try {
-                        assertEquals(name, Paths.valid(true, name));
-                        fail("invalid: " + name);
-                    } catch (IllegalArgumentException expected) {
-                        // ignore
-                    }
-                    assertEquals(name, Paths.valid(false, name));
+                    assertEquals(name, Paths.valid(name));
                 }
             }
         }
@@ -236,7 +211,7 @@ public class PathsTest {
         List<String> names = Paths.names(path1);
         assertTrue("absolute: " + names.get(0), isAbsolute(names.get(0)));
 
-        String path2 = Paths.toPath(true, names);
+        String path2 = Paths.toPath(names);
         assertTrue("absolute:" + path2, isAbsolute(path2));
 
         File file2 = Paths.toFile(null, path2);
@@ -250,11 +225,40 @@ public class PathsTest {
         List<String> names = Paths.names(path1);
         assertFalse("absolute: " + names.get(0), isAbsolute(names.get(0)));
 
-        String path2 = Paths.toPath(true, names);
+        String path2 = Paths.toPath(names);
         assertFalse("absolute:" + path2, isAbsolute(path2));
 
         File file2 = Paths.toFile(base, path2);
         assertTrue("absolute:" + file2.getPath(), file2.isAbsolute());
         assertEquals(file2.getName(), new File(base, file.getPath()), file2);
+    }
+
+    @Test
+    public void validationConsistency() {
+        checkValid(false, null);
+        checkValid(true, "");
+        checkValid(false, "relatively/../uncomfortable");
+        checkValid(false, "current/./events");
+        checkValid(false, ".");
+        checkValid(false, "..");
+        checkValid(true, "directory/");
+        checkValid(true, "directory/file.txt");
+        checkValid(true, "image.png");
+
+        // valid but inadvisable
+        checkValid(true, "grep.*");
+    }
+
+    private void checkValid(boolean isValid, String path) {
+        assertEquals("validate: " + path, isValid, Paths.isValid(path));
+        if (isValid) {
+            assertEquals(path, Paths.valid(path));
+        } else {
+            try {
+                assertNotEquals(path, Paths.valid(null));
+                fail("Expected '" + path + "' the fail validation with an exception");
+            } catch (NullPointerException | IllegalStateException expected) {
+            }
+        }
     }
 }

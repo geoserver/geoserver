@@ -9,8 +9,8 @@ The ``GeoServer`` interface is configured as a spring bean with access to:
 
 * :ref:`config_catalog`
 * :ref:`config_resource`
-* ``GeoServerInfo``
-* ``GlobalSettings``
+* :ref:`config_geoserver_info`
+* :ref:`config_settings`
 
 Access to ``GeoServer`` configuration is available to spring beans during application startup and shutdown:
 
@@ -41,12 +41,14 @@ Also available for use via wicket (via ``GeoServerApplication`` web application)
    
    GeoServer gs = page.getGeoServerApplication().getGeoServer();
 
-.. _config_geoserver_info:
+.. _config_info:
 
 Info
 ----
 
-All ``Info`` objects have an ``getId()`` identifier used during persistance.
+All Configuration ``Info`` objects have an ``getId()`` identifier used during persistance.
+
+.. _config_geoserver_info:
 
 GeoServerInfo
 -------------

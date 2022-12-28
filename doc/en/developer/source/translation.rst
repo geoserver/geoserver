@@ -41,7 +41,7 @@ If you are using `Eclipse <http://www.eclipse.org/>`_, you can install the `Ecli
 Translating documentation
 -------------------------
 
-The GeoServer User Manual contains a wealth of information from the novice to the experienced GeoServer user.  It is written using the `Sphinx Documentation Generator <http://sphinx.pocoo.org/>`_.  The stable branch version of the User Manual exists as the following URL:
+The GeoServer User Manual contains a wealth of information from the novice to the experienced GeoServer user.  It is written using the `Sphinx Documentation Generator <https://www.sphinx-doc.org/>`_.  The stable branch version of the User Manual exists as the following URL:
 
   http://docs.geoserver.org/stable/en/user/
 

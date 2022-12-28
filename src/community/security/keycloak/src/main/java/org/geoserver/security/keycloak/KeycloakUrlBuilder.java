@@ -1,5 +1,9 @@
 package org.geoserver.security.keycloak;
 
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /** A builder for a keycloak rest endpoint. */
 class KeycloakUrlBuilder {
 
@@ -38,7 +42,11 @@ class KeycloakUrlBuilder {
      */
     KeycloakUrlBuilder userByName(String userName) {
         users();
-        sb.append("?exact=true&username=").append(userName);
+        try {
+            sb.append("?exact=true&username=").append(URLEncoder.encode(userName, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new UncheckedIOException(e);
+        }
         return this;
     }
 

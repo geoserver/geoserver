@@ -544,7 +544,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             propagation = Propagation.REQUIRED,
             readOnly = true)
     public <T extends CatalogInfo> T getDefault(final String key, Class<T> type) {
-        String sql = "SELECT ID FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
+        String sql = "SELECT id FROM default_object WHERE def_key = :key";
 
         String defaultObjectId;
         try {
@@ -577,7 +577,7 @@ public class ConfigDatabase implements ApplicationContextAware {
         Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
         final String statement =
                 String.format(
-                        "insert into object (oid, type_id, id, blob) values (%s, :type_id, :id, :blob)",
+                        "INSERT INTO object (oid, type_id, id, blob) VALUES (%s, :type_id, :id, :blob)",
                         dialect.nextVal("seq_OBJECT"));
         logStatement(statement, params);
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -658,9 +658,9 @@ public class ConfigDatabase implements ApplicationContextAware {
             Integer relatedPropertyType) {
 
         final String insertPropertySQL =
-                "insert into object_property " //
-                        + "(oid, property_type, related_oid, related_property_type, colindex, value, id) " //
-                        + "values (:object_id, :property_type, :related_oid, :related_property_type, :colindex, :value, :id)";
+                "INSERT INTO object_property "
+                        + "(oid, property_type, related_oid, related_property_type, colindex, value, id) "
+                        + "VALUES (:object_id, :property_type, :related_oid, :related_property_type, :colindex, :value, :id)";
         final Number propertyType = prop.getPropertyType().getOid();
         final String id = info.getId();
 
@@ -789,8 +789,8 @@ public class ConfigDatabase implements ApplicationContextAware {
             return;
         }
 
-        String deleteObject = "delete from object where id = :id";
-        String deleteRelatedProperties = "delete from object_property where related_oid = :oid";
+        String deleteObject = "DELETE FROM object WHERE id = :id";
+        String deleteRelatedProperties = "DELETE FROM object_property WHERE related_oid = :oid";
 
         Map<String, ?> params = ImmutableMap.of("id", info.getId());
         logStatement(deleteObject, params);
@@ -857,7 +857,7 @@ public class ConfigDatabase implements ApplicationContextAware {
         final Integer objectId = findObjectId(info);
         byte[] value = binding.objectToEntry(info);
         final String blob = new String(value, StandardCharsets.UTF_8);
-        String updateStatement = "update object set blob = :blob where oid = :oid";
+        String updateStatement = "UPDATE object SET blob = :blob WHERE oid = :oid";
         params = params("blob", blob, "oid", objectId);
         logStatement(updateStatement, params);
         template.update(updateStatement, params);
@@ -915,7 +915,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private Integer findObjectId(final Info info) {
         final String id = info.getId();
-        final String oidQuery = "select oid from object where id = :id";
+        final String oidQuery = "SELECT oid FROM object WHERE id = :id";
         Map<String, ?> params = params("id", id);
         logStatement(oidQuery, params);
         final Integer objectId = template.queryForObject(oidQuery, params, Integer.class);
@@ -930,7 +930,7 @@ public class ConfigDatabase implements ApplicationContextAware {
     public void repopulateQueryableProperties() {
         InfoRowMapper<Info> mapper = new InfoRowMapper<Info>(Info.class, binding, 2);
         template.query(
-                "select oid, blob from object",
+                "SELECT oid, blob FROM object",
                 new ResultSetExtractor<Void>() {
 
                     @Override
@@ -999,11 +999,11 @@ public class ConfigDatabase implements ApplicationContextAware {
                     relatedPropertyType = null;
                 }
                 String sql =
-                        "update object_property set " //
-                                + "related_oid = :related_oid, " //
-                                + "related_property_type = :related_property_type, " //
-                                + "value = :value " //
-                                + "where oid = :oid and property_type = :property_type and colindex = :colindex";
+                        "UPDATE object_property SET "
+                                + "related_oid = :related_oid, "
+                                + "related_property_type = :related_property_type, "
+                                + "value = :value "
+                                + "WHERE oid = :oid AND property_type = :property_type AND colindex = :colindex";
                 params =
                         params(
                                 "related_oid",
@@ -1035,8 +1035,8 @@ public class ConfigDatabase implements ApplicationContextAware {
                     // prop existed already, lets update any related property that points to its old
                     // value
                     String updateRelated =
-                            "update object_property set value = :value "
-                                    + "where related_oid = :oid and related_property_type = :property_type and colindex = :colindex";
+                            "UPDATE object_property SET value = :value "
+                                    + "WHERE related_oid = :oid AND related_property_type = :property_type AND colindex = :colindex";
                     params =
                             params(
                                     "value",
@@ -1066,8 +1066,8 @@ public class ConfigDatabase implements ApplicationContextAware {
             if (changedProp.isCollectionProperty()) {
                 // delete any remaining collection value that's no longer in the value list
                 String sql =
-                        "delete from object_property where oid=:oid and property_type=:property_type "
-                                + "and colindex > :maxIndex";
+                        "DELETE FROM object_property WHERE oid = :oid AND property_type = :property_type "
+                                + "AND colindex > :maxIndex";
                 Integer maxIndex = Integer.valueOf(values.size());
                 params = params("oid", oid, "property_type", propertyType, "maxIndex", maxIndex);
                 logStatement(sql, params);
@@ -1305,7 +1305,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         Map<String, ?> params = params("types", typesParam(clazz));
 
-        final String sql = "select id from object where type_id in ( :types ) order by id";
+        final String sql = "SELECT id FROM object WHERE type_id IN (:types) ORDER BY id";
 
         logStatement(sql, params);
         Stopwatch sw = Stopwatch.createStarted();
@@ -1349,12 +1349,12 @@ public class ConfigDatabase implements ApplicationContextAware {
             propagation = Propagation.REQUIRED,
             rollbackFor = Exception.class)
     public void setDefault(final String key, @Nullable final String id) {
-        String sql = "DELETE FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
+        String sql = "DELETE FROM default_object WHERE def_key = :key";
         Map<String, ?> params = params("key", key);
         logStatement(sql, params);
         template.update(sql, params);
         if (id != null) {
-            sql = "INSERT INTO DEFAULT_OBJECT (DEF_KEY, ID) VALUES(:key, :id)";
+            sql = "INSERT INTO default_object (def_key, id) VALUES (:key, :id)";
             params = params("key", key, "id", id);
             logStatement(sql, params);
             template.update(sql, params);
@@ -1402,7 +1402,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         CatalogInfo info;
         try {
-            String sql = "select blob from object where id = :id";
+            String sql = "SELECT blob FROM object WHERE id = :id";
             Map<String, String> params = ImmutableMap.of("id", id);
             logStatement(sql, params);
             info = template.queryForObject(sql, params, catalogRowMapper);
@@ -1584,7 +1584,7 @@ public class ConfigDatabase implements ApplicationContextAware {
     public Info loadConfig(String id) {
         Info info;
         try {
-            String sql = "select blob from object where id = :id";
+            String sql = "SELECT blob FROM object WHERE id = :id";
             Map<String, String> params = ImmutableMap.of("id", id);
             logStatement(sql, params);
             info = template.queryForObject(sql, params, configRowMapper);

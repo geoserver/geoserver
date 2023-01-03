@@ -8,9 +8,9 @@ package org.geoserver.jdbcconfig.internal;
 import static com.google.common.base.Preconditions.*;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -98,12 +98,11 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
 
     private final DbMappings dbMappings;
 
-    private Map<String, Object> namedParams;
+    private final Map<String, Object> namedParams = new LinkedHashMap<>();
 
     public FilterToCatalogSQL(Class<?> queryType, DbMappings dbMappings) {
         this.queryType = queryType;
         this.dbMappings = dbMappings;
-        namedParams = Maps.newHashMap();
         List<Integer> concreteQueryTypes = dbMappings.getConcreteQueryTypes(queryType);
         namedParams.put("types", concreteQueryTypes);
     }

@@ -8,6 +8,8 @@ package org.geoserver.jdbcconfig.internal;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.Info;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.Capabilities;
@@ -15,12 +17,15 @@ import org.geotools.filter.visitor.CapabilitiesFilterSplitter;
 import org.geotools.filter.visitor.ClientTransactionAccessor;
 import org.geotools.filter.visitor.LiteralDemultiplyingFilterVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
 class QueryBuilder<T extends Info> {
+
+    private static final Logger LOGGER = Logging.getLogger(QueryBuilder.class);
 
     @SuppressWarnings("unused")
     private static final SortBy DEFAULT_ORDER =
@@ -208,6 +213,8 @@ class QueryBuilder<T extends Info> {
                         if (isMappedProp) {
                             // continue normally
                             return null;
+                        } else if (LOGGER.isLoggable(Level.FINER)) {
+                            LOGGER.finer("Unable to encode property: " + attributePath);
                         }
                         // tell the caps filter splitter this property name is not encodable
                         return Filter.EXCLUDE;

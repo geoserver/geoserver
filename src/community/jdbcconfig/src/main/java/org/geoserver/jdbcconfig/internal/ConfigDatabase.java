@@ -656,7 +656,6 @@ public class ConfigDatabase implements ApplicationContextAware {
             final String storedValue,
             Integer relatedOid,
             Integer relatedPropertyType) {
-        Map<String, ?> params = params("value", storedValue);
 
         final String insertPropertySQL =
                 "insert into object_property " //
@@ -665,22 +664,22 @@ public class ConfigDatabase implements ApplicationContextAware {
         final Number propertyType = prop.getPropertyType().getOid();
         final String id = info.getId();
 
-        params =
+        Map<String, ?> params =
                 params(
                         "object_id",
-                        infoPk, //
+                        infoPk,
                         "property_type",
-                        propertyType, //
-                        "id",
-                        id, //
+                        propertyType,
                         "related_oid",
-                        relatedOid, //
+                        relatedOid,
                         "related_property_type",
-                        relatedPropertyType, //
+                        relatedPropertyType,
                         "colindex",
-                        colIndex, //
+                        colIndex,
                         "value",
-                        storedValue);
+                        storedValue,
+                        "id",
+                        id);
 
         logStatement(insertPropertySQL, params);
         template.update(insertPropertySQL, params);
@@ -1040,14 +1039,14 @@ public class ConfigDatabase implements ApplicationContextAware {
                                     + "where related_oid = :oid and related_property_type = :property_type and colindex = :colindex";
                     params =
                             params(
+                                    "value",
+                                    storedValue,
                                     "oid",
                                     oid,
                                     "property_type",
                                     propertyType,
                                     "colindex",
-                                    colIndex,
-                                    "value",
-                                    storedValue);
+                                    colIndex);
                     logStatement(updateRelated, params);
                     int relatedUpdateCnt = template.update(updateRelated, params);
                     if (LOGGER.isLoggable(Level.FINER)) {

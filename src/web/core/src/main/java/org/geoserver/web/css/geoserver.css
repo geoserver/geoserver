@@ -1596,6 +1596,11 @@ li.select2-results__option {
     padding: 10px;
   }
 
+.fullscreen #styleForm #style-context .tab-panel {
+  overflow: auto;
+  height: calc(100vh - 200px);
+}
+
 .fullscreen #styleForm #style-editor {
     -webkit-box-ordinal-group: 1;
     -moz-box-ordinal-group: 1;

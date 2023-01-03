@@ -5,9 +5,9 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -19,7 +19,7 @@ public class DbUtils {
     static final Logger LOGGER = Logging.getLogger(DbUtils.class.getPackage().getName());
 
     public static Map<String, ?> params(Object... kv) {
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, Object> params = new LinkedHashMap<>();
         String paramName;
         Object paramValue;
         for (int i = 0; i < kv.length; i += 2) {

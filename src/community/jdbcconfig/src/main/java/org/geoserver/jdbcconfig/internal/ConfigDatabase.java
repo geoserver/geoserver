@@ -1746,11 +1746,12 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     /**
-     * Listens to catalog events clearing cache entires when resources are modified.
-     * Copied from org.geoserver.catalog.ResourcePool
-     * upgrade CatalogClearingListener clear old source default priority is 100
+     * Listens to catalog events clearing cache entires when resources are modified. Copied from
+     * org.geoserver.catalog.ResourcePool upgrade CatalogClearingListener clear old source default
+     * priority is 100
+     *
      * @see CatalogImpl#addListener(CatalogListener)
-     * */
+     */
     public class CatalogClearingListener implements CatalogListener, ExtensionPriority {
 
         @Override

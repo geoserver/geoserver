@@ -104,6 +104,7 @@ import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.CacheProvider;
 import org.geoserver.util.DefaultCacheProvider;
@@ -1744,9 +1745,14 @@ public class ConfigDatabase implements ApplicationContextAware {
         releaseWriteLock(id);
     }
 
-    /** Listens to catalog events clearing cache entires when resources are modified. */
-    // Copied from org.geoserver.catalog.ResourcePool
-    public class CatalogClearingListener implements CatalogListener {
+    /**
+     * Listens to catalog events clearing cache entires when resources are modified. Copied from
+     * org.geoserver.catalog.ResourcePool upgrade CatalogClearingListener clear old source default
+     * priority is 100
+     *
+     * @see CatalogImpl#addListener(CatalogListener)
+     */
+    public class CatalogClearingListener implements CatalogListener, ExtensionPriority {
 
         @Override
         public void handleAddEvent(CatalogAddEvent event) {
@@ -1784,6 +1790,11 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         @Override
         public void reloaded() {}
+
+        @Override
+        public int getPriority() {
+            return 999;
+        }
     }
     /** Listens to configuration events clearing cache entires when resources are modified. */
     public class ConfigClearingListener extends ConfigurationListenerAdapter {

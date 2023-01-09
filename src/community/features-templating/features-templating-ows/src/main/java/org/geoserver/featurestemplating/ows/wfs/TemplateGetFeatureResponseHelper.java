@@ -40,6 +40,8 @@ public class TemplateGetFeatureResponseHelper {
 
     private TemplateIdentifier format;
 
+    private static final String ESCAPE_CHARS = "escapeCharacters";
+
     TemplateGetFeatureResponseHelper(Catalog catalog, TemplateIdentifier format) {
         this.catalog = catalog;
         this.format = format;
@@ -69,9 +71,15 @@ public class TemplateGetFeatureResponseHelper {
             case GML32:
             case HTML:
                 XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+                // we do ourselves the escaping in the template writer since the one provided in the
+                // XMLStreamWriter implementation
+                // doesn't handle all the characters.
+                if (xMLOutputFactory.isPropertySupported(ESCAPE_CHARS))
+                    xMLOutputFactory.setProperty(ESCAPE_CHARS, false);
                 try {
                     XMLStreamWriter xMLStreamWriter =
-                            xMLOutputFactory.createXMLStreamWriter(output);
+                            xMLOutputFactory.createXMLStreamWriter(output, "UTF-8");
+
                     if (format.equals(TemplateIdentifier.HTML))
                         outputWriter = new XHTMLTemplateWriter(xMLStreamWriter, output);
                     else outputWriter = new GMLTemplateWriter(xMLStreamWriter, version);

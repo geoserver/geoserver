@@ -20,9 +20,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.mail.internet.InternetHeaders;
@@ -1126,5 +1128,61 @@ public class DispatcherTest {
             Document dom = XMLUnit.buildTestDocument(outputContent);
             Assert.assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
         }
+    }
+
+    /**
+     * tests that, for a KVP GetCapabilities request, that the AcceptVersions are parsed and put in
+     * the request.
+     */
+    @Test
+    public void testHandleAcceptVersionsKVP() {
+        Request req = new Request();
+        req.setRequest("GetCapabilities");
+        req.setService("WMS");
+
+        Map<String, Object> rawKvp = new HashMap<>();
+        rawKvp.put("AcceptVersions", "1.3.0,1.1.1");
+        req.setRawKvp(rawKvp);
+
+        Dispatcher dispatcher = new Dispatcher();
+
+        dispatcher.handleAcceptVersionsKVP(req);
+
+        assertEquals(2, req.getAcceptVersions().size());
+        assertEquals(new Version("1.3.0"), req.getAcceptVersions().get(0));
+        assertEquals(new Version("1.1.1"), req.getAcceptVersions().get(1));
+    }
+
+    /**
+     * tests that, for an XMP POST GetCapabilities request, that the AcceptVersions are parsed
+     * correctly.
+     */
+    @Test
+    public void testParseAcceptVersionsXML() throws Exception {
+        Request req = new Request();
+        req.setRequest("GetCapabilities");
+        req.setService("WFS");
+
+        // WFS XML POST GetCapabilities Requests with AcceptVersion 1.0.0 and 1.1.1
+        String test =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<ows:GetCapabilities service=\"WFS\" xmlns:ows=\"http://www.opengis.net/wfs\">\n"
+                        + " <ows:AcceptVersions>\n"
+                        + "     <ows:Version>1.0.0</ows:Version>\n"
+                        + "     <ows:Version>1.1.1</ows:Version>\n"
+                        + "</ows:AcceptVersions>"
+                        + "</ows:GetCapabilities>";
+
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(test));
+
+        req.setInput(bufferedReader);
+
+        Dispatcher dispatcher = new Dispatcher();
+
+        req.setAcceptVersions(dispatcher.parseAcceptVersionsXML(req, req.getRequest()));
+
+        assertEquals(2, req.getAcceptVersions().size());
+        assertEquals(new Version("1.0.0"), req.getAcceptVersions().get(0));
+        assertEquals(new Version("1.1.1"), req.getAcceptVersions().get(1));
     }
 }

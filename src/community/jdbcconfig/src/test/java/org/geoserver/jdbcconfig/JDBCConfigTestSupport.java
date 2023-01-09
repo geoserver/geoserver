@@ -176,7 +176,11 @@ public class JDBCConfigTestSupport {
             System.err.println("skipping " + name + " tests, enable via maven profile");
             return;
         }
-        if ("true".equals(System.getProperty("jdbcconfig." + name + ".skip"))) {
+        if ("true"
+                .equals(
+                        System.getProperty(
+                                "jdbcconfig." + name + ".skip",
+                                "h2".equals(name) ? "false" : "true"))) {
             System.err.println("skipping " + name + " tests, enable via maven profile");
             return;
         }

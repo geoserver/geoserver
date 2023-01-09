@@ -125,6 +125,7 @@ import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.util.logging.Log4J2LoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.XSD;
+import org.jsoup.Jsoup;
 import org.junit.After;
 import org.junit.Before;
 import org.locationtech.jts.geom.Coordinate;
@@ -1977,6 +1978,22 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                         + " non bg pixels: "
                         + pixelsDiffer);
         return pixelsDiffer;
+    }
+
+    /**
+     * Executes an ows request using the GET method and returns the result as a JSoup document, that
+     * can be then queried using CSS selectors
+     */
+    protected org.jsoup.nodes.Document getAsJSoup(String url) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(url);
+        assertEquals(200, response.getStatus());
+        assertEquals("text/html", response.getContentType());
+
+        LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
+
+        // parse the HTML
+        org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());
+        return document;
     }
 
     //

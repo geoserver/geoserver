@@ -4,12 +4,13 @@
  */
 package org.geoserver.ogcapi.features;
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.geoserver.test.FeatureChainingMockData;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
-import org.w3c.dom.Document;
 
 public class ComplexFeaturesTest extends AbstractAppSchemaTestSupport {
     @Override
@@ -18,13 +19,13 @@ public class ComplexFeaturesTest extends AbstractAppSchemaTestSupport {
     }
 
     @Test
-    public void testHTMLMappedFeature() throws IOException {
-        Document doc = getAsDOM("ogc/features/collections/gsml:MappedFeature/items?f=text/html");
+    public void testHTMLMappedFeature() throws Exception {
+        Document doc = getAsJSoup("ogc/features/collections/gsml:MappedFeature/items?f=text/html");
 
         // all the five root feature are present
-        assertXpathCount(5, "//ul[@id='rootUL']", doc);
+        assertEquals(5, doc.select("ul[id=rootUL]").size());
         // nested features are present
-        assertXpathCount(4, "//li[span='GeologicUnitType']", doc);
-        assertXpathCount(6, "//li[span='CompositionPartType']", doc);
+        assertEquals(4, doc.select("li>span:containsOwn(GeologicUnitType)").size());
+        assertEquals(6, doc.select("li>span:containsOwn(CompositionPartType)").size());
     }
 }

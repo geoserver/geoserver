@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.util.ISO8601Formatter;
@@ -67,7 +68,8 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
             else {
                 streamWriter.writeStartElement(name);
                 evaluateChildren(encodingHints);
-                streamWriter.writeCharacters(staticContent.toString());
+                streamWriter.writeCharacters(
+                        StringEscapeUtils.escapeHtml(staticContent.toString()));
                 streamWriter.writeEndElement();
             }
         } catch (XMLStreamException e) {
@@ -127,7 +129,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
                 String value = "";
                 if (encodeAsAttribute) writeAsAttribute(key, value, encodingHints);
                 else {
-                    streamWriter.writeCharacters(value);
+                    writeAsCharacters(value);
                     canClose = true;
                 }
             } else if (elementValue instanceof String
@@ -137,7 +139,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
                     || elementValue instanceof URL) {
                 if (encodeAsAttribute) writeAsAttribute(key, elementValue, encodingHints);
                 else {
-                    streamWriter.writeCharacters(String.valueOf(elementValue));
+                    writeAsCharacters(String.valueOf(elementValue));
                     canClose = true;
                 }
             } else if (elementValue instanceof Geometry) {
@@ -177,21 +179,35 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
         }
     }
 
+    private void writeAsCharacters(String value) throws XMLStreamException {
+        if (value == null) value = "";
+        value = escape(value);
+        streamWriter.writeCharacters(value);
+    }
+
+    /**
+     * Escape reserved xml characters in string.
+     *
+     * @param value the string to escape.
+     * @return the string value with escaped xml.
+     */
+    protected String escape(String value) {
+        return StringEscapeUtils.escapeXml(value);
+    }
+
     private void writeAsAttribute(String key, Object elementValue, EncodingHints encodingHints)
             throws IOException {
         try {
+            String strVal = escape(elementValue.toString());
             if (key.indexOf(":") != -1 && !key.contains("xmlns")) {
                 String[] splitKey = key.split(":");
                 streamWriter.writeAttribute(
-                        splitKey[0],
-                        namespaces.get(splitKey[0]),
-                        splitKey[1],
-                        elementValue.toString());
+                        splitKey[0], namespaces.get(splitKey[0]), splitKey[1], strVal);
             } else {
                 if (key.contains("xmlns")) {
-                    streamWriter.writeNamespace(key.split(":")[1], elementValue.toString());
+                    streamWriter.writeNamespace(key.split(":")[1], strVal);
                 } else {
-                    streamWriter.writeAttribute(key, elementValue.toString());
+                    streamWriter.writeAttribute(key, strVal);
                 }
             }
         } catch (XMLStreamException e) {

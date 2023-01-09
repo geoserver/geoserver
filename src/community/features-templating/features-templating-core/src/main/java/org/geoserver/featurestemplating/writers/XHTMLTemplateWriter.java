@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -131,6 +132,11 @@ public class XHTMLTemplateWriter extends XMLTemplateWriter {
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }
+    }
+
+    @Override
+    protected String escape(String value) {
+        return StringEscapeUtils.escapeHtml(value);
     }
 
     @Override

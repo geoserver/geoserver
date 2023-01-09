@@ -117,6 +117,20 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
         assertTrue(resp.getContentAsString().contains("Unable to find a JSON-LD template"));
     }
 
+    @Test
+    public void testEscaping() {
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
+                                + "&outputFormat=text/html"
+                                + MF_HTML_PARAM);
+        assertXpathMatches(
+                "60&deg;",
+                "//html/body/ul/li[./span = 'MappedFeature']/ul/li[./span = 'Degrees']/ul/li",
+                doc);
+        assertHTMLResult(doc);
+    }
+
     private void assertHTMLResult(Document doc) {
         assertXpathCount(1, "//html/head/style", doc);
         assertXpathCount(5, "//html/body/ul/li[./span = 'MappedFeature']", doc);

@@ -12,7 +12,6 @@ package org.geoserver.gsr.controller;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.util.logging.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.DataStoreInfo;
@@ -23,8 +22,6 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gsr.validation.JSONValidator;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -110,16 +107,5 @@ public class ControllerTest extends GeoServerSystemTestSupport {
 
         assertEquals(expectedHttpCode, response.getStatus());
         return response;
-    }
-
-    protected Document getAsJSoup(String url) throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse(url, 200);
-        assertEquals("text/html", response.getContentType());
-
-        LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
-
-        // parse the HTML
-        Document document = Jsoup.parse(response.getContentAsString());
-        return document;
     }
 }

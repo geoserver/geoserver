@@ -16,7 +16,8 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
@@ -122,9 +123,10 @@ public class QueryBuilderTest {
                         .build();
         String sql = build.toString();
         // Ensure the following sql is present
-        assertTrue(
-                sql.contains(
-                        "NOT oid IN (SELECT oid FROM object_property WHERE property_type IN (:ptype0) AND UPPER(value) = :value0)"));
+        assertThat(
+                sql,
+                containsString(
+                        "NOT (oid IN (SELECT oid FROM object_property WHERE property_type IN (:ptype0) AND UPPER(value) = :value0)"));
     }
 
     @Test
@@ -138,7 +140,7 @@ public class QueryBuilderTest {
                         .build();
         String sql = build.toString();
         // Ensure the following sql is present
-        assertTrue(sql.contains("type_id = " + dbMappings.getTypeId(LayerInfo.class)));
+        assertThat(sql, containsString("type_id = " + dbMappings.getTypeId(LayerInfo.class)));
     }
 
     @Test
@@ -153,11 +155,11 @@ public class QueryBuilderTest {
         String sql = build.toString();
 
         String sqlNull =
-                "oid IN (select oid from object_property where property_type in (:"
-                        + "ptype0) and value IS NULL) OR oid NOT  in (select oid from object_property where property_type in (:"
+                "oid IN (SELECT oid FROM object_property WHERE property_type IN (:"
+                        + "ptype0) AND value IS NULL) OR oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:"
                         + "ptype0))";
         // Ensure the following sql is present
-        assertTrue(sql.contains(sqlNull));
+        assertThat(sql, containsString(sqlNull));
     }
 
     @Test
@@ -172,9 +174,9 @@ public class QueryBuilderTest {
         String sql = build.toString();
 
         String sqlNil =
-                "oid IN (select oid from object_property where property_type in (:"
-                        + "ptype0) and value IS NULL)";
+                "oid IN (SELECT oid FROM object_property WHERE property_type IN (:"
+                        + "ptype0) AND value IS NULL)";
         // Ensure the following sql is present
-        assertTrue(sql.contains(sqlNil));
+        assertThat(sql, containsString(sqlNil));
     }
 }

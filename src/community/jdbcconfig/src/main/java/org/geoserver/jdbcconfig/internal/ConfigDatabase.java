@@ -262,6 +262,12 @@ public class ConfigDatabase implements ApplicationContextAware {
         return dbMappings;
     }
 
+    /**
+     * CatalogClearingListener listener will be added to CatalogImpl when CatalogImpl is set, and
+     * CatalogImpl's addListener method will sort the listener
+     *
+     * @param catalog
+     */
     public void setCatalog(CatalogImpl catalog) {
         this.catalog = catalog;
         this.binding.setCatalog(catalog);

@@ -143,7 +143,7 @@ class QueryBuilder<T extends Info> {
 
         query.append("\n    (SELECT oid, id FROM object WHERE ");
         if (queryType != null) {
-            query.append("type_id in (:types) /* ")
+            query.append("type_id IN (:types) /* ")
                     .append(queryType.getCanonicalName())
                     .append(" */\n      AND ");
         }
@@ -170,7 +170,7 @@ class QueryBuilder<T extends Info> {
                     .append(")) ")
                     .append(subSelectName);
 
-            query.append("  /* ")
+            query.append(" /* ")
                     .append(order.getPropertyName().getPropertyName())
                     .append(" ")
                     .append(ascDesc(order))
@@ -243,16 +243,16 @@ class QueryBuilder<T extends Info> {
         StringBuilder query = new StringBuilder();
         if (isCountQuery) {
             if (Filter.INCLUDE.equals(this.originalFilter)) {
-                query.append("select count(oid) from object where type_id in (:types)");
+                query.append("SELECT COUNT(oid) FROM object WHERE type_id IN (:types)");
             } else {
-                query.append("select count(oid) from object where type_id in (:types) AND (\n");
-                query.append(whereClause).append("\n)");
+                query.append("SELECT COUNT(oid) FROM object WHERE type_id IN (:types) AND (\n");
+                query.append(whereClause).append(")");
             }
         } else {
             SortBy[] orders = this.sortOrder;
             if (orders == null) {
-                query.append("select id from object where type_id in (:types) AND (\n");
-                query.append(whereClause).append(")\n");
+                query.append("SELECT id FROM object WHERE type_id IN (:types) AND (\n");
+                query.append(whereClause).append(")");
                 query.append(" ORDER BY oid");
             } else {
                 querySortBy(query, whereClause, orders);

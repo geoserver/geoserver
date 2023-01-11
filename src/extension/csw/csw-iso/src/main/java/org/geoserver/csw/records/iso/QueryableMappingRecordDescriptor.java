@@ -29,6 +29,11 @@ import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.beans.FatalBeanException;
 
+/**
+ * Abstract class for Record Descriptor that supports configurable Queryables. The queryables
+ * mapping is stored in the ${recordtype}.queryables.properties file which is automatically copied
+ * to the csw folder in the geoserver data directory.
+ */
 public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDescriptor {
 
     private static final Logger LOGGER = Logging.getLogger(QueryableMappingRecordDescriptor.class);

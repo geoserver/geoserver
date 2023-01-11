@@ -105,6 +105,7 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
                     List<Object> attributes = List.class.cast(result);
                     List<Object> results = walkList(attributes, path, i);
                     if (results.size() == 1) result = results.get(0);
+                    else if (results.isEmpty()) result = null;
                     else result = results;
                     break;
                 } else if (result == null) {

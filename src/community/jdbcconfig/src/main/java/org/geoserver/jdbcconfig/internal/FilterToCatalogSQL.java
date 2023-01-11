@@ -132,7 +132,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
      */
     @Override
     public Object visit(ExcludeFilter filter, Object extraData) {
-        append(extraData, "(1=0) /* EXCLUDE */\n");
+        append(extraData, "0 = 1 /* EXCLUDE */\n");
         return extraData;
     }
 
@@ -142,7 +142,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
      */
     @Override
     public Object visit(IncludeFilter filter, Object extraData) {
-        append(extraData, "(1=1) /* INCLUDE */\n");
+        append(extraData, "1 = 1 /* INCLUDE */\n");
         return extraData;
     }
 
@@ -179,7 +179,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                     builder =
                             append(
                                     extraData,
-                                    "oid NOT IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
+                                    "oid NOT IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE o1.oid = o2.oid ",
                                     "AND o1.property_type IN (:",
                                     propertyTypesParam1,
                                     ") ",
@@ -190,15 +190,15 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                                     valueCol1,
                                     " != ",
                                     valueCol2,
-                                    " ) /* ",
+                                    ") /* ",
                                     filter.toString(),
-                                    " */ \n");
+                                    " */\n");
                     break;
                 case ANY: // any = the value for the property must occur at least once
                     builder =
                             append(
                                     extraData,
-                                    "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
+                                    "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE o1.oid = o2.oid ",
                                     "AND o1.property_type IN (:",
                                     propertyTypesParam1,
                                     ") ",
@@ -209,15 +209,15 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                                     valueCol1,
                                     " = ",
                                     valueCol2,
-                                    " ) /* ",
+                                    ") /* ",
                                     filter.toString(),
-                                    " */ \n");
+                                    " */\n");
                     break;
                 case ONE: // one = the value for the property must occur exactly once
                     builder =
                             append(
                                     extraData,
-                                    "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid) ",
+                                    "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE o1.oid = o2.oid ",
                                     "AND o1.property_type IN (:",
                                     propertyTypesParam1,
                                     ") ",
@@ -228,11 +228,11 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                                     valueCol1,
                                     " = ",
                                     valueCol2,
-                                    " GROUP BY (oid) HAVING COUNT(oid)=1) /* ",
+                                    " GROUP BY (oid) HAVING COUNT(oid) = 1) /* ",
                                     filter.toString(),
                                     "/* ",
                                     filter.toString(),
-                                    " */ \n");
+                                    " */\n");
                     break;
                 default:
                     throw new IllegalArgumentException("MatchAction: " + matchAction);
@@ -289,7 +289,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                                     valueParam,
                                     ") /* ",
                                     filter.toString(),
-                                    " */ \n");
+                                    " */\n");
                     break;
                 case ANY: // any = the value for the property must occur at least once
                     builder =
@@ -303,7 +303,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                                     valueParam,
                                     ") /* ",
                                     filter.toString(),
-                                    " */ \n");
+                                    " */\n");
                     break;
                 case ONE: // one = the value for the property must occur exactly once
                     builder =
@@ -315,9 +315,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                                     valueCol,
                                     " = :",
                                     valueParam,
-                                    " GROUP BY (oid) HAVING COUNT(oid)=1) /* ",
+                                    " GROUP BY (oid) HAVING COUNT(oid) = 1) /* ",
                                     filter.toString(),
-                                    " */ \n");
+                                    " */\n");
                     break;
                 default:
                     throw new IllegalArgumentException("MatchAction: " + matchAction);
@@ -333,12 +333,12 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         Class<?> clazz = expression1.evaluate(null, Class.class);
 
         if (clazz == null || dbMappings.getTypeId(clazz) == null) {
-            return "(1=0) /* EXCLUDE */\n";
+            return "0 = 1 /* EXCLUDE */\n";
         }
 
         Integer typeId = dbMappings.getTypeId(clazz);
 
-        return "type_id = " + typeId + "/* isInstanceOf " + clazz.toString() + " */ \n";
+        return "type_id = " + typeId + " /* isInstanceOf " + clazz.getName() + " */\n";
     }
 
     /**
@@ -375,13 +375,13 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                                 extraData,
                                 "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
                                 propertyTypesParam,
-                                ") AND NOT(",
+                                ") AND ",
                                 valueCol,
-                                " LIKE '",
+                                " NOT LIKE '",
                                 pattern,
-                                "')) /* ",
+                                "') /* ",
                                 filter.toString(),
-                                " */ \n");
+                                " */\n");
                 break;
             case ANY: // any = the value for the property must occur at least once
                 builder =
@@ -395,7 +395,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                                 pattern,
                                 "') /* ",
                                 filter.toString(),
-                                " */ \n");
+                                " */\n");
                 break;
             case ONE: // one = the value for the property must occur exactly once
                 builder =
@@ -408,9 +408,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                                 " LIKE '",
                                 pattern,
                                 "' ",
-                                "GROUP BY (oid) HAVING COUNT(oid)=1 ) /* ",
+                                "GROUP BY (oid) HAVING COUNT(oid) = 1) /* ",
                                 filter.toString(),
-                                " */ \n");
+                                " */\n");
                 break;
             default:
                 throw new IllegalArgumentException("MatchAction: " + matchAction);
@@ -481,13 +481,13 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
 
         List<Filter> children = filter.getChildren();
         checkArgument(children.size() > 0);
-        sql.append("(\n\t");
+        sql.append("(\n    ");
 
         for (Iterator<Filter> it = children.iterator(); it.hasNext(); ) {
             Filter child = it.next();
             sql = (StringBuilder) child.accept(this, sql);
             if (it.hasNext()) {
-                sql = append(extraData, "\tAND\n\t");
+                sql = append(extraData, "    AND\n    ");
             }
         }
         sql.append(")");
@@ -506,7 +506,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
             Filter child = it.next();
             sql = (StringBuilder) child.accept(this, sql);
             if (it.hasNext()) {
-                sql = append(extraData, "\tOR\n\t");
+                sql = append(extraData, "    OR\n    ");
             }
         }
         sql.append(")");
@@ -523,8 +523,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Not, java.lang.Object) */
     @Override
     public Object visit(Not filter, Object extraData) {
-
-        return filter.getFilter().accept(this, append(extraData, " NOT "));
+        filter.getFilter().accept(this, append(extraData, "NOT ("));
+        return append(extraData, ")");
     }
 
     /**
@@ -590,13 +590,13 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         StringBuilder builder =
                 append(
                         extraData,
-                        "(oid IN (select oid from object_property where property_type in (:",
+                        "(oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
                         propertyTypesParam,
-                        ") and value IS NULL) OR oid NOT  in (select oid from object_property where property_type in (:"
+                        ") AND value IS NULL) OR oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:"
                                 + propertyTypesParam
                                 + "))) /* ",
                         filter.toString(),
-                        " */ \n");
+                        " */\n");
         return builder;
     }
 
@@ -612,11 +612,11 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         StringBuilder builder =
                 append(
                         extraData,
-                        "oid IN (select oid from object_property where property_type in (:",
+                        "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
                         propertyTypesParam,
-                        ") and value IS NULL) /* ",
+                        ") AND value IS NULL) /* ",
                         filter.toString(),
-                        " */ \n");
+                        " */\n");
         return builder;
     }
 

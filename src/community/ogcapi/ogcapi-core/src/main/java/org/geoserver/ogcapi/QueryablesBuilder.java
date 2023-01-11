@@ -53,7 +53,7 @@ public class QueryablesBuilder {
 
     public QueryablesBuilder forType(FeatureTypeInfo ft) throws IOException {
         this.queryables.setCollectionId(ft.prefixedName());
-        this.queryables.setTitle(Optional.of(ft.getTitle()).orElse(ft.prefixedName()));
+        this.queryables.setTitle(Optional.ofNullable(ft.getTitle()).orElse(ft.prefixedName()));
         this.queryables.setDescription(ft.getDescription());
         return forType((SimpleFeatureType) ft.getFeatureType());
     }

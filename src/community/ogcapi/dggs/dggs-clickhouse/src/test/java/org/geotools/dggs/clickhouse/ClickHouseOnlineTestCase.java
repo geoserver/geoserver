@@ -18,12 +18,17 @@ package org.geotools.dggs.clickhouse;
 
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geootols.dggs.clickhouse.ClickHouseDGGSDataStore;
 import org.geootols.dggs.clickhouse.ClickHouseDGGStoreFactory;
 import org.geotools.dggs.DGGSFactoryFinder;
 import org.geotools.test.OnlineTestCase;
+import org.geotools.util.logging.Logging;
 
 public abstract class ClickHouseOnlineTestCase extends OnlineTestCase {
+
+    static final Logger LOGGER = Logging.getLogger(ClickHouseOnlineTestCase.class);
 
     protected ClickHouseDGGSDataStore dataStore;
 
@@ -38,6 +43,16 @@ public abstract class ClickHouseOnlineTestCase extends OnlineTestCase {
         @SuppressWarnings("unchecked")
         Map<String, ?> params = (Map) fixture;
         this.dataStore = (ClickHouseDGGSDataStore) factory.createDataStore(params);
+    }
+
+    @Override
+    protected boolean isOnline() {
+        String dggsId = getDGGSId();
+        boolean present = DGGSFactoryFinder.getFactory(dggsId).isPresent();
+        if (!present) {
+            LOGGER.log(Level.WARNING, dggsId + " is not present, skipping the test");
+        }
+        return present;
     }
 
     /**

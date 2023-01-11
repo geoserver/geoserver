@@ -40,26 +40,21 @@ public class TilesSampleDataProvider implements SampleDataProvider {
                 // is there any vector format, that is, actual "data"?
                 return mimeTypes.stream()
                         .filter(m -> m.isVector())
-                        .map(
-                                m -> {
-                                    String href =
-                                            ResponseUtils.buildURL(
-                                                    APIRequestInfo.get().getBaseURL(),
-                                                    "ogc/tiles/collections/"
-                                                            + ResponseUtils.urlEncode(
-                                                                    layer.prefixedName()
-                                                                            + "/tiles"),
-                                                    Collections.singletonMap("f", m.getFormat()),
-                                                    URLMangler.URLType.SERVICE);
-                                    return new Link(
-                                            href,
-                                            "tiles",
-                                            m.getFormat(),
-                                            "Tiles as " + m.getFormat());
-                                })
+                        .map(m -> buildSampleDataLink(layer, m))
                         .collect(Collectors.toList());
             }
         }
         return Collections.emptyList();
+    }
+
+    private Link buildSampleDataLink(LayerInfo layer, MimeType m) {
+        String href =
+                ResponseUtils.buildURL(
+                        APIRequestInfo.get().getBaseURL(),
+                        "ogc/tiles/collections/"
+                                + ResponseUtils.urlEncode(layer.prefixedName() + "/tiles"),
+                        Collections.singletonMap("f", m.getFormat()),
+                        URLMangler.URLType.SERVICE);
+        return new Link(href, "tiles", m.getFormat(), "Tiles as " + m.getFormat());
     }
 }

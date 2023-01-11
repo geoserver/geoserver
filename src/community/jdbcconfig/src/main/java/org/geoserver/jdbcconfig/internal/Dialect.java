@@ -37,10 +37,10 @@ public class Dialect {
             limit = Integer.MAX_VALUE;
         }
         if (limit != null) {
-            sql.append(" limit ").append(limit);
+            sql.append(" LIMIT ").append(limit);
         }
         if (offset != null) {
-            sql.append(" offset ").append(offset);
+            sql.append(" OFFSET ").append(offset);
         }
     }
 
@@ -61,6 +61,6 @@ public class Dialect {
     }
 
     public CharSequence iLikeNamedPreparedConstruct(String attributeName, String valueParam) {
-        return Joiner.on("").join("lower(", propertyName(attributeName), ") like :", valueParam);
+        return Joiner.on("").join("LOWER(", propertyName(attributeName), ") LIKE :", valueParam);
     }
 }

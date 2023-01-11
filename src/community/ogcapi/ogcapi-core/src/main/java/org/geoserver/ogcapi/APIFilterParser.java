@@ -86,9 +86,9 @@ public class APIFilterParser {
 
         try {
             Filter parsedFilter = null;
-            if (filterLang.equals(ECQL_TEXT)) {
+            if (ECQL_TEXT.equals(filterLang)) {
                 parsedFilter = ECQL.toFilter(filter);
-            } else if (filterLang.equals(CQL2_JSON)) {
+            } else if (CQL2_JSON.equals(filterLang)) {
                 CQLJsonCompiler cqlJsonCompiler =
                         new CQLJsonCompiler(filter, new FilterFactoryImpl());
                 cqlJsonCompiler.compileFilter();

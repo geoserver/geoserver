@@ -534,7 +534,7 @@
                     <sld:PointSymbolizer>
                         <sld:Graphic>
                             <sld:ExternalGraphic>
-                                <sld:OnlineResource xlink:href="../img/marker.png" />
+                                <sld:OnlineResource xlink:href="img/marker.png" />
                                 <sld:Format>image/png</sld:Format>
                             </sld:ExternalGraphic>
                             <sld:Opacity>0.7</sld:Opacity>

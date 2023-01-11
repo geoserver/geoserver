@@ -192,7 +192,7 @@ public class CollectionsTest extends CoveragesTestSupport {
         GeoServerInfo info = gs.getGlobal();
         SettingsInfo settings = info.getSettings();
         settings.setProxyBaseUrl("${X-Forwarded-Proto}://test-headers/geoserver/");
-        info.setUseHeadersProxyURL(true);
+        info.getSettings().setUseHeadersProxyURL(true);
         gs.save(info);
         try {
             MockHttpServletRequest request = createRequest("ogc/coverages/collections?f=html");
@@ -222,7 +222,7 @@ public class CollectionsTest extends CoveragesTestSupport {
             info = gs.getGlobal();
             settings = info.getSettings();
             settings.setProxyBaseUrl(null);
-            info.setUseHeadersProxyURL(null);
+            info.getSettings().setUseHeadersProxyURL(null);
             gs.save(info);
         }
     }

@@ -169,7 +169,7 @@ public class ApiTest extends FeaturesTestSupport {
         // filter languages
         Parameter langs = api.getComponents().getParameters().get("filter-lang");
         assertEquals(
-                langs.getSchema().getEnum(), new ArrayList(APIFilterParser.SUPPORTED_ENCODINGS));
+                langs.getSchema().getEnum(), new ArrayList<>(APIFilterParser.SUPPORTED_ENCODINGS));
 
         // ... feature
         PathItem item = paths.get("/collections/{collectionId}/items/{featureId}");

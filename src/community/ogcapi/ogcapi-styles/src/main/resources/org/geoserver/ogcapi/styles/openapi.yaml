@@ -988,7 +988,7 @@ components:
         (part of conformance class 'style-validation') \
         'yes' creates a new style after successful validation
         and returns 400, if validation fails,
-        ’no' creates the style without validation and 
+        'no' creates the style without validation and 
         'only' just validates the style without creating a
         new style and returns 400, if validation fails,
         otherwise 204.

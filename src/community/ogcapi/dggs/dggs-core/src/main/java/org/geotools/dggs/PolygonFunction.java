@@ -50,7 +50,7 @@ public class PolygonFunction extends DGGSSetFunctionBase {
                     Polygon polygon = (Polygon) getParameterValue(object, 1);
                     Integer resolution = (Integer) getParameterValue(object, 2);
                     Boolean compact =
-                            Optional.of((Boolean) getParameterValue(null, 3)).orElse(false);
+                            Optional.ofNullable((Boolean) getParameterValue(null, 3)).orElse(false);
                     DGGSInstance dggs = (DGGSInstance) getParameterValue(object, 4);
                     if (polygon == null || resolution == null || dggs == null)
                         return Collections.emptyIterator();
@@ -80,7 +80,7 @@ public class PolygonFunction extends DGGSSetFunctionBase {
         if (!isStable()) throw new IllegalStateException("Source parameters are not stable");
         Polygon polygon = (Polygon) getParameterValue(null, 1);
         Integer resolution = (Integer) getParameterValue(null, 2);
-        Boolean compact = Optional.of((Boolean) getParameterValue(null, 3)).orElse(false);
+        Boolean compact = Optional.ofNullable((Boolean) getParameterValue(null, 3)).orElse(false);
         DGGSInstance dggs = (DGGSInstance) getParameterValue(null, 4);
 
         return dggs.polygon(polygon, resolution, compact);

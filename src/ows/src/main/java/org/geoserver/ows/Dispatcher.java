@@ -1243,7 +1243,7 @@ public class Dispatcher extends AbstractController {
                                                 (x.getNamespace() != null)
                                                         && x.getNamespace().equals(namespace))
                                 .collect(Collectors.toList());
-                if (filteredMatches.size() > 0) {
+                if (!filteredMatches.isEmpty()) {
                     matches = filteredMatches;
                 }
             } else {

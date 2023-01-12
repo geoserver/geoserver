@@ -293,6 +293,8 @@ and the GUI will auto-fill itself based on the document contents:
    .. figure:: images/discovery.png
       :align: center
 
+The UI allow to set also the ``Post Logout Redirect URI`` which will be used to populate the  ``post_logout_redirect_uri`` request param, when doing the global logout from the GeoServer UI. The OpenId provider will use the URI to redirect to the desired app page.
+
 In addition, the OpenID connect authentication is able to extract the user roles from
 either the ID token or the Access Token:
 

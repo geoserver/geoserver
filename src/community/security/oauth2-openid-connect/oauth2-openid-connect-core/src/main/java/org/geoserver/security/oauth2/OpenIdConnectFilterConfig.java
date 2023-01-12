@@ -7,6 +7,7 @@
 package org.geoserver.security.oauth2;
 
 import org.geoserver.security.config.RoleSource;
+import org.springframework.util.StringUtils;
 
 /**
  * Filter configuration for OpenId Connect. This is completely freeform, so adding only the basic
@@ -18,6 +19,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     String jwkURI;
     String tokenRolesClaim;
     String responseMode;
+    String postLogoutRedirectUri;
     boolean sendClientSecret = false;
 
     /** Supports extraction of roles among the token claims */
@@ -81,6 +83,14 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         this.sendClientSecret = sendClientSecret;
     }
 
+    public String getPostLogoutRedirectUri() {
+        return postLogoutRedirectUri;
+    }
+
+    public void setPostLogoutRedirectUri(String postLogoutRedirectUri) {
+        this.postLogoutRedirectUri = postLogoutRedirectUri;
+    }
+
     @Override
     protected StringBuilder buildAuthorizationUrl() {
         StringBuilder sb = super.buildAuthorizationUrl();
@@ -92,9 +102,15 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     protected StringBuilder buildEndSessionUrl(final String idToken) {
         final StringBuilder logoutUri = new StringBuilder(getLogoutUri());
-        if (idToken != null) {
-            logoutUri.append("?").append("id_token_hint=").append(idToken);
-        }
+        boolean first = true;
+        if (idToken != null) first = appendParam(first, "id_token_hint", idToken, logoutUri);
+        if (StringUtils.hasText(getPostLogoutRedirectUri()))
+            appendParam(first, "post_logout_redirect_uri", getPostLogoutRedirectUri(), logoutUri);
         return logoutUri;
+    }
+
+    private boolean appendParam(boolean first, String name, String value, StringBuilder sb) {
+        sb.append(first ? "?" : "&").append(name).append("=").append(value);
+        return false;
     }
 }

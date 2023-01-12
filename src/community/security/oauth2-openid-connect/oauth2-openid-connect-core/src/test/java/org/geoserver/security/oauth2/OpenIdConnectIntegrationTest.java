@@ -247,6 +247,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         OpenIdConnectFilterConfig config =
                 (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect");
         config.setSendClientSecret(true);
+        config.setPostLogoutRedirectUri(null);
         manager.saveFilter(config);
 
         // make believe we authenticated and got the redirect back, with the code

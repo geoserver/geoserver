@@ -4,7 +4,7 @@
     xmlns:wcs="http://www.opengis.net/wcs/2.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.opengis.net/wcseo/1.0 http://schemas.opengis.net/wcseo/1.0/wcsEOAll.xsd"
-    service="WCS" version="2.0.0" count="100">
+    service="WCS" version="2.0.1" count="100">
     <wcseo:eoId>sf__spatio-temporal_dss</wcseo:eoId>
     <wcseo:containment>OVERLAPS</wcseo:containment>
     <wcseo:Sections>

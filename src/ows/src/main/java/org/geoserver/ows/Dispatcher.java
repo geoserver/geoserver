@@ -1236,10 +1236,16 @@ public class Dispatcher extends AbstractController {
         if ((version == null) && (acceptsVersions != null)) {
             if (namespace != null) {
                 // need to match based on the XML request namespace.
-                matches =
+                List<Service> filteredMatches =
                         matches.stream()
-                                .filter(x -> x.getNamespace().equals(namespace))
+                                .filter(
+                                        x ->
+                                                (x.getNamespace() != null)
+                                                        && x.getNamespace().equals(namespace))
                                 .collect(Collectors.toList());
+                if (filteredMatches.size() > 0) {
+                    matches = filteredMatches;
+                }
             } else {
                 for (Version acceptVersion : acceptsVersions) {
                     boolean match =

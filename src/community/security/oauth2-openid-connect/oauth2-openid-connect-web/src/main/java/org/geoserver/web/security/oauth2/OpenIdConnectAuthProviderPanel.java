@@ -140,6 +140,9 @@ public class OpenIdConnectAuthProviderPanel
         add(new HelpLink("jwkURIHelp", this).setDialog(dialog));
         add(new TextField<String>("jwkURI"));
 
+        add(new HelpLink("postLogoutRedirectUriHelp", this).setDialog(dialog));
+        add(new TextField<String>("postLogoutRedirectUri"));
+
         add(new HelpLink("responseModeHelp", this).setDialog(dialog));
         add(new TextField<String>("responseMode"));
         add(new HelpLink("sendClientSecretHelp", this).setDialog(dialog));

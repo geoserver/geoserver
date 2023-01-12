@@ -10,6 +10,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -22,6 +23,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     String jwkURI;
     String tokenRolesClaim;
     String responseMode;
+    String postLogoutRedirectUri;
     boolean sendClientSecret = false;
     boolean allowBearerTokens = true;
 
@@ -40,6 +42,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     public OpenIdConnectFilterConfig() {
         this.redirectUri = baseRedirectUri();
+        this.postLogoutRedirectUri = baseRedirectUri();
         this.scopes = "user";
         this.enableRedirectAuthenticationEntryPoint = false;
         this.forceAccessTokenUriHttps = true;
@@ -55,12 +58,15 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
      * @return
      */
     String baseRedirectUri() {
-        String proxbaseUrl =
-                GeoServerExtensions.bean(GeoServer.class).getSettings().getProxyBaseUrl();
+        GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
+        String proxbaseUrl = null;
+        if (gs != null) proxbaseUrl = gs.getSettings().getProxyBaseUrl();
         if (StringUtils.hasText(proxbaseUrl)) {
             return proxbaseUrl + "/";
         }
-        return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + "/";
+        if (RequestContextHolder.getRequestAttributes() != null)
+            return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + "/";
+        return "http://localhost:8080/geoserver";
     }
 
     public String getPrincipalKey() {
@@ -111,6 +117,14 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         this.allowBearerTokens = allowBearerTokens;
     }
 
+    public String getPostLogoutRedirectUri() {
+        return postLogoutRedirectUri;
+    }
+
+    public void setPostLogoutRedirectUri(String postLogoutRedirectUri) {
+        this.postLogoutRedirectUri = postLogoutRedirectUri;
+    }
+
     @Override
     public StringBuilder buildAuthorizationUrl() {
         StringBuilder sb = super.buildAuthorizationUrl();
@@ -122,9 +136,15 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     protected StringBuilder buildEndSessionUrl(final String idToken) {
         final StringBuilder logoutUri = new StringBuilder(getLogoutUri());
-        if (idToken != null) {
-            logoutUri.append("?").append("id_token_hint=").append(idToken);
-        }
+        boolean first = true;
+        if (idToken != null) first = appendParam(first, "id_token_hint", idToken, logoutUri);
+        if (StringUtils.hasText(getPostLogoutRedirectUri()))
+            appendParam(first, "post_logout_redirect_uri", getPostLogoutRedirectUri(), logoutUri);
         return logoutUri;
+    }
+
+    private boolean appendParam(boolean first, String name, String value, StringBuilder sb) {
+        sb.append(first ? "?" : "&").append(name).append("=").append(value);
+        return false;
     }
 }

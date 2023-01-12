@@ -70,7 +70,7 @@ public class CapabilitiesAllowedMimeTypesTest extends WMSTestSupport {
 
         doc =
                 getAsDOM(
-                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version==1.1.1",
+                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.1",
                         true);
         formatNodes =
                 xpath.getMatchingNodes(
@@ -89,7 +89,7 @@ public class CapabilitiesAllowedMimeTypesTest extends WMSTestSupport {
 
         doc =
                 getAsDOM(
-                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version==1.1.1",
+                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.1",
                         true);
         formatNodes =
                 xpath.getMatchingNodes(

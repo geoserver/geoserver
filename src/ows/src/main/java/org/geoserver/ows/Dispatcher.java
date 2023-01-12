@@ -48,6 +48,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import net.opengis.ows10.AcceptVersionsType;
+import net.opengis.ows10.Ows10Factory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -258,6 +260,8 @@ public class Dispatcher extends AbstractController {
             }
 
             // dispatch the operation
+            updateAcceptVersions(request, service);
+
             Operation operation = dispatch(request, service);
             request.setOperation(operation);
 
@@ -285,6 +289,34 @@ public class Dispatcher extends AbstractController {
         }
 
         return null;
+    }
+
+    private void updateAcceptVersions(Request request, Service service) {
+        if (request.getRequest().equalsIgnoreCase("GetCapabilities")) {
+            // ensure that down-stream processes know the negotiated version
+            if (request.getRawKvp() == null) {
+                request.setRawKvp(new HashMap<>());
+            }
+            request.getRawKvp().put("version", service.getVersion().toString());
+            request.getKvp().put("version", service.getVersion().toString());
+        }
+
+        if (service.getId().equalsIgnoreCase("WFS")
+                && (request.getVersion() != null)
+                && ((request.getVersion().equals("1.1.0"))
+                        || (request.getVersion().equals("1.0.0")))
+                && (request.getRequest().equalsIgnoreCase("GetCapabilities"))
+                && (request.getKvp().containsKey("ACCEPTVERSIONS"))
+                && (request.getKvp().get("ACCEPTVERSIONS") != null)) {
+            // need to do a type conversion
+            net.opengis.ows11.AcceptVersionsType current =
+                    (net.opengis.ows11.AcceptVersionsType) request.getKvp().get("ACCEPTVERSIONS");
+
+            AcceptVersionsType newValue = Ows10Factory.eINSTANCE.createAcceptVersionsType();
+            current.getVersion().stream().forEach(x -> newValue.getVersion().add((String) x));
+
+            request.getKvp().put("ACCEPTVERSIONS", newValue);
+        }
     }
 
     void flagAsSOAP(Operation op) {
@@ -1198,17 +1230,31 @@ public class Dispatcher extends AbstractController {
         Service sBean = null;
 
         if ((version == null) && (acceptsVersions != null)) {
-            // version negotiation
-            // 06-121r3: The server, upon receiving a GetCapabilities request, shall scan through
-            // this list and find the first version number that it supports.
-            for (Version acceptVersion : acceptsVersions) {
-                boolean match =
-                        matches.stream().anyMatch(x -> x.getVersion().equals(acceptVersion));
-                if (match) {
-                    version = acceptVersion;
-                    break;
+            if (namespace != null) {
+                // need to match based on the XML request namespace.
+                matches =
+                        matches.stream()
+                                .filter(x -> x.getNamespace().equals(namespace))
+                                .collect(Collectors.toList());
+            } else {
+                for (Version acceptVersion : acceptsVersions) {
+                    boolean match =
+                            matches.stream().anyMatch(x -> x.getVersion().equals(acceptVersion));
+                    if (match) {
+                        version = acceptVersion;
+                        break;
+                    }
                 }
             }
+        }
+
+        if ((version != null) && (acceptsVersions == null)) {
+            List<String> provided =
+                    matches.stream()
+                            .map(x -> x.getVersion().toString())
+                            .collect(Collectors.toList());
+            String v = RequestUtils.getVersionPreOws(provided, List.of(version.toString()));
+            version = new Version(v);
         }
 
         // if multiple, use version to filter match

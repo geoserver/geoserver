@@ -113,7 +113,7 @@ public class ResourceAccessManagerWCSTest extends WCSTestSupport {
         setRequestAuth("cite", "cite");
         Document dom =
                 getAsDOM(
-                        "wcs?request=DescribeCoverage&service=WCS&version=2.0.0&coverageId=sf__watertemp");
+                        "wcs?request=DescribeCoverage&service=WCS&version=2.0.1&coverageId=sf__watertemp");
         print(dom);
 
         // print(dom);

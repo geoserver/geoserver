@@ -63,7 +63,7 @@ public class RequestUtils {
         if (acceptedList == null || acceptedList.isEmpty()) return provided.last().toString();
 
         // next figure out what the client accepts (and check they are good version numbers)
-        TreeSet<Version> accepted = new TreeSet<>();
+        List<Version> accepted = new ArrayList<>();
         for (String v : acceptedList) {
             checkVersionNumber(v, null);
 
@@ -83,19 +83,19 @@ public class RequestUtils {
         String version = null;
         if (!accepted.isEmpty()) {
             // return the highest version provided
-            version = accepted.last().toString();
+            version = accepted.get(0).toString();
         } else {
             for (String v : acceptedList) {
                 accepted.add(new Version(v));
             }
 
             // if highest accepted less then lowest provided, send lowest
-            if ((accepted.last()).compareTo(provided.first()) < 0) {
+            if ((accepted.get(accepted.size() - 1)).compareTo(provided.first()) < 0) {
                 version = (provided.first()).toString();
             }
 
             // if lowest accepted is greater then highest provided, send highest
-            if ((accepted.first()).compareTo(provided.last()) > 0) {
+            if ((accepted.get(0)).compareTo(provided.last()) > 0) {
                 version = (provided.last()).toString();
             }
 
@@ -108,7 +108,7 @@ public class RequestUtils {
                 while (v.hasNext()) {
                     Version current = v.next();
 
-                    if (current.compareTo(accepted.last()) > 0) {
+                    if (current.compareTo(accepted.get(accepted.size() - 1)) > 0) {
                         break;
                     }
 

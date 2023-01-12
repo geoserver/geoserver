@@ -31,7 +31,7 @@ public class GetCapabilitiesResponse extends Response {
     public boolean canHandle(Operation operation) {
         // is this a wcs 1.1.1 or 1.1.0 one?
         return "GetCapabilities".equalsIgnoreCase(operation.getId())
-                && operation.getService().getId().equals("wcs")
+                && operation.getService().getId().equalsIgnoreCase("wcs")
                 && (operation.getService().getVersion().toString().equals("1.1.0")
                         || operation.getService().getVersion().toString().equals("1.1.1"));
     }

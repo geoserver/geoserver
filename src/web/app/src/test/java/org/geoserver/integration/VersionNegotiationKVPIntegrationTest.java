@@ -19,7 +19,7 @@ public class VersionNegotiationKVPIntegrationTest extends GeoServerSystemTestSup
      */
     public Document doGetCapOWS(String version, String acceptVersions, String service)
             throws Exception {
-        String url = "ows?service=" + service + "&request=getCapabilities";
+        String url = "ows?service=" + service + "&request=GetCapabilities";
         if (version != null) url += "&version=" + version;
         if (acceptVersions != null) url += "&acceptVersions=" + acceptVersions;
 
@@ -38,12 +38,47 @@ public class VersionNegotiationKVPIntegrationTest extends GeoServerSystemTestSup
      */
     public Document doGetCapService(String version, String acceptVersions, String service)
             throws Exception {
-        String url = service.toLowerCase() + "?service=" + service + "&request=getCapabilities";
+        String url = service.toLowerCase() + "?service=" + service + "&request=GetCapabilities";
         if (version != null) url += "&version=" + version;
         if (acceptVersions != null) url += "&acceptVersions=" + acceptVersions;
 
         Document doc = getAsDOM(url);
         return doc;
+    }
+
+    /**
+     * test when they don't put a service=... in the request (but use the "service" endpoint)
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testServiceNoService() throws Exception {
+        // wfs
+        String url = "wfs?request=GetCapabilities&version=1.0.0";
+        Document doc = doGetCapURL(url);
+        assertVersion(doc, "1.0.0");
+
+        url = "wfs?request=GetCapabilities&acceptVersions=2.0.0";
+        doc = doGetCapURL(url);
+        assertVersion(doc, "2.0.0");
+
+        // wms
+        url = "wms?request=GetCapabilities&version=1.3.0";
+        doc = doGetCapURL(url);
+        assertVersion(doc, "1.3.0");
+
+        url = "wms?request=GetCapabilities&acceptVersions=1.1.1";
+        doc = doGetCapURL(url);
+        assertVersion(doc, "1.1.1");
+
+        // wcs
+        url = "wcs?request=GetCapabilities&version=1.1.1";
+        doc = doGetCapURL(url);
+        assertVersion(doc, "1.1.1");
+
+        url = "wcs?request=GetCapabilities&acceptVersions=1.1.1";
+        doc = doGetCapURL(url);
+        assertVersion(doc, "1.1.1");
     }
 
     /**
@@ -185,11 +220,6 @@ public class VersionNegotiationKVPIntegrationTest extends GeoServerSystemTestSup
         assertVersion(doc, "1.1.1");
     }
 
-    @Test
-    public void delme() throws Exception {
-        Document doc = doGetCapService(null, "2.0.1", "WCS");
-        assertVersion(doc, "2.0.1");
-    }
     /**
      * Tests that setting a single `AcceptVersions=...` in the GetCapabilities requests works (to
      * service endpoint)

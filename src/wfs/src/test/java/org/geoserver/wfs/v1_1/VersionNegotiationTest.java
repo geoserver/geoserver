@@ -45,7 +45,10 @@ public class VersionNegotiationTest extends WFSTestSupport {
         request.getAcceptVersions().getVersion().add("1.1.0");
 
         TransformerBase tx = getCaps.run(GetCapabilitiesRequest.adapt(request));
-        assertTrue(tx instanceof CapabilitiesTransformer.WFS1_0); //choose first appropriate AcceptVersions
+        assertTrue(
+                tx
+                        instanceof
+                        CapabilitiesTransformer.WFS1_0); // choose first appropriate AcceptVersions
     }
 
     @Test

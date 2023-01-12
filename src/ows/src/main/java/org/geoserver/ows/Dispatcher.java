@@ -313,7 +313,13 @@ public class Dispatcher extends AbstractController {
                     (net.opengis.ows11.AcceptVersionsType) request.getKvp().get("ACCEPTVERSIONS");
 
             AcceptVersionsType newValue = Ows10Factory.eINSTANCE.createAcceptVersionsType();
-            current.getVersion().stream().forEach(x -> newValue.getVersion().add((String) x));
+            @SuppressWarnings("unchecked")
+            List<String> values =
+                    (List<String>)
+                            current.getVersion().stream()
+                                    .map(x -> x.toString())
+                                    .collect(Collectors.toList());
+            values.stream().forEach(x -> newValue.getVersion().add(x));
 
             request.getKvp().put("ACCEPTVERSIONS", newValue);
         }
@@ -537,12 +543,10 @@ public class Dispatcher extends AbstractController {
 
     /** parses the AcceptVersions from the request KVP and puts it in the request */
     void handleAcceptVersionsKVP(Request req) {
-        if ((req.getVersion() != null)
-                || (req.getService() == null)
-                || (req.getRequest() == null)) {
+        if ((req.getVersion() != null) || (req.getRequest() == null)) {
             return;
         }
-        if (req.getService().isEmpty() || !req.getRequest().equalsIgnoreCase("getCapabilities")) {
+        if (!req.getRequest().equalsIgnoreCase("GetCapabilities")) {
             return;
         }
         String acceptVersions = (String) req.getRawKvp().get("AcceptVersions");

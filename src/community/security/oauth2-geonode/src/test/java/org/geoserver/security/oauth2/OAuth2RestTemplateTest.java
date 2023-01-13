@@ -40,6 +40,7 @@ import org.springframework.util.MultiValueMap;
 public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // just a mock
     public void open() throws Exception {
         configuration = new GeoNodeOAuth2SecurityConfiguration();
         configuration.setAccessTokenRequest(accessTokenRequest);
@@ -136,7 +137,7 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
 
         StringBuilder baseURL = new StringBuilder("http://test.geoserver-org/wms");
         StringBuilder path = new StringBuilder();
-        Map<String, String> kvp = new HashMap<String, String>();
+        Map<String, String> kvp = new HashMap<>();
         kvp.put("request", "GetCapabilities");
 
         urlMangler.mangleURL(baseURL, path, kvp, URLType.SERVICE);
@@ -149,7 +150,7 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
             urlMangler.mangleURL(baseURL, path, kvp, URLType.SERVICE);
 
             assertTrue(kvp.containsKey("access_token"));
-            assertTrue("12345".equals(kvp.get("access_token")));
+            assertEquals("12345", kvp.get("access_token"));
         } finally {
             System.clearProperty(OAuth2AccessTokenURLMangler.ALLOW_OAUTH2_URL_MANGLER);
         }
@@ -185,7 +186,7 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
             assertTrue(headers.containsKey("Authorization"));
             assertEquals(getAuthorizationHeader(accessToken), headers.get("Authorization").get(0));
 
-            Map<String, Object> body = new HashMap<String, Object>();
+            Map<String, Object> body = new HashMap<>();
             body.put("client_id", clientId);
             return body;
         }

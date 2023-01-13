@@ -59,7 +59,7 @@ public class GeoNodeLoginButtonTest extends GeoServerWicketTestSupport {
         // the login form is there and has the link
         assertTrue(
                 html.contains(
-                        "<form style=\"display: inline-block;\" method=\"post\" action=\"../web/j_spring_oauth2_geonode_login\">"));
+                        "<form style=\"display: inline-block;\" method=\"post\" action=\"http://localhost/context/web/j_spring_oauth2_geonode_login\">"));
         assertTrue(
                 html.contains(
                         "<img src=\"./wicket/resource/org.geoserver.web.security.oauth2.GeoNodeOAuth2AuthProviderPanel/geonode"));

@@ -10,6 +10,7 @@ import java.util.Map;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class AudienceAccessTokenValidatorTest {
 
     String clientId = "MYCLIENTID";

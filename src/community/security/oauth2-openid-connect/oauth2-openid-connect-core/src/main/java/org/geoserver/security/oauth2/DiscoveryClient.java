@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.util.SuppressFBWarnings;
 import org.springframework.web.client.RestTemplate;
 
 /** Client for auto-configuration of */
 public class DiscoveryClient {
 
     private static final String PROVIDER_END_PATH = "/.well-known/openid-configuration";
-    private static final String ISSUER_ATTR_NAME = "issuer";
     private static final String AUTHORIZATION_ENDPOINT_ATTR_NAME = "authorization_endpoint";
     private static final String TOKEN_ENDPOINT_ATTR_NAME = "token_endpoint";
     private static final String USERINFO_ENDPOINT_ATTR_NAME = "userinfo_endpoint";
@@ -43,6 +43,7 @@ public class DiscoveryClient {
         this.location = location;
     }
 
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public void autofill(OpenIdConnectFilterConfig conf) {
         Map response = restTemplate.getForObject(this.location, Map.class);
         Optional.ofNullable(response.get(AUTHORIZATION_ENDPOINT_ATTR_NAME))

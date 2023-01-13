@@ -1,8 +1,6 @@
-/*
- * (c) 2018 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- *
  */
 package org.geoserver.security.oauth2;
 
@@ -171,7 +169,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
 
             List<String> groupIds = resolver.resolveRoles(accessToken);
             List<GeoServerRole> result = new ArrayList<>();
-            ((List) groupIds).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
+            groupIds.stream().forEach(v -> result.add(new GeoServerRole(v)));
             if (!result.isEmpty()) {
                 enrichWithRoleCalculator(result);
             }
@@ -237,6 +235,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
      * @return
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     private List<GeoServerRole> getGeoServerRoles(String rolesAttributePath, Object jsonObject)
             throws IOException {
         List<GeoServerRole> result = new ArrayList<>();

@@ -1,11 +1,4 @@
-/*
- * (c) 2018 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- *
- */
-
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -63,10 +56,12 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
         return true;
     }
 
+    @Override
     public boolean isAllowUnSecureLogging() {
         return allowUnSecureLogging;
     }
 
+    @Override
     public void setAllowUnSecureLogging(boolean allowUnSecureLogging) {
         this.allowUnSecureLogging = allowUnSecureLogging;
     }
@@ -203,6 +198,7 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
         };
     }
 
+    @Override
     public StringBuilder buildAuthorizationUrl() {
         final StringBuilder loginUri = new StringBuilder(getUserAuthorizationUri());
         loginUri.append("?")

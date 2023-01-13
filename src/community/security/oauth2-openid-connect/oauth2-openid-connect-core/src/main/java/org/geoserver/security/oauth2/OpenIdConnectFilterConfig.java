@@ -1,11 +1,10 @@
-/*
- * (c) 2018 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- *
  */
 package org.geoserver.security.oauth2;
 
+import java.util.Optional;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
@@ -18,6 +17,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * bits in here.
  */
 public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
+
+    /**
+     * Constant used to setup the proxy base in tests that are running without a GeoServer instance
+     * or an actual HTTP request context. The value of the variable is set-up in the pom.xml, as a
+     * system property for surefire, in order to avoid hard-coding the value in the code.
+     */
+    public static final String OPENID_TEST_GS_PROXY_BASE = "OPENID_TEST_GS_PROXY_BASE";
 
     String principalKey = "email";
     String jwkURI;
@@ -58,15 +64,17 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
      * @return
      */
     String baseRedirectUri() {
-        GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
-        String proxbaseUrl = null;
-        if (gs != null) proxbaseUrl = gs.getSettings().getProxyBaseUrl();
-        if (StringUtils.hasText(proxbaseUrl)) {
+        Optional<String> proxbaseUrl =
+                Optional.ofNullable(GeoServerExtensions.bean(GeoServer.class))
+                        .map(gs -> gs.getSettings())
+                        .map(s -> s.getProxyBaseUrl());
+        if (proxbaseUrl.isPresent() && StringUtils.hasText(proxbaseUrl.get())) {
             return proxbaseUrl + "/";
         }
         if (RequestContextHolder.getRequestAttributes() != null)
             return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + "/";
-        return "http://localhost:8080/geoserver";
+        // fallback to run tests without a full environment
+        return GeoServerExtensions.getProperty(OPENID_TEST_GS_PROXY_BASE);
     }
 
     public String getPrincipalKey() {

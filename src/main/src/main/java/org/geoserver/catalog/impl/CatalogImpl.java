@@ -1788,11 +1788,6 @@ public class CatalogImpl implements Catalog {
         return Collections.unmodifiableCollection(listeners);
     }
 
-    /**
-     * Add sorted listeners that implement ExtensionPriority interface to get priority through getPriority (), otherwise the default priority is 100. You can have the listener implementation ExtensionPriority specify the priority that determines the order in which the listener executes
-     *
-     * @param listener
-     */
     @Override
     public void addListener(CatalogListener listener) {
         listeners.add(listener);

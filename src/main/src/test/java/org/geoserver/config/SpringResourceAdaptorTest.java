@@ -5,8 +5,14 @@
 
 package org.geoserver.config;
 
-import static org.geoserver.platform.resource.Resource.Type.*;
-import static org.junit.Assert.*;
+import static org.geoserver.platform.resource.Resource.Type.DIRECTORY;
+import static org.geoserver.platform.resource.Resource.Type.RESOURCE;
+import static org.geoserver.platform.resource.Resource.Type.UNDEFINED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;

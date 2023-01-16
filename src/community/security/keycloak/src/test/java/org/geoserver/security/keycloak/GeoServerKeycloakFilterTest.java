@@ -98,6 +98,7 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
     private FilterChain chain;
 
     // do setup before each test
+    @SuppressWarnings("PMD.CloseResource") // just a mock
     @Before
     public void before() throws IOException {
         AdapterConfig aConfig = new AdapterConfig();
@@ -118,6 +119,7 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
     @After
     public void after() {
         SecurityContextHolder.getContext().setAuthentication(null);
+        getSecurityManager().getAuthenticationCache().removeAll();
         config = null;
         request = null;
         response = null;

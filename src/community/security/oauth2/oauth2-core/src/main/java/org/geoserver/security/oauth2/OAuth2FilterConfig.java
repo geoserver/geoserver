@@ -41,7 +41,7 @@ public interface OAuth2FilterConfig {
     /** @return */
     public Boolean getForceUserAuthorizationUriHttps();
 
-    /** @param forceAccessTokenUriHttps */
+    /** @param forceUserAuthorizationUriHttps */
     public void setForceUserAuthorizationUriHttps(Boolean forceUserAuthorizationUriHttps);
 
     /** @return the userAuthorizationUri */

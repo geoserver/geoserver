@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import junit.framework.TestCase;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.test.GeoServerMockTestSupport;
@@ -192,7 +191,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         o = OpenIdConnectAuthenticationFilter.extractFromJSON(json, "a.b");
         assertTrue(o instanceof List);
         assertSame(2, ((List) o).size());
-        TestCase.assertEquals("d", ((List) o).get(0));
-        TestCase.assertEquals("e", ((List) o).get(1));
+        assertEquals("d", ((List) o).get(0));
+        assertEquals("e", ((List) o).get(1));
     }
 }

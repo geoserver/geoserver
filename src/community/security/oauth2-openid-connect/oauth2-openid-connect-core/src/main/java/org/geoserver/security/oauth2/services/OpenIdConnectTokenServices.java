@@ -1,8 +1,6 @@
-/*
- * (c) 2018 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- *
  */
 package org.geoserver.security.oauth2.services;
 
@@ -32,6 +30,7 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
      * in the Authorization header. See
      * https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected Map<String, Object> checkToken(String accessToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();

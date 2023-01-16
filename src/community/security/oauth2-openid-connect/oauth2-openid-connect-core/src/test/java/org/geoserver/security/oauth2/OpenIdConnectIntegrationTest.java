@@ -169,7 +169,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         SecurityManagerConfig mconfig = getSecurityManager().getSecurityConfig();
         GeoServerSecurityFilterChain filterChain = mconfig.getFilterChain();
         VariableFilterChain chain = (VariableFilterChain) filterChain.getRequestChainByName("web");
-        List<Filter> result = new ArrayList<Filter>();
+        List<Filter> result = new ArrayList<>();
         for (String filterName : chain.getCompiledFilterNames()) {
             try {
                 result.add(getSecurityManager().loadFilter(filterName));
@@ -193,7 +193,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(location, CoreMatchers.startsWith(authService));
         Map<String, Object> kvp = KvpUtils.parseQueryString(location);
         assertThat(kvp, Matchers.hasEntry("client_id", CLIENT_ID));
-        assertThat(kvp, Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver"));
+        assertThat(kvp, Matchers.hasEntry("redirect_uri", "http://localhost/geoserver"));
         assertThat(kvp, Matchers.hasEntry("scope", "openid profile email phone address"));
         assertThat(kvp, Matchers.hasEntry("response_type", "code"));
 

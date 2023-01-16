@@ -26,6 +26,7 @@ import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // just a mock
     public void open() throws Exception {
         configuration = new GitHubOAuth2SecurityConfiguration();
         configuration.setAccessTokenRequest(accessTokenRequest);

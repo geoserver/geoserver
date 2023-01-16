@@ -5,17 +5,18 @@
  */
 package org.geoserver.security.keycloak;
 
-import junit.framework.TestCase;
-import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
-public class KeycloakUrlBuilderTest extends TestCase {
+public class KeycloakUrlBuilderTest {
 
     @Test
     public void testUserByName() {
         KeycloakUrlBuilder builder = new KeycloakUrlBuilder("testRealm", "http://keycloak/auth");
         String result = builder.userByName("test username").build();
-        Assert.assertFalse(result.contains(" "));
-        Assert.assertTrue(result.endsWith("username"));
+        assertFalse(result.contains(" "));
+        assertTrue(result.endsWith("username"));
     }
 }

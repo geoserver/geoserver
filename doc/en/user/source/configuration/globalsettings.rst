@@ -323,4 +323,4 @@ Display modification timestamps on administration lists
 
 These check boxes can be used to toggle Date of Modification on Workspaces, Stores, Layers, Layer Groups and Styles administration list pages.
 
-Time of Creation can be seen by hovering mouse over the dates.
+Time of Modification can be seen by hovering the mouse cursor over the dates.

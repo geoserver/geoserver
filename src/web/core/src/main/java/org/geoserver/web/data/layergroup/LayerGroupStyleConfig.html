@@ -1,29 +1,28 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-    <fieldset>
-        <legend style="font: bold 14px tahoma, arial, helvetica, sans-serif;
-                color: #000000;">
-            <span><wicket:message key="groupStyles">Layer Group Styles</wicket:message></span>
-        </legend>
-        <ul>
-            <li>
-                <a class="add-link" wicket:id="addNew"><wicket:message key="addNew">Add new</wicket:message></a>
-            </li>
-            <li>
-                <label for="availableStyles"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
-                <select id="availableStyles" wicket:id="availableStyles" style="width: 27em;"></select>
-                <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>
-            </li>
-            <li>
-                    <div wicket:id="listContainer">
-                        <div  wicket:id="styleList">
-                            <div wicket:id="layerGroupStylePanel"/>
-                        </div>
-                    </div>
-            </li>
-        </ul>
-    </fieldset>
+  <fieldset>
+    <legend>
+      <wicket:message key="groupStyles">Layer Group Styles</wicket:message>
+    </legend>
+    <ul>
+      <li>
+        <a class="add-link" wicket:id="addNew"><wicket:message key="addNew">Add new</wicket:message></a>
+      </li>
+      <li>
+        <label for="availableStyles"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
+        <select id="availableStyles" class="w-25-em" wicket:id="availableStyles"></select>
+        <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>
+      </li>
+      <li>
+        <div wicket:id="listContainer">
+          <div  wicket:id="styleList">
+            <div wicket:id="layerGroupStylePanel"/>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </fieldset>
 </wicket:panel>
 </body>
 </html>

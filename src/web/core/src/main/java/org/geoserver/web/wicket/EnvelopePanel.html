@@ -4,39 +4,38 @@
 </head>
 <body>
 <wicket:panel>
-<!--   <form wicket:id="form">  -->
-   <ul class="selfclear">
-     <li class="leftwise">
+
+  <ul class="clearfix">
+    <li class="float-start">
       <label for="minX" wicket:id="minXL">minX</label>
-      <input wicket:id="minX" id="minX" type="text" class="text" style="width: 100px;"/>
-     </li>
-     <li class="leftwise">
+      <input wicket:id="minX" id="minX" type="text" class="text w-10-em"/>
+    </li>
+    <li class="float-start">
       <label for="minY" wicket:id="minYL">Min Y</label>
-      <input wicket:id="minY" id="minY" type="text" class="text" style="width: 100px;"/>
-     </li>
-     <li class="leftwise">
+      <input wicket:id="minY" id="minY" type="text" class="text w-10-em"/>
+    </li>
+    <li class="float-start">
       <label for="minZ" wicket:id="minZL">Min Z</label>
-      <input wicket:id="minZ" id="minZ" type="text" class="text" style="width: 100px;"/>
-     </li>
-     <li class="leftwise">
+      <input wicket:id="minZ" id="minZ" type="text" class="text w-10-em"/>
+    </li>
+    <li class="float-start">
       <label for="maxX" wicket:id="maxXL">Max X</label>
-      <input wicket:id="maxX" id="maxX" type="text" class="text" style="width: 100px;"/>
-     </li>
-     <li class="leftwise">
+      <input wicket:id="maxX" id="maxX" type="text" class="text w-10-em"/>
+    </li>
+    <li class="float-start">
       <label for="maxY" wicket:id="maxYL">Max Y</label>
-      <input wicket:id="maxY" id="maxY" type="text" class="text" style="width: 100px;"/>
-     </li>
-     <li class="leftwise">
+      <input wicket:id="maxY" id="maxY" type="text" class="text w-10-em"/>
+    </li>
+    <li class="float-start">
       <label for="maxZ" wicket:id="maxZL">Max Z</label>
-      <input wicket:id="maxZ" id="maxZ" type="text" class="text" style="width: 100px;"/>
-     </li>
-     <br/>
-     <li class="clearBoth" wicket:id="crsContainer">
-      <label for="crs"><wicket:message key="crs">Coordinate Reference System</wicket:message></label>
-      <span wicket:id="crs"/>
-     </li>
-    </ul>
-<!--    </form> -->
+      <input wicket:id="maxZ" id="maxZ" type="text" class="text w-10-em"/>
+    </li>
+  </ul>
+  <div class="clearfix" wicket:id="crsContainer">
+    <label for="crs"><wicket:message key="crs">Coordinate Reference System</wicket:message></label>
+    <span wicket:id="crs"/>
+  </div>
+
 </wicket:panel>
 </body>
 </html>

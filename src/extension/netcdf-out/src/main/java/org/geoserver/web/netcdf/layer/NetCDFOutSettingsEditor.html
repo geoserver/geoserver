@@ -2,8 +2,7 @@
 <head></head>
 <body>
     <wicket:panel>
-        <ul>
-            <li>
+
                 <fieldset>
         <legend>
             <span>
@@ -18,7 +17,7 @@
                     </label>
                     <input id="standardName" class="field text" type="text" wicket:id="standardName"
                         list="availableNames" />
-                    <datalist id="availableNames" style="display: none;">
+                    <datalist id="availableNames" class="d-none">
                         <option wicket:id="availableNames">CF-Name</option>
                     </datalist>
                 </li>
@@ -65,34 +64,34 @@
                     </label>
                 </li>
                 <li>
-                    <label style="font-weight: bold; font-style: italic;">
+                    <label class="fw-bold fst-italic">
                         <wicket:message key="NetCDFOut.variableAttributes">Variable Attributes</wicket:message>
                     </label>
-                    <div style="display: table;">
-                        <div style="display: table-row; font-style: italic;">
-                            <div style="display: table-cell; border-bottom: 1px solid silver;">
+                    <div class="d-table">
+                        <div class="d-table-row fst-italic">
+                            <div class="d-table-cell">
                                 <wicket:message key="NetCDFOut.attribute">Attribute</wicket:message>
                             </div>
-                            <div style="display: table-cell; border-bottom: 1px solid silver">
+                            <div class="d-table-cell">
                                 <wicket:message key="NetCDFOut.value">Value</wicket:message>
                             </div>
                         </div>
-                        <div style="display: table-row;" wicket:id="variableAttributes">
-                            <div style="display: table-cell; border-bottom: 1px solid silver;"
+                        <div class="d-table-row" wicket:id="variableAttributes">
+                            <div class="d-table-cell"
                                 wicket:id="variableAttributeKey"></div>
-                            <div style="display: table-cell; border-bottom: 1px solid silver;"
+                            <div class="d-table-cell"
                                 wicket:id="variableAttributeValue"></div>
-                            <div style="display: table-cell;"
+                            <div class="d-table-cell"
                                 wicket:id="removeVariableAttributeIcon"></div>
                         </div>
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input type="text" wicket:id="newVariableAttributeKey"></input>
+                        <div class="d-table-row">
+                            <div class="d-table-cell">
+                                <input type="text" wicket:id="newVariableAttributeKey"/>
                             </div>
-                            <div style="display: table-cell;">
-                                <input type="text" wicket:id="newVariableAttributeValue"></input>
+                            <div class="d-table-cell">
+                                <input type="text" wicket:id="newVariableAttributeValue"/>
                             </div>
-                            <div style="display: table-cell;">
+                            <div class="d-table-cell">
                                 <a href="#" wicket:id="addVariableAttribute">
                                     <span wicket:id="addVariableAttributeIcon"></span>
                                 </a>
@@ -101,33 +100,33 @@
                     </div>
                 </li>
                 <li>
-                    <label style="font-weight: bold; font-style: italic;">
+                    <label class="fw-bold fst-italic">
                         <wicket:message key="NetCDFOut.globalAttributes">Global Attributes</wicket:message>
                     </label>
-                    <div style="display: table;">
-                        <div style="display: table-row; font-style: italic;">
-                            <div style="display: table-cell; border-bottom: 1px solid silver;">
+                    <div class="d-table">
+                        <div class="d-table-row fst-italic">
+                            <div class="d-table-cell">
                                 <wicket:message key="NetCDFOut.attribute">Attribute</wicket:message>
                             </div>
-                            <div style="display: table-cell; border-bottom: 1px solid silver">
+                            <div class="d-table-cell">
                                 <wicket:message key="NetCDFOut.value">Value</wicket:message>
                             </div>
                         </div>
-                        <div style="display: table-row;" wicket:id="globalAttributes">
-                            <div style="display: table-cell; border-bottom: 1px solid silver;"
+                        <div class="d-table-row" wicket:id="globalAttributes">
+                            <div class="d-table-cell"
                                 wicket:id="globalAttributeKey"></div>
-                            <div style="display: table-cell; border-bottom: 1px solid silver;"
+                            <div class="d-table-cell"
                                 wicket:id="globalAttributeValue"></div>
-                            <div style="display: table-cell;" wicket:id="removeGlobalAttributeIcon"></div>
+                            <div class="d-table-cell" wicket:id="removeGlobalAttributeIcon"></div>
                         </div>
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input type="text" wicket:id="newGlobalAttributeKey"></input>
+                        <div class="d-table-row">
+                            <div class="d-table-cell">
+                                <input type="text" wicket:id="newGlobalAttributeKey"/>
                             </div>
-                            <div style="display: table-cell;">
-                                <input type="text" wicket:id="newGlobalAttributeValue"></input>
+                            <div class="d-table-cell">
+                                <input type="text" wicket:id="newGlobalAttributeValue"/>
                             </div>
-                            <div style="display: table-cell;">
+                            <div class="d-table-cell">
                                 <a href="#" wicket:id="addGlobalAttribute">
                                     <span wicket:id="addGlobalAttributeIcon"></span>
                                 </a>
@@ -136,41 +135,41 @@
                     </div>
                 </li>
                 <li>
-                    <label style="font-weight: bold; font-style: italic;">
+                    <label class="fw-bold fst-italic">
                         <wicket:message key="NetCDFOut.extraVariables">Extra Variables</wicket:message>
                     </label>
-                    <div style="display: table;">
-                        <div style="display: table-row; font-style: italic;">
-                            <div style="display: table-cell; border-bottom: 1px solid silver;">
+                    <div class="d-table">
+                        <div class="d-table-row fst-italic">
+                            <div class="d-table-cell">
                                 <wicket:message key="NetCDFOut.extraVariableSource">Source</wicket:message>
                             </div>
-                            <div style="display: table-cell; border-bottom: 1px solid silver;">
+                            <div class="d-table-cell">
                                 <wicket:message key="NetCDFOut.extraVariableOutput">Output</wicket:message>
                             </div>
-                            <div style="display: table-cell; border-bottom: 1px solid silver;">
+                            <div class="d-table-cell">
                                 <wicket:message key="NetCDFOut.extraVariableDimensions">Dimension</wicket:message>
                             </div>
                         </div>
-                        <div style="display: table-row;" wicket:id="extraVariables">
-                            <div style="display: table-cell; border-bottom: 1px solid silver;"
+                        <div class="d-table-row" wicket:id="extraVariables">
+                            <div class="d-table-cell"
                                 wicket:id="extraVariableSource"></div>
-                            <div style="display: table-cell; border-bottom: 1px solid silver;"
+                            <div class="d-table-cell"
                                 wicket:id="extraVariableOutput"></div>
-                            <div style="display: table-cell; border-bottom: 1px solid silver;"
+                            <div class="d-table-cell"
                                 wicket:id="extraVariableDimensions"></div>
-                            <div style="display: table-cell;" wicket:id="removeExtraVariableIcon"></div>
+                            <div class="d-table-cell" wicket:id="removeExtraVariableIcon"></div>
                         </div>
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input type="text" wicket:id="newExtraVariableSource"></input>
+                        <div class="d-table-row">
+                            <div class="d-table-cell">
+                                <input type="text" wicket:id="newExtraVariableSource"/>
                             </div>
-                            <div style="display: table-cell;">
-                                <input type="text" wicket:id="newExtraVariableOutput"></input>
+                            <div class="d-table-cell">
+                                <input type="text" wicket:id="newExtraVariableOutput"/>
                             </div>
-                            <div style="display: table-cell;">
-                                <input type="text" wicket:id="newExtraVariableDimensions"></input>
+                            <div class="d-table-cell">
+                                <input type="text" wicket:id="newExtraVariableDimensions"/>
                             </div>
-                            <div style="display: table-cell;">
+                            <div class="d-table-cell">
                                 <a href="#" wicket:id="addExtraVariable">
                                     <span wicket:id="addExtraVariableIcon"></span>
                                 </a>
@@ -180,12 +179,11 @@
                 </li>
             </ul>
         </div>
-                </fieldset>
-            </li>
-            <li wicket:id="extensions">
-            <div wicket:id="content"></div>
-            </li>
-        </ul>
+      </fieldset>
+    <div wicket:id="extensions">
+        <div wicket:id="content"></div>
+    </div>
+
     </wicket:panel>
 </body>
 </html>

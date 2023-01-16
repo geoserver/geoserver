@@ -5,27 +5,26 @@
 <body>
 <wicket:panel>
 	<div wicket:id="importDialog"></div>
-    <ul>
-        <li>
-            <fieldset>
-                <legend>
-                    <span><wicket:message key="header"></wicket:message></span>
-                </legend>
-					<ul class="links-above-table">
-						<li><select wicket:id="metadataTemplate" /> <a href="#"
-							wicket:id="link"> <wicket:message key="actionImport" />
-						</a></li>
-						<li><a class="remove-link" href="#"
-							wicket:id="removeSelected"> <wicket:message
-									key="removeSelected" />
-						</a></li>
-					</ul>
-					<span wicket:id="linkTemplateFeedback"></span>
-					<div wicket:id="templatesPanel"></div>
-					<div wicket:id="noData"></div>
-				</fieldset>
-        </li>
-    </ul>
+
+	<fieldset>
+		<legend>
+			<span><wicket:message key="header"></wicket:message></span>
+		</legend>
+		<ul class="links-above-table">
+			<li><select wicket:id="metadataTemplate"/> <a href="#"
+																										wicket:id="link">
+				<wicket:message key="actionImport"/>
+			</a></li>
+			<li><a class="remove-link" href="#"
+						 wicket:id="removeSelected">
+				<wicket:message
+								key="removeSelected"/>
+			</a></li>
+		</ul>
+		<span wicket:id="linkTemplateFeedback"></span>
+		<div wicket:id="templatesPanel"></div>
+		<div wicket:id="noData"></div>
+	</fieldset>
 
 </wicket:panel>
 </body>

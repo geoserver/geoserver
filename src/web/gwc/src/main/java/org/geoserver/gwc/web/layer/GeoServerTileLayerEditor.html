@@ -41,18 +41,18 @@
               <li class="choiceItem">
                 <span class="fieldname"><wicket:message key="cacheFormats">Cache formats:</wicket:message></span>
                 <div wicket:id="cacheFormatsGroup">
-                  <div wicket:id="cacheFormats" style="padding: 2px;">
+                  <div wicket:id="cacheFormats" class="p-1">
                     <input wicket:id="cacheFormatsOption" type="checkbox"/>
                     <label for="cacheFormatsOption" wicket:id="name">[this is where name will be]</label>
                   </div></div>
               </li>
               <li>
                 <label for="expireCache" class="text"><wicket:message key="expireCache">Expire server cache after n seconds (set to 0 to use source setting)</wicket:message></label>
-                <input id="tileExpireCache" wicket:id="expireCache" class="field text" style="width: 80px;" type="text"/>
+                <input id="tileExpireCache" wicket:id="expireCache" class="field text w-10-em" type="text"/>
               </li>
               <li>
                 <label for="expireClients" class="text"><wicket:message key="expireClients">Expire client cache after n seconds (set to 0 to use server setting)</wicket:message></label>
-                <input id="tileExpireClients" wicket:id="expireClients" class="field text" style="width: 80px;" type="text"/>
+                <input id="tileExpireClients" wicket:id="expireClients" class="field text w-10-em" type="text"/>
               </li>
               <li>
                 <label class="text"><wicket:message key="skipOnWarning">SkipOnWarning</wicket:message></label>

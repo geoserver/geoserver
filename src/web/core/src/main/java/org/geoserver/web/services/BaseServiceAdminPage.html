@@ -1,64 +1,58 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
-<form wicket:id="form" style="padding-top: 1em;">
-  <ul>
-    <li>
-      <fieldset>
-        <legend>
-          <span><wicket:message key="workspace">Workspace</wicket:message></span>
-          <a href="#" wicket:id="workspaceHelp" class="help-link"></a>
-        </legend>
-        <ul>
-          <li>
-            <div wicket:id="workspace"></div>
-          </li>
-        </ul>
-      </fieldset>
-    </li>
-    <li>
-      <fieldset>
-        <legend><span><wicket:message key="serviceMetadata">Service Metadata</wicket:message></span></legend>
-        <ul>
-          <li class="choiceItem">
-            <input wicket:id="enabled" type="checkbox">
-            <label for="enabled"><span wicket:id="service.enabled">enable</span></label>
-          </li>
-          <li class="choiceItem">
-            <input wicket:id="citeCompliant" type="checkbox">
-            <label for="citeCompliant"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
-          </li>
-          <li>
-            <label><wicket:message key="maintainer">Maintainer</wicket:message></label>
-            <input wicket:id="maintainer" class="field text">
-          </li>
-          <li>
-            <label><wicket:message key="onlineResource">Online resource</wicket:message></label>
-            <input wicket:id="onlineResource" class="field text">
-          </li>
-          <li>
-            <div wicket:id="serviceTitleAndAbstract"></div>
-          </li>
-          <li>
-             <label><wicket:message key="fees">Fees</wicket:message></label>
-             <input wicket:id="fees" class="field text">
-          </li>
-          <li>
-             <label><wicket:message key="accessConstraints">Access Constraints</wicket:message></label>
-             <input wicket:id="accessConstraints" class="field text">
-          </li>
-          <li>
-             <div wicket:id="keywords"></div>
-          </li>
-        </ul>
-      </fieldset>
-    </li>
+<form wicket:id="form" class="pt-3">
+  <fieldset>
+    <legend>
+      <wicket:message key="workspace">Workspace</wicket:message>
+      <a href="#" wicket:id="workspaceHelp" class="help-link"></a>
+    </legend>
+    <ul>
+      <li>
+        <div wicket:id="workspace"></div>
+      </li>
+    </ul>
+  </fieldset>
+  <fieldset>
+    <legend><wicket:message key="serviceMetadata">Service Metadata</wicket:message></legend>
+    <ul>
+      <li class="choiceItem">
+        <input wicket:id="enabled" type="checkbox">
+        <label for="enabled"><span wicket:id="service.enabled">enable</span></label>
+      </li>
+      <li class="choiceItem">
+        <input wicket:id="citeCompliant" type="checkbox">
+        <label for="citeCompliant"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
+      </li>
+      <li>
+        <label><wicket:message key="maintainer">Maintainer</wicket:message></label>
+        <input wicket:id="maintainer" class="field text">
+      </li>
+      <li>
+        <label><wicket:message key="onlineResource">Online resource</wicket:message></label>
+        <input wicket:id="onlineResource" class="field text">
+      </li>
+      <li>
+        <div wicket:id="serviceTitleAndAbstract"></div>
+      </li>
+      <li>
+         <label><wicket:message key="fees">Fees</wicket:message></label>
+         <input wicket:id="fees" class="field text">
+      </li>
+      <li>
+         <label><wicket:message key="accessConstraints">Access Constraints</wicket:message></label>
+         <input wicket:id="accessConstraints" class="field text">
+      </li>
+      <li>
+         <div wicket:id="keywords"></div>
+      </li>
+    </ul>
+  </fieldset>
     <wicket:child>
     </wicket:child>
     <div wicket:id="extensions">
       <div wicket:id="content"></div>
     </div>
-  </ul>
   <div class="button-group toolbar-sticky selfclear">
     <button wicket:id="submit" class="form-button-save" type="submit"><wicket:message key="save"/></button>
     <a href="#a" class="form-button-apply" wicket:id="apply"><wicket:message key="apply">Apply</wicket:message></a>

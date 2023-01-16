@@ -1,50 +1,45 @@
 <html>
   <body>
     <wicket:extend>
-    <div>
-     <form>
-     <ul>
-       <li>
-         <fieldset style="margin-top: 1em;">
-           <legend>
-             <span><wicket:message key="buildInformation">Build Information</wicket:message></span>
-           </legend>
-           <ul>
-             <li>
-               <label for="version"><wicket:message key="geoserverVersion">Version</wicket:message></label>
-               <span id="version"><wicket:message key="version"></wicket:message></span>
-             </li>
-             <li>
-               <label for="buildRevision"><wicket:message key="gitRevision">Git Revision</wicket:message></label>
-               <span id="buildRevision"><wicket:message key="build.revision"></wicket:message></span>
-             </li>
-             <li>
-               <label for="buildDate"><wicket:message key="buildDate">Build Date</wicket:message></label>
-               <span id="buildDate"><wicket:message key="build.date"></wicket:message></span>
-             </li>
-             <li>
-               <label for="geotoolsInfo"><wicket:message key="geotoolsVersion">GeoTools Version</wicket:message></label>
-               <span id="geotoolsInfo">
-                 <span wicket:id="geotoolsVersion"></span> (rev <span wicket:id="geotoolsRevision"></span>)
-               </span>
-             </li>
-             <li>
-               <label for="geowebcacheInfo"><wicket:message key="geowebcacheVersion">GeoWebCache Version</wicket:message></label>
-               <span id="geotoolsInfo">
-                 <span wicket:id="geowebcacheVersion"></span> (rev <span wicket:id="geowebcacheRevision"></span>)
-               </span>
-             </li>
-           </ul>
-         </fieldset>
-       </li>
-       <li>
-         <fieldset>
-           <legend><span><wicket:message key="moreInformation">More Information</wicket:message></span></legend>
-           <p style="margin-top: 1em;">
+      <form>
+       <fieldset class="mt-3">
+         <legend>
+           <wicket:message key="buildInformation">Build Information</wicket:message>
+         </legend>
+         <ul>
+           <li>
+             <label for="version"><wicket:message key="geoserverVersion">Version</wicket:message></label>
+             <span id="version"><wicket:message key="version"></wicket:message></span>
+           </li>
+           <li>
+             <label for="buildRevision"><wicket:message key="gitRevision">Git Revision</wicket:message></label>
+             <span id="buildRevision"><wicket:message key="build.revision"></wicket:message></span>
+           </li>
+           <li>
+             <label for="buildDate"><wicket:message key="buildDate">Build Date</wicket:message></label>
+             <span id="buildDate"><wicket:message key="build.date"></wicket:message></span>
+           </li>
+           <li>
+             <label for="geotoolsInfo"><wicket:message key="geotoolsVersion">GeoTools Version</wicket:message></label>
+             <span id="geotoolsInfo">
+               <span wicket:id="geotoolsVersion"></span> (rev <span wicket:id="geotoolsRevision"></span>)
+             </span>
+           </li>
+           <li>
+             <label for="geowebcacheInfo"><wicket:message key="geowebcacheVersion">GeoWebCache Version</wicket:message></label>
+             <span id="geotoolsInfo">
+               <span wicket:id="geowebcacheVersion"></span> (rev <span wicket:id="geowebcacheRevision"></span>)
+             </span>
+           </li>
+         </ul>
+       </fieldset>
+       <fieldset>
+           <legend><wicket:message key="moreInformation">More Information</wicket:message></legend>
+           <p>
              <wicket:message key="introduction"></wicket:message>
            </p>
            <p>
-             <wicket:message key="information"></wicket:message>           
+             <wicket:message key="information"></wicket:message>
              <ul>
                <li><wicket:message key="informationAbout"></wicket:message></li>
                <li><wicket:message key="informationData"></wicket:message></li>
@@ -58,7 +53,7 @@
            <p>
              <wicket:message key="usefulLinks"></wicket:message>
            </p>
-             <ul style="margin-left: 2em;">
+             <ul>
               <li>
                 <a href="https://docs.geoserver.org"><wicket:message key="documentation">Documentation</wicket:message></a>
               </li>
@@ -68,17 +63,9 @@
               <li>
                 <a href="https://osgeo-org.atlassian.net/projects/GEOS"><wicket:message key="bugTracker">Bug Tracker</wicket:message></a>
               </li>
-              <!-- The user map is not there, uncomment when we have some 
-              <li>
-                <a href="http://users.geoserver.org/"><wicket:message key="userMap">User Map</wicket:message></a>
-              </li>
-               -->
             </ul>
          </fieldset>
-       </li>  
-     </ul>
-     </form>
-    </div>
+      </form>
     </wicket:extend>
   </body>
 </html>

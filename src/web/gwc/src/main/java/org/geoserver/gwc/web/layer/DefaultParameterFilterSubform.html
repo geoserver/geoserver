@@ -2,11 +2,16 @@
 <head></head>
 <body>
 <wicket:panel>
-  <div style="display:inline-block; vertical-align:top; margin:0.5em;">
-    <label><wicket:message key="defaultValue">Default Value</wicket:message></label>
+  <div class="py-1 me-3 align-top d-inline-block">
+    <label>
+      <wicket:message key="defaultValue">Default Value</wicket:message>
+    </label>
     <p wicket:id="defaultValue"></p>
-  </div><div style="display:inline-block; vertical-align:top; margin:0.5em;">
-    <label><wicket:message key="legalValues">Legal Values</wicket:message></label>
+  </div>
+  <div class="py-1 align-top d-inline-block">
+    <label>
+      <wicket:message key="legalValues">Legal Values</wicket:message>
+    </label>
     <ul>
       <li wicket:id="legalValueList"><span wicket:id="legalValue">Legal Value</span></li>
     </ul>

@@ -1,45 +1,44 @@
 <html>
-  <body>
-    <wicket:panel>
-      <fieldset>
-          <div wicket:id="panelTitle"/>
-          <ul>
-              <li>
-                  <ul class="action-group">
-                      <li><a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
-                      <li><a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>
-                      <li>
-                          <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
-                          <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
-                      </li>
-                  </ul>
-              </li>
-              <li>
-                  <div wicket:id="layers"></div>
-              </li>
-          </ul>
-      </fieldset>
-        <div wicket:id="popup"></div>
-        <div wicket:id="dialog"></div>
-    </wicket:panel>
+<body>
+<wicket:panel>
+  <fieldset>
+    <div wicket:id="panelTitle"/>
+    <ul>
+      <li>
+        <ul class="action-group">
+          <li><a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
+          <li><a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>
+          <li>
+            <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
+            <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <div wicket:id="layers"></div>
+      </li>
+    </ul>
+  </fieldset>
+  <div wicket:id="popup"></div>
+  <div wicket:id="dialog"></div>
+</wicket:panel>
 
-    <wicket:fragment wicket:id="defaultStyle">
-        <input type="checkbox" wicket:id="checkbox"/>
-    </wicket:fragment>
+<wicket:fragment wicket:id="defaultStyle">
+  <input type="checkbox" wicket:id="checkbox"/>
+</wicket:fragment>
 
-  <wicket:fragment wicket:id="bigLegend">
-      <legend>
-          <span><wicket:message key="layers">Layers</wicket:message></span>
-          <a href="#" wicket:id="layersHelp" class="help-link"></a>
-      </legend>
-  </wicket:fragment>
+<wicket:fragment wicket:id="bigLegend">
+  <legend>
+    <span><wicket:message key="layers">Layers</wicket:message></span>
+    <a href="#" wicket:id="layersHelp" class="help-link"></a>
+  </legend>
+</wicket:fragment>
 
-    <wicket:fragment wicket:id="smallLegend">
-        <legend style="font: 12px tahoma, arial, helvetica, sans-serif;
-                color: #000000;">
-            <span><wicket:message key="layers">Layers</wicket:message></span>
-        </legend>
-    </wicket:fragment>
-  </body>
+<wicket:fragment wicket:id="smallLegend">
+  <legend>
+    <wicket:message key="layers">Layers</wicket:message>
+  </legend>
+</wicket:fragment>
+</body>
 </html>
 

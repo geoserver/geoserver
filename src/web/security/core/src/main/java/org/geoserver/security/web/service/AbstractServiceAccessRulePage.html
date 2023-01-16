@@ -5,25 +5,34 @@
 <body>
 <wicket:extend>
 	<form wicket:id="form">
-	<ul>
-		<li>
-	    	<fieldset><ul>		
-		
-			<li><label for="service"><wicket:message key="service">service</wicket:message></label>
-			<select wicket:id="service" id="service" /></li>
-	
-			<li><label for="method"><wicket:message key="method">method</wicket:message></label>
-			<select wicket:id="method" id="method" /></li>
-			</ul></fieldset>
-		</li>
-		<li>
-			<div wicket:id="roles"></div>
-		</li>
-	</ul>
-	<div class="button-group toolbar-sticky selfclear">
-		<a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-		<a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
-	</div>
+
+		<fieldset>
+
+			<div class="py-1">
+				<label for="service">
+					<wicket:message key="service">service</wicket:message>
+				</label>
+				<select wicket:id="service" id="service"/>
+			</div>
+
+			<div class="py-1">
+				<label for="method">
+					<wicket:message key="method">method</wicket:message>
+				</label>
+				<select wicket:id="method" id="method"/>
+			</div>
+		</fieldset>
+
+		<div wicket:id="roles"></div>
+
+		<div class="button-group toolbar-sticky selfclear">
+			<a href="#" class="form-button-save" wicket:id="save">
+				<wicket:message key="save">Save</wicket:message>
+			</a>
+			<a href="#" class="form-button-cancel" wicket:id="cancel">
+				<wicket:message key="cancel">Cancel</wicket:message>
+			</a>
+		</div>
 	</form>
 </wicket:extend>
 </body>

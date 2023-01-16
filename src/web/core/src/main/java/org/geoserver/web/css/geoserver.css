@@ -1,92 +1,150 @@
+/* taken from bootstrap-reboot.css */
+:root {
+  --bs-blue: #0d6efd;
+  --bs-indigo: #6610f2;
+  --bs-purple: #6f42c1;
+  --bs-pink: #d63384;
+  --bs-red: #dc3545;
+  --bs-orange: #fd7e14;
+  --bs-yellow: #ffc107;
+  --bs-green: #198754;
+  --bs-teal: #20c997;
+  --bs-cyan: #0dcaf0;
+  --bs-black: #000;
+  --bs-white: #fff;
+  --bs-gray: #6c757d;
+  --bs-gray-dark: #343a40;
+  --bs-gray-100: #f8f9fa;
+  --bs-gray-200: #e9ecef;
+  --bs-gray-300: #dee2e6;
+  --bs-gray-400: #ced4da;
+  --bs-gray-500: #adb5bd;
+  --bs-gray-600: #6c757d;
+  --bs-gray-700: #495057;
+  --bs-gray-800: #343a40;
+  --bs-gray-900: #212529;
+  --bs-primary: #0d6efd;
+  --bs-secondary: #6c757d;
+  --bs-success: #198754;
+  --bs-info: #0dcaf0;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --bs-light: #f8f9fa;
+  --bs-dark: #212529;
+  --bs-primary-rgb: 13, 110, 253;
+  --bs-secondary-rgb: 108, 117, 125;
+  --bs-success-rgb: 25, 135, 84;
+  --bs-info-rgb: 13, 202, 240;
+  --bs-warning-rgb: 255, 193, 7;
+  --bs-danger-rgb: 220, 53, 69;
+  --bs-light-rgb: 248, 249, 250;
+  --bs-dark-rgb: 33, 37, 41;
+  --bs-white-rgb: 255, 255, 255;
+  --bs-black-rgb: 0, 0, 0;
+  --bs-body-color-rgb: 33, 37, 41;
+  --bs-body-bg-rgb: 255, 255, 255;
+  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+  --bs-body-font-family: var(--bs-font-sans-serif);
+  --bs-body-font-size: 1rem;
+  --bs-body-font-weight: 400;
+  --bs-body-line-height: 1.5;
+  --bs-body-color: #212529;
+  --bs-body-bg: #fff;
+  --bs-border-width: 1px;
+  --bs-border-style: solid;
+  --bs-border-color: #dee2e6;
+  --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
+  --bs-border-radius: 0.375rem;
+  --bs-border-radius-sm: 0.25rem;
+  --bs-border-radius-lg: 0.5rem;
+  --bs-border-radius-xl: 1rem;
+  --bs-border-radius-2xl: 2rem;
+  --bs-border-radius-pill: 50rem;
+  --bs-link-color: #0d6efd;
+  --bs-link-hover-color: #0a58ca;
+  --bs-code-color: #d63384;
+  --bs-highlight-bg: #fff3cd;
+  /* GeoServer */
+  --gs-green-light: #c6e09b;
+  --gs-blue: #0076a1;
+  --gs-blue-heading: #0082b6;
+  --gs-orange: #cc6d00;
+  /* (feedback) messages */
+  --gs-info-bg: #c6ff8e;
+  --gs-info-link: #6a993d;
+  --gs-info-link-hover: #007a99;
+  --gs-warning-bg: #ffec8e;
+  --gs-warning-link: #cc872e;
+  --gs-warning-link-hover: #dd7c14;
+  --gs-error-bg: #f24e50;
+  --gs-error-link: #801a1b;
+  --gs-error-link-hover: #660002;
+  /* tables */
+  --gs-table-bg: #f4f9eb;
+  --gs-table-bg-even: #e2efcd;
+  --gs-table-bg-even-hover: var(--gs-table-bg);
+}
+
 /*-----------------------
 General styles
 -----------------------*/
+html {
+  /* add font-size to be able to use `rem` units for sizing */
+  font-size: 12px;
+}
 body {
-background: #fff;
-color: #0076a1;
-font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
-text-align:left !important; /* override blueprint's ie.css */
-overflow-y: scroll;
+  font-size: 100%; /* override blueprint */
+  background: #fff;
+  color: var(--gs-blue);
+  font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+  text-align:left !important; /* override blueprint's ie.css */
+  overflow-y: scroll;
 }
-
 body.help {
-padding: 2em;
-}
-body.help ul {
-/*padding-top: 1em;*/
+  padding: 2em;
 }
 body.help ol, ul ul {
-color:black;
+  color:black;
 }
-
 body.help ol li {
-display:list-item;
+  display:list-item;
 }
 body.help p {
-color: black;
+  color: black;
 }
 
-h1, 
-h2, 
-h3, 
-h4, 
-h5, 
-h6 {
-color: #0082b6;
-font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
-height: auto; /* override blueprint's screen.css */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--gs-blue-heading);
+  font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+  height: auto; /* override blueprint's screen.css */
 }
-
 h1 { /* override blueprint.css */
-font-size: 2.1em;
+  font-size: 2.1em;
 }
 
-strong, 
-em,
-dt, 
-b, 
-i {
-font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+strong, em, dt, b, i {
+  font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
 }
-
 a {
-color: #0076a1;
-text-decoration: none;
-outline: none !important; /* avoid ugly dotted border for Firefox */
+  color: var(--gs-blue);
+  text-decoration: none;
+  outline: none !important; /* avoid ugly dotted border for Firefox */
 }
-
 a:hover {
-color: #cc6d00;
-text-decoration: underline;
+  color: var(--gs-orange);
+  text-decoration: underline;
 }
-
 a img {
-border: none; 
+  border: none;
 }
-
-div {
-outline: none !important; /* avoid ugly dotted border for Firefox, when listeners are added via js */
-}
-
-.error, 
-.notice, 
-.success { /* override blueprint.css */
-border: 0 none transparent;
-margin-bottom: 0;
-padding: 0;
-background: transparent;
-border-color: transparent;
-}
-
-input,
-textarea,
-select {
-background: #fff;
-color: #000;
-}
-
-input[readonly] {
-	border: 1px solid Lightgrey;
+.error, .notice, .success { /* override blueprint.css */
+  border: 0 none transparent;
+  margin-bottom: 0;
+  padding: 0;
+  background: transparent;
+  border-color: transparent;
 }
 
 .palette th, .palette td {
@@ -129,78 +187,107 @@ input[readonly] {
 /*-----------------------
 Utility Classes
 -----------------------*/
+
+/* texts */
+.text-small {
+  font-size: small !important;
+}
+.text-smaller {
+  font-size: 11px !important;
+}
+
+/* widths */
+.w-10-em {
+  width: 10em !important;
+}
+.w-15-em {
+  width: 15em !important;
+}
+.w-25-em {
+  width: 25em !important;
+}
+.w-30-em {
+  width: 30em !important;
+}
+.w-50-em {
+  width: 50em !important;
+}
+.w-100-em {
+  width: 100em !important;
+}
+.w-20-ex {
+  width: 20ex !important;
+}
+.w-60-ex {
+  width: 60ex !important;
+}
+/* add to Bootstrap utilities */
+.w-10 {
+  width: 10% !important;
+}
+.w-95 {
+  width: 95% !important;
+}
+/* heights */
+.h-5-em {
+  height: 5em !important;
+}
+.h-10-em {
+  height: 10em !important;
+}
+.h-20-em {
+  height: 20em !important;
+}
+.h-25-em {
+  height: 25em !important;
+}
+.h-50-em {
+  height: 50em !important;
+}
+.h-100-em {
+  height: 100em !important;
+}
+
+/* positioning */
+
+/* keep these for backwards compatibility */
 .selfclear:after {
-content: ".";
-display: block;
-height: 0;
-clear: both;
-visibility: hidden;
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
 }
-
-.selfclear {
-display: inline-block; /* IE 7 */
-}
-
-.selfclear {
-display: block;
-}
-
-* html .selfclear {
-height: 1px; /* IE < 7 */
-}
-
-/* Alpha transparency for IE6 */
-* html .pngfix {
-zoom: 1;
-behavior: expression((this.runtimeStyle.behavior="none")&&(this.pngSet?this.pngSet=true:(this.nodeName == "IMG" && this.src.toLowerCase().indexOf('.png')>-1 ?  (this.runtimeStyle.backgroundImage = "none", this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.src + "', sizingMethod='image')", this.src = "/img/transparent.gif") : (this.origBg = this.origBg ? this.origBg :  this.currentStyle.backgroundImage.toString().replace('url("','').replace('")',''), this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.origBg + "', sizingMethod='" + (this.currentStyle.backgroundRepeat=='no-repeat' ? 'crop' : 'scale') +"')", this.runtimeStyle.backgroundImage = "none")),this.pngSet=true));
-}
-
-.leftwise {
-float:left;
-}
-
-.rightwise {
-float:right;
-}
-
-.clearBoth {
-clear:both;
-}
-
-.nobreak {
-white-space: nowrap;
-}
-
-.noshow {
-display: none;
+.clearBoth, .clearboth {
+  clear:both;
 }
 
 .wrap {
-width: 82em;
-min-width: 80%;
-margin: 0; 
-padding: 0;
-position: relative;
+  width: 82em;
+  min-width: 80%;
+  margin: 0;
+  padding: 0;
+  position: relative;
 }
 
+/* lists */
 ul.plain {
-margin-left: 0;
-margin-right: 0;
-list-style-type: none;
+  margin-left: 0;
+  margin-right: 0;
+  list-style-type: none;
 }
-
 ul.horizontal li {
-display: inline;
-padding-right:1em;
+  display: inline;
+  padding-right: 1em;
+}
+ul.horizontal li label {
+  display: inline;
+  margin-left: 0.2em;
+}
+ul.action-group {
+  margin: 0;
 }
 
-ul.horizontal li label {
-display:inline;
-margin-left:0.2em;
-}
-.displayNone {
-display:none;
-}
 /*-----------------------
 Feedback Message Styles
 -----------------------*/
@@ -216,43 +303,39 @@ border: 1px solid #ccccb8;
 list-style-type: none;
 }
 
+
+
 .feedbackPanelINFO {
-color: #000;
-background: #c6ff8e;
+  color: #000;
+  background: var(--gs-info-bg);
 }
-
 .feedbackPanelINFO a {
-color: #6a993d;
+  color: var(--gs-info-link);
 }
-
 .feedbackPanelINFO a:hover {
-color: #007a99;
+  color: var(--gs-info-link-hover);
 }
 
 .feedbackPanelWARNING {
-color: #000;
-background: #ffec8e;
+  color: #000;
+  background: var(--gs-warning-bg);
 }
-
 .feedbackPanelWARNING a {
-color: #cc872e;
+  color: var(--gs-warning-link);
 }
-
 .feedbackPanelWARNING a:hover {
-color: #dd7c14;
+  color: var(--gs-warning-link-hover);
 }
 
 .feedbackPanelERROR {
-color: #fff;
-background: #f24e50;
+  color: #fff;
+  background: var(--gs-error-bg);
 }
-
 .feedbackPanelERROR a {
-color: #801a1b;
+  color: var(--gs-error-link);
 }
-
 .feedbackPanelERROR a:hover {
-color: #660002;
+  color: var(--gs-error-link-hover);
 }
 
 /*-----------------------
@@ -264,13 +347,8 @@ padding: 5px;
 }
 
 #main {
-border-top: 2px solid #c6e09b;
+border-top: 2px solid var(--gs-green-light);
 background: url(../img/main-bg.png) repeat-x;
-}
-
-#sidebar, 
-#page {
-text-align: left; /* IE */
 }
 
 #sidebar {
@@ -295,28 +373,27 @@ padding: 0 0 250px 19px;
 Tables
 -----------------------*/
 table {
-margin-bottom: 0.3em; /* override blueprint's settings */
-margin-top: 0.3em; /* override blueprint's settings */
+  margin-bottom: 0.3em; /* override blueprint's settings */
+  margin-top: 0.3em; /* override blueprint's settings */
+  /* replace the `cellspacing=0` in the HTML table element, it is now obsolete */
+  border-collapse: collapse;
 }
-
 th {
-background: transparent; /* override blueprint's settings */
+  background: transparent; /* override blueprint's settings */
 }
 
 thead th {
-background: #c6e09b;
-border: 1px solid #0076a1;
-border-width: 0 0 1px;
+  background: var(--gs-green-light);
+  border: 1px solid var(--gs-blue);
+  border-width: 0 0 1px;
 }
 
-tr:hover td,
-tbody tr:hover th {
-background: #f4f9eb;
+tr:hover td, tbody tr:hover th {
+background: var(--gs-table-bg);
 }
 
-tr.even td,
-tr.even th {
-background: #e2efcd; /* override blueprint's settings */
+tr.even td, tr.even th {
+  background: var(--gs-table-bg-even); /* override blueprint's settings */
 }
 
 tr.dnd-drop-center td {
@@ -330,9 +407,8 @@ div.dnd-theme-web tr {
   cursor: -webkit-grab;
 }
 
-tr.even:hover td,
-tr.even:hover th {
-background: #f4f9eb;
+tr.even:hover td, tr.even:hover th {
+  background: var(--gs-table-bg-even-hover);
 }
 
 th.actions,
@@ -345,138 +421,111 @@ th.selection {
 }
 
 .alternating-rows tr:nth-child(even) {
-	background: #e2efcd;
+	background: var(--gs-table-bg-even)
 }
 /*-----------------------
 Forms
 -----------------------*/
+
+input,
+textarea,
+select {
+  background: #fff;
+  color: #000;
+}
+
+input[readonly] {
+  border: 1px solid Lightgrey;
+}
+
 form ul,
 ul.form-data {
-margin: 0; /* override blueprint's settings for unordered lists */
-list-style-type: none;
+  margin: 0; /* override blueprint's settings for unordered lists */
+  list-style-type: none;
 }
 
 form li,
 ul.form-data li {
-display: block;
-margin: 0 0 0.3em;
-padding: 4px 5px 2px 0;
-position: relative;
+  display: block;
+  margin: 0 0 0.3em;
+  padding: 4px 5px 2px 0;
+  position: relative;
 }
 
 form ul ul {
-margin: 0;
+  margin: 0;
 }
 
 form li li {
-padding: 0;
-margin: 0.3em 0;
+  padding: 0;
+  margin: 0.3em 0;
 }
 
-form a.expanded {
-background-image: url(../img/icons/silk/bullet_arrow_down.png);
-background-repeat: no-repeat;
-background-position: 0px 0px;
-padding-left: 16px;
-height: 18px;
-font-weight: bold;
+form a.expanded, form a.collapsed {
+  background-image: url(../img/icons/silk/bullet_arrow_down.png);
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  padding-left: 16px;
+  height: 18px;
+  font-weight: bold;
 }
 
 form a.collapsed {
-background-image: url(../img/icons/silk/bullet_arrow_right.png);
-background-repeat: no-repeat;
-background-position: 0px 0px;
-padding-left: 16px;
-height: 18px;
-font-weight: bold;
+  background-image: url(../img/icons/silk/bullet_arrow_right.png);
 }
+
 fieldset { /* override blueprint's settings */
-padding: 0 0 1em 0;
-margin: 0 0 0.5em;
-border: 1px solid #c6e09b;
-border-width: 1px 0 0;
-position: relative;
+  padding: 0 0 1em 0;
+  margin: 0 0 0.5em;
+  border: 0;
 }
-
-fieldset.noTitle {
-border: 0;
-}
-
 legend {
-border: 0 none transparent;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--gs-green-light);
 }
-
-legend span { 
-position: absolute;
-width: 29.2em;
-top: -1.5em;
-left: 0;
-}
-
 legend a {
-position: absolute;
-top: -1.5em;
-right: 1px;
+  font-weight: normal;
+  font-size: 12px;
 }
-
+legend li {
+  font-weight: normal;
+  padding-right: 0;
+  font-size: 12px;
+}
 label, span.fieldname {
-border: medium none;
-color: #222;
-display: block;
-font-weight: normal;
-font-size: 0.95em;
-line-height: 1.5em;
-padding: 0 0 1px;
+  border: medium none;
+  color: #222;
+  display: block;
+  font-weight: normal;
+  line-height: 1.5em;
+  padding: 0 0 1px;
 }
 
 label.choice {
-display: block;
-margin: -1.65em 0 0 25px;
-padding: 0.44em 0 0.5em;
-width: 90%;
-line-height: 1.5em;
+  display: block;
+  margin: -1.65em 0 0 25px;
+  padding: 0.44em 0 0.5em;
+  width: 90%;
+  line-height: 1.5em;
 }
 
 label.choice,ul.choiceList>li label, *.choiceItem label {
-color: #222; 
-font-weight: normal;
-font-size: 100%;
+  color: #222;
+  font-weight: normal;
+  font-size: 100%;
 }
 
-ul.choiceList>li span.fieldname, *.choiceItem span.fieldname {
-margin-left: -2em;
-}
 ul.choiceList>li span.fieldname:dir(rtl), *.choiceItem span.fieldname:dir(rtl) {
-margin-left: 0;
-margin-right: -2em;
-}
-
-
-/* For a "choiceList" create padding down leading side to act as a "hanging indent" then move the checkbox/radio into that padding. This allows the label to remain inline so it doesn't produce clickable whitespace. */
-ul.choiceList>li,*.choiceItem {
-position: relative;
-padding-left: 2em; 
-}
-ul.choiceList>li:dir(rtl),*.choiceItem:dir(rtl){
-padding-left: 0;
-padding-right: 2em;
+  margin-left: 0;
+  margin-right: -2em;
 }
 ul.choiceList>li label,*.choiceItem label{
-display: inline;
+  display: inline;
 }
-ul.choiceList>li input[type=checkbox],ul.choiceList>li input[type=radio],*.choiceItem input[type=checkbox],*.choiceItem input[type=radio] {
-display: block;
-position: absolute;
-left: 0;
-}
-ul.choiceList>li:dir(rtl) input[type=checkbox],ul.choiceList>li:dir(rtl) input[type=radio],*.choiceItem:dir(rtl) input[type=checkbox],*.choiceItem:dir(rtl) input[type=radio] {
-left: auto;
-right: 0;
-}
-
 textarea.cql {
-  height : 1.2em;
-  width : 95%;
+  height: 1.2em;
+  width: 95%;
   padding: 3px 3px;
 }
 
@@ -512,6 +561,10 @@ border-color: #7c7c7c #c3c3c3 #ddd;
 padding: 0.2em;
 width: 25em;
 }
+input[type=text], input[type=number], input[type=password] {
+  border: 1px solid #7c7c7c;
+  border-color: #7c7c7c #c3c3c3 #ddd;
+}
 
 input.longtext {
   width: 50em;
@@ -526,7 +579,6 @@ form ul.plain-ul {
 form ul.plain-ul li {
 	display: list-item;
 	list-style-type: disc;
-	display: list-item;
 }
 
 /* search button inside text field */
@@ -583,18 +635,39 @@ div.value-wide pre { /* override blueprint's settings */
 margin: 0;
 }
 
+/* bootstrap checkbox form */
+.form-check {
+  display: block;
+  min-height: 1.5rem;
+  padding-left: 0.5em;
+  margin-bottom: 0.125rem;
+}
+.form-check-input {
+  width: 1em;
+  height: 1em;
+  margin-top: 0.25em;
+  vertical-align: top;
+}
+.form-check-label {
+  display: inline-block;
+}
+/* special case for the form ion the header */
+#header .form-check {
+  display: inline-block;
+}
+
 /*-----------------------
 Button  Styles
 -----------------------*/
 .button-group a,
 .button-group button,
 input.btnTxt {
-background: #c6e09b url(../img/button-gradient.png) top left repeat-x;
-border: 1px solid #c6e09b;
+background: var(--gs-green-light) url(../img/button-gradient.png) top left repeat-x;
+border: 1px solid var(--gs-green-light);
 font-size: 0.9em;
 font-weight: bold;
 text-decoration: none;
-color: #0076a1;
+color: var(--gs-blue);
 cursor: pointer;
 padding: 5px 10px 5px 7px;
 -moz-border-radius: 5px;
@@ -604,30 +677,9 @@ line-height:1.5;
 font-family:Tahoma, Arial, sans-serif;
 }
 
-/* Alpha transparency for IE6 
-Redundant to .pngfix but added as otherwise
-we have to declare "pngfix" on every button
-*/
-* html .button-group a,
-* html .button-group button,
-* html input.btnTxt {
-zoom: 1;
-behavior: expression((this.runtimeStyle.behavior="none")&&(this.pngSet?this.pngSet=true:(this.nodeName == "IMG" && this.src.toLowerCase().indexOf('.png')>-1 ?  (this.runtimeStyle.backgroundImage = "none", this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.src + "', sizingMethod='image')", this.src = "img/transparent.gif") : (this.origBg = this.origBg ? this.origBg :  this.currentStyle.backgroundImage.toString().replace('url("','').replace('")',''), this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.origBg + "', sizingMethod='" + (this.currentStyle.backgroundRepeat=='no-repeat' ? 'crop' : 'scale') +"')", this.runtimeStyle.backgroundImage = "none")),this.pngSet=true));
-}
-
 .button-group button {
 width: auto;
 overflow: visible;
-}
-
-*:first-child+html button[type],
-*:first-child+html input.btnTxt {
-padding: 4px 10px 3px 10px; /* IE7 */
-}
-
-* html .button-group button,
-* html input.btnTxt {
-padding: 4px 10px 3px 7px; /* IE6 */
 }
 
 .button-group a:hover,
@@ -649,12 +701,6 @@ padding-top: 5px;
 padding-bottom: 5px;
 background-position: 0 50%;
 background-repeat: no-repeat;
-}
-
-*:first-child+html .button-group a.icon div, /* IE7 */
-* html .button-group button a.icon div { /*IE6 */
-padding-top: 4px;
-padding-bottom: 3px;
 }
 
 .button-group input {
@@ -778,12 +824,6 @@ position: relative;
 padding: 0.5em 0 0;
 }
 
-#header form {
-}
-
-span.username {
-}
-
 #header label.shown {
 display: inline;
 font-weight: normal;
@@ -842,7 +882,7 @@ padding: 3px 5px 7px;
 .navigation-tab-single,
 .navigation-tab-header {
 font-weight: bold;
-color: #0076a1;
+color: var(--gs-blue);
 }
 
 .navigation-tab-content {
@@ -853,7 +893,7 @@ border-top: none;
 .navigation-tab-header a,
 .navigation-tab-content a {
 display: block;
-color: #0076a1;
+color: var(--gs-blue);
 }
 
 li.nav-administer-service {
@@ -994,14 +1034,6 @@ background-position: 100% -2px;
 background: #fff url(../img/page-bg.png) no-repeat;
 }
 
-* html #page { /* IE6 */
-background-position: 0 -2px;
-}
-
-*:first-child+html #page { /* IE7 */
-background-position: 0 -2px;
-}
-
 .page-header {
 background: #fff url(../img/page-header-bg.png) repeat-x;
 margin-bottom: 1em;
@@ -1052,13 +1084,6 @@ padding-top: 1em;
   margin-top: 5px;
 }
 
-* html .page-header { /* IE6 */
-background-position: 0 -2px;
-}
-
-*:first-child+html .page-header { /* IE7 */
-background-position: 0 -2px;
-}
 /*-----------------------
 Targeted Styles
 -----------------------*/
@@ -1207,16 +1232,13 @@ border: 1px solid #ccc;
 }
 
 div.progress-bar {
--moz-border-radius-bottomleft:5px;
--moz-border-radius-bottomright:5px;
--moz-border-radius-topleft:5px;
--moz-border-radius-topright:5px;
-background-color:#E8E6E6;
-border:1px solid #555555;
-float:none;
-height:16px;
-margin:1.2em auto;
-width:50%;
+  -moz-border-radius: 5px;
+  background-color:#E8E6E6;
+  border:1px solid #555555;
+  float:none;
+  height:16px;
+  margin:1.2em auto;
+  width:50%;
 }
 
 div.progress-bar span.bar {
@@ -1247,7 +1269,7 @@ padding: 1em 0;
 .paginator a,
 .paginator em {
 padding: 2px 6px;
-border: 1px solid #c6e09b;
+border: 1px solid var(--gs-green-light);
 background: #fff;
 text-decoration: none;
 -moz-border-radius: 5px;
@@ -1267,7 +1289,7 @@ color: #aaa;
 }
 
 .paginator a:hover {
-background: #0076a1;
+background: var(--gs-blue);
 color: #fff;
 }
 
@@ -1337,15 +1359,7 @@ visibility: hidden;
 }
 
 .tab-row ul {
-display: inline-block; /* IE 7 */
-}
-
-.tab-row ul {
 display: block;
-}
-
-* html .tab-row ul {
-height: 1px; /* IE < 7 */
 }
 
 .devtoolbar {
@@ -1355,59 +1369,51 @@ height: 1px; /* IE < 7 */
 /*-----------
 Add/remove icons for add/remove links
 -------------*/
+
+.add-link, .remove-link, .warning-link, .refresh-link, .info-link, .help-link, .edit-link, .reset-link, .gwc-clear {
+  background-color: transparent;
+  background-attachment: scroll;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding: 2px 0 2px 20px;
+}
+
 .add-link {
-background: transparent url(../img/icons/silk/add.png) scroll no-repeat left center;
-padding: 2px 0px 2px 20px;
+background-image: url(../img/icons/silk/add.png);
 }
-
 .remove-link {
-background: transparent url(../img/icons/silk/delete.png) scroll no-repeat left center;
-padding: 2px 0px 2px 20px;
+  background-image: url(../img/icons/silk/delete.png);
 }
-
 .warning-link {
-background: transparent url(../img/icons/silk/error.png) scroll no-repeat left center;
-padding: 2px 0px 2px 20px;
+  background-image: url(../img/icons/silk/error.png);
 }
-
 .refresh-link {
-background: transparent url(../img/icons/silk/arrow_refresh.png) scroll no-repeat left center;
-padding: 2px 0px 2px 20px;
+  background-image: url(../img/icons/silk/arrow_refresh.png);
 }
-
 .info-link {
-background: transparent url(../img/icons/silk/information.png) scroll no-repeat left center;
-padding: 2px 0px 2px 20px;
+  background-image: url(../img/icons/silk/information.png);
 }
-
 .help-link {
-background: transparent url(../img/icons/silk/help.png) scroll no-repeat left center;
-padding: 2px 0px 2px 20px;
+  background-image: url(../img/icons/silk/help.png);
 }
-
 .edit-link {
-background: transparent url(../img/icons/silk/pencil.png) scroll no-repeat left center;
-padding: 2px 0px 2px 20px;
+  background-image: url(../img/icons/silk/pencil.png);
 }
-
 .reset-link {
-background: transparent url(../img/icons/silk/bin.png) scroll no-repeat left center;
-padding: 2px 0px 2px 20px;
+  background-image: url(../img/icons/silk/bin.png);
+}
+.gwc-clear {
+  background-image: url(../img/clear_cache.png);
 }
 
 legend a.help-link {
-width: 16px;
-height: 16px;
+  height: 16px;
+  float: right;
 }
 
 .computeLink { 
 display: block;
 margin-bottom: 1em;
-}
-
-.gwc-clear {
-background: transparent url(../img/clear_cache.png) scroll no-repeat left center;
-padding: 2px 0px 2px 20px;
 }
 
 /*----------------
@@ -1442,10 +1448,8 @@ div.wicket-aa {
     color:black;
 }
 div.wicket-aa ul {
-   list-style-image:none;
-   list-style-position:outside;
-   list-style-type:none;
-   margin:0pt;
+  list-style: none outside none;
+  margin:0pt;
    padding:5px;
 }
 div.wicket-aa ul li.selected {
@@ -1461,7 +1465,7 @@ div.wicket-aa ul li.selected {
 } 
 .select2-container--default .select2-selection--single {
    border: 1px solid #aaa;
-   border-radius: 0px;
+   border-radius: 0;
 }
 .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
    border-color: #000 transparent;
@@ -1491,13 +1495,13 @@ div.wicket-aa ul li.selected {
 }
 
 li.select2-results__option {
-    max-width: 100%;
-    overflow: hidden;
-    /*Altered two below to make word wrap work */
-    word-wrap: break-word !important;
-    white-space: normal;
-    /* show empty option properly */
-    min-height:18px; 
+  max-width: 100%;
+  overflow: hidden;
+  /*Altered two below to make word wrap work */
+  word-wrap: break-word !important;
+  white-space: normal;
+  /* show empty option properly */
+  min-height:18px;
 }
 
 .fullscreen {
@@ -1512,13 +1516,13 @@ li.select2-results__option {
 }
 
 #fullscreen-div {
- float: right;
- display: block;
- margin-top: 0px;
- margin-right: 0px;
- width: 16px;
- height: 16px;
- padding: 4px 0px;
+  float: right;
+  display: block;
+  margin-top: 0px;
+  margin-right: 0px;
+  width: 16px;
+  height: 16px;
+  padding: 4px 0px;
 }
 
 #fullscreen-div img {
@@ -1591,6 +1595,11 @@ li.select2-results__option {
     height: 100%;
     padding: 10px;
   }
+
+.fullscreen #styleForm #style-context .tab-panel {
+  overflow: auto;
+  height: calc(100vh - 200px);
+}
 
 .fullscreen #styleForm #style-editor {
     -webkit-box-ordinal-group: 1;

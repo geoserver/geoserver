@@ -6,7 +6,7 @@ Troubleshooting
 Checking WFS requests
 ----------------------------
 
-It often happens that users report issues with hand made WFS requests not working as expected. In the majority of the cases the request is malformed, but GeoServer does not complain and just ignores the malformed part (this behaviour is the default to make older WFS clients work fine with GeoServer). 
+It often happens that users report issues with hand-crafted WFS requests not working as expected. In the majority of the cases the request is malformed, but GeoServer does not complain and just ignores the malformed part (this behaviour is the default to make older WFS clients work fine with GeoServer). 
 
 If you want GeoServer to validate most WFS XML request you can post it to the following URL::
   
@@ -89,7 +89,7 @@ The output shows the ``pid``, the main class name if available, and the paramete
 jstack
 ````````
 
-`jstack <http://java.sun.com/javase/6/docs/technotes/tools/share/jstack.html>`__ is a tool extracting a the current stack trace for each thread running in the virtual machine. It can be used to identify scalability issues and to gather what the program is actually doing. 
+`jstack <http://java.sun.com/javase/6/docs/technotes/tools/share/jstack.html>`__ is a tool for extracting the current stack trace for each thread running in the virtual machine. It can be used to identify scalability issues and to gather what the program is actually doing. 
 
 It usually requires detailed understanding of the inner workings of GeoServer to properly interpret the jstack output.
   
@@ -144,7 +144,7 @@ And the file contents might look like::
 jmap
 ````
 
-`jmap <http://java.sun.com/javase/6/docs/technotes/tools/share/jmap.html>`__ is a tool to gather information about the a Java virtual machine. 
+`jmap <http://java.sun.com/javase/6/docs/technotes/tools/share/jmap.html>`__ is a tool to gather information about the Java virtual machine. 
 It can be used in a few interesting ways.
 
 By running it without arguments (other than the process id of the JVM) it will print out a **dump of the native libraries used by the JVM**. This can come in handy when one wants to double check GeoServer is actually using a certain version of a native library (e.g., GDAL)::

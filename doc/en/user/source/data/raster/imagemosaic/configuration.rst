@@ -272,6 +272,9 @@ In addition to the required envelope and location attributes, the schema for the
      - N
      - Comma separate list of custom dimensions to be exposed. Each custom dimension declaration can be a simple attribute name from the
        schema, e.g., ``runtime``, a mapping from dimension name to attribute name, e.g. ``time2(runtime)``, or a mapping from a range dimension name to two attributes, e.g., ``timerange(timeStart,timeEnd)`` 
+   * - PropertySelection
+     - N
+     - Boolean value to enable/disable selection of properties from the mosaic index. Default is ``false``. When enabled, the ImageMosaic will try to load in memory only the properties needed to perform mosaicking. A typical use case is using a STAC API as a mosaic index, a STAC item typically contains many complex properties, and the API might be remote, reducing the payload improves both query time and memory usage.
 
 Here is a sample :file:`indexer.properties` file::
 

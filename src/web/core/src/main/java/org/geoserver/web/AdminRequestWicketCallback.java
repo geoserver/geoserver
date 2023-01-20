@@ -5,9 +5,11 @@
  */
 package org.geoserver.web;
 
+import org.apache.wicket.Session;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.geoserver.security.AdminRequest;
+import org.geoserver.web.spring.security.GeoServerSession;
 
 /**
  * Wicket callback that sets the {@link AdminRequest} thread local.
@@ -35,10 +37,18 @@ public class AdminRequestWicketCallback implements WicketCallback {
         // for non secured page requests we abort the admin request since they are meant to be
         // accessible anonymously, so we don't consider this an admin request
         if (requestTarget == null
-                || !(GeoServerSecuredPage.class.isAssignableFrom(requestTarget)
-                        || GeoServerHomePage.class.isAssignableFrom(requestTarget))) {
+                || !GeoServerSecuredPage.class.isAssignableFrom(requestTarget)
+                || (GeoServerHomePage.class.isAssignableFrom(requestTarget) && !isAdmin())) {
             AdminRequest.abort();
         }
+    }
+
+    private boolean isAdmin() {
+        Session session = Session.get();
+        if (session instanceof GeoServerSession) {
+            return ((GeoServerSession) session).isAdmin();
+        }
+        return false;
     }
 
     @Override

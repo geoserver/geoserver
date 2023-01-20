@@ -106,7 +106,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         commonBaseInit();
     }
 
-    private void commonBaseInit() {
+    protected void commonBaseInit() {
         // lookup for a pluggable favicon
         PackageResourceReference faviconReference = null;
         List<HeaderContribution> cssContribs =

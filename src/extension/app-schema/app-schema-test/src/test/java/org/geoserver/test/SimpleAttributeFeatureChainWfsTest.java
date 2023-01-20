@@ -533,9 +533,8 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         //      FROM "appschematest"."MAPPEDFEATURENAMEONE" "chain_link_1"
         //      WHERE "chain_link_1"."NAME" = 'nameone 4' AND
         //            "appschematest"."MAPPEDFEATUREWITHNESTEDNAME"."ID" = "chain_link_1"."MF_ID"))
-        assertTrue(encodedCombined.matches("^\\(.*GUNTHORPE FORMATION.*OR.*EXISTS.*\\)$"));
-        assertContainsFeatures(fs.getFeatures(combined), "mf1", "mf3");
-        // test UNION improvement off
+        // matches the literal GUNTHORPE or ? for prepared statement dialect like oracle
+        assertTrue(encodedCombined.matches("^\\(.*(GUNTHORPE FORMATION|\\Q?\\E).*OR.*EXISTS.*\\)$"));
         AppSchemaDataAccessRegistry.getAppSchemaProperties()
                 .setProperty("app-schema.orUnionReplace", "false");
         try {

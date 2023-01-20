@@ -7,8 +7,11 @@ package org.geoserver.test.onlineTest.setup;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -69,6 +72,7 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
     /** Default WKT parser for non 3D tests. */
     private static String DEFAULT_PARSER = "SDO_GEOMETRY";
 
+    private static List<String> ESCAPE_COL_NAMES= Arrays.asList("LEVEL");
     private String sql;
 
     /**
@@ -167,6 +171,7 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 int spatialIndexCounter = 0;
                 for (PropertyDescriptor desc : schema.getDescriptors()) {
                     field = desc.getName().toString().toUpperCase();
+                    if (escape(field)) field="\""+field+"\"";
                     fieldNames[j] = field;
                     if (desc instanceof GeometryDescriptor) {
                         type = "SDO_GEOMETRY";
@@ -234,7 +239,16 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                     j++;
                 }
                 // Add numeric PK for sorting
-                String pkey = schema.getTypeName() + "_PKEY";
+                String pkey;
+                String typeName=schema.getTypeName();
+                // ugly but is the only way to make the oracle test pass for JdbcMultiValue tests. The directive is not
+                // properly resolved in the stations.xml use case because column are case insensitive in oracle and get uppercased
+                // when table is created. The featuretype will have uppercased pk property name, but a mapping used as it lower cased
+                // causing exception for all the tests in NormalizedMultiValueTest.
+                if (typeName.startsWith("use_"))
+                    pkey="\""+schema.getTypeName() + "_PKEY\"";
+                else pkey=schema.getTypeName() + "_PKEY";
+
                 fieldNames[j] = pkey;
                 createParams.add(pkey + " VARCHAR2(30)");
                 buf.append(StringUtils.join(createParams.iterator(), ", "));
@@ -281,11 +295,13 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                             }
                             geomValue.append(")");
                             values[valueIndex] = geomValue.toString();
-                        } else if (prop.getType()
-                                .getBinding()
-                                .getSimpleName()
-                                .equalsIgnoreCase("DATE")) {
-                            values[valueIndex] = "TO_DATE('" + value + "', 'yyyy-MM-dd')";
+                        } else if (Date.class.isAssignableFrom(prop.getType().getBinding())) {
+                            String format = "yyyy-MM-dd";
+                            SimpleDateFormat sdf = new SimpleDateFormat(format);
+                            String strDate = sdf.format((Date) value);
+                            values[valueIndex] = "TO_DATE('" + strDate + "', '" + format + "')";
+                        } else if (Number.class.isAssignableFrom(prop.getType().getBinding())) {
+                            values[valueIndex] = "" + value;
                         } else {
                             values[valueIndex] = "'" + value + "'";
                         }
@@ -309,5 +325,17 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
     @Override
     protected void runSqlInsertScript() throws Exception {
         this.run(sql, false);
+    }
+
+    public static boolean isOracleTest() {
+        String onlineTestId = System.getProperty("testDatabase");
+        if (onlineTestId != null && onlineTestId.equals("oracle")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean escape(String name){
+        return ESCAPE_COL_NAMES.contains(name);
     }
 }

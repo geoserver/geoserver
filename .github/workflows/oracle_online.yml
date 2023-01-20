@@ -1,0 +1,43 @@
+name: Oracle AppSchema online tests
+
+on: [pull_request]
+
+jobs:
+  build:
+    name: Java ${{ matrix.java }}
+    runs-on: [ubuntu-20.04]
+    strategy:
+      matrix:
+        java: [11]
+        java-dist: ['temurin']
+
+    steps:
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v2
+      with:
+        java-version: ${{ matrix.java }}
+        distribution: ${{ matrix.java-dist }}
+    - uses: actions/checkout@v2
+    - name: Maven repository caching
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: gt-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          gt-maven-
+    - name: Free up diskspace
+      run: |
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /usr/share/dotnet
+        df -h
+    - name: Setup test environment for Oracle XE 
+      run: |
+        ./build/ci/oracle/start-oracle.sh
+        ./build/ci/oracle/setup-oracle.sh
+    - name: Build GeoTools dependent modules (no tests)
+      run: mvn -B clean install -T2 -Dall -pl :gt-jdbc-oracle -DskipTests -am
+    - name: Test AppSchema Oracle data store
+      run: mvn -B clean install -pl :gs-app-schema-oracle-test -Pci-oracle-build -Dspotless.apply.skip=true
+    - name: Remove SNAPSHOT jars from repository
+      run: |
+        find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

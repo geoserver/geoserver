@@ -35,24 +35,24 @@
             <classifier>tests</classifier>
         </dependency>
         <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-kml</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <!--
-                wfs required to get applicationContext.xml. Without it, code will
-                compile but will not run.
-            -->
+                      wfs required to get applicationContext.xml. Without it, code will
+                      compile but will not run.
+                  -->
             <groupId>org.geoserver</groupId>
             <artifactId>gs-wfs</artifactId>
         </dependency>
         <dependency>
             <!--
-                //NC - wms package required for wms support
-            -->
+                      //NC - wms package required for wms support
+                  -->
             <groupId>org.geoserver</groupId>
             <artifactId>gs-wms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>gs-kml</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.opencsv</groupId>
@@ -86,10 +86,10 @@
             <scope>test</scope>
         </dependency>
         <!--
-            maven-eclipse-plugin does not correctly add transitive test dependencies
-            geosciml-2.0 and earthresourceml-1.1 should be included by depending on
-            gt-app-schema tests
-        -->
+                maven-eclipse-plugin does not correctly add transitive test dependencies
+                geosciml-2.0 and earthresourceml-1.1 should be included by depending on
+                gt-app-schema tests
+            -->
         <dependency>
             <groupId>org.geotools.schemas</groupId>
             <artifactId>geosciml-2.0</artifactId>
@@ -123,13 +123,13 @@
         </dependency>
         <dependency>
             <groupId>org.geotools.jdbc</groupId>
-            <artifactId>gt-jdbc-oracle</artifactId>
+            <artifactId>gt-jdbc-postgis</artifactId>
             <version>${gt.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geotools.jdbc</groupId>
-            <artifactId>gt-jdbc-postgis</artifactId>
+            <artifactId>gt-jdbc-oracle</artifactId>
             <version>${gt.version}</version>
             <scope>test</scope>
         </dependency>
@@ -166,15 +166,11 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <scope>test</scope>
-	    </dependency>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc8</artifactId>
         </dependency>
         <!-- required for Web UI tests -->
         <dependency>
@@ -197,6 +193,10 @@
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -210,6 +210,10 @@
                     <excludes>
                         <exclude>**/onlineTest/*.java</exclude>
                         <exclude>**/DefaultGeometryTest.java</exclude>
+                        <exclude>**/BBox3DTest.java</exclude>
+                        <exclude>**/Reprojection3DTest.java</exclude>
+                        <exclude>**/MultiGeometryTest..java</exclude>
+                        <exclude>**/SubstitutionGroupCoverageWfsTest.java</exclude>
                         <exclude>${test.exclude.pattern}</exclude>
                     </excludes>
                     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts}

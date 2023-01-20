@@ -54,6 +54,7 @@ import org.geotools.data.complex.DataAccessRegistry;
 import org.geotools.data.complex.FeatureTypeMapping;
 import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
 import org.geotools.data.jdbc.FilterToSQL;
+import org.geotools.data.oracle.OracleDialect;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.jdbc.BasicSQLDialect;
@@ -579,7 +580,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         } else if (dialect instanceof PreparedStatementSQLDialect) {
             original = ((PreparedStatementSQLDialect) dialect).createPreparedFilterToSQL();
             // disable prepared statements to have literals actually encoded in the SQL
-            ((PreparedFilterToSQL) original).setPrepareEnabled(false);
+            ((PreparedFilterToSQL) original).setPrepareEnabled(dialect instanceof OracleDialect);
         }
         original.setFeatureType((SimpleFeatureType) mapping.getSource().getSchema());
 

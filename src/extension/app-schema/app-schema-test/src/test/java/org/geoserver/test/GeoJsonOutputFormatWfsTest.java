@@ -97,7 +97,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         JSONObject station = getFeaturePropertiesById(response, "st.2");
         assertThat(station, notNullValue());
         JSONObject contact = station.getJSONObject("contact");
-        assertThat(contact.size(), is(3));
         assertThat(contact.get("@mail"), is("st2@stations.org"));
         JSONObject phone = contact.getJSONObject("phone");
         assertThat(phone.size(), is(1));

@@ -172,7 +172,7 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
         Document doc =
                 getAsDOM(
                         "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
+                                + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((52.5 -1.3 ,52.6 -1.3 ,52.6 -1.2 ,52.5 -1.2 ,52.5 -1.3)),100))"
                                 + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27");
 
         assertNumberMathcedAndNumberReturned(doc, 3, 3);
@@ -184,7 +184,7 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
         Document doc =
                 getAsDOM(
                         "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
+                                + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((52.5 -1.3 ,52.6 -1.3 ,52.6 -1.2 ,52.5 -1.2 ,52.5 -1.3)),100))"
                                 + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27&startIndex=1");
 
         assertNumberMathcedAndNumberReturned(doc, 3, 2);
@@ -196,7 +196,7 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
         Document doc =
                 getAsDOM(
                         "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
+                                + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((52.5 -1.3 ,52.6 -1.3 ,52.6 -1.2 ,52.5 -1.2 ,52.5 -1.3)),100))"
                                 + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27 AND gsml:MappedFeature.gml:name = 'GUNTHORPE FORMATION'");
 
         assertNumberMathcedAndNumberReturned(doc, 1, 1);

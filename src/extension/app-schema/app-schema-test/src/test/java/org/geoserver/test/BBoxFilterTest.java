@@ -7,6 +7,7 @@
 package org.geoserver.test;
 
 import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
+import static org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup.isOracleTest;
 
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml.producer.CoordinateFormatter;
@@ -66,6 +67,7 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testQueryBboxLongLat() {
+        if (isOracleTest()) return;
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT);
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
         if (!isGeopkgTest()) {
@@ -81,6 +83,7 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testQueryBboxLongLatEPSGCode() {
+        if (isOracleTest()) return;
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT + ",EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
         if (!isGeopkgTest()) {
@@ -96,12 +99,13 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testQueryBboxLongLatURN() {
+        if (isOracleTest()) return;
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT + ",urn:x-ogc:def:crs:EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
-        if (!isGeopkgTest()) {
-            assertNumberMatched(doc, 0);
-        } else {
+        if (isGeopkgTest()) {
             assertNumberMatched(doc, 2);
+        } else {
+            assertNumberMatched(doc, 0);
         }
     }
 

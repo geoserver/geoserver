@@ -309,11 +309,8 @@ public class DbMappings {
                     }
                 };
 
-        final List<PropertyType> propertyTypes;
-        {
-            final Map<String, ?> params = Collections.emptyMap();
-            propertyTypes = template.query(query, params, rowMapper);
-        }
+        logStatement(query, null);
+        List<PropertyType> propertyTypes = template.query(query, rowMapper);
 
         Map<Integer, Map<String, PropertyType>> perTypeProps = Maps.newHashMap();
         for (PropertyType pt : propertyTypes) {
@@ -330,7 +327,8 @@ public class DbMappings {
 
     private BiMap<Integer, Class<?>> loadTypes(NamedParameterJdbcOperations template) {
         String sql = "SELECT oid, typename FROM type";
-        SqlRowSet rowSet = template.queryForRowSet(sql, params("", ""));
+        logStatement(sql, null);
+        SqlRowSet rowSet = template.queryForRowSet(sql, params());
         BiMap<Integer, Class<?>> types = HashBiMap.create();
         if (rowSet.first()) {
             do {
@@ -356,7 +354,9 @@ public class DbMappings {
                 String.format(
                         "INSERT INTO type (typename, oid) VALUES (:typeName, %s)",
                         dialect.nextVal("seq_TYPE"));
-        int update = template.update(sql, params("typeName", typeName));
+        Map<String, ?> params = params("typeName", typeName);
+        logStatement(sql, params);
+        int update = template.update(sql, params);
         if (1 == update) {
             log("created type " + typeName);
         }

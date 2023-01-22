@@ -63,7 +63,17 @@
                   <ogc:PropertyName>NAME_LEN</ogc:PropertyName>
                   <ogc:Literal>8</ogc:Literal>
                 </ogc:Function>
-                <ogc:PropertyName>NAME</ogc:PropertyName>
+                <ogc:Function name="Recode">
+                  <ogc:Function name="language"/>
+                  <ogc:Literal/>
+                  <ogc:PropertyName>NAME</ogc:PropertyName>
+                  <ogc:Literal>en</ogc:Literal>
+                  <ogc:PropertyName>NAME</ogc:PropertyName>
+                  <ogc:Literal>it</ogc:Literal>
+                  <ogc:PropertyName>NAME_IT</ogc:PropertyName>
+                  <ogc:Literal>fr</ogc:Literal>
+                  <ogc:PropertyName>NAME_FR</ogc:PropertyName>
+                </ogc:Function>
                 <ogc:PropertyName>ABBREV</ogc:PropertyName>
               </ogc:Function>
             </sld:Label>
@@ -107,7 +117,17 @@
           <sld:MinScaleDenominator>7.0E7</sld:MinScaleDenominator>
           <sld:TextSymbolizer>
             <sld:Label>
-              <ogc:PropertyName>NAME</ogc:PropertyName>
+              <ogc:Function name="Recode">
+                <ogc:Function name="language"/>
+                <ogc:Literal/>
+                <ogc:PropertyName>NAME</ogc:PropertyName>
+                <ogc:Literal>en</ogc:Literal>
+                <ogc:PropertyName>NAME</ogc:PropertyName>
+                <ogc:Literal>it</ogc:Literal>
+                <ogc:PropertyName>NAME_IT</ogc:PropertyName>
+                <ogc:Literal>fr</ogc:Literal>
+                <ogc:PropertyName>NAME_FR</ogc:PropertyName>
+              </ogc:Function>
             </sld:Label>
             <sld:Font>
               <sld:CssParameter name="font-family">SansSerif</sld:CssParameter>
@@ -149,7 +169,17 @@
           <sld:MaxScaleDenominator>7.0E7</sld:MaxScaleDenominator>
           <sld:TextSymbolizer>
             <sld:Label>
-              <ogc:PropertyName>NAME</ogc:PropertyName>
+              <ogc:Function name="Recode">
+                <ogc:Function name="language"/>
+                <ogc:Literal/>
+                <ogc:PropertyName>NAME</ogc:PropertyName>
+                <ogc:Literal>en</ogc:Literal>
+                <ogc:PropertyName>NAME</ogc:PropertyName>
+                <ogc:Literal>it</ogc:Literal>
+                <ogc:PropertyName>NAME_IT</ogc:PropertyName>
+                <ogc:Literal>fr</ogc:Literal>
+                <ogc:PropertyName>NAME_FR</ogc:PropertyName>
+              </ogc:Function>
             </sld:Label>
             <sld:Font>
               <sld:CssParameter name="font-family">SansSerif</sld:CssParameter>
@@ -185,7 +215,17 @@
           <sld:MaxScaleDenominator>3.5E7</sld:MaxScaleDenominator>
           <sld:TextSymbolizer>
             <sld:Label>
-              <ogc:PropertyName>NAME</ogc:PropertyName>
+              <ogc:Function name="Recode">
+                <ogc:Function name="language"/>
+                <ogc:Literal/>
+                <ogc:PropertyName>NAME</ogc:PropertyName>
+                <ogc:Literal>en</ogc:Literal>
+                <ogc:PropertyName>NAME</ogc:PropertyName>
+                <ogc:Literal>it</ogc:Literal>
+                <ogc:PropertyName>NAME_IT</ogc:PropertyName>
+                <ogc:Literal>fr</ogc:Literal>
+                <ogc:PropertyName>NAME_FR</ogc:PropertyName>
+              </ogc:Function>
             </sld:Label>
             <sld:Font>
               <sld:CssParameter name="font-family">SansSerif</sld:CssParameter>

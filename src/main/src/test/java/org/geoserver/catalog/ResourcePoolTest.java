@@ -28,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.awt.image.RenderedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -709,6 +710,25 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             // writeStyleFile throws an IOException
         }
         Assert.assertFalse("foo.sld should not exist on disk after a failure.", sldFile.exists());
+    }
+
+    /**
+     * Since GEOS-10743 readStyle() must throw a FileNotFoundException if the style file does not
+     * exist. (Before an empty file was returned.)
+     *
+     * @throws IOException
+     */
+    @Test(expected = FileNotFoundException.class)
+    public void testMissingStyleThrowsException() throws IOException {
+        Catalog catalog = getCatalog();
+        StyleInfo missing = catalog.getFactory().createStyle();
+        missing.setName("missing");
+        missing.setFilename("missing.sld");
+
+        ResourcePool pool = new ResourcePool(catalog);
+        try (BufferedReader reader = pool.readStyle(missing)) {
+            fail("FileNotFoundException expected for missing style files");
+        }
     }
 
     @Test

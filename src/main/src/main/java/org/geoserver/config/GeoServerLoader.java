@@ -1109,7 +1109,7 @@ public abstract class GeoServerLoader {
         }
     }
 
-    public void destroy() throws Exception {
+    public void destroy() {
         // dispose
         geoserver.dispose();
     }

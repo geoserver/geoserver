@@ -35,7 +35,7 @@ jobs:
         ./build/ci/oracle/start-oracle.sh
         ./build/ci/oracle/setup-oracle.sh
     - name: Test AppSchema Oracle data store
-      run: mvn -B clean install -pl :gs-app-schema-oracle-test -Dspotless.apply.skip=true -Papp-schema,app-schema-online-test -nsu
+      run: mvn -B clean install -pl :gs-app-schema-oracle-test -Dspotless.apply.skip=true -Papp-schema,app-schema-online-test -nsu -f src/pom.xml
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

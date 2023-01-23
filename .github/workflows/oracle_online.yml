@@ -34,10 +34,8 @@ jobs:
       run: |
         ./build/ci/oracle/start-oracle.sh
         ./build/ci/oracle/setup-oracle.sh
-    - name: Build GeoTools dependent modules (no tests)
-      run: mvn -B clean install -T2 -Dall -pl :gt-jdbc-oracle -DskipTests -am
     - name: Test AppSchema Oracle data store
-      run: mvn -B clean install -pl :gs-app-schema-oracle-test -Pci-oracle-build -Dspotless.apply.skip=true
+      run: mvn -B clean install -pl :gs-app-schema-oracle-test -Dspotless.apply.skip=true -Papp-schema,app-schema-online-test -nsu
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

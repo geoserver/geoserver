@@ -88,7 +88,7 @@ Configuring authentication
 
 Basic authentication is supported through the ``user`` and ``passwd`` credential parameters. The provided user must have
 superuser privilege on the index to enable the mapping and alias requests performed during store initialization.
-Note that aliases must already be present on the elasticsearch index. If you enter an alias which is not present, the
+Note that aliases must already be present on the Elasticsearch index. If you enter an alias which is not present, the
 plugin will not generate it for you. Optional ``proxy_user`` and ``proxy_passwd`` parameters can be used to specify an
 alternate user for document search (OGC service) requests. The proxy user can have restricted privileges on the index
 through document level security. If not provided the default user is used for all requests.
@@ -120,7 +120,7 @@ System properties are supported for SSL/TLS configuration::
 
 See `HttpClientBuilder <https://hc.apache.org/httpcomponents-userClient-ga/httpclient/apidocs/org/apache/http/impl/userClient/HttpClientBuilder.html>`_  documentation for available properties.
 
-For example use ``javax.net.ssl.trustStore[Password]`` to validate server certificate::
+For example, use ``javax.net.ssl.trustStore[Password]`` to validate server certificate::
 
     $ export JAVA_OPTS="-Djavax.net.ssl.trustStore=/path/to/truststore.jks -Djavax.net.ssl.trustStorePassword=changeme $JAVA_OPTS "
 
@@ -303,7 +303,7 @@ Geohash grid aggregations
 
 Geohash grid aggregation support includes dynamic precision updating and a custom rendering transformation for visualization. Geohash grid aggregation precision is updated dynamically to approximate the specified ``grid_size`` based on current bbox extent and the additional ``grid_threshold`` parameter as described above.
 
-Geohash grid aggregation visualization is supported in WMS requests through a custom rendering transformation, ``vec:GeoHashGrid``, which translates aggregation response data into a raster for display. By default raster values correspond to the aggregation bucket ``doc_count``. The following shows an example GeoServer style that uses the GeoHashGrid rendering transformation::
+Geohash grid aggregation visualization is supported in WMS requests through a custom rendering transformation, ``vec:GeoHashGrid``, which translates aggregation response data into a raster for display. By default, raster values correspond to the aggregation bucket ``doc_count``. The following shows an example GeoServer style that uses the GeoHashGrid rendering transformation::
 
    <StyledLayerDescriptor version="1.0.0"
        xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
@@ -374,7 +374,7 @@ Example WMS request including Geohash grid aggregation with the above custom sty
          &layers=test:active&styles=geohashgrid&bbox=0.0,0.0,24.0,44.0&srs=EPSG:4326
          &width=418&height=768&format=application/openlayers
          
-The ES aggregation definition can be computed automatically, or provided as an explicit parameter,
+The Elasticsearch aggregation definition can be computed automatically, or provided as an explicit parameter,
 for example::
 
                <ogc:Function name="parameter">
@@ -585,7 +585,7 @@ Implementing a custom Grid Strategy
 
 By default the raster values computed in the geohash grid aggregation rendering transformation correspond to the top level ``doc_count``. Adding an additional strategy for computing the raster values from bucket data currently requires source code updates to the ``gt-elasticsearch-process`` module as described below.
 
-First create a custom implementation of ``org.geoserver.process.elasticsearch.GeoHashGrid`` and provide an implementation of the ``computeCellValue`` method, which takes the raw bucket data and returns the raster value. For example the default basic implementation simply returns the doc_count::
+First create a custom implementation of ``org.geoserver.process.elasticsearch.GeoHashGrid`` and provide an implementation of the ``computeCellValue`` method, which takes the raw bucket data and returns the raster value. For example, the default basic implementation simply returns the doc_count::
 
     public class BasicGeoHashGrid extends GeoHashGrid {
         @Override
@@ -596,7 +596,7 @@ First create a custom implementation of ``org.geoserver.process.elasticsearch.Ge
 
 Then update ``org.geoserver.process.elasticsearch.GeoHashGridProcess`` and add a new entry to the Strategy enum to point to the custom implementation. 
 
-After deploying the customized plugin the new geohash grid computer can be used by updating the ``gridStrategy`` parameter in the GeoServer style::
+After deploying the customized plugin, the new geohash grid computer can be used by updating the ``gridStrategy`` parameter in the GeoServer style::
 
    <StyledLayerDescriptor version="1.0.0"
        ...
@@ -613,9 +613,9 @@ After deploying the customized plugin the new geohash grid computer can be used 
 FAQ
 ---
 
-- By default arrays are returned directly, which is suitable for many output formats including GeoJSON. When using CSV output format with layers containing arrays it's necessary to set the ``array_encoding`` store parameter to ``CSV``. Note however when using the ``CSV`` array encoding that only the first value will be returned.
+- By default, arrays are returned directly, which is suitable for many output formats including GeoJSON. When using CSV output format with layers containing arrays it's necessary to set the ``array_encoding`` store parameter to ``CSV``. Note however when using the ``CSV`` array encoding that only the first value will be returned.
 - When updating from pre-2.11.0 versions of the plugin it may be necessary to reload older layers to enable full aggregation and time support. Missing aggregation data or errors of the form ``IllegalArgumentException: Illegal pattern component`` indicate a layer reload is necessary. In this case the layer must be removed and re-added to GeoServer (e.g. a feature type reload will not be sufficient).
-- Commas in the native query and aggregation body must be escaped with a backslash. Additionally body may need to be URL encoded.
+- Commas in the native query and aggregation body must be escaped with a backslash. Additionally, body may need to be URL encoded.
 - Geometry property name in the aggregation SLD RasterSymbolizer must be a valid geometry property in the layer
 - ``PropertyIsEqualTo`` maps to an Elasticsearch term query, which will return documents that contain the supplied term. When searching on an analyzed string field, ensure that the search values are consistent with the analyzer used in the index. For example, values may need to be lowercase when querying fields analyzed with the default analyzer. See the Elasticsearch term query documentation for more information.
 - ``PropertyIsLike`` maps to either a query string query or a regexp query, depending on whether the field is analyzed or not. Reserved characters should be escaped as applicable. Note case sensitive and insensitive searches may not be supported for analyzed and not analyzed fields, respectively. See Elasticsearch query string and regexp query documentation for more information.

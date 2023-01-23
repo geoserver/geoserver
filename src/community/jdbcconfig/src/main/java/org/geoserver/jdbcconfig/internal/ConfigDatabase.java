@@ -936,8 +936,10 @@ public class ConfigDatabase implements ApplicationContextAware {
             rollbackFor = Exception.class)
     public void repopulateQueryableProperties() {
         InfoRowMapper<Info> mapper = new InfoRowMapper<Info>(Info.class, binding, 2);
+        String sql = "SELECT oid, blob FROM object";
+        logStatement(sql, null);
         template.query(
-                "SELECT oid, blob FROM object",
+                sql,
                 new ResultSetExtractor<Void>() {
 
                     @Override

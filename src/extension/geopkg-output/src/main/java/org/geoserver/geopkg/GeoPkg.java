@@ -43,12 +43,15 @@ public class GeoPkg {
      */
     public static GeoPackage getGeoPackage(File file) throws IOException {
         SQLiteConfig config = new SQLiteConfig();
-        config.setSharedCache(true);
+        config.setSharedCache(false);
         config.setJournalMode(SQLiteConfig.JournalMode.OFF);
-        config.setPragma(SQLiteConfig.Pragma.SYNCHRONOUS, "OFF");
-        config.setLockingMode(SQLiteConfig.LockingMode.EXCLUSIVE);
+        config.setSynchronous(SQLiteConfig.SynchronousMode.OFF);
+        config.setLockingMode(SQLiteConfig.LockingMode.NORMAL);
+        config.setTempStore(SQLiteConfig.TempStore.MEMORY);
+
         Map<String, Object> params = new HashMap<>();
         params.put(JDBCDataStoreFactory.BATCH_INSERT_SIZE.key, 10000);
+
         return new GeoPackage(file, config, params);
     }
 }

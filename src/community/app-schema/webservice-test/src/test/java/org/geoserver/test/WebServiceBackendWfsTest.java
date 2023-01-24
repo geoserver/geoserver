@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.junit.Test;
@@ -56,7 +55,6 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
      * Test whether DescribeFeatureType returns xsd:schema, and if the contents are correct. When no
      * type name specified, it should return imports for all name spaces involved. If type name is
      * specified, it should return imports of GML type and the type's top level schema.
-     *
      */
     @Test
     public void testDescribeFeatureType() throws IOException {
@@ -352,10 +350,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Check schema location
-     *
-     */
+    /** Check schema location */
     private void checkSchemaLocation(Document doc) {
         String schemaLocation = evaluate("/wfs:FeatureCollection/@xsi:schemaLocation", doc);
         String gsmlLocation =
@@ -375,10 +370,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
         }
     }
 
-    /**
-     * Check mf1 content are encoded correctly
-     *
-     */
+    /** Check mf1 content are encoded correctly */
     private void checkMf1Content(String id, Document doc) {
         assertXpathEvaluatesTo(
                 "GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
@@ -466,10 +458,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Check mf2 content are encoded correctly
-     *
-     */
+    /** Check mf2 content are encoded correctly */
     private void checkMf2Content(String id, Document doc) {
         assertXpathEvaluatesTo(
                 "MERCIA MUDSTONE GROUP",
@@ -579,10 +568,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Check mf3 content are encoded correctly
-     *
-     */
+    /** Check mf3 content are encoded correctly */
     private void checkMf3Content(String id, Document doc) {
         assertXpathEvaluatesTo(
                 "CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
@@ -598,10 +584,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Check mf4 content are encoded correctly
-     *
-     */
+    /** Check mf4 content are encoded correctly */
     private void checkMf4Content(String id, Document doc) {
         assertXpathEvaluatesTo(
                 "MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);

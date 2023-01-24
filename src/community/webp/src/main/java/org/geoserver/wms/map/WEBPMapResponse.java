@@ -27,62 +27,65 @@ import org.geotools.image.io.ImageIOExt;
  */
 public final class WEBPMapResponse extends RenderedImageMapResponse {
 
-  /** Logger. */
-  private static final Logger LOGGER =
-      org.geotools.util.logging.Logging.getLogger(WEBPMapResponse.class.toString());
+    /** Logger. */
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(WEBPMapResponse.class.toString());
 
-  private static final boolean CODEC_LIB_AVAILABLE = PackageUtil.isCodecLibAvailable();
+    private static final boolean CODEC_LIB_AVAILABLE = PackageUtil.isCodecLibAvailable();
 
-  private static MapProducerCapabilities CAPABILITIES =
-      new MapProducerCapabilities(true, true, true);
+    private static MapProducerCapabilities CAPABILITIES =
+            new MapProducerCapabilities(true, true, true);
 
-  /** the only MIME type this map producer supports */
-  private static final String MIME_TYPE = "image/webp";
+    /** the only MIME type this map producer supports */
+    private static final String MIME_TYPE = "image/webp";
 
-  private static final ImageWriterSpi writerSPI = new com.luciad.imageio.webp.WebPImageWriterSpi();
+    private static final ImageWriterSpi writerSPI =
+            new com.luciad.imageio.webp.WebPImageWriterSpi();
 
-  public WEBPMapResponse(WMS wms) {
-    super(MIME_TYPE, wms);
-  }
-
-  @Override
-  public void formatImageOutputStream(
-      RenderedImage image, OutputStream outStream, WMSMapContent mapContent) throws IOException {
-    if (LOGGER.isLoggable(Level.FINE)) {
-      LOGGER.fine("About to write a WEBP image.");
+    public WEBPMapResponse(WMS wms) {
+        super(MIME_TYPE, wms);
     }
 
-    final ImageWriter writer = writerSPI.createWriterInstance();
+    @Override
+    public void formatImageOutputStream(
+            RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
+            throws IOException {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("About to write a WEBP image.");
+        }
 
-    try (final ImageOutputStream ioutstream =
-        ImageIOExt.createImageOutputStream(image, outStream)) {
-      if (ioutstream == null) throw new ServiceException("Unable to create ImageOutputStream.");
-      writer.setOutput(ioutstream);
-      writer.write(image);
-    } finally {
-      try {
+        final ImageWriter writer = writerSPI.createWriterInstance();
 
-        writer.dispose();
-      } catch (Throwable e) {
-        if (LOGGER.isLoggable(Level.FINEST))
-          LOGGER.log(Level.FINEST, "Unable to properly dispose writer", e);
-      }
+        try (final ImageOutputStream ioutstream =
+                ImageIOExt.createImageOutputStream(image, outStream)) {
+            if (ioutstream == null)
+                throw new ServiceException("Unable to create ImageOutputStream.");
+            writer.setOutput(ioutstream);
+            writer.write(image);
+        } finally {
+            try {
 
-      RasterCleaner.addImage(image);
+                writer.dispose();
+            } catch (Throwable e) {
+                if (LOGGER.isLoggable(Level.FINEST))
+                    LOGGER.log(Level.FINEST, "Unable to properly dispose writer", e);
+            }
+
+            RasterCleaner.addImage(image);
+        }
+
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Writing a WEBP done!!!");
+        }
     }
 
-    if (LOGGER.isLoggable(Level.FINE)) {
-      LOGGER.fine("Writing a WEBP done!!!");
+    @Override
+    public MapProducerCapabilities getCapabilities(String outputFormat) {
+        return CAPABILITIES;
     }
-  }
 
-  @Override
-  public MapProducerCapabilities getCapabilities(String outputFormat) {
-    return CAPABILITIES;
-  }
-
-  @Override
-  public String getExtension(RenderedImage image, WMSMapContent mapContent) {
-    return "webp";
-  }
+    @Override
+    public String getExtension(RenderedImage image, WMSMapContent mapContent) {
+        return "webp";
+    }
 }

@@ -7,7 +7,7 @@ This reference describes all filter functions that can be used in WFS/WMS filter
 
 The list of functions available on a GeoServer instance can be determined by 
 browsing to http://localhost:8080/geoserver/wfs?request=GetCapabilities 
-and searching for ``ogc:FunctionNames`` in the returned XML.  
+and searching for ``ogc:Function_Names`` (WFS 1.0.0), ``ogc:FunctionNames`` (WFS 1.1.0), or ``fes:Functions`` (WFS 2.0.0) in the returned XML.  
 If a function is described in the Capabilities document but is not in this reference, 
 then it might mean that the function cannot be used for filtering, 
 or that it is new and has not been documented.  Ask for details on the user mailing list.
@@ -83,7 +83,7 @@ Comparison functions
    * - not
      - ``bool``:Boolean
      - Returns the negation of ``bool``
-   * - notEqual
+   * - notEqualTo
      - ``x``:Object, ``y``:Object
      - Returns true if ``x`` and ``y`` are equal, false otherwise
      

@@ -46,7 +46,7 @@ public class GwcUrlHandlerMapping extends RequestMappingHandlerMapping
         if (patternsRequestCondition != null && patternsRequestCondition.getPatterns() != null) {
             for (String pattern : patternsRequestCondition.getPatterns()) {
                 if (pattern.contains(GWC_URL_PATTERN)) {
-                    // this is an handler for GWC WMTS REST API
+                    // this is a handler for GWC WMTS REST API
                     super.registerHandlerMethod(handler, method, mapping);
                     break;
                 }

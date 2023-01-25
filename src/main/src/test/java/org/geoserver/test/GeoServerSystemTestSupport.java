@@ -1620,7 +1620,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Remove parmeters from mime type.
+     * Remove parameters from mime type.
      *
      * @param mimeType the mime type
      * @return with mime type without parameters

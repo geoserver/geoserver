@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.geoserver.catalog.Catalog;
@@ -152,7 +153,8 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         if (layerName != null) {
             if (!ANY.equals(root) && rawCatalog.getWorkspaceByName(root) == null)
                 LOGGER.warning("Namespace/Workspace " + root + " is unknown in rule " + rule);
-            if (!ANY.equals(layerName)
+            if (LOGGER.isLoggable(Level.FINE)
+                    && !ANY.equals(layerName)
                     && rawCatalog.getLayerByName(new NameImpl(root, layerName)) == null
                     && rawCatalog.getLayerGroupByName(root, layerName) == null)
                 LOGGER.fine("Layer " + root + ":" + layerName + " is unknown in rule: " + rule);

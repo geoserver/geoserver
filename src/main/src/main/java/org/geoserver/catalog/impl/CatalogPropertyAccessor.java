@@ -85,6 +85,10 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         if (input instanceof Info && Predicates.ANY_TEXT.getPropertyName().equals(propertyName)) {
             return getAnyText((Info) input);
         }
+        if (input instanceof Info && "id".equals(propertyName)) {
+            return ((Info) input).getId();
+        }
+
         String[] propertyNames = propertyName.split("\\.");
         return getProperty(input, propertyNames, 0);
     }

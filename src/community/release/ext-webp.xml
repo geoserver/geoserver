@@ -10,7 +10,7 @@
             <outputDirectory></outputDirectory>
             <includes>
                 <include>gs-webp*.jar</include>
-                <include>webp-imageio-0.2.2.jar</include>
+                <include>webp-imageio-*.jar</include>
             </includes>
         </fileSet>
     </fileSets>

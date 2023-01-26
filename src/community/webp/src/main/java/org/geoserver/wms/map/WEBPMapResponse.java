@@ -31,8 +31,6 @@ public final class WEBPMapResponse extends RenderedImageMapResponse {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(WEBPMapResponse.class.toString());
 
-    private static final boolean CODEC_LIB_AVAILABLE = PackageUtil.isCodecLibAvailable();
-
     private static MapProducerCapabilities CAPABILITIES =
             new MapProducerCapabilities(true, true, true);
 

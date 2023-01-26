@@ -32,14 +32,6 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
                 || !RestListWrapper.class.isAssignableFrom(clazz);
     }
 
-    //
-    // reading
-    //
-    //    @Override
-    //    public boolean canRead(Class<?> clazz, MediaType mediaType) {
-    //        return !RestListWrapper.class.isAssignableFrom(clazz) && canRead(mediaType);
-    //    }
-
     @Override
     protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {

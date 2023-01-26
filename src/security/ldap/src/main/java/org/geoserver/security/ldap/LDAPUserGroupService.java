@@ -170,13 +170,16 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public SortedSet<GeoServerUser> getUsers() {
         final SortedSet<GeoServerUser> users = new TreeSet<>();
 
-        // Replace "\" with "\5C" for search.
-        String allUsersSearchFilterNew = allUsersSearchFilter.replace("\\", "\\5C");
-        
+        // Replace the escape token "\" with "\\" to search.
+        String allUsersSearchFilterNew = LDAPUtils.escapeSearchString(allUsersSearchFilter);
+
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(userSearchBase, allUsersSearchFilterNew, addToUsers(users)));
+                                .search(
+                                        userSearchBase,
+                                        allUsersSearchFilterNew,
+                                        addToUsers(users)));
 
         return Collections.unmodifiableSortedSet(users);
     }
@@ -434,9 +437,9 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public int getUserCount() {
         AtomicInteger size = new AtomicInteger(0);
 
-        // Replace "\" with "\5C" for search.
-        String allUsersSearchFilterNew = allUsersSearchFilter.replace("\\", "\\5C");
-                
+        // Replace the escape token "\" with "\\" to search.
+        String allUsersSearchFilterNew = LDAPUtils.escapeSearchString(allUsersSearchFilter);
+
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
@@ -449,8 +452,8 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public int getGroupCount() {
         AtomicInteger size = new AtomicInteger(0);
 
-        // Replace "\" with "\5C" for search.
-        String allGroupsSearchFilterNew = allGroupsSearchFilter.replace("\\", "\\5C");
+        // Replace the escape token "\" with "\\" to search.
+        String allGroupsSearchFilterNew = LDAPUtils.escapeSearchString(allGroupsSearchFilter);
 
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
@@ -485,15 +488,19 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) {
         final SortedSet<GeoServerUser> users = new TreeSet<>();
 
-        // Replace "\" with "\5C" for search.
-        String allUsersSearchFilterNew = allUsersSearchFilter.replace("\\", "\\5C");
+        // Replace the escape token "\" with "\\" to search.
+        String allUsersSearchFilterNew = LDAPUtils.escapeSearchString(allUsersSearchFilter);
 
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
                                 .search(
                                         userSearchBase,
-                                        "(&(!(" + propname + "=*))(" + allUsersSearchFilterNew + "))",
+                                        "(&(!("
+                                                + propname
+                                                + "=*))("
+                                                + allUsersSearchFilterNew
+                                                + "))",
                                         addToUsers(users)));
 
         return users;
@@ -503,15 +510,19 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public int getUserCountNotHavingProperty(String propname) {
         AtomicInteger size = new AtomicInteger(0);
 
-        // Replace "\" with "\5C" for search.
-        String allUsersSearchFilterNew = allUsersSearchFilter.replace("\\", "\\5C");
+        // Replace the escape token "\" with "\\" to search.
+        String allUsersSearchFilterNew = LDAPUtils.escapeSearchString(allUsersSearchFilter);
 
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
                                 .search(
                                         userSearchBase,
-                                        "(&(!(" + propname + "=*))(" + allUsersSearchFilterNew + "))",
+                                        "(&(!("
+                                                + propname
+                                                + "=*))("
+                                                + allUsersSearchFilterNew
+                                                + "))",
                                         counter(size)));
         return size.get();
     }
@@ -521,8 +532,8 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
             throws IOException {
         final SortedSet<GeoServerUser> users = new TreeSet<>();
 
-        // Replace "\" with "\5C" for search.
-        String propvalueNew = propvalue.replace("\\", "\\5C");
+        // Replace the escape token "\" with "\\" to search.
+        String propvalueNew = LDAPUtils.escapeSearchString(propvalue);
 
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
@@ -540,13 +551,16 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
             throws IOException {
         AtomicInteger size = new AtomicInteger(0);
 
-        // Replace "\" with "\5C" for search.
-        String propvalueNew = propvalue.replace("\\", "\\5C");
+        // Replace the escape token "\" with "\\" to search.
+        String propvalueNew = LDAPUtils.escapeSearchString(propvalue);
 
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(userSearchBase, propname + "=" + propvalueNew, counter(size)));
+                                .search(
+                                        userSearchBase,
+                                        propname + "=" + propvalueNew,
+                                        counter(size)));
         return size.get();
     }
 }

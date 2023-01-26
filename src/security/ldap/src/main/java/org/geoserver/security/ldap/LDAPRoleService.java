@@ -354,10 +354,9 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     @Override
     public int getRoleCount() throws IOException {
         AtomicInteger count = new AtomicInteger(0);
-        
-        // Replace "\" with "\5C" for search.
-        String allGroupsSearchFilterNew = allGroupsSearchFilter.replace("\\", "\\5C");
-        
+
+        // Replace the escape token "\" with "\\" to search.
+        String allGroupsSearchFilterNew = LDAPUtils.escapeSearchString(allGroupsSearchFilter);
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)

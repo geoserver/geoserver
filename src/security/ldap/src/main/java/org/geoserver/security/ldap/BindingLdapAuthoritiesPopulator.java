@@ -209,8 +209,8 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
                     final String formattedFilter =
                             MessageFormat.format(groupSearchFilter, userDn, username);
-                    // Replace "\" with "\5C" for search.
-                    String formattedFilterNew = formattedFilter.replace("\\", "\\5C"); 
+                    // Replace the escape token "\" with "\\" to search.
+                    String formattedFilterNew = LDAPUtils.escapeSearchString(formattedFilter);
                     userRolesNameDn.addAll(
                             authTemplate.search(
                                     getGroupSearchBase(),
@@ -280,8 +280,8 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
                     final String formattedFilter =
                             MessageFormat.format(nestedGroupSearchFilter, groupDn, groupName);
-                    // Replace "\" with "\5C" for search.
-                    String formattedFilterNew = formattedFilter.replace("\\", "\\5C"); 
+                    // Replace the escape token "\" with "\\" to search.
+                    String formattedFilterNew = LDAPUtils.escapeSearchString(formattedFilter);
                     groupRolesNameDn.addAll(
                             authTemplate.search(
                                     getGroupSearchBase(),

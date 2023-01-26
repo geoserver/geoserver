@@ -38,12 +38,16 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        //        if( RestWrapper.class.isAssignableFrom(clazz) ){
-        //            return !RestListWrapper.class.isAssignableFrom(clazz); // we can only write
-        // RestWrapper, not RestListWrapper
-        //        }
-        return true; // reading objects is fine
+        // this converter is actually used for classes that are not RestWrapper, but we need to
+        // exclude OGC API Objects that need to be managed by the Jackson converter
+        return clazz != null
+                && (RestWrapper.class.isAssignableFrom(clazz) || !isOGCAPIObject(clazz));
     }
+
+    private boolean isOGCAPIObject(Class<?> clazz) {
+        return clazz.getPackage().getName().startsWith("org.geoserver.ogcapi");
+    }
+
     //
     // reading
     //

@@ -7,6 +7,8 @@ package org.geoserver.ogcapi;
 import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import io.swagger.v3.oas.models.OpenAPI;
+import java.lang.reflect.Type;
+import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.http.MediaType;
 
 /**
@@ -21,11 +23,34 @@ public class MappingJackson2HttpMessageConverter
     }
 
     @Override
-    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        if (clazz.getAnnotation(JsonIgnoreType.class) != null
-                || OpenAPI.class.isAssignableFrom(clazz)) {
+    public boolean canRead(Class<?> clazz, MediaType mediaType) {
+        if (!canJacksonHandle(clazz)) return false;
+
+        return super.canRead(clazz, mediaType);
+    }
+
+    @Override
+    public boolean canRead(Type type, Class<?> contextClass, MediaType mediaType) {
+        // reading wise, the converters are called with simple types (not wrappers),
+        // limit this to the OGC API controllers, while the REST ones handle all the
+        // other classes, for backwards compatibility
+        if (contextClass != null
+                && !contextClass.getPackage().getName().startsWith("org.geoserver.ogcapi"))
             return false;
-        }
+
+        return super.canRead(type, contextClass, mediaType);
+    }
+
+    @Override
+    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
+        if (!canJacksonHandle(clazz)) return false;
+
         return super.canWrite(clazz, mediaType);
+    }
+
+    static boolean canJacksonHandle(Class<?> clazz) {
+        return clazz.getAnnotation(JsonIgnoreType.class) == null
+                && !RestWrapper.class.isAssignableFrom(clazz)
+                && !OpenAPI.class.isAssignableFrom(clazz);
     }
 }

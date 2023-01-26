@@ -31,6 +31,7 @@
     <dependency>
       <groupId>com.github.gotson</groupId>
       <artifactId>webp-imageio</artifactId>
+      <version>0.2.2</version>cd
     </dependency>
   </dependencies>
 

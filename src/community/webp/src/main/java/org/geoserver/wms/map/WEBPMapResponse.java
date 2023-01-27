@@ -4,7 +4,6 @@
  */
 package org.geoserver.wms.map;
 
-import com.sun.media.imageioimpl.common.PackageUtil;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;

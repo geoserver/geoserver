@@ -3,8 +3,16 @@
 WCS Vendor Parameters
 =====================
 
+WCS vendor parameters are non-standard request parameters 
+that are defined by an implementation to provide enhanced capabilities.
+
+.. include:: ../generic_vendor_options.txt
+
+GetCoverage Request
+-------------------
+
 namespace
----------
+^^^^^^^^^
 
 Requests to the WCS GetCapabilities operation can be filtered to only return layers corresponding to a particular namespace.
 
@@ -19,7 +27,7 @@ Sample code: ::
 Using an invalid namespace prefix will not cause any errors, but the document returned will not contain information on any layers.
 
 cql_filter
-----------
+^^^^^^^^^^
 
 The ``cql_filter`` parameter is similar to same named WMS parameter, and allows expressing a filter using ECQL (Extended Common Query Language).
 The filter is sent down into readers exposing a ``Filter`` read parameter.
@@ -32,7 +40,7 @@ granules with a cloud cover less than 10% using:
 For full details see the :ref:`filter_ecql_reference` and :ref:`cql_tutorial` tutorial.
 
 sortBy
-------
+^^^^^^
 
 The ``sortBy`` parameter allows to control the order of granules being mosaicked, using the same
 syntax as WFS 1.0, that is:

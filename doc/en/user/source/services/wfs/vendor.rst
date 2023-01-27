@@ -5,54 +5,10 @@ WFS vendor parameters
 
 WFS vendor parameters are non-standard request parameters defined by an implementation to provide enhanced capabilities. GeoServer supports a variety of vendor-specific WFS parameters.
 
-CQL filters
------------
-
-In WFS :ref:`wfs_getfeature` GET requests, the ``cql_filter`` parameter can be used to specify a filter in ECQL (Extended Common Query Language) format. ECQL provides a more compact and readable syntax compared to OGC XML filters. 
-
-For full details see the :ref:`filter_ecql_reference` and :ref:`cql_tutorial` tutorial.
-
-The following example illustrates a GET request OGC filter:
-
-:: 
-
-   filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E
-
-Using ECQL, the identical filter would be defined as follows:
-
-::
-
-   cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))
-
-
-Format options
---------------
-
-The ``format_options`` parameter is a container for other parameters that are format-specific. The syntax is::
-  
-    format_options=param1:value1;param2:value2;...
-    
-The supported format option is:
-
-* ``callback`` (default is ``parseResponse``)—Specifies the callback function name for the JSONP response format
-* ``id_policy`` (default is ``true``)- Specifies id generation for the JSON output format. To include feature id in output use an attribute name, or use ``format_options=id_policy:true`` for feature id generation. To avoid the use of feature id completely use ``format_options=id_policy:false``.
-* ``filename`` (default is :file:`features` or generated from feature type name)- provide a ``Content-Disposition`` header indicating the attachment filename (used as a suggestion by browsers saving content to disk using :command:`Save-As`). For example ``format_options=filename:content.txt``.
-* ``csvseparator`` (default is ```,``` )- Specifies a separator that can be used in output csv file
-
-Reprojection
-------------
-
-As WFS 1.1.0 and 2.0.0 both support data reprojection, GeoServer can store the data in one projection and return GML in another projection. While not part of the specification, GeoServer supports this using WFS 1.0.0 as well. When submitting a WFS :ref:`wfs_getfeature` GET request, you can add this parameter to specify the reprojection SRS as follows:
-
-::
-
-  srsName=<srsName>
-  
-The code for the projection is represented by ``<srsName>``, for example ``EPSG:4326``. For POST requests, you can add the same code to the ``Query`` element.
-
+.. include:: ../generic_vendor_options.txt
 
 XML request validation
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 GeoServer is less strict than the WFS specification when it comes to the validity of an XML request. To force incoming XML requests to be valid, use the following parameter:
 
@@ -86,9 +42,11 @@ That said, the request would still be processed by default. Executing the above 
      <wfs:Query typeName="topp:states"/>
    </wfs:GetFeature>
 
+GetCapabilities Request
+-----------------------
 
-GetCapabilities namespace filter
---------------------------------
+Namespace filter
+^^^^^^^^^^^^^^^^
 
 WFS :ref:`wfs_getcap` requests may be filtered to return only those layers that correspond to a particular namespace by adding the ``<namespace>`` parameter to the request.
 
@@ -106,3 +64,50 @@ Although providing an invalid namespace will not result in any errors, the GetCa
 
 .. note:: This filter is related to :ref:`virtual_services`.
 
+GetFeature Request
+------------------
+
+CQL filters
+^^^^^^^^^^^
+
+In WFS :ref:`wfs_getfeature` GET requests, the ``cql_filter`` parameter can be used to specify a filter in ECQL (Extended Common Query Language) format. ECQL provides a more compact and readable syntax compared to OGC XML filters. 
+
+For full details see the :ref:`filter_ecql_reference` and :ref:`cql_tutorial` tutorial.
+
+The following example illustrates a GET request OGC filter:
+
+:: 
+
+   filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E
+
+Using ECQL, the identical filter would be defined as follows:
+
+::
+
+   cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))
+
+
+Format options
+^^^^^^^^^^^^^^
+
+The ``format_options`` parameter is a container for other parameters that are format-specific. The syntax is::
+  
+    format_options=param1:value1;param2:value2;...
+    
+The supported format option is:
+
+* ``callback`` (default is ``parseResponse``)—Specifies the callback function name for the JSONP response format
+* ``id_policy`` (default is ``true``)- Specifies id generation for the JSON output format. To include feature id in output use an attribute name, or use ``format_options=id_policy:true`` for feature id generation. To avoid the use of feature id completely use ``format_options=id_policy:false``.
+* ``filename`` (default is :file:`features` or generated from feature type name)- provide a ``Content-Disposition`` header indicating the attachment filename (used as a suggestion by browsers saving content to disk using :command:`Save-As`). For example ``format_options=filename:content.txt``.
+* ``csvseparator`` (default is ```,``` )- Specifies a separator that can be used in output csv file
+
+Reprojection
+^^^^^^^^^^^^
+
+As WFS 1.1.0 and 2.0.0 both support data reprojection, GeoServer can store the data in one projection and return GML in another projection. While not part of the specification, GeoServer supports this using WFS 1.0.0 as well. When submitting a WFS :ref:`wfs_getfeature` GET request, you can add this parameter to specify the reprojection SRS as follows:
+
+::
+
+  srsName=<srsName>
+  
+The code for the projection is represented by ``<srsName>``, for example ``EPSG:4326``. For POST requests, you can add the same code to the ``Query`` element.

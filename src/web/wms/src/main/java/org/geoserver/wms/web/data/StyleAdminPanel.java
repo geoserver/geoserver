@@ -232,7 +232,8 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                 // ouch, the style file is gone! Register a generic error message
                 Session.get()
                         .error(
-                                new ParamResourceModel("styleNotFound", this, style.getFilename())
+                                new ParamResourceModel(
+                                                "styleNotFound", stylePage, style.getFilename())
                                         .getString());
             }
         }

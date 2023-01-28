@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -2166,9 +2167,10 @@ public class ResourcePool {
      */
     public BufferedReader readStyle(StyleInfo style) throws IOException {
         Resource styleResource = dataDir().style(style);
-        if (styleResource == null) {
-            throw new IOException("No such resource: " + style.getFilename());
+        if (styleResource.getType() != Resource.Type.RESOURCE) {
+            throw new FileNotFoundException("No such resource: " + style.getFilename());
         }
+
         return new BufferedReader(new InputStreamReader(styleResource.in()));
     }
 

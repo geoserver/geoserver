@@ -50,7 +50,7 @@ public final class WEBPMapResponse extends RenderedImageMapResponse {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("About to write a WEBP image.");
         }
-
+        image = applyPalette(image, mapContent, MIME_TYPE, true);
         final ImageWriter writer = writerSPI.createWriterInstance();
 
         try (final ImageOutputStream ioutstream =

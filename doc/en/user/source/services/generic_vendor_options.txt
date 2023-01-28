@@ -8,16 +8,16 @@ content-disposition
 
 The ``content-disposition`` parameter directs how a web browser directed to handle returned content. The syntax is::
 
-   content-dispoition=<dispoition>
+   content-disposition=<disposition>
 
-Where ``content-dispoition=attachment`` to direct the browser to save the content to disk (even if it is a format such as json or text which it may be wlling to display directly).
+Where ``content-disposition =attachment`` to direct the browser to save the content to disk.
 
-Where ``content-dispoition=inline`` asks the browser to display the content. Note this may present a difficulty when asked to display large content.
+Where ``content-disposition=inline`` asks the browser to display the content. Note this may present performance issues when asked to display very large content.
 
 filename
 ^^^^^^^^
 
-The ``filename`` parameter provides a suggested filename when a browser saves a file to Downloads folder. The syntax is::
+The ``filename`` parameter provides a suggested filename when a browser saves a file (e.g. to Downloads folder). The syntax is::
 
    filename=<file>
 

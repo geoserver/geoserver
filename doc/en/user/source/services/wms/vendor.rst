@@ -28,7 +28,7 @@ An example request:
 namespace
 ^^^^^^^^^
 
-The ``namespace`` parameter causes WMS :ref:`wms_getcap` responses to be filtered to only contain layers in to a particular namespace.  
+The ``namespace`` parameter causes WMS :ref:`wms_getcap` responses to be filtered to only contain layers in a particular namespace.  
 The syntax is::
 
    namespace=<namespace>

@@ -96,8 +96,8 @@ The ``format_options`` parameter is a container for other parameters that are fo
     
 The supported format option is:
 
-* ``callback`` (default is ``parseResponse``)—Specifies the callback function name for the JSONP response format
-* ``id_policy`` (default is ``true``)- Specifies id generation for the JSON output format. To include feature id in output use an attribute name, or use ``format_options=id_policy:true`` for feature id generation. To avoid the use of feature id completely use ``format_options=id_policy:false``.
+* ``callback`` (default is ``parseResponse``) - specifies the callback function name for the JSONP response format
+* ``id_policy`` (default is ``true``) - Specifies id generation for the JSON output format. To include feature id in the output, use an attribute name, or use ``format_options=id_policy:true`` for feature id generation. To avoid the use of feature id completely use ``format_options=id_policy:false``.
 * ``filename`` (default is :file:`features` or generated from feature type name)- provide a ``Content-Disposition`` header indicating the attachment filename (used as a suggestion by browsers saving content to disk using :command:`Save-As`). For example ``format_options=filename:content.txt``.
 * ``csvseparator`` (default is ```,``` )- Specifies a separator that can be used in output csv file
 

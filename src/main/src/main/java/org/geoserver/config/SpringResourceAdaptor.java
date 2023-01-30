@@ -1,10 +1,14 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2022 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.config;
 
+import static org.geoserver.platform.resource.Resource.Type.RESOURCE;
+import static org.geoserver.platform.resource.Resource.Type.UNDEFINED;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -54,6 +58,9 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
 
     @Override
     public InputStream getInputStream() throws IOException {
+        if (resource.getType() != RESOURCE) {
+            throw new FileNotFoundException(resource.path());
+        }
         return resource.in();
     }
 
@@ -63,8 +70,13 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
     }
 
     @Override
+    public boolean isFile() {
+        return resource != null && resource.getType() == RESOURCE;
+    }
+
+    @Override
     public boolean isReadable() {
-        return Resources.canRead(resource);
+        return resource.getType() != UNDEFINED && Resources.canRead(resource);
     }
 
     @Override
@@ -74,22 +86,37 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
 
     @Override
     public URL getURL() throws IOException {
-        return Resources.find(resource).toURI().toURL();
+        return getFile().toURI().toURL();
     }
 
     @Override
     public URI getURI() throws IOException {
-        return Resources.find(resource).toURI();
+        return getFile().toURI();
     }
 
+    /**
+     * @return a File handle for this resource.
+     * @throws FileNotFoundException if the resource is UNDEFINED.
+     */
     @Override
     public File getFile() throws IOException {
-        return Resources.find(resource);
+        File file = Resources.find(resource);
+        if (file == null) {
+            throw new FileNotFoundException(resource.path());
+        }
+        return file;
     }
 
+    /**
+     * {@link org.springframework.core.io.Resource#contentLength()} suggests to throw an IOException
+     * while {@link java.io.File#length()} suggests to return 0L instead, which is used here to
+     * kinder the client code. Directory resources also return 0L.
+     *
+     * @return the content length for this resource or 0L if it is not a file.
+     */
     @Override
-    public long contentLength() throws IOException {
-        return Resources.find(resource).length();
+    public long contentLength() {
+        return resource.getType() == RESOURCE ? resource.file().length() : 0;
     }
 
     @Override
@@ -98,8 +125,7 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
     }
 
     @Override
-    public org.springframework.core.io.Resource createRelative(String relativePath)
-            throws IOException {
+    public org.springframework.core.io.Resource createRelative(String relativePath) {
         return new SpringResourceAdaptor(resource.get(relativePath));
     }
 

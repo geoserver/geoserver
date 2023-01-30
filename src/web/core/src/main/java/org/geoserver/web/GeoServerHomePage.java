@@ -252,12 +252,8 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         String layerSelection = toLayer(workspaceName, layerName);
 
         PageParameters pageParams = new PageParameters();
-        if (workspaceSelection != null) {
-            pageParams.add("workspace", workspaceSelection, 0, INamedParameters.Type.QUERY_STRING);
-        }
-        if (layerSelection != null) {
-            pageParams.add("layer", layerSelection, 1, INamedParameters.Type.QUERY_STRING);
-        }
+        pageParams.add("workspace", workspaceSelection, 0, INamedParameters.Type.QUERY_STRING);
+        pageParams.add("layer", layerSelection, 1, INamedParameters.Type.QUERY_STRING);
         setResponsePage(GeoServerHomePage.class, pageParams);
     }
 
@@ -763,7 +759,11 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 return layerName.substring(0, layerName.indexOf(":"));
             }
         }
-        return workspaceName;
+        if (!Strings.isEmpty(workspaceName)) {
+            return workspaceName;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -781,7 +781,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 return layerName;
             }
         } else {
-            return null;
+            return "";
         }
     }
 }

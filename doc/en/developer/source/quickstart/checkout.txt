@@ -8,8 +8,8 @@ Check out the source code from the git repository.::
 To list the available branches.::
 
   % git branch
-     2.15.x
-     2.16.x
+     2.21.x
+     2.22.x
    * main
 
 Choose ``main`` for the latest development.::
@@ -18,7 +18,7 @@ Choose ``main`` for the latest development.::
 
 Or chose a stable branch for versions less likely to change often::
 
-  % git checkout 2.16.x
+  % git checkout 2.22.x
 
 In this example we will pretend that your source code is in a directory
 called ``geoserver``, but a more descriptive name is recommended.

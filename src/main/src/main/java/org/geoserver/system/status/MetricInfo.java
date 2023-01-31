@@ -47,10 +47,10 @@ public enum MetricInfo {
     GEOSERVER_THREADS("GEOSERVER", 1301, "GeoServer threads"),
     GEOSERVER_JVM_MEMORY_USAGE("GEOSERVER", 1302, "GeoServer JVM memory usage", "%");
 
-    private String category;
-    private int priority;
-    private String description;
-    private String unit;
+    private final String category;
+    private final int priority;
+    private final String description;
+    private final String unit;
 
     MetricInfo(String category, int priority, String description) {
         this(category, priority, description, "");

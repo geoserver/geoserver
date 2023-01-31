@@ -8,7 +8,7 @@ This tutorial will show how to use the GeoServer vector tiles output.
 Why use vector tiles?
 ---------------------
 
-The advantages of vector tiles are;
+The advantages of vector tiles are:
 
 * **Rendering is done by the client** (for example, OpenLayers), not by the server. This allows different maps/applications to style a map differently without having to reconfigure GeoServer.
 
@@ -27,7 +27,7 @@ Vector tile formats
 
 GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and MapBox Vector (MVT). These are also supported by OpenLayers and other clients.
 
-.. warning:: When using vector tiles, be sure to use an up-to-date client. Older clients do not support all vector tiles capabilites and may result in rendering errors. We recommend using the latest version of OpenLayers (Currently v5.3.0).
+.. warning:: When using vector tiles, be sure to use an up-to-date client. Older clients do not support all vector tiles capabilities and may result in rendering errors. We recommend using the latest version of OpenLayers (Currently v5.3.0).
 
 * MVT is the preferred format for production.
 
@@ -174,7 +174,7 @@ Create OpenLayers application - WMS Vector Tiles
 .. note::   
    Vector tiles requested with WMS allows retrieving non-cached vector tiles (server side) by setting the ``tiled=false`` parameter on the ``getMap`` request. This setting could be particularly useful when serving fast changing source data that should constantly be kept up-to-date for display. 
    However, in terms of rendering performances, vector tiles can be faster than a PNG provided there are few features per tile and a limited amount of attributes in the source vector data.
-   Viceversa, for tiles containing a large number of features with a long list of attributes the PNG may still be the preferred option since it is orders of magnitude smaller in size.    
+   Vice versa, for tiles containing a large number of features with a long list of attributes the PNG may still be the preferred option since it is orders of magnitude smaller in size.    
 
 #. Create a ``www/wms-vectortiles`` directory inside your GeoServer Data Directory.
 

@@ -21,8 +21,8 @@ public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testMetricCollector() {
-        final OSHISystemInfoCollector systemInfoCollector =
-                GeoServerExtensions.bean(OSHISystemInfoCollector.class);
+        final SystemInfoCollector systemInfoCollector =
+                GeoServerExtensions.bean(SystemInfoCollector.class);
         final Metrics collected = systemInfoCollector.retrieveAllSystemInfo();
         final List<MetricValue> metrics = collected.getMetrics();
         for (MetricValue m : metrics) {
@@ -36,12 +36,16 @@ public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testStatisticsEnabled() {
-        final OSHISystemInfoCollector systemInfoCollector =
-                GeoServerExtensions.bean(OSHISystemInfoCollector.class);
+    public void testStatisticsEnabled() throws InterruptedException {
+        final SystemInfoCollector systemInfoCollector =
+                GeoServerExtensions.bean(SystemInfoCollector.class);
 
         // enable the statistics
         systemInfoCollector.setStatisticsStatus(true);
+
+        // leave it working some time.
+        Thread.sleep(3 * OSHISystemInfoCollector.INTERVAL);
+
         final Metrics collected = systemInfoCollector.retrieveAllSystemInfo();
         final List<MetricValue> metrics = collected.getMetrics();
 
@@ -51,8 +55,8 @@ public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testStatisticsDisabled() {
-        final OSHISystemInfoCollector systemInfoCollector =
-                GeoServerExtensions.bean(OSHISystemInfoCollector.class);
+        final OSHISystemInfoMonitor systemInfoCollector =
+                GeoServerExtensions.bean(OSHISystemInfoMonitor.class);
 
         // disable the statistics
         systemInfoCollector.setStatisticsStatus(false);
@@ -63,5 +67,20 @@ public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
         for (MetricValue m : metrics) {
             Assert.assertEquals(BaseSystemInfoCollector.DEFAULT_VALUE, m.getValue());
         }
+
+        // find if the collector has stopped.
+        Assert.assertFalse(systemInfoCollector.isRunning());
+    }
+
+    @Override
+    protected void destroyGeoServer() {
+
+        final OSHISystemInfoMonitor systemInfoCollector =
+                GeoServerExtensions.bean(OSHISystemInfoMonitor.class);
+
+        super.destroyGeoServer();
+
+        // find if the collector has stopped.
+        Assert.assertFalse(systemInfoCollector.isRunning());
     }
 }

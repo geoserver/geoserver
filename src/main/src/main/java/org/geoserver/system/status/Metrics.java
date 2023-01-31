@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class Metrics {
 
-    private List<MetricValue> metrics = new ArrayList<>();
+    private final List<MetricValue> metrics = new ArrayList<>();
 
     public List<MetricValue> getMetrics() {
         return metrics;

@@ -8,13 +8,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.web.ServiceDescription;
 import org.geoserver.web.ServiceLinkDescription;
+import org.geoserver.wfs.WFSResourceVoter;
 import org.junit.Test;
 
 public class WFSServiceDescriptionProviderTest extends GeoServerSystemTestSupport {
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        testData.setUpDefault();
+        testData.setUpDefaultRasterLayers();
+    }
 
     @Test
     public void serviceDescriptorAndLinks() {
@@ -37,5 +48,20 @@ public class WFSServiceDescriptionProviderTest extends GeoServerSystemTestSuppor
                 assertTrue("version", link.getLink().contains("&version="));
             }
         }
+    }
+
+    @Test
+    public void ignoreCoverage() {
+        WFSServiceDescriptionProvider provider =
+                GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
+        Catalog catalog = getCatalog();
+        WorkspaceInfo gs = catalog.getWorkspaceByName("gs");
+        LayerInfo world = catalog.getLayerByName("World");
+
+        WFSResourceVoter voter = new WFSResourceVoter();
+        assertTrue(voter.hideService("WFS", world.getResource()));
+
+        List<ServiceDescription> services = provider.getServices(gs, world);
+        assertEquals(1, services.size());
     }
 }

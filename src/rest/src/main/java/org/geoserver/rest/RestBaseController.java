@@ -4,6 +4,7 @@
  */
 package org.geoserver.rest;
 
+import freemarker.core.HTMLOutputFormat;
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
@@ -83,6 +84,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
         if (encoding != null) {
             cfg.setDefaultEncoding(encoding);
         }
+        cfg.setOutputFormat(HTMLOutputFormat.INSTANCE);
         return cfg;
     }
 

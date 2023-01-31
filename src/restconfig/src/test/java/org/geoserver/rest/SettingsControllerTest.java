@@ -5,6 +5,9 @@
 package org.geoserver.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -103,6 +106,18 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetContactAsHTML() throws Exception {
         getAsDOM(RestBaseController.ROOT_PATH + "/settings/contact.html", 200);
+    }
+
+    @Test
+    public void testGetContactAsHTMLXSS() throws Exception {
+        String decoded = "<foo>bar</foo>";
+        String encoded = "&lt;foo&gt;bar&lt;/foo&gt;";
+        GeoServerInfo geoServerInfo = geoServer.getGlobal();
+        geoServerInfo.getSettings().getContact().setAddress(decoded);
+        geoServer.save(geoServerInfo);
+        String html = getAsString(RestBaseController.ROOT_PATH + "/settings/contact.html");
+        assertThat(html, not(containsString(decoded)));
+        assertThat(html, containsString(encoded));
     }
 
     @Test

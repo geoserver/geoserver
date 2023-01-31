@@ -79,6 +79,12 @@
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>

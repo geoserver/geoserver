@@ -26,7 +26,8 @@ public class ApiTest extends TiledFeaturesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/api", 200);
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse("ogc/features/openapi", 200);
         assertThat(
                 response.getContentType(),
                 CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));

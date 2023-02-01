@@ -33,7 +33,7 @@ public class TilesExtensionsTest extends OGCApiTestSupport {
 
     @Test
     public void testApiExtension() throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/tiles/api", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/tiles/openapi", 200);
         assertThat(response.getContentType(), startsWith(OPEN_API_MEDIA_TYPE_VALUE));
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);

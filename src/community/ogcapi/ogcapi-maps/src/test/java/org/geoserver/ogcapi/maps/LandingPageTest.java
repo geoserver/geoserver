@@ -104,7 +104,7 @@ public class LandingPageTest extends MapsTestSupport {
         // check API links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*ogc\\/maps\\/api.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/maps\\/openapi.*/)].rel",
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DOC);

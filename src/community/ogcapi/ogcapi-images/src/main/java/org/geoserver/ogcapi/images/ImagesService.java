@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.images;
 
 import static java.util.stream.Collectors.toList;
+import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geotools.gce.imagemosaic.Utils.FF;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -154,11 +155,11 @@ public class ImagesService implements ApplicationContextAware {
     }
 
     @GetMapping(
-            path = "api",
+            path = "openapi",
             name = "getApi",
             produces = {
                 OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-                "application/x-yaml",
+                APPLICATION_YAML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
     @ResponseBody

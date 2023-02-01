@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
@@ -23,6 +24,7 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +46,20 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/api", 200);
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse("ogc/features/openapi", 200);
+        validateJSONAPI(response);
+    }
+
+    @Test
+    public void testApiJsonExtension() throws Exception {
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse("ogc/features/openapi.json", 200);
+        validateJSONAPI(response);
+    }
+
+    private void validateJSONAPI(MockHttpServletResponse response)
+            throws UnsupportedEncodingException, JsonProcessingException {
         assertThat(
                 response.getContentType(),
                 CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
@@ -59,7 +74,7 @@ public class ApiTest extends FeaturesTestSupport {
     @Test
     public void testApiHTML() throws Exception {
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/features/api?f=text/html", 200);
+                getAsMockHttpServletResponse("ogc/features/openapi?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         GeoServerBaseTestSupport.LOGGER.info(html);
@@ -84,12 +99,22 @@ public class ApiTest extends FeaturesTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/features/api?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0"));
+                        "url: \"http://localhost:8080/geoserver/ogc/features/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0"));
     }
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/features/api?f=application/x-yaml");
+        String yaml = getAsString("ogc/features/openapi?f=application/x-yaml");
+        validateYAMLApi(yaml);
+    }
+
+    @Test
+    public void testApiYamlExtension() throws Exception {
+        String yaml = getAsString("ogc/features/openapi?f=application/x-yaml");
+        validateYAMLApi(yaml);
+    }
+
+    private void validateYAMLApi(String yaml) throws JsonProcessingException {
         GeoServerBaseTestSupport.LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
@@ -99,7 +124,7 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testYamlAsAcceptsHeader() throws Exception {
-        MockHttpServletRequest request = createRequest("ogc/features/api");
+        MockHttpServletRequest request = createRequest("ogc/features/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -198,7 +223,7 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testWorkspaceQualifiedAPI() throws Exception {
-        MockHttpServletRequest request = createRequest("cdf/ogc/features/api");
+        MockHttpServletRequest request = createRequest("cdf/ogc/features/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");

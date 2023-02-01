@@ -18,14 +18,14 @@ info:
   contact:
     name: Acme Corporation
     email: info@example.org
-    url: 'http://example.org/'
+    url: 'http://example.org'
   license:
     name: CC-BY 4.0 license
-    url: 'https://creativecommons.org/licenses/by/4.0/'
+    url: 'https://creativecommons.org/licenses/by/4.0'
 servers:
-  - url: 'https://data.example.org/'
+  - url: 'https://data.example.org'
     description: Production server
-  - url: 'https://dev.example.org/'
+  - url: 'https://dev.example.org'
     description: Development server
 tags:
   - name: Capabilities
@@ -49,6 +49,19 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/LandingPage'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/api':
+    get:
+      tags:
+        - Capabilities
+      summary: OpenAPI definition
+      description: |-
+        The OpenAPI document describing the API (this document)
+      operationId: getOpenApiDocument
+      responses:
+        '200':
+          $ref: '#/components/responses/ConformanceDeclaration'
         '500':
           $ref: '#/components/responses/ServerError'
   '/conformance':
@@ -900,7 +913,7 @@ components:
             title: Buildings in Bonn
             description: Access to data about buildings in the city of Bonn via a Web API that conforms to the OGC API Features specification.
             links:
-              - href: 'http://data.example.org/'
+              - href: 'http://data.example.org'
                 rel: self
                 type: application/json
                 title: this document
@@ -1008,7 +1021,7 @@ components:
                     rel: items
                     type: text/html
                     title: Buildings
-                  - href: 'https://creativecommons.org/publicdomain/zero/1.0/'
+                  - href: 'https://creativecommons.org/publicdomain/zero/1.0'
                     rel: license
                     type: text/html
                     title: CC0-1.0
@@ -1068,7 +1081,7 @@ components:
                 rel: items
                 type: text/html
                 title: Buildings
-              - href: 'https://creativecommons.org/publicdomain/zero/1.0/'
+              - href: 'https://creativecommons.org/publicdomain/zero/1.0'
                 rel: license
                 type: text/html
                 title: CC0-1.0

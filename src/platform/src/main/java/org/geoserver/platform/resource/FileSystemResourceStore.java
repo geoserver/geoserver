@@ -201,7 +201,8 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public InputStream in() {
-            File actualFile = file();
+            // just take the File as is, don't create it.
+            File actualFile = this.file;
             if (!actualFile.exists()) {
                 throw new IllegalStateException("File not found " + actualFile);
             }

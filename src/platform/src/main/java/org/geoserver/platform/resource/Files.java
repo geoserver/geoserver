@@ -77,7 +77,8 @@ public final class Files {
 
         @Override
         public InputStream in() {
-            final File actualFile = file();
+            // just take the File as is, don't create it.
+            final File actualFile = this.file;
             if (!actualFile.exists()) {
                 throw new IllegalStateException("Cannot access " + actualFile);
             }

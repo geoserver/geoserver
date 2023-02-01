@@ -5,12 +5,16 @@
 
 package org.geoserver.ogcapi;
 
+import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML;
+import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE;
+import static org.springframework.http.MediaType.TEXT_HTML;
+import static org.springframework.http.MediaType.TEXT_XML;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.http.MediaType;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
@@ -26,6 +30,7 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
         List<ContentNegotiationStrategy> strategies = new ArrayList<>();
         // first use the f parameter
         strategies.add(new FormatContentNegotiationStrategy());
+        strategies.add(new OpenAPIContentNegotiationStrategy());
         strategies.add(new HeaderContentNegotiationStrategy());
         this.getStrategies().clear();
         this.getStrategies().addAll(strategies);
@@ -35,21 +40,33 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
     private static class FormatContentNegotiationStrategy implements ContentNegotiationStrategy {
 
         @Override
-        public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
-                throws HttpMediaTypeNotAcceptableException {
+        public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest) {
             String format = webRequest.getParameter("f");
             if ("json".equals(format)) {
                 return Arrays.asList(
                         MediaType.APPLICATION_JSON, MediaType.parseMediaType("application/*+json"));
             } else if ("xml".equals(format)) {
-                return Arrays.asList(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
+                return Arrays.asList(MediaType.APPLICATION_XML, TEXT_XML);
             } else if ("html".equals(format)) {
-                return Collections.singletonList(MediaType.TEXT_HTML);
+                return Collections.singletonList(TEXT_HTML);
+            } else if ("yaml".equals(format)) {
+                return Collections.singletonList(APPLICATION_YAML);
             } else if (format != null) {
                 return Collections.singletonList(MediaType.parseMediaType(format));
-            } else {
-                return MEDIA_TYPE_ALL_LIST;
             }
+            return MEDIA_TYPE_ALL_LIST;
+        }
+    }
+
+    private class OpenAPIContentNegotiationStrategy implements ContentNegotiationStrategy {
+        @Override
+        public List<MediaType> resolveMediaTypes(NativeWebRequest nativeWebRequest) {
+            if (nativeWebRequest.getContextPath().endsWith("/openapi.json")) {
+                return Arrays.asList(OPEN_API_MEDIA_TYPE);
+            } else if (nativeWebRequest.getContextPath().endsWith("/openapi.yaml")) {
+                return Arrays.asList(APPLICATION_YAML);
+            }
+            return MEDIA_TYPE_ALL_LIST;
         }
     }
 }

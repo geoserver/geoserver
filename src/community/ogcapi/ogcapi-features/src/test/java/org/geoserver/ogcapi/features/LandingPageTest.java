@@ -102,7 +102,7 @@ public class LandingPageTest extends FeaturesTestSupport {
                 "http://localhost:8080/geoserver/ogc/features/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/features/openapi?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/features/conformance?f=text%2Fhtml",
@@ -117,7 +117,7 @@ public class LandingPageTest extends FeaturesTestSupport {
                 "http://localhost:8080/geoserver/sf/ogc/features/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/sf/ogc/features/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/sf/ogc/features/openapi?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
     }
 
@@ -140,13 +140,13 @@ public class LandingPageTest extends FeaturesTestSupport {
         // check API links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*ogc\\/features\\/api.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/features\\/openapi.*/)].rel",
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DOC);
         // check API with right API mime type
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/api?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0",
+                "http://localhost:8080/geoserver/ogc/features/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0",
                 readSingle(
                         json,
                         "links[?(@.type=='"

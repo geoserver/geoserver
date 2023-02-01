@@ -38,7 +38,7 @@ public class ApiTest extends StylesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/styles/api", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/styles/openapi", 200);
         assertThat(
                 response.getContentType(),
                 CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
@@ -53,7 +53,7 @@ public class ApiTest extends StylesTestSupport {
     @Test
     public void testApiHTML() throws Exception {
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/styles/api?f=text/html", 200);
+                getAsMockHttpServletResponse("ogc/styles/openapi?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         LOGGER.info(html);
@@ -78,12 +78,12 @@ public class ApiTest extends StylesTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/styles/api?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0\""));
+                        "url: \"http://localhost:8080/geoserver/ogc/styles/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0\""));
     }
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/styles/api?f=application/x-yaml");
+        String yaml = getAsString("ogc/styles/openapi?f=application/x-yaml");
         LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
@@ -93,7 +93,7 @@ public class ApiTest extends StylesTestSupport {
 
     @Test
     public void testYamlAsAcceptsHeader() throws Exception {
-        MockHttpServletRequest request = createRequest("ogc/styles/api");
+        MockHttpServletRequest request = createRequest("ogc/styles/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -167,7 +167,7 @@ public class ApiTest extends StylesTestSupport {
 
     @Test
     public void testWorkspaceQualifiedAPI() throws Exception {
-        OpenAPI api = getOpenAPI("ws/ogc/styles/api");
+        OpenAPI api = getOpenAPI("ws/ogc/styles/openapi");
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter styleId = params.get("styleId");
         @SuppressWarnings("unchecked")
@@ -191,7 +191,7 @@ public class ApiTest extends StylesTestSupport {
     @Test
     public void testWorkspaceQualifiedAPIGlobalOnly() throws Exception {
         // cdf has no local styles, only global ones
-        OpenAPI api = getOpenAPI("cdf/ogc/styles/api");
+        OpenAPI api = getOpenAPI("cdf/ogc/styles/openapi");
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter collectionId = params.get("styleId");
         @SuppressWarnings("unchecked")

@@ -38,7 +38,7 @@ public class ApiTest extends TilesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/tiles/api", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/tiles/openapi", 200);
         assertThat(
                 response.getContentType(),
                 CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
@@ -53,7 +53,7 @@ public class ApiTest extends TilesTestSupport {
     @Test
     public void testApiHTML() throws Exception {
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/tiles/api?f=text/html", 200);
+                getAsMockHttpServletResponse("ogc/tiles/openapi?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         LOGGER.info(html);
@@ -78,12 +78,12 @@ public class ApiTest extends TilesTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/tiles/api?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0\""));
+                        "url: \"http://localhost:8080/geoserver/ogc/tiles/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0\""));
     }
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/tiles/api?f=application/x-yaml");
+        String yaml = getAsString("ogc/tiles/openapi?f=application/x-yaml");
         LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
@@ -93,7 +93,7 @@ public class ApiTest extends TilesTestSupport {
 
     @Test
     public void testYamlAsAcceptsHeader() throws Exception {
-        MockHttpServletRequest request = createRequest("ogc/tiles/api");
+        MockHttpServletRequest request = createRequest("ogc/tiles/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -148,7 +148,7 @@ public class ApiTest extends TilesTestSupport {
     @Test
     @SuppressWarnings("unchecked") // getSchema().getEnum() not fully generified
     public void testWorkspaceQualifiedAPI() throws Exception {
-        MockHttpServletRequest request = createRequest("cdf/ogc/tiles/api");
+        MockHttpServletRequest request = createRequest("cdf/ogc/tiles/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");

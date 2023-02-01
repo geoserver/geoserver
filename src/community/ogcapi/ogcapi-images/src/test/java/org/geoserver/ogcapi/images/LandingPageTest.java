@@ -91,7 +91,7 @@ public class LandingPageTest extends ImagesTestSupport {
                 "http://localhost:8080/geoserver/ogc/images/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/images/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/images/openapi?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/images/conformance?f=text%2Fhtml",
@@ -129,7 +129,7 @@ public class LandingPageTest extends ImagesTestSupport {
         // check API links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*ogc\\/images\\/api.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/images\\/openapi.*/)].rel",
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DOC);

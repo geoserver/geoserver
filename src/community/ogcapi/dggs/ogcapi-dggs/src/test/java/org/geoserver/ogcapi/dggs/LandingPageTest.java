@@ -110,7 +110,7 @@ public class LandingPageTest extends OGCApiTestSupport {
                 "http://localhost:8080/geoserver/ogc/dggs/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/dggs/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/dggs/openapi?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/dggs/conformance?f=text%2Fhtml",
@@ -125,7 +125,7 @@ public class LandingPageTest extends OGCApiTestSupport {
                 "http://localhost:8080/geoserver/sf/ogc/dggs/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/sf/ogc/dggs/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/sf/ogc/dggs/openapi?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
         assertEquals(
                 "http://localhost:8080/geoserver/sf/ogc/dggs/conformance?f=text%2Fhtml",
@@ -151,13 +151,13 @@ public class LandingPageTest extends OGCApiTestSupport {
         // check API links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*ogc\\/dggs\\/api.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/dggs\\/openapi.*/)].rel",
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DOC);
         // check API with right API mime type
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/dggs/api?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0",
+                "http://localhost:8080/geoserver/ogc/dggs/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0",
                 readSingle(
                         json,
                         "links[?(@.type=='"

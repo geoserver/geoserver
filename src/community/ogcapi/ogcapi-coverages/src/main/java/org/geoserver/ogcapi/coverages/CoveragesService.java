@@ -144,7 +144,7 @@ public class CoveragesService {
     }
 
     @GetMapping(
-            path = "api",
+            path = "openapi",
             name = "getApi",
             produces = {
                 OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,

@@ -38,7 +38,8 @@ public class ApiTest extends CoveragesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/coverages/api", 200);
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse("ogc/coverages/openapi", 200);
         assertThat(
                 response.getContentType(),
                 CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
@@ -53,7 +54,7 @@ public class ApiTest extends CoveragesTestSupport {
     @Test
     public void testApiHTML() throws Exception {
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/coverages/api?f=text/html", 200);
+                getAsMockHttpServletResponse("ogc/coverages/openapi?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         GeoServerBaseTestSupport.LOGGER.info(html);
@@ -78,12 +79,12 @@ public class ApiTest extends CoveragesTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/coverages/api?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0"));
+                        "url: \"http://localhost:8080/geoserver/ogc/coverages/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0"));
     }
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/coverages/api?f=application/x-yaml");
+        String yaml = getAsString("ogc/coverages/openapi?f=application/x-yaml");
         GeoServerBaseTestSupport.LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
@@ -93,7 +94,7 @@ public class ApiTest extends CoveragesTestSupport {
 
     @Test
     public void testYamlAsAcceptsHeader() throws Exception {
-        MockHttpServletRequest request = createRequest("ogc/coverages/api");
+        MockHttpServletRequest request = createRequest("ogc/coverages/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -171,7 +172,7 @@ public class ApiTest extends CoveragesTestSupport {
     @Test
     @SuppressWarnings("unchecked") // getSchema not generified
     public void testWorkspaceQualifiedAPI() throws Exception {
-        MockHttpServletRequest request = createRequest("cdf/ogc/coverages/api");
+        MockHttpServletRequest request = createRequest("cdf/ogc/coverages/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");

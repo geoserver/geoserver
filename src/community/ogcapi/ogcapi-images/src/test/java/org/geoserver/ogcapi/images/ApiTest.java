@@ -35,7 +35,7 @@ public class ApiTest extends ImagesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/images/api", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/images/openapi", 200);
         assertThat(
                 response.getContentType(),
                 CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
@@ -50,7 +50,7 @@ public class ApiTest extends ImagesTestSupport {
     @Test
     public void testApiHTML() throws Exception {
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/images/api?f=text/html", 200);
+                getAsMockHttpServletResponse("ogc/images/openapi?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         LOGGER.info(html);
@@ -75,12 +75,12 @@ public class ApiTest extends ImagesTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/images/api?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0\""));
+                        "url: \"http://localhost:8080/geoserver/ogc/images/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0\""));
     }
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/images/api?f=application/x-yaml");
+        String yaml = getAsString("ogc/images/openapi?f=application/x-yaml");
         LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
@@ -90,7 +90,7 @@ public class ApiTest extends ImagesTestSupport {
 
     @Test
     public void testYamlAsAcceptsHeader() throws Exception {
-        MockHttpServletRequest request = createRequest("ogc/images/api");
+        MockHttpServletRequest request = createRequest("ogc/images/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -142,7 +142,7 @@ public class ApiTest extends ImagesTestSupport {
 
     @Test
     public void testWorkspaceQualifiedAPI() throws Exception {
-        MockHttpServletRequest request = createRequest("gs/ogc/images/api");
+        MockHttpServletRequest request = createRequest("gs/ogc/images/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");

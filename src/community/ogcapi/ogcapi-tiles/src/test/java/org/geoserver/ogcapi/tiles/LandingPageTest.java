@@ -107,7 +107,7 @@ public class LandingPageTest extends TilesTestSupport {
                 "http://localhost:8080/geoserver/ogc/tiles/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/tiles/openapi?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/conformance?f=text%2Fhtml",
@@ -122,7 +122,7 @@ public class LandingPageTest extends TilesTestSupport {
                 "http://localhost:8080/geoserver/sf/ogc/tiles/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/sf/ogc/tiles/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/sf/ogc/tiles/openapi?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
         assertEquals(
                 "http://localhost:8080/geoserver/sf/ogc/tiles/conformance?f=text%2Fhtml",
@@ -148,7 +148,7 @@ public class LandingPageTest extends TilesTestSupport {
         // check API links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*ogc\\/tiles\\/api.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/tiles\\/openapi.*/)].rel",
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DOC);

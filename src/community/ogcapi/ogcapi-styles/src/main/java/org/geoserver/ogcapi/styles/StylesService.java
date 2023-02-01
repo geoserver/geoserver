@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.styles;
 
+import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geoserver.ogcapi.styles.StylesService.ValidationMode.only;
 import static org.geoserver.ogcapi.styles.StylesService.ValidationMode.yes;
 
@@ -159,11 +160,11 @@ public class StylesService {
     }
 
     @GetMapping(
-            path = "api",
+            path = "openapi",
             name = "getApi",
             produces = {
                 OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-                "application/x-yaml",
+                APPLICATION_YAML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
     @ResponseBody

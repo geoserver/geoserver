@@ -101,7 +101,7 @@ public class LandingPageTest extends StylesTestSupport {
                 "http://localhost:8080/geoserver/ogc/styles/styles?f=text%2Fhtml",
                 document.select("#htmlStylesLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/styles/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/styles/openapi?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/conformance?f=text%2Fhtml",
@@ -127,7 +127,7 @@ public class LandingPageTest extends StylesTestSupport {
         // check API links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*ogc\\/styles\\/api.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/styles\\/openapi.*/)].rel",
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DOC);

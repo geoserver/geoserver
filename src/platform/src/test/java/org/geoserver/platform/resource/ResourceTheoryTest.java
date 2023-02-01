@@ -126,15 +126,15 @@ public abstract class ResourceTheoryTest {
     }
 
     @Theory
-    public void theoryUndefinedHaveIstreamAndBecomeResource(String path) throws Exception {
+    public void theoryUndefinedHaveNoIstreams(String path) throws Exception {
         Resource res = getResource(path);
 
         assumeThat(res, is(undefined()));
 
-        try (InputStream result = res.in()) {
-            assertThat(result, notNullValue());
-            assertThat(res, is(resource()));
-        }
+        assertThrows(IllegalStateException.class, () -> res.in().close());
+
+        // must not be created unintentionally.
+        assertThat(res, is(undefined()));
     }
 
     @Theory

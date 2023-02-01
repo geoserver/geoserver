@@ -30,7 +30,7 @@ public class GeoServerOpenAPI extends OpenAPI {
         String baseURL = APIRequestInfo.get().getBaseURL();
         return ResponseUtils.buildURL(
                 baseURL,
-                serviceBase + (serviceBase.endsWith("/") ? "api" : "/api"),
+                serviceBase + (serviceBase.endsWith("/") ? "openapi" : "/openapi"),
                 Collections.singletonMap("f", OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE),
                 URLMangler.URLType.SERVICE);
     }

@@ -17,6 +17,8 @@ import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
+import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
+import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 
 import com.google.common.collect.ImmutableList;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -47,7 +49,6 @@ import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.JSONSchemaMessageConverter;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
-import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.QueryablesBuilder;
 import org.geoserver.ows.URLMangler;
@@ -187,11 +188,11 @@ public class FeatureService {
     }
 
     @GetMapping(
-            path = "api",
+            path = "openapi",
             name = "getApi",
             produces = {
-                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-                "application/x-yaml",
+                OPEN_API_MEDIA_TYPE_VALUE,
+                APPLICATION_YAML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
     @ResponseBody

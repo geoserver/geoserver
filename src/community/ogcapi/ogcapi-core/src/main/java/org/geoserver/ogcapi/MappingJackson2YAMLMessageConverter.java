@@ -14,8 +14,10 @@ import org.springframework.http.converter.json.AbstractJackson2HttpMessageConver
 /** Message converter encoding a Java bean into YAML using Jackson */
 public class MappingJackson2YAMLMessageConverter extends AbstractJackson2HttpMessageConverter {
 
-    public static final MediaType APPLICATION_YAML = MediaType.parseMediaType("application/x-yaml");
-    public static final String APPLICATION_YAML_VALUE = APPLICATION_YAML.toString();
+    public static final String APPLICATION_YAML_VALUE = "application/x-yaml";
+
+    public static final MediaType APPLICATION_YAML =
+            MediaType.parseMediaType(APPLICATION_YAML_VALUE);
 
     protected MappingJackson2YAMLMessageConverter() {
         super(Yaml.mapper(), APPLICATION_YAML);

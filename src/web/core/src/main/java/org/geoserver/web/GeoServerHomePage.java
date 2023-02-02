@@ -138,7 +138,6 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
     private void homeInit() {
         GeoServer gs = getGeoServer();
-        initFromPageParameters(getPageParameters());
 
         boolean admin = getSession().isAdmin();
 

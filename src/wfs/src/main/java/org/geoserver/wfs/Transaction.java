@@ -187,7 +187,7 @@ public class Transaction {
                 final FeatureTypeInfo meta = catalog.getFeatureTypeByName(namespaceURI, name);
 
                 if (meta == null) {
-                    String msg = "Feature type '" + name + "' is not available: ";
+                    String msg = "Feature type '" + name + "' is not available";
                     throw new WFSTransactionException(
                             msg, ServiceException.INVALID_PARAMETER_VALUE, element.getHandle());
                 }

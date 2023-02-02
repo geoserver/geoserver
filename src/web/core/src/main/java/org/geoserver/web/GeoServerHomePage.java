@@ -252,8 +252,12 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         String layerSelection = toLayer(workspaceName, layerName);
 
         PageParameters pageParams = new PageParameters();
-        pageParams.add("workspace", workspaceSelection, 0, INamedParameters.Type.QUERY_STRING);
-        pageParams.add("layer", layerSelection, 1, INamedParameters.Type.QUERY_STRING);
+        if (!Strings.isEmpty(workspaceSelection)) {
+            pageParams.add("workspace", workspaceSelection, 0, INamedParameters.Type.QUERY_STRING);
+        }
+        if (!Strings.isEmpty(layerSelection)) {
+            pageParams.add("layer", layerSelection, 1, INamedParameters.Type.QUERY_STRING);
+        }
         setResponsePage(GeoServerHomePage.class, pageParams);
     }
 

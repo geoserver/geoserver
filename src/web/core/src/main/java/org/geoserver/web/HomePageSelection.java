@@ -218,6 +218,9 @@ abstract class HomePageSelection implements Serializable {
                             } else {
                                 page.selectHomePage(null, prefixed);
                             }
+                        } else {
+                            String workspaceName = page.getWorkspaceFieldText();
+                            page.selectHomePage(workspaceName, null);
                         }
                     }
                 };

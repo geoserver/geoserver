@@ -8,7 +8,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class GeoServerLifecycleTests extends GeoServerLifecycleTest {
+/**
+ * Test if all callbacks on {@link LifecycleWatcher} took place
+ *
+ * @author d.stueken (con terra)
+ */
+public class GeoServerLifecycleTests extends GeoServerLifecycleTestSupport {
 
     @Test
     public void testReset() {

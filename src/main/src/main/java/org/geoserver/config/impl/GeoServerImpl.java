@@ -559,11 +559,9 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
             try {
                 callback.accept(handler);
             } catch (Throwable t) {
-                LOGGER.logp(
+                LOGGER.log(
                         Level.SEVERE,
-                        handler.getClass().getName(),
-                        name,
-                        "A GeoServer lifecycle handler threw an exception",
+                        "A GeoServer lifecycle handler threw an exception during " + name,
                         t);
             }
         }

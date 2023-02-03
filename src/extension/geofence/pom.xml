@@ -10,147 +10,59 @@
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>gs-geofence</artifactId>
-  <packaging>jar</packaging>
+  <artifactId>gs-geofence-root</artifactId>
+  <packaging>pom</packaging>
   <name>GeoFence security integration</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-      <!--            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-expression</artifactId>
-                </exclusion>
-            </exclusions>-->
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-sec-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
-    </dependency>
+  <modules>
+    <module>geofence</module>
+  </modules>
 
-    <dependency>
-      <groupId>org.geoserver.geofence</groupId>
-      <artifactId>geofence-services-api</artifactId>
-      <version>${gf.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.geofence</groupId>
-      <artifactId>geofence-model</artifactId>
-      <version>${gf.version}</version>
-    </dependency>
+  <profiles>
 
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-rest</artifactId>
-    </dependency>
+    <profile>
+      <id>geofence-server</id>
+      <activation>
+        <property>
+          <name>geofence</name>
+        </property>
+      </activation>
+      <modules>
+        <module>geofence-server</module>
+      </modules>
+    </profile>
 
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+    <profile>
+      <id>geofence-wps</id>
+      <activation>
+        <property>
+          <!-- this is ok when building from root: property (or profile) geofence will include the geofence-root
+                    module, while wps will include geofence-wps, putting properties conditions in AND.
+                    -->
+          <name>wps</name>
+        </property>
+      </activation>
+      <modules>
+        <module>geofence-wps</module>
+      </modules>
+    </profile>
 
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
+    <profile>
+      <id>allExtensions</id>
+      <modules>
+        <module>geofence-server</module>
+        <module>geofence-wps</module>
+      </modules>
+    </profile>
 
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
+    <profile>
+      <id>release</id>
+      <modules>
+        <module>geofence-server</module>
+        <module>geofence-wps</module>
+      </modules>
+    </profile>
 
-    <dependency>
-      <groupId>org.geotools.jdbc</groupId>
-      <artifactId>gt-jdbc-postgis</artifactId>
-    </dependency>
+  </profiles>
 
-    <!-- test dependencies -->
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>spring-expression</artifactId>
-          <groupId>org.springframework</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-expression</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <resources>
-      <resource>
-        <directory>${basedir}/src/main/java</directory>
-        <includes>
-          <include>**/*.html</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

@@ -16,6 +16,7 @@
         <exclude>*geofence-persistence*.jar</exclude>
         <exclude>*geofence-services-impl*.jar</exclude>
         <exclude>*geofence-model-internal*</exclude>
+        <exclude>*geofence-wps*</exclude>
       </excludes>
     </fileSet>
     <fileSet>

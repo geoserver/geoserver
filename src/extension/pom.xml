@@ -346,7 +346,6 @@
       </activation>
       <modules>
         <module>geofence</module>
-        <module>geofence-server</module>
       </modules>
     </profile>
     <profile>
@@ -450,7 +449,6 @@
         <module>mongodb</module>
         <module>sldService</module>
         <module>geofence</module>
-        <module>geofence-server</module>
         <module>authkey</module>
         <module>web-resource</module>
         <module>params-extractor</module>
@@ -502,7 +500,6 @@
         <module>mongodb</module>
         <module>sldService</module>
         <module>geofence</module>
-        <module>geofence-server</module>
         <module>authkey</module>
         <module>web-resource</module>
         <module>params-extractor</module>

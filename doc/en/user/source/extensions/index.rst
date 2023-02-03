@@ -34,6 +34,7 @@ This section describes most of the extensions available for GeoServer. Other dat
    sldservice/index
    geofence/index
    geofence-server/index
+   geofence-wps/index
    cas/index
    params-extractor/index
    gwc-s3/index

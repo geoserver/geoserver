@@ -72,6 +72,19 @@ public class ApiTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testHTMLEncoding() throws Exception {
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse("ogc/features?f=text/html", 200);
+        assertEquals("text/html", response.getContentType());
+        String html = response.getContentAsString();
+        GeoServerBaseTestSupport.LOGGER.info(html);
+        assertThat(
+                html,
+                containsString(
+                        "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">"));
+    }
+
+    @Test
     public void testApiHTML() throws Exception {
         MockHttpServletResponse response =
                 getAsMockHttpServletResponse("ogc/features/openapi?f=text/html", 200);

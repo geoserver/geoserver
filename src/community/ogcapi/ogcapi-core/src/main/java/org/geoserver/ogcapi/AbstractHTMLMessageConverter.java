@@ -12,6 +12,7 @@ import freemarker.template.TemplateModelException;
 import freemarker.template.utility.DeepUnwrap;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -195,6 +196,15 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
         return v;
     }
 
+    @Override
+    public Charset getDefaultCharset() {
+        Charset defaultCharset = super.getDefaultCharset();
+        if (defaultCharset == null) {
+            defaultCharset = Charset.forName(geoServer.getSettings().getCharset());
+        }
+        return defaultCharset;
+    }
+
     private String processHtmlExtensions(Map<String, Object> model, List arguments) {
         try {
             List<HTMLExtensionCallback> callbacks =
@@ -202,7 +212,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
             StringBuilder sb = new StringBuilder();
             Request dr = Dispatcher.REQUEST.get();
             for (HTMLExtensionCallback callback : callbacks) {
-                String html = callback.getExtension(dr, model, arguments);
+                String html = callback.getExtension(dr, model, getDefaultCharset(), arguments);
                 if (html != null) {
                     // add a separation just for output readability
                     if (sb.length() > 0) {

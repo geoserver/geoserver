@@ -56,7 +56,8 @@ public class SimpleHTMLMessageConverter<T> extends AbstractHTMLMessageConverter<
                     templateName,
                     serviceClass,
                     model,
-                    new OutputStreamWriter(outputMessage.getBody()));
+                    new OutputStreamWriter(outputMessage.getBody(), getDefaultCharset()),
+                    getDefaultCharset());
         } finally {
             // the model can be working over feature collections, make sure they are cleaned up
             purgeIterators();

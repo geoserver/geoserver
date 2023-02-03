@@ -6,7 +6,6 @@
 package org.geoserver.ogcapi.features;
 
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -70,13 +69,9 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
         model.put("response", response);
         addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
 
-        try (OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody())) {
-            try {
-                header.process(model, osw);
-            } catch (TemplateException e) {
-                String msg = "Error occurred processing header template.";
-                throw new IOException(msg, e);
-            }
+        try (OutputStreamWriter osw =
+                new OutputStreamWriter(outputMessage.getBody(), getDefaultCharset())) {
+            templateSupport.processTemplate(header, model, osw, getDefaultCharset());
 
             // process content template for all feature collections found
             for (FeatureCollection fc : collections) {
@@ -102,30 +97,15 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
                             }
                         }
                         try {
-                            content.process(model, osw);
-                        } catch (TemplateException e) {
-                            String msg =
-                                    "Error occurred processing content template "
-                                            + content.getName()
-                                            + " for "
-                                            + typeInfo.prefixedName();
-                            throw new IOException(msg, e);
+                            templateSupport.processTemplate(
+                                    content, model, osw, getDefaultCharset());
                         } finally {
                             model.remove("data");
                         }
                     } else {
                         Template template = getEmptyTemplate(typeInfo);
                         model.put("collection", typeInfo.prefixedName());
-                        try {
-                            template.process(model, osw);
-                        } catch (TemplateException e) {
-                            String msg =
-                                    "Error occurred processing empty template "
-                                            + template.getName()
-                                            + " for "
-                                            + typeInfo.prefixedName();
-                            throw new IOException(msg, e);
-                        }
+                        templateSupport.processTemplate(template, model, osw, getDefaultCharset());
                     }
                 }
             }
@@ -133,12 +113,7 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
             // if a template footer was loaded (ie, there were only one feature
             // collection), process it
             if (footer != null) {
-                try {
-                    footer.process(model, osw);
-                } catch (TemplateException e) {
-                    String msg = "Error occured processing footer template.";
-                    throw new IOException(msg, e);
-                }
+                templateSupport.processTemplate(footer, model, osw, getDefaultCharset());
             }
             osw.flush();
         } finally {

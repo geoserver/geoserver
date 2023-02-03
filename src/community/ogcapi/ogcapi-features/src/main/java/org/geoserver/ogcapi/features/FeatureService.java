@@ -102,6 +102,9 @@ public class FeatureService {
     public static final String OAS30 =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
 
+    public static final String CRS_BY_REFERENCE =
+            "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs";
+
     public static final String CRS_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
     public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
 
@@ -270,7 +273,8 @@ public class FeatureService {
                         OAS30,
                         HTML,
                         GEOJSON,
-                        GMLSF0,
+                        /* GMLSF0, GS does not use the gmlsf namespace */
+                        CRS_BY_REFERENCE,
                         FEATURES_FILTER,
                         FILTER,
                         ECQL,

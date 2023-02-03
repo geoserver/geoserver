@@ -47,7 +47,7 @@ public class ConformanceTest extends FeaturesTestSupport {
             FeatureService.OAS30,
             FeatureService.HTML,
             FeatureService.GEOJSON,
-            FeatureService.GMLSF0,
+            FeatureService.CRS_BY_REFERENCE,
             FEATURES_FILTER,
             FILTER,
             ECQL,

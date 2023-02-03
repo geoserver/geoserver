@@ -9,10 +9,19 @@ import static org.junit.Assert.assertTrue;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.junit.Test;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
-public class GeoServerLifecycleTest extends GeoServerSystemTestSupport {
+/**
+ * Base test class for GeoServer lifecycle tests to verify different {@link
+ * GeoServerLifecycleHandler} calls.
+ *
+ * <p>Subclasses may ask the internal {@link LifecycleWatcher} if the expected call took place. A
+ * special case is the onDispose() call, which can not be addressed by a unit test. Therefor an
+ * assertion was placed in the destroyGeoServer() hook.
+ *
+ * @author d.stueken (con terra)
+ */
+public class GeoServerLifecycleTestSupport extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData data) throws Exception {
@@ -25,15 +34,11 @@ public class GeoServerLifecycleTest extends GeoServerSystemTestSupport {
         return applicationContext.getBean(LifecycleWatcher.class);
     }
 
-    @Test
-    public synchronized void testRunning() {
-        assertTrue(applicationContext.isRunning());
-    }
-
     @Override
     protected void destroyGeoServer() {
         LifecycleWatcher watcher = getLifecycleWatcher().reset();
         super.destroyGeoServer();
+        // verify if onDispose() was finally called.
         assertTrue(watcher.didDispose);
     }
 

@@ -11,6 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -159,6 +160,41 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         assertEquals(page3.getWorkspaceInfo(), getCatalog().getWorkspaceByName(CITE_PREFIX));
         assertEquals(
                 page3.getPublishedInfo(), getCatalog().getLayerByName(getLayerId(BASIC_POLYGONS)));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testDropDownLayerSelection() throws Exception {
+        tester.startPage(GeoServerHomePage.class);
+        tester.assertNoErrorMessage();
+        tester.assertRenderedPage(GeoServerHomePage.class);
+        Page page1 = tester.getLastRenderedPage();
+
+        // select a layer directly
+        FormTester form = tester.newFormTester("form");
+        form.setValue("layer:select", getLayerId(BASIC_POLYGONS));
+        tester.executeAjaxEvent("form:layer:select", "change");
+
+        // it switched to a new page with a single layer
+        tester.assertRenderedPage(GeoServerHomePage.class);
+        GeoServerHomePage page2 = (GeoServerHomePage) tester.getLastRenderedPage();
+        assertNotSame(page1, page2);
+        assertEquals(page2.getWorkspaceInfo(), getCatalog().getWorkspaceByName(CITE_PREFIX));
+        assertEquals(
+                page2.getPublishedInfo(), getCatalog().getLayerByName(getLayerId(BASIC_POLYGONS)));
+
+        // now un-select the layer
+        form = tester.newFormTester("form");
+        form.setValue("layer:select", null);
+        tester.executeAjaxEvent("form:layer:select", "change");
+
+        // it switched to a new page with a single layer
+        tester.assertRenderedPage(GeoServerHomePage.class);
+        GeoServerHomePage page3 = (GeoServerHomePage) tester.getLastRenderedPage();
+        assertNotSame(page1, page3);
+        assertNotSame(page2, page3);
+        assertEquals(page2.getWorkspaceInfo(), getCatalog().getWorkspaceByName(CITE_PREFIX));
+        assertNull(page2.getPublishedInfo());
     }
 
     @Test

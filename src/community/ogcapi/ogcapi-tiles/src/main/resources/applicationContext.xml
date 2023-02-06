@@ -19,7 +19,7 @@
 >
 
   <!-- <mvc:annotation-driven/> -->
-  <context:component-scan base-package="org.geoserver.ogcapi.tiles"/>
+  <context:component-scan base-package="org.geoserver.ogcapi.v1.tiles"/>
 
   <bean id="tilesServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">
     <constructor-arg index="0" value="Tiles"/>

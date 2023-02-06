@@ -15,8 +15,8 @@ import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.Link;
-import org.geoserver.ogcapi.features.CollectionDocument;
-import org.geoserver.ogcapi.features.FeaturesResponse;
+import org.geoserver.ogcapi.v1.features.CollectionDocument;
+import org.geoserver.ogcapi.v1.features.FeaturesResponse;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
@@ -47,7 +47,7 @@ public class GeoJSONAPIWriter extends GeoJSONWriter {
             writeLink(next, "next", mimeType, "Next page", null);
         }
         // alternate/self links
-        String basePath = "ogc/features/collections/" + ResponseUtils.urlEncode(prefixedName);
+        String basePath = "ogc/features/v1/collections/" + ResponseUtils.urlEncode(prefixedName);
         Collection<MediaType> formats =
                 requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
         for (MediaType format : formats) {

@@ -32,7 +32,7 @@ public class HTMLComplexFeaturesResponseApiTest extends TemplateComplexTestSuppo
     public void getFilteredMappedFeature() throws IOException {
         Document doc =
                 getAsDOM(
-                        "ogc/features/collections/gsml:MappedFeature/items?f=text/html"
+                        "ogc/features/v1/collections/gsml:MappedFeature/items?f=text/html"
                                 + MF_HTML_PARAM);
 
         assertXpathCount(1, "//html/head/script", doc);

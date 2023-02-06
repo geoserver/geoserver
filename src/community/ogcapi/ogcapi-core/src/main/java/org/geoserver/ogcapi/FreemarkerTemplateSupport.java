@@ -119,11 +119,10 @@ public class FreemarkerTemplateSupport {
     /**
      * Processes a template and returns the result as a string
      *
-     * @param resource The resource reference used to lookup templates in the data dir
-     * @param templateName The template name
-     * @param referenceClass The reference class for classpath template loading
+     * @param template The template to process
      * @param model The model to be applied
      * @param writer The writer receiving the template output
+     * @param charset The charset to use for the output
      */
     public void processTemplate(
             Template template, Map<String, Object> model, Writer writer, Charset charset)

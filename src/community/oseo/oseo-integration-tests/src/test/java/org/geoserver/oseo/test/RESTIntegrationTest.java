@@ -7,7 +7,7 @@ package org.geoserver.oseo.test;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
-import org.geoserver.ogcapi.stac.STACQueryablesBuilder;
+import org.geoserver.ogcapi.v1.stac.STACQueryablesBuilder;
 import org.geoserver.opensearch.rest.OSEORestTestSupport;
 import org.junit.Test;
 

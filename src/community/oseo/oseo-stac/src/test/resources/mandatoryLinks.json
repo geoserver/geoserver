@@ -1,16 +1,16 @@
 [
   {
-    "href": "$${serviceLink('ogcapi/stac/collections/%s', eop:parentIdentifier)}",
+    "href": "$${serviceLink('ogc/stac/v1/collections/%s', eop:parentIdentifier)}",
     "rel": "collection",
     "type": "application/json"
   },
   {
-    "href": "$${serviceLink('ogcapi/stac')}",
+    "href": "$${serviceLink('ogc/stac/v1')}",
     "rel": "root",
     "type": "application/json"
   },
   {
-    "href": "$${serviceLink('ogcapi/stac/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
+    "href": "$${serviceLink('ogc/stac/v1/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
     "rel": "self",
     "type": "application/geo+json"
   }

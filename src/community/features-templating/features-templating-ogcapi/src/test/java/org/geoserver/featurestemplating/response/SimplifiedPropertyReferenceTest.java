@@ -72,7 +72,7 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
     public void testGML() throws IOException {
         Document doc =
                 getAsDOM(
-                        "ogc/features/collections/gsml:MappedFeature"
+                        "ogc/features/v1/collections/gsml:MappedFeature"
                                 + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2&"
                                 + SIMPLIFIED_GML_PARAM);
         assertXpathCount(5, "//gsml:MappedFeature", doc);
@@ -90,7 +90,7 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
     @Test
     public void testJsonLd() throws Exception {
         String path =
-                "ogc/features/collections/"
+                "ogc/features/v1/collections/"
                         + "gsml:MappedFeature"
                         + "/items?f=application%2Fld%2Bjson&"
                         + SIMPLIFIED_JSONLD_PARAM;
@@ -122,7 +122,7 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
     @Test
     public void testFlatGeoJSON() throws Exception {
         String path =
-                "ogc/features/collections/"
+                "ogc/features/v1/collections/"
                         + "gsml:MappedFeature"
                         + "/items?f=application%2Fgeo%2Bjson&"
                         + SIMPLIFIED_FLAT_PARAM;

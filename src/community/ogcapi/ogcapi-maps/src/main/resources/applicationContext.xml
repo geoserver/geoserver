@@ -15,7 +15,7 @@
 >
 
     <!-- <mvc:annotation-driven/> -->
-    <context:component-scan base-package="org.geoserver.ogcapi.maps"/>
+    <context:component-scan base-package="org.geoserver.ogcapi.v1.maps"/>
 
     <!-- Bridges to have OGC services show up as OWS services too -->
     <bean id="mapsServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">

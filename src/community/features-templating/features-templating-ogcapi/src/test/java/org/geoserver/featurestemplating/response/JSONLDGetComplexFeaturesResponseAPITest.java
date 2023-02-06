@@ -58,7 +58,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     @Test
     public void testJsonLdResponseOGCAPI() throws Exception {
         String path =
-                "ogc/features/collections/"
+                "ogc/features/v1/collections/"
                         + "gsml:MappedFeature"
                         + "/items?f=application%2Fld%2Bjson"
                         + MF_JSON_LD_PARAM;
@@ -77,7 +77,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     @Test
     public void testJsonLdQueryOGCAPI() throws Exception {
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&filter-lang=cql-text")
@@ -97,7 +97,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     @Test
     public void testJsonLdQueryEnvSubstitutionOnAttributeName() throws Exception {
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&env=id:envId")
@@ -116,7 +116,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     @Test
     public void testJsonLdQueryEnvSubstitutionOnSource() throws Exception {
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&env=source:notComposition")
@@ -133,7 +133,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     @Test
     public void testJsonLdQueryEnvSubstitutionOnAttribute() throws Exception {
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&env=positionalAccuracyType:CGI_NotNumericValue")
@@ -153,7 +153,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     @Test
     public void testJsonLdQueryEnvSubstitutionOnXpath() throws Exception {
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&env=previous:@id")
@@ -182,7 +182,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     @Test
     public void testJsonLdQueryPointingToArray() throws Exception {
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&filter= features.gsml:positionalAccuracy.valueArray1 > 120")
@@ -201,7 +201,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     @Test
     public void testJsonLdContextValidationFails() throws Exception {
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&validation=true")
@@ -216,7 +216,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     @Test
     public void testJsonLdResponseOGCAPISingleFeature() throws Exception {
         String path =
-                "ogc/features/collections/"
+                "ogc/features/v1/collections/"
                         + "gsml:MappedFeature"
                         + "/items/mf4?f=application%2Fld%2Bjson"
                         + MF_JSON_LD_PARAM;
@@ -247,7 +247,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
                 "gsml",
                 mappedFeature);
         String path =
-                "ogc/features/collections/"
+                "ogc/features/v1/collections/"
                         + "gsml:MappedFeature"
                         + "/items?f=application%2Fld%2Bjson";
         MockHttpServletRequest request = createRequest(path);
@@ -294,7 +294,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
     private JSONArray getResultFilterConcatenated(
             String cql_filter, String equalsTo, String reqParam) throws Exception {
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&filter-lang=cql-text")

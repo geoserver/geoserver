@@ -72,7 +72,7 @@ Run GeoServer from IntelliJ
    .. image:: img/intellij_run.png
       :width: 500
 
-#. It is **important** that you correctly set the ``Working directory`` to ``src/web/app``. While you have the ``Edit Configurations`` dialog open, you can fine tune your launch environment (including setting a ``GEOSERVER_DATA_DIR`` or the ``jetty.port``). When you are happy with your settings, click ``OK``.
+#. It is **important** to correctly set the ``Working directory`` to ``src/web/app``. While having the ``Edit Configurations`` dialog open, fine tune the launch environment (including setting a ``GEOSERVER_DATA_DIR`` or the ``jetty.port``). When settings are satisfactory, click ``OK``.
 
    .. image:: img/intellij_run_config.png
       :width: 600

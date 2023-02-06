@@ -29,7 +29,7 @@ Import modules into IntelliJ
    .. image:: img/intellij_project_trust.png
       :width: 350
 
-#. Wait for IntelliJ to ``Sync`` the dependencies, you can follow the process from the ``Build`` tab panel on the bottom.
+#. Wait for IntelliJ to ``Sync`` the dependencies, it's possible to follow the process from the ``Build`` tab panel on the bottom.
 
    .. image:: img/intellij_sync.png
       :width: 500

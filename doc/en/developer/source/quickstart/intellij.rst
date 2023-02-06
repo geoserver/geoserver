@@ -24,7 +24,7 @@ Import modules into IntelliJ
    .. image:: img/intellij_project.png
       :width: 350
 
-#. Optionally, depending on which platform you have, IntelliJ may ask you to ``Trust the Project``.
+#. Optionally, depending on which platform you have, IntelliJ may ask to ``Trust the Project``.
 
    .. image:: img/intellij_project_trust.png
       :width: 350

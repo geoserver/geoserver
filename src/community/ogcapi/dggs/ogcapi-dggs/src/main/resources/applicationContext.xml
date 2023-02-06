@@ -19,7 +19,7 @@
 >
 
     <!-- <mvc:annotation-driven/> -->
-    <context:component-scan base-package="org.geoserver.ogcapi.dggs"/>
+    <context:component-scan base-package="org.geoserver.ogcapi.v1.dggs"/>
 
     <!-- Bridges to have OGC services show up as OWS services too -->
     <bean id="dggssServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">

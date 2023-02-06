@@ -42,27 +42,27 @@
       "assets": "${assets}",
       "links": [
         {
-          "href": "$${serviceLink('ogcapi/stac/collections/%s', name)}",
+          "href": "$${serviceLink('ogc/stac/v1/collections/%s', name)}",
           "rel": "self",
           "type": "application/json"
         },
         {
-          "href": "$${serviceLink('ogcapi/stac')}",
+          "href": "$${serviceLink('ogc/stac/v1')}",
           "rel": "root",
           "type": "application/json"
         },
         {
-          "href": "$${serviceLink('ogcapi/stac')}",
+          "href": "$${serviceLink('ogc/stac/v1')}",
           "rel": "parent",
           "type": "application/json"
         },
         {
-          "href": "$${serviceLink('ogcapi/stac/collections/%s/items', name)}",
+          "href": "$${serviceLink('ogc/stac/v1/collections/%s/items', name)}",
           "rel": "items",
           "type": "application/geo+json"
         },
         {
-          "href": "$${serviceLink('ogcapi/stac/collections/%s/queryables', name)}",
+          "href": "$${serviceLink('ogc/stac/v1/collections/%s/queryables', name)}",
           "rel": "http://www.opengis.net/def/rel/ogc/1.0/queryables",
           "type": "application/schema+json"
         }

@@ -17,7 +17,7 @@ public class GeoJSONGetSimpleFeaturesResponseAPITest extends GeoJSONGetSimpleFea
     public void testGeoJSONResponseOGCAPI() throws Exception {
         setUpSimple("NamedPlacesGeoJSON.json");
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("cite:NamedPlaces")
                         .append("/items?f=application/json");
         JSONObject result = (JSONObject) getJson(sb.toString());
@@ -33,7 +33,7 @@ public class GeoJSONGetSimpleFeaturesResponseAPITest extends GeoJSONGetSimpleFea
     public void testGeoJSONResponseOGCAPIWithFilter() throws Exception {
         setUpSimple("NamedPlacesGeoJSON.json");
         StringBuilder path =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("cite:NamedPlaces")
                         .append("/items?f=application/json")
                         .append("&filter= features.id = '118'")

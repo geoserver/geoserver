@@ -18,7 +18,7 @@ public class JSONLDGetSimpleFeaturesResponseAPITest extends JSONLDGetSimpleFeatu
     public void testJsonLdResponseOGCAPI() throws Exception {
         setUpSimple("NamedPlaces.json");
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("cite:NamedPlaces")
                         .append("/items?f=application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
@@ -33,7 +33,7 @@ public class JSONLDGetSimpleFeaturesResponseAPITest extends JSONLDGetSimpleFeatu
     public void testJsonLdResponseOGCAPIWithFilter() throws Exception {
         setUpSimple("NamedPlaces.json");
         StringBuilder path =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("cite:NamedPlaces")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&filter= features.id = '118'")
@@ -55,7 +55,7 @@ public class JSONLDGetSimpleFeaturesResponseAPITest extends JSONLDGetSimpleFeatu
     public void testJsonLdResponseOGCAPISingleFeature() throws Exception {
         setUpSimple("NamedPlaces.json");
         StringBuilder path =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("cite:NamedPlaces")
                         .append("/items/NamedPlaces.1107531895891?f=application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(path.toString());

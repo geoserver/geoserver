@@ -206,6 +206,10 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
         StyleInfo otherStyle = otherCatalog.getStyle(style.getId());
         if (!(Objects.equals(style, otherStyle)
                 && getStyleFile(style, dataDir).equals(getStyleFile(otherStyle, otherDataDir)))) {
+            if (Objects.equals(style, otherStyle)) {
+                System.out.println(getStyleFile(style, dataDir));
+                System.out.println(getStyleFile(otherStyle, otherDataDir));
+            }
             differences.add(new InfoDiff(style, otherStyle));
         }
     }

@@ -595,6 +595,8 @@ public class XStreamPersister {
         xs.allowTypeHierarchy(Info.class);
         xs.allowTypeHierarchy(Multimap.class);
         xs.allowTypeHierarchy(JAIInfo.class);
+        xs.allowTypeHierarchy(JAIEXTInfo.class);
+        xs.allowTypeHierarchy(CoverageAccessInfo.class);
         xs.allowTypes(new Class[] {DynamicProxyMapper.DynamicProxy.class});
         xs.allowTypes(new String[] {"java.util.Collections$SingletonList"});
         xs.allowTypesByWildcard(new String[] {"org.geoserver.catalog.**"});

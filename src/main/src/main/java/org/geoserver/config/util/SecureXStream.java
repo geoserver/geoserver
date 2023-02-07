@@ -58,6 +58,7 @@ import java.lang.reflect.Constructor;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -188,7 +189,11 @@ public class SecureXStream extends XStream {
                     Map.class,
                     HashMap.class,
                     TreeMap.class,
-                    ConcurrentHashMap.class
+                    ConcurrentHashMap.class,
+                    java.util.Collections.emptyList().getClass(),
+                    java.util.Collections.emptyMap().getClass(),
+                    java.util.Collections.emptySet().getClass(),
+                    Arrays.asList("foo").getClass()
                 });
 
         // Allow classes from user defined whitelist

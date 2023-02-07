@@ -33,4 +33,9 @@ public final class InfoDiff {
     public Info getInfoB() {
         return infoB;
     }
+
+    @Override
+    public String toString() {
+        return "InfoDiff{" + "infoA=" + infoA + ", infoB=" + infoB + '}';
+    }
 }

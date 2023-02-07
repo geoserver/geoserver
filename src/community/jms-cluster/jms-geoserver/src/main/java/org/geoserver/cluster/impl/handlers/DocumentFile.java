@@ -68,6 +68,7 @@ public class DocumentFile {
     public void writeTo(Resource file) throws JDOMException, IOException {
         try (OutputStream out = file.out()) {
             IOUtils.write(body, out);
+            out.flush();
         }
     }
 }

@@ -92,7 +92,7 @@ Troubleshooting
        .. image:: img/intellij_maven_errorprone.png
           :width: 400
 
-    #. To use ``errorprone``, notably to perform the QA checks, install the ``Error Prone Compiler`` plugin, restart the IDE and set ``Javac with error-prone`` as a default compiler for the project. Please note that this will slower the build.
+    #. To use ``errorprone``, notably to perform the QA checks, install the ``Error Prone Compiler`` plugin, restart the IDE and set ``Javac with error-prone`` as a default compiler for the project. Please note that this will slow down the build.
 #. If there are errors such as "cannot find symbol AbstractUserGroupServiceTest", rebuild the ``security-tests`` project in the security module.  Right-click on the ``security-tests`` project and click Rebuild.
 #. In the last versions of IntelliJ Annotations processors are enabled. If there are errors because of this uncheck this option from compiler settings.
 

@@ -46,6 +46,7 @@ public class ClusterControllerTest extends GeoServerSystemTestSupport {
     public void testGetConfigurationJSON() throws Exception {
         // get JSON properties
         JSON json = getAsJSON("rest/cluster.json");
+        print(json);
         assertThat(json, notNullValue());
         assertThat(json, instanceOf(JSONObject.class));
         JSONObject jsonObject = (JSONObject) json;

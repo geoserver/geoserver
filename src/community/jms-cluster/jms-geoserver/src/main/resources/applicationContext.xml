@@ -87,7 +87,12 @@
 	<bean id="RestDispatcherCallback"
 		class="org.geoserver.cluster.impl.events.RestDispatcherCallback" />
 
-	<bean id="JMSXstream" class="com.thoughtworks.xstream.XStream" />
+	<bean id="JMSXstreamFactory" class="org.geoserver.cluster.impl.JMSXStreamFactory" depends-on="geoServerLoader,catalog">
+		<constructor-arg ref="xstreamPersisterFactory"/>
+		<constructor-arg ref="geoServer"/>
+	</bean>
+	
+	<bean id="JMSXstream" factory-bean ="JMSXstreamFactory" factory-method="createXStream"/>
 
 	<!-- Producers -->
 

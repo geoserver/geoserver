@@ -24,7 +24,7 @@ Import modules into IntelliJ
    .. image:: img/intellij_project.png
       :width: 350
 
-#. Optionally, depending on which platform you have, IntelliJ may ask to ``Trust the Project``.
+#. Optionally, depending on which platform, IntelliJ may ask to ``Trust the Project``.
 
    .. image:: img/intellij_project_trust.png
       :width: 350
@@ -42,7 +42,7 @@ Finalize the GeoServer Project configuration
    .. image:: img/intellij_project_structure.png
       :width: 300
 
-#. Update the ``Name`` and select the correct ``SDK`` accordingly to your GeoServer version.
+#. Update the ``Name`` and select the correct ``SDK`` accordingly to the GeoServer version.
 
    .. image:: img/intellij_project_sdk.png
       :width: 400
@@ -77,24 +77,27 @@ Run GeoServer from IntelliJ
    .. image:: img/intellij_run_config.png
       :width: 600
 
+#. It's possible now to run GeoServer by selecting ``Run -> Run 'Start'``
+
+   .. image:: img/intellij_run_start.png
+      :width: 300
+
+Troubleshooting
+^^^^^^^^^^^^^^^
+
 #. If there are errors such as "cannot find symbol class ASTAxisId", some generated code is not being included in the build.  Using ``wcs1_1`` as the working directory, run a ``mvn clean install``.
-#. If you get a compiler error like ``java.lang.NoSuchMethodError``, it might be due to ``Error Prone``. This tool is switched off by default, but sometimes it turns on after import to IntelliJ. There are two options to fix it:
+#. In the case of compiler errors like ``java.lang.NoSuchMethodError``, it might be due to ``Error Prone``. This tool is switched off by default, but sometimes it turns on after import to IntelliJ. There are two options to fix it:
     #. Go to Maven tool window and uncheck the ``errorprone`` profile, then click ``Reimport All Maven Projects``:
 
        .. image:: img/intellij_maven_errorprone.png
           :width: 400
 
-    #. If you want to use ``errorprone``, notably to perform the QA checks, install the ``Error Prone Compiler`` plugin, restart the IDE and set ``Javac with error-prone`` as a default compiler for the project. Please note that this will slower the build.
+    #. To use ``errorprone``, notably to perform the QA checks, install the ``Error Prone Compiler`` plugin, restart the IDE and set ``Javac with error-prone`` as a default compiler for the project. Please note that this will slower the build.
 #. If there are errors such as "cannot find symbol AbstractUserGroupServiceTest", rebuild the ``security-tests`` project in the security module.  Right-click on the ``security-tests`` project and click Rebuild.
 #. In the last versions of IntelliJ Annotations processors are enabled. If there are errors because of this uncheck this option from compiler settings.
 
    .. image:: img/intellij_project_settings_annotation_processing.png
       :width: 600
-
-#. You can now re-run GeoServer. Select ``Run -> Run 'Start'``
-
-   .. image:: img/intellij_run_start.png
-      :width: 300
 
 #. If IntelliJ complains with an error message like ``Command line is too long.``, click on ``Shorten the command line and run.``
 
@@ -103,12 +106,12 @@ Run GeoServer from IntelliJ
 
 .. note::
    
-   If you already have a server running on localhost:8080 see the :ref:`eclipse_guide` for instructions on changing to a different port.
+   If there's a server running on localhost:8080 please check the :ref:`eclipse_guide` for instructions on changing to a different port.
 
 Run GeoServer with Extensions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The above instructions assume you want to run GeoServer without any extensions enabled. In cases where you do need certain extensions, the ``web-app`` module declares a number of profiles that will enable specific extensions when running ``Start``. To enable an extension, open the ``Maven Projects`` tool and select the profile(s) you want to enable.
+The above instructions assume running GeoServer without any extensions enabled. In cases where certain extensions are needed, the ``web-app`` module declares a number of profiles that will enable specific extensions when running ``Start``. To enable an extension, open the ``Maven Projects`` tool and select the profile(s) to enable.
 
    .. image:: img/intellij_run_profile.png
       :width: 600

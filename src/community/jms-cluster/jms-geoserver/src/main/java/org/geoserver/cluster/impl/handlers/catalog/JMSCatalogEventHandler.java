@@ -18,6 +18,7 @@ import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.JMSEventHandlerSPI;
+import org.geoserver.ows.util.OwsUtils;
 
 /**
  * Abstract class which use Xstream as message serializer/de-serializer. We extend this class to
@@ -57,6 +58,7 @@ public abstract class JMSCatalogEventHandler extends JMSEventHandler<String, Cat
         final Object source = xstream.fromXML(s);
         if (source instanceof CatalogEvent) {
             final CatalogEvent ev = (CatalogEvent) source;
+            if (ev.getSource() != null) OwsUtils.resolveCollections(ev.getSource());
             if (LOGGER.isLoggable(Level.FINE)) {
                 final CatalogInfo info = ev.getSource();
                 LOGGER.fine("Incoming message event of type CatalogEvent: " + info.getId());

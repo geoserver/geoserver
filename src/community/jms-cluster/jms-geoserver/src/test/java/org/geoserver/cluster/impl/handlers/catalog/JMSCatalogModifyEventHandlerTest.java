@@ -9,12 +9,14 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
-import com.thoughtworks.xstream.XStream;
 import java.util.Arrays;
 import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.cluster.impl.JMSXStreamFactory;
+import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -31,7 +33,12 @@ public final class JMSCatalogModifyEventHandlerTest {
                 Arrays.asList("new_value", new CatalogImpl(), null, new CatalogImpl()));
         // serialise the event and deserialize it
         JMSCatalogModifyEventHandlerSPI handler =
-                new JMSCatalogModifyEventHandlerSPI(0, null, new XStream(), null);
+                new JMSCatalogModifyEventHandlerSPI(
+                        0,
+                        null,
+                        new JMSXStreamFactory(new XStreamPersisterFactory(), new GeoServerImpl())
+                                .createXStream(),
+                        null);
         String serializedEvent = handler.createHandler().serialize(catalogModifyEvent);
         CatalogEvent newEvent = handler.createHandler().deserialize(serializedEvent);
         // check the deserialized event

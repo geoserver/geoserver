@@ -250,7 +250,10 @@ public abstract class CatalogUtils {
         }
 
         // localize layers
-        info.getStyles().addAll(localizeStyles(new HashSet<StyleInfo>(info.getStyles()), catalog));
+        Set<StyleInfo> localizeStyles =
+                localizeStyles(new HashSet<StyleInfo>(info.getStyles()), catalog);
+        info.getStyles().clear();
+        info.getStyles().addAll(localizeStyles);
 
         // attach to the catalog
         final CatalogBuilder builder = new CatalogBuilder(catalog);

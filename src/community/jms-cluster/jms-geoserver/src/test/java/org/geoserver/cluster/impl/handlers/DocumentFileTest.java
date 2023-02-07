@@ -8,7 +8,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.thoughtworks.xstream.XStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
@@ -17,6 +16,9 @@ import java.nio.file.Files;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.cluster.impl.JMSXStreamFactory;
+import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.junit.After;
@@ -46,7 +48,11 @@ public class DocumentFileTest {
         // instantiating a document file representing the style file
         DocumentFile documentFile = new DocumentFile(resource);
         // serialising the file document
-        DocumentFileHandlerSPI handler = new DocumentFileHandlerSPI(0, new XStream());
+        DocumentFileHandlerSPI handler =
+                new DocumentFileHandlerSPI(
+                        0,
+                        new JMSXStreamFactory(new XStreamPersisterFactory(), new GeoServerImpl())
+                                .createXStream());
         String result = handler.createHandler().serialize(documentFile);
         // checking the serialization result
         assertThat(result, notNullValue());

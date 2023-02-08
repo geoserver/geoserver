@@ -986,4 +986,112 @@ public class ShapeZipTest extends WFSTestSupport {
         zis.close();
         return resultBytes;
     }
+
+    @Test
+    public void testMultiGeometryColumns() throws Exception {
+        final FeatureSource fs = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
+        GeoServer g = getGeoServer();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        g,
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
+        zip.gs.getService(WFSInfo.class).setIncludeWFSRequestDumpFile(false);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        FeatureCollectionResponse fct =
+                FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
+        fct.getFeature().add(fs.getFeatures());
+
+        // add the charset
+        Map options = new HashMap();
+        gft.setFormatOptions(options);
+        zip.write(fct, bos, op);
+
+        // should have generated three separate shapefile, one per geometry column
+        byte[] byteArrayZip = bos.toByteArray();
+        checkShapefileIntegrity(
+                new String[] {
+                    "PrimitiveGeoFeaturecurveProperty",
+                    "PrimitiveGeoFeaturesurfaceProperty",
+                    "PrimitiveGeoFeaturepointProperty"
+                },
+                new ByteArrayInputStream(byteArrayZip));
+
+        // perform basic checks on each of the shapefiles
+        testShapefile(
+                new ByteArrayInputStream(byteArrayZip),
+                "PrimitiveGeoFeaturecurveProperty",
+                (store) -> {
+                    SimpleFeatureCollection fc = store.getFeatureSource().getFeatures();
+                    assertEquals(1, fc.size());
+                    SimpleFeature f = DataUtilities.first(fc);
+                    assertEquals("name-f003", f.getAttribute("name"));
+                    assertEquals(12.92, (Double) f.getAttribute("decimalPro"), 0.01);
+                    assertEquals(Boolean.TRUE, f.getAttribute("booleanPro"));
+                });
+
+        testShapefile(
+                new ByteArrayInputStream(byteArrayZip),
+                "PrimitiveGeoFeaturesurfaceProperty",
+                (store) -> {
+                    SimpleFeatureCollection fc = store.getFeatureSource().getFeatures();
+                    assertEquals(1, fc.size());
+                    SimpleFeature f = DataUtilities.first(fc);
+                    assertEquals("name-f008", f.getAttribute("name"));
+                    assertEquals(18.92, (Double) f.getAttribute("decimalPro"), 0.01);
+                    assertEquals(Boolean.TRUE, f.getAttribute("booleanPro"));
+                });
+
+        testShapefile(
+                new ByteArrayInputStream(byteArrayZip),
+                "PrimitiveGeoFeaturepointProperty",
+                (store) -> {
+                    SimpleFeatureCollection fc = store.getFeatureSource().getFeatures();
+                    assertEquals(3, fc.size());
+                    SimpleFeature f = DataUtilities.first(fc);
+                    assertEquals("name-f001", f.getAttribute("name"));
+                    assertEquals(5.03, (Double) f.getAttribute("decimalPro"), 0.01);
+                    assertEquals(Boolean.TRUE, f.getAttribute("booleanPro"));
+                });
+    }
+
+    public interface ThrowingConsumer<T> {
+
+        void accept(T t) throws Exception;
+    }
+
+    private void testShapefile(
+            InputStream is, String shapeName, ThrowingConsumer<ShapefileDataStore> test)
+            throws Exception {
+        ZipInputStream zis = new ZipInputStream(is);
+        ZipEntry entry = null;
+
+        // copy the desired shapefile
+        File tempFolder = createTempFolder("shp_");
+        String shapeFileName = "";
+        while ((entry = zis.getNextEntry()) != null) {
+            final String name = entry.getName();
+            if (!name.startsWith(shapeName)) continue;
+            String outName = tempFolder.getAbsolutePath() + File.separatorChar + name;
+            // store .shp file name
+            if (name.toLowerCase().endsWith("shp")) shapeFileName = outName;
+            // copy each file to temp folder
+
+            try (FileOutputStream outFile = new FileOutputStream(outName)) {
+                copyStream(zis, outFile);
+            }
+            zis.closeEntry();
+        }
+        zis.close();
+
+        // create a datastore reading the uncompressed shapefile
+        File shapeFile = new File(shapeFileName);
+        ShapefileDataStore ds = new ShapefileDataStore(URLs.fileToUrl(shapeFile));
+        try {
+            test.accept(ds);
+        } finally {
+            ds.dispose();
+            FileUtils.deleteQuietly(tempFolder);
+        }
+    }
 }

@@ -1,3 +1,3 @@
 zip=${typename}
-shp=${typename}${geometryType}
+shp=${typename}${geometryName}${geometryType}
 txt=wfsrequest

@@ -72,7 +72,7 @@ If a file name is not specified, the output file name is inferred from the reque
 ::
 
   zip=${typename}
-  shp=${typename}${geometryType}
+  shp=${typename}${geometryName}${geometryType}
   txt=wfsrequest
 
 The ``zip`` property is the name of the archive, the ``shp`` property is the name of the shapefile for a given feature type, and ``txt`` is the dump of the actual WFS request.
@@ -80,6 +80,7 @@ The ``zip`` property is the name of the archive, the ``shp`` property is the nam
 The properties available in the template are:
   
   * ``typename``—Feature type name (for the ``zip`` property this will be the first feature type if the request contains many feature types)
+  * ``geometryName``—Name of the geometry attribute. Used only if the original feature type has more than one geometry attribute.
   * ``geometryType``—Type of geometry contained in the shapefile. This is only used if the output geometry type is generic and the various geometries are stored in one shapefile per type.
   * ``workspace``—Workspace of the feature type
   * ``timestamp``—Date object with the request timestamp

@@ -183,18 +183,19 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
             OutputStream output,
             final GetFeatureRequest request)
             throws IOException, ServiceException {
-        // We might get multiple featurecollections in our response (multiple queries?) so we need
-        // to
-        // write out multiple shapefile sets, one for each query response.
+        // We might get multiple feature collections in our response (multiple queries?) so we need
+        // to write out multiple shapefile sets, one for each query response.
         final File tempDir = IOUtils.createTempDirectory("shpziptemp");
         ShapefileDumper dumper =
                 new ShapefileDumper(tempDir) {
 
                     @Override
-                    protected String getShapeName(SimpleFeatureType schema, String geometryType) {
+                    protected String getShapeName(
+                            SimpleFeatureType schema, String geometryName, String geometryType) {
                         FeatureTypeInfo ftInfo = getFeatureTypeInfo(schema);
                         String fileName =
-                                new FileNameSource(getClass()).getShapeName(ftInfo, geometryType);
+                                new FileNameSource(getClass())
+                                        .getShapeName(ftInfo, geometryName, geometryType);
                         return fileName;
                     }
 
@@ -467,7 +468,8 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
             this.clazz = clazz;
         }
 
-        private Properties processTemplate(FeatureTypeInfo ftInfo, String geometryType) {
+        private Properties processTemplate(
+                FeatureTypeInfo ftInfo, String geometryName, String geometryType) {
             try {
                 // setup template subsystem
                 GeoServerTemplateLoader templateLoader =
@@ -491,6 +493,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
                 Map<String, Object> context = new HashMap<>();
                 context.put("typename", getTypeName(ftInfo));
                 context.put("workspace", ftInfo.getNamespace().getPrefix());
+                context.put("geometryName", geometryName == null ? "" : geometryName);
                 context.put("geometryType", geometryType == null ? "" : geometryType);
                 context.put("timestamp", timestamp);
                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -516,7 +519,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         }
 
         public String getZipName(FeatureTypeInfo ftInfo) {
-            Properties props = processTemplate(ftInfo, null);
+            Properties props = processTemplate(ftInfo, null, null);
             String filename = props.getProperty("zip");
             if (filename == null) {
                 filename = getTypeName(ftInfo);
@@ -525,8 +528,9 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
             return filename;
         }
 
-        public String getShapeName(FeatureTypeInfo ftInfo, String geometryType) {
-            Properties props = processTemplate(ftInfo, geometryType);
+        public String getShapeName(
+                FeatureTypeInfo ftInfo, String geometryName, String geometryType) {
+            Properties props = processTemplate(ftInfo, geometryName, geometryType);
             String filename = props.getProperty("shp");
             if (filename == null) {
                 filename = getTypeName(ftInfo) + geometryType;
@@ -536,7 +540,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         }
 
         public String getRequestDumpName(FeatureTypeInfo ftInfo) {
-            Properties props = processTemplate(ftInfo, null);
+            Properties props = processTemplate(ftInfo, null, null);
             String filename = props.getProperty("txt");
             if (filename == null) {
                 filename = getTypeName(ftInfo);

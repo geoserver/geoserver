@@ -105,7 +105,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
                         .getForm()
                         .get("blobSpecificPanel:awsSecretKey")
                         .getDefaultModelObject()); // check if is stored as a fake in HTML
-        assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
+        assertEquals("50", ((S3BlobStoreInfo) config).getMaxConnections());
         assertEquals("PRIVATE", ((S3BlobStoreInfo) config).getAccess().toString());
 
         GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
@@ -134,7 +134,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals("mybucket", ((S3BlobStoreInfo) config).getBucket());
         assertEquals("myaccesskey", ((S3BlobStoreInfo) config).getAwsAccessKey());
         assertEquals("mysecretkey", ((S3BlobStoreInfo) config).getAwsSecretKey());
-        assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
+        assertEquals("50", ((S3BlobStoreInfo) config).getMaxConnections());
         assertEquals("PUBLIC", ((S3BlobStoreInfo) config).getAccess().toString());
 
         GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
@@ -146,7 +146,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         Field id = BlobStoreInfo.class.getDeclaredField("name");
         id.setAccessible(true);
         id.set(sconfig, "myblobstore");
-        sconfig.setMaxConnections(50);
+        sconfig.setMaxConnections("50");
         sconfig.setBucket("mybucket");
         sconfig.setAwsAccessKey("myaccesskey");
         sconfig.setAwsSecretKey("mysecretkey");
@@ -211,7 +211,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals("mybucket", ((S3BlobStoreInfo) config).getBucket());
         assertEquals(null, ((S3BlobStoreInfo) config).getAwsAccessKey());
         assertEquals(null, ((S3BlobStoreInfo) config).getAwsSecretKey());
-        assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
+        assertEquals("50", ((S3BlobStoreInfo) config).getMaxConnections());
         assertEquals("PRIVATE", ((S3BlobStoreInfo) config).getAccess().toString());
 
         GWC.get().removeBlobStores(Collections.singleton("myblobstore"));

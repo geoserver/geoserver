@@ -26,10 +26,10 @@ public class LandingPageTest extends FeaturesTestSupport {
 
     @Test
     public void testServiceDescriptor() {
-        Service service = getService("Features", new Version("1.0"));
+        Service service = getService("Features", new Version("1.0.1"));
         assertNotNull(service);
         assertEquals("Features", service.getId());
-        assertEquals(new Version("1.0"), service.getVersion());
+        assertEquals(new Version("1.0.1"), service.getVersion());
         assertThat(service.getService(), CoreMatchers.instanceOf(FeatureService.class));
         assertThat(
                 service.getOperations(),

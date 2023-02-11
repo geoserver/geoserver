@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @APIService(
         service = "Maps",
-        version = "1.0",
+        version = "1.0.1",
         landingPage = "ogc/maps",
         serviceClass = WMSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps")

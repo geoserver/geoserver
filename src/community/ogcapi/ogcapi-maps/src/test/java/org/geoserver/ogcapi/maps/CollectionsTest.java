@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.maps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectionsTest extends MapsTestSupport {
 
@@ -67,6 +69,12 @@ public class CollectionsTest extends MapsTestSupport {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/maps/collections?f=html");
         // This may need update if the layout is styled
         assertEquals(getNumberOfLayers(), document.select("#content h2 a[href]").size());
+    }
+
+    @Test
+    public void testVersionHeader() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("ogc/maps/collections?f=html");
+        assertTrue(headerHasValue(response, "API-Version", "1.0.1"));
     }
 
     private int getNumberOfLayers() {

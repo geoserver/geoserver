@@ -102,7 +102,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 /** Implementation of OGC Features API service */
 @APIService(
         service = "STAC",
-        version = "1.0",
+        version = "1.0.1",
         landingPage = "ogc/stac",
         serviceClass = OSEOInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/stac")

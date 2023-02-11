@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /** Extension to the Tiles service allowing to retrieve changesets */
 @APIService(
         service = "Tiles",
-        version = "1.0",
+        version = "1.0.1",
         landingPage = "ogc/tiles",
         core = false,
         serviceClass = TilesServiceInfo.class)

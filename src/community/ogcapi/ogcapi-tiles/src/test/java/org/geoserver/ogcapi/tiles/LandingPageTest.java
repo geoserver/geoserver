@@ -22,10 +22,10 @@ public class LandingPageTest extends TilesTestSupport {
 
     @Test
     public void testServiceDescriptor() {
-        Service service = getService("Tiles", new Version("1.0"));
+        Service service = getService("Tiles", new Version("1.0.1"));
         assertNotNull(service);
         assertEquals("Tiles", service.getId());
-        assertEquals(new Version("1.0"), service.getVersion());
+        assertEquals(new Version("1.0.1"), service.getVersion());
         assertThat(service.getService(), CoreMatchers.instanceOf(TilesService.class));
         assertThat(
                 service.getOperations(),

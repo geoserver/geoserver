@@ -22,10 +22,10 @@ public class LandingPageTest extends StylesTestSupport {
 
     @Test
     public void testServiceDescriptor() {
-        Service service = getService("Styles", new Version("1.0"));
+        Service service = getService("Styles", new Version("1.0.1"));
         assertNotNull(service);
         assertEquals("Styles", service.getId());
-        assertEquals(new Version("1.0"), service.getVersion());
+        assertEquals(new Version("1.0.1"), service.getVersion());
         assertThat(service.getService(), CoreMatchers.instanceOf(StylesService.class));
         assertThat(
                 service.getOperations(),

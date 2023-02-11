@@ -21,10 +21,10 @@ public class LandingPageTest extends ImagesTestSupport {
 
     @Test
     public void testServiceDescriptor() {
-        Service service = getService("Images", new Version("1.0"));
+        Service service = getService("Images", new Version("1.0.1"));
         assertNotNull(service);
         assertEquals("Images", service.getId());
-        assertEquals(new Version("1.0"), service.getVersion());
+        assertEquals(new Version("1.0.1"), service.getVersion());
         assertThat(service.getService(), CoreMatchers.instanceOf(ImagesService.class));
         assertThat(
                 service.getOperations(),

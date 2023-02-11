@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @APIService(
         service = "Features",
-        version = "1.0",
+        version = "1.0.1",
         landingPage = "ogc/features",
         serviceClass = WFSInfo.class,
         core = false)

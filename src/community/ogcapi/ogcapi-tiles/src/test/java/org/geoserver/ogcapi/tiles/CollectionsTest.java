@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Streams;
 import com.jayway.jsonpath.DocumentContext;
@@ -28,6 +29,7 @@ import org.geowebcache.layer.TileLayer;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class CollectionsTest extends TilesTestSupport {
@@ -136,5 +138,12 @@ public class CollectionsTest extends TilesTestSupport {
         assertEquals(
                 BASIC_POLYGONS_DESCRIPTION,
                 document.select("#" + basicPolygonsName + "_description").text());
+    }
+
+    @Test
+    public void testVersionHeader() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse("ogc/tiles/collections/?f=application/x-yaml");
+        assertTrue(headerHasValue(response, "API-Version", "1.0.1"));
     }
 }

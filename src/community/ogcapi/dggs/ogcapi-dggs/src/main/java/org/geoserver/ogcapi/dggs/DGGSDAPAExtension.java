@@ -70,7 +70,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /** Implementation of OGC API - DGGS DAPA extensions */
 @APIService(
         service = "DGGS",
-        version = "1.0",
+        version = "1.0.1",
         landingPage = "ogc/dggs",
         serviceClass = DGGSInfo.class,
         core = false)

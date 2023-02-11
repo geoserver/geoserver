@@ -203,4 +203,19 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
         List<T> selfRels = json.read(path);
         assertThat(selfRels, Matchers.containsInAnyOrder(expected));
     }
+
+    /**
+     * Verifies that the given header is present in the response, and that it contains the expected
+     * value
+     *
+     * @param response the response
+     * @param headerName the header name
+     * @param expectedValue the expected value
+     * @return true if the header is present and contains the expected value
+     */
+    protected boolean headerHasValue(
+            MockHttpServletResponse response, String headerName, String expectedValue) {
+        String headerValue = response.getHeader(headerName);
+        return headerValue != null && headerValue.contains(expectedValue);
+    }
 }

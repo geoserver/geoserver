@@ -28,10 +28,10 @@ public class LandingPageTest extends STACTestSupport {
 
     @Test
     public void testServiceDescriptor() {
-        Service service = getService("STAC", new Version("1.0"));
+        Service service = getService("STAC", new Version("1.0.1"));
         assertNotNull(service);
         assertEquals("STAC", service.getId());
-        assertEquals(new Version("1.0"), service.getVersion());
+        assertEquals(new Version("1.0.1"), service.getVersion());
         assertThat(service.getService(), CoreMatchers.instanceOf(STACService.class));
         assertThat(
                 service.getOperations(),

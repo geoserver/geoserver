@@ -95,7 +95,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 /** A service to manage collections of images (mosaics, in GeoServer) */
 @APIService(
         service = "Images",
-        version = "1.0",
+        version = "1.0.1",
         landingPage = "ogc/images",
         serviceClass = ImagesServiceInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/images")

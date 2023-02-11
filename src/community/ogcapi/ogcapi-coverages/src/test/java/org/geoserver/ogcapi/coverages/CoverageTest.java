@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.coverages;
 
 import static org.geoserver.catalog.ResourceInfo.TIME;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.awt.geom.Point2D;
@@ -96,6 +97,13 @@ public class CoverageTest extends CoveragesTestSupport {
                 targetCoverage.dispose(true);
             }
         }
+    }
+
+    @Test
+    public void testVersionHeader() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse("ogc/coverages/collections/rs:DEM/coverage");
+        assertTrue(headerHasValue(response, "API-Version", "1.0.1"));
     }
 
     private void assertBBOXDEM(

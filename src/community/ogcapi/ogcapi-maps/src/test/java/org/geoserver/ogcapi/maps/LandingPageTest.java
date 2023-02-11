@@ -20,10 +20,10 @@ public class LandingPageTest extends MapsTestSupport {
 
     @Test
     public void testServiceDescriptor() {
-        Service service = getService("Maps", new Version("1.0"));
+        Service service = getService("Maps", new Version("1.0.1"));
         assertNotNull(service);
         assertEquals("Maps", service.getId());
-        assertEquals(new Version("1.0"), service.getVersion());
+        assertEquals(new Version("1.0.1"), service.getVersion());
         assertThat(service.getService(), CoreMatchers.instanceOf(MapsService.class));
         assertThat(
                 service.getOperations(),

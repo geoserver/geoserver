@@ -73,7 +73,7 @@ import org.xml.sax.EntityResolver;
 
 @APIService(
         service = "Styles",
-        version = "1.0",
+        version = "1.0.1",
         landingPage = "ogc/styles",
         serviceClass = StylesServiceInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/styles")

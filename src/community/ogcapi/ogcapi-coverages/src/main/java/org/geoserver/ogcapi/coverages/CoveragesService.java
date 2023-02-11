@@ -62,7 +62,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /** Implementation of OGC Coverages API service */
 @APIService(
         service = "Coverages",
-        version = "1.0",
+        version = "1.0.1",
         landingPage = "ogc/coverages",
         serviceClass = WCSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/coverages")

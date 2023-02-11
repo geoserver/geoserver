@@ -84,7 +84,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 /** Implementation of OGC Features API service */
 @APIService(
         service = "Features",
-        version = "1.0",
+        version = "1.0.1",
         landingPage = "ogc/features",
         serviceClass = WFSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")

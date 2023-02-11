@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.stac;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectionsTest extends STACTestSupport {
 
@@ -179,5 +181,12 @@ public class CollectionsTest extends STACTestSupport {
 
         assertEquals("InvalidParameterValue", json.read("code"));
         assertEquals("Collection not found: DISABLED_COLLECTION", json.read("description"));
+    }
+
+    @Test
+    public void testVersionHeader() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse("ogc/stac/collections/SENTINEL2?f=json");
+        assertTrue(headerHasValue(response, "API-Version", "1.0.1"));
     }
 }

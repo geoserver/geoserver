@@ -20,7 +20,7 @@
     <!-- Bridges to have OGC services show up as OWS services too -->
     <bean id="stacServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">
         <constructor-arg index="0" value="STAC"/>
-        <constructor-arg index="1" value="1.0"/>
+        <constructor-arg index="1" value="1.0.1"/>
     </bean>
 
 </beans>

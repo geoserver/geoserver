@@ -31,6 +31,11 @@ initScript=jdbcconfig/scripts/initdb.postgres.sql
 #
 import=true
 
+# Flag controlling whether to add comments and some pretty-printing to SQL queries to
+# assist with debugging.  Setting this to false may allow the module to better take
+# advantage of prepared statement caching.
+debugMode=false
+
 #
 # The JNDI name for the data source.  Uncomment to use JNDI.
 #

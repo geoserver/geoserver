@@ -14,7 +14,8 @@ import javax.sql.DataSource;
 
 public class Dialect {
 
-    // see https://github.com/hibernate/hibernate-orm/commit/59fede7acaaa1579b561407aefa582311f7ebe78
+    // see
+    // https://github.com/hibernate/hibernate-orm/commit/59fede7acaaa1579b561407aefa582311f7ebe78
     private static final Pattern ESCAPE_CLOSING_COMMENT_PATTERN = Pattern.compile("\\*/");
     private static final Pattern ESCAPE_OPENING_COMMENT_PATTERN = Pattern.compile("/\\*");
 

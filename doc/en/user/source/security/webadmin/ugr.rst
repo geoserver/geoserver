@@ -57,7 +57,7 @@ To add a new XML user/group service, click the :guilabel:`Add new` link. XML is 
 Add new JDBC user/group service
 -------------------------------
 
-To add a new XML user/group service, click the :guilabel:`Add new` link, and then the :guilabel:`JDBC` option at the top of the following form. The following figure shows the configuration options for a JDBC user/group service.
+To add a new JDBC user/group service, click the :guilabel:`Add new` link, and then the :guilabel:`JDBC` option at the top of the following form. The following figure shows the configuration options for a JDBC user/group service.
 
 .. figure:: images/ugr_ugjdbcsettings.png
    :align: center

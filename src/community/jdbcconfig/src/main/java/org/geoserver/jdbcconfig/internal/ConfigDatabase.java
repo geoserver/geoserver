@@ -103,6 +103,7 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
+import org.geoserver.jdbcloader.JDBCLoaderProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.CacheProvider;
@@ -159,6 +160,8 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private Dialect dialect;
 
+    private JDBCLoaderProperties properties;
+
     private DataSource dataSource;
 
     private DbMappings dbMappings;
@@ -193,15 +196,19 @@ public class ConfigDatabase implements ApplicationContextAware {
         //
     }
 
-    public ConfigDatabase(final DataSource dataSource, final XStreamInfoSerialBinding binding) {
-        this(dataSource, binding, null);
+    public ConfigDatabase(
+            JDBCLoaderProperties properties,
+            DataSource dataSource,
+            XStreamInfoSerialBinding binding) {
+        this(properties, dataSource, binding, null);
     }
 
     public ConfigDatabase(
+            JDBCLoaderProperties properties,
             final DataSource dataSource,
             final XStreamInfoSerialBinding binding,
             CacheProvider cacheProvider) {
-
+        this.properties = properties;
         this.binding = binding;
         this.template = new NamedParameterJdbcTemplate(dataSource);
         // cannot use dataSource at this point due to spring context config hack
@@ -222,7 +229,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private Dialect dialect() {
         if (dialect == null) {
-            this.dialect = Dialect.detect(dataSource);
+            this.dialect = Dialect.detect(dataSource, properties.isDebugMode());
         }
         return dialect;
     }
@@ -285,7 +292,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(dialect, of, dbMappings).filter(filter);
 
-        final StringBuilder sql = sqlBuilder.build();
+        final String sql = sqlBuilder.build();
         final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
         final boolean fullySupported = Filter.INCLUDE.equals(unsupportedFilter);
         if (LOGGER.isLoggable(Level.FINER)) {
@@ -298,7 +305,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
             logStatement(sql, namedParameters);
 
-            count = template.queryForObject(sql.toString(), namedParameters, Integer.class);
+            count = template.queryForObject(sql, namedParameters, Integer.class);
         } else {
             LOGGER.fine(
                     "Filter is not fully supported, doing scan of supported part to return the number of matches");
@@ -352,7 +359,7 @@ public class ConfigDatabase implements ApplicationContextAware {
                         .offset(offset)
                         .limit(limit)
                         .sortOrder(sortOrder);
-        final StringBuilder sql = sqlBuilder.build();
+        final String sql = sqlBuilder.build();
 
         List<String> ids = null;
 
@@ -395,7 +402,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             // with rownum in the 2nd - queryForList will throw an exception
             ids =
                     template.query(
-                            sql.toString(),
+                            sql,
                             namedParameters,
                             new RowMapper<String>() {
                                 @Override
@@ -461,7 +468,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(dialect, of, dbMappings).filter(filter);
 
-        final StringBuilder sql = sqlBuilder.build();
+        final String sql = sqlBuilder.build();
         final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
         final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
         final boolean fullySupported = Filter.INCLUDE.equals(unsupportedFilter);
@@ -478,7 +485,7 @@ public class ConfigDatabase implements ApplicationContextAware {
         // with rownum in the 2nd - queryForList will throw an exception
         List<String> ids =
                 template.query(
-                        sql.toString(),
+                        sql,
                         namedParameters,
                         new RowMapper<String>() {
                             @Override

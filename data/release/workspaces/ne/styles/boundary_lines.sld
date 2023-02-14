@@ -20,8 +20,8 @@
         </Rule>
         <Rule>
           <Title>Boundary</Title>
-          <MaxScaleDenominator>7.0E7</MaxScaleDenominator>
           <MinScaleDenominator>3.5E7</MinScaleDenominator>
+          <MaxScaleDenominator>7.0E7</MaxScaleDenominator>
           <LineSymbolizer>
             <Stroke>
               <CssParameter name="stroke">#D3C2A8</CssParameter>
@@ -32,8 +32,8 @@
         </Rule>
         <Rule>
           <Title>Boundary</Title>
-          <MaxScaleDenominator>3.5E7</MaxScaleDenominator>
           <MinScaleDenominator>2.0E7</MinScaleDenominator>
+          <MaxScaleDenominator>3.5E7</MaxScaleDenominator>
           <LineSymbolizer>
             <Stroke>
               <CssParameter name="stroke">#D3C2A8</CssParameter>

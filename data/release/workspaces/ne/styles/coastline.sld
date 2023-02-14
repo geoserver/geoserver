@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<StyledLayerDescriptor version="1.0.0"
-  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
-  xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
-  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor xmlns="http://www.opengis.net/sld"
+    xmlns:sld="http://www.opengis.net/sld"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:gml="http://www.opengis.net/gml"
+    version="1.0.0">
   <NamedLayer>
     <Name>coastline</Name>
     <UserStyle>
@@ -19,8 +20,8 @@
         </Rule>
         <Rule>
           <Title>Coastline</Title>
-          <MaxScaleDenominator>7.0E7</MaxScaleDenominator>
           <MinScaleDenominator>3.5E7</MinScaleDenominator>
+          <MaxScaleDenominator>7.0E7</MaxScaleDenominator>
           <LineSymbolizer>
             <Stroke>
               <CssParameter name="stroke">#B3CCD1</CssParameter>
@@ -30,8 +31,8 @@
         </Rule>
         <Rule>
           <Title>Coastline</Title>
-          <MaxScaleDenominator>3.5E7</MaxScaleDenominator>
           <MinScaleDenominator>2.0E7</MinScaleDenominator>
+          <MaxScaleDenominator>3.5E7</MaxScaleDenominator>
           <LineSymbolizer>
             <Stroke>
               <CssParameter name="stroke">#B3CCD1</CssParameter>

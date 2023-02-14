@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sld:StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sld="http://www.opengis.net/sld">
+<sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld"
+    xmlns:sld="http://www.opengis.net/sld"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:gml="http://www.opengis.net/gml"
+    version="1.0.0">
   <sld:NamedLayer>
-    <sld:Name>populated_places</sld:Name>
-    <sld:Title>Populated Places</sld:Title>
-    <sld:Abstract>Dynamic presentation of populated places with level of detail depending on scale. Dymanic styling is used to determine mark symbol shown based on feature classification. Label is introduced at lower scales.</sld:Abstract>
+    <!-- style applies to named layer only -->
+    <sld:Name>ne:populated_places</sld:Name>
     <sld:UserStyle>
-      <sld:Name/>
+      <sld:Name>populated_places</sld:Name>
+      <sld:Title>Populated Places</sld:Title>
+      <sld:Abstract>Dynamic presentation of populated places with level of detail depending on scale. Dymanic styling is used to determine mark symbol shown based on feature classification. Label is introduced at lower scales.</sld:Abstract>
       <sld:FeatureTypeStyle>
-        <sld:Name>name</sld:Name>
-
+        <sld:Name>places</sld:Name>
         <sld:Rule>
           <ogc:Filter>
             <ogc:PropertyIsLessThan>
@@ -38,8 +42,8 @@
               <ogc:Literal>3</ogc:Literal>
             </ogc:PropertyIsLessThan>
           </ogc:Filter>
-          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:MinScaleDenominator>7.0E7</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:Mark>
@@ -60,14 +64,14 @@
                 <ogc:PropertyName>min_zoom</ogc:PropertyName>
                 <ogc:Literal>3</ogc:Literal>
               </ogc:PropertyIsLessThan>
-              <ogc:PropertyEquals>
+              <ogc:PropertyIsEqualTo>
                 <ogc:PropertyName>featurecla</ogc:PropertyName>
                 <ogc:Literal>Admin-0</ogc:Literal>
-              </ogc:PropertyEquals>
+              </ogc:PropertyIsEqualTo>
             </ogc:And>
           </ogc:Filter>
-          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:MinScaleDenominator>7.0E7</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:Mark>
@@ -115,23 +119,18 @@
                 </ogc:Function>
               </sld:Size>
             </sld:Graphic>
-            <VendorOption name="labelObstacle">true</VendorOption>
+            <sld:VendorOption name="labelObstacle">true</sld:VendorOption>
           </sld:PointSymbolizer>
           <sld:TextSymbolizer>
             <sld:Label>
               <ogc:PropertyName>name</ogc:PropertyName>
             </sld:Label>
-            <Halo>
-              <Radius>0.75</Radius>
-              <Fill>
-                <CssParameter name="fill">#FFFFFF</CssParameter>
-                <CssParameter name="fill-opacity">0.75</CssParameter>
-              </Fill>
-            </Halo>
             <sld:Font>
               <sld:CssParameter name="font-family">SansSerif</sld:CssParameter>
               <sld:CssParameter name="font-size">12</sld:CssParameter>
             </sld:Font>
+
+
             <sld:LabelPlacement>
               <sld:PointPlacement>
                 <sld:AnchorPoint>
@@ -144,6 +143,16 @@
                 </sld:Displacement>
               </sld:PointPlacement>
             </sld:LabelPlacement>
+            
+            <sld:Halo>
+              <sld:Radius>0.75</sld:Radius>
+              <sld:Fill>
+                <sld:CssParameter name="fill">#FFFFFF</sld:CssParameter>
+                <sld:CssParameter name="fill-opacity">0.75</sld:CssParameter>
+              </sld:Fill>
+            </sld:Halo>
+            
+           
             <sld:Fill>
               <sld:CssParameter name="fill">#000000</sld:CssParameter>
             </sld:Fill>
@@ -153,7 +162,9 @@
                 <ogc:PropertyName>labelrank</ogc:PropertyName>
               </ogc:Sub>
             </sld:Priority>
+
             <sld:VendorOption name="maxDisplacement">10</sld:VendorOption>
+            
           </sld:TextSymbolizer>
         </sld:Rule>
         
@@ -182,19 +193,12 @@
                 </ogc:Function>
               </sld:Size>
             </sld:Graphic>
-            <VendorOption name="labelObstacle">true</VendorOption>
+            <sld:VendorOption name="labelObstacle">true</sld:VendorOption>
           </sld:PointSymbolizer>
           <sld:TextSymbolizer>
             <sld:Label>
               <ogc:PropertyName>name</ogc:PropertyName>
             </sld:Label>
-            <Halo>
-              <Radius>1.5</Radius>
-              <Fill>
-                <CssParameter name="fill">#FFFFFF</CssParameter>
-                <CssParameter name="fill-opacity">0.75</CssParameter>
-              </Fill>
-            </Halo>
             <sld:Font>
               <sld:CssParameter name="font-family">SansSerif</sld:CssParameter>
               <sld:CssParameter name="font-size">14</sld:CssParameter>
@@ -211,6 +215,14 @@
                 </sld:Displacement>
               </sld:PointPlacement>
             </sld:LabelPlacement>
+            <Halo>
+              <Radius>1.5</Radius>
+              <Fill>
+                <CssParameter name="fill">#FFFFFF</CssParameter>
+                <CssParameter name="fill-opacity">0.75</CssParameter>
+              </Fill>
+            </Halo>
+
             <sld:Fill>
               <sld:CssParameter name="fill">#000000</sld:CssParameter>
             </sld:Fill>
@@ -221,7 +233,7 @@
               </ogc:Sub>
             </sld:Priority>
             <sld:VendorOption name="maxDisplacement">12</sld:VendorOption>
-            <VendorOption name="spaceAround">5</VendorOption>
+            <sld:VendorOption name="spaceAround">5</sld:VendorOption>
           </sld:TextSymbolizer>
         </sld:Rule>
         

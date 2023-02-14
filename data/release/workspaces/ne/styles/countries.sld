@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
   <sld:NamedLayer>
-    <sld:Name>countries_transparent</sld:Name>
-    <sld:Title>Countries</sld:Title>
-    <sld:Abstract>Alternate on mapcolor9 theme for ne:countries layer. This presentation uses a slight transparencyto allow background to show thru as part of a layer group or map. Labeling is done at a lower priority than populated places to allow cities to take precedence</sld:Abstract>
+    <sld:Name>ne:countries</sld:Name>
     <sld:UserStyle>
-      <sld:Name />
+      <sld:Name>countries_transparent</sld:Name>
+      <sld:Title>Countries</sld:Title>
+      <sld:Abstract>Alternate on mapcolor9 theme for ne:countries layer. This presentation uses a slight transparencyto allow background to show through as part of a layer group or map. Labeling is done at a lower priority than populated places to allow cities to take precedence</sld:Abstract>
       <sld:FeatureTypeStyle>
         <sld:Rule>
           <sld:Name>Countries</sld:Name>
@@ -13,8 +13,8 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#8DD3C7</sld:CssParameter>
             </sld:Fill>
+            <sld:VendorOption name="inclusion">legendOnly</sld:VendorOption>
           </sld:PolygonSymbolizer>
-          <sld:VendorOption name="inclusion">legendOnly</sld:VendorOption>
         </sld:Rule>
         <sld:Rule>
           <sld:PolygonSymbolizer>
@@ -44,8 +44,8 @@
               </sld:CssParameter>
               <sld:CssParameter name="fill-opacity">0.75</sld:CssParameter>
             </sld:Fill>
+            <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
           </sld:PolygonSymbolizer>
-          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
         </sld:Rule>
         
         <sld:Rule>
@@ -103,8 +103,8 @@
             <sld:VendorOption name="charSpacing">1</sld:VendorOption>
             <sld:VendorOption name="autoWrap">70</sld:VendorOption>
             <sld:VendorOption name="goodnessOfFit">0.95</sld:VendorOption>
+            <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
           </sld:TextSymbolizer>
-          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
         </sld:Rule>
         <sld:Rule>
           <ogc:Filter>
@@ -113,8 +113,8 @@
               <ogc:Literal>3</ogc:Literal>
             </ogc:PropertyIsLessThan>
           </ogc:Filter>
-          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:MinScaleDenominator>7.0E7</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:TextSymbolizer>
             <sld:Label>
               <ogc:Function name="Recode">
@@ -155,8 +155,8 @@
             <sld:VendorOption name="charSpacing">1</sld:VendorOption>
             <sld:VendorOption name="autoWrap">70</sld:VendorOption>
             <sld:VendorOption name="goodnessOfFit">0.95</sld:VendorOption>
+            <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
           </sld:TextSymbolizer>
-          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
         </sld:Rule>
         <sld:Rule>
           <ogc:Filter>
@@ -208,8 +208,8 @@
             <sld:VendorOption name="charSpacing">1</sld:VendorOption>
             <sld:VendorOption name="autoWrap">90</sld:VendorOption>
             <sld:VendorOption name="goodnessOfFit">1.0</sld:VendorOption>
+            <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
           </sld:TextSymbolizer>
-          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
         </sld:Rule>
         <sld:Rule>
           <sld:MaxScaleDenominator>3.5E7</sld:MaxScaleDenominator>
@@ -254,10 +254,9 @@
             <sld:VendorOption name="charSpacing">1</sld:VendorOption>
             <sld:VendorOption name="autoWrap">100</sld:VendorOption>
             <sld:VendorOption name="goodnessOfFit">1.00</sld:VendorOption>
+            <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
           </sld:TextSymbolizer>
-          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
-        </sld:Rule>        
-        
+        </sld:Rule>            
         
       </sld:FeatureTypeStyle>
     </sld:UserStyle>

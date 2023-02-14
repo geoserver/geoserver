@@ -38,8 +38,8 @@
               <ogc:Literal>3</ogc:Literal>
             </ogc:PropertyIsLessThan>
           </ogc:Filter>
-          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:MinScaleDenominator>7.0E7</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:Mark>
@@ -66,8 +66,8 @@
               </ogc:PropertyEquals>
             </ogc:And>
           </ogc:Filter>
-          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:MinScaleDenominator>7.0E7</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>14.0E7</sld:MaxScaleDenominator>
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:Mark>

@@ -21,12 +21,17 @@ public class OracleDialect extends Dialect {
             limit += 1; // not zero-based
         }
         if (offset != null && limit != null) {
-            sql.insert(0, "SELECT * FROM (SELECT query.*, rownum rnum FROM (\n");
-            sql.append(") query\n");
+            sql.insert(
+                    0,
+                    "SELECT * FROM (SELECT query.*, rownum rnum FROM ("
+                            + (isDebugMode() ? "\n" : ""));
+            sql.append(") query");
+            appendIfDebug(sql, "\n", " ");
             if (limit != Integer.MAX_VALUE) {
                 limit = offset + limit;
             }
-            sql.append("WHERE rownum <= ").append(limit).append(")\n");
+            sql.append("WHERE rownum <= ").append(limit).append(")");
+            appendIfDebug(sql, "\n", " ");
             sql.append("WHERE rnum > ").append(offset);
         }
     }

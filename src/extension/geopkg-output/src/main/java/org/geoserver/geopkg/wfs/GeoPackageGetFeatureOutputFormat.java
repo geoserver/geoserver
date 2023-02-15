@@ -87,9 +87,9 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
      * <p>If the CUSTOM_TEMP_DIR_PROPERTY directory doesn't exist (or isnt a directory), then an
      * exception is thrown
      *
-     * @param prefix
-     * @param suffix
-     * @return
+     * @param prefix filename prefix, must be three characters or more
+     * @param suffix filename suffix, or if null {@code null} suffix {@code ".tmp") used
+     * @return path to newly created temporary file
      */
     File createTempFile(String prefix, String suffix) throws IOException {
         String customTempDir = GeoServerExtensions.getProperty(CUSTOM_TEMP_DIR_PROPERTY);

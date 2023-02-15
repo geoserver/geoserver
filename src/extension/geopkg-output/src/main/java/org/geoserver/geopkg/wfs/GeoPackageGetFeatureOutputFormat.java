@@ -18,11 +18,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.geopkg.GeoPkg;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
@@ -31,7 +33,9 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
+import org.springframework.util.StringUtils;
 
 /**
  * WFS GetFeature OutputFormat for GeoPackage
@@ -40,7 +44,10 @@ import org.opengis.feature.type.FeatureType;
  */
 public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
 
+    protected static Logger LOGGER = Logging.getLogger(GeoPackageGetFeatureOutputFormat.class);
+
     public static final String PROPERTY_INDEXED = "geopackage.wfs.indexed";
+    public static final String CUSTOM_TEMP_DIR_PROPERTY = "geopackage.getfeatureoutput.tempdir";
 
     public GeoPackageGetFeatureOutputFormat(GeoServer gs) {
         super(gs, Sets.union(Sets.newHashSet(MIME_TYPES), Sets.newHashSet(NAMES)));
@@ -71,6 +78,34 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         return EXTENSION;
     }
 
+    /**
+     * This is a smarter version of File.createTempFile().
+     *
+     * <p>If the CUSTOM_TEMP_DIR_PROPERTY property is set, then use that as the temp directory.
+     * Otherwise (unset), use the standard File.createTempFile() temp directory.
+     *
+     * <p>If the CUSTOM_TEMP_DIR_PROPERTY directory doesn't exist (or isnt a directory), then an
+     * exception is thrown
+     *
+     * @param prefix
+     * @param suffix
+     * @return
+     */
+    File createTempFile(String prefix, String suffix) throws IOException {
+        String customTempDir = GeoServerExtensions.getProperty(CUSTOM_TEMP_DIR_PROPERTY);
+        if (!StringUtils.hasText(customTempDir)) {
+            return File.createTempFile("geopkg", ".tmp.gpkg");
+        }
+        File tempDir = new File(customTempDir);
+        if (!tempDir.exists() || !tempDir.isDirectory()) {
+            throw new IOException(
+                    "GeoPKG output: temp dir: '"
+                            + customTempDir
+                            + "' doesn't exist or isn't a directory");
+        }
+        return File.createTempFile("geopkg", ".tmp.gpkg", tempDir);
+    }
+
     @Override
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
@@ -78,7 +113,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         // create the geopackage file and write the features into it.
         // geopackage is written to a temporary file, copied into the outputStream, then the temp
         // file deleted.
-        File file = File.createTempFile("geopkg", ".tmp.gpkg");
+        File file = createTempFile("geopkg", ".tmp.gpkg");
 
         try (GeoPackage geopkg = GeoPkg.getGeoPackage(file)) {
             for (FeatureCollection collection : featureCollection.getFeatures()) {

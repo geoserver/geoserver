@@ -2505,7 +2505,7 @@
               <fork>false</fork>
               <compilerArgs>
                 <arg>-XDcompilePolicy=simple</arg>
-                <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
+                <arg>-Xplugin:ErrorProne -XepExcludedPaths:\Q${project.build.directory}\E.* ${errorProneFlags}</arg>
                 <arg>-Xlint:${lint}</arg>
                 <arg>-Werror</arg>
                 <arg>-Xmaxwarns</arg>

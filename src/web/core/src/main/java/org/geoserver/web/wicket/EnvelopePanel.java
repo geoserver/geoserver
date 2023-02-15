@@ -13,6 +13,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.ValidationError;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.locationtech.jts.geom.Envelope;
@@ -103,6 +105,8 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
         add(maxYInput = new DecimalTextField("maxY", new PropertyModel<>(this, "maxY")));
         add(maxZInput = new DecimalTextField("maxZ", new PropertyModel<>(this, "maxZ")));
 
+        addBoundingBoxValidators();
+
         minZInput.setVisible(is3D());
         minZLabel.setVisible(is3D());
         maxZInput.setVisible(is3D());
@@ -113,6 +117,39 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
         crsPanel = new CRSPanel("crs", new PropertyModel<>(this, "crs"));
         crsContainer.add(crsPanel);
         add(crsContainer);
+    }
+
+    private void addBoundingBoxValidators() {
+        minXInput.add(validatable -> validateAxis(validatable, maxXInput, "X"));
+
+        minYInput.add(validatable -> validateAxis(validatable, maxYInput, "Y"));
+
+        if (is3D()) {
+            minZInput.add(validatable -> validateAxis(validatable, maxZInput, "Z"));
+        }
+    }
+
+    /**
+     * Validate if bounding box min value is lower then max value for specific axis
+     *
+     * @param validatable
+     * @param maxValueField
+     * @param axis
+     */
+    private void validateAxis(
+            IValidatable<Double> validatable, DecimalTextField maxValueField, String axis) {
+        // if max is not valid, form will fail anyway, and there is nothing to compare against
+        if (maxValueField.isValid()) {
+            maxValueField.convertInput();
+            Double convertedValue = maxValueField.getConvertedInput();
+            if (convertedValue != null && validatable.getValue() >= convertedValue) {
+                ValidationError error = new ValidationError();
+                error.setMessage(
+                        new ParamResourceModel("validation.boundingBoxAxisNonPositive", this, axis)
+                                .getObject());
+                validatable.error(error);
+            }
+        }
     }
 
     @Override

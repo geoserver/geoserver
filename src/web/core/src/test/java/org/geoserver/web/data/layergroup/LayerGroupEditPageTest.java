@@ -161,8 +161,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:name", "lakes");
         form.setValue("tabs:panel:bounds:minX", "0");
         form.setValue("tabs:panel:bounds:minY", "0");
-        form.setValue("tabs:panel:bounds:maxX", "0");
-        form.setValue("tabs:panel:bounds:maxY", "0");
+        form.setValue("tabs:panel:bounds:maxX", "1");
+        form.setValue("tabs:panel:bounds:maxY", "1");
         form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
 
         page.lgEntryPanel
@@ -325,8 +325,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:name", "lakes");
         form.setValue("tabs:panel:bounds:minX", "0");
         form.setValue("tabs:panel:bounds:minY", "0");
-        form.setValue("tabs:panel:bounds:maxX", "0");
-        form.setValue("tabs:panel:bounds:maxY", "0");
+        form.setValue("tabs:panel:bounds:maxX", "1");
+        form.setValue("tabs:panel:bounds:maxY", "1");
         form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
 
         tester.executeAjaxEvent("publishedinfo:tabs:panel:metadataLinks:addlink", "click");
@@ -519,6 +519,12 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // Update the title
         FormTester ft = tester.newFormTester("publishedinfo");
+        ft.setValue("tabs:panel:bounds:minX", "0");
+        ft.setValue("tabs:panel:bounds:minY", "0");
+        ft.setValue("tabs:panel:bounds:minZ", "0");
+        ft.setValue("tabs:panel:bounds:maxX", "1");
+        ft.setValue("tabs:panel:bounds:maxY", "1");
+        ft.setValue("tabs:panel:bounds:maxZ", "1");
         String newTitle = "A test title";
         ft.setValue("tabs:panel:titleAndAbstract:title", newTitle);
         ft.submit("apply");
@@ -733,6 +739,12 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                     "click");
 
             FormTester ft = tester.newFormTester("publishedinfo");
+            ft.setValue("tabs:panel:bounds:minX", "0");
+            ft.setValue("tabs:panel:bounds:minY", "0");
+            ft.setValue("tabs:panel:bounds:minZ", "0");
+            ft.setValue("tabs:panel:bounds:maxX", "1");
+            ft.setValue("tabs:panel:bounds:maxY", "1");
+            ft.setValue("tabs:panel:bounds:maxZ", "1");
             ft.setValue(
                     "tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupStyleName",
                     "LgStyleTest");

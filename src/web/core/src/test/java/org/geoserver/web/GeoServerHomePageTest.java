@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
@@ -23,10 +24,12 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.web.wicket.Select2DropDownChoice;
+import org.geotools.util.GrowableInternationalString;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +67,33 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
                 Collections.singletonList(
                         getGeoServerApplication()
                                 .getBeanOfType(CapabilitiesHomePageLinkProvider.class)));
+    }
+
+    @Test
+    public void testHelloWorld() {
+        GeoServer gs = getGeoServer();
+        GeoServerInfo global = gs.getGlobal();
+        SettingsInfo settings = global.getSettings();
+        ContactInfo contact = settings.getContact();
+
+        GrowableInternationalString helloWorld = new GrowableInternationalString("Hello World");
+        helloWorld.add(Locale.ENGLISH, "Hello World");
+        helloWorld.add(Locale.ITALIAN, "Ciao mondo");
+        helloWorld.add(Locale.FRENCH, "Bonjour le monde");
+
+        contact.setWelcome("Hello world");
+        contact.setInternationalWelcome(helloWorld);
+        gs.save(global);
+
+        tester.getSession().setLocale(Locale.ITALIAN);
+        tester.startPage(GeoServerHomePage.class);
+        String html = tester.getLastResponseAsString();
+        assertThat(html, CoreMatchers.containsString("Ciao mondo"));
+
+        tester.getSession().setLocale(Locale.FRENCH);
+        tester.startPage(GeoServerHomePage.class);
+        html = tester.getLastResponseAsString();
+        assertThat(html, CoreMatchers.containsString("Bonjour le monde"));
     }
 
     @Test

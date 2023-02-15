@@ -154,7 +154,10 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
         Locale locale = getLocale();
 
-        String welcomeText = contactInfo.getWelcome();
+        InternationalString welcome =
+                InternationalStringUtils.growable(
+                        contactInfo.getInternationalWelcome(), contactInfo.getWelcome());
+        String welcomeText = welcome.toString(locale);
         Label welcomeMessage = new Label("welcome", welcomeText);
         welcomeMessage.setVisible(StringUtils.isNotBlank(welcomeText));
         add(welcomeMessage);

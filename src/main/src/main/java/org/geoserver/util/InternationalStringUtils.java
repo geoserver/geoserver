@@ -41,6 +41,9 @@ public class InternationalStringUtils {
                         (GrowableInternationalString) textTranslations;
                 GrowableInternationalString combined = new GrowableInternationalString(textDefault);
                 for (Locale locale : translations.getLocales()) {
+                    if (locale == null) {
+                        continue; // textDefault used in constructor
+                    }
                     combined.add(locale, translations.toString(locale));
                 }
                 if (combined.toString(GeoServerDefaultLocale.get()) == null) {

@@ -16,6 +16,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.xsd.EMFUtils;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.Or;
 
 /**
  * Delete element in a Transaction request.
@@ -80,12 +81,9 @@ public abstract class Delete extends TransactionElement {
         Filter currentFilter = (Filter) EMFUtils.get(obj, property);
 
         List<Filter> filters = new ArrayList<>();
-        if (newFilter != null) {
-            filters.add(newFilter);
-        }
-        if (currentFilter != null) {
-            filters.add(currentFilter);
-        }
+
+        flattenFilter(newFilter, filters);
+        flattenFilter(currentFilter, filters);
 
         Filter result;
         if (filters.isEmpty()) {
@@ -100,6 +98,16 @@ public abstract class Delete extends TransactionElement {
             ((DeleteElementTypeImpl) obj).setFilter(result);
         } else if (obj instanceof DeleteTypeImpl) {
             ((DeleteTypeImpl) obj).setFilter(result);
+        }
+    }
+
+    private void flattenFilter(Filter filter, List<Filter> filters) {
+        if (filter != null) {
+            if (filter instanceof Or) {
+                filters.addAll(((Or) filter).getChildren());
+            } else {
+                filters.add(filter);
+            }
         }
     }
 }

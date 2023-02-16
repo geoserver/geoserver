@@ -177,6 +177,44 @@ public class BatchManagerTest {
         testAggregationWithDeleteBatchSize(-1);
     }
 
+    @Test
+    public void testLargeBatchDeletion() {
+
+        final int batchSizeForDeletion = 40;
+
+        Map<TransactionElement, TransactionElementHandler> element2Handlers = new LinkedHashMap<>();
+
+        Delete delete1 = newDelete(type1Name, filter1);
+        TransactionElementHandler delete1Handler = mock(TransactionElementHandler.class);
+
+        element2Handlers.put(delete1, delete1Handler);
+
+        for (int i = 1; i < batchSizeForDeletion; i++) {
+            Delete delete = newDelete(type1Name, filter1);
+            TransactionElementHandler deleteHandler = mock(TransactionElementHandler.class);
+            element2Handlers.put(delete, deleteHandler);
+        }
+
+        TransactionRequest lTransaction = transactionRequest(element2Handlers.keySet());
+
+        BatchManager sut =
+                new BatchManager(
+                        lTransaction,
+                        transactionListener,
+                        stores,
+                        transactionResponse,
+                        element2Handlers,
+                        batchSizeForDeletion);
+        sut.run();
+
+        String message = String.format("First %d DELETEs have been merged", batchSizeForDeletion);
+        assertTrue(message, delete1.getFilter() instanceof Or);
+        int lOrCount = ((Or) delete1.getFilter()).getChildren().size();
+        assertEquals(message, 40, lOrCount);
+
+        verify(delete1Handler, times(1)).execute(same(delete1), any(), any(), any(), any());
+    }
+
     private void testAggregationWithDeleteBatchSize(int pDeleteBatchSize) {
         // given: test transactions contents...
         Insert insert1 = newInsert(feature1);

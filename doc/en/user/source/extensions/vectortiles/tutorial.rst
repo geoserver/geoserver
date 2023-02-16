@@ -27,7 +27,6 @@ Vector tile formats
 
 GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and MapBox Vector (MVT). These are also supported by OpenLayers and other clients.
 
-.. warning:: When using vector tiles, be sure to use an up-to-date client. Older clients do not support all vector tiles capabilities and may result in rendering errors. We recommend using the latest version of OpenLayers (Currently v5.3.0).
 
 * MVT is the preferred format for production.
 

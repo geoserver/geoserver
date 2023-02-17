@@ -100,15 +100,15 @@ pygments_style = 'sphinx'
 # -----------------------------------
 
 extlinks = { 
-    'wiki': ('https://github.com/geoserver/geoserver/wiki/%s',''),
-    'website': ('http://geoserver.org/%s',''),
-    'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s',''),
-    'developer': ('http://docs.geoserver.org/latest/en/developer/%s',''),
-    'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
-    'geotools': ('https://docs.geotools.org/latest/userguide/%s',''),
+    'wiki': ('https://github.com/geoserver/geoserver/wiki/%s',None),
+    'website': ('http://geoserver.org/%s',None),
+    'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s',None),
+    'developer': ('http://docs.geoserver.org/latest/en/developer/%s',None),
+    'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',None),
+    'geotools': ('https://docs.geotools.org/latest/userguide/%s',None),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
-    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s','')
+    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s',None)
 }
 
 # Options for HTML output

@@ -10,12 +10,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.19-SNAPSHOT</version>
+    <version>2.19.7</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-qos</artifactId>
-  <version>2.19-SNAPSHOT</version>
+  <version>2.19.7</version>
   <packaging>jar</packaging>
   <name>GeoServer Quality of Service GetCapabilities module</name>
 

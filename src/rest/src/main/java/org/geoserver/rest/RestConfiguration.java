@@ -149,7 +149,13 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         // finally, allow any other WebMvcConfigurer in the application context to do its thing
         super.addInterceptors(registry);
     }
-
+    // ContentNegotiationConfigurer.favorPathExtension is deprecated because Spring wants to
+    // discourage extensions in paths.  See
+    // https://github.com/spring-projects/spring-framework/issues/24179
+    // for more details.  Removing extensions would cause REST API backwards compatibility issues
+    // that will have to be
+    // addressed in the future.  For now, we are suppressing the deprecation warning.
+    @SuppressWarnings("deprecation")
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         // scan and register media types for style handlers
@@ -174,13 +180,14 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         configurer.mediaType("xslt", MediaType.valueOf("application/xslt+xml"));
         configurer.mediaType("ftl", MediaType.TEXT_PLAIN);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
-        configurer.favorParameter(true);
+        configurer.favorParameter(true).favorPathExtension(true);
 
         // allow extension point configuration of media types
         List<MediaTypeCallback> callbacks = GeoServerExtensions.extensions(MediaTypeCallback.class);
         for (MediaTypeCallback callback : callbacks) {
             callback.configure(configurer);
         }
+
         //        configurer.favorPathExtension(true);
         // todo properties files are only supported for test cases. should try to find a way to
         // support them without polluting prod code with handling
@@ -189,14 +196,18 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         // finally, allow any other WebMvcConfigurer in the application context to do its thing
         super.configureContentNegotiation(configurer);
     }
-
+    // PathMatchConfigurer.setUseSuffixPatternMatch is deprecated because Spring wants to
+    // discourage extensions in paths
+    @SuppressWarnings("deprecation")
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         // Force MVC to use /restng endpoint. If we need something more advanced, we should make a
         // custom PathHelper
+
         GeoServerUrlPathHelper helper = new GeoServerUrlPathHelper();
         helper.setAlwaysUseFullPath(true);
         configurer.setUrlPathHelper(helper);
+        configurer.setUseSuffixPatternMatch(true);
         // finally, allow any other WebMvcConfigurer in the application context to do its thing
         super.configurePathMatch(configurer);
     }

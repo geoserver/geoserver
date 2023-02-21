@@ -417,7 +417,8 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         }
 
         if (body != null) {
-            throw new HttpMediaTypeNotAcceptableException(this.allSupportedMediaTypes);
+            throw new HttpMediaTypeNotAcceptableException(
+                    this.getSupportedMediaTypes(Object.class));
         }
         return null;
     }

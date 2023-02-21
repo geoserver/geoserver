@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.response;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -61,23 +62,24 @@ import org.opengis.filter.identity.FeatureId;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CSVOutputFormatTest extends WFSTestSupport {
+    private static final String CSV = "text/csv";
 
     @Test
     public void testFullRequest() throws Exception {
         MockHttpServletResponse resp =
                 getAsServletResponse(
                         "wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv",
-                        "");
+                        UTF_8.name());
 
         FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
 
         //        System.out.println(resp.getOutputStreamContent());
 
         // check the mime type
-        assertEquals("text/csv", resp.getContentType());
+        assertEquals(CSV, getBaseMimeType(resp.getContentType()));
 
         // check the charset encoding
-        assertEquals("UTF-8", resp.getCharacterEncoding());
+        assertEquals(UTF_8.name(), resp.getCharacterEncoding());
 
         // check the content disposition
         assertEquals(
@@ -103,10 +105,10 @@ public class CSVOutputFormatTest extends WFSTestSupport {
                         "wfs?version=1.1.0&request=GetFeature&"
                                 + "typeName=sf:PrimitiveGeoFeature&"
                                 + "outputFormat=csv&format_options=filename:test",
-                        "");
+                        UTF_8.name());
 
-        assertEquals("text/csv", resp.getContentType());
-        assertEquals("UTF-8", resp.getCharacterEncoding());
+        assertEquals(CSV, getBaseMimeType(resp.getContentType()));
+        assertEquals(UTF_8.name(), resp.getCharacterEncoding());
         assertEquals("attachment; filename=test.csv", resp.getHeader("Content-Disposition"));
     }
 
@@ -223,15 +225,15 @@ public class CSVOutputFormatTest extends WFSTestSupport {
                 getAsServletResponse(
                         "wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv&format_options=csvSeparator:"
                                 + separator,
-                        "");
+                        UTF_8.name());
 
         FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
 
         // check the mime type
-        assertEquals("text/csv", resp.getContentType());
+        assertEquals(CSV, getBaseMimeType(resp.getContentType()));
 
         // check the charset encoding
-        assertEquals("UTF-8", resp.getCharacterEncoding());
+        assertEquals(UTF_8.name(), resp.getCharacterEncoding());
 
         // check the content disposition
         assertEquals(
@@ -289,15 +291,15 @@ public class CSVOutputFormatTest extends WFSTestSupport {
                 getAsServletResponse(
                         "wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv&format_options=csvSeparator:"
                                 + separator,
-                        "");
+                        UTF_8.name());
 
         FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
 
         // check the mime type
-        assertEquals("text/csv", resp.getContentType());
+        assertEquals(CSV, getBaseMimeType(resp.getContentType()));
 
         // check the charset encoding
-        assertEquals("UTF-8", resp.getCharacterEncoding());
+        assertEquals(UTF_8.name(), resp.getCharacterEncoding());
 
         // check the content disposition
         assertEquals(

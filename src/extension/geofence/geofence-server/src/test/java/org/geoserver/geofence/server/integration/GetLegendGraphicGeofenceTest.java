@@ -129,7 +129,7 @@ public class GetLegendGraphicGeofenceTest extends GeofenceWMSTestSupport {
                             + "&format=image/png&width=20&height=20";
             response = getAsServletResponse(url);
             // should fail the forests_style contains the not allowed polygon style
-            assertEquals(response.getContentType(), "application/vnd.ogc.se_xml");
+            assertEquals(getBaseMimeType(response.getContentType()), "application/vnd.ogc.se_xml");
             assertTrue(
                     response.getContentAsString().contains("style is not available on this layer"));
         } finally {

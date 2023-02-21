@@ -215,7 +215,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
                                 + getLayerId(V_TIME_ELEVATION)
                                 + "&elevation=0.0/4.0/0.01");
 
-        assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+        assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
         Document dom = dom(response, true);
         // print(dom);
         String text =
@@ -251,7 +251,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
                                     + getLayerId(V_TIME_ELEVATION)
                                     + "&elevation=0.0/4.0/0.01");
 
-            assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+            assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
             Document dom = dom(response, true);
             // print(dom);
             String text =
@@ -604,7 +604,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
                                 + "&layers="
                                 + getLayerId(V_TIME_ELEVATION)
                                 + "&time=2011-05-01/2011-06-01/PT1H");
-        assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+        assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
         Document dom = dom(response, true);
         // print(dom);
         String text = checkLegacyException(dom, ServiceException.INVALID_PARAMETER_VALUE, "time");
@@ -634,7 +634,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
                                     + "&time=2011-05-01/2011-05-04/P1D",
                             "image/png");
 
-            assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+            assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
             Document dom = dom(response, true);
             // print(dom);
             String text =

@@ -228,7 +228,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                                     + "&DIM_"
                                     + CUSTOM_DIMENSION_NAME
                                     + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
-            assertEquals("text/xml", response.getContentType());
+            assertEquals("text/xml", getBaseMimeType(response.getContentType()));
             Document dom = dom(response, true);
             // print(dom);
             String text =

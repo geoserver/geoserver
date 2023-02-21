@@ -34,7 +34,6 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.model.ExtPropertyModel;
-import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 
 /**
  * GeoFence wicket administration UI for GeoServer.
@@ -107,15 +106,18 @@ public class GeofencePage extends GeoServerSecuredPage {
                             ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                         }
                     }
-
+                    // HttpInvokerProxyFactoryBean is deprecated because
+                    // Spring no longer supports serialized RMI invocations
+                    @SuppressWarnings("deprecation")
                     private RuleReaderService getRuleReaderService(String servicesUrl) {
                         if (config.isInternal()) {
                             return (RuleReaderService)
                                     GeoServerExtensions.bean("ruleReaderService");
                         } else {
-                            HttpInvokerProxyFactoryBean invoker =
-                                    new org.springframework.remoting.httpinvoker
-                                            .HttpInvokerProxyFactoryBean();
+                            org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean
+                                    invoker =
+                                            new org.springframework.remoting.httpinvoker
+                                                    .HttpInvokerProxyFactoryBean();
                             invoker.setServiceUrl(servicesUrl);
                             invoker.setServiceInterface(RuleReaderService.class);
                             invoker.afterPropertiesSet();

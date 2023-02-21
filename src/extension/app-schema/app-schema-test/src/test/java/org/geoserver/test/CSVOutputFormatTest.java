@@ -39,7 +39,7 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
                         "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsmlp:BoreholeView&outputFormat=csv");
 
         // check the mime type
-        assertEquals("text/csv", resp.getContentType());
+        assertEquals("text/csv", getBaseMimeType(resp.getContentType()));
 
         // check the content disposition
         assertEquals(
@@ -106,7 +106,7 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
                         xml,
                         "text/csv");
         // check the mime type
-        assertEquals("text/csv", resp.getContentType());
+        assertEquals("text/csv", getBaseMimeType(resp.getContentType()));
         // check the content disposition
         assertEquals(
                 "attachment; filename=BoreholeView.csv", resp.getHeader("Content-Disposition"));

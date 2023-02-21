@@ -132,7 +132,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         // using an invalid mime type should throw an exception
         response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1&format=invalid");
         assertThat(response.getStatus(), is(200));
-        assertThat(response.getContentType(), is("application/vnd.ogc.se_xml"));
+        assertThat(getBaseMimeType(response.getContentType()), is("application/vnd.ogc.se_xml"));
         // using an empty mime type should fall back to the default mime type
         response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1&format=");
         assertThat(response.getStatus(), is(200));

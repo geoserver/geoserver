@@ -549,7 +549,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
                             + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
             response = getAsServletResponse(url);
             // should get an error since the polygon style is contained in the lg forest_style
-            assertEquals("text/xml", response.getContentType());
+            assertEquals("text/xml", getBaseMimeType(response.getContentType()));
             assertTrue(
                     response.getContentAsString().contains("style is not available on this layer"));
         } finally {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.rest.resources;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -115,7 +116,9 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testResource() throws Exception {
-        String str = getAsString(RestBaseController.ROOT_PATH + "/resource/mydir/myres").trim();
+        String str =
+                getAsString(RestBaseController.ROOT_PATH + "/resource/mydir/myres", UTF_8.name())
+                        .trim();
         Assert.assertEquals(STR_MY_TEST, str);
     }
 
@@ -170,10 +173,17 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testResourceMetadataWithResourceExtension() throws Exception {
         String str =
-                getAsString(RestBaseController.ROOT_PATH + "/resource/mydir2/myres.xml").trim();
+                getAsString(
+                                RestBaseController.ROOT_PATH + "/resource/mydir2/myres.xml",
+                                UTF_8.name())
+                        .trim();
         Assert.assertEquals(STR_MY_TEST, str);
 
-        str = getAsString(RestBaseController.ROOT_PATH + "/resource/mydir2/myres.json").trim();
+        str =
+                getAsString(
+                                RestBaseController.ROOT_PATH + "/resource/mydir2/myres.json",
+                                UTF_8.name())
+                        .trim();
         Assert.assertEquals(STR_MY_TEST, str);
 
         // format=xml should return XML regardless of extension

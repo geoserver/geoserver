@@ -12,8 +12,8 @@ GeoServer documentation written in `reStructuredText <https://docutils.sourcefor
 
 We handle changes to the documentation in the same way as we do changes to the code base, so you need to make a branch for your change and submit it as a "pull request" to the main repository, this is all explained in the :ref:`workflow` section later.
 
-Since the repository requires authentication to make changes, authors who plan large changes can be granted access so they are able to directly contribute to the documentation.  While this does slightly raise the barrier to entry, the ability to control the quality of the documentation was seen as a greater benefit.
+Since the repository requires authentication to make changes, authors who plan large changes can be granted access, so they are able to directly contribute to the documentation.  While this does slightly raise the barrier to entry, the ability to control the quality of the documentation was seen as a greater benefit.
 
 .. note:: Prior to the use of Sphinx GeoServer documentation was created using a wiki as part of the GeoServer home page. While this allowed anyone to sign up and contribute documentation we ended up with problems of vandalism and lacked features we now enjoy (Version control, PDF export).
 
-Read on to find out :ref:`contributing`.
+Read on to find out more about :ref:`contributing`.

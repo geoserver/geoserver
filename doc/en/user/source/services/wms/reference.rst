@@ -41,11 +41,11 @@ WMS requests can perform the following operations:
      - Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers
    * - ``GetMap``
      - Retrieves a map image for a specified area and content
-   * - ``GetFeatureInfo`` (optional)
+   * - ``GetFeatureInfo`` 
      - Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map
-   * - ``DescribeLayer`` (optional)
+   * - ``DescribeLayer`` 
      - Indicates the WFS or WCS to retrieve additional information about the layer.
-   * - ``GetLegendGraphic`` (optional)
+   * - ``GetLegendGraphic`` 
      - Retrieves a generated legend for a map 
 
 Exceptions
@@ -73,10 +73,10 @@ Formats in which WMS can report exceptions. The supported values for exceptions 
      - This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the :ref:`WMS Configuration Limits <wms_configuration_limits>` to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the ``timeout`` :ref:`vendor parameter <wms_vendor_parameters>`.
    * - JSON
      - ``EXCEPTIONS=application/json``
-     - Simple Json representation.
+     - Simple JSON representation.
    * - JSONP
      - ``EXCEPTIONS=text/javascript``
-     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
+     - Return JSONP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 
 .. _wms_getcap:
 
@@ -397,10 +397,10 @@ The supported formats are:
      - Uses HTML templates that are defined on the server. See :ref:`tutorials_getfeatureinfo_html` for information on how to template HTML output. 
    * - JSON
      - ``info_format=application/json``
-     - Simple Json representation. See :ref:`tutorials_getfeatureinfo_geojson` for information on how to template Json output.
+     - Simple JSON representation. See :ref:`tutorials_getfeatureinfo_geojson` for information on how to template JSON output.
    * - JSONP
      - ``info_format=text/javascript``
-     - Returns a JsonP in the form: ``parseResponse(...json...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
+     - Returns JSONP in the form: ``parseResponse(...json...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 
 GeoServer provides the following vendor-specific parameters
 for the GetFeatureInfo operation.
@@ -572,10 +572,10 @@ The supported formats are:
      - The default format.
    * - JSON
      - ``output_format=application/json``
-     - Simple Json representation.
+     - Simple JSON representation.
    * - JSONP
      - ``output_format=text/javascript``
-     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.  Note that this format is disabled by default (See :ref:`wms_global_variables`).
+     - Return JSONP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.  Note that this format is disabled by default (See :ref:`wms_global_variables`).
      
 
 An example request in XML (default) format on a layer is: :

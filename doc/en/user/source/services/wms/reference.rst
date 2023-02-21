@@ -35,15 +35,15 @@ WMS requests can perform the following operations:
 
    * - **Operation**
      - **Description**
-   * - ``GetCapabilities``
+   * - `GetCapabilities`_
      - Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers
-   * - ``GetMap``
+   * - `GetMap`_
      - Retrieves a map image for a specified area and content
-   * - ``GetFeatureInfo`` 
+   * - `GetFeatureInfo`_ 
      - Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map
-   * - ``DescribeLayer`` 
+   * - `DescribeLayer`_ 
      - Indicates the WFS or WCS to retrieve additional information about the layer.
-   * - ``GetLegendGraphic`` 
+   * - `GetLegendGraphic`_
      - Retrieves a generated legend for a map 
 
 .. _wms_getcap:

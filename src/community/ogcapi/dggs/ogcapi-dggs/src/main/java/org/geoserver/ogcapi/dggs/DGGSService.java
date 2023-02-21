@@ -4,6 +4,8 @@
  */
 package org.geoserver.ogcapi.dggs;
 
+import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
+import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geotools.dggs.gstore.DGGSStore.RESOLUTION;
 
@@ -38,7 +40,6 @@ import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
-import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.PropertiesParser;
 import org.geoserver.ogcapi.features.FeaturesGetFeature;
 import org.geoserver.ogcapi.features.FeaturesResponse;
@@ -134,11 +135,11 @@ public class DGGSService {
     }
 
     @GetMapping(
-            path = "api",
+            path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
             produces = {
-                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-                "application/x-yaml",
+                OPEN_API_MEDIA_TYPE_VALUE,
+                APPLICATION_YAML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
     @ResponseBody

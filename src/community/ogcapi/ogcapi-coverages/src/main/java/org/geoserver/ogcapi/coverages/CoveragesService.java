@@ -6,6 +6,8 @@ package org.geoserver.ogcapi.coverages;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import static org.geoserver.ogcapi.APIException.INVALID_PARAMETER_VALUE;
+import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
+import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
@@ -35,7 +37,6 @@ import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
-import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.coverages.cis.DomainSet;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
@@ -144,11 +145,11 @@ public class CoveragesService {
     }
 
     @GetMapping(
-            path = "openapi",
+            path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
             produces = {
-                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-                "application/x-yaml",
+                OPEN_API_MEDIA_TYPE_VALUE,
+                APPLICATION_YAML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
     @ResponseBody

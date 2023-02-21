@@ -19,6 +19,7 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 
 /**
  * A ContentNegotiationManager using the "f" query parameter as a way to request a few well known
@@ -61,10 +62,16 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
     private class OpenAPIContentNegotiationStrategy implements ContentNegotiationStrategy {
         @Override
         public List<MediaType> resolveMediaTypes(NativeWebRequest nativeWebRequest) {
-            if (nativeWebRequest.getContextPath().endsWith("/openapi.json")) {
-                return Arrays.asList(OPEN_API_MEDIA_TYPE);
-            } else if (nativeWebRequest.getContextPath().endsWith("/openapi.yaml")) {
-                return Arrays.asList(APPLICATION_YAML);
+            if (nativeWebRequest instanceof ServletWebRequest) {
+                ServletWebRequest servletWebRequest = (ServletWebRequest) nativeWebRequest;
+                if (servletWebRequest.getRequest().getRequestURI().endsWith("/openapi.json")) {
+                    return Arrays.asList(OPEN_API_MEDIA_TYPE);
+                } else if (servletWebRequest
+                        .getRequest()
+                        .getRequestURI()
+                        .endsWith("/openapi.yaml")) {
+                    return Arrays.asList(APPLICATION_YAML);
+                }
             }
             return MEDIA_TYPE_ALL_LIST;
         }

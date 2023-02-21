@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.styles;
 
 import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
+import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 import static org.geoserver.ogcapi.styles.StylesService.ValidationMode.only;
 import static org.geoserver.ogcapi.styles.StylesService.ValidationMode.yes;
 
@@ -38,7 +39,6 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
-import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.ResourceNotFoundException;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler;
@@ -160,10 +160,10 @@ public class StylesService {
     }
 
     @GetMapping(
-            path = "openapi",
+            path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
             produces = {
-                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+                OPEN_API_MEDIA_TYPE_VALUE,
                 APPLICATION_YAML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })

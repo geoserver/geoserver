@@ -191,7 +191,7 @@ public class FeatureService {
     }
 
     @GetMapping(
-            path = "openapi",
+            path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
             produces = {
                 OPEN_API_MEDIA_TYPE_VALUE,

@@ -1422,10 +1422,6 @@
       </dependencies>
     </profile>
     <profile>
-          <groupId>com.jayway.jsonpath</groupId>
-          <artifactId>json-path</artifactId>
-        </dependency>
-        <dependency>
       <id>wmts-multi-dimensional</id>
       <dependencies>
         <dependency>

@@ -35,53 +35,21 @@ WMS requests can perform the following operations:
 
    * - **Operation**
      - **Description**
-   * - ``Exceptions``
-     - If an exception occur
-   * - ``GetCapabilities``
+   * - `GetCapabilities`_
      - Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers
-   * - ``GetMap``
+   * - `GetMap`_
      - Retrieves a map image for a specified area and content
-   * - ``GetFeatureInfo`` (optional)
+   * - `GetFeatureInfo`_ 
      - Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map
-   * - ``DescribeLayer`` (optional)
+   * - `DescribeLayer`_ 
      - Indicates the WFS or WCS to retrieve additional information about the layer.
-   * - ``GetLegendGraphic`` (optional)
+   * - `GetLegendGraphic`_
      - Retrieves a generated legend for a map 
-
-Exceptions
-----------
-
-Formats in which WMS can report exceptions. The supported values for exceptions are:
-
-.. list-table::
-   :widths: 15 35 50
-   
-   * - **Format**
-     - **Syntax**
-     - **Notes**
-   * - XML
-     - ``EXCEPTIONS=application/vnd.ogc.se_xml``
-     - Xml output. (The default format)
-   * - INIMAGE
-     - ``EXCEPTIONS=application/vnd.ogc.se_inimage``
-     - Generates an image
-   * - BLANK
-     - ``EXCEPTIONS=application/vnd.ogc.se_blank``
-     - Generates a blank image
-   * - PARTIALMAP
-     - ``EXCEPTIONS=application/vnd.gs.wms_partial``
-     - This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the :ref:`WMS Configuration Limits <wms_configuration_limits>` to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the ``timeout`` :ref:`vendor parameter <wms_vendor_parameters>`.
-   * - JSON
-     - ``EXCEPTIONS=application/json``
-     - Simple Json representation.
-   * - JSONP
-     - ``EXCEPTIONS=text/javascript``
-     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 
 .. _wms_getcap:
 
 GetCapabilities
----------------
+~~~~~~~~~~~~~~~
 
 The **GetCapabilities** operation requests metadata about the operations, services, and data ("capabilities") that are offered by a WMS server. 
 
@@ -159,7 +127,7 @@ It contains three main sections:
 .. _wms_getmap:
 
 GetMap
-------
+~~~~~~
 
 The **GetMap** operation requests that the server generate a map.  
 The core parameters specify one or more layers and styles to appear on the map,
@@ -302,7 +270,7 @@ See :doc:`/services/wms/time` for information on its use.
 .. _wms_getfeatureinfo:
 
 GetFeatureInfo
---------------
+~~~~~~~~~~~~~~
 
 The **GetFeatureInfo** operation requests the spatial and attribute data for the features
 at a given location on a map.  
@@ -397,10 +365,10 @@ The supported formats are:
      - Uses HTML templates that are defined on the server. See :ref:`tutorials_getfeatureinfo_html` for information on how to template HTML output. 
    * - JSON
      - ``info_format=application/json``
-     - Simple Json representation. See :ref:`tutorials_getfeatureinfo_geojson` for information on how to template Json output.
+     - Simple JSON representation. See :ref:`tutorials_getfeatureinfo_geojson` for information on how to template JSON output.
    * - JSONP
      - ``info_format=text/javascript``
-     - Returns a JsonP in the form: ``parseResponse(...json...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
+     - Returns JSONP in the form: ``parseResponse(...json...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 
 GeoServer provides the following vendor-specific parameters
 for the GetFeatureInfo operation.
@@ -523,7 +491,7 @@ The result will be:
 .. _wms_describelayer:
 
 DescribeLayer
--------------
+~~~~~~~~~~~~~
 
 The **DescribeLayer** operation is used primarily by clients that understand SLD-based WMS.  
 In order to make an SLD one needs to know the structure of the data.  
@@ -572,10 +540,10 @@ The supported formats are:
      - The default format.
    * - JSON
      - ``output_format=application/json``
-     - Simple Json representation.
+     - Simple JSON representation.
    * - JSONP
      - ``output_format=text/javascript``
-     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.  Note that this format is disabled by default (See :ref:`wms_global_variables`).
+     - Return JSONP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.  Note that this format is disabled by default (See :ref:`wms_global_variables`).
      
 
 An example request in XML (default) format on a layer is: :
@@ -634,8 +602,40 @@ The result will be: ::
 .. _wms_getlegendgraphic:
 
 GetLegendGraphic
-----------------
+~~~~~~~~~~~~~~~~
 
 The **GetLegendGraphic** operation provides a mechanism for generating legend graphics as images, beyond the LegendURL reference of WMS Capabilities.  
 It generates a legend based on the style defined on the server, or alternatively based on a user-supplied SLD.  
 For more information on this operation and the various options that GeoServer supports see :ref:`get_legend_graphic`.
+
+Exceptions
+----------
+
+Formats in which WMS can report exceptions. The supported values for exceptions are:
+
+.. list-table::
+   :widths: 15 35 50
+
+   * - **Format**
+     - **Syntax**
+     - **Notes**
+   * - XML
+     - ``EXCEPTIONS=application/vnd.ogc.se_xml``
+     - XML output. (The default format)
+   * - INIMAGE
+     - ``EXCEPTIONS=application/vnd.ogc.se_inimage``
+     - Generates an image
+   * - BLANK
+     - ``EXCEPTIONS=application/vnd.ogc.se_blank``
+     - Generates a blank image
+   * - PARTIALMAP
+     - ``EXCEPTIONS=application/vnd.gs.wms_partial``
+     - This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the :ref:`WMS Configuration Limits <wms_configuration_limits>` to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the ``timeout`` :ref:`vendor parameter <wms_vendor_parameters>`.
+   * - JSON
+     - ``EXCEPTIONS=application/json``
+     - Simple JSON representation.
+   * - JSONP
+     - ``EXCEPTIONS=text/javascript``
+     - Return JSONP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
+
+

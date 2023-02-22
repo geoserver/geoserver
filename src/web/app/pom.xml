@@ -755,10 +755,6 @@
       <id>authkey</id>
       <dependencies>
         <dependency>
-          <groupId>com.jayway.jsonpath</groupId>
-          <artifactId>json-path</artifactId>
-        </dependency>
-        <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-authkey</artifactId>
           <version>${project.version}</version>
@@ -1266,10 +1262,6 @@
       <id>backup-restore</id>
       <dependencies>
         <dependency>
-          <groupId>com.jayway.jsonpath</groupId>
-          <artifactId>json-path</artifactId>
-        </dependency>
-        <dependency>
           <groupId>org.geoserver.community.backuprestore</groupId>
           <artifactId>gs-backup-restore-extension</artifactId>
           <version>${project.version}</version>
@@ -1325,10 +1317,6 @@
       <id>keycloak</id>
       <dependencies>
         <dependency>
-          <groupId>com.jayway.jsonpath</groupId>
-          <artifactId>json-path</artifactId>
-        </dependency>
-        <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-sec-keycloak</artifactId>
           <version>${project.version}</version>
@@ -1338,10 +1326,6 @@
     <profile>
       <id>oauth2-google</id>
       <dependencies>
-        <dependency>
-          <groupId>com.jayway.jsonpath</groupId>
-          <artifactId>json-path</artifactId>
-        </dependency>
         <dependency>
           <groupId>org.geoserver.community.security</groupId>
           <artifactId>gs-sec-oauth2-core</artifactId>
@@ -1363,10 +1347,6 @@
       <id>oauth2-github</id>
       <dependencies>
         <dependency>
-          <groupId>com.jayway.jsonpath</groupId>
-          <artifactId>json-path</artifactId>
-        </dependency>
-        <dependency>
           <groupId>org.geoserver.community.security</groupId>
           <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
@@ -1387,10 +1367,6 @@
       <id>oauth2-geonode</id>
       <dependencies>
         <dependency>
-          <groupId>com.jayway.jsonpath</groupId>
-          <artifactId>json-path</artifactId>
-        </dependency>
-        <dependency>
           <groupId>org.geoserver.community.security</groupId>
           <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
@@ -1410,10 +1386,6 @@
     <profile>
       <id>oauth2-openid-connect</id>
       <dependencies>
-        <dependency>
-          <groupId>com.jayway.jsonpath</groupId>
-          <artifactId>json-path</artifactId>
-        </dependency>
         <dependency>
           <groupId>org.geoserver.community.security</groupId>
           <artifactId>gs-sec-oauth2-core</artifactId>

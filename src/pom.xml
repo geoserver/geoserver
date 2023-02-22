@@ -1515,11 +1515,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
       <scope>test</scope>

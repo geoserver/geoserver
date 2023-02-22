@@ -27,4 +27,13 @@
     <module>web-oseo</module>
     <module>oseo-integration-tests</module>
   </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
 </project>

@@ -32,7 +32,7 @@ public class ImportTransformTest extends ImporterTestSupport {
 
     DataStoreInfo store;
 
-    private static String BASEPATH = RestBaseController.ROOT_PATH;
+    static String BASEPATH = RestBaseController.ROOT_PATH;
 
     /**
      * Create a test transform context: one import task with two transforms:

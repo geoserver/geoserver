@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.util.InternationalString;
 
 /**
  * An attribute exposed by a {@link FeatureTypeInfo}.
@@ -99,4 +100,18 @@ public interface AttributeTypeInfo extends Serializable {
      * @param source A valid CQL expression, in the simple case, the attribute name
      */
     void setSource(String source);
+
+    /**
+     * Get Attribute description
+     *
+     * @return Attribute description
+     */
+    InternationalString getDescription();
+
+    /**
+     * Set attribute description
+     *
+     * @param description
+     */
+    void setDescription(InternationalString description);
 }

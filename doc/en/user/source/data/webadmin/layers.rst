@@ -202,6 +202,7 @@ It is possible to:
 * Remove an attribute using the "remove" icon at the end of the attribute row.
 * Add a new attribute, which will be computed based on the :guilabel:`Source` CQL expression.
 * Rename an attribute.
+* Add a description of the attribute, which will be visible wherever the feature type is described.
 * Change the nillability of the attribute, for example, making the attribute mandatory even if it's
   not in the data source, and vice-versa.
 * Change the type of the attribute using the `Type` column. The most common types are available in 

@@ -5,8 +5,10 @@
  */
 package org.geoserver.wfs.v1_1;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.geoserver.data.test.CiteTestData.PRIMITIVEGEOFEATURE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,8 +17,10 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URLEncoder;
+import java.util.List;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -29,6 +33,7 @@ import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.gml3.GML;
+import org.geotools.util.SimpleInternationalString;
 import org.geotools.wfs.v1_1.WFS;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -354,5 +359,38 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
         assertXpathExists("//xsd:element[@name='" + typeName + "']", doc);
         assertXpathExists("//xsd:import[@namespace='" + GML.NAMESPACE + "']", doc);
         assertXpathNotExists("//xsd:import[@namespace='" + WFS.NAMESPACE + "']", doc);
+    }
+
+    @Test
+    public void testCustomizeFeatureType() throws Exception {
+        // customize feature type
+        String layerId = getLayerId(PRIMITIVEGEOFEATURE);
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(layerId);
+        // dynamically compute attributes
+        List<AttributeTypeInfo> attributes = fti.attributes();
+
+        // customize and set statically
+        attributes.get(0).setName("abstract"); // rename
+        attributes.get(0).setSource("description");
+        attributes.get(0).setDescription(new SimpleInternationalString("attribute description"));
+        attributes.remove(2); // remove
+        AttributeTypeInfo att = getCatalog().getFactory().createAttribute();
+        att.setName("new");
+        att.setSource("Concatenate(name, 'abcd')");
+        attributes.add(att);
+        fti.getAttributes().addAll(attributes);
+        getCatalog().save(fti);
+
+        // check DFT
+        String path =
+                "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=" + layerId;
+        Document doc = getAsDOM(path);
+        assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='abstract']/@type", doc);
+        assertXpathNotExists("//xsd:element[@name='surfaceProperty']", doc);
+        assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='new']/@type", doc);
+        assertXpathEvaluatesTo(
+                "attribute description",
+                "//xsd:element[@name='abstract']/xsd:annotation/xsd:documentation",
+                doc);
     }
 }

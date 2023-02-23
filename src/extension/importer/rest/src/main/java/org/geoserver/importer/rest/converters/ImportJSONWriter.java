@@ -467,6 +467,8 @@ public class ImportJSONWriter {
                         (AttributesToPointGeometryTransform) transform;
                 json.key("latField").value(atpgt.getLatField());
                 json.key("lngField").value(atpgt.getLngField());
+                json.key("pointFieldName").value(atpgt.getPointFieldName());
+                json.key("preserveGeometry").value(atpgt.isPreserveGeometry());
             } else if (transform.getClass() == ReprojectTransform.class) {
                 ReprojectTransform rt = (ReprojectTransform) transform;
                 json.key("source").value(srs(rt.getSource()));

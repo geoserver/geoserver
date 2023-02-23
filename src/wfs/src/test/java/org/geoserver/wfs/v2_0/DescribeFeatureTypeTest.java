@@ -34,6 +34,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.gml3.v3_2.GML;
+import org.geotools.util.SimpleInternationalString;
 import org.geotools.wfs.v2_0.WFS;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -503,6 +504,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         // customize and set statically
         attributes.get(0).setName("abstract"); // rename
         attributes.get(0).setSource("description");
+        attributes.get(0).setDescription(new SimpleInternationalString("attribute description"));
         attributes.remove(2); // remove
         AttributeTypeInfo att = getCatalog().getFactory().createAttribute();
         att.setName("new");
@@ -518,5 +520,9 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='abstract']/@type", doc);
         assertXpathNotExists("//xsd:element[@name='surfaceProperty']", doc);
         assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='new']/@type", doc);
+        assertXpathEvaluatesTo(
+                "attribute description",
+                "//xsd:element[@name='abstract']/xsd:annotation/xsd:documentation",
+                doc);
     }
 }

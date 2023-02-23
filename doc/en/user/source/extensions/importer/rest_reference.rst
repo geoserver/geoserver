@@ -948,7 +948,7 @@ Computes a new field based on an expression that can use the other field values
 AttributesToPointGeometryTransform
 """"""""""""""""""""""""""""""""""
 
-Transforms two numeric fields ``latField`` and ``lngField`` into a point geometry representation ``POINT(lngField,latField)``, the source fields will be removed.
+Transforms two numeric fields ``latField`` and ``lngField`` into a point geometry representation with ``pointFieldName`` setting name of the point ``POINT(lngField,latField)``, the source fields will be removed if ``preserveGeometry`` is false.
 
 .. list-table::
    :header-rows: 1
@@ -962,6 +962,12 @@ Transforms two numeric fields ``latField`` and ``lngField`` into a point geometr
    * - lngField
      - N
      - The "longitude" field
+   * - pointFieldName
+     - Y
+     - The name of the point
+   * - preserveGeometry
+     - Y
+     - Setting this flag will prevent source fields from removal (false by default)
 
 CreateIndexTransform
 """"""""""""""""""""

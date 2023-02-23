@@ -346,7 +346,15 @@ public class ImportJSONReader {
         } else if ("AttributesToPointGeometryTransform".equalsIgnoreCase(type)) {
             String latField = json.getString("latField");
             String lngField = json.getString("lngField");
-            transform = new AttributesToPointGeometryTransform(latField, lngField);
+            String pointFieldName = (String) json.get("pointFieldName");
+            String preserveGeometry = (String) json.get("preserveGeometry");
+
+            transform =
+                    new AttributesToPointGeometryTransform(
+                            latField,
+                            lngField,
+                            pointFieldName,
+                            Boolean.parseBoolean(preserveGeometry));
         } else if ("ReprojectTransform".equalsIgnoreCase(type)) {
             CoordinateReferenceSystem source =
                     json.has("source") ? crs(json.getString("source")) : null;

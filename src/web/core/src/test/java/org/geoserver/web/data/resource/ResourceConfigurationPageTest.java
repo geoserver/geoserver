@@ -73,6 +73,7 @@ import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
+import org.geoserver.util.GeoServerDefaultLocale;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.ColorPickerPanel;
@@ -917,7 +918,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue(edit1 + "2:component:text", "description");
         tester.assertModelValue(edit1 + "3:component:type", java.lang.String.class);
         tester.assertModelValue(edit1 + "4:component:area", "description");
-        tester.assertModelValue(edit1 + "5:component:check", true);
+        tester.assertModelValue(edit1 + "5:component:description", null);
+        tester.assertModelValue(edit1 + "6:component:check", true);
 
         // customize one attribute
         String formEdit1 =
@@ -926,7 +928,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         form.setValue(formEdit1 + "2:component:text", "abstract");
         String cql = "Concatenate(description, ' and more!')";
         form.setValue(formEdit1 + "4:component:area", cql);
-        form.setValue(formEdit1 + "5:component:check", "false");
+        form.setValue(formEdit1 + "5:component:description", "attribute described");
+        form.setValue(formEdit1 + "6:component:check", "false");
 
         // save
         form.submit("apply");
@@ -939,6 +942,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals(6, attributes.size());
         AttributeTypeInfo att = attributes.get(0);
         assertEquals("abstract", att.getName());
+        assertEquals(
+                "attribute described", att.getDescription().toString(GeoServerDefaultLocale.get()));
         assertEquals(cql, att.getSource());
     }
 }

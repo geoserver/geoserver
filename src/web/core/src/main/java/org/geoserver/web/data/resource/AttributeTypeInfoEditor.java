@@ -28,6 +28,7 @@ import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -53,6 +54,8 @@ class AttributeTypeInfoEditor extends Panel {
             new GeoServerDataProvider.BeanProperty<>("binding");
     private static final Property<AttributeTypeInfo> SOURCE =
             new GeoServerDataProvider.BeanProperty<>("source");
+    private static final Property<AttributeTypeInfo> DESCRIPTION =
+            new GeoServerDataProvider.BeanProperty<>("description");
     private static final Property<AttributeTypeInfo> NILLABLE =
             new GeoServerDataProvider.BeanProperty<>("nillable");
     private static final GeoServerDataProvider.PropertyPlaceholder<AttributeTypeInfo> REMOVE =
@@ -65,7 +68,8 @@ class AttributeTypeInfoEditor extends Panel {
                     new LoadableDetachableModel<List<Property<AttributeTypeInfo>>>() {
                         @Override
                         protected List<Property<AttributeTypeInfo>> load() {
-                            return Arrays.asList(NAME, BINDING, SOURCE, NILLABLE, REMOVE);
+                            return Arrays.asList(
+                                    NAME, BINDING, SOURCE, DESCRIPTION, NILLABLE, REMOVE);
                         }
                     };
     private final ReorderableTablePanel<AttributeTypeInfo> table;
@@ -174,6 +178,19 @@ class AttributeTypeInfoEditor extends Panel {
             } else if (property == SOURCE) {
                 Fragment f = new Fragment(id, "area", getParent());
                 TextArea<String> source = new TextArea<>("area", model);
+                source.add(new UpdateModelBehavior());
+                f.add(source);
+                return f;
+            } else if (property == DESCRIPTION) {
+                Fragment f = new Fragment(id, "description", getParent());
+                TextArea<String> source =
+                        new TextArea<>("description", model) {
+                            @SuppressWarnings("unchecked")
+                            @Override
+                            public <C> IConverter<C> getConverter(Class<C> type) {
+                                return (IConverter<C>) new InternationalStringConverter();
+                            }
+                        };
                 source.add(new UpdateModelBehavior());
                 f.add(source);
                 return f;

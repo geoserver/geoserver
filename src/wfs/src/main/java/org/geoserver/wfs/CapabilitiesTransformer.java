@@ -900,7 +900,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * </pre>
              */
             protected void handleFilterCapabilities() {
-                String ogc = "ogc:";
+                nsSupport.declarePrefix(OGC_PREFIX, OGC_URI);
+
+                String ogc = OGC_PREFIX + ':';
 
                 // REVISIT: for now I"m just prepending ogc onto the name element.
                 // Is the proper way to only do that for the qname?  I guess it

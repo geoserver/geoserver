@@ -1257,6 +1257,9 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPostToWorkspaceSLDPackage() throws Exception {
+        File tempDir = new File(System.getProperty("java.io.tmpdir"));
+        int initialSize = tempDir.listFiles().length;
+
         Catalog cat = getCatalog();
         assertNull(cat.getStyleByName("gs", "foo"));
 
@@ -1286,6 +1289,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
         assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/gear.png"));
         assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/foo.sld"));
+        assertEquals(initialSize, tempDir.listFiles().length);
     }
 
     @Test

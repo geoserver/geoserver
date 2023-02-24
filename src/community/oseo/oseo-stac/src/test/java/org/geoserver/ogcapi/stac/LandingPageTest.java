@@ -116,7 +116,7 @@ public class LandingPageTest extends STACTestSupport {
         // check API links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*ogc\\/stac\\/api.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/stac\\/openapi.*/)].rel",
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DOC);

@@ -4,8 +4,9 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -43,12 +44,7 @@ public abstract class AbstractItemsHTMLMessageConverter<T extends AbstractItemsR
         addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
 
         try (OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody())) {
-            try {
-                header.process(model, osw);
-            } catch (TemplateException e) {
-                String msg = "Error occurred processing header template.";
-                throw new IOException(msg, e);
-            }
+            templateSupport.processTemplate(header, model, osw, UTF_8);
 
             // process content template for all feature collections found
             model.put("featureInfo", value.getItems().getSchema());
@@ -57,25 +53,12 @@ public abstract class AbstractItemsHTMLMessageConverter<T extends AbstractItemsR
             model.put("next", value.getNext());
 
             if (!value.getItems().isEmpty()) {
-                try {
-                    content.process(model, osw);
-                } catch (TemplateException e) {
-                    throw new IOException("Error occurred processing content template", e);
-                }
+                templateSupport.processTemplate(content, model, osw, UTF_8);
             } else {
-                try {
-                    empty.process(model, osw);
-                } catch (TemplateException e) {
-                    throw new IOException("Error occurred processing empty template", e);
-                }
+                templateSupport.processTemplate(empty, model, osw, UTF_8);
             }
 
-            try {
-                footer.process(model, osw);
-            } catch (TemplateException e) {
-                String msg = "Error occurred processing footer template.";
-                throw new IOException(msg, e);
-            }
+            templateSupport.processTemplate(footer, model, osw, UTF_8);
             osw.flush();
         } finally {
             purgeIterators();

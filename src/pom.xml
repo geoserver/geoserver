@@ -2276,7 +2276,7 @@
 
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.7</version>
+            <version>3.1.0</version>
             <executions>
               <execution>
                 <id>read-manifest</id>

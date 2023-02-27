@@ -41,7 +41,7 @@
             <id>version</id>
             <phase>process-resources</phase>
             <configuration>
-              <tasks>
+              <target>
                  <copy file="../en/release/VERSION.txt" todir="target" filtering="true">
                   <filterset begintoken="$${" endtoken="}">
                     <filter token="project.version" value="${project.version}"/>
@@ -51,7 +51,7 @@
                     <filter token="build.hudsonId" value="${build.hudsonId}"/>
                   </filterset>
                  </copy>
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
@@ -61,12 +61,12 @@
             <id>sphinx</id>
             <phase>compile</phase>
             <configuration>
-              <tasks>
+              <target>
                 <ant antfile="build.xml" dir="${basedir}" target="${target}">
                   <property name="build.directory" value="${project.build.directory}"/>
                   <property name="project.version" value="${project.version}"/>
                 </ant>
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>

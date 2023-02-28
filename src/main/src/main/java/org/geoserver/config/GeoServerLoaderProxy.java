@@ -8,11 +8,10 @@ package org.geoserver.config;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextClosedEvent;
 
 /**
  * A proxy for {@link GeoServerLoader} that loads the actual loader instance based on the spring
@@ -25,7 +24,7 @@ import org.springframework.context.event.ContextClosedEvent;
  */
 public class GeoServerLoaderProxy
         implements BeanPostProcessor,
-                ApplicationListener<ContextClosedEvent>,
+                DisposableBean,
                 ApplicationContextAware,
                 GeoServerReinitializer {
 
@@ -70,7 +69,7 @@ public class GeoServerLoaderProxy
     }
 
     @Override
-    public void onApplicationEvent(ContextClosedEvent event) {
+    public void destroy() throws Exception {
         if (loader != null) {
             loader.destroy();
         }

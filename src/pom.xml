@@ -2598,11 +2598,11 @@
     </profile>
     <profile>
       <id>deploygeosolutions</id>
-       <distributionManagement>
+      <distributionManagement>
         <repository>
-         <uniqueVersion>false</uniqueVersion>
-         <id>geosolutions</id>
-         <url>ftp://demo.geo-solutions.it</url>
+          <uniqueVersion>false</uniqueVersion>
+          <id>geosolutions</id>
+          <url>ftp://demo.geo-solutions.it</url>
         </repository>
       </distributionManagement>
     </profile>

@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>gs-security</artifactId>
-    <version>2.21.4</version>
+    <version>C105.2.21.4.01</version>
   </parent>
 
   <groupId>org.geoserver.security</groupId>

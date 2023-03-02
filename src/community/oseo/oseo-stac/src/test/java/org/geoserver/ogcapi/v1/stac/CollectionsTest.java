@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
@@ -179,7 +180,7 @@ public class CollectionsTest extends STACTestSupport {
     public void testDisabledItem() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/DISABLED_COLLECTION", 404);
 
-        assertEquals("InvalidParameterValue", json.read("code"));
+        assertEquals(APIException.NOT_FOUND, json.read("code"));
         assertEquals("Collection not found: DISABLED_COLLECTION", json.read("description"));
     }
 

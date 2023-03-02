@@ -270,7 +270,7 @@ public class STACService {
         Feature collection = DataUtilities.first(collections);
         if (collection == null)
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
+                    APIException.NOT_FOUND,
                     "Collection not found: " + collectionId,
                     HttpStatus.NOT_FOUND);
         return collection;

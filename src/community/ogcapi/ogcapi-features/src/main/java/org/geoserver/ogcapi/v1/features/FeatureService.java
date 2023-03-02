@@ -40,6 +40,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIDispatcher;
+import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
@@ -72,6 +73,7 @@ import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -256,10 +258,10 @@ public class FeatureService {
         // single collection
         FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(collectionId);
         if (featureType == null) {
-            throw new ServiceException(
+            throw new APIException(
+                    APIException.NOT_FOUND,
                     "Unknown collection " + collectionId,
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "collectionId");
+                    HttpStatus.NOT_FOUND);
         }
         return featureType;
     }

@@ -12,8 +12,8 @@ import com.jayway.jsonpath.PathNotFoundException;
 import java.util.Arrays;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ogcapi.APIException;
 import org.geoserver.opensearch.eo.OSEOInfo;
-import org.geoserver.platform.ServiceException;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
@@ -113,7 +113,7 @@ public class QueryablesTest extends STACTestSupport {
     @Test
     public void testCollectionNotExists() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/NOT_THERE/queryables", 404);
-        assertEquals(ServiceException.INVALID_PARAMETER_VALUE, json.read("code"));
+        assertEquals(APIException.NOT_FOUND, json.read("code"));
         assertEquals("Collection not found: NOT_THERE", json.read("description"));
     }
 

@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.v1.stac;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +29,9 @@ public class STACExceptionHandler extends AbstractAPIExceptionHandler {
 
     @Override
     public boolean canHandle(Throwable t, APIRequestInfo request) {
-        return request.getService().getId().equals("STAC");
+        return Optional.ofNullable(request.getService())
+                .map(s -> s.getId().equals("STAC"))
+                .orElse(request.getRequestPath().startsWith("/ogc/stac/"));
     }
 
     @Override

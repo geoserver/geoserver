@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.ServiceException;
+import org.geoserver.ogcapi.APIException;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ public class SortablesTest extends STACTestSupport {
     @Test
     public void testCollectionNotExists() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/NOT_THERE/sortables", 404);
-        assertEquals(ServiceException.INVALID_PARAMETER_VALUE, json.read("code"));
+        assertEquals(APIException.NOT_FOUND, json.read("code"));
         assertEquals("Collection not found: NOT_THERE", json.read("description"));
     }
 

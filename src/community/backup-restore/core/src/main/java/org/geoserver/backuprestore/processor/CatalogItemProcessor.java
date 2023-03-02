@@ -210,7 +210,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return null;
             }
 
-            if (!filterIsValid()) {
+            if (!filterIsValid() && style.getId() != null) {
                 Catalog catalog = getCatalog();
                 result = catalog.validate(style, isNew());
                 if (!result.isValid()) {
@@ -270,7 +270,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return null;
             }
 
-            if (!filterIsValid()) {
+            if (!filterIsValid() && layer.getId() != null) {
                 Catalog catalog = getCatalog();
                 result = catalog.validate(layer, isNew());
                 if (!result.isValid()) {
@@ -400,10 +400,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            result = this.getCatalog().validate(resource, isNew);
-            if (!result.isValid()) {
-                LOGGER.log(Level.SEVERE, "Workspace is not valid: {0}", resource);
-                logValidationResult(result, resource);
+            if (resource.getId() != null) {
+                result = this.getCatalog().validate(resource, isNew);
+                if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Workspace is not valid: {0}", resource);
+                    logValidationResult(result, resource);
+                }
             }
         } catch (Exception e) {
             LOGGER.warning(
@@ -437,10 +439,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            result = this.getCatalog().validate(resource, isNew);
-            if (!result.isValid()) {
-                LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
-                logValidationResult(result, resource);
+            if (resource.getId() != null) {
+                result = this.getCatalog().validate(resource, isNew);
+                if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
+                    logValidationResult(result, resource);
+                }
             }
         } catch (Exception e) {
             LOGGER.warning(
@@ -466,10 +470,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            result = this.getCatalog().validate(resource, isNew);
-            if (!result.isValid()) {
-                LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
-                logValidationResult(result, resource);
+            if (resource.getId() != null) {
+                result = this.getCatalog().validate(resource, isNew);
+                if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
+                    logValidationResult(result, resource);
+                }
             }
         } catch (Exception e) {
             LOGGER.warning(

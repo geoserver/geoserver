@@ -10,10 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -22,6 +20,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ItemWriter;
@@ -76,7 +75,7 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
                     write((LayerGroupInfo) item);
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Exception writting catalog item : " + item, e);
+                LOGGER.log(Level.SEVERE, "Exception writing catalog item : " + item, e);
                 logValidationExceptions((T) null, e);
             }
         }
@@ -87,7 +86,7 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
             getCatalog().add(layerGroupInfo);
             getCatalog().save(getCatalog().getLayerGroup(layerGroupInfo.getId()));
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Exception writting layer group : " + layerGroupInfo, e);
+            LOGGER.log(Level.SEVERE, "Exception writing layer group : " + layerGroupInfo, e);
             if (getCurrentJobExecution() != null) {
                 getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
             }
@@ -106,6 +105,21 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
         if (layerInfo.getName() != null) {
             LayerInfo source = getCatalog().getLayerByName(layerInfo.getName());
             if (source == null) {
+                try {
+                    GeoServerTileLayerInfo tiledLayer =
+                            getTileLayerCatalog().getLayerByName(layerInfo.getName());
+                    if (tiledLayer != null && tiledLayer.getId() != null) {
+                        getTileLayerCatalog().delete(tiledLayer.getId());
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Exception purging Tiled Layer for : " + layerInfo.getName(),
+                            e);
+                    if (getCurrentJobExecution() != null) {
+                        getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+                    }
+                }
                 getCatalog().add(layerInfo);
                 getCatalog().save(getCatalog().getLayer(layerInfo.getId()));
             }
@@ -113,15 +127,9 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(ResourceInfo resourceInfo) {
-        if (getCatalog().getResourceByName(resourceInfo.getName(), FeatureTypeInfo.class) == null
-                && getCatalog().getResourceByName(resourceInfo.getName(), CoverageInfo.class)
-                        == null) {
-            Class<? extends ResourceInfo> clz = null;
-            if (resourceInfo instanceof FeatureTypeInfo) {
-                clz = FeatureTypeInfo.class;
-            } else if (resourceInfo instanceof CoverageInfo) {
-                clz = CoverageInfo.class;
-            }
+        Class clz = resourceInfo.getClass().getInterfaces()[0];
+        ResourceInfo source = getCatalog().getResourceByName(resourceInfo.getName(), clz);
+        if (source == null) {
             getCatalog().add(resourceInfo);
             getCatalog().save(getCatalog().getResource(resourceInfo.getId(), clz));
         }

@@ -51,6 +51,7 @@ import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.gwc.layer.TileLayerCatalog;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.decorators.SecuredCoverageInfo;
@@ -80,6 +81,8 @@ public abstract class BackupRestoreItem<T> {
 
     private Catalog catalog;
 
+    private TileLayerCatalog tileLayerCatalog;
+
     protected XStreamPersister xstream;
 
     private XStream xp;
@@ -101,7 +104,6 @@ public abstract class BackupRestoreItem<T> {
     public BackupRestoreItem(Backup backupFacade) {
         this.backupFacade = backupFacade;
         this.xStreamPersisterFactory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
-        ;
     }
 
     /** @return the xStreamPersisterFactory */
@@ -123,6 +125,12 @@ public abstract class BackupRestoreItem<T> {
     public Catalog getCatalog() {
         authenticate();
         return catalog;
+    }
+
+    /** @return the tileLayerCatalog */
+    public TileLayerCatalog getTileLayerCatalog() {
+        authenticate();
+        return tileLayerCatalog;
     }
 
     /** */
@@ -177,6 +185,7 @@ public abstract class BackupRestoreItem<T> {
         JobExecution jobExecution = stepExecution.getJobExecution();
 
         this.xstream = xStreamPersisterFactory.createXMLPersister();
+        this.tileLayerCatalog = backupFacade.getTileLayerCatalog();
 
         if (backupFacade.getRestoreExecutions() != null
                 && !backupFacade.getRestoreExecutions().isEmpty()

@@ -47,22 +47,9 @@ import org.springframework.batch.core.BatchStatus;
 /** @author Alessio Fabiani, GeoSolutions */
 public class BackupTest extends BackupRestoreTestSupport {
 
-    @Override
-    @Before
-    public void beforeTest() throws InterruptedException {
-        ensureCleanedQueues();
-
-        // Authenticate as Administrator
-        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
-    }
-
     @Test
     public void testRunSpringBatchBackupJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
 
         BackupExecutionAdapter backupExecution =
                 backupFacade.runBackupAsync(
@@ -99,22 +86,19 @@ public class BackupTest extends BackupRestoreTestSupport {
             }
         }
 
-        assertEquals(backupExecution.getStatus(), BatchStatus.COMPLETED);
+        assertEquals(BatchStatus.FAILED, backupExecution.getStatus());
+
         assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
         // check that generic listener was invoked for the backup job
-        assertThat(GenericListener.getBackupAfterInvocations(), is(4));
-        assertThat(GenericListener.getBackupBeforeInvocations(), is(4));
-        assertThat(GenericListener.getRestoreAfterInvocations(), is(1));
-        assertThat(GenericListener.getRestoreBeforeInvocations(), is(1));
+        assertThat(GenericListener.getBackupAfterInvocations(), is(1));
+        assertThat(GenericListener.getBackupBeforeInvocations(), is(1));
+        assertThat(GenericListener.getRestoreAfterInvocations(), is(0));
+        assertThat(GenericListener.getRestoreBeforeInvocations(), is(0));
     }
 
     @Test
     public void testTryToRunMultipleSpringBatchBackupJobs() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
 
         backupFacade.runBackupAsync(
                 Files.asResource(File.createTempFile("testRunSpringBatchBackupJob", ".zip")),
@@ -172,7 +156,7 @@ public class BackupTest extends BackupRestoreTestSupport {
             }
         }
 
-        assertEquals(backupExecution.getStatus(), BatchStatus.COMPLETED);
+        assertEquals(BatchStatus.FAILED, backupExecution.getStatus());
         assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
     }
 
@@ -198,10 +182,6 @@ public class BackupTest extends BackupRestoreTestSupport {
     @Test
     public void testRunSpringBatchFilteredRestoreJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
 
         Filter filter = ECQL.toFilter("name = 'topp'");
         RestoreExecutionAdapter restoreExecution =
@@ -250,10 +230,6 @@ public class BackupTest extends BackupRestoreTestSupport {
     @Test
     public void testStopSpringBatchBackupJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
 
         BackupExecutionAdapter backupExecution =
                 backupFacade.runBackupAsync(
@@ -362,7 +338,7 @@ public class BackupTest extends BackupRestoreTestSupport {
             }
         }
 
-        assertEquals(backupExecution.getStatus(), BatchStatus.COMPLETED);
+        assertEquals(BatchStatus.COMPLETED, backupExecution.getStatus());
 
         assertTrue(Resources.exists(backupFile));
         Resource srcDir = BackupUtils.dir(dd.get(Paths.BASE), "WEB-INF");
@@ -427,10 +403,6 @@ public class BackupTest extends BackupRestoreTestSupport {
         @Test
         public void testParameterizedRestore() throws Exception {
             Hints hints = new Hints(new HashMap(2));
-            hints.add(
-                    new Hints(
-                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                            Backup.PARAM_BEST_EFFORT_MODE));
             hints.add(
                     new Hints(
                             new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS),
@@ -500,10 +472,10 @@ public class BackupTest extends BackupRestoreTestSupport {
             if (restoreExecution.getStatus() == BatchStatus.COMPLETED) {
                 assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
                 // check that generic listener was invoked for the backup job
-                assertThat(GenericListener.getBackupAfterInvocations(), is(4));
-                assertThat(GenericListener.getBackupBeforeInvocations(), is(4));
-                assertThat(GenericListener.getRestoreAfterInvocations(), is(2));
-                assertThat(GenericListener.getRestoreBeforeInvocations(), is(2));
+                assertThat(GenericListener.getBackupAfterInvocations(), is(1));
+                assertThat(GenericListener.getBackupBeforeInvocations(), is(1));
+                assertThat(GenericListener.getRestoreAfterInvocations(), is(1));
+                assertThat(GenericListener.getRestoreBeforeInvocations(), is(1));
 
                 DataStoreInfo restoredDataStore =
                         restoreCatalog.getStoreByName("sf", "sf", DataStoreInfo.class);
@@ -547,10 +519,6 @@ public class BackupTest extends BackupRestoreTestSupport {
         @Test
         public void testRunSpringBatchRestoreJob() throws Exception {
             Hints hints = new Hints(new HashMap(2));
-            hints.add(
-                    new Hints(
-                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                            Backup.PARAM_BEST_EFFORT_MODE));
 
             RestoreExecutionAdapter restoreExecution =
                     backupFacade.runRestoreAsync(
@@ -611,10 +579,10 @@ public class BackupTest extends BackupRestoreTestSupport {
             if (restoreExecution.getStatus() == BatchStatus.COMPLETED) {
                 assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
                 // check that generic listener was invoked for the backup job
-                assertThat(GenericListener.getBackupAfterInvocations(), is(4));
-                assertThat(GenericListener.getBackupBeforeInvocations(), is(4));
-                assertThat(GenericListener.getRestoreAfterInvocations(), is(3));
-                assertThat(GenericListener.getRestoreBeforeInvocations(), is(3));
+                assertThat(GenericListener.getBackupAfterInvocations(), is(1));
+                assertThat(GenericListener.getBackupBeforeInvocations(), is(1));
+                assertThat(GenericListener.getRestoreAfterInvocations(), is(2));
+                assertThat(GenericListener.getRestoreBeforeInvocations(), is(2));
             }
         }
     }

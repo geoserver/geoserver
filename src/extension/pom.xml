@@ -453,7 +453,9 @@
         <module>web-resource</module>
         <module>params-extractor</module>
         <module>gwc-s3</module>
+        <module>wmts-multi-dimensional</module>
         <module>wps-download</module>
+        <module>wps-jdbc</module>
         <module>mapml</module>
         <module>geopkg-output</module>
         <module>metadata</module>

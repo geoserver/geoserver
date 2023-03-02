@@ -89,7 +89,7 @@
 
   <properties>
     <gs.version>C105.2.21.4.01</gs.version>
-    <gt.version>27.4</gt.version>
+    <gt.version>27.4.01</gt.version>
     <gwc.version>1.21.4</gwc.version>
     <jts.version>1.18.2</jts.version>
     <spring.version>5.2.22.RELEASE</spring.version>

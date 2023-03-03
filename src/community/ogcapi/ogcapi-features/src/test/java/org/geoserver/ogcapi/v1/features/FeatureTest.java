@@ -194,6 +194,26 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testBBOXOGCAuthority() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/v1/collections/"
+                                + roadSegments
+                                + "/items?"
+                                + "bbox=35,0,60,3"
+                                + "&bbox-crs=http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return those two features only
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    @Test
     public void testBBoxDatelineCrossingFilter() throws Exception {
         String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =

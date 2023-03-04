@@ -38,8 +38,11 @@ public class FeatureResponseMessageConverter
 
     static final Logger LOGGER = Logging.getLogger(FeatureResponseMessageConverter.class);
     private static final Version V2 = new Version("2.0");
-    /** Name of the header stating the CRS of the response */
-    public static final String CRS_RESPONSE_HEADER = "OGC-CRS";
+    /**
+     * Name of the header stating the CRS of the response see
+     * https://docs.ogc.org/is/18-058/18-058.html#_coordinate_reference_system_information_independent_of_the_feature_encoding
+     */
+    public static final String CRS_RESPONSE_HEADER = "Content-Crs";
 
     List<Response> responses;
 

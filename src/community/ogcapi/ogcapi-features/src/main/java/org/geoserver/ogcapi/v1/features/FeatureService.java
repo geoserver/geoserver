@@ -352,11 +352,7 @@ public class FeatureService {
         query.setTypeNames(Arrays.asList(new QName(ft.getNamespace().getURI(), ft.getName())));
         List<Filter> filters = new ArrayList<>();
         if (bbox != null) {
-            CoordinateReferenceSystem queryCRS = DefaultGeographicCRS.WGS84;
-            if (bboxCRS != null) {
-                queryCRS = CRS.decode(bboxCRS);
-            }
-            filters.add(APIBBoxParser.toFilter(bbox, queryCRS));
+            filters.add(APIBBoxParser.toFilter(bbox, bboxCRS));
         }
         if (datetime != null) {
             filters.add(buildTimeFilter(ft, datetime));
@@ -398,6 +394,10 @@ public class FeatureService {
         // build a response tracking both results and request to allow reusing the existing WFS
         // output formats
         return new FeaturesResponse(request.getAdaptee(), response);
+    }
+
+    private static CoordinateReferenceSystem parseCRS(String bboxCRS) throws FactoryException {
+        return CRS.decode(bboxCRS);
     }
 
     /** TODO: use DimensionInfo instead? It's used to return the time range in the collection */

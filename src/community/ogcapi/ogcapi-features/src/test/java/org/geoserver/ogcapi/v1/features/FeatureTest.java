@@ -25,6 +25,7 @@ import java.util.Map;
 import net.minidev.json.JSONArray;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.ogcapi.APIException;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -211,6 +212,23 @@ public class FeatureTest extends FeaturesTestSupport {
                 1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
         assertEquals(
                 1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    @Test
+    public void testInvalidBBOXCRS() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/v1/collections/"
+                                + roadSegments
+                                + "/items?"
+                                + "bbox=35,0,60,3"
+                                + "&bbox-crs=http://www.opengis.net/def/crs/OGC/1.3/INVALID",
+                        400);
+        assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("code", String.class));
+        assertEquals(
+                "Invalid CRS: http://www.opengis.net/def/crs/OGC/1.3/INVALID",
+                json.read("description"));
     }
 
     @Test

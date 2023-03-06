@@ -19,6 +19,7 @@
 >
 
     <bean id="headerLinksAppender" class="org.geoserver.ogcapi.v1.features.HttpHeaderLinksAppender"/>
+    <bean id="contentCrsAppender" class="org.geoserver.ogcapi.v1.features.HttpHeaderContentCrsAppender"/>
 
     <!-- <mvc:annotation-driven/> -->
     <context:component-scan base-package="org.geoserver.ogcapi.v1.features"/>

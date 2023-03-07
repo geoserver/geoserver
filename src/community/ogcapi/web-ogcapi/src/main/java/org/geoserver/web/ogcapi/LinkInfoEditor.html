@@ -1,0 +1,20 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <wicket:fragment wicket:id="text">
+        <input type="text" wicket:id="text" class="w-7-em"></input>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="area">
+        <textarea wicket:id="area" class="cql"></textarea>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="service">
+        <select wicket:id="service" class="w-7-em"></select>
+    </wicket:fragment>
+    <ul class="action-group">
+        <li><a class="add-link" wicket:id="addLink"><wicket:message key="addLink">Add</wicket:message></a></li>
+    </ul>
+    <div wicket:id="table"></div>
+</wicket:panel>
+</body>
+</html>

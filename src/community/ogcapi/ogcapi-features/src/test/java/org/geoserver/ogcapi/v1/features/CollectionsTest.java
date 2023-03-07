@@ -15,11 +15,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minidev.json.JSONArray;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -28,6 +31,8 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIDispatcher;
+import org.geoserver.ogcapi.LinkInfo;
+import org.geoserver.ogcapi.impl.LinkInfoImpl;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.Matchers;
@@ -276,5 +281,32 @@ public class CollectionsTest extends FeaturesTestSupport {
             wfs.getSRS().clear();
             gs.save(wfs);
         }
+    }
+
+    @Test
+    public void testCustomLinks() throws Exception {
+        GeoServerInfo gsi = getGeoServer().getGlobal();
+        LinkInfoImpl link1 =
+                new LinkInfoImpl(
+                        "enclosure",
+                        "application/geopackage+sqlite3",
+                        "http://example.com/fullDataset.gpkg");
+        LinkInfoImpl link2 = new LinkInfoImpl("license", "text/html", "http://example.com/license");
+        link2.setService("Coverages");
+        ArrayList<LinkInfo> links =
+                Stream.of(link1, link2).collect(Collectors.toCollection(ArrayList::new));
+        gsi.getSettings().getMetadata().put(LinkInfo.LINKS_METADATA_KEY, links);
+        getGeoServer().save(gsi);
+
+        DocumentContext json = getAsJSONPath("cite/ogc/features/v1/collections/", 200);
+
+        // check first link
+        DocumentContext l1c = readSingleContext(json, "$.links[?(@.rel=='enclosure')]");
+        assertEquals(link1.getHref(), l1c.read("href"));
+        assertEquals(link1.getType(), l1c.read("type"));
+
+        // second link should not be there, service does not match
+        List l2List = json.read("$.links[?(@.rel=='rasterized')]", List.class);
+        assertTrue(l2List.isEmpty());
     }
 }

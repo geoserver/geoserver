@@ -13,6 +13,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
+import org.geoserver.ogcapi.LinkInfoConverter;
 import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -31,6 +32,7 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
 
     public CollectionDocument(GeoServer geoServer, PublishedInfo published) {
         super(published);
+        LinkInfoConverter.addLinksToDocument(this, published, MapsService.class);
         // basic info
         String collectionId = published.prefixedName();
         this.id = collectionId;

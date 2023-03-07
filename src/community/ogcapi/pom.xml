@@ -28,6 +28,7 @@
     <module>ogcapi-tiled-features</module>
     <module>dggs</module>
     <module>ogcapi-coverages</module>
+    <module>web-ogcapi</module>
   </modules>
 
   <dependencies>

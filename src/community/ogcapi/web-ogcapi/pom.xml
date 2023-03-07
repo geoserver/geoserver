@@ -7,36 +7,20 @@
     <version>2.24-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-ogcapi-changeset</artifactId>
+  <artifactId>gs-web-ogcapi</artifactId>
+  <packaging>jar</packaging>
+  <name>OGC API core web module</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-ogcapi-tiles</artifactId>
+      <artifactId>gs-ogcapi-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-ogcapi-images</artifactId>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-gwc</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-ows</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools.jdbc</groupId>
-      <artifactId>gt-jdbc-h2</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -46,18 +30,18 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-ogcapi-core</artifactId>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-ogcapi-features</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

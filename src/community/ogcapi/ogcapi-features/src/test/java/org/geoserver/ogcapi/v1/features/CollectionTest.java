@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
+import static org.geoserver.data.test.MockData.ROAD_SEGMENTS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -12,18 +13,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIDispatcher;
+import org.geoserver.ogcapi.LinkInfo;
 import org.geoserver.ogcapi.Queryables;
+import org.geoserver.ogcapi.impl.LinkInfoImpl;
 import org.geoserver.platform.GeoServerExtensions;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -43,9 +51,14 @@ public class CollectionTest extends FeaturesTestSupport {
         getCatalog().save(basicPolygons);
     }
 
+    @Before
+    public void cleanupRoads() throws IOException {
+        revertLayer(ROAD_SEGMENTS);
+    }
+
     @Test
     public void testCollectionJson() throws Exception {
-        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
+        String roadSegments = getLayerId(ROAD_SEGMENTS);
         DocumentContext json = getAsJSONPath("ogc/features/v1/collections/" + roadSegments, 200);
 
         assertEquals("cite:RoadSegments", json.read("$.id", String.class));
@@ -81,7 +94,8 @@ public class CollectionTest extends FeaturesTestSupport {
                                 + Queryables.REL
                                 + "' && @.type=='application/schema+json')].href"),
                 equalTo(
-                        "http://localhost:8080/geoserver/ogc/features/v1/collections/cite:RoadSegments/queryables?f=application%2Fschema%2Bjson"));
+                        "http://localhost:8080/geoserver/ogc/features/v1/collections/cite"
+                                + ":RoadSegments/queryables?f=application%2Fschema%2Bjson"));
 
         // check the CRS list, this feature type shares the top level list
         List<String> crs = json.read("crs");
@@ -132,7 +146,7 @@ public class CollectionTest extends FeaturesTestSupport {
 
     @Test
     public void testCollectionVirtualWorkspace() throws Exception {
-        String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
+        String roadSegments = ROAD_SEGMENTS.getLocalPart();
         DocumentContext json =
                 getAsJSONPath("cite/ogc/features/v1/collections/" + roadSegments, 200);
 
@@ -162,14 +176,16 @@ public class CollectionTest extends FeaturesTestSupport {
         Document dom =
                 getAsDOM(
                         "ogc/features/v1/collections/"
-                                + getLayerId(MockData.ROAD_SEGMENTS)
+                                + getLayerId(ROAD_SEGMENTS)
                                 + "?f=application/xml");
         print(dom);
         String expected =
-                "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ARoadSegments/items?f=application%2Fjson";
+                "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ARoadSegments"
+                        + "/items?f=application%2Fjson";
         XMLAssert.assertXpathEvaluatesTo(
                 expected,
-                "//wfs:Collection[wfs:id='cite:RoadSegments']/atom:link[@atom:type='application/json']/@atom:href",
+                "//wfs:Collection[wfs:id='cite:RoadSegments']/atom:link[@atom:type='application"
+                        + "/json']/@atom:href",
                 dom);
     }
 
@@ -177,14 +193,14 @@ public class CollectionTest extends FeaturesTestSupport {
     public void testCollectionYaml() throws Exception {
         getAsString(
                 "ogc/features/v1/collections/"
-                        + getLayerId(MockData.ROAD_SEGMENTS)
+                        + getLayerId(ROAD_SEGMENTS)
                         + "?f=application/x-yaml");
         // System.out.println(yaml);
     }
 
     @Test
     public void testQueryables() throws Exception {
-        String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
+        String roadSegments = ROAD_SEGMENTS.getLocalPart();
         DocumentContext json =
                 getAsJSONPath(
                         "cite/ogc/features/v1/collections/" + roadSegments + "/queryables", 200);
@@ -197,10 +213,39 @@ public class CollectionTest extends FeaturesTestSupport {
 
     @Test
     public void testQueryablesHTML() throws Exception {
-        String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
+        String roadSegments = ROAD_SEGMENTS.getLocalPart();
         org.jsoup.nodes.Document document =
                 getAsJSoup(
                         "cite/ogc/features/v1/collections/" + roadSegments + "/queryables?f=html");
         assertEquals("the_geom: MultiLineString", document.select("#queryables li:eq(0)").text());
+    }
+
+    @Test
+    public void testCustomLinks() throws Exception {
+        FeatureTypeInfo roads = getCatalog().getFeatureTypeByName(getLayerId(ROAD_SEGMENTS));
+        LinkInfoImpl link1 =
+                new LinkInfoImpl(
+                        "enclosure",
+                        "application/geopackage+sqlite3",
+                        "http://example.com/roads.gpkg");
+        LinkInfoImpl link2 =
+                new LinkInfoImpl("rasterized", "image/tiff", "http://example.com/roads.tif");
+        link2.setService("Coverages");
+        ArrayList<LinkInfo> links =
+                Stream.of(link1, link2).collect(Collectors.toCollection(ArrayList::new));
+        roads.getMetadata().put(LinkInfo.LINKS_METADATA_KEY, links);
+        getCatalog().save(roads);
+
+        String rsName = ROAD_SEGMENTS.getLocalPart();
+        DocumentContext json = getAsJSONPath("cite/ogc/features/v1/collections/" + rsName, 200);
+
+        // check first link
+        DocumentContext l1c = readSingleContext(json, "$.links[?(@.rel=='enclosure')]");
+        assertEquals(link1.getHref(), l1c.read("href"));
+        assertEquals(link1.getType(), l1c.read("type"));
+
+        // second link should not be there, service does not match
+        List l2List = json.read("$.links[?(@.rel=='rasterized')]", List.class);
+        assertTrue(l2List.isEmpty());
     }
 }

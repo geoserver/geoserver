@@ -363,7 +363,7 @@ public class APIDispatcher extends AbstractController {
      * @return The first {@link APIService} found walking up the inheritance hierarchy, or null if
      *     not found
      */
-    static APIService getApiServiceAnnotation(Class<?> clazz) {
+    public static APIService getApiServiceAnnotation(Class<?> clazz) {
         APIService annotation = null;
         while (annotation == null && clazz != null) {
             annotation = (APIService) clazz.getAnnotation(APIService.class);

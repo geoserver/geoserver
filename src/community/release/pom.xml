@@ -323,6 +323,11 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-web-ogcapi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-web-dggs</artifactId>
       <version>${project.version}</version>
     </dependency>

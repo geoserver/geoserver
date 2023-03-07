@@ -73,8 +73,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                         ? ((GeoServerTileLayer) tileLayer).getContextualName()
                         : tileLayer.getName();
         if (tileLayer instanceof GeoServerTileLayer) {
-            PublishedInfo published =
-                    (PublishedInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo();
+            PublishedInfo published = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
             setTitle(published.getTitle());
             setDescription(published.getAbstract());
             this.extent = getExtentsFromPublished(published);

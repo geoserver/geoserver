@@ -197,6 +197,9 @@ Utility Classes
 }
 
 /* widths */
+.w-7-em {
+  width: 7em !important;
+}
 .w-10-em {
   width: 10em !important;
 }

@@ -63,6 +63,8 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFilter
         implements AuthenticationCachingFilter, GeoServerAuthenticationFilter, LogoutHandler {
 
+    private static final String ID_TOKEN_HINT = "id_token_hint";
+
     private static final Logger LOG = Logging.getLogger(GeoServerKeycloakFilter.class);
 
     // used to map keycloak roles to spring-security roles
@@ -92,6 +94,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
         GeoServerKeycloakFilterConfig keycloakConfig = (GeoServerKeycloakFilterConfig) config;
         KeycloakDeployment deployment =
                 KeycloakDeploymentBuilder.build(keycloakConfig.readAdapterConfig());
+        deployment.setScope("openid");
         this.keycloakContext = new AdapterDeploymentContext(deployment);
         this.enableRedirectEntryPoint = keycloakConfig.isEnableRedirectEntryPoint();
     }
@@ -117,6 +120,12 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
                 deployment
                         .getLogoutUrl()
                         .queryParam(OAuth2Constants.REDIRECT_URI, refererNoParams)
+                        .queryParam(
+                                ID_TOKEN_HINT,
+                                ((org.keycloak.adapters.OidcKeycloakAccount)
+                                                authentication.getDetails())
+                                        .getKeycloakSecurityContext()
+                                        .getIdTokenString())
                         .build()
                         .toString());
     }

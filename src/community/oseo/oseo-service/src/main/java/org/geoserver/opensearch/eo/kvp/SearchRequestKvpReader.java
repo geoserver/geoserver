@@ -198,7 +198,9 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         List<Filter> filters = new ArrayList<>();
         for (Parameter<?> parameter : parameters) {
             Object value = rawKvp.get(parameter.key);
-            if (!StringUtils.isEmpty(value) && !NOT_FILTERS.contains(parameter.key)) {
+            if (value != null
+                    && StringUtils.hasText(value.toString())
+                    && !NOT_FILTERS.contains(parameter.key)) {
                 Filter filter = null;
                 if (SEARCH_TERMS.key.equals(parameter.key)) {
                     filter = buildSearchTermsFilter(value);

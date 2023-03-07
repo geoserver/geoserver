@@ -32,6 +32,7 @@ import org.geoserver.jdbcconfig.internal.JDBCConfigProperties;
 import org.geoserver.jdbcconfig.internal.JDBCConfigXStreamPersisterInitializer;
 import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
+import org.geoserver.jdbcloader.JDBCLoaderProperties;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -418,7 +419,9 @@ public class JDBCConfigTestSupport {
         @Bean
         public ConfigDatabase configDatabase() {
             return new ConfigDatabase(
-                    dataSource(), new XStreamInfoSerialBinding(new XStreamPersisterFactory()));
+                    new JDBCLoaderProperties(null),
+                    dataSource(),
+                    new XStreamInfoSerialBinding(new XStreamPersisterFactory()));
         }
 
         @Bean

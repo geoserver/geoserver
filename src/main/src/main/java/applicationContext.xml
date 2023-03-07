@@ -237,6 +237,11 @@
     <bean id="loggingFilter" class="org.geoserver.filters.LoggingFilter">
         <constructor-arg ref="geoServer"/>
     </bean>
+
+    <!-- This filter restricts the HTTP methods that can be used to access GeoServer
+        to: GET, POST, PUT, DELETE, HEAD, PATCH, OPTIONS -->
+    <bean id="methodFilter" class="org.geoserver.filters.HTTPMethodFilter" />
+
   
   <!-- the proxyfing URL mangler, along with machinery to support headers expansion usage in asynch requests -->
   <bean id="proxyfier" class="org.geoserver.ows.ProxifyingURLMangler">

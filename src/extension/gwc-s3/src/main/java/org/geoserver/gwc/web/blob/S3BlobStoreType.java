@@ -20,7 +20,7 @@ public class S3BlobStoreType implements BlobStoreType<S3BlobStoreInfo> {
     public S3BlobStoreInfo newConfigObject() {
         S3BlobStoreInfo config = new S3BlobStoreInfo();
         config.setEnabled(true);
-        config.setMaxConnections(50);
+        config.setMaxConnections("50");
         return config;
     }
 

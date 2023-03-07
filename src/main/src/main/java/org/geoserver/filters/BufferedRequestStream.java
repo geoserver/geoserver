@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 
 /**
@@ -48,6 +49,28 @@ public class BufferedRequestStream extends ServletInputStream {
         }
 
         return index - off;
+    }
+
+    @Override
+    public boolean isFinished() {
+        try {
+            return available() < 1;
+        } catch (IOException e) {
+            Logger LOGGER =
+                    org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
+            LOGGER.finer("Stream is closed");
+            return true;
+        }
+    }
+
+    @Override
+    public boolean isReady() {
+        return true;
+    }
+
+    @Override
+    public void setReadListener(ReadListener readListener) {
+        throw new UnsupportedOperationException("Not supported with BufferedInputStream");
     }
 
     @Override

@@ -33,10 +33,10 @@ public class BaseSystemInfoCollector implements SystemInfoCollector, Serializabl
     }
 
     /**
-     * Retrieve one or more metric for each element defined in {@link MetricInfo}
+     * Retrieve one or more metric values for a {@link MetricInfo} element.
      *
      * @param info the element to retrieve
-     * @return a list of {@link MetricValue} for each {@link MetricInfo}
+     * @return a list of {@link MetricValue} for the {@link MetricInfo} element.
      */
     List<MetricValue> retrieveSystemInfo(MetricInfo info) {
         MetricValue mv = new MetricValue(info);

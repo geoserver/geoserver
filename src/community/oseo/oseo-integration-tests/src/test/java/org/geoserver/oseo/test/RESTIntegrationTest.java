@@ -7,7 +7,7 @@ package org.geoserver.oseo.test;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
-import org.geoserver.ogcapi.stac.STACQueryablesBuilder;
+import org.geoserver.ogcapi.v1.stac.STACQueryablesBuilder;
 import org.geoserver.opensearch.rest.OSEORestTestSupport;
 import org.junit.Test;
 
@@ -19,9 +19,9 @@ public class RESTIntegrationTest extends OSEORestTestSupport {
         // the sample feature code used fail here, the collection is empty, no products yet
         createTest123Collection();
 
-        DocumentContext json = getAsJSONPath("ogc/stac/collections/TEST123/queryables", 200);
+        DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/TEST123/queryables", 200);
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/stac/collections/TEST123/queryables",
+                "http://localhost:8080/geoserver/ogc/stac/v1/collections/TEST123/queryables",
                 json.read("$.$id"));
 
         // only has the basic built-ins

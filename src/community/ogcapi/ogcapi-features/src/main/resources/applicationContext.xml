@@ -18,16 +18,17 @@
 	     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 >
 
-    <bean id="headerLinksAppender" class="org.geoserver.ogcapi.features.HttpHeaderLinksAppender"/>
+    <bean id="headerLinksAppender" class="org.geoserver.ogcapi.v1.features.HttpHeaderLinksAppender"/>
+    <bean id="contentCrsAppender" class="org.geoserver.ogcapi.v1.features.HttpHeaderContentCrsAppender"/>
 
     <!-- <mvc:annotation-driven/> -->
-    <context:component-scan base-package="org.geoserver.ogcapi.features"/>
+    <context:component-scan base-package="org.geoserver.ogcapi.v1.features"/>
 
 
     <!-- Bridges to have OGC services show up as OWS services too -->
     <bean id="featuresServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">
         <constructor-arg index="0" value="Features"/>
-        <constructor-arg index="1" value="1.0"/>
+        <constructor-arg index="1" value="1.0.1"/>
     </bean>
 
 </beans>

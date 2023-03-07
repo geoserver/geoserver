@@ -31,6 +31,8 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.cluster.impl.utils.BeanUtils;
 import org.geoserver.cluster.server.events.StyleModifyEvent;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Resource;
 
 /**
  * Handle modify events synchronizing catalog with serialized objects
@@ -156,7 +158,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
         } else if (info instanceof NamespaceInfo) {
 
             final String uri;
-            final Object uriObj = getOldValue(catalog, modifyEv, "uRI");
+            final Object uriObj = getOldValue(modifyEv, "uRI");
             if (uriObj != null) {
                 uri = uriObj.toString();
             } else {
@@ -183,7 +185,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             }
             // check if workspace is changed
             final WorkspaceInfo workspace;
-            final Object objWorkpsace = getOldValue(catalog, modifyEv, "workspace");
+            final Object objWorkpsace = getOldValue(modifyEv, "workspace");
             if (objWorkpsace != null) {
                 workspace = (WorkspaceInfo) objWorkpsace;
             } else {
@@ -221,7 +223,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             }
             // check if namespace is changed
             final NamespaceInfo namespace;
-            final Object objWorkpsace = getOldValue(catalog, modifyEv, "namespace");
+            final Object objWorkpsace = getOldValue(modifyEv, "namespace");
             if (objWorkpsace != null) {
                 namespace = (NamespaceInfo) objWorkpsace;
             } else {
@@ -269,13 +271,17 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             BeanUtils.smartUpdate(
                     localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
 
-            // let's if the style file was provided
+            // let's see if the style file was provided
+            Resource oldStyleFile = null;
+            GeoServerDataDirectory dd = new GeoServerDataDirectory(catalog.getResourceLoader());
             if (modifyEv instanceof StyleModifyEvent) {
                 StyleModifyEvent styleModifyEvent = (StyleModifyEvent) modifyEv;
                 byte[] fileContent = styleModifyEvent.getFile();
+                StyleInfo oldStyle = catalog.getStyleByName(name);
+                oldStyleFile = dd.style(oldStyle);
+                dd.style(oldStyle);
                 if (fileContent != null && fileContent.length != 0) {
                     // update the style file using the old style
-                    StyleInfo oldStyle = catalog.getStyleByName(name);
                     try {
                         catalog.getResourcePool()
                                 .writeStyle(oldStyle, new ByteArrayInputStream(fileContent));
@@ -290,6 +296,16 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
 
             // update the style in the catalog
             catalog.save(localObject);
+
+            if (modifyEv instanceof StyleModifyEvent) {
+                // handle file moving
+                StyleInfo oldStyle = catalog.getStyleByName(name);
+                String oldFileName = (String) getOldValue(modifyEv, "filename");
+                if (oldFileName != null) {
+                    Resource newStyleFile = dd.style(localObject);
+                    oldStyleFile.renameTo(newStyleFile);
+                }
+            }
 
         } else if (info instanceof WorkspaceInfo) {
 
@@ -358,7 +374,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
      */
     private static String getOldName(final Catalog catalog, final CatalogModifyEvent ev) {
         // try to get the old value for the name
-        final Object name = getOldValue(catalog, ev, "name");
+        final Object name = getOldValue(ev, "name");
         // check return and return a string representation of the name or null
         return name != null ? name.toString() : null;
     }
@@ -366,14 +382,12 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
     /**
      * get the old property for the passed CatalogInfo event
      *
-     * @param catalog the catalog
      * @param ev the modify event
      * @param oldProp the name of the old property to search for
      * @return an Object representing the old value of the passed property or null if name is not
      *     changed or not exists at all
      */
-    private static Object getOldValue(
-            final Catalog catalog, final CatalogModifyEvent ev, final String oldProp) {
+    private static Object getOldValue(final CatalogModifyEvent ev, final String oldProp) {
         final CatalogInfo service = ev.getSource();
         if (service == null) {
             throw new IllegalArgumentException("passed service is null");

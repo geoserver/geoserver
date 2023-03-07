@@ -589,7 +589,7 @@ public class GetCoverageTest extends WCSTestSupport {
                             + "&coverage="
                             + getLayerId(WATTEMP);
             MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
-            assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+            assertEquals("application/vnd.ogc.se_xml;charset=UTF-8", response.getContentType());
             Document dom = dom(response, true);
             // print(dom);
             String text =
@@ -751,7 +751,7 @@ public class GetCoverageTest extends WCSTestSupport {
                             + "&elevation=0.0/1000.0/1.0&coverage="
                             + getLayerId(WATTEMP);
             MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
-            assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+            assertEquals("application/vnd.ogc.se_xml;charset=UTF-8", response.getContentType());
             Document dom = dom(response, true);
             print(dom);
             String text =

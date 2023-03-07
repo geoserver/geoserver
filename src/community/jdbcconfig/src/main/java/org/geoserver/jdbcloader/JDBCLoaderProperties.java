@@ -107,4 +107,12 @@ public class JDBCLoaderProperties extends Properties {
     public void setDatasourceId(String datasourceId) {
         this.datasourceId = datasourceId;
     }
+
+    public boolean isDebugMode() {
+        return Boolean.parseBoolean(getProperty("debugMode", "false"));
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        setProperty("debugMode", String.valueOf(debugMode));
+    }
 }

@@ -240,7 +240,6 @@
       <!-- Builds a valid data directory into the web app -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
         <executions>
           <execution>
             <id>configPackage</id>
@@ -269,9 +268,9 @@
               <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>
+              <target>
                 <delete dir="${webappSourceDirectory}/data"></delete>
-              </tasks>
+              </target>
             </configuration>
           </execution>
         </executions>

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
+<sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld"
+    xmlns:sld="http://www.opengis.net/sld"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:gml="http://www.opengis.net/gml"
+    version="1.0.0">
   <sld:NamedLayer>
-    <sld:Name>countries_mapcolor9</sld:Name>
-    <sld:Title>Countries Mapcolor9</sld:Title>
-    <sld:Abstract>Theme using mapcolor9 for ne:countries layer.</sld:Abstract>
+    <sld:Name>ne:countries</sld:Name>
     <sld:UserStyle>
-      <sld:Name />
+      <sld:Name>countries_mapcolor_9</sld:Name>
+      <sld:Title>Countries Mapcolor9</sld:Title>
+      <sld:Abstract>Theme using mapcolor9 for ne:countries layer.</sld:Abstract>
+
       <sld:FeatureTypeStyle>
         <sld:Rule>
           <sld:Name>Countries</sld:Name>
@@ -13,8 +18,8 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#8DD3C7</sld:CssParameter>
             </sld:Fill>
+            <sld:VendorOption name="inclusion">legendOnly</sld:VendorOption>
           </sld:PolygonSymbolizer>
-          <sld:VendorOption name="inclusion">legendOnly</sld:VendorOption>
         </sld:Rule>
         <sld:Rule>
           <sld:PolygonSymbolizer>
@@ -43,8 +48,8 @@
                 </ogc:Function>
               </sld:CssParameter>
             </sld:Fill>
+            <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
           </sld:PolygonSymbolizer>
-          <sld:VendorOption name="inclusion">mapOnly</sld:VendorOption>
         </sld:Rule>
       </sld:FeatureTypeStyle>
     </sld:UserStyle>

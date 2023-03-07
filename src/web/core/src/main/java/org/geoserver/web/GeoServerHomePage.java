@@ -138,7 +138,6 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
     private void homeInit() {
         GeoServer gs = getGeoServer();
-        initFromPageParameters(getPageParameters());
 
         boolean admin = getSession().isAdmin();
 
@@ -155,7 +154,10 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
         Locale locale = getLocale();
 
-        String welcomeText = contactInfo.getWelcome();
+        InternationalString welcome =
+                InternationalStringUtils.growable(
+                        contactInfo.getInternationalWelcome(), contactInfo.getWelcome());
+        String welcomeText = welcome.toString(locale);
         Label welcomeMessage = new Label("welcome", welcomeText);
         welcomeMessage.setVisible(StringUtils.isNotBlank(welcomeText));
         add(welcomeMessage);
@@ -252,8 +254,12 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         String layerSelection = toLayer(workspaceName, layerName);
 
         PageParameters pageParams = new PageParameters();
-        pageParams.add("workspace", workspaceSelection, 0, INamedParameters.Type.QUERY_STRING);
-        pageParams.add("layer", layerSelection, 1, INamedParameters.Type.QUERY_STRING);
+        if (!Strings.isEmpty(workspaceSelection)) {
+            pageParams.add("workspace", workspaceSelection, 0, INamedParameters.Type.QUERY_STRING);
+        }
+        if (!Strings.isEmpty(layerSelection)) {
+            pageParams.add("layer", layerSelection, 1, INamedParameters.Type.QUERY_STRING);
+        }
         setResponsePage(GeoServerHomePage.class, pageParams);
     }
 

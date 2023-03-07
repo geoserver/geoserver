@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /** @author Niels Charlier */
-public class GeofenceSecurityInterceptor extends HandlerInterceptorAdapter {
+public class GeofenceSecurityInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(

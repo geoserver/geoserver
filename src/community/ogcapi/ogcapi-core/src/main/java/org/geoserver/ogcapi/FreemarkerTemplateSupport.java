@@ -5,12 +5,14 @@
 package org.geoserver.ogcapi;
 
 import freemarker.cache.ClassTemplateLoader;
+import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.geoserver.catalog.ResourceInfo;
@@ -117,6 +119,26 @@ public class FreemarkerTemplateSupport {
     /**
      * Processes a template and returns the result as a string
      *
+     * @param template The template to process
+     * @param model The model to be applied
+     * @param writer The writer receiving the template output
+     * @param charset The charset to use for the output
+     */
+    public void processTemplate(
+            Template template, Map<String, Object> model, Writer writer, Charset charset)
+            throws IOException {
+        try {
+            Environment env = template.createProcessingEnvironment(model, writer, null);
+            env.setOutputEncoding(charset.name());
+            env.process();
+        } catch (TemplateException e) {
+            throw new IOException("Error occured processing template " + template.getName(), e);
+        }
+    }
+
+    /**
+     * Processes a template and returns the result as a string
+     *
      * @param resource The resource reference used to lookup templates in the data dir
      * @param templateName The template name
      * @param referenceClass The reference class for classpath template loading
@@ -128,15 +150,11 @@ public class FreemarkerTemplateSupport {
             String templateName,
             Class<?> referenceClass,
             Map<String, Object> model,
-            Writer writer)
+            Writer writer,
+            Charset charset)
             throws IOException {
         Template template = getTemplate(resource, templateName, referenceClass);
-
-        try {
-            template.process(model, writer);
-        } catch (TemplateException e) {
-            throw new IOException("Error occured processing template " + templateName, e);
-        }
+        processTemplate(template, model, writer, charset);
     }
 
     /**
@@ -151,10 +169,11 @@ public class FreemarkerTemplateSupport {
             ResourceInfo resource,
             String templateName,
             Class<?> referenceClass,
-            Map<String, Object> model)
+            Map<String, Object> model,
+            Charset charset)
             throws IOException {
         StringWriter sw = new StringWriter();
-        processTemplate(resource, templateName, referenceClass, model, sw);
+        processTemplate(resource, templateName, referenceClass, model, sw, charset);
         return sw.toString();
     }
 }

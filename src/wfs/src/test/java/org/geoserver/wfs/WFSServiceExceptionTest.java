@@ -56,7 +56,7 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         JSONType.setJsonpEnabled(false);
 
         // MimeType
-        assertEquals(JSONType.jsonp, response.getContentType());
+        assertEquals(JSONType.jsonp, getBaseMimeType(response.getContentType()));
 
         // Content
         String content = response.getContentAsString();
@@ -71,7 +71,7 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
                 getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.json);
 
         // MimeType
-        assertEquals(JSONType.json, response.getContentType());
+        assertEquals(JSONType.json, getBaseMimeType(response.getContentType()));
 
         // Content
         String content = response.getContentAsString();

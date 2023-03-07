@@ -7,6 +7,7 @@ package org.geoserver.ogcapi;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -51,12 +52,22 @@ public class SimpleHTMLMessageConverter<T> extends AbstractHTMLMessageConverter<
             throws IOException, HttpMessageNotWritableException {
         try {
             HashMap<String, Object> model = setupModel(value);
-            templateSupport.processTemplate(
-                    null,
-                    templateName,
-                    serviceClass,
-                    model,
-                    new OutputStreamWriter(outputMessage.getBody()));
+            Charset defaultCharset = getDefaultCharset();
+            if (outputMessage != null
+                    && outputMessage.getBody() != null
+                    && defaultCharset != null) {
+                templateSupport.processTemplate(
+                        null,
+                        templateName,
+                        serviceClass,
+                        model,
+                        new OutputStreamWriter(outputMessage.getBody(), defaultCharset),
+                        defaultCharset);
+            } else {
+                LOGGER.warning(
+                        "Either the default character set, output message or body was null, so the "
+                                + "template could not be processed.");
+            }
         } finally {
             // the model can be working over feature collections, make sure they are cleaned up
             purgeIterators();

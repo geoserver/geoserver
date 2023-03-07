@@ -6,8 +6,8 @@
 package org.geoserver.filters;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -35,10 +35,10 @@ class FlushSafeResponse extends HttpServletResponseWrapper implements HttpServle
 
     static class FlushSafeServletOutputStream extends ServletOutputStream {
 
-        OutputStream delegate;
+        ServletOutputStream delegate;
         boolean closed = false;
 
-        public FlushSafeServletOutputStream(OutputStream delegate) {
+        public FlushSafeServletOutputStream(ServletOutputStream delegate) {
             this.delegate = delegate;
         }
 
@@ -68,6 +68,16 @@ class FlushSafeResponse extends HttpServletResponseWrapper implements HttpServle
         public void close() throws IOException {
             closed = true;
             delegate.close();
+        }
+
+        @Override
+        public boolean isReady() {
+            return delegate.isReady();
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            delegate.setWriteListener(writeListener);
         }
     }
 }

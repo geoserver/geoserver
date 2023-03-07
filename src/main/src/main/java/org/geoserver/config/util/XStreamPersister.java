@@ -469,6 +469,8 @@ public class XStreamPersister {
         // AttributeTypeInfo
         xs.omitField(impl(AttributeTypeInfo.class), "featureType");
         xs.omitField(impl(AttributeTypeInfo.class), "attribute");
+        xs.registerLocalConverter(
+                impl(AttributeTypeInfo.class), "description", new InternationalStringConverter());
 
         // LayerInfo
         // xs.omitField( LayerInfo.class), "resource");
@@ -595,6 +597,8 @@ public class XStreamPersister {
         xs.allowTypeHierarchy(Info.class);
         xs.allowTypeHierarchy(Multimap.class);
         xs.allowTypeHierarchy(JAIInfo.class);
+        xs.allowTypeHierarchy(JAIEXTInfo.class);
+        xs.allowTypeHierarchy(CoverageAccessInfo.class);
         xs.allowTypes(new Class[] {DynamicProxyMapper.DynamicProxy.class});
         xs.allowTypes(new String[] {"java.util.Collections$SingletonList"});
         xs.allowTypesByWildcard(new String[] {"org.geoserver.catalog.**"});
@@ -794,6 +798,9 @@ public class XStreamPersister {
         }
         if (interfce == ResourceInfo.class) {
             return ResourceInfoImpl.class;
+        }
+        if (interfce == AttributeTypeInfo.class) {
+            return AttributeTypeInfoImpl.class;
         }
 
         if (interfce == LayerGroupStyle.class) return LayerGroupStyleImpl.class;

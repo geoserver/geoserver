@@ -30,4 +30,12 @@
     <module>ogcapi-coverages</module>
   </modules>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
 </project>

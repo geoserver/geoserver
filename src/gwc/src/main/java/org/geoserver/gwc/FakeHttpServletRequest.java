@@ -28,6 +28,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -163,6 +164,11 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
+    public String changeSessionId() {
+        throw new ServletDebugException();
+    }
+
+    @Override
     public HttpSession getSession(boolean arg0) {
         throw new ServletDebugException();
     }
@@ -209,6 +215,12 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass)
+            throws IOException, ServletException {
+        return null;
+    }
+
+    @Override
     public boolean isRequestedSessionIdValid() {
         throw new ServletDebugException();
     }
@@ -236,6 +248,11 @@ class FakeHttpServletRequest implements HttpServletRequest {
     @Override
     public int getContentLength() {
         throw new ServletDebugException();
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        return 0;
     }
 
     @Override

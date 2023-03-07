@@ -92,9 +92,9 @@
     <gt.version>29-SNAPSHOT</gt.version>
     <gwc.version>1.23-SNAPSHOT</gwc.version>
     <jts.version>1.19.0</jts.version>
-    <spring.version>5.2.22.RELEASE</spring.version>
-    <spring.security.version>5.1.13.RELEASE</spring.security.version>
-    <servlet-api.version>3.0.1</servlet-api.version>
+    <spring.version>5.3.25</spring.version>
+    <spring.security.version>5.7.6</spring.security.version>
+    <servlet-api.version>3.1.0</servlet-api.version>
     <jetty.version>9.4.48.v20220622</jetty.version>
     <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
     <poi.version>4.1.1</poi.version>
@@ -826,7 +826,7 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.4</version>
+        <version>1.5</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -906,7 +906,7 @@
       <dependency>
         <groupId>com.jayway.jsonpath</groupId>
         <artifactId>json-path</artifactId>
-        <version>2.4.0</version>
+        <version>2.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -1278,7 +1278,7 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.19</version>
+        <version>1.4.20</version>
         <exclusions>
           <exclusion>
             <artifactId>xpp3</artifactId>
@@ -1515,11 +1515,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
       <scope>test</scope>
@@ -1667,6 +1662,10 @@
     <pluginManagement>
       <plugins>
         <!-- core org.apache.maven.plugins -->
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>3.2.0</version>
@@ -2281,7 +2280,6 @@
 
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.7</version>
             <executions>
               <execution>
                 <id>read-manifest</id>
@@ -2506,7 +2504,7 @@
               <fork>false</fork>
               <compilerArgs>
                 <arg>-XDcompilePolicy=simple</arg>
-                <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
+                <arg>-Xplugin:ErrorProne -XepExcludedPaths:\Q${project.build.directory}\E.* ${errorProneFlags}</arg>
                 <arg>-Xlint:${lint}</arg>
                 <arg>-Werror</arg>
                 <arg>-Xmaxwarns</arg>

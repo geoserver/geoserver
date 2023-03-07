@@ -1,0 +1,17 @@
+<layer>
+  <name>disputed_areas</name>
+  <id>LayerInfoImpl--72884701:185db6cdd61:-7ffe</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--72884701:185db6cdd61:-7ffd</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--72884701:185db6cdd61:-7fff</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2023-01-22 21:43:37.670 UTC</dateCreated>
+  <dateModified>2023-01-22 21:47:54.745 UTC</dateModified>
+</layer>

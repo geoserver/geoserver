@@ -56,7 +56,7 @@ public class FeatureTest extends FeaturesTestSupport {
                 getAsMockHttpServletResponse(
                         "ogc/features/v1/collections/" + roadSegments + "/items", 200);
         assertEquals(
-                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>",
                 response.getHeader(HttpHeaderContentCrsAppender.CRS_RESPONSE_HEADER));
         DocumentContext json = getAsJSONPath(response);
         assertEquals("FeatureCollection", json.read("type", String.class));
@@ -94,7 +94,7 @@ public class FeatureTest extends FeaturesTestSupport {
                                 + "3857",
                         200);
         assertEquals(
-                "http://www.opengis.net/def/crs/EPSG/0/3857",
+                "<http://www.opengis.net/def/crs/EPSG/0/3857>",
                 response.getHeader(HttpHeaderContentCrsAppender.CRS_RESPONSE_HEADER));
         DocumentContext json = getAsJSONPath(response);
         assertEquals("FeatureCollection", json.read("type", String.class));
@@ -652,7 +652,7 @@ public class FeatureTest extends FeaturesTestSupport {
         String url = "ogc/features/v1/collections/" + roadSegments + "/items?f=html";
         MockHttpServletResponse response = getAsMockHttpServletResponse(url, 200);
         assertEquals(
-                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>",
                 response.getHeader(HttpHeaderContentCrsAppender.CRS_RESPONSE_HEADER));
     }
 
@@ -752,7 +752,7 @@ public class FeatureTest extends FeaturesTestSupport {
                                 + "/items/PrimitiveGeoFeature.f002",
                         200);
         assertEquals(
-                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>",
                 response.getHeader(HttpHeaderContentCrsAppender.CRS_RESPONSE_HEADER));
         DocumentContext json = getAsJSONPath(response);
         assertEquals("Feature", json.read("type", String.class));
@@ -789,7 +789,7 @@ public class FeatureTest extends FeaturesTestSupport {
                                 + "?crs=CRS:84",
                         200);
         assertEquals(
-                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>",
                 response.getHeader(HttpHeaderContentCrsAppender.CRS_RESPONSE_HEADER));
         DocumentContext json = getAsJSONPath(response);
         assertEquals("Feature", json.read("type", String.class));

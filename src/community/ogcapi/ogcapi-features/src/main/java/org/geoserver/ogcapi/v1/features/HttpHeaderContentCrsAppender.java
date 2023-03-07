@@ -46,7 +46,7 @@ public class HttpHeaderContentCrsAppender extends AbstractDispatcherCallback {
                 try {
                     String crsURI = FeatureService.getCRSURI(crs);
                     if (crsURI != null) {
-                        httpResponse.addHeader(CRS_RESPONSE_HEADER, crsURI);
+                        httpResponse.addHeader(CRS_RESPONSE_HEADER, "<" + crsURI + ">");
                     }
                 } catch (FactoryException e) {
                     LOGGER.log(

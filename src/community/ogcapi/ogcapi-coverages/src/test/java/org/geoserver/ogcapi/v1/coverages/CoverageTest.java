@@ -103,7 +103,7 @@ public class CoverageTest extends CoveragesTestSupport {
     public void testVersionHeader() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("ogc/coverages/v1/collections/rs:DEM/coverage");
-        assertTrue(headerHasValue(response, "API-Version", "1.0.1"));
+        assertTrue(headerHasValue(response, "API-Version", "1.0.0"));
     }
 
     private void assertBBOXDEM(

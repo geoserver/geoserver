@@ -188,6 +188,6 @@ public class CollectionsTest extends STACTestSupport {
     public void testVersionHeader() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("ogc/stac/v1/collections/SENTINEL2?f=json");
-        assertTrue(headerHasValue(response, "API-Version", "1.0.1"));
+        assertTrue(headerHasValue(response, "API-Version", "1.0.0"));
     }
 }

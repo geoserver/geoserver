@@ -290,7 +290,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/landing-page'
+                $ref: '#/components/parameters/landing-page'
               example:
                 - href: 'https://example.org/catalog/1.0/?f=json'
                   rel: self
@@ -347,7 +347,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/conf-classes'
+                $ref: '#/components/parameters/conf-classes'
               example:
                 - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/core'
                 - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/html'
@@ -1170,7 +1170,7 @@ components:
         id:
           type: string
         link:
-          $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/link'
+          $ref: '#/components/schemas/link'
     style-metadata:
       type: object
       required:
@@ -1324,7 +1324,7 @@ components:
           type: string
           nullable: true
         link:
-          $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/link'
+          $ref: '#/components/schemas/link'
     style-layer:
       type: object
       nullable: true
@@ -1348,6 +1348,138 @@ components:
             - geometry
             - raster
         attributes:
-          $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/queryables'
+          $ref: '#/components/schemas/queryables'
         sampleData:
-          $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/link'
+          $ref: '#/components/schemas/link'
+    landing-page:
+      type: object
+      required:
+        - links
+      properties:
+        title:
+          type: string
+          example: Buildings in Bonn
+        description:
+          type: string
+          example: Access to data about buildings in the city of Bonn via a Web API that conforms to the OGC API Features specification.
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+    link:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          example: http://data.example.com/buildings/123
+        rel:
+          type: string
+          example: alternate
+        type:
+          type: string
+          example: application/geo+json
+        hreflang:
+          type: string
+          example: en
+        title:
+          type: string
+          example: Trierer Strasse 70, 53115 Bonn
+        length:
+          type: integer            
+    conf-classes:
+      type: object
+      required:
+        - conformsTo
+      properties:
+        conformsTo:
+          type: array
+          items:
+            type: string
+    queryables:
+      type: object
+      required:
+        - queryables
+      properties:
+        queryables:
+          description: list of queryable properties
+          type: array
+          items:
+            $ref: "#/components/schemas/queryable"
+    queryable:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        id:
+          description: identifier of the attribute that can be used in CQL filters
+          type: string
+          example: address
+        type:
+          description: the property type
+          type: string
+          enum:
+            - string
+            - uri
+            - number
+            - integer
+            - date
+            - dateTime
+            - boolean
+            - geometry
+    style-set:
+      type: object
+      required:
+        - styles
+      properties:
+        styles:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/style-set-entry'
+          example:
+            - id: night
+              title: Topographic night style
+              links:
+                - href: https://example.com/api/1.0/styles/night?f=mapbox
+                  type: application/vnd.mapbox.style+json
+                  rel: stylesheet
+                - href: https://example.com/api/1.0/styles/night?f=sld10
+                  type: application/vnd.ogc.sld+xml;version=1.0
+                  rel: stylesheet
+                - href: https://example.com/api/1.0/styles/night/metadata?f=json
+                  type: application/json
+                  rel: describedBy
+            - id: topographic
+              title: Regular topographic style
+              links:
+                - href: https://example.com/api/1.0/styles/topographic?f=mapbox
+                  type: application/vnd.mapbox.style+json
+                  rel: stylesheet
+                - href: https://example.com/api/1.0/styles/topographic?f=sld10
+                  type: application/vnd.ogc.sld+xml;version=1.0
+                  rel: stylesheet
+                - href: https://example.com/api/1.0/styles/topographic/metadata?f=json
+                  type: application/json
+                  rel: describedBy
+    style-set-entry:
+      type: object
+      nullable: true
+      required:
+        - id
+        - links
+      properties:
+        id:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        links:
+          type: array
+          nullable: true
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/link'

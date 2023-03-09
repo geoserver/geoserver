@@ -396,10 +396,6 @@ public class FeatureService {
         return new FeaturesResponse(request.getAdaptee(), response);
     }
 
-    private static CoordinateReferenceSystem parseCRS(String bboxCRS) throws FactoryException {
-        return CRS.decode(bboxCRS);
-    }
-
     /** TODO: use DimensionInfo instead? It's used to return the time range in the collection */
     private Filter buildTimeFilter(FeatureTypeInfo ft, String time)
             throws ParseException, IOException {

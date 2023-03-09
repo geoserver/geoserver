@@ -159,6 +159,9 @@ public class ApiTest extends FeaturesTestSupport {
                 servers.get(0).getUrl(),
                 equalTo("http://localhost:8080/geoserver/ogc/features/v1"));
 
+        // info version is spec version
+        assertEquals("1.0.1", api.getInfo().getVersion());
+
         // paths
         Paths paths = api.getPaths();
 

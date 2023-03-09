@@ -117,6 +117,9 @@ public class ApiTest extends CoveragesTestSupport {
                 servers.get(0).getUrl(),
                 equalTo("http://localhost:8080/geoserver/ogc/coverages/v1"));
 
+        // info version is spec version
+        assertEquals("1.0.0", api.getInfo().getVersion());
+
         // paths
         Paths paths = api.getPaths();
 

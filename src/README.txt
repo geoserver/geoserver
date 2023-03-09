@@ -1,6 +1,6 @@
 This README helps you getting started with GeoServer development. It will guide you through the process of checking out the source code, compiling it, and running.
 
-GeoServer Development requires Java 8, Maven, and git. Due to subtle changes in Java class libraries we require development on Java 8 at this time (although the result is tested on Java 11).
+GeoServer Development requires Java 11, Maven, and git.
 
 
 Further readings:
@@ -12,7 +12,7 @@ Linux
 
 1) Install prerequisites
 
-Obtain OpenJDK 8, Maven and git from your Linux distribution.
+Obtain OpenJDK 11, Maven and git from your Linux distribution.
 
 
 macOS
@@ -20,12 +20,12 @@ macOS
 
 1) Install Java Runtime Environment
 
-   Download and install Java 8 runtime environment, as provided by adoptium macOS installers:
-   https://adoptium.net
+   Download and install Java 11 runtime environment, as provided by adoptium macOS installers:
+   https://adoptium.net/temurin/archive/?version=11
 
    Update your shell environment with:
 
-     export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptiumjdk-8.jdk/Contents/Home
+     export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptiumjdk-11.jdk/Contents/Home
   
 The system /usr/bin/java makes use of JAVA_HOME setting above.
 
@@ -40,7 +40,7 @@ Windows
 
 1) Install Java Runtime Environment
 
-   Download and install Java 8 runtime environment, as provided by Adoptium windows installers:
+   Download and install Java 11 runtime environment, as provided by Adoptium windows installers:
    https://adoptium.net
 
    Update Windows *Environment Variables*:

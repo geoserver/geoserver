@@ -30,7 +30,7 @@ public class ImagesAPIBuilder extends OpenAPIBuilder<ImagesServiceInfo> {
     private final GeoServer geoServer;
 
     public ImagesAPIBuilder(GeoServer geoServer) {
-        super(ImagesServiceInfo.class, "openapi.yaml", "Images API", "ogc/images/v1");
+        super(ImagesServiceInfo.class, "openapi.yaml", "Images API", ImagesService.class);
         this.geoServer = geoServer;
     }
 

@@ -23,7 +23,7 @@ public class CoveragesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WCS
                 CoveragesAPIBuilder.class,
                 "openapi.yaml",
                 "Coverages 1.0 server",
-                "ogc/coverages/v1");
+                CoveragesService.class);
     }
 
     /**

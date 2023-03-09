@@ -22,7 +22,11 @@ import org.geoserver.wfs.WFSInfo;
 public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSInfo> {
 
     public FeaturesAPIBuilder() {
-        super(FeaturesAPIBuilder.class, "openapi.yaml", "Features 1.0 server", "ogc/features/v1");
+        super(
+                FeaturesAPIBuilder.class,
+                "openapi.yaml",
+                "Features 1.0 server",
+                FeatureService.class);
     }
 
     /**

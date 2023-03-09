@@ -22,7 +22,7 @@ public class TilesAPIBuilder extends OpenAPIBuilder<TilesServiceInfo> {
     private final GWC gwc;
 
     public TilesAPIBuilder(GWC gwc) {
-        super(TilesServiceInfo.class, "openapi.yaml", "Tiles API", "ogc/tiles/v1");
+        super(TilesServiceInfo.class, "openapi.yaml", "Tiles API", TilesService.class);
         this.gwc = gwc;
     }
 

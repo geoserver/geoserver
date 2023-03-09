@@ -17,7 +17,7 @@ import org.geoserver.ogcapi.OpenAPIBuilder;
 public class StylesAPIBuilder extends OpenAPIBuilder<StylesServiceInfo> {
 
     public StylesAPIBuilder() {
-        super(StylesAPIBuilder.class, "openapi.yaml", "Style API", "ogc/styles/v1");
+        super(StylesAPIBuilder.class, "openapi.yaml", "Style API", StylesService.class);
     }
 
     @Override

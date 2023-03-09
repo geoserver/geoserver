@@ -142,6 +142,6 @@ public class CollectionsTest extends TilesTestSupport {
     public void testVersionHeader() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("ogc/tiles/v1/collections/?f=application/x-yaml");
-        assertTrue(headerHasValue(response, "API-Version", "1.0.1"));
+        assertTrue(headerHasValue(response, "API-Version", "1.0.0"));
     }
 }

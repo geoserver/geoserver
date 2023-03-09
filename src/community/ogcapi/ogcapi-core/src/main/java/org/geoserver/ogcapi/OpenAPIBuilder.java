@@ -20,10 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.geoserver.ManifestLoader;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.URLMangler;
@@ -39,10 +37,10 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
 
     private final String apiSpecification;
     private final String defaultTitle;
-    private final String serviceBase;
+    private final APIService serviceAnnotation;
 
     public OpenAPIBuilder(
-            Class<?> clazz, String location, String defaultTitle, String serviceBase) {
+            Class<?> clazz, String location, String defaultTitle, Class serviceClass) {
         try (InputStream is = clazz.getResourceAsStream(location)) {
             if (is == null) {
                 throw new RuntimeException(
@@ -53,7 +51,7 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
             throw new RuntimeException("Failed to read the api template", e);
         }
         this.defaultTitle = defaultTitle;
-        this.serviceBase = serviceBase;
+        this.serviceAnnotation = APIDispatcher.getApiServiceAnnotation(serviceClass);
     }
 
     /**
@@ -65,7 +63,7 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
      */
     public OpenAPI build(T service) throws IOException {
         GeoServerOpenAPI api = readTemplate();
-        api.setServiceBase(serviceBase);
+        api.setServiceBase(this.serviceAnnotation.landingPage());
         addAPIInfo(service, api);
         addServers(api);
         addBasePathFormats(api);
@@ -91,7 +89,7 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
         String wfsUrl =
                 ResponseUtils.buildURL(
                         APIRequestInfo.get().getBaseURL(),
-                        serviceBase,
+                        this.serviceAnnotation.landingPage(),
                         null,
                         URLMangler.URLType.SERVICE);
         api.servers(Arrays.asList(new Server().description("This server").url(wfsUrl)));
@@ -111,13 +109,12 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
                                         .collect(Collectors.joining(" - ")))
                         .url(contactInfo.getOnlineResource());
         String title = service.getTitle() == null ? defaultTitle : service.getTitle();
-        String version = getGeoServerVersion();
         Info info =
                 new Info()
                         .contact(contact)
                         .title(title)
                         .description(service.getAbstract())
-                        .version(version);
+                        .version(this.serviceAnnotation.version());
         api.info(info);
     }
 
@@ -155,15 +152,5 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-    }
-
-    protected String getGeoServerVersion() {
-        ManifestLoader.AboutModel versions = ManifestLoader.getVersions();
-        TreeSet<ManifestLoader.AboutModel.ManifestModel> manifests = versions.getManifests();
-        return manifests.stream()
-                .filter(m -> m.getName().equalsIgnoreCase("GeoServer"))
-                .map(m -> m.getEntries().get("Version"))
-                .findFirst()
-                .orElse("1.0.0");
     }
 }

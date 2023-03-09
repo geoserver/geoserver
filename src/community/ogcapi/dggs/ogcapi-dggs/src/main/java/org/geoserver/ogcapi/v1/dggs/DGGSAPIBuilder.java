@@ -18,7 +18,7 @@ import org.geoserver.ogcapi.v1.features.FeaturesResponse;
 public class DGGSAPIBuilder extends OpenAPIBuilder<DGGSInfo> {
 
     public DGGSAPIBuilder() {
-        super(DGGSAPIBuilder.class, "openapi.yaml", "DGGS 1.0 server", "ogc/dggs");
+        super(DGGSAPIBuilder.class, "openapi.yaml", "DGGS 1.0 server", DGGSService.class);
     }
 
     @Override

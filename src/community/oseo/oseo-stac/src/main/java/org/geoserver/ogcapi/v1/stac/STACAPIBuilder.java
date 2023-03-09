@@ -37,7 +37,7 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
     private final OpenSearchAccessProvider accessProvider;
 
     public STACAPIBuilder(OpenSearchAccessProvider accessProvider) {
-        super(STACAPIBuilder.class, "openapi.yaml", "STAC server", "ogc/stac/v1");
+        super(STACAPIBuilder.class, "openapi.yaml", "STAC server", STACService.class);
         this.accessProvider = accessProvider;
     }
 

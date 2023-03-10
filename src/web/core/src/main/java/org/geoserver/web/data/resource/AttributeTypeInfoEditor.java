@@ -184,7 +184,7 @@ class AttributeTypeInfoEditor extends Panel {
             } else if (property == DESCRIPTION) {
                 Fragment f = new Fragment(id, "description", getParent());
                 TextArea<String> source =
-                        new TextArea<>("description", model) {
+                        new TextArea<String>("description", model) {
                             @SuppressWarnings("unchecked")
                             @Override
                             public <C> IConverter<C> getConverter(Class<C> type) {

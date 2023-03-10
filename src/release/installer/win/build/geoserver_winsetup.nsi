@@ -187,7 +187,7 @@ Var GSPassHWND
 ; ----------------------------------------------------------------------------
 ; Convert NOTICE.txt markdown into an RTF file using Pandoc
 
-  !system 'pandoc -s -f markdown -t rtf "..\source\licences\NOTICE.txt" -o license.rtf'
+  !system 'pandoc -s -f markdown -t rtf "..\source\license\NOTICE.txt" -o license.rtf'
 
 ; ----------------------------------------------------------------------------
 ; Installer pages

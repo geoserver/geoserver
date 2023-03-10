@@ -121,6 +121,20 @@ public interface GeoServerInfo extends Info {
     Boolean isXmlExternalEntitiesEnabled();
 
     /**
+     * If true URLs are matched by ignoring a trailing slash.
+     *
+     * @param trailingSlashMatch true if trailing slash should be ignored
+     */
+    void setTrailingSlashMatch(Boolean trailingSlashMatch);
+
+    /**
+     * If true URLs are matched by ignoring a trailing slash.
+     *
+     * @return true if trailing slash should be ignored
+     */
+    Boolean isTrailingSlashMatch();
+
+    /**
      * Name of lock provider used for resource access.
      *
      * @return name of spring bean to use as lock provider

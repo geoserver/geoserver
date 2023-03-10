@@ -324,3 +324,11 @@ Display modification timestamps on administration lists
 These check boxes can be used to toggle Date of Modification on Workspaces, Stores, Layers, Layer Groups and Styles administration list pages.
 
 Time of Modification can be seen by hovering the mouse cursor over the dates.
+
+Match URLs with trailing slash
+''''''''''''''''''''''''''''''
+
+This setting determine whether GeoServer matches URLs whether or not the request has a trailing slash. If enabled a request mapped to "/ogc/collections" also matches "/ogc/collections/".  A restart is required for a change to this setting to take effect.
+
+Note that trailing slash matches may be removed entirely in future versions of GeoServer due to introduced ambiguities that can lead to security vulnerabilities.  Discussion of the issue can be found in `this Spring issue <https://github.com/spring-projects/spring-framework/issues/28552>`_.
+

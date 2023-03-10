@@ -62,7 +62,7 @@ public class WMTSSettingsControllerTest extends CatalogRESTTestSupport {
                 "{'wmts': {'id':'wmts','enabled':'false','name':'WMTS', 'title':'New Title'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wmts/settings/",
+                        RestBaseController.ROOT_PATH + "/services/wmts/settings",
                         json,
                         "text/json");
         assertEquals(200, response.getStatus());
@@ -105,7 +105,7 @@ public class WMTSSettingsControllerTest extends CatalogRESTTestSupport {
         assertNotNull(original);
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wmts/settings/",
+                        RestBaseController.ROOT_PATH + "/services/wmts/settings",
                         original.toString(),
                         "text/json");
         assertEquals(200, response.getStatus());

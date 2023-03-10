@@ -249,7 +249,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
                         + "</wmtsLayer>";
         MockHttpServletResponse response =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/",
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers",
                         xml,
                         "text/xml");
 
@@ -288,7 +288,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
                         + "</wmtsLayer>";
         MockHttpServletResponse response =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtslayers/",
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtslayers",
                         xml,
                         "text/xml");
 
@@ -328,7 +328,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
                         + "}";
         MockHttpServletResponse response =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/",
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers",
                         json,
                         "text/json");
 

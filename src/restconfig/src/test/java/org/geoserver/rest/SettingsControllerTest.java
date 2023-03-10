@@ -268,7 +268,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
                         + "}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/settings/", inputJson, "text/json");
+                        RestBaseController.ROOT_PATH + "/settings", inputJson, "text/json");
         assertEquals(200, response.getStatus());
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/settings.json");
         JSONObject jsonObject = (JSONObject) json;
@@ -338,7 +338,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
                         + "</global>";
 
         MockHttpServletResponse response =
-                putAsServletResponse(RestBaseController.ROOT_PATH + "/settings/", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/settings.xml");
         assertEquals("global", dom.getDocumentElement().getLocalName());

@@ -91,7 +91,7 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
                 "{'wfs': {'id' : 'wfs', 'name' : 'WFS', 'workspace': {'name': 'sf'},'enabled': 'true'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings/",
+                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings",
                         input,
                         "text/json");
         assertEquals(200, response.getStatus());
@@ -140,7 +140,7 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
                 "{'wfs': {'id':'wfs','workspace':{'name':'sf'},'enabled':'false','name':'WFS'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings/",
+                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings",
                         json,
                         "text/json");
         assertEquals(200, response.getStatus());

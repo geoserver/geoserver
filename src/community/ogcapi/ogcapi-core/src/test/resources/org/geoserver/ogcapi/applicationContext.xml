@@ -11,11 +11,18 @@
 <beans>
 
     <bean id="configuration" class="org.geoserver.ogcapi.APIConfigurationSupport"/>
-    <bean id="dispatcher" class="org.geoserver.ogcapi.APIDispatcher"/>
     <bean id="hello" class="org.geoserver.ogcapi.HelloController"/>
     <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl"/>
+    <bean id="dispatcher" class="org.geoserver.ogcapi.APIDispatcher">
+        <constructor-arg ref="geoServer"/>
+    </bean>
     <bean id="defaultExceptionHandler" class="org.geoserver.ogcapi.DefaultAPIExceptionHandler">
         <constructor-arg ref="geoServer"/>
     </bean>
+    <bean id="mvcContentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManager"/>
+    <bean id="mvcConversionService" class="org.springframework.format.support.FormattingConversionService"/>
+    <bean id="mvcValidator" class="org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean"/>
+    <bean id="restConfiguration" class="org.geoserver.rest.RestConfiguration"/>
+    <bean id="catalog" class="org.geoserver.catalog.impl.CatalogImpl"/>
 
 </beans>

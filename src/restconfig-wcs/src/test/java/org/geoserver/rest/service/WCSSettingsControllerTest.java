@@ -60,9 +60,7 @@ public class WCSSettingsControllerTest extends CatalogRESTTestSupport {
         String json = "{'wcs': {'id':'wcs','enabled':'false','name':'WCS'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wcs/settings/",
-                        json,
-                        "text/json");
+                        RestBaseController.ROOT_PATH + "/services/wcs/settings", json, "text/json");
         assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wcs/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
@@ -128,9 +126,7 @@ public class WCSSettingsControllerTest extends CatalogRESTTestSupport {
                         + " 'internationalTitle': {'en':'english WCS title','it': 'titolo italiano WCS'}}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wcs/settings/",
-                        json,
-                        "text/json");
+                        RestBaseController.ROOT_PATH + "/services/wcs/settings", json, "text/json");
         assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wcs/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;

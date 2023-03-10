@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.geoserver.config.GeoServer;
 import org.geoserver.gsr.api.ServiceException;
 import org.geoserver.gsr.model.exception.ServiceError;
 import org.geoserver.kml.KMZMapOutputFormat;
@@ -41,7 +42,8 @@ import org.springframework.web.context.request.NativeWebRequest;
  */
 public class GSRDispatcher extends APIDispatcher {
 
-    public GSRDispatcher() {
+    public GSRDispatcher(GeoServer geoServer) {
+        super(geoServer);
         this.contentNegotiationManager = new GSRContentNegotiationManager();
     }
 

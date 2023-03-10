@@ -139,7 +139,7 @@ public class CoverageControllerWCSTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages/",
+                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages",
                         xml,
                         "text/xml");
 
@@ -215,7 +215,7 @@ public class CoverageControllerWCSTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages/",
+                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages",
                         content,
                         "application/json");
         assertEquals(201, response.getStatus());
@@ -294,7 +294,7 @@ public class CoverageControllerWCSTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages/",
+                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages",
                         xml,
                         "text/xml");
 
@@ -342,7 +342,7 @@ public class CoverageControllerWCSTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages/",
+                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages",
                         xml,
                         "text/xml");
 
@@ -391,7 +391,7 @@ public class CoverageControllerWCSTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages/",
+                                + "/workspaces/gs/coveragestores/usaWorldImage/coverages",
                         xml,
                         "text/xml");
 

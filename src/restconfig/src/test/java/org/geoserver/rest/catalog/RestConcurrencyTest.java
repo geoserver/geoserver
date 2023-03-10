@@ -146,7 +146,7 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
                                 + workspace
                                 + "/datastores/"
                                 + store
-                                + "/featuretypes/";
+                                + "/featuretypes";
                 String xml =
                         "<featureType>"
                                 + "<name>"
@@ -175,7 +175,7 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
                 assertEquals(201, response.getStatus());
                 assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
                 assertNotNull(response.getHeader("Location"));
-                assertTrue(response.getHeader("Location").endsWith(base + typeName));
+                assertTrue(response.getHeader("Location").endsWith(base + "/" + typeName));
 
                 // check it's there
                 LOGGER.info(threadId + "Checking " + typeName);

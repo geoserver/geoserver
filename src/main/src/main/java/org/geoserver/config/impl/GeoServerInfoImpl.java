@@ -21,6 +21,8 @@ import org.geoserver.filters.LoggingFilter;
 
 public class GeoServerInfoImpl implements GeoServerInfo {
 
+    public static final String TRAILING_SLASH_MATCH_KEY = "org.geoserver.trailingSlashMatch";
+
     protected String id;
 
     protected SettingsInfo settings = new SettingsInfoImpl();
@@ -49,6 +51,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     protected Integer xmlPostRequestLogBufferSize = LoggingFilter.REQUEST_LOG_BUFFER_SIZE_DEFAULT;
 
     protected Boolean xmlExternalEntitiesEnabled = Boolean.FALSE;
+
+    protected Boolean trailingSlashMatch = getDefaultTrailingSlashMatch();
 
     protected String lockProviderName;
 
@@ -282,6 +286,16 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     }
 
     @Override
+    public void setTrailingSlashMatch(Boolean trailingSlashMatch) {
+        this.trailingSlashMatch = trailingSlashMatch;
+    }
+
+    @Override
+    public Boolean isTrailingSlashMatch() {
+        return trailingSlashMatch == null ? getDefaultTrailingSlashMatch() : trailingSlashMatch;
+    }
+
+    @Override
     public MetadataMap getMetadata() {
         return metadata;
     }
@@ -489,5 +503,9 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     public void setUseHeadersProxyURLRaw(Boolean useHeadersProxyURL) {
         this.useHeadersProxyURL = useHeadersProxyURL;
+    }
+
+    private static Boolean getDefaultTrailingSlashMatch() {
+        return Boolean.valueOf(System.getProperty(TRAILING_SLASH_MATCH_KEY, "true"));
     }
 }

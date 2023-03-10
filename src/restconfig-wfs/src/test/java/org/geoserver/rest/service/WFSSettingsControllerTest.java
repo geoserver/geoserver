@@ -61,9 +61,7 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
         String json = "{'wfs': {'id':'wfs','enabled':'false','name':'WFS'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/settings/",
-                        json,
-                        "text/json");
+                        RestBaseController.ROOT_PATH + "/services/wfs/settings", json, "text/json");
         assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wfs/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;

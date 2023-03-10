@@ -88,7 +88,7 @@ public class LocalWMTSSettingsControllerTest extends CatalogRESTTestSupport {
                 "{'wmts': {'id' : 'wmts_sf', 'workspace':{'name':'sf'},'name' : 'WMTS', 'enabled': 'true'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wmts/workspaces/sf/settings/",
+                        RestBaseController.ROOT_PATH + "/services/wmts/workspaces/sf/settings",
                         input,
                         "text/json");
         assertEquals(200, response.getStatus());
@@ -140,7 +140,7 @@ public class LocalWMTSSettingsControllerTest extends CatalogRESTTestSupport {
                 "{'wmts': {'id':'wmts','workspace':{'name':'sf'},'enabled':'false','name':'WMTS'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wmts/workspaces/sf/settings/",
+                        RestBaseController.ROOT_PATH + "/services/wmts/workspaces/sf/settings",
                         json,
                         "text/json");
         assertEquals(200, response.getStatus());

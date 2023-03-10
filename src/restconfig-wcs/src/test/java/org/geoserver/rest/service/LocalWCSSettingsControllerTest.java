@@ -89,7 +89,7 @@ public class LocalWCSSettingsControllerTest extends CatalogRESTTestSupport {
                 "{'wcs': {'id' : 'wcs', 'name' : 'WCS', 'workspace': {'name': 'sf'},'enabled': 'true'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wcs/workspaces/sf/settings/",
+                        RestBaseController.ROOT_PATH + "/services/wcs/workspaces/sf/settings",
                         input,
                         "text/json");
         assertEquals(200, response.getStatus());
@@ -138,7 +138,7 @@ public class LocalWCSSettingsControllerTest extends CatalogRESTTestSupport {
                 "{'wcs': {'id':'wcs','workspace':{'name':'sf'},'enabled':'false','name':'WCS'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wcs/workspaces/sf/settings/",
+                        RestBaseController.ROOT_PATH + "/services/wcs/workspaces/sf/settings",
                         json,
                         "text/json");
         assertEquals(200, response.getStatus());

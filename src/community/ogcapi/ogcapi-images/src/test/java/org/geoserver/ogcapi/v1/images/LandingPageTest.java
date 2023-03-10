@@ -50,7 +50,7 @@ public class LandingPageTest extends ImagesTestSupport {
 
     @Test
     public void testLandingPageSlash() throws Exception {
-        DocumentContext json = getAsJSONPath("ogc/images/v1/", 200);
+        DocumentContext json = getAsJSONPath("ogc/images/v1", 200);
         checkJSONLandingPage(json);
     }
 

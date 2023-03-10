@@ -8,11 +8,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.Styles;
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
@@ -61,6 +63,8 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
     private ContentNegotiationManager contentNegotiationManager;
 
     @Autowired private ApplicationContext applicationContext;
+
+    @Autowired private GeoServer geoServer;
 
     /**
      * Return a {@link ContentNegotiationManager} instance to use to determine requested {@linkplain
@@ -208,6 +212,11 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         helper.setAlwaysUseFullPath(true);
         configurer.setUrlPathHelper(helper);
         configurer.setUseSuffixPatternMatch(true);
+        configurer.setUseTrailingSlashMatch(
+                Optional.ofNullable(geoServer)
+                        .map(g -> g.getGlobal())
+                        .map(g -> g.isTrailingSlashMatch())
+                        .orElse(true));
         // finally, allow any other WebMvcConfigurer in the application context to do its thing
         super.configurePathMatch(configurer);
     }

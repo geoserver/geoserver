@@ -69,9 +69,7 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
         String json = "{'wms': {'id':'wms','enabled':'false','name':'WMS'}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings/",
-                        json,
-                        "text/json");
+                        RestBaseController.ROOT_PATH + "/services/wms/settings", json, "text/json");
         assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wms/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
@@ -109,7 +107,7 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
         assertNotNull(original);
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings/",
+                        RestBaseController.ROOT_PATH + "/services/wms/settings",
                         original.toString(),
                         "text/json");
         assertEquals(200, response.getStatus());

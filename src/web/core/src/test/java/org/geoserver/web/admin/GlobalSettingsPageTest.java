@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.admin;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -45,6 +46,8 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue(
                 "form:showModifiedTimeCols",
                 info.getSettings().isShowModifiedTimeColumnsInAdminList());
+        tester.assertComponent("form:trailingSlashMatch", CheckBox.class);
+        tester.assertModelValue("form:trailingSlashMatch", info.isTrailingSlashMatch());
     }
 
     @Test
@@ -53,10 +56,12 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
         tester.startPage(GlobalSettingsPage.class);
         FormTester ft = tester.newFormTester("form");
         ft.setValue("verbose", true);
+        ft.setValue("trailingSlashMatch", false);
         ft.submit("submit");
 
         tester.assertRenderedPage(GeoServerHomePage.class);
         assertTrue(gs.getSettings().isVerbose());
+        assertFalse(gs.getGlobal().isTrailingSlashMatch());
     }
 
     @Test
@@ -65,10 +70,12 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
         tester.startPage(GlobalSettingsPage.class);
         FormTester ft = tester.newFormTester("form");
         ft.setValue("verbose", true);
+        ft.setValue("trailingSlashMatch", false);
         ft.submit("apply");
 
         tester.assertRenderedPage(GlobalSettingsPage.class);
         assertTrue(gs.getSettings().isVerbose());
+        assertFalse(gs.getGlobal().isTrailingSlashMatch());
     }
 
     @Test

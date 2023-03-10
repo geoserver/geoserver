@@ -158,7 +158,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         ResourceInfo layerMeta = li.getResource();
         layerMeta.getMetadata().put("mapml.useTiles", true);
         cat.save(layerMeta);
-        request = createRequest("mapml/" + li.getName() + "/osmtile/");
+        request = createRequest("mapml/" + li.getName() + "/osmtile");
         Mapml m = testLayersAndGroupsMapML(li, request);
         String title = m.getHead().getTitle();
         assertTrue(title.equalsIgnoreCase(li.getName()));
@@ -167,14 +167,14 @@ public class MapMLControllerTest extends WMSTestSupport {
         layerMeta = li.getResource();
         layerMeta.getMetadata().put("mapml.useTiles", false);
         cat.save(layerMeta);
-        request = createRequest("mapml/" + li.getName() + "/osmtile/");
+        request = createRequest("mapml/" + li.getName() + "/osmtile");
         m = testLayersAndGroupsMapML(li, request);
         title = m.getHead().getTitle();
         assertTrue(title.equalsIgnoreCase(li.getName()));
 
         LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
         assertSame(DefaultGeographicCRS.WGS84, lgi.getBounds().getCoordinateReferenceSystem());
-        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile");
         m = testLayersAndGroupsMapML(lgi, request);
         title = m.getHead().getTitle();
         assertTrue(title.equalsIgnoreCase(lgi.getName()));
@@ -182,7 +182,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         lgi = cat.getLayerGroupByName("layerGroup");
         lgi.getMetadata().put("mapml.useTiles", true);
         cat.save(lgi);
-        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile");
         request.addPreferredLocale(Locale.CANADA_FRENCH);
         m = testLayersAndGroupsMapML(lgi, request);
         title = m.getHead().getTitle();
@@ -192,7 +192,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertSame(
                 MapMLController.previewTcrsMap.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
-        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile");
         m = testLayersAndGroupsMapML(lgi, request);
         title = m.getHead().getTitle();
         String expectedInternationalTitle = lgi.getInternationalTitle().toString();
@@ -202,7 +202,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         lgi = cat.getLayerGroupByName(NATURE_GROUP);
         lgi.getMetadata().put("mapml.useTiles", true);
         cat.save(lgi);
-        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile");
         request.addPreferredLocale(Locale.CANADA_FRENCH);
         assertSame(
                 MapMLController.previewTcrsMap.get("OSMTILE").getCRS(),
@@ -220,7 +220,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         Catalog cat = getCatalog();
 
         LayerInfo li = cat.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
-        MockHttpServletRequest request = createRequest("mapml/" + li.getName() + "/osmtile/");
+        MockHttpServletRequest request = createRequest("mapml/" + li.getName() + "/osmtile");
         request.addPreferredLocale(Locale.CANADA_FRENCH);
         Document d = testLayersAndGroupsHTML(li, request);
 
@@ -229,14 +229,14 @@ public class MapMLControllerTest extends WMSTestSupport {
                 "Le titre français".equalsIgnoreCase(d.title()));
 
         LayerGroupInfo lgi = cat.getLayerGroupByName(NATURE_GROUP);
-        request = createRequest("mapml/" + lgi.getName() + "/osmtile/");
+        request = createRequest("mapml/" + lgi.getName() + "/osmtile");
         d = testLayersAndGroupsHTML(lgi, request);
         assertTrue(
                 "HTML layer group title must be internationalized",
                 "A i18n title for polygons".equalsIgnoreCase(d.title()));
 
         LayerGroupInfo noTitleLG = cat.getLayerGroupByName("layerGroup");
-        MockHttpServletRequest r = createRequest("mapml/" + noTitleLG.getName() + "/osmtile/");
+        MockHttpServletRequest r = createRequest("mapml/" + noTitleLG.getName() + "/osmtile");
         d = testLayersAndGroupsHTML(noTitleLG, r);
         assertTrue(
                 "HTML layer group title must NOT be internationalized",
@@ -245,7 +245,7 @@ public class MapMLControllerTest extends WMSTestSupport {
 
     @Test
     public void testNonExistentLayer() throws Exception {
-        MockHttpServletRequest request = createRequest("mapml/" + "foo" + "/osmtile/");
+        MockHttpServletRequest request = createRequest("mapml/" + "foo" + "/osmtile");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         mc.Html(
@@ -451,7 +451,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         + MockData.ROAD_SEGMENTS.getPrefix()
                         + ":"
                         + MockData.ROAD_SEGMENTS.getLocalPart()
-                        + "/osmtile/";
+                        + "/osmtile";
 
         // set up mapml layer to useTiles
         Catalog catalog = getCatalog();
@@ -495,7 +495,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         + MockData.ROAD_SEGMENTS.getPrefix()
                         + ":"
                         + MockData.ROAD_SEGMENTS.getLocalPart()
-                        + "/osmtile/";
+                        + "/osmtile";
 
         org.w3c.dom.Document doc = getLocalizedMapML(path, Locale.FRENCH);
 
@@ -574,7 +574,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         + MockData.ROAD_SEGMENTS.getPrefix()
                         + ":"
                         + MockData.ROAD_SEGMENTS.getLocalPart()
-                        + "/osmtile/";
+                        + "/osmtile";
 
         org.w3c.dom.Document doc = getMapML(path);
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
@@ -662,7 +662,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         + MockData.ROAD_SEGMENTS.getPrefix()
                         + ":"
                         + MockData.ROAD_SEGMENTS.getLocalPart()
-                        + "/osmtile/";
+                        + "/osmtile";
 
         org.w3c.dom.Document doc = getMapML(path);
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
@@ -783,7 +783,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         + MockData.BASIC_POLYGONS.getPrefix()
                         + ":"
                         + MockData.BASIC_POLYGONS.getLocalPart()
-                        + "/osmtile/";
+                        + "/osmtile";
 
         // set up mapml layer featurecaption
         Catalog catalog = getCatalog();

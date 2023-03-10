@@ -165,7 +165,7 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
                         + "</featureType>";
         MockHttpServletResponse response =
                 postAsServletResponse(
-                        BASEPATH + "/workspaces/gs/datastores/pds/featuretypes/", xml, "text/xml");
+                        BASEPATH + "/workspaces/gs/datastores/pds/featuretypes", xml, "text/xml");
 
         assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader("Location"));
@@ -200,7 +200,7 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
                         + "<store>pds</store>"
                         + "</featureType>";
         MockHttpServletResponse response =
-                postAsServletResponse(BASEPATH + "/workspaces/gs/featuretypes/", xml, "text/xml");
+                postAsServletResponse(BASEPATH + "/workspaces/gs/featuretypes", xml, "text/xml");
 
         assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader("Location"));
@@ -236,9 +236,7 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
                         + "}";
         MockHttpServletResponse response =
                 postAsServletResponse(
-                        BASEPATH + "/workspaces/gs/datastores/pds/featuretypes/",
-                        json,
-                        "text/json");
+                        BASEPATH + "/workspaces/gs/datastores/pds/featuretypes", json, "text/json");
 
         assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader("Location"));

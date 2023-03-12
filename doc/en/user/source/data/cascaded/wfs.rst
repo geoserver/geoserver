@@ -47,19 +47,19 @@ To connect to an external WFS, it is necessary to load it as a new datastore.  T
    * - :guilabel:`LENIENT`
      - When checked, will try to render features that don't match the appropriate schema.  Errors will be logged. 
    * - :guilabel:`MAXFEATURES`
-     - Maximum amount of features to retrieve for each featuretype.  Default is no limit.
+     - Maximum number of features to retrieve for each featuretype.  Default is no limit.
    * - :guilabel:`AXIS_ORDER`
      - Axis order used in result coordinates (It applies only to WFS 1.x.0 servers). Default is Compliant.
    * - :guilabel:`AXIS_ORDER_FILTER`
      - Axis order used in filter (It applies only to WFS 1.x.0 servers). Default is Compliant.
    * - :guilabel:`OUTPUTFORMAT`
-     - Output format to request (instead of the default remote service one).
+     - Output format to request (instead of the default remote service one) e.g. JSON.
    * - :guilabel:`GML_COMPLIANCE_LEVEL`
      - OCG GML compliance level. i.e. (simple feature) 0, 1 or 2. Default is 0.
    * - :guilabel:`GML_COMPATIBLE_TYPENAMES`
-     - Use Gml Compatible TypeNames (replace : by _).  Default is no false.
+     - Use GML Compatible TypeNames (replace : by _).  Default is no false.
    * - :guilabel:`USE_HTTP_CONNECTION_POOLING`
-     - Use connection pooling to connect to the remote WFS service. Also enables digest authentcation.
+     - Use connection pooling to connect to the remote WFS service. Also enables digest authentication.
 
 When finished, click :guilabel:`Save`.
 
@@ -86,7 +86,7 @@ For a Windows install running GeoServer as a service, this is done by modifying 
    wrapper.java.additional.7=-Dhttps.proxyPort=8080
    wrapper.java.additional.8=-Dhttp.nonProxyHosts="mait*|dpi*|localhost"
 
-Note that the :command:`http.proxySet=true` parameter is required. Also, the parameter numbers must be consecutive - ie. no gaps.
+Note that the :command:`http.proxySet=true` parameter is required. Also, the parameter numbers must be consecutive - i.e. no gaps.
 
 For a Windows install not running GeoServer as a service, modify :file:`startup.bat` so that the :command:`java` command runs with similar -D parameters.
 

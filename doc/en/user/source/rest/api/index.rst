@@ -3,7 +3,10 @@
 REST configuration API reference
 ================================
 
-This section describes the GeoServer REST configuration API.  You may also want to refer to the `Swagger spec <https://docs.geoserver.org/latest/en/user/rest/index.html#api>`_ but heed the warning.
+This section describes the GeoServer REST configuration API. 
+
+.. note:: You may also wish to review the hand-written :doc:`Open API  </rest/index>`_ documentation. This documentation not auto-generated and may not exactly match the latest GeoServer. Please treat this resource as documentation only as this is not suitable for client generation.
+
 
 .. toctree::
    :maxdepth: 1

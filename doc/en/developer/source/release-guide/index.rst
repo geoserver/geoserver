@@ -300,50 +300,6 @@ Create the download page
 
 The `GeoServer website <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a download page for the release. This requires the url of the blog post announcing the release, so wait until after you have posted the announcement to do this.
 
-Post the Documentation
-----------------------
-
-.. note:: For now, this requires Boundless credentials; if you do not have them, please ask on the `GeoServer developer list <https://lists.sourceforge.net/lists/listinfo/geoserver-devel>`_ for someone to perform this step for you.
-
-.. note:: This content will likely move to GitHub in the near future.
-
-#. Log in to the server.
-
-#. Create the following new directories::
-
-     /var/www/docs.geoserver.org/htdocs/a.b.c
-     /var/www/docs.geoserver.org/htdocs/a.b.c/developer
-     /var/www/docs.geoserver.org/htdocs/a.b.c/user
-
-   where ``a.b.c`` is the full release number.
-
-#. Download the HTML documentation archive from the GeoServer download page, and extract the contents of both user manuals to the appropriate directory:
-    
-    .. code-block:: bash
-
-       cd /var/www/docs.geoserver.org/htdocs/a.b.c/
-       sudo wget http://downloads.sourceforge.net/geoserver/geoserver-a.b.c-htmldoc.zip
-       sudo unzip geoserver-a.b.c-htmldoc.zip
-       sudo rm geoserver-a.b.c-htmldoc.zip
-
-   .. note:: Steps 2 and 3 have now been automated by a bash script on the server, and can be completed by executing:
-      
-      .. code-block:: bash
-         
-         sudo /var/www/docs.geoserver.org/htdocs/postdocs.sh a.b.c
- 
-#. Open the file :file:`/var/www/docs.geoserver.org/htdocs/index.html` in a text editor.
-
-#. Add a new entry in the table for the most recent release::
-
-    <tr>
-      <td><strong><a href="http://geoserver.org/release/a.b.c/">a.b.c</a></strong></td>
-      <td><a href="a.b.c/user/">User Manual</a></td>
-      <td><a href="a.b.c/developer/">Developer Manual</a></td>
-    </tr>
-
-#. Save and close this file.
-
 Announce the Release
 --------------------
 

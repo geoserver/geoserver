@@ -972,13 +972,15 @@ Section "GeoServer" SectionMain
   SetOutPath "$INSTDIR"
   File /r /x "*.sh" "..\source\bin"  ; Copy manual start/stop *.bat files (skip *.sh)
   File /r "..\source\etc"
-  File /r "..\source\modules"
   File /r "..\source\lib"
+  File /r "..\source\license"
   File /r "..\source\logs"
+  File /r "..\source\modules"
   File /r "..\source\resources"
   File /r "..\source\webapps"
   File "..\source\*.txt"
-  File "..\source\*.md"
+  File "..\source\*.html"
+
 
   ; Copy Jetty files, manipulate .ini
   File "..\source\start.jar"

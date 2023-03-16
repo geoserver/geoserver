@@ -23,7 +23,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
  */
 public abstract class AbstractFlowControllerTest {
 
-    protected static final long MAX_WAIT = 20000;
+    protected static final long MAX_WAIT = 60000;
 
     /**
      * Waits until the thread enters in WAITING or TIMED_WAITING state

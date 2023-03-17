@@ -169,6 +169,44 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
     }
 
     @Test
+    public void testUserRolesEndpoint() throws Exception {
+        // validate that the user roles endpoint is returning the correct xml using admin user
+        String userXML = getAsString("rest/security/roles/user/admin.xml");
+        assertEquals(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><roles><role>ADMIN</role></roles>",
+                userXML.trim());
+    }
+
+    @Test
+    public void testRolesEndpoint() throws Exception {
+        // validate that the roles endpoint is returning the correct xml
+        String userXML = getAsString("rest/security/roles");
+        assertEquals(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><roles><role>ADMIN</role><role>GROUP_ADMIN</role></roles>",
+                userXML.trim());
+    }
+
+    @Test
+    public void testUserEndpoint() throws Exception {
+        // validate that the users endpoint is returning the correct xml
+        String userXML = getAsString("rest/security/usergroup/service/" + USER_SERVICE + "/users");
+        assertEquals(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><users><user><enabled>true</enabled><userName>admin</userName></user></users>",
+                userXML.trim());
+    }
+
+    @Test
+    public void testGroupEndpoint() throws Exception {
+        // validate that the groups endpoint is returning the correct xml
+        usersController.insertGroup(USER_SERVICE, "clowns");
+        usersController.insertGroup(USER_SERVICE, "circus");
+        String userXML = getAsString("rest/security/usergroup/service/" + USER_SERVICE + "/groups");
+        assertEquals(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><groups><group>circus</group><group>clowns</group></groups>",
+                userXML.trim());
+    }
+
+    @Test
     public void testGroups() throws PasswordPolicyException, IOException {
 
         JaxbUser user = new JaxbUser();

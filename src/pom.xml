@@ -1939,7 +1939,7 @@
           <quiet>true</quiet>
           <maxmemory>512M</maxmemory>
           <encoding>UTF-8</encoding>
-	  <failOnError>false</failOnError>
+          <failOnError>false</failOnError>
 
           <additionalparam>-Xdoclint:none</additionalparam>
           <breakiterator>true</breakiterator>

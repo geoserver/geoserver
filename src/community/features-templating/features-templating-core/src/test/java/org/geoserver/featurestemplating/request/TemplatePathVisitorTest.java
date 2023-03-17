@@ -61,6 +61,20 @@ public class TemplatePathVisitorTest {
         assertEquals("a/b/b/e/f", result.getPropertyName());
     }
 
+    /**
+     * Tests if using non existing property returns successfully
+     * @throws IOException
+     */
+    @Test
+    public void testBackwardMappingNonExistingProp() throws IOException {
+        RootBuilder rootBuilder = getBuilderTree("testTemplateBackwardMapping.json");
+        TemplatePathVisitor pathVisitor = new TemplatePathVisitor(false);
+        String property = "root/nonExistent";
+        PropertyName pn = FF.property(property);
+        PropertyName result = (PropertyName) pn.accept(pathVisitor, rootBuilder);
+        assertEquals(property, result.getPropertyName());
+    }
+
     private RootBuilder getBuilderTree(String resourceName) throws IOException {
         InputStream is = getClass().getResource(resourceName).openStream();
         ObjectMapper mapper =

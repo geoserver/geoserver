@@ -33,6 +33,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationStrategy;
@@ -139,6 +140,11 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         for (BaseMessageConverter converter : gsConverters) {
             converters.add(converter);
         }
+
+        // make sure that Jaxb2RootElementHttpMessageConverter is the first one, otherwise Jackson
+        // will override and ignore Jaxb annotations
+        converters.removeIf(Jaxb2RootElementHttpMessageConverter.class::isInstance);
+        converters.add(0, new Jaxb2RootElementHttpMessageConverter());
 
         // use the default ones as lowest priority
         super.addDefaultHttpMessageConverters(converters);

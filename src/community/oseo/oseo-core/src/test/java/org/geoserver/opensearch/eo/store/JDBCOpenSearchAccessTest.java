@@ -64,6 +64,7 @@ import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeImpl;
+import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -864,5 +865,29 @@ public class JDBCOpenSearchAccessTest {
                 ResultSet rs = st.executeQuery(sql)) {
             assertFalse(rs.next());
         }
+    }
+
+    @Test
+    public void testJDBCProducteFeatureStoreSortJSONB() throws Exception {
+        JDBCProductFeatureStore jdbcProductFeatureStore =
+                (JDBCProductFeatureStore) osAccess.getProductSource();
+        jdbcProductFeatureStore.jsonBProperties =
+                new HashSet<>(Arrays.asList(new NameImpl("string")));
+        SimpleFeatureType featureType =
+                DataUtilities.createType("testType", "string:String,int:Integer,double:Double");
+        ComplexFeatureBuilder complexFeatureBuilder = new ComplexFeatureBuilder(featureType);
+        SimpleFeature f =
+                SimpleFeatureBuilder.build(
+                        featureType,
+                        new Object[] {
+                            "{\"g\":1,\"m\":2,\"f\":3,\"h\":4,\"c\":5,\"a\":{\"hello\":6,\"archive\":7,\"meh\":{\"working\":8,\"aver\":9}},\"opt:cloudCover\":34}",
+                            Integer.valueOf(3),
+                            Double.valueOf(3.3)
+                        },
+                        "fid.3");
+        jdbcProductFeatureStore.mapPropertiesToComplex(complexFeatureBuilder, f);
+        assertEquals(
+                "{\"a\":{\"archive\":7,\"hello\":6,\"meh\":{\"aver\":9,\"working\":8}},\"c\":5,\"f\":3,\"g\":1,\"h\":4,\"m\":2,\"opt:cloudCover\":34}",
+                f.getAttribute("string").toString());
     }
 }

@@ -53,6 +53,21 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
     }
 
     @Test
+    public void testGeoJSONQueryPointingToSimpleAttribute() throws Exception {
+        setUpSimple("NamedPlacesDifferentAttributesGeoJSON.json");
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
+                        .append("application/json")
+                        .append("&cql_filter= NAME = 'Goose Island' ");
+        JSONObject result = (JSONObject) getJson(sb.toString());
+        JSONArray features = (JSONArray) result.get("features");
+        assertTrue(features.size() == 1);
+        assertEquals(features.getJSONObject(0).getString("name_cod"), "Goose Island");
+        checkAdditionalInfo(result);
+    }
+
+    @Test
     public void testGeoJSONResponseWithFilter() throws Exception {
         setUpSimple("NamedPlacesGeoJSON.json");
         StringBuilder path =

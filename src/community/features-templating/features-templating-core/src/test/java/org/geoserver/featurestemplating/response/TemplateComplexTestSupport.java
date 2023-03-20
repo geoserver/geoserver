@@ -57,7 +57,10 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         if (contentType != null)
             assertThat(
                     contentType,
-                    anyOf(equalTo("application/json"), equalTo("application/geo+json")));
+                    anyOf(
+                            equalTo("application/json"),
+                            equalTo("application/geo+json"),
+                            equalTo("application/json;charset=UTF-8")));
         return json(response);
     }
 

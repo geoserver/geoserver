@@ -7,8 +7,13 @@ package org.geoserver.featurestemplating.builders;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.filter.function.JsonPointerFunction;
@@ -37,6 +42,16 @@ public class JSONFieldSupport {
      */
     private static ObjectMapper MAPPER =
             new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
+
+    /**
+     * Used to parse JSON strings into JSON trees where the attributes are sorted by key
+     * alphanumerically.
+     */
+    public static ObjectMapper SORT_BY_KEY_MAPPER =
+            JsonMapper.builder()
+                    .enable(JsonParser.Feature.ALLOW_COMMENTS)
+                    .nodeFactory(new SortingNodeFactory())
+                    .build();
 
     /**
      * Checks if the current result can be evaluated into a JSONNode, based on type information
@@ -76,12 +91,38 @@ public class JSONFieldSupport {
         return isJSONField(Optional.ofNullable(opd));
     }
 
+    /**
+     * Checks if the given PropertyDescriptor is backed by a JSONB field.
+     *
+     * @param opd PropertyDescriptor to check
+     * @return true if the PropertyDescriptor is backed by a JSONB field
+     */
+    public static boolean isJSONBField(PropertyDescriptor opd) {
+        return isJSONBField(Optional.ofNullable(opd));
+    }
+
     private static boolean isJSONField(Optional<PropertyDescriptor> opd) {
         return opd.map(pd -> pd.getUserData().get(JDBC_NATIVE_TYPENAME))
                 .filter(t -> t instanceof String)
                 .map(t -> (String) t)
-                .filter(t -> "JSON".equalsIgnoreCase(t) || "JSONB".equalsIgnoreCase(t))
+                .filter(t -> matchesJSONType(t))
                 .isPresent();
+    }
+
+    private static boolean isJSONBField(Optional<PropertyDescriptor> opd) {
+        return opd.map(pd -> pd.getUserData().get(JDBC_NATIVE_TYPENAME))
+                .filter(t -> t instanceof String)
+                .map(t -> (String) t)
+                .filter(t -> matchesJSONBType(t))
+                .isPresent();
+    }
+
+    private static boolean matchesJSONType(String type) {
+        return "JSON".equalsIgnoreCase(type) || "JSONB".equalsIgnoreCase(type);
+    }
+
+    private static boolean matchesJSONBType(String type) {
+        return "JSONB".equalsIgnoreCase(type);
     }
 
     /**
@@ -101,5 +142,12 @@ public class JSONFieldSupport {
             return Converters.convert(((Attribute) value).getValue(), String.class);
         }
         return Converters.convert(value, String.class);
+    }
+
+    static class SortingNodeFactory extends JsonNodeFactory {
+        @Override
+        public ObjectNode objectNode() {
+            return new ObjectNode(this, new TreeMap<String, JsonNode>());
+        }
     }
 }

@@ -80,9 +80,13 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             currentSource = new Stack<>();
             currentEl = 0;
             Expression expression = findFunction(builder, Arrays.asList(elements));
-            Expression newExpression = findXpathArg(expression);
-            if (newExpression != null) {
-                return newExpression;
+            if (expression != null) {
+                // we found a function hence we may need to extract the property,
+                // otherwise we would fallback on the provided property name
+                Expression newExpression = findXpathArg(expression);
+                if (newExpression != null) {
+                    return newExpression;
+                }
             }
         } catch (Throwable ex) {
             throw new RuntimeException(

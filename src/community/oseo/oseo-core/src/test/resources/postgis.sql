@@ -138,6 +138,7 @@ create table product (
   "atmAlgorithmVersion" varchar[],
   "enabled" boolean not null DEFAULT true,
   "assets" json,
+  "assetsb" jsonb,
   "keywords" varchar[]
 );
 

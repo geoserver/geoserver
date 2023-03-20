@@ -71,7 +71,8 @@ public class SearchTest extends STACTestSupport {
     }
 
     public void checkCollections(DocumentContext doc, boolean post) {
-        checkCollectionsSinglePage(doc, 3, containsInAnyOrder("LANDSAT8", "SAS1", "SAS1"));
+        checkCollectionsSinglePage(
+                doc, 4, containsInAnyOrder("LANDSAT8", "LANDSAT8", "SAS1", "SAS1"));
 
         // expecting only a self link
         DocumentContext link = readSingleContext(doc, "links");
@@ -95,7 +96,7 @@ public class SearchTest extends STACTestSupport {
                         "ogc/stac/v1/search?collections=SAS1,LANDSAT8"
                                 + "&filter=constellation='landsat8'&filter-lang=cql2-text",
                         200);
-        checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
+        checkCollectionsSinglePage(doc, 2, containsInAnyOrder("LANDSAT8", "LANDSAT8"));
     }
 
     @Test
@@ -106,7 +107,7 @@ public class SearchTest extends STACTestSupport {
                         "ogc/stac/v1/search?collections=SENTINEL2,LANDSAT8"
                                 + "&filter=constellation='landsat8'&filter-lang=cql2-text",
                         200);
-        assertEquals(new Integer(1), doc.read("numberMatched", Integer.class));
+        assertEquals(new Integer(2), doc.read("numberMatched", Integer.class));
     }
 
     @Test
@@ -122,7 +123,7 @@ public class SearchTest extends STACTestSupport {
                         + "  \"filter-lang\": \"cql-text\"\n"
                         + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
+        checkCollectionsSinglePage(doc, 2, containsInAnyOrder("LANDSAT8", "LANDSAT8"));
     }
 
     @Test
@@ -138,7 +139,7 @@ public class SearchTest extends STACTestSupport {
                         + "  \"filter-lang\": \"cql2-text\"\n"
                         + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
+        checkCollectionsSinglePage(doc, 2, containsInAnyOrder("LANDSAT8", "LANDSAT8"));
     }
 
     @Test
@@ -154,7 +155,7 @@ public class SearchTest extends STACTestSupport {
                         + "  \"filter-lang\": \"cql2-json\"\n"
                         + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
+        checkCollectionsSinglePage(doc, 2, containsInAnyOrder("LANDSAT8", "LANDSAT8"));
     }
 
     private void checkCollectionsSinglePage(
@@ -173,14 +174,16 @@ public class SearchTest extends STACTestSupport {
 
         checkCollectionsItemsSinglePage(
                 doc,
-                5,
-                containsInAnyOrder("LANDSAT8", "SAS1", "SAS1", "SENTINEL2", "SENTINEL2"),
+                6,
+                containsInAnyOrder(
+                        "LANDSAT8", "LANDSAT8", "SAS1", "SAS1", "SENTINEL2", "SENTINEL2"),
                 containsInAnyOrder(
                         "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWG_N02.01",
                         "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01",
                         "LS8_TEST.02",
                         "SAS1_20180226102021.01",
-                        "SAS1_20180227102021.02"));
+                        "SAS1_20180227102021.02",
+                        "JSONB_TEST.02"));
     }
 
     @Test
@@ -199,14 +202,16 @@ public class SearchTest extends STACTestSupport {
 
         checkCollectionsItemsSinglePage(
                 doc,
-                5,
-                containsInAnyOrder("LANDSAT8", "SAS1", "SAS1", "SENTINEL2", "SENTINEL2"),
+                6,
+                containsInAnyOrder(
+                        "LANDSAT8", "LANDSAT8", "SAS1", "SAS1", "SENTINEL2", "SENTINEL2"),
                 containsInAnyOrder(
                         "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWG_N02.01",
                         "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01",
                         "LS8_TEST.02",
                         "SAS1_20180226102021.01",
-                        "SAS1_20180227102021.02"));
+                        "SAS1_20180227102021.02",
+                        "JSONB_TEST.02"));
     }
 
     public void checkCollectionsItemsSinglePage(
@@ -228,10 +233,13 @@ public class SearchTest extends STACTestSupport {
 
         checkCollectionsItemsSinglePage(
                 doc,
-                3,
-                containsInAnyOrder("LANDSAT8", "SAS1", "SAS1"),
+                4,
+                containsInAnyOrder("LANDSAT8", "LANDSAT8", "SAS1", "SAS1"),
                 containsInAnyOrder(
-                        "LS8_TEST.02", "SAS1_20180226102021.01", "SAS1_20180227102021.02"));
+                        "LS8_TEST.02",
+                        "SAS1_20180226102021.01",
+                        "SAS1_20180227102021.02",
+                        "JSONB_TEST.02"));
     }
 
     @Test
@@ -240,8 +248,8 @@ public class SearchTest extends STACTestSupport {
         DocumentContext doc = getAsJSONPath("ogc/stac/v1/search?limit=50", 200);
 
         // had to inline as "CoreMatches.not" has poor generics management
-        assertEquals(Integer.valueOf(23), doc.read("numberMatched"));
-        assertEquals(Integer.valueOf(23), doc.read("numberReturned"));
+        assertEquals(Integer.valueOf(24), doc.read("numberMatched"));
+        assertEquals(Integer.valueOf(24), doc.read("numberReturned"));
         assertThat(doc.read("features[*].collection"), not(hasItem("DISABLED_COLLECTION")));
         assertThat(
                 (List<String>) doc.read("features[*].id"),
@@ -265,10 +273,13 @@ public class SearchTest extends STACTestSupport {
 
         checkCollectionsItemsSinglePage(
                 doc,
-                3,
-                containsInAnyOrder("LANDSAT8", "SAS1", "SAS1"),
+                4,
+                containsInAnyOrder("LANDSAT8", "LANDSAT8", "SAS1", "SAS1"),
                 containsInAnyOrder(
-                        "LS8_TEST.02", "SAS1_20180226102021.01", "SAS1_20180227102021.02"));
+                        "LS8_TEST.02",
+                        "SAS1_20180226102021.01",
+                        "SAS1_20180227102021.02",
+                        "JSONB_TEST.02"));
     }
 
     @Test
@@ -277,7 +288,7 @@ public class SearchTest extends STACTestSupport {
                 "ogc/stac/v1/search?collections=SAS1,LANDSAT8"
                         + "&filter=eo:cloud_cover=0&filter-lang=cql-text&limit=1";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
-        assertEquals(Integer.valueOf(3), doc.read("numberMatched"));
+        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, self and next
@@ -302,7 +313,7 @@ public class SearchTest extends STACTestSupport {
                 "ogc/stac/v1/search?collections=SAS1,LANDSAT8"
                         + "&filter=eo:cloud_cover=0&filter-lang=cql-text&limit=1&startIndex=1";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
-        assertEquals(Integer.valueOf(3), doc.read("numberMatched"));
+        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // three links expected, prev, self and next
@@ -334,11 +345,11 @@ public class SearchTest extends STACTestSupport {
                 "ogc/stac/v1/search?collections=SAS1,LANDSAT8"
                         + "&filter=eo:cloud_cover=0&filter-lang=cql-text&limit=1&startIndex=2";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
-        assertEquals(Integer.valueOf(3), doc.read("numberMatched"));
+        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, prev, self
-        assertEquals(Integer.valueOf(2), doc.read("links.length()"));
+        assertEquals(Integer.valueOf(3), doc.read("links.length()"));
 
         // prev link (order should be stable, linked hash maps all around)
         DocumentContext prev = readSingleContext(doc, "links[?(@.rel=='prev')]");
@@ -366,7 +377,7 @@ public class SearchTest extends STACTestSupport {
                         + "  \"limit\": 1\n"
                         + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        assertEquals(Integer.valueOf(3), doc.read("numberMatched"));
+        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, self and next
@@ -402,7 +413,7 @@ public class SearchTest extends STACTestSupport {
                         + "  \"startIndex\": 1\n"
                         + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        assertEquals(Integer.valueOf(3), doc.read("numberMatched"));
+        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // three links expected, prev, self and next
@@ -446,11 +457,11 @@ public class SearchTest extends STACTestSupport {
                         + "  \"startIndex\": 2\n"
                         + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        assertEquals(Integer.valueOf(3), doc.read("numberMatched"));
+        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, prev, self
-        assertEquals(Integer.valueOf(2), doc.read("links.length()"));
+        assertEquals(Integer.valueOf(3), doc.read("links.length()"));
 
         // prev link (order should be stable, linked hash maps all around)
         DocumentContext prev = readSingleContext(doc, "links[?(@.rel=='prev')]");
@@ -529,14 +540,16 @@ public class SearchTest extends STACTestSupport {
 
         checkCollectionsItemsSinglePage(
                 doc,
-                5,
-                containsInAnyOrder("LANDSAT8", "SAS1", "SAS1", "SENTINEL2", "SENTINEL2"),
+                6,
+                containsInAnyOrder(
+                        "LANDSAT8", "LANDSAT8", "SAS1", "SAS1", "SENTINEL2", "SENTINEL2"),
                 containsInAnyOrder(
                         "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWG_N02.01",
                         "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01",
                         "LS8_TEST.02",
                         "SAS1_20180226102021.01",
-                        "SAS1_20180227102021.02"));
+                        "SAS1_20180227102021.02",
+                        "JSONB_TEST.02"));
     }
 
     @Test
@@ -546,7 +559,7 @@ public class SearchTest extends STACTestSupport {
                 getAsJSONPath(
                         "ogc/stac/v1/search?&filter=collection='LANDSAT8'&filter-lang=cql2-text",
                         200);
-        checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
+        checkCollectionsSinglePage(doc, 2, containsInAnyOrder("LANDSAT8", "LANDSAT8"));
     }
 
     @Test

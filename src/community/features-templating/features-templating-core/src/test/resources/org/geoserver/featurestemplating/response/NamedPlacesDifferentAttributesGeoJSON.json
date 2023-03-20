@@ -1,0 +1,13 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "$source": "cite:NamedPlaces"
+    },
+    {
+      "identifier": "${cite:FID}",
+      "name_cod": "${cite:NAME}",
+      "location": "${cite:the_geom}"
+    }
+  ]
+}

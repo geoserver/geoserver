@@ -1350,6 +1350,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertEquals(1, catalog.getLayers().size());
 
         LayerInfo l2 = catalog.getFactory().createLayer();
+        ((LayerInfoImpl) l2).setId("foobar");
         try {
             catalog.add(l2);
             fail("adding with no name should throw exception");

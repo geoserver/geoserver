@@ -7,6 +7,7 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.data.test.MockData.ROAD_SEGMENTS;
 import static org.geoserver.data.test.MockData.SF_PREFIX;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.assertEquals;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,6 +37,8 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.AttributeTypeInfo;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -43,12 +47,24 @@ import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.data.DataAccess;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.NameImpl;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.VirtualTable;
 import org.geotools.referencing.CRS;
 import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.springframework.http.MediaType;
@@ -58,6 +74,72 @@ import org.w3c.dom.Document;
 public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
     private static String BASEPATH = RestBaseController.ROOT_PATH;
+
+    private static String VT_PREFIX = "vt";
+    private static String VT_URI = "http://www.geoserver.org/vt";
+    private static Name VT_ROAD_SEGMENTS = new NameImpl(VT_URI, "VirtualSegments");
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // new workspace for virtual table tests
+        testData.addWorkspace(VT_PREFIX, VT_URI, getCatalog());
+
+        // set up a H2 datastore that we can run virtual table tests against
+        Catalog cat = getCatalog();
+        DataStoreInfo ds = cat.getFactory().createDataStore();
+        ds.setName("h2");
+        ds.setWorkspace(cat.getWorkspaceByName(VT_PREFIX));
+        ds.setEnabled(true);
+
+        Map<String, Serializable> params = ds.getConnectionParameters();
+        params.put("dbtype", "h2");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        cat.add(ds);
+
+        SimpleFeatureSource geSource = getFeatureSource(ROAD_SEGMENTS);
+
+        JDBCDataStore store = (JDBCDataStore) ds.getDataStore(null);
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+
+        tb.init(geSource.getSchema());
+        store.createSchema(tb.buildFeatureType());
+
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(ds);
+
+        SimpleFeatureStore geTarget =
+                (SimpleFeatureStore) store.getFeatureSource(ROAD_SEGMENTS.getLocalPart());
+        addFeatures(geTarget, geSource.getFeatures());
+
+        VirtualTable vt =
+                new VirtualTable(
+                        VT_ROAD_SEGMENTS.getLocalPart(),
+                        "select \"the_geom\" as \"geom\", \"FID\" as \"theId\", \"NAME\" as "
+                                + "\"theName\" from \"RoadSegments\"");
+        vt.addGeometryMetadatata("geom", MultiLineString.class, 4326);
+        store.createVirtualTable(vt);
+
+        FeatureTypeInfo vft =
+                cb.buildFeatureType(store.getFeatureSource(VT_ROAD_SEGMENTS.getLocalPart()));
+        vft.getMetadata().put(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, vt);
+        cat.add(vft);
+    }
+
+    void addFeatures(SimpleFeatureStore fs, SimpleFeatureCollection features) throws Exception {
+        SimpleFeatureBuilder b = new SimpleFeatureBuilder(fs.getSchema());
+
+        DefaultFeatureCollection toAdd = new DefaultFeatureCollection(null, null);
+        try (FeatureIterator it = features.features()) {
+            while (it.hasNext()) {
+                SimpleFeature f = (SimpleFeature) it.next();
+                b.init(f);
+                toAdd.add(b.buildFeature(null));
+            }
+        }
+        fs.addFeatures(toAdd);
+    }
 
     @Before
     public void removePropertyStores() {
@@ -305,11 +387,6 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
         FeatureTypeInfo ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
 
-        /*
-         * ReferencedEnvelope re = ft.getNativeBoundingBox(); assertXpathEvaluatesTo( re.getMinX()+"" , "/featureType/nativeBoundingBox/minx", dom );
-         * assertXpathEvaluatesTo( re.getMaxX()+"" , "/featureType/nativeBoundingBox/maxx", dom ); assertXpathEvaluatesTo( re.getMinY()+"" ,
-         * "/featureType/nativeBoundingBox/miny", dom ); assertXpathEvaluatesTo( re.getMaxY()+"" , "/featureType/nativeBoundingBox/maxy", dom );
-         */
         ReferencedEnvelope re = ft.getLatLonBoundingBox();
         assertXpathEvaluatesTo(re.getMinX() + "", "/featureType/latLonBoundingBox/minx", dom);
         assertXpathEvaluatesTo(re.getMaxX() + "", "/featureType/latLonBoundingBox/maxx", dom);
@@ -939,5 +1016,28 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         assertNotSame(featureTypeNew, featureType);
         assertNotNull(featureTypeNew.getDescriptor("description"));
         assertNotNull(featureTypeNew.getDescriptor("identifier"));
+    }
+
+    @Test
+    public void testCreateVirtualTable() throws Exception {
+        // get full definition of an existing virtual table
+        String existingName = VT_ROAD_SEGMENTS.getLocalPart();
+        String path =
+                BASEPATH + "/workspaces/" + VT_PREFIX + "/featuretypes/" + existingName + ".xml";
+        MockHttpServletResponse sr = getAsServletResponse(path);
+        assertEquals(200, sr.getStatus());
+        String xml = sr.getContentAsString();
+
+        String newVirtualTable = existingName + "2";
+        String xml2 = xml.replace(existingName, newVirtualTable);
+        sr = postAsServletResponse(BASEPATH + "/workspaces/" + VT_PREFIX + "/featuretypes", xml2);
+        assertEquals(201, sr.getStatus());
+
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(VT_PREFIX, newVirtualTable);
+        assertNotNull(ft.getFeatureType());
+        assertEquals(newVirtualTable, ft.getFeatureType().getName().getLocalPart());
+        VirtualTable vt2 =
+                ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
+        assertEquals(newVirtualTable, vt2.getName());
     }
 }

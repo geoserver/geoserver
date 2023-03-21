@@ -5,10 +5,12 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -19,6 +21,8 @@ import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.filter.visitor.ExpressionTypeVisitor;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.VirtualTable;
 import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -32,12 +36,23 @@ class FeatureTypeValidator {
         if (attributes == null || attributes.isEmpty()) return;
 
         // only checking simple features
+        VirtualTable vt =
+                fti.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
+        String typeName = fti.getNativeName();
+        boolean temporaryVirtualTable = false;
+        JDBCDataStore jds = null;
         try {
             DataAccess access = fti.getStore().getDataStore(null);
             if (!(access instanceof DataStore)) return;
             DataStore ds = (DataStore) access;
 
-            SimpleFeatureType ft = ds.getSchema(fti.getNativeName());
+            if (vt != null && ds instanceof JDBCDataStore) {
+                jds = (JDBCDataStore) ds;
+                typeName = setupTempVirtualTable(vt, jds);
+                temporaryVirtualTable = true;
+            }
+
+            SimpleFeatureType ft = ds.getSchema(typeName);
             Map<String, AttributeDescriptor> nativeAttributes =
                     ft.getAttributeDescriptors().stream()
                             .collect(Collectors.toMap(ad -> ad.getLocalName(), ad -> ad));
@@ -48,18 +63,34 @@ class FeatureTypeValidator {
                 validate(attribute, ft, nativeAttributes);
                 // check for duplicate attribute names
                 String name = attribute.getName();
-                if (names.contains(name))
+                if (names.contains(name)) {
                     throw new ValidationException(
                             "multiAttributeSameName",
                             "Found multiple definitions for output attribute {0}",
                             name);
+                }
                 names.add(name);
             }
 
         } catch (IOException e) {
             throw new IllegalArgumentException(
                     "Failed to access data source to check attribute customization", e);
+        } finally {
+            if (temporaryVirtualTable && jds != null) jds.dropVirtualTable(typeName);
         }
+    }
+
+    /**
+     * Creates a temporary virtual table in the data store, returns the name of the virtual table
+     */
+    private String setupTempVirtualTable(VirtualTable vt, JDBCDataStore ds) throws IOException {
+        String temporaryName = null;
+        do {
+            temporaryName = UUID.randomUUID().toString();
+        } while (Arrays.asList(ds.getTypeNames()).contains(temporaryName));
+        VirtualTable temporary = new VirtualTable(temporaryName, vt);
+        ds.createVirtualTable(temporary);
+        return temporaryName;
     }
 
     private void validate(
@@ -67,13 +98,15 @@ class FeatureTypeValidator {
             SimpleFeatureType schema,
             Map<String, AttributeDescriptor> nativeAttributes) {
         try {
-            if (attribute.getName() == null || attribute.getName().isEmpty())
+            if (attribute.getName() == null || attribute.getName().isEmpty()) {
                 throw new ValidationException(
                         "attributeNullName", "Attribute name must not be null or empty");
+            }
 
-            if (attribute.getSource() == null || attribute.getSource().isEmpty())
+            if (attribute.getSource() == null || attribute.getSource().isEmpty()) {
                 throw new ValidationException(
                         "attributeNullSource", "Attribute source must not be null or empty");
+            }
 
             // parses the CQL expression, will throw exception if invalid
             Expression expression = ECQL.toExpression(attribute.getSource());
@@ -86,7 +119,8 @@ class FeatureTypeValidator {
             if (!usedSourceAttributes.isEmpty()) {
                 throw new ValidationException(
                         "cqlUsesInvalidAttribute",
-                        "The CQL source expression for attribute {0} refers to attributes unavailable in the data source: {1}",
+                        "The CQL source expression for attribute {0} refers to attributes "
+                                + "unavailable in the data source: {1}",
                         attribute.getName(),
                         usedSourceAttributes);
             }
@@ -102,7 +136,8 @@ class FeatureTypeValidator {
                         && Converters.getConverterFactories(expressionType, binding).isEmpty()) {
                     throw new ValidationException(
                             "attributeInvalidConversion",
-                            "Issue found in attribute {0}, unable to convert from native type, {1}, to target type, {2}",
+                            "Issue found in attribute {0}, unable to convert from native type, "
+                                    + "{1}, to target type, {2}",
                             attribute.getName(),
                             expressionType.getName(),
                             binding.getName());

@@ -4,11 +4,7 @@
  */
 package org.geoserver.backuprestore.imagemosaic.reader;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;

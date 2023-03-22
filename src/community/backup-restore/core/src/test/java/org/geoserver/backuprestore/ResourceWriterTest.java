@@ -4,9 +4,7 @@
  */
 package org.geoserver.backuprestore;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import com.thoughtworks.xstream.XStream;
 import java.io.File;
@@ -19,11 +17,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.LoggingInfo;
-import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.*;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;

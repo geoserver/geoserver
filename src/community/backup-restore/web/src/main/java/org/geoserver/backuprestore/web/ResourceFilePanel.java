@@ -23,11 +23,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.backuprestore.tasklet.AbstractCatalogBackupRestoreTasklet;
 import org.geoserver.backuprestore.utils.BackupUtils;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
@@ -48,11 +44,9 @@ import org.opengis.filter.Filter;
 @SuppressWarnings("serial")
 public class ResourceFilePanel extends Panel {
 
-    protected static Logger LOGGER = Logging.getLogger(ResourceFilePanel.class);
-
     private static final String[] FILE_EXTENSIONS =
             new String[] {".zip", ".gz", ".tar", ".tgz", ".bz"};
-
+    protected static Logger LOGGER = Logging.getLogger(ResourceFilePanel.class);
     String file;
     List<WorkspaceInfo> workspaces;
     Map<String, List<StoreInfo>> stores;

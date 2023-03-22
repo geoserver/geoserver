@@ -12,11 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -41,26 +37,16 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
+import org.springframework.batch.core.launch.JobExecutionNotRunningException;
+import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 
 /** @author Alessio Fabiani, GeoSolutions */
+@FixMethodOrder()
 public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
-
-    protected static Catalog catalog;
-
-    protected static XpathEngine xp;
-
-    protected static Backup backupFacade;
-
-    static File root;
-
-    protected GeoServerDataDirectory createDataDirectoryMock() {
-        GeoServerDataDirectory dd = createNiceMock(GeoServerDataDirectory.class);
-        expect(dd.root()).andReturn(root).anyTimes();
-        return dd;
-    }
 
     public static final Set<String> DEFAULT_STYLEs =
             new HashSet<String>() {
@@ -72,6 +58,55 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
                     add(StyleInfo.DEFAULT_RASTER);
                 }
             };
+    protected static Catalog catalog;
+    protected static XpathEngine xp;
+    protected static Backup backupFacade;
+    static File root;
+
+    public static Resource file(String path) throws Exception {
+        Resource dir = BackupUtils.tmpDir();
+
+        if (dir.dir().exists()) {
+            FileUtils.forceDelete(dir.dir());
+        }
+
+        return file(path, dir);
+    }
+
+    public static Resource file(String path, Resource dir) throws IOException {
+        String filename = new File(path).getName();
+        InputStream in = BackupRestoreTestSupport.class.getResourceAsStream("test-data/" + path);
+
+        File file = new File(dir.dir(), filename);
+
+        if (file.exists()) {
+            FileUtils.forceDelete(file);
+        }
+
+        FileOutputStream out = new FileOutputStream(file);
+        try {
+            IOUtils.copy(in, out);
+        } catch (Exception e) {
+            return null;
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+
+            if (out != null) {
+                out.flush();
+                out.close();
+            }
+        }
+
+        return org.geoserver.platform.resource.Files.asResource(file);
+    }
+
+    protected GeoServerDataDirectory createDataDirectoryMock() {
+        GeoServerDataDirectory dd = createNiceMock(GeoServerDataDirectory.class);
+        expect(dd.root()).andReturn(root).anyTimes();
+        return dd;
+    }
 
     @Before
     public void beforeTest() throws InterruptedException {
@@ -79,6 +114,9 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         ContinuableHandler.resetInvocationsCount();
         // reset invocation of generic listener
         GenericListener.reset();
+
+        // cleanup BR queues
+        ensureCleanedQueues();
 
         // Authenticate as Administrator
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
@@ -378,45 +416,6 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         store.addFeatures(features);
     }
 
-    public static Resource file(String path) throws Exception {
-        Resource dir = BackupUtils.tmpDir();
-
-        if (dir.dir().exists()) {
-            FileUtils.forceDelete(dir.dir());
-        }
-
-        return file(path, dir);
-    }
-
-    public static Resource file(String path, Resource dir) throws IOException {
-        String filename = new File(path).getName();
-        InputStream in = BackupRestoreTestSupport.class.getResourceAsStream("test-data/" + path);
-
-        File file = new File(dir.dir(), filename);
-
-        if (file.exists()) {
-            FileUtils.forceDelete(file);
-        }
-
-        FileOutputStream out = new FileOutputStream(file);
-        try {
-            IOUtils.copy(in, out);
-        } catch (Exception e) {
-            return null;
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-
-            if (out != null) {
-                out.flush();
-                out.close();
-            }
-        }
-
-        return org.geoserver.platform.resource.Files.asResource(file);
-    }
-
     public void cleanCatalog() {
         try {
             for (StoreInfo s : catalog.getStores(StoreInfo.class)) {
@@ -460,6 +459,26 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
             // Wait a bit
             Thread.sleep(10);
             cnt++;
+            for (Iterator<Long> it = backupFacade.getRestoreRunningExecutions().iterator();
+                    it.hasNext(); ) {
+                try {
+                    backupFacade.stopExecution(it.next());
+                } catch (NoSuchJobExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (JobExecutionNotRunningException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            for (Iterator<Long> it = backupFacade.getBackupRunningExecutions().iterator();
+                    it.hasNext(); ) {
+                try {
+                    backupFacade.stopExecution(it.next());
+                } catch (NoSuchJobExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (JobExecutionNotRunningException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 }

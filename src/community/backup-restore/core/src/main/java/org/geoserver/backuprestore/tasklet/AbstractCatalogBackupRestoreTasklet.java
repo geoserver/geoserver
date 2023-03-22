@@ -8,11 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
@@ -38,12 +34,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobInterruptedException;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.StoppableTasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -60,10 +51,9 @@ import org.springframework.util.Assert;
  * timeout value is required to be set, so that the batch job does not hang forever if the external
  * process hangs.
  *
- * <p>Tasklet periodically checks for termination status (i.e. {@link
- * #doExecute(StepContribution,ChunkContext,JobExecution)} finished its execution or {@link
- * #setTimeout(long)} expired or job was interrupted). The check interval is given by {@link
- * #setTerminationCheckInterval(long)}.
+ * <p>Tasklet periodically checks for termination status (i.e. {@link #doExecute(StepContribution,
+ * ChunkContext, JobExecution)} finished its execution or {@link #setTimeout(long)} expired or job
+ * was interrupted). The check interval is given by {@link #setTerminationCheckInterval(long)}.
  *
  * <p>When job interrupt is detected tasklet's execution is terminated immediately by throwing
  * {@link JobInterruptedException}.
@@ -80,8 +70,8 @@ import org.springframework.util.Assert;
 public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupRestoreItem
         implements StoppableTasklet, InitializingBean {
 
+    public static final String BR_INDEX_XML = "br_index.xml";
     protected static Logger LOGGER = Logging.getLogger(AbstractCatalogBackupRestoreTasklet.class);
-
     /*
      *
      */
@@ -170,18 +160,11 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     }
 
     private long timeout = 0;
-
     private long checkInterval = 1000;
-
     private StepExecution execution = null;
-
     private TaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
-
     private boolean interruptOnCancel = false;
-
     private volatile boolean stopped = false;
-
-    public static final String BR_INDEX_XML = "br_index.xml";
 
     public AbstractCatalogBackupRestoreTasklet(Backup backupFacade) {
         super(backupFacade);
@@ -675,8 +658,8 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
      * #setInterruptOnCancel(boolean)} has been set to true. Otherwise the underlying command will
      * be allowed to finish before the tasklet ends.
      *
-     * @since 3.0
      * @see StoppableTasklet#stop()
+     * @since 3.0
      */
     @Override
     public void stop() {

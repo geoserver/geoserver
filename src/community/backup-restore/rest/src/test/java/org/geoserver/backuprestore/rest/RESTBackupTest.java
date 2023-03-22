@@ -4,9 +4,7 @@
  */
 package org.geoserver.backuprestore.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,27 +51,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
                         + "  }"
                         + "}";
 
-        JSONObject backup = postNewBackup(json);
-
-        assertNotNull(backup);
-
-        JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
-
-        assertTrue(
-                "STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")));
-
-        int cnt = 0;
-        while (cnt < 100
-                && ("STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")))) {
-            execution = readExecutionStatus(execution.getLong("id"));
-
-            Thread.sleep(100);
-            cnt++;
-        }
-
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        assertBackupIsValid(json);
     }
 
     @Test
@@ -113,27 +91,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
                         + "  }"
                         + "}";
 
-        JSONObject backup = postNewBackup(json);
-
-        assertNotNull(backup);
-
-        JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
-
-        assertTrue(
-                "STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")));
-
-        int cnt = 0;
-        while (cnt < 100
-                && ("STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")))) {
-            execution = readExecutionStatus(execution.getLong("id"));
-
-            Thread.sleep(100);
-            cnt++;
-        }
-
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        assertBackupIsValid(json);
     }
 
     @Test
@@ -151,27 +109,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
                         + "  }"
                         + "}";
 
-        JSONObject backup = postNewBackup(json);
-
-        assertNotNull(backup);
-
-        JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
-
-        assertTrue(
-                "STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")));
-
-        int cnt = 0;
-        while (cnt < 100
-                && ("STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")))) {
-            execution = readExecutionStatus(execution.getLong("id"));
-
-            Thread.sleep(100);
-            cnt++;
-        }
-
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        assertBackupIsValid(json);
 
         ZipFile backupZip = new ZipFile(new File(archiveFilePath));
         ZipEntry entry = backupZip.getEntry("store.dat.1");
@@ -210,8 +148,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         assertTrue(
                 execution
                         .getJSONObject("stepExecutions")
-                        .getJSONArray("step")
-                        .getJSONObject(0)
+                        .getJSONObject("step")
                         .getJSONObject("parameters")
                         .get("wsFilter")
                         .equals("name IN ('topp','geosolutions-it')"));
@@ -233,18 +170,48 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         assertTrue("COMPLETED".equals(execution.getString("status")));
     }
 
+    private void assertBackupIsValid(String json) throws Exception {
+        JSONObject backup = postNewBackup(json);
+
+        assertNotNull(backup);
+
+        JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
+
+        assertTrue(
+                "STARTED".equals(execution.getString("status"))
+                        || "STARTING".equals(execution.getString("status")));
+
+        int cnt = 0;
+        while (cnt < 100
+                && ("STARTED".equals(execution.getString("status"))
+                        || "STARTING".equals(execution.getString("status")))) {
+            execution = readExecutionStatus(execution.getLong("id"));
+
+            Thread.sleep(1000);
+            cnt++;
+        }
+
+        assertTrue("COMPLETED".equals(execution.getString("status")));
+    }
+
     JSONObject postNewBackup(String body) throws Exception {
         MockHttpServletResponse resp =
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/br/backup",
                         body,
-                        MediaType.APPLICATION_JSON_VALUE);
+                        MediaType.APPLICATION_JSON_UTF8_VALUE);
 
+        int cnt = 0;
+        while (cnt < 100 && resp.getStatus() == 500) {
+            LOGGER.info(
+                    "Could not start a new Backup Job Execution since there are currently Running jobs.");
+            Thread.sleep(1000);
+            cnt++;
+        }
         assertEquals(201, resp.getStatus());
         assertEquals("application/json", resp.getContentType());
 
         JSONObject json = (JSONObject) json(resp);
-
         JSONObject execution = json.getJSONObject("backup");
 
         assertNotNull(execution);

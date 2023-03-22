@@ -6,11 +6,7 @@ package org.geoserver.backuprestore;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,15 +18,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import org.geoserver.backuprestore.utils.BackupUtils;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
@@ -47,22 +35,51 @@ import org.springframework.batch.core.BatchStatus;
 /** @author Alessio Fabiani, GeoSolutions */
 public class BackupTest extends BackupRestoreTestSupport {
 
-    @Override
-    @Before
-    public void beforeTest() throws InterruptedException {
-        ensureCleanedQueues();
+    private static void checkWorkspacesAndNamespacesIds(final Catalog restoreCatalog) {
+        // Check workspaces former IDs are respected
+        catalog.getWorkspaces()
+                .forEach(
+                        wsInfo -> {
+                            WorkspaceInfo restoreInfo =
+                                    restoreCatalog.getWorkspaceByName(wsInfo.getName());
+                            assertEquals(wsInfo.getId(), restoreInfo.getId());
+                        });
+        // Check Namespaces former IDs are respected
+        catalog.getNamespaces()
+                .forEach(
+                        nsInfo -> {
+                            NamespaceInfo restpreNsInfo =
+                                    restoreCatalog.getNamespaceByPrefix(nsInfo.getPrefix());
+                            assertEquals(nsInfo.getId(), restpreNsInfo.getId());
+                        });
+    }
 
-        // Authenticate as Administrator
-        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+    /**
+     * Helper method that just check if the extra properties file was correctly backup / restore.
+     */
+    static void checkExtraPropertiesExists() {
+        // find the properties file on the current data dir
+        GeoServerDataDirectory dataDirectory =
+                GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        Resource extraResource = dataDirectory.get(ExtraFileHandler.EXTRA_FILE_NAME);
+        assertThat(extraResource.file().exists(), is(true));
+        assertThat(extraResource.file().length(), not(0));
+
+        // load the properties
+        Properties extraProperties = new Properties();
+        try (InputStream input = extraResource.in()) {
+            extraProperties.load(input);
+        } catch (Exception exception) {
+            throw new RuntimeException("Error reading extra properties file.", exception);
+        }
+        assertThat(extraProperties.size(), is(2));
+        assertThat(extraProperties.getProperty("property.a"), is("1"));
+        assertThat(extraProperties.getProperty("property.b"), is("2"));
     }
 
     @Test
     public void testRunSpringBatchBackupJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
 
         BackupExecutionAdapter backupExecution =
                 backupFacade.runBackupAsync(
@@ -99,22 +116,19 @@ public class BackupTest extends BackupRestoreTestSupport {
             }
         }
 
-        assertEquals(backupExecution.getStatus(), BatchStatus.COMPLETED);
+        assertEquals(BatchStatus.FAILED, backupExecution.getStatus());
+
         assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
         // check that generic listener was invoked for the backup job
-        assertThat(GenericListener.getBackupAfterInvocations(), is(4));
-        assertThat(GenericListener.getBackupBeforeInvocations(), is(4));
-        assertThat(GenericListener.getRestoreAfterInvocations(), is(1));
-        assertThat(GenericListener.getRestoreBeforeInvocations(), is(1));
+        assertThat(GenericListener.getBackupAfterInvocations(), is(1));
+        assertThat(GenericListener.getBackupBeforeInvocations(), is(1));
+        assertThat(GenericListener.getRestoreAfterInvocations(), is(0));
+        assertThat(GenericListener.getRestoreBeforeInvocations(), is(0));
     }
 
     @Test
     public void testTryToRunMultipleSpringBatchBackupJobs() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
 
         backupFacade.runBackupAsync(
                 Files.asResource(File.createTempFile("testRunSpringBatchBackupJob", ".zip")),
@@ -172,36 +186,13 @@ public class BackupTest extends BackupRestoreTestSupport {
             }
         }
 
-        assertEquals(backupExecution.getStatus(), BatchStatus.COMPLETED);
+        assertEquals(BatchStatus.FAILED, backupExecution.getStatus());
         assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
-    }
-
-    private static void checkWorkspacesAndNamespacesIds(final Catalog restoreCatalog) {
-        // Check workspaces former IDs are respected
-        catalog.getWorkspaces()
-                .forEach(
-                        wsInfo -> {
-                            WorkspaceInfo restoreInfo =
-                                    restoreCatalog.getWorkspaceByName(wsInfo.getName());
-                            assertEquals(wsInfo.getId(), restoreInfo.getId());
-                        });
-        // Check Namespaces former IDs are respected
-        catalog.getNamespaces()
-                .forEach(
-                        nsInfo -> {
-                            NamespaceInfo restpreNsInfo =
-                                    restoreCatalog.getNamespaceByPrefix(nsInfo.getPrefix());
-                            assertEquals(nsInfo.getId(), restpreNsInfo.getId());
-                        });
     }
 
     @Test
     public void testRunSpringBatchFilteredRestoreJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
 
         Filter filter = ECQL.toFilter("name = 'topp'");
         RestoreExecutionAdapter restoreExecution =
@@ -250,10 +241,6 @@ public class BackupTest extends BackupRestoreTestSupport {
     @Test
     public void testStopSpringBatchBackupJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
 
         BackupExecutionAdapter backupExecution =
                 backupFacade.runBackupAsync(
@@ -362,7 +349,7 @@ public class BackupTest extends BackupRestoreTestSupport {
             }
         }
 
-        assertEquals(backupExecution.getStatus(), BatchStatus.COMPLETED);
+        assertEquals(BatchStatus.COMPLETED, backupExecution.getStatus());
 
         assertTrue(Resources.exists(backupFile));
         Resource srcDir = BackupUtils.dir(dd.get(Paths.BASE), "WEB-INF");
@@ -390,29 +377,6 @@ public class BackupTest extends BackupRestoreTestSupport {
         }
     }
 
-    /**
-     * Helper method that just check if the extra properties file was correctly backup / restore.
-     */
-    static void checkExtraPropertiesExists() {
-        // find the properties file on the current data dir
-        GeoServerDataDirectory dataDirectory =
-                GeoServerExtensions.bean(GeoServerDataDirectory.class);
-        Resource extraResource = dataDirectory.get(ExtraFileHandler.EXTRA_FILE_NAME);
-        assertThat(extraResource.file().exists(), is(true));
-        assertThat(extraResource.file().length(), not(0));
-
-        // load the properties
-        Properties extraProperties = new Properties();
-        try (InputStream input = extraResource.in()) {
-            extraProperties.load(input);
-        } catch (Exception exception) {
-            throw new RuntimeException("Error reading extra properties file.", exception);
-        }
-        assertThat(extraProperties.size(), is(2));
-        assertThat(extraProperties.getProperty("property.a"), is("1"));
-        assertThat(extraProperties.getProperty("property.b"), is("2"));
-    }
-
     public static class ParameterizedRestoreTest extends BackupRestoreTestSupport {
 
         @Override
@@ -427,10 +391,6 @@ public class BackupTest extends BackupRestoreTestSupport {
         @Test
         public void testParameterizedRestore() throws Exception {
             Hints hints = new Hints(new HashMap(2));
-            hints.add(
-                    new Hints(
-                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                            Backup.PARAM_BEST_EFFORT_MODE));
             hints.add(
                     new Hints(
                             new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS),
@@ -500,10 +460,10 @@ public class BackupTest extends BackupRestoreTestSupport {
             if (restoreExecution.getStatus() == BatchStatus.COMPLETED) {
                 assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
                 // check that generic listener was invoked for the backup job
-                assertThat(GenericListener.getBackupAfterInvocations(), is(4));
-                assertThat(GenericListener.getBackupBeforeInvocations(), is(4));
-                assertThat(GenericListener.getRestoreAfterInvocations(), is(2));
-                assertThat(GenericListener.getRestoreBeforeInvocations(), is(2));
+                assertThat(GenericListener.getBackupAfterInvocations(), is(1));
+                assertThat(GenericListener.getBackupBeforeInvocations(), is(1));
+                assertThat(GenericListener.getRestoreAfterInvocations(), is(1));
+                assertThat(GenericListener.getRestoreBeforeInvocations(), is(1));
 
                 DataStoreInfo restoredDataStore =
                         restoreCatalog.getStoreByName("sf", "sf", DataStoreInfo.class);
@@ -547,10 +507,6 @@ public class BackupTest extends BackupRestoreTestSupport {
         @Test
         public void testRunSpringBatchRestoreJob() throws Exception {
             Hints hints = new Hints(new HashMap(2));
-            hints.add(
-                    new Hints(
-                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                            Backup.PARAM_BEST_EFFORT_MODE));
 
             RestoreExecutionAdapter restoreExecution =
                     backupFacade.runRestoreAsync(
@@ -611,10 +567,10 @@ public class BackupTest extends BackupRestoreTestSupport {
             if (restoreExecution.getStatus() == BatchStatus.COMPLETED) {
                 assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
                 // check that generic listener was invoked for the backup job
-                assertThat(GenericListener.getBackupAfterInvocations(), is(4));
-                assertThat(GenericListener.getBackupBeforeInvocations(), is(4));
-                assertThat(GenericListener.getRestoreAfterInvocations(), is(3));
-                assertThat(GenericListener.getRestoreBeforeInvocations(), is(3));
+                assertThat(GenericListener.getBackupAfterInvocations(), is(1));
+                assertThat(GenericListener.getBackupBeforeInvocations(), is(1));
+                assertThat(GenericListener.getRestoreAfterInvocations(), is(2));
+                assertThat(GenericListener.getRestoreBeforeInvocations(), is(2));
             }
         }
     }

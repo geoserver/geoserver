@@ -12,14 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemCountAware;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemStream;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.ItemStreamReader;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.batch.item.*;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.batch.item.util.ExecutionContextUserSupport;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,7 +34,16 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
                 ResourceAwareItemReaderItemStream<T>,
                 InitializingBean {
 
+    private static final String READ_COUNT = "read.count";
+    private static final String READ_COUNT_MAX = "read.count.max";
+    private final ExecutionContextUserSupport executionContextUserSupport =
+            new ExecutionContextUserSupport();
     protected Class clazz;
+    private int currentItemCount = 0;
+
+    private int maxItemCount = Integer.MAX_VALUE;
+
+    private boolean saveState = true;
 
     public CatalogReader(Class<T> clazz, Backup backupFacade) {
         super(backupFacade);
@@ -49,19 +51,6 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
 
         this.setExecutionContextName(ClassUtils.getShortName(clazz));
     }
-
-    private static final String READ_COUNT = "read.count";
-
-    private static final String READ_COUNT_MAX = "read.count.max";
-
-    private int currentItemCount = 0;
-
-    private int maxItemCount = Integer.MAX_VALUE;
-
-    private boolean saveState = true;
-
-    private final ExecutionContextUserSupport executionContextUserSupport =
-            new ExecutionContextUserSupport();
 
     /**
      * The name of the component which will be used as a stem for keys in the {@link
@@ -143,8 +132,8 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
      * <code>[name].read.count</code> (where <code>[name]</code> is the name of this component) the
      * value from the {@link ExecutionContext} will be used in preference.
      *
-     * @see #setName(String)
      * @param count the value of the current item count
+     * @see #setName(String)
      */
     public void setCurrentItemCount(int count) {
         this.currentItemCount = count;
@@ -155,8 +144,8 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
      * <code>[name].read.count.max</code> (where <code>[name]</code> is the name of this component)
      * the value from the {@link ExecutionContext} will be used in preference.
      *
-     * @see #setName(String)
      * @param count the value of the maximum item count
+     * @see #setName(String)
      */
     public void setMaxItemCount(int count) {
         this.maxItemCount = count;
@@ -230,6 +219,15 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
     }
 
     /**
+     * The flag that determines whether to save internal state for restarts.
+     *
+     * @return true if the flag was set
+     */
+    public boolean isSaveState() {
+        return saveState;
+    }
+
+    /**
      * Set the flag that determines whether to save internal data for {@link ExecutionContext}. Only
      * switch this to false if you don't want to save any state from this stream, and you don't need
      * it to be restartable. Always set it to false if the reader is being used in a concurrent
@@ -239,14 +237,5 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
      */
     public void setSaveState(boolean saveState) {
         this.saveState = saveState;
-    }
-
-    /**
-     * The flag that determines whether to save internal state for restarts.
-     *
-     * @return true if the flag was set
-     */
-    public boolean isSaveState() {
-        return saveState;
     }
 }

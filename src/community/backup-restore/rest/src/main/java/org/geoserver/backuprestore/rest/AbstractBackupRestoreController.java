@@ -19,13 +19,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
@@ -54,24 +48,8 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
     protected static final Logger LOGGER = Logging.getLogger(BackupController.class);
     protected Backup backupFacade;
 
-    /** @author Alessio Fabiani, GeoSolutions S.A.S. */
-    public static class ArchiveFileResourceConverter extends AbstractSingleValueConverter {
-
-        @SuppressWarnings("rawtypes")
-        @Override
-        public boolean canConvert(Class type) {
-            return Resource.class.isAssignableFrom(type);
-        }
-
-        @Override
-        public String toString(Object obj) {
-            return ((Resource) obj).path();
-        }
-
-        @Override
-        public Object fromString(String str) {
-            return Files.asResource(new File(str));
-        }
+    public AbstractBackupRestoreController() {
+        super();
     }
 
     /** @return the backupFacade */
@@ -342,6 +320,26 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
     }
 
     /** @author Alessio Fabiani, GeoSolutions S.A.S. */
+    public static class ArchiveFileResourceConverter extends AbstractSingleValueConverter {
+
+        @SuppressWarnings("rawtypes")
+        @Override
+        public boolean canConvert(Class type) {
+            return Resource.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public String toString(Object obj) {
+            return ((Resource) obj).path();
+        }
+
+        @Override
+        public Object fromString(String str) {
+            return Files.asResource(new File(str));
+        }
+    }
+
+    /** @author Alessio Fabiani, GeoSolutions S.A.S. */
     public static class JobExecutionConverter extends ReflectionConverter {
 
         private Backup backupFacade;
@@ -425,9 +423,5 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
             return filter;
         }
-    }
-
-    public AbstractBackupRestoreController() {
-        super();
     }
 }

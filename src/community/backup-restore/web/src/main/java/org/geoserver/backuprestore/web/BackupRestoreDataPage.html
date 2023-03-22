@@ -1,11 +1,11 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <head>
-<wicket:head>
-  <wicket:link>
-    <link rel="stylesheet" type="text/css" href="style.css"/>
-  </wicket:link>
-  
- <style type="text/css">
+    <wicket:head>
+        <wicket:link>
+            <link href="style.css" rel="stylesheet" type="text/css"/>
+        </wicket:link>
+
+        <style type="text/css">
    fieldset {
      margin-top: 3em;
    }
@@ -18,113 +18,136 @@
    #sources li:first-child {
      margin: 0.3em 0 0;
    }
- </style>
- </wicket:head>
+
+
+        </style>
+    </wicket:head>
 </head>
 <body>
 <wicket:extend>
 
-   <div>
-    <fieldset>
-      <legend><span><wicket:message key="backupResource">Archive File</wicket:message></span></legend>
-	  <div wicket:id="backupResource"></div>
-	  <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
-      <select id="workspace" wicket:id="workspace"></select>
-      <span wicket:id="workspaceNameContainer"><input type="text" class="text" wicket:id="workspaceName" style="width:10em;"></input></span>
-	  <label for="store"><wicket:message key="store">Store</wicket:message></label>
-      <select id="store" wicket:id="store"></select>
-      <label for="layer"><wicket:message key="layer">Layer</wicket:message></label>
-      <select id="layer" wicket:id="layer"></select>
-	</fieldset>
-  </div>
-  
-  <form wicket:id="backupForm">
-    <h3><span><wicket:message key="issueNewBackup">issueNewBackup</wicket:message></span></h3>
-	<fieldset>
-	    <legend><span><wicket:message key="newBackupOptions">Backup Options</wicket:message></span></legend>
-	    <ul>
-	      <li class="choiceItem">
-	        <input id="backupOptOverwirte" type="checkbox" wicket:id="backupOptOverwirte" />
-	        <label for="backupOptOverwirteLabel"><wicket:message key="backupOptOverwirteLabel">Overwrite Existing Archive</wicket:message></label>
-	      </li>
-	      <li class="choiceItem">
-	        <input id="backupOptBestEffort" type="checkbox" wicket:id="backupOptBestEffort" />
-	        <label for="backupOptBestEffortLabel"><wicket:message key="backupOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
-	      </li>
-	      <li class="choiceItem">
-	        <input id="backupOptCleanTemp" type="checkbox" wicket:id="backupOptCleanTemp" />
-	        <label for="backupOptCleanTempLabel"><wicket:message key="backupOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
-	      </li>
-	    </ul>
-	</fieldset>
-	<div class="button-group selfclear">
-      <a href="#" wicket:id="newBackupStart">
-        <span>Start Backup</span>
-      </a>
-      <a href="#" wicket:id="cancel">
-        <span><wicket:message key="cancel"></wicket:message></span>
-      </a>
-      <span wicket:id="status">Working</span>
+    <div>
+        <fieldset>
+            <legend><span><wicket:message key="backupResource">Archive File</wicket:message></span></legend>
+            <div wicket:id="backupResource"></div>
+            <label for="workspace">
+                <wicket:message key="workspace">Workspace</wicket:message>
+            </label>
+            <select id="workspace" wicket:id="workspace"></select>
+            <span wicket:id="workspaceNameContainer"><input class="text" style="width:10em;" type="text"
+                                                            wicket:id="workspaceName"></input></span>
+            <label for="store">
+                <wicket:message key="store">Store</wicket:message>
+            </label>
+            <select id="store" wicket:id="store"></select>
+            <label for="layer">
+                <wicket:message key="layer">Layer</wicket:message>
+            </label>
+            <select id="layer" wicket:id="layer"></select>
+        </fieldset>
     </div>
-    <wicket:message key="mandatory">mandatory</wicket:message> *
-    
-    <fieldset>
-      <legend>
-        <span class="border-0"><wicket:message key="recentBackups">recentBackups</wicket:message></span>
-      </legend>
 
-      <ul>
-        <li>
-          <div wicket:id="backups"></div>
-        </li>
-      </ul>
-    </fieldset>
-  </form>
+    <form wicket:id="backupForm">
+        <h3><span><wicket:message key="issueNewBackup">issueNewBackup</wicket:message></span></h3>
+        <fieldset>
+            <legend><span><wicket:message key="newBackupOptions">Backup Options</wicket:message></span></legend>
+            <ul>
+                <li class="choiceItem">
+                    <input id="backupOptOverwirte" type="checkbox" wicket:id="backupOptOverwirte"/>
+                    <label for="backupOptOverwirteLabel">
+                        <wicket:message key="backupOptOverwirteLabel">Overwrite Existing Archive</wicket:message>
+                    </label>
+                </li>
+                <li class="choiceItem">
+                    <input id="backupOptBestEffort" type="checkbox" wicket:id="backupOptBestEffort"/>
+                    <label for="backupOptBestEffortLabel">
+                        <wicket:message key="backupOptBestEffortLabel">Skip Failing Resources</wicket:message>
+                    </label>
+                </li>
+                <li class="choiceItem">
+                    <input id="backupOptCleanTemp" type="checkbox" wicket:id="backupOptCleanTemp"/>
+                    <label for="backupOptCleanTempLabel">
+                        <wicket:message key="backupOptCleanTempLabel">Clean-Up Temp Resources</wicket:message>
+                    </label>
+                </li>
+            </ul>
+        </fieldset>
+        <div class="button-group selfclear">
+            <a href="#" wicket:id="newBackupStart">
+                <span>Start Backup</span>
+            </a>
+            <a href="#" wicket:id="cancel">
+                <span><wicket:message key="cancel"></wicket:message></span>
+            </a>
+            <span wicket:id="status">Working</span>
+        </div>
+        <wicket:message key="mandatory">mandatory</wicket:message>
+        *
 
-  <form wicket:id="restoreForm">
-    <h3><span><wicket:message key="issueNewRestore">issueNewRestore</wicket:message></span></h3>
-	<fieldset>
-	    <legend><span><wicket:message key="newRestoreOptions">Restore Options</wicket:message></span></legend>
-	    <ul>
-	      <li class="choiceItem">
-	        <input id="restoreOptDryRun" type="checkbox" wicket:id="restoreOptDryRun" />
-	        <label for="restoreOptDryRunLabel"><wicket:message key="restoreOptDryRunLabel">Restore Dry-Run</wicket:message></label>
-	      </li>
-	      <li class="choiceItem">
-	        <input id="restoreOptBestEffort" type="checkbox" wicket:id="restoreOptBestEffort" />
-	        <label for="restoreOptBestEffortLabel"><wicket:message key="restoreOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
-	      </li>
-	      <li class="choiceItem">
-	        <input id="restoreOptCleanTemp" type="checkbox" wicket:id="restoreOptCleanTemp" />
-	        <label for="restoreOptCleanTempLabel"><wicket:message key="restoreOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
-	      </li>
-	    </ul>
-	</fieldset>
-	<div class="button-group selfclear">
-      <a href="#" wicket:id="newRestoreStart">
-        <span>Start Restore</span>
-      </a>
-      <a href="#" wicket:id="cancel">
-        <span><wicket:message key="cancel"></wicket:message></span>
-      </a>
-      <span wicket:id="status">Working</span>
-    </div>
-    <wicket:message key="mandatory">mandatory</wicket:message> *
-    
-    <fieldset>
-      <legend>
-        <span class="border-0"><wicket:message key="recentRestores">recentRestores</wicket:message></span>
-      </legend>
+        <fieldset>
+            <legend>
+                <span class="border-0"><wicket:message key="recentBackups">recentBackups</wicket:message></span>
+            </legend>
 
-      <ul>
-        <li>
-          <div wicket:id="restores"></div>
-        </li>
-      </ul>
-    </fieldset>
-  </form>
-    
-  <div wicket:id="dialog"></div>
+            <ul>
+                <li>
+                    <div wicket:id="backups"></div>
+                </li>
+            </ul>
+        </fieldset>
+    </form>
+
+    <form wicket:id="restoreForm">
+        <h3><span><wicket:message key="issueNewRestore">issueNewRestore</wicket:message></span></h3>
+        <fieldset>
+            <legend><span><wicket:message key="newRestoreOptions">Restore Options</wicket:message></span></legend>
+            <ul>
+                <li class="choiceItem">
+                    <input id="restoreOptDryRun" type="checkbox" wicket:id="restoreOptDryRun"/>
+                    <label for="restoreOptDryRunLabel">
+                        <wicket:message key="restoreOptDryRunLabel">Restore Dry-Run</wicket:message>
+                    </label>
+                </li>
+                <li class="choiceItem">
+                    <input id="restoreOptBestEffort" type="checkbox" wicket:id="restoreOptBestEffort"/>
+                    <label for="restoreOptBestEffortLabel">
+                        <wicket:message key="restoreOptBestEffortLabel">Skip Failing Resources</wicket:message>
+                    </label>
+                </li>
+                <li class="choiceItem">
+                    <input id="restoreOptCleanTemp" type="checkbox" wicket:id="restoreOptCleanTemp"/>
+                    <label for="restoreOptCleanTempLabel">
+                        <wicket:message key="restoreOptCleanTempLabel">Clean-Up Temp Resources</wicket:message>
+                    </label>
+                </li>
+            </ul>
+        </fieldset>
+        <div class="button-group selfclear">
+            <a href="#" wicket:id="newRestoreStart">
+                <span>Start Restore</span>
+            </a>
+            <a href="#" wicket:id="cancel">
+                <span><wicket:message key="cancel"></wicket:message></span>
+            </a>
+            <span wicket:id="status">Working</span>
+        </div>
+        <wicket:message key="mandatory">mandatory</wicket:message>
+        *
+
+        <fieldset>
+            <legend>
+                <span class="border-0"><wicket:message key="recentRestores">recentRestores</wicket:message></span>
+            </legend>
+
+            <ul>
+                <li>
+                    <div wicket:id="restores"></div>
+                </li>
+            </ul>
+        </fieldset>
+    </form>
+
+    <div wicket:id="dialog"></div>
 </wicket:extend>
 </body>
 </html>

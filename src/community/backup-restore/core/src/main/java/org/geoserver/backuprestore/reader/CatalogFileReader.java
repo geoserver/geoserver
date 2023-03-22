@@ -21,11 +21,7 @@
 
 package org.geoserver.backuprestore.reader;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -37,11 +33,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.ValidationResult;
@@ -134,10 +126,10 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
      * Ensure that all required dependencies for the ItemReader to run are provided after all
      * properties have been set.
      *
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      * @throws IllegalArgumentException if the Resource, FragmentDeserializer or
      *     FragmentRootElementName is null, or if the root element is empty.
      * @throws IllegalStateException if the Resource does not exist.
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -280,7 +272,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
      */
     private Object unmarshal(Source source)
             throws TransformerException, XMLStreamException, UnsupportedEncodingException {
-        TransformerFactory tf = TransformerFactory.newInstance();
+        TransformerFactory tf = TransformerFactory.newDefaultInstance();
         Transformer t = tf.newTransformer();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Result result = new StreamResult(os);

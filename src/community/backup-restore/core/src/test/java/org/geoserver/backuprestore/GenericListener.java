@@ -15,30 +15,6 @@ public final class GenericListener implements BackupRestoreJobExecutionListener 
     private static int restoreBeforeInvocations = 0;
     private static int restoreAfterInvocations = 0;
 
-    @Override
-    public void beforeJob(JobType type, JobExecution jobExecution) {
-        switch (type) {
-            case BACKUP:
-                backupBeforeInvocations++;
-                break;
-            case RESTORE:
-                restoreBeforeInvocations++;
-                break;
-        }
-    }
-
-    @Override
-    public void afterJob(JobType type, JobExecution jobExecution) {
-        switch (type) {
-            case BACKUP:
-                backupAfterInvocations++;
-                break;
-            case RESTORE:
-                restoreAfterInvocations++;
-                break;
-        }
-    }
-
     public static int getBackupBeforeInvocations() {
         return backupBeforeInvocations;
     }
@@ -61,5 +37,29 @@ public final class GenericListener implements BackupRestoreJobExecutionListener 
         backupAfterInvocations = 0;
         restoreBeforeInvocations = 0;
         restoreAfterInvocations = 0;
+    }
+
+    @Override
+    public void beforeJob(JobType type, JobExecution jobExecution) {
+        switch (type) {
+            case BACKUP:
+                backupBeforeInvocations++;
+                break;
+            case RESTORE:
+                restoreBeforeInvocations++;
+                break;
+        }
+    }
+
+    @Override
+    public void afterJob(JobType type, JobExecution jobExecution) {
+        switch (type) {
+            case BACKUP:
+                backupAfterInvocations++;
+                break;
+            case RESTORE:
+                restoreAfterInvocations++;
+                break;
+        }
     }
 }

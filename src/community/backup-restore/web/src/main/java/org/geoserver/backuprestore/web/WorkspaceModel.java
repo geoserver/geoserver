@@ -12,9 +12,8 @@ import org.geoserver.web.GeoServerApplication;
 public class WorkspaceModel<T extends WorkspaceInfo> extends LoadableDetachableModel<T> {
 
     private static final long serialVersionUID = 8956830437048564765L;
-
-    private ResourceFilePanel resourceFilePanel;
     String name;
+    private ResourceFilePanel resourceFilePanel;
 
     private WorkspaceModel(T workspace) {
         super(workspace);

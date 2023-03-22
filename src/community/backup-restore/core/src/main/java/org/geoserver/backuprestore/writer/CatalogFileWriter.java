@@ -4,11 +4,7 @@
  */
 package org.geoserver.backuprestore.writer;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.UnsupportedCharsetException;
@@ -21,11 +17,7 @@ import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.util.XStreamPersister;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStream;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.WriteFailedException;
-import org.springframework.batch.item.WriterNotOpenException;
+import org.springframework.batch.item.*;
 import org.springframework.batch.item.support.AbstractItemStreamItemWriter;
 import org.springframework.batch.item.util.FileUtils;
 import org.springframework.batch.support.transaction.TransactionAwareBufferedWriter;
@@ -41,10 +33,8 @@ import org.springframework.util.Assert;
  */
 public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
-    private static final boolean DEFAULT_TRANSACTIONAL = false;
-
     protected static final Logger logger = Logging.getLogger(CatalogFileWriter.class);
-
+    private static final boolean DEFAULT_TRANSACTIONAL = false;
     private static final String WRITTEN_STATISTICS_NAME = "written";
 
     private static final String RESTART_DATA_NAME = "current.count";
@@ -295,28 +285,18 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
     private class OutputState {
         // default encoding for writing to output files - set to UTF-8.
         private static final String DEFAULT_CHARSET = "UTF-8";
-
-        private FileOutputStream os;
-
         // The bufferedWriter over the file channel that is actually written
         Writer outputBufferedWriter;
-
         FileChannel fileChannel;
-
         // this represents the charset encoding (if any is needed) for the
         // output file
         String encoding = DEFAULT_CHARSET;
-
         boolean restarted = false;
-
         long lastMarkedByteOffsetPosition = 0;
-
         long linesWritten = 0;
-
         boolean shouldDeleteIfExists = true;
-
         boolean initialized = false;
-
+        private FileOutputStream os;
         private boolean append = false;
 
         private boolean appending = false;

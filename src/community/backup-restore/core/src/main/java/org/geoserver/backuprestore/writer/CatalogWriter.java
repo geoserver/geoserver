@@ -32,6 +32,8 @@ import org.springframework.util.ClassUtils;
 public abstract class CatalogWriter<T> extends BackupRestoreItem
         implements ItemStreamWriter<T>, ResourceAwareItemWriterItemStream<T>, InitializingBean {
 
+    private final ExecutionContextUserSupport executionContextUserSupport =
+            new ExecutionContextUserSupport();
     protected Class clazz;
 
     public CatalogWriter(Class<T> clazz, Backup backupFacade) {
@@ -40,9 +42,6 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
 
         this.setExecutionContextName(ClassUtils.getShortName(clazz));
     }
-
-    private final ExecutionContextUserSupport executionContextUserSupport =
-            new ExecutionContextUserSupport();
 
     /**
      * No-op.

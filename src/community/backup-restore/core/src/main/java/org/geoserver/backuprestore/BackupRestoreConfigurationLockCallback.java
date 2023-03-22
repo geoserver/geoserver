@@ -10,10 +10,9 @@ import org.geoserver.GeoServerConfigurationLock.LockType;
 /** @author Alessio Fabiani, GeoSolutions */
 public class BackupRestoreConfigurationLockCallback implements BackupRestoreCallback {
 
-    GeoServerConfigurationLock locker;
-
     static ThreadLocal<LockType> THREAD_LOCK =
             new ThreadLocal<GeoServerConfigurationLock.LockType>();
+    GeoServerConfigurationLock locker;
 
     public BackupRestoreConfigurationLockCallback(GeoServerConfigurationLock locker) {
         this.locker = locker;

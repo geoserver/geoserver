@@ -20,6 +20,16 @@ public final class ContinuableHandler implements GenericTaskletHandler, Serializ
 
     private static AtomicInteger INVOCATIONS = new AtomicInteger(0);
 
+    /** Reset the number of invocation of this handler counter. */
+    public static void resetInvocationsCount() {
+        INVOCATIONS.set(0);
+    }
+
+    /** Return the number of time this handler has been invoked. */
+    public static int getInvocationsCount() {
+        return INVOCATIONS.get();
+    }
+
     @Override
     public void initialize(StepExecution stepExecution, BackupRestoreItem context) {
         // nothing to do here
@@ -38,15 +48,5 @@ public final class ContinuableHandler implements GenericTaskletHandler, Serializ
         }
         // we need to run again
         return RepeatStatus.CONTINUABLE;
-    }
-
-    /** Reset the number of invocation of this handler counter. */
-    public static void resetInvocationsCount() {
-        INVOCATIONS.set(0);
-    }
-
-    /** Return the number of time this handler has been invoked. */
-    public static int getInvocationsCount() {
-        return INVOCATIONS.get();
     }
 }

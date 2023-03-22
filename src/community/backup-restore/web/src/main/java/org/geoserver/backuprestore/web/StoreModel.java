@@ -14,10 +14,9 @@ import org.geoserver.web.GeoServerApplication;
 public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> {
 
     private static final long serialVersionUID = -2008934085507417813L;
-
-    private ResourceFilePanel resourceFilePanel;
     IModel workspace;
     String name;
+    private ResourceFilePanel resourceFilePanel;
 
     private StoreModel(T store) {
         super(store);

@@ -14,11 +14,10 @@ import org.geoserver.web.GeoServerApplication;
 public class LayerModel<T extends LayerInfo> extends LoadableDetachableModel<T> {
 
     private static final long serialVersionUID = 1619470274815042758L;
-
-    private ResourceFilePanel resourceFilePanel;
     IModel workspace;
     IModel store;
     String name;
+    private ResourceFilePanel resourceFilePanel;
 
     private LayerModel(T store) {
         super(store);

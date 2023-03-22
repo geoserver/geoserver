@@ -13,52 +13,17 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogException;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.ValidationResult;
-import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WMTSStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.CoverageInfoImpl;
-import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
-import org.geoserver.catalog.impl.DataStoreInfoImpl;
-import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
-import org.geoserver.catalog.impl.LayerGroupInfoImpl;
-import org.geoserver.catalog.impl.LayerInfoImpl;
-import org.geoserver.catalog.impl.ProxyUtils;
-import org.geoserver.catalog.impl.StoreInfoImpl;
-import org.geoserver.catalog.impl.WMSStoreInfoImpl;
-import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
+import org.geoserver.catalog.*;
+import org.geoserver.catalog.impl.*;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.gwc.layer.TileLayerCatalog;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.decorators.SecuredCoverageInfo;
-import org.geoserver.security.decorators.SecuredCoverageStoreInfo;
-import org.geoserver.security.decorators.SecuredDataStoreInfo;
-import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
-import org.geoserver.security.decorators.SecuredWMSLayerInfo;
-import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
+import org.geoserver.security.decorators.*;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.Converters;
@@ -73,35 +38,25 @@ import org.springframework.util.Assert;
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public abstract class BackupRestoreItem<T> {
 
+    public static final String ENCRYPTED_FIELDS_KEY = "backupRestoreParameterizedFields";
     /** logger */
     private static final Logger LOGGER = Logging.getLogger(BackupRestoreItem.class);
 
     protected Backup backupFacade;
-
-    private Catalog catalog;
-
     protected XStreamPersister xstream;
-
+    private Catalog catalog;
+    private TileLayerCatalog tileLayerCatalog;
     private XStream xp;
-
     private boolean isNew = true;
-
     private AbstractExecutionAdapter currentJobExecution;
-
     private boolean dryRun = true;
-
     private boolean bestEffort;
-
     private XStreamPersisterFactory xStreamPersisterFactory;
-
     private Filter filters[];
-
-    public static final String ENCRYPTED_FIELDS_KEY = "backupRestoreParameterizedFields";
 
     public BackupRestoreItem(Backup backupFacade) {
         this.backupFacade = backupFacade;
         this.xStreamPersisterFactory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
-        ;
     }
 
     /** @return the xStreamPersisterFactory */
@@ -123,6 +78,12 @@ public abstract class BackupRestoreItem<T> {
     public Catalog getCatalog() {
         authenticate();
         return catalog;
+    }
+
+    /** @return the tileLayerCatalog */
+    public TileLayerCatalog getTileLayerCatalog() {
+        authenticate();
+        return tileLayerCatalog;
     }
 
     /** */
@@ -177,6 +138,7 @@ public abstract class BackupRestoreItem<T> {
         JobExecution jobExecution = stepExecution.getJobExecution();
 
         this.xstream = xStreamPersisterFactory.createXMLPersister();
+        this.tileLayerCatalog = backupFacade.getTileLayerCatalog();
 
         if (backupFacade.getRestoreExecutions() != null
                 && !backupFacade.getRestoreExecutions().isEmpty()
@@ -196,7 +158,9 @@ public abstract class BackupRestoreItem<T> {
 
         // Set Catalog
         this.xstream.setCatalog(this.catalog);
-        this.xstream.setReferenceByName(true);
+        this.xstream.setReferenceByName(false);
+        this.xstream.setUnwrapNulls(true);
+        this.xstream.setEncryptPasswordFields(false);
         this.xp = this.xstream.getXStream();
 
         Assert.notNull(this.xp, "xStream persister should not be NULL");
@@ -322,8 +286,7 @@ public abstract class BackupRestoreItem<T> {
     }
 
     /** */
-    protected boolean filteredResource(
-            T resource, WorkspaceInfo ws, boolean strict, Class<?> clazz) {
+    public boolean filteredResource(T resource, WorkspaceInfo ws, boolean strict, Class<?> clazz) {
         // Filtering Resources
         if (!filterIsValid()) {
             return false;
@@ -358,7 +321,7 @@ public abstract class BackupRestoreItem<T> {
     }
 
     /** */
-    protected boolean filteredResource(WorkspaceInfo ws, boolean strict) {
+    public boolean filteredResource(WorkspaceInfo ws, boolean strict) {
         return filteredResource(null, ws, strict, WorkspaceInfo.class);
     }
 
@@ -509,7 +472,7 @@ public abstract class BackupRestoreItem<T> {
     }
 
     /** @param catalog */
-    protected void syncTo(Catalog srcCatalog) {
+    public void syncTo(Catalog srcCatalog) {
         // do a manual import
 
         // WorkSpaces && NameSpaces

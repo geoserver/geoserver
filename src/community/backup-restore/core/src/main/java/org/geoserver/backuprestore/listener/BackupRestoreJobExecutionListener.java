@@ -9,12 +9,6 @@ import org.springframework.batch.core.JobExecution;
 /** Beans implementing this interface will be invoked as listeners of backup and restore jobs. */
 public interface BackupRestoreJobExecutionListener {
 
-    // a job is a backup or a restore job
-    enum JobType {
-        BACKUP,
-        RESTORE
-    }
-
     /** Callback before a job executes. */
     void beforeJob(JobType type, JobExecution jobExecution);
 
@@ -24,4 +18,10 @@ public interface BackupRestoreJobExecutionListener {
      * BatchStatus.X)".
      */
     void afterJob(JobType type, JobExecution jobExecution);
+
+    // a job is a backup or a restore job
+    enum JobType {
+        BACKUP,
+        RESTORE
+    }
 }

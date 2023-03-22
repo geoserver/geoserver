@@ -91,6 +91,13 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                 getType(pp.get("clazz").toString()));
     }
 
+    public BackupRestorePage(IModel<T> model, PageParameters pp, Class<T> clazz) {
+        this.params = pp;
+        this.clazz = clazz;
+
+        initComponents(model);
+    }
+
     /** */
     @SuppressWarnings("rawtypes")
     private static Class getType(String simpleName) {
@@ -100,13 +107,6 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
             return RestoreExecutionAdapter.class;
         }
         return null;
-    }
-
-    public BackupRestorePage(IModel<T> model, PageParameters pp, Class<T> clazz) {
-        this.params = pp;
-        this.clazz = clazz;
-
-        initComponents(model);
     }
 
     public Class<T> getType() {
@@ -397,6 +397,11 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
         return null;
     }
 
+    void setLinkEnabled(AjaxLink link, boolean enabled, AjaxRequestTarget target) {
+        link.setEnabled(enabled);
+        target.add(link);
+    }
+
     class DataTitleModel<T extends AbstractExecutionAdapter>
             extends LoadableDetachableModel<String> {
 
@@ -439,11 +444,6 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
 
             return title;
         }
-    }
-
-    void setLinkEnabled(AjaxLink link, boolean enabled, AjaxRequestTarget target) {
-        link.setEnabled(enabled);
-        target.add(link);
     }
 
     class BKErrorDetailsModel<T extends AbstractExecutionAdapter>

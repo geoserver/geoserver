@@ -4,9 +4,7 @@
  */
 package org.geoserver.backuprestore.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.logging.Level;
 import net.sf.json.JSONObject;
@@ -14,6 +12,7 @@ import org.geoserver.backuprestore.BackupRestoreTestSupport;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /** @author Alessio Fabiani, GeoSolutions */
@@ -35,40 +34,53 @@ public class RESTRestoreTest extends BackupRestoreTestSupport {
                             + "  }"
                             + "}";
 
-            JSONObject restore = postNewRestore(json);
+            assertRestoreIsValid(json);
+        }
+    }
 
-            assertNotNull(restore);
+    private void assertRestoreIsValid(String json) throws Exception {
+        JSONObject restore = postNewRestore(json);
 
-            Thread.sleep(500);
+        assertNotNull(restore);
 
-            JSONObject execution =
-                    readExecutionStatus(restore.getJSONObject("execution").getLong("id"));
+        Thread.sleep(500);
 
-            assertTrue(
-                    "STARTED".equals(execution.getString("status"))
-                            || "STARTING".equals(execution.getString("status")));
+        JSONObject execution =
+                readExecutionStatus(restore.getJSONObject("execution").getLong("id"));
 
-            int cnt = 0;
-            while (cnt < 100
-                    && ("STARTED".equals(execution.getString("status"))
-                            || "STARTING".equals(execution.getString("status")))) {
-                execution = readExecutionStatus(execution.getLong("id"));
+        assertTrue(
+                "STARTED".equals(execution.getString("status"))
+                        || "STARTING".equals(execution.getString("status")));
 
-                Thread.sleep(100);
-                cnt++;
-            }
+        int cnt = 0;
+        while (cnt < 100
+                && ("STARTED".equals(execution.getString("status"))
+                        || "STARTING".equals(execution.getString("status")))) {
+            execution = readExecutionStatus(execution.getLong("id"));
 
-            if (cnt < 100) {
-                assertTrue("COMPLETED".equals(execution.getString("status")));
-            }
+            Thread.sleep(1000);
+            cnt++;
+        }
+
+        if (cnt < 100) {
+            assertTrue("COMPLETED".equals(execution.getString("status")));
         }
     }
 
     JSONObject postNewRestore(String body) throws Exception {
         MockHttpServletResponse resp =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/br/restore", body, "application/json");
+                        RestBaseController.ROOT_PATH + "/br/restore",
+                        body,
+                        MediaType.APPLICATION_JSON_UTF8_VALUE);
 
+        int cnt = 0;
+        while (cnt < 100 && resp.getStatus() == 500) {
+            LOGGER.info(
+                    "Could not start a new Restore Job Execution since there are currently Running jobs.");
+            Thread.sleep(1000);
+            cnt++;
+        }
         assertEquals(201, resp.getStatus());
         assertEquals("application/json", resp.getContentType());
 

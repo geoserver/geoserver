@@ -27,12 +27,7 @@ import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStream;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.ResourceAware;
-import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.batch.item.*;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.core.io.Resource;
@@ -70,6 +65,15 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     private boolean noInput;
 
     private boolean strict = false;
+    private Comparator<Resource> comparator =
+            new Comparator<Resource>() {
+
+                /** Compares resource filenames. */
+                @Override
+                public int compare(Resource r1, Resource r2) {
+                    return r1.getFilename().compareTo(r2.getFilename());
+                }
+            };
 
     public CatalogMultiResourceItemReader(Class<T> clazz, Backup backupFacade) {
         super(clazz, backupFacade);
@@ -89,16 +93,6 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     public void setStrict(boolean strict) {
         this.strict = strict;
     }
-
-    private Comparator<Resource> comparator =
-            new Comparator<Resource>() {
-
-                /** Compares resource filenames. */
-                @Override
-                public int compare(Resource r1, Resource r2) {
-                    return r1.getFilename().compareTo(r2.getFilename());
-                }
-            };
 
     /** Reads the next item, jumping to next resource if necessary. */
     @Override

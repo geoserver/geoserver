@@ -6,43 +6,30 @@ package org.geoserver.backuprestore;
 
 import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
-import org.geoserver.backuprestore.utils.BackupUtils;
+import org.geoserver.backuprestore.executor.BackupAsyncExecutor;
+import org.geoserver.backuprestore.executor.RestoreAsyncExecutor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.gwc.layer.TileLayerCatalog;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
-import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.job.AbstractJob;
-import org.springframework.batch.core.launch.JobExecutionNotRunningException;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
+import org.springframework.batch.core.launch.*;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
@@ -76,39 +63,30 @@ public class Backup extends JobExecutionListenerSupport
     public static final String PARAM_PURGE_RESOURCES = "BK_PURGE_RESOURCES";
 
     public static final String PARAM_SKIP_GWC = "BK_SKIP_GWC";
-
-    static Logger LOGGER = Logging.getLogger(Backup.class);
-
     /* Job Parameters Keys **/
     public static final String PARAM_TIME = "time";
-
     public static final String PARAM_JOB_NAME = "job.execution.name";
-
     public static final String PARAM_OUTPUT_FILE_PATH = "output.file.path";
-
     public static final String PARAM_INPUT_FILE_PATH = "input.file.path";
-
     public static final String PARAM_EXCLUDE_FILE_PATH = "exclude.file.path";
-
     public static final String PARAM_CLEANUP_TEMP = "BK_CLEANUP_TEMP";
-
     public static final String PARAM_DRY_RUN_MODE = "BK_DRY_RUN";
-
     public static final String PARAM_BEST_EFFORT_MODE = "BK_BEST_EFFORT";
-
     /* Jobs Context Keys **/
     public static final String BACKUP_JOB_NAME = "backupJob";
-
     public static final String RESTORE_JOB_NAME = "restoreJob";
-
     public static final String PARAM_PARAMETERIZE_PASSWDS = "BK_PARAM_PASSWORDS";
-
     public static final String RESTORE_CATALOG_KEY = "restore.catalog";
+    static Logger LOGGER = Logging.getLogger(Backup.class);
+    /** A static application context */
+    private static ApplicationContext context;
 
-    private Authentication auth;
-
+    private final BackupAsyncExecutor backupAsyncExecutor;
+    private final RestoreAsyncExecutor restoreAsyncExecutor;
     /** catalog */
-    Catalog catalog;
+    private final Catalog catalog;
+
+    private final TileLayerCatalog tileLayerCatalog;
 
     GeoServer geoServer;
 
@@ -137,18 +115,18 @@ public class Backup extends JobExecutionListenerSupport
     Integer totalNumberOfBackupSteps;
 
     Integer totalNumberOfRestoreSteps;
-
-    /** A static application context */
-    private static ApplicationContext context;
+    private Authentication auth;
 
     public Backup(Catalog catalog, GeoServerResourceLoader rl) {
         this.catalog = catalog;
-        this.geoServer = GeoServerExtensions.bean(GeoServer.class);
-
         this.resourceLoader = rl;
         this.geoServerDataDirectory = new GeoServerDataDirectory(rl);
-
         this.xpf = GeoServerExtensions.bean(XStreamPersisterFactory.class);
+        this.geoServer = GeoServerExtensions.bean(GeoServer.class);
+        this.tileLayerCatalog =
+                (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
+        this.backupAsyncExecutor = new BackupAsyncExecutor(this);
+        this.restoreAsyncExecutor = new RestoreAsyncExecutor(this);
     }
 
     /** @return the context */
@@ -236,6 +214,10 @@ public class Backup extends JobExecutionListenerSupport
 
     public Catalog getCatalog() {
         return catalog;
+    }
+
+    public TileLayerCatalog getTileLayerCatalog() {
+        return tileLayerCatalog;
     }
 
     public GeoServer getGeoServer() {
@@ -334,7 +316,8 @@ public class Backup extends JobExecutionListenerSupport
         JobParametersBuilder builder = new JobParametersBuilder();
         params.forEach(builder::addString);
 
-        return runBackupAsync(archiveFile, overwrite, wsFilter, siFilter, liFilter, builder);
+        return backupAsyncExecutor.executeAsyncBackup(
+                archiveFile, overwrite, wsFilter, siFilter, liFilter, builder);
     }
 
     public BackupExecutionAdapter runBackupAsync(
@@ -348,119 +331,8 @@ public class Backup extends JobExecutionListenerSupport
 
         JobParametersBuilder builder = new JobParametersBuilder();
         parseParams(hints, builder);
-        return runBackupAsync(archiveFile, overwrite, wsFilter, siFilter, liFilter, builder);
-    }
-
-    /** */
-    private BackupExecutionAdapter runBackupAsync(
-            final Resource archiveFile,
-            final boolean overwrite,
-            final Filter wsFilter,
-            final Filter siFilter,
-            final Filter liFilter,
-            final JobParametersBuilder paramsBuilder)
-            throws IOException {
-
-        // Check whether the user is authenticated or not and, in the second case, if it is an
-        // Administrator or not
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
-
-        if (!isAdmin) {
-            throw new IllegalStateException("Not enough privileges to run a Restore process!");
-        }
-
-        // Check if archiveFile exists
-        if (archiveFile.file().exists()) {
-            if (!overwrite && FileUtils.sizeOf(archiveFile.file()) > 0) {
-                // Unless the user explicitly wants to overwrite the archiveFile, throw an exception
-                // whenever it already exists
-                throw new IOException(
-                        "The target archive file already exists. Use 'overwrite=TRUE' if you want to overwrite it.");
-            } else {
-                FileUtils.forceDelete(archiveFile.file());
-            }
-        } else {
-            // Make sure the parent path exists
-            if (!archiveFile.file().getParentFile().exists()) {
-                try {
-                    archiveFile.file().getParentFile().mkdirs();
-                } finally {
-                    if (!archiveFile.file().getParentFile().exists()) {
-                        throw new IOException("The path to target archive file is unreachable.");
-                    }
-                }
-            }
-        }
-
-        // Initialize ZIP
-        FileUtils.touch(archiveFile.file());
-
-        // Write flat files into a temporary folder
-        Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
-
-        if (wsFilter != null) {
-            paramsBuilder.addString("wsFilter", ECQL.toCQL(wsFilter));
-        }
-        if (siFilter != null) {
-            paramsBuilder.addString("siFilter", ECQL.toCQL(siFilter));
-        }
-        if (liFilter != null) {
-            paramsBuilder.addString("liFilter", ECQL.toCQL(liFilter));
-        }
-
-        paramsBuilder
-                .addString(PARAM_JOB_NAME, BACKUP_JOB_NAME)
-                .addString(
-                        PARAM_OUTPUT_FILE_PATH,
-                        BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
-                .addLong(PARAM_TIME, System.currentTimeMillis());
-
-        //        parseParams(params, paramsBuilder);
-
-        JobParameters jobParameters = paramsBuilder.toJobParameters();
-
-        // Send Execution Signal
-        BackupExecutionAdapter backupExecution;
-        try {
-            if (getRestoreRunningExecutions().isEmpty() && getBackupRunningExecutions().isEmpty()) {
-                synchronized (jobOperator) {
-                    // Start a new Job
-                    JobExecution jobExecution = jobLauncher.run(backupJob, jobParameters);
-                    backupExecution =
-                            new BackupExecutionAdapter(jobExecution, totalNumberOfBackupSteps);
-                    backupExecutions.put(backupExecution.getId(), backupExecution);
-
-                    backupExecution.setArchiveFile(archiveFile);
-                    backupExecution.setOverwrite(overwrite);
-                    backupExecution.setWsFilter(wsFilter);
-                    backupExecution.setSiFilter(siFilter);
-                    backupExecution.setLiFilter(liFilter);
-
-                    backupExecution.getOptions().add("OVERWRITE=" + overwrite);
-                    for (Entry jobParam : jobParameters.toProperties().entrySet()) {
-                        if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_TIME.equals(jobParam.getKey())) {
-                            backupExecution
-                                    .getOptions()
-                                    .add(jobParam.getKey() + "=" + jobParam.getValue());
-                        }
-                    }
-
-                    return backupExecution;
-                }
-            } else {
-                throw new IOException(
-                        "Could not start a new Backup Job Execution since there are currently Running jobs.");
-            }
-        } catch (JobExecutionAlreadyRunningException
-                | JobRestartException
-                | JobInstanceAlreadyCompleteException
-                | JobParametersInvalidException e) {
-            throw new IOException("Could not start a new Backup Job Execution: ", e);
-        } finally {
-        }
+        return backupAsyncExecutor.executeAsyncBackup(
+                archiveFile, overwrite, wsFilter, siFilter, liFilter, builder);
     }
 
     public RestoreExecutionAdapter runRestoreAsync(
@@ -473,7 +345,8 @@ public class Backup extends JobExecutionListenerSupport
 
         JobParametersBuilder paramsBuilder = new JobParametersBuilder();
         params.forEach(paramsBuilder::addString);
-        return runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, paramsBuilder);
+        return restoreAsyncExecutor.executeAsyncRestore(
+                archiveFile, wsFilter, siFilter, liFilter, paramsBuilder);
     }
 
     /** */
@@ -488,84 +361,8 @@ public class Backup extends JobExecutionListenerSupport
         JobParametersBuilder paramsBuilder = new JobParametersBuilder();
         parseParams(params, paramsBuilder);
 
-        return runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, paramsBuilder);
-    }
-
-    private RestoreExecutionAdapter runRestoreAsync(
-            Resource archiveFile,
-            final Filter wsFilter,
-            final Filter siFilter,
-            final Filter liFilter,
-            JobParametersBuilder paramsBuilder)
-            throws IOException {
-
-        // Check whether the user is authenticated or not and, in the second case, if it is an
-        // Administrator or not
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
-
-        if (!isAdmin) {
-            throw new IllegalStateException("Not enough privileges to run a Restore process!");
-        }
-
-        Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
-        BackupUtils.extractTo(archiveFile, tmpDir);
-        RestoreExecutionAdapter restoreExecution;
-
-        if (wsFilter != null) {
-            paramsBuilder.addString("wsFilter", ECQL.toCQL(wsFilter));
-        }
-        if (siFilter != null) {
-            paramsBuilder.addString("siFilter", ECQL.toCQL(siFilter));
-        }
-        if (liFilter != null) {
-            paramsBuilder.addString("liFilter", ECQL.toCQL(liFilter));
-        }
-
-        paramsBuilder
-                .addString(PARAM_JOB_NAME, RESTORE_JOB_NAME)
-                .addString(
-                        PARAM_INPUT_FILE_PATH,
-                        BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
-                .addLong(PARAM_TIME, System.currentTimeMillis());
-
-        JobParameters jobParameters = paramsBuilder.toJobParameters();
-
-        try {
-            if (getRestoreRunningExecutions().isEmpty() && getBackupRunningExecutions().isEmpty()) {
-                synchronized (jobOperator) {
-                    // Start a new Job
-                    JobExecution jobExecution = jobLauncher.run(restoreJob, jobParameters);
-                    restoreExecution =
-                            new RestoreExecutionAdapter(jobExecution, totalNumberOfRestoreSteps);
-                    restoreExecutions.put(restoreExecution.getId(), restoreExecution);
-                    restoreExecution.setArchiveFile(archiveFile);
-                    restoreExecution.setWsFilter(wsFilter);
-                    restoreExecution.setSiFilter(siFilter);
-                    restoreExecution.setLiFilter(liFilter);
-
-                    for (Entry jobParam : jobParameters.toProperties().entrySet()) {
-                        if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_TIME.equals(jobParam.getKey())) {
-                            restoreExecution
-                                    .getOptions()
-                                    .add(jobParam.getKey() + "=" + jobParam.getValue());
-                        }
-                    }
-
-                    return restoreExecution;
-                }
-            } else {
-                throw new IOException(
-                        "Could not start a new Restore Job Execution since there are currently Running jobs.");
-            }
-        } catch (JobExecutionAlreadyRunningException
-                | JobRestartException
-                | JobInstanceAlreadyCompleteException
-                | JobParametersInvalidException e) {
-            throw new IOException("Could not start a new Restore Job Execution: ", e);
-        }
+        return restoreAsyncExecutor.executeAsyncRestore(
+                archiveFile, wsFilter, siFilter, liFilter, paramsBuilder);
     }
 
     @Override
@@ -724,7 +521,7 @@ public class Backup extends JobExecutionListenerSupport
     }
 
     /** @return */
-    private GeoServerSecurityManager getSecurityManager() {
+    public GeoServerSecurityManager getSecurityManager() {
         return context.getBean(GeoServerSecurityManager.class);
     }
 }

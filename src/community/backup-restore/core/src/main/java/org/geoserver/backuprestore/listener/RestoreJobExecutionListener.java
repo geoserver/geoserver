@@ -45,7 +45,7 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        // Prior starting the JobExecution, lets store a new empty GeoServer Catalog into the
+        // Prior to starting the JobExecution, lets store a new empty GeoServer Catalog into the
         // context.
         // It will be used to load the resources on a temporary in-memory configuration, which will
         // be
@@ -100,21 +100,20 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
 
     private synchronized Catalog createRestoreCatalog(JobParameters params) {
         boolean purge = getPurgeResources(params);
-        CatalogImpl restoreCatalog = new CatalogImpl();
         Catalog gsCatalog = unwrapGsCatalog();
 
-        restoreCatalog.setResourceLoader(gsCatalog.getResourceLoader());
-        restoreCatalog.setResourcePool(gsCatalog.getResourcePool());
+        this.backupFacade.getNewCatalog().setResourceLoader(gsCatalog.getResourceLoader());
+        this.backupFacade.getNewCatalog().setResourcePool(gsCatalog.getResourcePool());
         // only synchronize catalogs if purge flag is not set to true
         if (!purge) {
-            syncCatalogs(restoreCatalog, gsCatalog);
+            syncCatalogs((CatalogImpl) this.backupFacade.getNewCatalog(), gsCatalog);
         }
 
         for (CatalogListener listener : gsCatalog.getListeners()) {
-            restoreCatalog.addListener(listener);
+            this.backupFacade.getNewCatalog().addListener(listener);
         }
 
-        return restoreCatalog;
+        return this.backupFacade.getNewCatalog();
     }
 
     private Catalog unwrapGsCatalog() {

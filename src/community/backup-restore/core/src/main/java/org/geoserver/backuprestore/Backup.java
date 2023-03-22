@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.geoserver.backuprestore.executor.BackupAsyncExecutor;
 import org.geoserver.backuprestore.executor.RestoreAsyncExecutor;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.util.XStreamPersister;
@@ -83,8 +84,12 @@ public class Backup extends JobExecutionListenerSupport
 
     private final BackupAsyncExecutor backupAsyncExecutor;
     private final RestoreAsyncExecutor restoreAsyncExecutor;
-    /** catalog */
+
+    /** GeoServer current catalog */
     private final Catalog catalog;
+
+    /** The new catalog we want to restore/replace */
+    private final Catalog newCatalog;
 
     private final TileLayerCatalog tileLayerCatalog;
 
@@ -119,6 +124,7 @@ public class Backup extends JobExecutionListenerSupport
 
     public Backup(Catalog catalog, GeoServerResourceLoader rl) {
         this.catalog = catalog;
+        this.newCatalog = new CatalogImpl();
         this.resourceLoader = rl;
         this.geoServerDataDirectory = new GeoServerDataDirectory(rl);
         this.xpf = GeoServerExtensions.bean(XStreamPersisterFactory.class);
@@ -214,6 +220,10 @@ public class Backup extends JobExecutionListenerSupport
 
     public Catalog getCatalog() {
         return catalog;
+    }
+
+    public Catalog getNewCatalog() {
+        return newCatalog;
     }
 
     public TileLayerCatalog getTileLayerCatalog() {

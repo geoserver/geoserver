@@ -150,7 +150,6 @@ public abstract class BackupRestoreItem<T> {
         } else {
             this.currentJobExecution = backupFacade.getBackupExecutions().get(jobExecution.getId());
             this.catalog = backupFacade.getCatalog();
-            this.xstream.setExcludeIds();
             this.isNew = false;
         }
 
@@ -158,8 +157,8 @@ public abstract class BackupRestoreItem<T> {
 
         // Set Catalog
         this.xstream.setCatalog(this.catalog);
-        this.xstream.setReferenceByName(false);
         this.xstream.setUnwrapNulls(true);
+        this.xstream.setReferenceByName(false);
         this.xstream.setEncryptPasswordFields(false);
         this.xp = this.xstream.getXStream();
 

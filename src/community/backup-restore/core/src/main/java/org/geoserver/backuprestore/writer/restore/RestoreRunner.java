@@ -42,22 +42,20 @@ public class RestoreRunner {
 
     CatalogBackupRestoreTasklet catalogBackupRestoreTasklet;
 
-    /**
-     *
-     * @param catalogBackupRestoreTasklet
-     */
+    /** @param catalogBackupRestoreTasklet */
     public RestoreRunner(CatalogBackupRestoreTasklet catalogBackupRestoreTasklet) {
         this.catalogBackupRestoreTasklet = catalogBackupRestoreTasklet;
     }
 
     /**
-     *  Hard Restore of GeoServer Configuration and Data (Catalog) from a Backup Archive (ZIP File) to a GeoServer Instance (Catalog)
+     * Hard Restore of GeoServer Configuration and Data (Catalog) from a Backup Archive (ZIP File)
+     * to a GeoServer Instance (Catalog)
      *
-     *  @param geoserver (can be null)
-     *  @param dd (can be null)
-     *  @param sourceRestoreFolder (can be null)
-     *  @param sourceWorkspacesFolder (can be null)
-     *  @param newGeoServerInfo (can be null)
+     * @param geoserver (can be null)
+     * @param dd (can be null)
+     * @param sourceRestoreFolder (can be null)
+     * @param sourceWorkspacesFolder (can be null)
+     * @param newGeoServerInfo (can be null)
      * @throws Exception
      */
     public void doRestore(

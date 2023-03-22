@@ -356,7 +356,6 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     /**
-     *
      * @param item
      * @return
      * @throws Exception

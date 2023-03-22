@@ -187,8 +187,9 @@ public class ResourceWriterTest extends BackupRestoreTestSupport {
 
         XStreamPersister xstream = catalogTsklet.getxStreamPersisterFactory().createXMLPersister();
         xstream.setCatalog(cat);
-        xstream.setReferenceByName(true);
-        xstream.setExcludeIds();
+        xstream.setUnwrapNulls(true);
+        xstream.setReferenceByName(false);
+        xstream.setEncryptPasswordFields(false);
         XStream xp = xstream.getXStream();
 
         GeoServerInfo gsGlobal =

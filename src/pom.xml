@@ -94,6 +94,7 @@
     <jts.version>1.19.0</jts.version>
     <spring.version>5.2.22.RELEASE</spring.version>
     <spring.security.version>5.1.13.RELEASE</spring.security.version>
+    <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <servlet-api.version>3.0.1</servlet-api.version>
     <jetty.version>9.4.48.v20220622</jetty.version>
     <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
@@ -1049,6 +1050,11 @@
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-cas</artifactId>
         <version>${spring.security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security.oauth</groupId>
+        <artifactId>spring-security-oauth2</artifactId>
+        <version>${spring.security.oauth2.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jasypt</groupId>

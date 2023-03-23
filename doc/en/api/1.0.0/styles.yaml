@@ -58,7 +58,7 @@ paths:
           Adds a new style entry to the server. 
           Using POST with the `application/xml` or `application/json` content only adds the style info to the catalog and does not upload style content. PUT to `/styles/{style}` to upload the style in this case.
 
-          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then separately PUT the style info at `/styles/{style}` to make any desired changes to the generated catalog entry.
+          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.se+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then separately PUT the style info at `/styles/{style}` to make any desired changes to the generated catalog entry.
           You can also use POST with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files, and then separately PUT the style info at /styles/{style}. POST with a ZIP file does not support any other style types.
       parameters:
         - $ref: "#/parameters/StyleInfoPost"
@@ -76,8 +76,15 @@ paths:
         - application/xml
         - application/json
         - application/zip
+        - text/xml
+        - text/json
         - application/vnd.ogc.sld+xml
         - application/vnd.ogc.se+xml
+        - application/vnd.geoserver.geocss+css
+        - application/vnd.geoserver.ysld+yaml
+        - application/vnd.geoserver.mbstyle+json
+      produces:
+        - text/plain
       responses:
         201:
           description: Created
@@ -220,11 +227,16 @@ paths:
           required: false
           default: false
       consumes:
-        - application/xml
         - application/json
         - application/zip
+        - text/xml
+        - application/xml
+        - text/json
         - application/vnd.ogc.sld+xml
         - application/vnd.ogc.se+xml
+        - application/vnd.geoserver.geocss+css
+        - application/vnd.geoserver.mbstyle+json
+        - application/vnd.geoserver.ysld+yaml
       responses:
         200:
           description: OK
@@ -346,8 +358,15 @@ paths:
         - application/xml
         - application/json
         - application/zip
+        - text/html
+        - text/json
         - application/vnd.ogc.sld+xml
         - application/vnd.ogc.se+xml
+        - application/vnd.geoserver.geocss+css
+        - application/vnd.geoserver.ysld+yaml
+        - application/vnd.geoserver.mbstyle+json
+      produces:
+        - text/plain
       responses:
         201:
           description: Created
@@ -523,11 +542,16 @@ paths:
           type: boolean
           required: false
       consumes:
-        - application/xml
         - application/json
         - application/zip
+        - text/xml
+        - application/xml
+        - text/json
         - application/vnd.ogc.sld+xml
         - application/vnd.ogc.se+xml
+        - application/vnd.geoserver.geocss+css
+        - application/vnd.geoserver.ysld+yaml
+        - application/vnd.geoserver.mbstyle+json
       responses:
         200:
           description: OK

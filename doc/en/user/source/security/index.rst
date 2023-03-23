@@ -18,5 +18,6 @@ The first page discusses configuration options in the web administration interfa
    service
    layer
    rest
+   urlchecks
    disable
    tutorials/index

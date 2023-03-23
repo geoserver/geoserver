@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WFS_Capabilities version="1.0.0"
+                  xmlns="http://www.opengis.net/wfs"
+                  xmlns:tiger="http://www.census.gov"
+                  xmlns:ogc="http://www.opengis.net/ogc"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/wfs $ {wfsBase}/schemas/wfs/1.0.0/WFS-capabilities.xsd">
+    <Service>
+        <Name>WFS</Name>
+        <Title>GeoServer Features service</Title>
+        <Abstract>This services delivers vector data in raw form, including both geometries and
+            attributes.
+        </Abstract>
+        <Keywords>WFS, WMS, GEOSERVER</Keywords>
+        <OnlineResource>http://geoserver.org</OnlineResource>
+        <Fees>NONE</Fees>
+        <AccessConstraints>NONE</AccessConstraints>
+    </Service>
+    <Capability>
+        <Request>
+            <GetCapabilities>
+                <DCPType>
+                    <HTTP>
+                        <Get onlineResource="${wfsBase}?request=GetCapabilities"/>
+                    </HTTP>
+                </DCPType>
+                <DCPType>
+                    <HTTP>
+                        <Post onlineResource="${wfsBase}"/>
+                    </HTTP>
+                </DCPType>
+            </GetCapabilities>
+            <DescribeFeatureType>
+                <SchemaDescriptionLanguage>
+                    <XMLSCHEMA/>
+                </SchemaDescriptionLanguage>
+                <DCPType>
+                    <HTTP>
+                        <Get onlineResource="${wfsBase}?request=DescribeFeatureType"/>
+                    </HTTP>
+                </DCPType>
+                <DCPType>
+                    <HTTP>
+                        <Post onlineResource="${wfsBase}"/>
+                    </HTTP>
+                </DCPType>
+            </DescribeFeatureType>
+            <GetFeature>
+                <ResultFormat>
+                    <KML/>
+                    <GML2/>
+                    <GML3/>
+                    <SHAPE-ZIP/>
+                    <CSV/>
+                    <JSON/>
+                    <GeoJSON-RFC/>
+                </ResultFormat>
+                <DCPType>
+                    <HTTP>
+                        <Get onlineResource="${wfsBase}?request=GetFeature"/>
+                    </HTTP>
+                </DCPType>
+                <DCPType>
+                    <HTTP>
+                        <Post onlineResource="${wfsBase}"/>
+                    </HTTP>
+                </DCPType>
+            </GetFeature>
+            <Transaction>
+                <DCPType>
+                    <HTTP>
+                        <Get onlineResource="${wfsBase}?request=Transaction"/>
+                    </HTTP>
+                </DCPType>
+                <DCPType>
+                    <HTTP>
+                        <Post onlineResource="${wfsBase}"/>
+                    </HTTP>
+                </DCPType>
+            </Transaction>
+            <LockFeature>
+                <DCPType>
+                    <HTTP>
+                        <Get onlineResource="${wfsBase}?request=LockFeature"/>
+                    </HTTP>
+                </DCPType>
+                <DCPType>
+                    <HTTP>
+                        <Post onlineResource="${wfsBase}"/>
+                    </HTTP>
+                </DCPType>
+            </LockFeature>
+            <GetFeatureWithLock>
+                <ResultFormat>
+                    <GML2/>
+                </ResultFormat>
+                <DCPType>
+                    <HTTP>
+                        <Get onlineResource="${wfsBase}?request=GetFeatureWithLock"/>
+                    </HTTP>
+                </DCPType>
+                <DCPType>
+                    <HTTP>
+                        <Post onlineResource="${wfsBase}"/>
+                    </HTTP>
+                </DCPType>
+            </GetFeatureWithLock>
+        </Request>
+    </Capability>
+    <FeatureTypeList>
+        <Operations>
+            <Query/>
+            <Insert/>
+            <Update/>
+            <Delete/>
+            <Lock/>
+        </Operations>
+        <FeatureType>
+            <Name>tiger:poi</Name>
+            <Title>Manhattan (NY) points of interest</Title>
+            <Abstract>Points of interest in New York, New York (on Manhattan). One of the attributes
+                contains the name of a file with a picture of the point of interest.
+            </Abstract>
+            <Keywords>poi, Manhattan, DS_poi, points_of_interest</Keywords>
+            <SRS>EPSG:4326</SRS>
+            <LatLongBoundingBox minx="-74.0118315772888"
+                                miny="40.70754683896324"
+                                maxx="-74.00857344353275"
+                                maxy="40.711945649065406"/>
+        </FeatureType>
+    </FeatureTypeList>
+    <ogc:Filter_Capabilities>
+        <ogc:Spatial_Capabilities>
+            <ogc:Spatial_Operators>
+                <ogc:Disjoint/>
+                <ogc:Equals/>
+                <ogc:DWithin/>
+                <ogc:Beyond/>
+                <ogc:Intersect/>
+                <ogc:Touches/>
+                <ogc:Crosses/>
+                <ogc:Within/>
+                <ogc:Contains/>
+                <ogc:Overlaps/>
+                <ogc:BBOX/>
+            </ogc:Spatial_Operators>
+        </ogc:Spatial_Capabilities>
+        <ogc:Scalar_Capabilities>
+            <ogc:Logical_Operators/>
+            <ogc:Comparison_Operators>
+                <ogc:Simple_Comparisons/>
+                <ogc:Between/>
+                <ogc:Like/>
+                <ogc:NullCheck/>
+            </ogc:Comparison_Operators>
+            <ogc:Arithmetic_Operators>
+                <ogc:Simple_Arithmetic/>
+            </ogc:Arithmetic_Operators>
+        </ogc:Scalar_Capabilities>
+    </ogc:Filter_Capabilities>
+</WFS_Capabilities>

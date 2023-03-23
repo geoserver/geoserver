@@ -682,7 +682,7 @@ public class Dispatcher extends AbstractController {
                         requestBean = parseRequestKVP(parameterType, req);
                         kvpParsed = true;
                     } catch (Exception e) {
-                        // dont die now, there might be a body to parse
+                        // don't die now, there might be a body to parse
                         t = e;
                     }
                 }

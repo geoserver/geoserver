@@ -706,7 +706,7 @@ public class ExecuteTest extends WPSTestSupport {
 
         assertXpathExists("/ows:ExceptionReport/ows:Exception/ows:ExceptionText", d);
         assertXpathEvaluatesTo(
-                "Failed to parse process inputs\nRemote complex input references are disabled",
+                "Failed to parse process input: features\nRemote complex input references are disabled",
                 "/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                 d);
     }
@@ -806,7 +806,7 @@ public class ExecuteTest extends WPSTestSupport {
 
         assertXpathExists("/ows:ExceptionReport/ows:Exception/ows:ExceptionText", d);
         assertXpathEvaluatesTo(
-                "Failed to parse process inputs\nRemote complex input references are disabled",
+                "Failed to parse process input: features\nRemote complex input references are disabled",
                 "/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                 d);
     }

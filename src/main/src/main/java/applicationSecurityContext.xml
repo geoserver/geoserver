@@ -168,5 +168,18 @@
   <bean id="securedResourceNameChangeListener" class="org.geoserver.security.SecuredResourceNameChangeListener">
     <constructor-arg ref="rawCatalog"/>
     <constructor-arg ref="accessRulesDao"/>
-  </bean>  
+  </bean>
+
+  <bean id="urlCheckDAO" class="org.geoserver.security.urlchecks.URLCheckDAO">
+    <constructor-arg ref="dataDirectory"/>
+    <constructor-arg ref="xstreamPersisterFactory"/>
+  </bean>
+
+  <bean id="configurableUrlChecker" class="org.geoserver.security.urlchecks.GeoServerURLChecker">
+    <constructor-arg ref="urlCheckDAO"/>
+  </bean>
+
+  <bean id="styleUrlChecker" class="org.geoserver.security.urlchecks.StyleURLChecker">
+    <constructor-arg ref="dataDirectory"/>
+  </bean>
 </beans>

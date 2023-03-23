@@ -30,6 +30,18 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+Remote requests control (GeoServer 2.24 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.24, remote requests control has been added, and enabled by default, in GeoServer. This feature allows administrators to control which remote requests are allowed to be made to GeoServer. By default, no authorizations are included, thus GeoServer will deny remote requests originating from user interaction. In particular, the following use cases are affected:
+
+* WMS operations with remotely fetch styles (``sld`` parameter) and style referencing remote icons (in general, icons outside of the data directory).
+  As a reminder, when a remote icon is not found, GeoServer will fall back to a default icon, a gray square with a black border.
+* WMS "feature portrayal" with dynamic remote WFS references provided in the request (``REMOTE_OWS_TYPE`` and ``REMOTE_OWS_URL`` parameters).
+* WPS remote inputs via either GET or POST request (e.g., remote GeoJSON file source).
+
+The list of locations that are safe to contact can be configured in the "URL checks" menu. 
+
 Log4J Upgrade (GeoServer 2.21 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

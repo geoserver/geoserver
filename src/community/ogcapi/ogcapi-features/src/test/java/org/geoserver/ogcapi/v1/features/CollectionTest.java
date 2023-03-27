@@ -5,9 +5,13 @@
 package org.geoserver.ogcapi.v1.features;
 
 import static org.geoserver.data.test.MockData.ROAD_SEGMENTS;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIDispatcher;
@@ -30,6 +35,7 @@ import org.geoserver.ogcapi.LinkInfo;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.impl.LinkInfoImpl;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -54,6 +60,18 @@ public class CollectionTest extends FeaturesTestSupport {
     @Before
     public void cleanupRoads() throws IOException {
         revertLayer(ROAD_SEGMENTS);
+    }
+
+    @Before
+    public void enableWFS() throws Exception {
+        setWFSEnabled(true);
+    }
+
+    private void setWFSEnabled(boolean enabled) {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setEnabled(enabled);
+        gs.save(wfs);
     }
 
     @Test
@@ -247,5 +265,26 @@ public class CollectionTest extends FeaturesTestSupport {
         // second link should not be there, service does not match
         List l2List = json.read("$.links[?(@.rel=='rasterized')]", List.class);
         assertTrue(l2List.isEmpty());
+    }
+
+    @Test
+    public void testDescribeFeatureType() throws Exception {
+        // WFS enabled
+        String roadSegments = getLayerId(ROAD_SEGMENTS);
+        String resource = "ogc/features/v1/collections/" + roadSegments;
+        DocumentContext jsonEnabled = getAsJSONPath(resource, 200);
+        assertThat(
+                readSingle(jsonEnabled, "$.links[?(@.rel=='describedBy')].href"),
+                allOf(
+                        startsWith("http://localhost:8080/geoserver/wfs?"),
+                        containsString("request=DescribeFeatureType"),
+                        containsString("service=WFS"),
+                        containsString("version=2.0"),
+                        containsString("typenames=cite%3ARoadSegments")));
+
+        // WFS disabled
+        setWFSEnabled(false);
+        DocumentContext jsonDisabled = getAsJSONPath(resource, 200);
+        assertThat(jsonDisabled.read("$.links[?(@.rel=='describedBy')]"), empty());
     }
 }

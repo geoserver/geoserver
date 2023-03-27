@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.ServiceInfo;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
@@ -83,22 +82,19 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         addSelfLinks("ogc/features/v1/collections/" + id);
 
         // describedBy as GML schema
-        String describedByHref =
-                ResponseUtils.buildURL(
-                        baseUrl,
-                        "wfs",
-                        new HashMap<String, String>() {
-                            {
-                                put("service", "WFS");
-                                put("version", "2.0");
-                                put("request", "DescribeFeatureType");
-                                put("typenames", featureType.prefixedName());
-                            }
-                        },
-                        URLMangler.URLType.SERVICE);
-        Link describedBy =
-                new Link(describedByHref, "describedBy", "application/xml", "Schema for " + id);
-        addLink(describedBy);
+        if (isOWSAvailable(geoServer, "WFS")) {
+            Map<String, String> kvp =
+                    Map.ofEntries(
+                            Map.entry("service", "WFS"),
+                            Map.entry("version", "2.0"),
+                            Map.entry("request", "DescribeFeatureType"),
+                            Map.entry("typenames", featureType.prefixedName()));
+            String describedByHref =
+                    ResponseUtils.buildURL(baseUrl, "wfs", kvp, URLMangler.URLType.SERVICE);
+            Link describedBy =
+                    new Link(describedByHref, "describedBy", "application/xml", "Schema for " + id);
+            addLink(describedBy);
+        }
 
         // queryables
         new LinksBuilder(Queryables.class, "ogc/features/v1/collections")
@@ -109,7 +105,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
                 .add(this);
 
         // map preview
-        if (isWMSAvailable(geoServer)) {
+        if (isOWSAvailable(geoServer, "WMS")) {
             Map<String, String> kvp = new HashMap<>();
             kvp.put("LAYERS", featureType.prefixedName());
             kvp.put("FORMAT", "application/openlayers");
@@ -118,13 +114,9 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         }
     }
 
-    private boolean isWMSAvailable(GeoServer geoServer) {
-        ServiceInfo si =
-                geoServer.getServices().stream()
-                        .filter(s -> "WMS".equals(s.getId()))
-                        .findFirst()
-                        .orElse(null);
-        return si != null;
+    private static boolean isOWSAvailable(GeoServer geoServer, String serviceId) {
+        return geoServer.getServices().stream()
+                .anyMatch(s -> serviceId.equalsIgnoreCase(s.getName()) && s.isEnabled());
     }
 
     private String lookupStorageCrs() {

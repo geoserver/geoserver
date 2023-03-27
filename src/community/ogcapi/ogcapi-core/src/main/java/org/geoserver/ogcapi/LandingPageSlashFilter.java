@@ -4,6 +4,9 @@
  */
 package org.geoserver.ogcapi;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +17,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.filters.GeoServerFilter;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +32,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class LandingPageSlashFilter implements GeoServerFilter, ApplicationContextAware {
 
+    private final Catalog catalog;
     private List<APIService> services;
+
+    public LandingPageSlashFilter(Catalog catalog) {
+        this.catalog = catalog;
+    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -40,16 +49,55 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
             ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         if (servletRequest instanceof HttpServletRequest
-                && isLandingPage((HttpServletRequest) servletRequest)) {
+                && isLandingPageWithSlash((HttpServletRequest) servletRequest)) {
             filterChain.doFilter(new SlashWrapper(servletRequest), servletResponse);
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
     }
 
-    private boolean isLandingPage(HttpServletRequest servletRequest) {
-        String path = "ogc" + servletRequest.getPathInfo();
-        return services.stream().anyMatch(s -> (s.landingPage() + "/").equals(path));
+    private boolean isLandingPageWithSlash(HttpServletRequest servletRequest) {
+        String path =
+                servletRequest
+                        .getRequestURI()
+                        .substring(servletRequest.getContextPath().length() + 1);
+        // no point checking services if it does not end with a slash anyway
+        if (!path.endsWith("/")) return false;
+
+        return services.stream().anyMatch(s -> matchesServiceLandingPage(path, s));
+    }
+
+    /**
+     * The path can contain a local workspace and a local layer name, so we need to remove them to
+     * get to the actual path in the service
+     */
+    private boolean matchesServiceLandingPage(String path, APIService s) {
+        // global service
+        String landingPageSlash = s.landingPage() + "/";
+        if (path.equals(landingPageSlash)) return true;
+
+        // workspace local service then?
+        String[] components = path.split("/");
+        if (components.length <= 3) return false; // ogc/features/v1/... no workspace
+
+        // check if the first component is a workspace or a layer group
+        String token1 = components[0];
+        if (catalog.getWorkspaceByName(token1) == null
+                && catalog.getLayerGroupByName(token1) == null) return false;
+
+        // is it a match now?
+        if (landingPageSlash.equals(toLandingPath(components, 1))) return true;
+
+        // maybe layer specific too?
+        String token2 = components[1];
+        if (catalog.getLayerByName(token1 + ":" + token2) == null) return false;
+
+        // remove both workspace and layer name then
+        return landingPageSlash.equals(toLandingPath(components, 2));
+    }
+
+    private static String toLandingPath(String[] components, long skip) {
+        return stream(components).skip(skip).collect(joining("/")) + "/";
     }
 
     @Override

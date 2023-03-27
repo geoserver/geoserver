@@ -5,7 +5,9 @@
 package org.geoserver.ogcapi;
 
 import javax.servlet.http.HttpServletRequest;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -20,11 +22,21 @@ public class LocalWorkspaceURLPathHelper extends UrlPathHelper {
     public String getRequestUri(HttpServletRequest request) {
         String uri = super.getRequestUri(request);
         WorkspaceInfo ws = LocalWorkspace.get();
-        if (ws == null) {
+        PublishedInfo published = LocalPublished.get();
+        if (ws == null && published == null) {
             return uri;
         }
 
-        String localRequestPrefix = request.getContextPath() + "/" + ws.getName();
+        // handle all local services cases
+        String localRequestPrefix;
+        if (ws == null) {
+            localRequestPrefix = request.getContextPath() + "/" + published.getName();
+        } else if (published == null) {
+            localRequestPrefix = request.getContextPath() + "/" + ws.getName();
+        } else {
+            localRequestPrefix =
+                    request.getContextPath() + "/" + ws.getName() + "/" + published.getName();
+        }
         if (uri.startsWith(localRequestPrefix)) {
             uri = request.getContextPath() + uri.substring(localRequestPrefix.length());
         }

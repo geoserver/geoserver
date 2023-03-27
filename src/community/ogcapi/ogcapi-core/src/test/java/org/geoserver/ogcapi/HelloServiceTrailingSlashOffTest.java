@@ -43,6 +43,26 @@ public class HelloServiceTrailingSlashOffTest extends OGCApiTestSupport {
     }
 
     @Test
+    public void testWorkspaceLandingPageRegardlessTrailingSlash() throws Exception {
+        DocumentContext doc = getAsJSONPath("cite/ogc/hello/v1/", 200);
+        assertEquals("Landing page", doc.read("message"));
+        doc = getAsJSONPath("cite/ogc/hello/v1", 200);
+        assertEquals("Landing page", doc.read("message"));
+        // this workspace does not exist
+        assertEquals(404, getAsServletResponse("abcd/ogc/hello/v1").getStatus());
+    }
+
+    @Test
+    public void testLayerLandingPageRegardlessTrailingSlash() throws Exception {
+        DocumentContext doc = getAsJSONPath("cite/BasicPolygons/ogc/hello/v1/", 200);
+        assertEquals("Landing page", doc.read("message"));
+        doc = getAsJSONPath("cite/BasicPolygons/ogc/hello/v1", 200);
+        assertEquals("Landing page", doc.read("message"));
+        // this layer does not exist
+        assertEquals(404, getAsServletResponse("cite/abcd/ogc/hello/v1").getStatus());
+    }
+
+    @Test
     public void testHelloTrailingSlash() throws Exception {
         DocumentContext doc = getAsJSONPath("ogc/hello/v1/hello?message=abcd", 200);
         assertEquals("abcd", doc.read("message"));

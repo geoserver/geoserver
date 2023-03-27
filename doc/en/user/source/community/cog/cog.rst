@@ -155,6 +155,10 @@ On the table below, replace the "$ALIAS$" template with HTTP or HTTPS or S3 if y
      - Default user (access key ID) for AWS basic authentication credentials
    * - IIO_$ALIAS$_AWS_PASSWORD
      - Default password (secret access key) for AWS basic authentication credentials
+   * - IIO_$ALIAS$_AWS_REGION
+     - Default AWS region
+   * - IIO_$ALIAS$_AWS_ENDPOINT
+     - Endpoint to Amazon service or any other S3-compatible service run by a third-party 
 
 Google Cloud storage configuration
 ----------------------------------

@@ -23,7 +23,13 @@ jobs:
           sphinx
           requests
     - name: Build docs
-      run: mvn -f doc/en install
+      run: mvn -f doc/en -ntp -B compile
+    - name: Check index.html
+      run: |
+        if test ! -f doc/en/target/user/html/index.html; then
+          echo sphinx-build did not generate user/html/index.html >&2
+          exit 1
+        fi
 
   docs-zhcn:
     runs-on: ubuntu-20.04
@@ -38,4 +44,10 @@ jobs:
           sphinx
           requests
     - name: Build docs
-      run: mvn -f doc/zhCN install
+      run: mvn -f doc/zhCN -ntp -B compile
+    - name: Check index.html
+      run: |
+        if test ! -f doc/zhCN/target/user/html/index.html; then
+          echo sphinx-build did not generate user/html/index.html >&2
+          exit 1
+        fi

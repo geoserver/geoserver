@@ -143,7 +143,7 @@ You can create a new style on the server in two ways. In the first way, the crea
 
    201 Created
 
-**Create a new style in a single step using css:**
+**Create a new style in a single step using CSS:**
 
 *Request*
 

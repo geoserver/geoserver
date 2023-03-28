@@ -80,16 +80,28 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         return item;
     }
 
+    private T validate(Info item) throws Exception {
+        if (item == null || item.getId() == null) {
+            LOGGER.log(Level.SEVERE, item.getClass() + " is not valid: {0}", item);
+            logValidationResult((ValidationResult) null, (CatalogInfo) item);
+            logValidationExceptions(getClazz().cast(item), null);
+            return null;
+        }
+
+        return (T) item;
+    }
+
     private T process(DataStoreInfo ds) throws Exception {
         LOGGER.log(Level.FINE, "Processing datastore: {0}", ds);
+        ds = (DataStoreInfo) validate(ds);
         WorkspaceInfo ws = resolveWorkspace(ds);
 
         if (ws == null && filterIsValid()) {
             Catalog catalog = getCatalog();
-            DataStoreInfo source = backupFacade.getCatalog().getDataStoreByName(ds.getName());
+            DataStoreInfo source = backupFacade.getCatalog().getDataStore(ds.getId());
             LOGGER.log(Level.FINE, "Found source datastore: {0}", source);
             if (source != null && source.getWorkspace() != null) {
-                ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
+                ws = catalog.getWorkspace(source.getWorkspace().getId());
                 if (ws == null) {
                     LOGGER.log(Level.WARNING, "Workspace not found for datastore: {0}", ds);
                     return null;
@@ -117,28 +129,29 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
     private T process(WMSStoreInfo wms) throws Exception {
         LOGGER.log(Level.FINE, "Processing wmsstore: {0}", wms);
+        wms = (WMSStoreInfo) validate(wms);
         WorkspaceInfo ws = resolveWorkspace(wms);
 
         if (ws == null && filterIsValid()) {
             Catalog catalog = getCatalog();
-            WMSStoreInfo source = backupFacade.getCatalog().getWMSStoreByName(wms.getName());
-            LOGGER.log(Level.FINE, "Found source wmsstore: {0}", source);
+            WMSStoreInfo source = backupFacade.getCatalog().getWMSStore(wms.getId());
+            LOGGER.log(Level.FINE, "Found source WMS store: {0}", source);
             if (source != null && source.getWorkspace() != null) {
-                ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
+                ws = catalog.getWorkspace(source.getWorkspace().getId());
                 if (ws == null) {
-                    LOGGER.log(Level.WARNING, "Workspace not found for wmsstore: {0}", wms);
+                    LOGGER.log(Level.WARNING, "Workspace not found for WMS store: {0}", wms);
                     return null;
                 }
                 wms.setWorkspace(ws);
                 catalog.add(wms);
                 WMSStoreInfo addedWms = catalog.getWMSStore(wms.getId());
                 catalog.save(addedWms);
-                LOGGER.log(Level.FINE, "Saved wmsstore into catalog: {0}", addedWms);
+                LOGGER.log(Level.FINE, "Saved WMS store into catalog: {0}", addedWms);
             }
         }
 
         if (filteredResource(getClazz().cast(wms), ws, true, StoreInfo.class)) {
-            LOGGER.log(Level.FINE, "Filtered out wmsstore : {0}", wms);
+            LOGGER.log(Level.FINE, "Filtered out WMS store : {0}", wms);
             return null;
         }
 
@@ -151,15 +164,16 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     private T process(WMTSStoreInfo wmts) throws Exception {
-        LOGGER.log(Level.FINE, "Processing wmtsstore: {0}", wmts);
+        LOGGER.log(Level.FINE, "Processing WMTS store: {0}", wmts);
+        wmts = (WMTSStoreInfo) validate(wmts);
         WorkspaceInfo ws = resolveWorkspace(wmts);
 
         if (ws == null && filterIsValid()) {
             Catalog catalog = getCatalog();
-            WMTSStoreInfo source = backupFacade.getCatalog().getWMTSStoreByName(wmts.getName());
+            WMTSStoreInfo source = backupFacade.getCatalog().getWMTSStore(wmts.getId());
             LOGGER.log(Level.FINE, "Found source wmtsstore: {0}", source);
             if (source != null && source.getWorkspace() != null) {
-                ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
+                ws = catalog.getWorkspace(source.getWorkspace().getId());
                 if (ws == null) {
                     LOGGER.log(Level.WARNING, "Workspace not found for wmtsstore: {0}", wmts);
                     return null;
@@ -186,6 +200,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     private T process(StyleInfo style) throws Exception {
+        style = (StyleInfo) validate(style);
         ValidationResult result = null;
         try {
             WorkspaceInfo ws = resolveWorkspace(style);
@@ -194,8 +209,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return null;
             }
 
-            if (!filterIsValid() && style.getId() != null) {
-                Catalog catalog = getCatalog();
+            Catalog catalog = getCatalog();
+            StyleInfo existingStyle = catalog.getStyle(style.getId());
+            if (existingStyle == null) {
                 result = catalog.validate(style, isNew());
                 if (!result.isValid()) {
                     LOGGER.log(Level.SEVERE, "Style is not valid: {0}", style);
@@ -212,7 +228,8 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         return getClazz().cast(style);
     }
 
-    private T process(LayerGroupInfo lg) {
+    private T process(LayerGroupInfo lg) throws Exception {
+        lg = (LayerGroupInfo) validate(lg);
         ValidationResult result = null;
         try {
             WorkspaceInfo ws = resolveWorkspace(lg);
@@ -221,8 +238,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return null;
             }
 
-            if (!filterIsValid()) {
-                Catalog catalog = getCatalog();
+            Catalog catalog = getCatalog();
+            LayerGroupInfo existingLayerGroup = catalog.getLayerGroup(lg.getId());
+            if (existingLayerGroup == null) {
                 result = catalog.validate(lg, isNew());
                 if (!result.isValid()) {
                     LOGGER.log(Level.SEVERE, "LayerGroup is not valid: {0}", lg);
@@ -241,6 +259,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     private T process(LayerInfo layer) throws Exception {
+        layer = (LayerInfo) validate(layer);
         ValidationResult result = null;
         try {
             ResourceInfo layerResouce = layer.getResource();
@@ -254,8 +273,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return null;
             }
 
-            if (!filterIsValid() && layer.getId() != null) {
-                Catalog catalog = getCatalog();
+            Catalog catalog = getCatalog();
+            LayerInfo existingLayer = catalog.getLayer(layer.getId());
+            if (existingLayer == null) {
                 result = catalog.validate(layer, isNew());
                 if (!result.isValid()) {
                     LOGGER.log(Level.SEVERE, "Layer is not valid: {0}", layer);
@@ -276,7 +296,8 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         return getClazz().cast(layer);
     }
 
-    private T process(ResourceInfo resource) {
+    private T process(ResourceInfo resource) throws Exception {
+        resource = (ResourceInfo) validate(resource);
         StoreInfo itemStore = resource.getStore();
         WorkspaceInfo ws = resolveWorkspace(resource);
 
@@ -294,12 +315,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
             ResourceInfo source = null;
             try {
-                source = backupFacade.getCatalog().getResourceByName(resource.getName(), clz);
+                source = backupFacade.getCatalog().getResource(resource.getId(), clz);
             } catch (NullPointerException e) {
                 LOGGER.log(Level.WARNING, "Resource info not found on catalog: {0}", resource);
             }
             if (source != null && source.getStore() != null) {
-                StoreInfo store = catalog.getStoreByName(source.getStore().getName(), storeClz);
+                StoreInfo store = catalog.getStore(source.getStore().getId(), storeClz);
                 if (store == null) {
                     LOGGER.log(Level.SEVERE, "Resource info not found on catalog: {0}", resource);
                     return null;
@@ -324,14 +345,15 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     private T process(CoverageStoreInfo store) throws Exception {
+        store = (CoverageStoreInfo) validate(store);
         WorkspaceInfo ws = resolveWorkspace(store);
 
         if (ws == null && filterIsValid()) {
             Catalog catalog = getCatalog();
             CoverageStoreInfo source =
-                    backupFacade.getCatalog().getCoverageStoreByName(store.getName());
+                    backupFacade.getCatalog().getCoverageStore(store.getId());
             if (source != null && source.getWorkspace() != null) {
-                ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
+                ws = catalog.getWorkspace(source.getWorkspace().getId());
                 if (ws == null) {
                     LOGGER.log(Level.SEVERE, "Workspace not found for store: {0}", store);
                     return null;
@@ -364,6 +386,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         if (filteredResource(item, false)) {
             return null;
         }
+        item = (WorkspaceInfo) validate(item);
         if (filterIsValid() && null == resolveWorkspace(item)) {
             Catalog catalog = getCatalog();
             catalog.add(item);
@@ -426,7 +449,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     private boolean validateDataStore(DataStoreInfo resource, boolean isNew) throws Exception {
         if (resource != null && resource.getWorkspace() != null) {
             final WorkspaceInfo ws =
-                    this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
+                    this.getCatalog().getWorkspace(resource.getWorkspace().getId());
             if (ws == null) {
                 return false;
             } else {
@@ -436,8 +459,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            if (resource.getId() != null) {
-                result = this.getCatalog().validate(resource, isNew);
+            Catalog catalog = getCatalog();
+            DataStoreInfo existingDataStore = catalog.getDataStore(resource.getId());
+            if (existingDataStore == null) {
+                result = catalog.validate(resource, isNew);
                 if (!result.isValid()) {
                     LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
                     logValidationResult(result, resource);
@@ -459,7 +484,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     private boolean validateHttpStore(HTTPStoreInfo resource, boolean isNew) throws Exception {
         if (resource != null && resource.getWorkspace() != null) {
             final WorkspaceInfo ws =
-                    this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
+                    this.getCatalog().getWorkspace(resource.getWorkspace().getId());
             if (ws == null) {
                 return false;
             } else {
@@ -469,8 +494,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            if (resource.getId() != null) {
-                result = this.getCatalog().validate(resource, isNew);
+            Catalog catalog = getCatalog();
+            HTTPStoreInfo existingHttpStore = catalog.getStore(resource.getId(), HTTPStoreInfo.class);
+            if (existingHttpStore == null) {
+                result = catalog.validate(resource, isNew);
                 if (!result.isValid()) {
                     LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
                     logValidationResult(result, resource);
@@ -500,7 +527,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             throws Exception {
         if (resource != null && resource.getWorkspace() != null) {
             final WorkspaceInfo ws =
-                    this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
+                    this.getCatalog().getWorkspace(resource.getWorkspace().getId());
             if (ws == null) {
                 return false;
             } else {
@@ -510,10 +537,14 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            result = this.getCatalog().validate(resource, isNew);
-            if (!result.isValid()) {
-                LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
-                logValidationResult(result, resource);
+            Catalog catalog = getCatalog();
+            CoverageStoreInfo existingCoverageStore = catalog.getCoverageStore(resource.getId());
+            if (existingCoverageStore == null) {
+                result = catalog.validate(resource, isNew);
+                if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
+                    logValidationResult(result, resource);
+                }
             }
         } catch (Exception e) {
             LOGGER.warning(
@@ -525,70 +556,6 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         }
 
         return true;
-    }
-
-    /**
-     * Being sure the associated {@link StoreInfo} exists and is available on the GeoServer Catalog.
-     *
-     * @param {@link ResourceInfo} resource
-     * @return boolean indicating whether the resource is valid or not.
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private boolean validateResource(ResourceInfo resource, boolean isNew) {
-        try {
-            final StoreInfo store = resource.getStore();
-            final NamespaceInfo namespace = resource.getNamespace();
-
-            if (store == null) {
-                return logValidationExceptions((T) resource, null);
-            }
-
-            final Class storeClazz =
-                    (store instanceof DataStoreInfo
-                            ? DataStoreInfo.class
-                            : CoverageStoreInfo.class);
-            final StoreInfo ds = this.getCatalog().getStoreByName(store.getName(), storeClazz);
-
-            if (ds != null) {
-                resource.setStore(ds);
-            } else {
-                return logValidationExceptions((T) resource, null);
-            }
-
-            ResourceInfo existing =
-                    getCatalog().getResourceByStore(store, resource.getName(), ResourceInfo.class);
-            if (existing != null && !existing.getId().equals(resource.getId())) {
-                final String msg =
-                        "Resource named '"
-                                + resource.getName()
-                                + "' already exists in store: '"
-                                + store.getName()
-                                + "'";
-                return logValidationExceptions((T) resource, new RuntimeException(msg));
-            }
-
-            existing =
-                    getCatalog()
-                            .getResourceByName(namespace, resource.getName(), ResourceInfo.class);
-            if (existing != null && !existing.getId().equals(resource.getId())) {
-                final String msg =
-                        "Resource named '"
-                                + resource.getName()
-                                + "' already exists in namespace: '"
-                                + namespace.getPrefix()
-                                + "'";
-                return logValidationExceptions((T) resource, new RuntimeException(msg));
-            }
-
-            return true;
-        } catch (Exception e) {
-            LOGGER.warning(
-                    "Could not validate the resource "
-                            + resource
-                            + " due to the following issue: "
-                            + e.getLocalizedMessage());
-            return logValidationExceptions((T) resource, e);
-        }
     }
 
     private WorkspaceInfo resolveWorkspace(CatalogInfo item) {
@@ -611,7 +578,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         } else {
             throw new IllegalArgumentException("Don't know how to extract workspace from " + item);
         }
-        return ws == null ? null : getCatalog().getWorkspaceByName(ws.getName());
+        return ws == null ? null : getCatalog().getWorkspace(ws.getId());
     }
 
     private void logValidationResult(ValidationResult result, CatalogInfo resourceInfo) {

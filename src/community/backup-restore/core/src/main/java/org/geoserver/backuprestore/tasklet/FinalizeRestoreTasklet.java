@@ -31,15 +31,11 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
         if (jobExecution.getStatus() != BatchStatus.STOPPED) {
 
             GeoServer geoserver = backupFacade.getGeoServer();
-            Catalog catalog = geoserver.getCatalog();
 
             if (!dryRun) {
                 try {
                     // TODO: add option 'cleanUpGeoServerDataDir'
                     // TODO: purge/preserve GEOSERVER_DATA_DIR
-                    catalog.getResourcePool().dispose();
-                    catalog.dispose();
-                    geoserver.dispose();
                     geoserver.reload(getCatalog());
                 } catch (Exception e) {
                     LOGGER.log(
@@ -47,9 +43,10 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
                             "Error occurred while trying to Reload the GeoServer Catalog: ",
                             e);
                 }
+            } else {
+                Catalog catalog = geoserver.getCatalog();
+                geoserver.reload(catalog);
             }
-
-            geoserver.reload();
         }
 
         return RepeatStatus.FINISHED;

@@ -184,7 +184,7 @@ public class RestoreRunner {
     }
 
     /**
-     * Performs a "Hard Restore". Repleaces the whole Catalog.
+     * Performs a "Hard Restore". Replaces the whole Catalog.
      *
      * @param geoserver
      * @param dd

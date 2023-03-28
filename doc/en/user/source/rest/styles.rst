@@ -143,6 +143,22 @@ You can create a new style on the server in two ways. In the first way, the crea
 
    201 Created
 
+**Create a new style in a single step using CSS:**
+
+*Request*
+
+.. admonition:: curl
+
+   ::
+
+     curl -u admin:geoserver -XPOST -H "Content-type: application/vnd.geoserver.geocss+css" -d '* { stroke: red; }' http://localhost:8080/geoserver/rest/styles
+
+*Response*
+
+::
+
+   201 Created
+
    
 This example will create a new style on the server and populate it the contents of a local SLD file and related images provided in a SLD package. 
 A SLD package is a zip file containing the SLD style and related image files used in the SLD.

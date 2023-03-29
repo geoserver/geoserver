@@ -19,6 +19,8 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.coverage.grid.GridGeometry2D;
+import org.opengis.coverage.grid.GridGeometry;
 
 public class JMSXStreamFactory {
 
@@ -60,6 +62,10 @@ public class JMSXStreamFactory {
         // add these converters to avoid the need to handle a large number of allows just
         // for the tree of objects that make up a CRS
         this.xs.registerConverter(new XStreamPersister.CRSConverter());
+        // add the GridGeometry converter, low level GeoTools class
+        this.xs.allowTypeHierarchy(GridGeometry.class);
+        this.xs.registerConverter(
+                persisterXStream.getConverterLookup().lookupConverterForType(GridGeometry2D.class));
     }
 
     public XStream createXStream() {

@@ -57,10 +57,10 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
     }
 
     private boolean isLandingPageWithSlash(HttpServletRequest servletRequest) {
-        String path =
-                servletRequest
-                        .getRequestURI()
-                        .substring(servletRequest.getContextPath().length() + 1);
+        String requestURI = servletRequest.getRequestURI();
+        int contextPathLength = servletRequest.getContextPath().length();
+        if (requestURI.length() <= contextPathLength) return false;
+        String path = requestURI.substring(contextPathLength + 1);
         // no point checking services if it does not end with a slash anyway
         if (!path.endsWith("/")) return false;
 

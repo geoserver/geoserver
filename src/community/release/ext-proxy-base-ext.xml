@@ -1,0 +1,16 @@
+<assembly>
+    <id>proxy-base-ext-plugin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>release/target/dependency</directory>
+            <outputDirectory/>
+            <includes>
+                <include>gs-proxy-base-ext*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

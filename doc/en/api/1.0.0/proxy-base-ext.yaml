@@ -1,0 +1,185 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Proxy Base Extension
+  description: A Proxy Base Extension rule allows to rewrite the links returned by
+    the REST API to point to a different host and/or port. This is useful when GeoServer
+    is behind a reverse proxy, and the proxy is configured to rewrite the host and/or
+    port in the request URL.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+  /proxy-base-ext:
+    get:
+      operationId: getProxyBaseExtensionRules
+      summary: Get the Proxy Base Extension rules
+      description: Returns the list of Proxy Base Extension rules.
+      tags:
+        - ProxyBaseExtension
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Rules'
+          examples:
+            application/xml: |
+              <ProxyBaseExtensionRules>
+                <ProxyBaseExtensionRule>
+                  <id>9d6fc373-f109-4a9c-9417-dbd0bc821ae9</id>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/proxy-base-ext/rules/9d6fc373-f109-4a9c-9417-dbd0bc821ae9.xml" type="application/atom+xml"/>
+                </ProxyBaseExtensionRule>
+              </ProxyBaseExtensionRules>
+            application/json: |
+              {"ProxyBaseExtensionRules":{"ProxyBaseExtensionRule":[
+                {
+                  "id":"9d6fc373-f109-4a9c-9417-dbd0bc821ae9",
+                  "href":"http://localhost:8080/geoserver/rest/proxy-base-ext/rules/9d6fc373-f109-4a9c-9417-dbd0bc821ae9.json"
+                }
+              ]}}
+    post:
+        operationId: postProxyBaseExtensionRule
+        summary: Create a Proxy Base Extension rule
+        description: Creates a new Proxy Base Extension rule.
+        tags:
+            - ProxyBaseExtension
+        produces:
+            - application/xml
+            - application/json
+        parameters:
+          - $ref: '#/parameters/ruleBodyParameter'
+        responses:
+            201:
+            description: Created
+            schema:
+              type: string
+            headers:
+              Location:
+                description: URL where the newly created rule can be found
+                type: string
+  /proxy-base-ext/rules/{id}:
+    get:
+      operationId: getProxyBaseExtensionRule
+      summary: Get a Proxy Base Extension rule
+      description: Returns the Proxy Base Extension rule with the given id.
+      tags:
+        - ProxyBaseExtension
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: The id of the rule
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Rule'
+          examples:
+            application/xml: |
+              <ProxyBaseExtensionRule>
+                <id>9d6fc373-f109-4a9c-9417-dbd0bc821ae9</id>
+                <activated>true</activated>
+                <position>0</position>
+                <transformer>http://localhost:8080/geoserver</transformer>
+                <matcher>.*</matcher>
+              </ProxyBaseExtensionRule>
+            application/json: |
+              {"ProxyBaseExtensionRule":{
+                "id":"9d6fc373-f109-4a9c-9417-dbd0bc821ae9",
+                "activated":true,
+                "position":0,
+                "transformer":"http://localhost:8080/geoserver",
+                "matcher":".*"
+              }}
+
+    put:
+        operationId: putProxyBaseExtensionRule
+        summary: Update a Proxy Base Extension rule
+        description: Updates the Proxy Base Extension rule with the given id.
+        tags:
+            - ProxyBaseExtension
+        produces:
+            - application/xml
+            - application/json
+        parameters:
+            - name: id
+              in: path
+              description: The id of the rule
+              required: true
+              type: string
+            - $ref: '#/parameters/ruleBodyParameter'
+        consumes:
+          - application/xml
+          - application/json
+        responses:
+            200:
+            description: The rule was updated
+    delete:
+        operationId: deleteProxyBaseExtensionRule
+        summary: Delete a Proxy Base Extension rule
+        description: Deletes the Proxy Base Extension rule with the given id.
+        tags:
+            - ProxyBaseExtension
+        parameters:
+            - name: id
+              in: path
+              description: The id of the rule
+              required: true
+              type: string
+        responses:
+            200:
+              description: The rule was deleted
+parameters:
+  ruleBodyParameter:
+    name: body
+    in: body
+    description: The rule to be created
+    required: true
+    schema:
+      $ref: '#/definitions/Rule'
+
+definitions:
+  Rules:
+    title: Rule link list
+    type: array
+    items:
+      title: ruleListItem
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifeir of the rule
+        link:
+          type: string
+          description: URL to  the rule definition
+  Rule:
+    title: Rule
+    type: object
+    properties:
+      id:
+        type: string
+        description: identifier of the rule
+      activated:
+        type: boolean
+        description: Whether or not the Proxy Base Extension rule is active
+      position:
+        type: integer
+        description: The priority of the rule, the lower the number the higher the priority
+      transformer:
+        type: string
+        description: The transformer to be used to rewrite the links
+      matcher:
+        type: string
+        description: The path matcher to be used to match the links for rewriting, works with regular expressions

@@ -57,6 +57,7 @@ officially part of the GeoServer releases. They are however built along with the
    ogr-store/index
    opensearch-eo/index
    pgraster/pgraster
+   proxy-base-ext/index
    remote-wps/index
    s3-geotiff/index
    saml/index

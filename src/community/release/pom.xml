@@ -436,6 +436,11 @@
       <artifactId>gs-vector-mosaic</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-proxy-base-ext</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

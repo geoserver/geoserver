@@ -166,8 +166,10 @@ public final class JMSConfiguration {
 
     public void loadConfig() throws IOException {
         Resource config = configPathDir.get(CONFIG_FILE_NAME);
-        try (InputStream fis = config.in()) {
-            this.configuration.load(fis);
+        if (config.getType() == Resource.Type.RESOURCE) {
+            try (InputStream fis = config.in()) {
+                this.configuration.load(fis);
+            }
         }
     }
 

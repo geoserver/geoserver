@@ -289,7 +289,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
         // check features
         JSONArray features = json.getJSONArray("features");
-        assertEquals(1, features.size());
+        assertEquals(2, features.size());
         String featureId = "LS8_TEST.02";
         JSONObject sample = getFeature(features, featureId);
         assertNotNull(sample);

@@ -14,6 +14,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /** Tests trailing slash match disabled, with exception for landing page */
@@ -32,6 +33,19 @@ public class HelloServiceTrailingSlashOffTest extends OGCApiTestSupport {
         try (FileOutputStream fos = new FileOutputStream(file)) {
             xs.toXML(gs, fos);
         }
+    }
+
+    @Test
+    public void testContextPath() throws Exception {
+        MockHttpServletRequest request = createRequest("", false);
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver");
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+
+        MockHttpServletResponse sr = dispatch(request, null);
+        System.out.println(sr.getStatus());
+        System.out.println(sr.getContentAsString());
     }
 
     @Test

@@ -58,11 +58,17 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
+import org.geotools.coverage.grid.GeneralGridEnvelope;
+import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Integration tests for JMS that tests that GeoServer configurations events and GeoServer catalog
@@ -315,11 +321,14 @@ public final class IntegrationTest {
     }
 
     /** Helper method that add some new catalog elements to the provided GeoServer instance. */
-    private void applyAddCatalogChanges(GeoServerInstance instance) {
+    private void applyAddCatalogChanges(GeoServerInstance instance) throws FactoryException {
         // instantiate some common objects
         Catalog catalog = instance.getCatalog();
+        // going through wkt as otherwise the equality between in memory and deserialized will fail
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326", true);
+        String wkt = crs.toWKT();
         ReferencedEnvelope envelope =
-                new ReferencedEnvelope(-1.0, 1.0, -2.0, 2.0, DefaultGeographicCRS.WGS84);
+                new ReferencedEnvelope(-1.0, 1.0, -2.0, 2.0, CRS.parseWKT(wkt));
         AttributionInfo attribution = new AttributionInfoImpl();
         attribution.setTitle("attribution-Title");
         attribution.setHref("attribution-Href");
@@ -405,6 +414,10 @@ public final class IntegrationTest {
         coverage.setAdvertised(false);
         coverage.setNativeCoverageName("coverage-NativeCoverageName");
         coverage.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+        coverage.setGrid(
+                new GridGeometry2D(
+                        new GeneralGridEnvelope(new int[] {0, 0}, new int[] {100, 100}),
+                        new Envelope2D(envelope)));
         catalog.add(coverage);
         // add style info and style file
         copyStyle(instance, "/test_style.sld", "test_style.sld");

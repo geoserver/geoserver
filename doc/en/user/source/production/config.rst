@@ -73,6 +73,24 @@ You can also use a more generic non-spatial caching system, such as `OSCache <ht
 
 Caching is also possible for WFS layers, in a very limited fashion. For DataStores that don't have a quick way to determine feature counts (e.g. shapefiles), enabling caching can prevent querying a store twice during a single request. To enable caching, set the Java system property ``org.geoserver.wfs.getfeature.cachelimit`` to a positive integer. Any data sets that are smaller than the cache limit will be cached for the duration of a request, which will prevent the dataset from being queried a second time for the feature count. Note that this may adversely affect some types of DataStores, as it bypasses any feature count optimizations that may exist.
 
+Welcome page selectors
+----------------------
+
+
+The workspace and layer selectors migth take a lot of time to fill up against large catalogs. Because of this, GeoServer tries to limit the time taken to fill them (by default, 5 seconds), and the amount of items in them (by default, ``1000``), and will fall back on simple text fields if the time limit is reached.
+
+In some situations, that won't be enough and the page might get stuck anyways. The following properties can be used to tweak the behavior:
+
+*  ``GeoServerHomePage.selectionMode`` : can be set to ``text`` to always use simple text fields, ``dropdown`` to always use dropdowns, or ``auto`` to use the default automatic behavior.
+* ``GeoServerHomePage.selectionTimeout`` : the time limit in milliseconds, defaults to ``5000``.
+* ``GeoServerHomePage.selectionMaxItems`` : the maximum number of items to show in the dropdowns, defaults to ``1000``.
+
+When using ``text`` selection mode the page description is static, no longer offering of available workspace and layers.
+
+.. figure:: images/selector_text.png
+   
+   Welcome page text selection mode
+
 Disable the GeoServer web administration interface
 --------------------------------------------------
 

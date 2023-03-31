@@ -19,5 +19,7 @@
   <context:component-scan base-package="org.geoserver.rest.system.status"/>
   <!-- XStream persister initializer -->
   <bean id="restConfigXStreamPersister" class="org.geoserver.rest.security.RestConfigXStreamPersister" />
-
+  
+  <mvc:resources mapping="swagger-ui.html" location="classpath:/META-INF/resources/" />
+  <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/" />
 </beans>

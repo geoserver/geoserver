@@ -34,6 +34,10 @@ public class AdvancedDispatchFilter implements Filter {
             throws IOException, ServletException {
 
         if (request instanceof HttpServletRequest) {
+            if (((HttpServletRequest) request).getPathInfo().startsWith("/v2/")) {
+                chain.doFilter(request, response);
+                return;
+            }
             request = new AdvancedDispatchHttpRequest((HttpServletRequest) request);
         }
         chain.doFilter(request, response);

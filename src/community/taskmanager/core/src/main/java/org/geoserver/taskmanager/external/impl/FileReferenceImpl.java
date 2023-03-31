@@ -35,4 +35,28 @@ public class FileReferenceImpl implements FileReference {
     public FileService getService() {
         return service;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((latestVersion == null) ? 0 : latestVersion.hashCode());
+        result = prime * result + ((nextVersion == null) ? 0 : nextVersion.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        FileReferenceImpl other = (FileReferenceImpl) obj;
+        if (latestVersion == null) {
+            if (other.latestVersion != null) return false;
+        } else if (!nextVersion.equals(other.nextVersion)) return false;
+        if (service == null) {
+            if (other.service != null) return false;
+        } else if (!service.equals(other.service)) return false;
+        return true;
+    }
 }

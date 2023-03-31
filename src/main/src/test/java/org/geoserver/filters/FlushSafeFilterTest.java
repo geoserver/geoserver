@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.WriteListener;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
@@ -64,6 +65,16 @@ public class FlushSafeFilterTest {
                             final ServletOutputStream wrapped = super.getOutputStream();
                             os =
                                     new ServletOutputStream() {
+                                        @Override
+                                        public boolean isReady() {
+                                            return wrapped.isReady();
+                                        }
+
+                                        @Override
+                                        public void setWriteListener(WriteListener writeListener) {
+                                            wrapped.setWriteListener(writeListener);
+                                        }
+
                                         boolean closed;
 
                                         @Override

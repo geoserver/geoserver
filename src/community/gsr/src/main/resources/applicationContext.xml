@@ -28,9 +28,11 @@
     <!-- <mvc:annotation-driven/> -->
     <context:component-scan base-package="org.geoserver.gsr.api" />
     <context:component-scan base-package="org.geoserver.gsr.translate.relationship" />
-
+    <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl"/>
     <!-- The GRS dispatcher (same as OGC API dispatcher for the moment, but allows for customization/subclassing later -->
-    <bean id="gsrDispatcher" class="org.geoserver.gsr.GSRDispatcher"/>
+    <bean id="gsrDispatcher" class="org.geoserver.gsr.GSRDispatcher">
+        <constructor-arg ref="geoServer"/>
+    </bean>
     <bean id="gsrExceptionHandler" class="org.geoserver.gsr.GSRExceptionHandler"/>
 
     <bean id="gsrServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">

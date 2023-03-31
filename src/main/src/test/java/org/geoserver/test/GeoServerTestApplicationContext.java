@@ -75,7 +75,7 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
         super.loadBeanDefinitions(reader);
 
         if (useLegacyGeoServerLoader) {
-            BeanDefinition def = reader.getBeanFactory().getBeanDefinition("geoServerLoader");
+            BeanDefinition def = reader.getRegistry().getBeanDefinition("geoServerLoader");
             def.setBeanClassName("org.geoserver.test.TestGeoServerLoaderProxy");
         }
     }

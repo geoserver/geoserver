@@ -25,7 +25,7 @@ public class AbstractLandingPageDocumentNoConformance extends AbstractDocument {
         addSelfLinks(serviceBase + "/");
         // api
         new LinksBuilder(OpenAPI.class, serviceBase)
-                .segment("/api")
+                .segment("/openapi")
                 .title("API definition for this endpoint as ")
                 .rel(Link.REL_SERVICE_DESC)
                 .classification("api")

@@ -60,7 +60,7 @@ public class GoogleLoginButtonTest extends GeoServerWicketTestSupport {
         // the login form is there and has the link
         assertTrue(
                 html.contains(
-                        "<form style=\"display: inline-block;\" method=\"post\" action=\"../web/j_spring_oauth2_google_login\">"));
+                        "<form style=\"display: inline-block;\" method=\"post\" action=\"http://localhost/context/web/j_spring_oauth2_google_login\">"));
         assertTrue(
                 html.contains(
                         "<img src=\"./wicket/resource/org.geoserver.web.security.oauth2.GoogleOAuth2AuthProviderPanel/google"));

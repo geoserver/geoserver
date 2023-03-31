@@ -24,15 +24,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @APIService(
         service = "Hello",
-        version = "1.0",
-        landingPage = "ogc/hello",
+        version = "1.0.1",
+        landingPage = "ogc/hello/v1",
         serviceClass = HelloController.HelloServiceInfo.class)
-@RequestMapping(path = APIDispatcher.ROOT_PATH)
+@RequestMapping(path = APIDispatcher.ROOT_PATH + "/hello/v1")
 public class HelloController {
 
     static interface HelloServiceInfo extends ServiceInfo {};
 
     String defaultValue = "hello";
+
+    @GetMapping(name = "landingPage")
+    @ResponseBody
+    public Message landingPage() {
+        return new Message("Landing page");
+    }
 
     @GetMapping(path = "hello", name = "sayHello")
     @ResponseBody

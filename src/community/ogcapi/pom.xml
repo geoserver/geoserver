@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.23-SNAPSHOT</version>
+    <version>2.24-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -28,6 +28,15 @@
     <module>ogcapi-tiled-features</module>
     <module>dggs</module>
     <module>ogcapi-coverages</module>
+    <module>web-ogcapi</module>
   </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>

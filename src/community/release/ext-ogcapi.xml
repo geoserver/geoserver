@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>	
         <include>gs-ogcapi-*.jar</include>
+        <include>gs-web-ogcapi-*.jar</include>
         <include>gt-jdbc-h2-*.jar</include>
         <include>gt-cql2-*.jar</include>
         <!-- to parse JTS geometries embedded in larger JSON documents 

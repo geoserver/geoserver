@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.geoserver.platform.resource.Paths;
 
 /**
  * Panel for editing.
@@ -23,6 +24,11 @@ public class PanelEdit extends Panel {
 
     public PanelEdit(String id, String resource, boolean isNew, String contents) {
         super(id);
+        if (Paths.isAbsolute(resource)) {
+            // double check resource browser cannot be used to edit
+            // absolute path locations
+            throw new IllegalStateException("Path location not supported by Resource Browser");
+        }
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
         add(
                 new TextField<String>("resource", new Model<>(resource)) {

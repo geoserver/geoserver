@@ -1,11 +1,4 @@
-/*
- * (c) 2018 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- *
- */
-
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -52,9 +45,25 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
 
     protected String logoutEndpoint;
 
+    /**
+     * Add extra logging. NOTE: this might spill confidential information to the log - do not turn
+     * on in normal operation!
+     */
+    boolean allowUnSecureLogging = false;
+
     @Override
     public boolean providesAuthenticationEntryPoint() {
         return true;
+    }
+
+    @Override
+    public boolean isAllowUnSecureLogging() {
+        return allowUnSecureLogging;
+    }
+
+    @Override
+    public void setAllowUnSecureLogging(boolean allowUnSecureLogging) {
+        this.allowUnSecureLogging = allowUnSecureLogging;
     }
 
     /** @return the cliendId */
@@ -189,7 +198,8 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
         };
     }
 
-    protected StringBuilder buildAuthorizationUrl() {
+    @Override
+    public StringBuilder buildAuthorizationUrl() {
         final StringBuilder loginUri = new StringBuilder(getUserAuthorizationUri());
         loginUri.append("?")
                 .append("response_type=code")

@@ -1,12 +1,16 @@
-/*
- * (c) 2018 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- *
  */
 package org.geoserver.security.oauth2;
 
+import java.util.Optional;
+import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * Filter configuration for OpenId Connect. This is completely freeform, so adding only the basic
@@ -14,10 +18,18 @@ import org.geoserver.security.config.RoleSource;
  */
 public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
+    /**
+     * Constant used to setup the proxy base in tests that are running without a GeoServer instance
+     * or an actual HTTP request context. The value of the variable is set-up in the pom.xml, as a
+     * system property for surefire, in order to avoid hard-coding the value in the code.
+     */
+    public static final String OPENID_TEST_GS_PROXY_BASE = "OPENID_TEST_GS_PROXY_BASE";
+
     String principalKey = "email";
     String jwkURI;
     String tokenRolesClaim;
     String responseMode;
+    String postLogoutRedirectUri;
     boolean sendClientSecret = false;
     boolean allowBearerTokens = true;
 
@@ -35,7 +47,8 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     };
 
     public OpenIdConnectFilterConfig() {
-        this.redirectUri = "http://localhost:8080/geoserver";
+        this.redirectUri = baseRedirectUri();
+        this.postLogoutRedirectUri = baseRedirectUri();
         this.scopes = "user";
         this.enableRedirectAuthenticationEntryPoint = false;
         this.forceAccessTokenUriHttps = true;
@@ -43,6 +56,26 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         this.loginEndpoint = "/j_spring_oauth2_openid_connect_login";
         this.logoutEndpoint = "/j_spring_oauth2_openid_connect_logout";
     };
+
+    /**
+     * we add "/" at the end since not having it will SOMETIME cause issues. This will either use
+     * the proxyBaseURL (if set), or from ServletUriComponentsBuilder.fromCurrentContextPath().
+     *
+     * @return
+     */
+    String baseRedirectUri() {
+        Optional<String> proxbaseUrl =
+                Optional.ofNullable(GeoServerExtensions.bean(GeoServer.class))
+                        .map(gs -> gs.getSettings())
+                        .map(s -> s.getProxyBaseUrl());
+        if (proxbaseUrl.isPresent() && StringUtils.hasText(proxbaseUrl.get())) {
+            return proxbaseUrl + "/";
+        }
+        if (RequestContextHolder.getRequestAttributes() != null)
+            return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + "/";
+        // fallback to run tests without a full environment
+        return GeoServerExtensions.getProperty(OPENID_TEST_GS_PROXY_BASE);
+    }
 
     public String getPrincipalKey() {
         return principalKey == null ? "email" : principalKey;
@@ -92,8 +125,16 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         this.allowBearerTokens = allowBearerTokens;
     }
 
+    public String getPostLogoutRedirectUri() {
+        return postLogoutRedirectUri;
+    }
+
+    public void setPostLogoutRedirectUri(String postLogoutRedirectUri) {
+        this.postLogoutRedirectUri = postLogoutRedirectUri;
+    }
+
     @Override
-    protected StringBuilder buildAuthorizationUrl() {
+    public StringBuilder buildAuthorizationUrl() {
         StringBuilder sb = super.buildAuthorizationUrl();
         String responseMode = getResponseMode();
         if (responseMode != null && !"".equals(responseMode.trim()))
@@ -103,9 +144,15 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     protected StringBuilder buildEndSessionUrl(final String idToken) {
         final StringBuilder logoutUri = new StringBuilder(getLogoutUri());
-        if (idToken != null) {
-            logoutUri.append("?").append("id_token_hint=").append(idToken);
-        }
+        boolean first = true;
+        if (idToken != null) first = appendParam(first, "id_token_hint", idToken, logoutUri);
+        if (StringUtils.hasText(getPostLogoutRedirectUri()))
+            appendParam(first, "post_logout_redirect_uri", getPostLogoutRedirectUri(), logoutUri);
         return logoutUri;
+    }
+
+    private boolean appendParam(boolean first, String name, String value, StringBuilder sb) {
+        sb.append(first ? "?" : "&").append(name).append("=").append(value);
+        return false;
     }
 }

@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.23-SNAPSHOT</version>
+    <version>2.24-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-release</artifactId>
@@ -69,6 +69,11 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-spatialjson</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-webp</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -314,6 +319,11 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-ogcapi-dggs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-web-ogcapi</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

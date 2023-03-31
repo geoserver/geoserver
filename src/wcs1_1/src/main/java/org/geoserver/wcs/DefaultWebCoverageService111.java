@@ -957,6 +957,14 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     || interpolation.equalsIgnoreCase("bilinear")) {
                 interpolation = "bilinear";
             }
+            if (interpolation.trim().isEmpty()) {
+                // ie. "contents:"  WCS Spec doesn't specify the exact error message/locator
+                //  This satisfies the WCS 1.1 CITE Tests
+                throw new WcsException(
+                        "RangeSubset parameter - InterpolationMethod is empty",
+                        InvalidParameterValue,
+                        "RangeSubset");
+            }
 
             for (String method : info.getInterpolationMethods()) {
                 if (method.toLowerCase().startsWith(interpolation)) {

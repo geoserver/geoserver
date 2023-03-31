@@ -37,7 +37,7 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
     public void getMappedFeature() throws IOException {
         Document doc =
                 getAsDOM(
-                        "ogc/features/collections/gsml:MappedFeature"
+                        "ogc/features/v1/collections/gsml:MappedFeature"
                                 + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2&"
                                 + MF_GML32_PARAM);
         assertXpathCount(5, "//gsml:MappedFeature", doc);
@@ -66,7 +66,7 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
     public void getMappedFeatureBackwardsMappingToExpression() throws IOException {
         Document doc =
                 getAsDOM(
-                        "ogc/features/collections/gsml:MappedFeature/items?filter-lang=cql-text&f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        "ogc/features/v1/collections/gsml:MappedFeature/items?filter-lang=cql-text&f=application%2Fgml%2Bxml%3Bversion%3D3.2"
                                 + "&filter=wfs:FeatureCollection.wfs:member"
                                 + ".gsml:MappedFeature.gml:name='mf.GUNTHORPE FORMATION'&"
                                 + MF_GML32_PARAM);
@@ -78,7 +78,7 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
     public void getMappedFeatureBackwardsMappingPointingToExpression2() throws IOException {
         Document doc =
                 getAsDOM(
-                        "ogc/features/collections/gsml:MappedFeature/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        "ogc/features/v1/collections/gsml:MappedFeature/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
                                 + "&filter=wfs:FeatureCollection.wfs:member.gsml:MappedFeature.gsml:specification.gsml:GeologicUnit"
                                 + ".gsml:composition.gsml:CompositionPart.gsml:role='interbedded component'&"
                                 + MF_GML32_PARAM);

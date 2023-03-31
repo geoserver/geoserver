@@ -8,6 +8,8 @@ package org.geoserver.jdbcconfig.internal;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.Info;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.Capabilities;
@@ -15,12 +17,15 @@ import org.geotools.filter.visitor.CapabilitiesFilterSplitter;
 import org.geotools.filter.visitor.ClientTransactionAccessor;
 import org.geotools.filter.visitor.LiteralDemultiplyingFilterVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
 class QueryBuilder<T extends Info> {
+
+    private static final Logger LOGGER = Logging.getLogger(QueryBuilder.class);
 
     @SuppressWarnings("unused")
     private static final SortBy DEFAULT_ORDER =
@@ -123,7 +128,7 @@ class QueryBuilder<T extends Info> {
         return this;
     }
 
-    private void querySortBy(StringBuilder query, StringBuilder whereClause, SortBy[] orders) {
+    private void querySortBy(StringBuilder query, String whereClause, SortBy[] orders) {
 
         /*
          * Start with the oid and id from the object table selecting for type and the filter.
@@ -139,15 +144,15 @@ class QueryBuilder<T extends Info> {
 
         int i = 0;
 
-        query.append("SELECT id FROM ");
-
-        query.append("\n    (SELECT oid, id FROM object WHERE ");
-        if (queryType != null) {
-            query.append("type_id in (:types) /* ")
-                    .append(queryType.getCanonicalName())
-                    .append(" */\n      AND ");
+        query.append("SELECT id FROM");
+        dialect.appendIfDebug(query, "\n    ", " ");
+        query.append("(SELECT oid, id FROM object WHERE type_id IN (:types)");
+        dialect.appendComment(query, queryType.getName());
+        if (whereClause != null) {
+            dialect.appendIfDebug(query, "      ", " ");
+            query.append("AND ").append(whereClause);
         }
-        query.append(whereClause).append(") object");
+        query.append(") object");
 
         for (SortBy order : orders) {
             final String sortProperty = order.getPropertyName().getPropertyName();
@@ -162,35 +167,36 @@ class QueryBuilder<T extends Info> {
             Map<String, Object> namedParameters = getNamedParameters();
             namedParameters.put(propertyParamName, sortPropertyTypeIds);
 
-            query.append("\n  LEFT JOIN");
-            query.append("\n    (SELECT oid, value ")
-                    .append(attributeName)
-                    .append(" FROM \n      object_property WHERE property_type IN (:")
+            dialect.appendIfDebug(query, "\n  ", " ");
+            query.append("LEFT JOIN");
+            dialect.appendIfDebug(query, "\n    ", " ");
+            query.append("(SELECT oid, value ").append(attributeName).append(" FROM");
+            dialect.appendIfDebug(query, "\n      ", " ");
+            query.append("object_property WHERE property_type IN (:")
                     .append(propertyParamName)
                     .append(")) ")
                     .append(subSelectName);
-
-            query.append("  /* ")
-                    .append(order.getPropertyName().getPropertyName())
-                    .append(" ")
-                    .append(ascDesc(order))
-                    .append(" */");
-
-            query.append("\n  ON object.oid = ").append(subSelectName).append(".oid");
+            dialect.appendComment(
+                    query, order.getPropertyName().getPropertyName(), " ", ascDesc(order));
+            dialect.appendIfDebug(query, "  ", " ");
+            query.append("ON object.oid = ").append(subSelectName).append(".oid");
             // Update the ORDER BY clause to be added later
             if (i > 0) orderBy.append(", ");
             orderBy.append(attributeName).append(" ").append(ascDesc(order));
 
             i++;
         }
-
-        query.append("\n  ").append(orderBy);
+        dialect.appendIfDebug(query, "\n  ", " ");
+        query.append(orderBy);
     }
 
-    private StringBuilder buildWhereClause() {
+    private String buildWhereClause() {
+        this.predicateBuilder =
+                new FilterToCatalogSQL(this.dialect, this.queryType, this.dbMappings);
+        if (Filter.INCLUDE.equals(this.originalFilter)) {
+            return null;
+        }
         final SimplifyingFilterVisitor filterSimplifier = new SimplifyingFilterVisitor();
-
-        this.predicateBuilder = new FilterToCatalogSQL(this.queryType, this.dbMappings);
         Capabilities fcs = new Capabilities(FilterToCatalogSQL.CAPABILITIES);
         FeatureType parent = null;
         // use this to instruct the filter splitter which filters can be encoded depending on
@@ -208,6 +214,8 @@ class QueryBuilder<T extends Info> {
                         if (isMappedProp) {
                             // continue normally
                             return null;
+                        } else if (LOGGER.isLoggable(Level.FINER)) {
+                            LOGGER.finer("Unable to encode property: " + attributePath);
                         }
                         // tell the caps filter splitter this property name is not encodable
                         return Filter.EXCLUDE;
@@ -231,36 +239,42 @@ class QueryBuilder<T extends Info> {
                 (Filter) supported.accept(new LiteralDemultiplyingFilterVisitor(), null);
         this.supportedFilter = (Filter) demultipliedFilter.accept(filterSimplifier, null);
         this.unsupportedFilter = (Filter) unsupported.accept(filterSimplifier, null);
-
+        if (Filter.INCLUDE.equals(this.supportedFilter)) {
+            return null;
+        }
         StringBuilder whereClause = new StringBuilder();
-        return (StringBuilder) this.supportedFilter.accept(predicateBuilder, whereClause);
+        return this.supportedFilter.accept(predicateBuilder, whereClause).toString();
     }
 
-    public StringBuilder build() {
+    public String build() {
 
-        StringBuilder whereClause = buildWhereClause();
+        String whereClause = buildWhereClause();
 
         StringBuilder query = new StringBuilder();
         if (isCountQuery) {
-            if (Filter.INCLUDE.equals(this.originalFilter)) {
-                query.append("select count(oid) from object where type_id in (:types)");
-            } else {
-                query.append("select count(oid) from object where type_id in (:types) AND (\n");
-                query.append(whereClause).append("\n)");
+            query.append("SELECT COUNT(oid) FROM object WHERE type_id IN (:types)");
+            dialect.appendComment(query, queryType.getName());
+            if (whereClause != null) {
+                dialect.appendIfDebug(query, "", " ");
+                query.append("AND ").append(whereClause);
             }
         } else {
-            SortBy[] orders = this.sortOrder;
-            if (orders == null) {
-                query.append("select id from object where type_id in (:types) AND (\n");
-                query.append(whereClause).append(")\n");
-                query.append(" ORDER BY oid");
+            if (sortOrder != null) {
+                querySortBy(query, whereClause, sortOrder);
             } else {
-                querySortBy(query, whereClause, orders);
+                query.append("SELECT id FROM object WHERE type_id IN (:types)");
+                dialect.appendComment(query, queryType.getName());
+                dialect.appendIfDebug(query, "", " ");
+                if (whereClause != null) {
+                    query.append("AND ").append(whereClause);
+                    dialect.appendIfDebug(query, whereClause.endsWith("\n") ? "" : " ", " ");
+                }
+                query.append("ORDER BY oid");
             }
             applyOffsetLimit(query);
         }
 
-        return query;
+        return query.toString().trim();
     }
 
     /** When the query was built, were the offset and limit included. */

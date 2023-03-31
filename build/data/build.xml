@@ -111,8 +111,8 @@
       
       <antcall target="-lines">
         <param name="table" value="boundary_lines_land"/>
-        <param name="from" value="ne_110m_admin_0_boundary_lines_land"/>
-        <param name="select" value = "*"/>
+        <param name="from" value="ne_50m_admin_0_boundary_lines_land"/>
+        <param name="select" value = "fid,geom,SCALERANK,FEATURECLA,MIN_ZOOM"/>
         <param name="where" value ="TRUE"/>
         <param name="options" value=""/>
         <param name="title" value="Boundary Lines"/>
@@ -121,7 +121,7 @@
 
       <antcall target="-lines">
         <param name="table" value="coastlines"/>
-        <param name="from" value="ne_110m_coastline"/>
+        <param name="from" value="ne_50m_coastline"/>
         <param name="select" value = "*"/>
         <param name="where" value ="TRUE"/>
         <param name="options" value="-update"/>
@@ -131,17 +131,27 @@
 
       <antcall target="-polygons">
         <param name="table" value="countries"/>
-        <param name="from" value="ne_110m_admin_0_countries"/>
-        <param name="select" value = "*"/>
+        <param name="from" value="ne_50m_admin_0_countries"/>
+        <param name="select" value = "fid,geom,featurecla,scalerank,LABELRANK,SOVEREIGNT,SOV_A3,ADM0_DIF,LEVEL,TYPE,TLC,ADMIN,ADM0_A3,GEOU_DIF,GEOUNIT,GU_A3,SU_DIF,SUBUNIT,SU_A3,BRK_DIFF,NAME,NAME_LONG,BRK_A3,BRK_NAME,BRK_GROUP,ABBREV,POSTAL,FORMAL_EN,FORMAL_FR,NAME_CIAWF,NOTE_ADM0,NOTE_BRK,NAME_SORT,NAME_ALT,MAPCOLOR7,MAPCOLOR8,MAPCOLOR9,MAPCOLOR13,POP_EST,POP_RANK,POP_YEAR,GDP_MD,GDP_YEAR,ECONOMY,INCOME_GRP,FIPS_10,ISO_A2,ISO_A2_EH,ISO_A3,ISO_A3_EH,ISO_N3,ISO_N3_EH,UN_A3,WB_A2,WB_A3,WOE_ID,WOE_ID_EH,WOE_NOTE,ADM0_ISO,CONTINENT,REGION_UN,SUBREGION,REGION_WB,NAME_LEN,LONG_LEN,ABBREV_LEN,TINY,HOMEPART,MIN_ZOOM,MIN_LABEL,MAX_LABEL,LABEL_X,LABEL_Y,NE_ID,WIKIDATAID,NAME_AR,NAME_BN,NAME_DE,NAME_EN,NAME_ES,NAME_FA,NAME_FR,NAME_EL,NAME_HE,NAME_HI,NAME_HU,NAME_ID,NAME_IT,NAME_JA,NAME_KO,NAME_NL,NAME_PL,NAME_PT,NAME_RU,NAME_SV,NAME_TR,NAME_UK,NAME_UR,NAME_VI,NAME_ZH,NAME_ZHT,FCLASS_ISO,TLC_DIFF,FCLASS_TLC"/>
         <param name="where" value ="TRUE"/>
         <param name="options" value="-update"/>
         <param name="title" value="Countries"/>
         <param name="description" value="Sovereign states"/>
       </antcall>
+      
+      <antcall target="-polygons">
+        <param name="table" value="disputed_areas"/>
+        <param name="from" value="ne_50m_admin_0_breakaway_disputed_areas"/>
+        <param name="select" value = "*"/>
+        <param name="where" value ="TRUE"/>
+        <param name="options" value="-update"/>
+        <param name="title" value="Disputed Areas"/>
+        <param name="description" value="Disputed areas and breakaway regions."/>
+      </antcall>
 
       <antcall target="-point">
         <param name="table" value="populated_places"/>
-        <param name="from" value="ne_110m_populated_places_simple"/>
+        <param name="from" value="ne_50m_populated_places_simple"/>
         <param name="select" value = "*"/>
         <param name="where" value ="TRUE"/>
         <param name="options" value="-update"/>

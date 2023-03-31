@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /** Interceptor notifying {@link DispatcherCallback} of request processing progress */
-public class CallbackInterceptor extends HandlerInterceptorAdapter {
+public class CallbackInterceptor implements HandlerInterceptor {
 
     static final Logger LOGGER = Logging.getLogger(CallbackInterceptor.class);
 

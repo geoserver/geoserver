@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.23-SNAPSHOT</version>
+    <version>2.24-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-app</artifactId>
@@ -240,7 +240,6 @@
       <!-- Builds a valid data directory into the web app -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
         <executions>
           <execution>
             <id>configPackage</id>
@@ -269,9 +268,9 @@
               <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>
+              <target>
                 <delete dir="${webappSourceDirectory}/data"></delete>
-              </tasks>
+              </target>
             </configuration>
           </execution>
         </executions>
@@ -1658,6 +1657,11 @@
           <artifactId>gs-ogcapi-coverages</artifactId>
           <version>${project.version}</version>
         </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-ogcapi</artifactId>
+          <version>${project.version}</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -1726,6 +1730,16 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-spatialjson</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>webp</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-webp</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
@@ -768,7 +769,8 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         // request for it or fr
         Document doc =
                 getAsDOM(
-                        "wfs?service=WFS&request=getCapabilities&version=2.0.0&acceptLanguages=it,fr");
+                        "wfs?service=WFS&request=getCapabilities&version=2.0.0&acceptLanguages=it,fr",
+                        UTF_8.name());
         String service = "//ows:ServiceIdentification";
         assertXpathEvaluatesTo("titolo italiano servizio WFS", service + "/ows:Title", doc);
         assertXpathEvaluatesTo("abstract italiano servizio WFS", service + "/ows:Abstract", doc);

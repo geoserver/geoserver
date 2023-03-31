@@ -73,7 +73,7 @@ public class OseoSettingsControllerTest extends OSEORestTestSupport {
                 "{'oseo': {'id':'oseo','enabled':'false','name':'OSEO','globalQueryables': { 'string': ['id','geometry']}}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/oseo/settings/",
+                        RestBaseController.ROOT_PATH + "/services/oseo/settings",
                         json,
                         "text/json");
         assertEquals(200, response.getStatus());

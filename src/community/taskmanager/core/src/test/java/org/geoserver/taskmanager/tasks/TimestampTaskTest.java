@@ -96,10 +96,6 @@ public class TimestampTaskTest extends AbstractTaskManagerTest {
     @Test
     public void testSuccess() throws SchedulerException, SQLException, IOException {
         // create metadata map
-        CoverageInfo ci = geoServer.getCatalog().getCoverageByName("DEM");
-        // ci.getMetadata().put("custom", new HashMap<>());
-        geoServer.getCatalog().save(ci);
-
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");
         config = dao.save(config);
 
@@ -109,7 +105,7 @@ public class TimestampTaskTest extends AbstractTaskManagerTest {
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
-        ci = geoServer.getCatalog().getCoverageByName("DEM");
+        CoverageInfo ci = geoServer.getCatalog().getCoverageByName("DEM");
         assertNotNull(ci.getMetadata().get("revisionDate"));
         assertNotNull(((Map<?, ?>) ci.getMetadata().get("custom")).get("_timestamp"));
         geoServer.getCatalog().save(ci);

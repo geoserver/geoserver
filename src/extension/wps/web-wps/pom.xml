@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-wps</artifactId>
-    <version>2.23-SNAPSHOT</version>
+    <version>2.24-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
@@ -38,6 +38,12 @@
     <dependency>
       <groupId>xalan</groupId>
       <artifactId>serializer</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>

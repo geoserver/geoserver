@@ -375,7 +375,13 @@ Task Types
 
 -  ``CopyTableTask`` Copy a database table from one database to another.
    The user can specify a source database, source table name, target
-   database and target table name. Supports commit/rollback by creating
+   database and target table name. The source table name may also be a view.
+   If the source does not contain a primary key column (f.e. if it is a view),
+   an additional column 'generated_id', with an automatically generated primary key
+   will be added to the destination table. The task will also copy all existing indexes. 
+   If the source table contains a geometry column but not a spatial index (f.e. if it is a view),
+   a spatial index will automatically be added to the destination table.
+   Supports commit/rollback by creating
    a temporary table.
 
 -  ``CreateViewTask`` Create a view based on a single table. The user

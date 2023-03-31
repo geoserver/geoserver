@@ -282,7 +282,7 @@ public class ImportControllerTest extends ImporterTestSupport {
         // now a normal request - make sure it continues the sequence
         resp =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/imports/", "{}", "application/json");
+                        RestBaseController.ROOT_PATH + "/imports", "{}", "application/json");
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
         assertTrue(resp.getHeader("Location").endsWith("/imports/8675311"));

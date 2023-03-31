@@ -1118,7 +1118,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
      */
     private Document getResultAsDocument(MockHttpServletResponse response, String contentType)
             throws Exception {
-        return getResultAsDocument(response, contentType, HttpStatus.OK);
+        return getResultAsDocument(response, getBaseMimeType(contentType), HttpStatus.OK);
     }
 
     private Document getResultAsDocument(
@@ -1126,7 +1126,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
             throws Exception {
         String result = response.getContentAsString();
         assertThat(response.getStatus(), is(expectedStatus.value()));
-        assertThat(response.getContentType(), is(contentType));
+        assertThat(getBaseMimeType(response.getContentType()), is(contentType));
         return XMLUnit.buildTestDocument(result);
     }
 

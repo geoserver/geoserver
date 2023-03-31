@@ -19,13 +19,13 @@
 >
 
     <!-- <mvc:annotation-driven/> -->
-    <context:component-scan base-package="org.geoserver.ogcapi.coverages"/>
+    <context:component-scan base-package="org.geoserver.ogcapi.v1.coverages"/>
 
 
     <!-- Bridges to have OGC services show up as OWS services too -->
     <bean id="coveragesServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">
         <constructor-arg index="0" value="Coverages"/>
-        <constructor-arg index="1" value="1.0"/>
+        <constructor-arg index="1" value="1.0.0"/>
     </bean>
 
 </beans>

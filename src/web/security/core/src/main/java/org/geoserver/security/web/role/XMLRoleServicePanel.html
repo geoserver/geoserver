@@ -4,29 +4,33 @@
     xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
-    <ul>
-      <li>
-       <fieldset>
-         <legend>
-            <span><wicket:message key="settings"></wicket:message></span>
-         </legend>
-         <ul>
-            <li>  
-              <label for="fileName"><wicket:message key="fileName"></wicket:message></label>
-              <input wicket:id="fileName" type="text" class="field text"></input>
-            </li>
-            <li class="choiceItem">
-              <input wicket:id="validating" type="checkbox"></input>
-              <label for="validating"><wicket:message key="validating"></wicket:message></label>
-            </li>
-            <li>
-              <label for="checkInterval"><wicket:message key="checkInterval"></wicket:message></label>
-              <input wicket:id="checkInterval" type="text" class="field text"></input>
-            </li>
-         </ul>
-       </fieldset>
-      </li>
-    </ul>
+
+  <fieldset>
+    <legend>
+      <span><wicket:message key="settings"></wicket:message></span>
+    </legend>
+
+    <div class="py-1">
+      <label for="fileName">
+        <wicket:message key="fileName"></wicket:message>
+      </label>
+      <input wicket:id="fileName" type="text" class="field text"></input>
+    </div>
+    <div class="choiceItem py-1">
+      <input wicket:id="validating" type="checkbox"></input>
+      <label for="validating">
+        <wicket:message key="validating"></wicket:message>
+      </label>
+    </div>
+    <div class="py-1">
+      <label for="checkInterval">
+        <wicket:message key="checkInterval"></wicket:message>
+      </label>
+      <input wicket:id="checkInterval" type="text" class="field text"></input>
+    </div>
+
+  </fieldset>
+
 </wicket:extend>
 </body>
 </html>

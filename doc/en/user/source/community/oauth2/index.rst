@@ -49,7 +49,7 @@ The first thing to do is to configure the OAuth2 Provider and obtain ``Client ID
         .. figure:: images/google_api_console001.png
            :align: center
 
-   * Click on ``API Manager``
+   * Click on ``APIs & Services``
    
         .. figure:: images/google_api_console002.png
            :align: center
@@ -76,8 +76,6 @@ The first thing to do is to configure the OAuth2 Provider and obtain ``Client ID
 
 #. Select an existing (or create a new one) ``OAuth Client ID``
 
-   Click on the ``Client credentials`` context menu as shown in the figure below.
-   
     .. figure:: images/google_api_console007.png
        :align: center
 
@@ -91,17 +89,21 @@ The first thing to do is to configure the OAuth2 Provider and obtain ``Client ID
    * Customize the ``consent screen``
     
         .. warning:: This step is mandatory only if it's the first time you are defining a ``Web application`` on a new project.
+         If you don't have an organization, you can only choose type External from the screen below.
 
         .. figure:: images/google_api_console009.png
+           :align: center
+   * Fill the form below and click on ``save and continue`` untill all tabs are filled.
+         .. figure:: images/google_api_console010.png
            :align: center
    
         .. note:: It can be edited and updated also later (see last point of this section below)
         
-   * Select ``Application type`` -> ``Web application``
+   * From the credentials page, click on ``CREATE CREDENTIALS``> ``OAuth Client ID`` and select ``Application type`` -> ``Web application``
    
         .. warning:: This step is mandatory only if it's the first time you are defining a ``Web application`` on a new project.
 
-        .. figure:: images/google_api_console010.png
+        .. figure:: images/google_api_console010a.png
            :align: center
    
    * Add a ``Name`` and the ``Authorized redirect URIs`` like shown here below.
@@ -292,6 +294,8 @@ and the GUI will auto-fill itself based on the document contents:
 
    .. figure:: images/discovery.png
       :align: center
+
+The UI allow to set also the ``Post Logout Redirect URI`` which will be used to populate the  ``post_logout_redirect_uri`` request param, when doing the global logout from the GeoServer UI. The OpenId provider will use the URI to redirect to the desired app page.
 
 In addition, the OpenID connect authentication is able to extract the user roles from
 either the ID token or the Access Token:

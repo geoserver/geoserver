@@ -119,8 +119,9 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
             assertEquals(ThreadState.COMPLETE, t2.state);
             waitState(ThreadState.PROCESSING, t3, MAX_WAIT);
 
-            // unlock t2 as well
+            // unlock t2 and t3 as well
             t2.interrupt();
+            t3.interrupt();
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);

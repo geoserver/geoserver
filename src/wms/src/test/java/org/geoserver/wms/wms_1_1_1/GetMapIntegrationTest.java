@@ -564,7 +564,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                     + "&height=250"
                                     + "&srs=EPSG:900913"
                                     + "&time=\"2022-6-20T5:30:0:00.000Z\"");
-            assertEquals("text/xml", response.getContentType());
+            assertEquals("text/xml", getBaseMimeType(response.getContentType()));
             appender.stopRecording("org.geoserver.ows");
         }
     }
@@ -1261,7 +1261,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                             + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
             // this group is not meant to be called directly so we should get an exception
             MockHttpServletResponse resp = getAsServletResponse(url);
-            assertEquals("application/vnd.ogc.se_xml", resp.getContentType());
+            assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(resp.getContentType()));
 
             Document dom = getAsDOM(url);
             assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());

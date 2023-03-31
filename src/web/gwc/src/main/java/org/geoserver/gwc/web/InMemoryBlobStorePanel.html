@@ -3,16 +3,16 @@
 <wicket:panel>
   <fieldset>
     <ul>
-      <li>
-        <label for="innerCachingEnabled" class="checkbox"><wicket:message key="innerCachingEnabled">Inner Cahing Enabled</wicket:message></label>      
-        <input id="innerCachingEnabled" class="field checkbox" type="checkbox" wicket:id="innerCachingEnabled" />
+      <li class="choiceItem">
+				<input id="innerCachingEnabled" class="field checkbox" type="checkbox" wicket:id="innerCachingEnabled" />
+        <label for="innerCachingEnabled" class="checkbox"><wicket:message key="innerCachingEnabled">Inner Cahing Enabled</wicket:message></label>
       </li>
       <li wicket:id="container">
       <ul>
-          <li>
-        	<label for="persistenceEnabled" class="checkbox"><wicket:message key="persistenceEnabled">Persistence Enabled</wicket:message></label>      
-        	<input id="persistenceEnabled" class="field checkbox" type="checkbox" wicket:id="persistenceEnabled" />
-      	  </li>
+          <li class="choiceItem">
+						<input id="persistenceEnabled" class="field checkbox" type="checkbox" wicket:id="persistenceEnabled" />
+        		<label for="persistenceEnabled" class="checkbox"><wicket:message key="persistenceEnabled">Persistence Enabled</wicket:message></label>
+        	</li>
 	      <li>
 	        <label for="caches" class="select"><wicket:message key="caches">Cache Providers</wicket:message></label>      
 	        <select id="caches" wicket:id="caches" />

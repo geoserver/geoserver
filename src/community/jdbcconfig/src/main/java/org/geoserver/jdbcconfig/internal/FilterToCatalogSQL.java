@@ -8,9 +8,9 @@ package org.geoserver.jdbcconfig.internal;
 import static com.google.common.base.Preconditions.*;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +19,7 @@ import org.geoserver.function.IsInstanceOf;
 import org.geotools.filter.Capabilities;
 import org.geotools.filter.LikeFilterImpl;
 import org.opengis.filter.And;
+import org.opengis.filter.BinaryLogicOperator;
 import org.opengis.filter.ExcludeFilter;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -94,16 +95,18 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         CAPABILITIES = builder.getContents();
     }
 
+    private final Dialect dialect;
+
     private final Class<?> queryType;
 
     private final DbMappings dbMappings;
 
-    private Map<String, Object> namedParams;
+    private final Map<String, Object> namedParams = new LinkedHashMap<>();
 
-    public FilterToCatalogSQL(Class<?> queryType, DbMappings dbMappings) {
+    public FilterToCatalogSQL(Dialect dialect, Class<?> queryType, DbMappings dbMappings) {
+        this.dialect = dialect;
         this.queryType = queryType;
         this.dbMappings = dbMappings;
-        namedParams = Maps.newHashMap();
         List<Integer> concreteQueryTypes = dbMappings.getConcreteQueryTypes(queryType);
         namedParams.put("types", concreteQueryTypes);
     }
@@ -133,8 +136,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
      */
     @Override
     public Object visit(ExcludeFilter filter, Object extraData) {
-        append(extraData, "(1=0) /* EXCLUDE */\n");
-        return extraData;
+        return dialect.appendComment(append(extraData, "0 = 1"), "EXCLUDE");
     }
 
     /**
@@ -143,8 +145,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
      */
     @Override
     public Object visit(IncludeFilter filter, Object extraData) {
-        append(extraData, "(1=1) /* INCLUDE */\n");
-        return extraData;
+        return dialect.appendComment(append(extraData, "1 = 1"), "INCLUDE");
     }
 
     /**
@@ -172,81 +173,57 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
             String valueCol1 = matchingCase ? "o1.value" : "UPPER(o1.value)";
             String valueCol2 = matchingCase ? "o2.value" : "UPPER(o2.value)";
 
-            StringBuilder builder;
-
             switch (matchAction) {
                     // respect matchaction
                 case ALL: // all = another value for the property may not occur
-                    builder =
-                            append(
-                                    extraData,
-                                    "oid NOT IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
-                                    "AND o1.property_type IN (:",
-                                    propertyTypesParam1,
-                                    ") ",
-                                    "AND o2.property_type IN (:",
-                                    propertyTypesParam2,
-                                    ") ",
-                                    "AND ",
-                                    valueCol1,
-                                    " != ",
-                                    valueCol2,
-                                    " ) /* ",
-                                    filter.toString(),
-                                    " */ \n");
+                    append(
+                            extraData,
+                            "oid NOT IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE o1.oid = o2.oid ",
+                            "AND o1.property_type IN (:",
+                            propertyTypesParam1,
+                            ") AND o2.property_type IN (:",
+                            propertyTypesParam2,
+                            ") AND ",
+                            valueCol1,
+                            " != ",
+                            valueCol2,
+                            ")");
                     break;
                 case ANY: // any = the value for the property must occur at least once
-                    builder =
-                            append(
-                                    extraData,
-                                    "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
-                                    "AND o1.property_type IN (:",
-                                    propertyTypesParam1,
-                                    ") ",
-                                    "AND o2.property_type IN (:",
-                                    propertyTypesParam2,
-                                    ") ",
-                                    "AND ",
-                                    valueCol1,
-                                    " = ",
-                                    valueCol2,
-                                    " ) /* ",
-                                    filter.toString(),
-                                    " */ \n");
+                    append(
+                            extraData,
+                            "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE o1.oid = o2.oid ",
+                            "AND o1.property_type IN (:",
+                            propertyTypesParam1,
+                            ") AND o2.property_type IN (:",
+                            propertyTypesParam2,
+                            ") AND ",
+                            valueCol1,
+                            " = ",
+                            valueCol2,
+                            ")");
                     break;
                 case ONE: // one = the value for the property must occur exactly once
-                    builder =
-                            append(
-                                    extraData,
-                                    "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid) ",
-                                    "AND o1.property_type IN (:",
-                                    propertyTypesParam1,
-                                    ") ",
-                                    "AND o2.property_type IN (:",
-                                    propertyTypesParam2,
-                                    ") ",
-                                    "AND ",
-                                    valueCol1,
-                                    " = ",
-                                    valueCol2,
-                                    " GROUP BY (oid) HAVING COUNT(oid)=1) /* ",
-                                    filter.toString(),
-                                    "/* ",
-                                    filter.toString(),
-                                    " */ \n");
+                    append(
+                            extraData,
+                            "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE o1.oid = o2.oid ",
+                            "AND o1.property_type IN (:",
+                            propertyTypesParam1,
+                            ") AND o2.property_type IN (:",
+                            propertyTypesParam2,
+                            ") AND ",
+                            valueCol1,
+                            " = ",
+                            valueCol2,
+                            " GROUP BY (oid) HAVING COUNT(oid) = 1)");
                     break;
                 default:
                     throw new IllegalArgumentException("MatchAction: " + matchAction);
             }
-
-            return builder;
-
         } else {
 
             if (filter.getExpression1() instanceof IsInstanceOf) {
-                StringBuilder builder =
-                        append(extraData, handleInstanceOf((IsInstanceOf) filter.getExpression1()));
-                return builder;
+                return handleInstanceOf((IsInstanceOf) filter.getExpression1(), extraData);
             }
 
             // comparing a literal with a field
@@ -272,74 +249,60 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
                 expectedValue = expectedValue.toUpperCase();
             }
             String valueParam = newParam("value", expectedValue);
-
-            StringBuilder builder;
             String valueCol = matchingCase ? "value" : "UPPER(value)";
 
             switch (matchAction) {
                     // respect match action
                 case ALL: // all = another value for the property may not occur
-                    builder =
-                            append(
-                                    extraData,
-                                    "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                                    propertyTypesParam,
-                                    ") AND ",
-                                    valueCol,
-                                    " != :",
-                                    valueParam,
-                                    ") /* ",
-                                    filter.toString(),
-                                    " */ \n");
+                    append(
+                            extraData,
+                            "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                            propertyTypesParam,
+                            ") AND ",
+                            valueCol,
+                            " != :",
+                            valueParam,
+                            ")");
                     break;
                 case ANY: // any = the value for the property must occur at least once
-                    builder =
-                            append(
-                                    extraData,
-                                    "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                                    propertyTypesParam,
-                                    ") AND ",
-                                    valueCol,
-                                    " = :",
-                                    valueParam,
-                                    ") /* ",
-                                    filter.toString(),
-                                    " */ \n");
+                    append(
+                            extraData,
+                            "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                            propertyTypesParam,
+                            ") AND ",
+                            valueCol,
+                            " = :",
+                            valueParam,
+                            ")");
                     break;
                 case ONE: // one = the value for the property must occur exactly once
-                    builder =
-                            append(
-                                    extraData,
-                                    "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                                    propertyTypesParam,
-                                    ") AND ",
-                                    valueCol,
-                                    " = :",
-                                    valueParam,
-                                    " GROUP BY (oid) HAVING COUNT(oid)=1) /* ",
-                                    filter.toString(),
-                                    " */ \n");
+                    append(
+                            extraData,
+                            "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                            propertyTypesParam,
+                            ") AND ",
+                            valueCol,
+                            " = :",
+                            valueParam,
+                            " GROUP BY (oid) HAVING COUNT(oid) = 1)");
                     break;
                 default:
                     throw new IllegalArgumentException("MatchAction: " + matchAction);
             }
-
-            return builder;
         }
+        return dialect.appendComment(extraData, filter);
     }
 
-    private String handleInstanceOf(IsInstanceOf instanceOf) {
+    private Object handleInstanceOf(IsInstanceOf instanceOf, Object extraData) {
         Expression expression1 = instanceOf.getParameters().get(0);
 
         Class<?> clazz = expression1.evaluate(null, Class.class);
-
-        if (clazz == null || dbMappings.getTypeId(clazz) == null) {
-            return "(1=0) /* EXCLUDE */\n";
-        }
-
         Integer typeId = dbMappings.getTypeId(clazz);
-
-        return "type_id = " + typeId + "/* isInstanceOf " + clazz.toString() + " */ \n";
+        if (typeId == null) {
+            return visit(Filter.EXCLUDE, extraData);
+        }
+        append(extraData, "type_id = ", typeId.toString());
+        return dialect.appendComment(extraData, "isInstanceOf ", clazz.getName());
     }
 
     /**
@@ -349,7 +312,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     @Override
     public Object visit(PropertyIsLike filter, Object extraData) {
         final PropertyName expression1 = (PropertyName) filter.getExpression();
-        // TODO: check for indexed property name
 
         final String propertyTypesParam = propertyTypesParam(expression1);
 
@@ -361,63 +323,51 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         final boolean matchCase = filter.isMatchingCase();
 
         final String pattern =
-                LikeFilterImpl.convertToSQL92(esc, multi, single, matchCase, literal);
+                LikeFilterImpl.convertToSQL92(esc, multi, single, matchCase, literal, false);
 
         // respect match case
+        String valueParam = newParam("value", pattern);
         String valueCol = matchCase ? "value" : "UPPER(value)";
-
-        StringBuilder builder;
 
         switch (matchAction) {
                 // respect match action
             case ALL: // all = another value for the property may not occur
-                builder =
-                        append(
-                                extraData,
-                                "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                                propertyTypesParam,
-                                ") AND NOT(",
-                                valueCol,
-                                " LIKE '",
-                                pattern,
-                                "')) /* ",
-                                filter.toString(),
-                                " */ \n");
+                append(
+                        extraData,
+                        "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                        propertyTypesParam,
+                        ") AND ",
+                        valueCol,
+                        " NOT LIKE :",
+                        valueParam,
+                        ")");
                 break;
             case ANY: // any = the value for the property must occur at least once
-                builder =
-                        append(
-                                extraData,
-                                "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                                propertyTypesParam,
-                                ") AND ",
-                                valueCol,
-                                " LIKE '",
-                                pattern,
-                                "') /* ",
-                                filter.toString(),
-                                " */ \n");
+                append(
+                        extraData,
+                        "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                        propertyTypesParam,
+                        ") AND ",
+                        valueCol,
+                        " LIKE :",
+                        valueParam,
+                        ")");
                 break;
             case ONE: // one = the value for the property must occur exactly once
-                builder =
-                        append(
-                                extraData,
-                                "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                                propertyTypesParam,
-                                ") AND ",
-                                valueCol,
-                                " LIKE '",
-                                pattern,
-                                "' ",
-                                "GROUP BY (oid) HAVING COUNT(oid)=1 ) /* ",
-                                filter.toString(),
-                                " */ \n");
+                append(
+                        extraData,
+                        "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                        propertyTypesParam,
+                        ") AND ",
+                        valueCol,
+                        " LIKE :",
+                        valueParam,
+                        " GROUP BY (oid) HAVING COUNT(oid) = 1)");
                 break;
             default:
                 throw new IllegalArgumentException("MatchAction: " + matchAction);
         }
-
-        return builder;
+        return dialect.appendComment(extraData, filter);
     }
 
     private String propertyTypesParam(final PropertyName property) {
@@ -478,40 +428,30 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.And, java.lang.Object) */
     @Override
     public Object visit(And filter, Object extraData) {
-        StringBuilder sql = (StringBuilder) extraData;
-
-        List<Filter> children = filter.getChildren();
-        checkArgument(children.size() > 0);
-        sql.append("(\n\t");
-
-        for (Iterator<Filter> it = children.iterator(); it.hasNext(); ) {
-            Filter child = it.next();
-            sql = (StringBuilder) child.accept(this, sql);
-            if (it.hasNext()) {
-                sql = append(extraData, "\tAND\n\t");
-            }
-        }
-        sql.append(")");
-        return sql;
+        return visit(filter, "AND", extraData);
     }
 
     /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Or, java.lang.Object) */
     @Override
     public Object visit(Or filter, Object extraData) {
-        StringBuilder sql = (StringBuilder) extraData;
+        return visit(filter, "OR", extraData);
+    }
 
+    protected Object visit(BinaryLogicOperator filter, String type, Object extraData) {
+        StringBuilder sql = (StringBuilder) extraData;
         List<Filter> children = filter.getChildren();
         checkArgument(children.size() > 0);
-        sql.append("(");
+        sql.append('(');
+        dialect.appendIfDebug(sql, "\n    ", "");
         for (Iterator<Filter> it = children.iterator(); it.hasNext(); ) {
-            Filter child = it.next();
-            sql = (StringBuilder) child.accept(this, sql);
+            it.next().accept(this, sql);
             if (it.hasNext()) {
-                sql = append(extraData, "\tOR\n\t");
+                dialect.appendIfDebug(sql, "    ", " ");
+                sql.append(type);
+                dialect.appendIfDebug(sql, "\n    ", " ");
             }
         }
-        sql.append(")");
-        return sql;
+        return sql.append(')');
     }
 
     /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Id, java.lang.Object) */
@@ -524,8 +464,13 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Not, java.lang.Object) */
     @Override
     public Object visit(Not filter, Object extraData) {
-
-        return filter.getFilter().accept(this, append(extraData, " NOT "));
+        Filter child = filter.getFilter();
+        // these filter types are already enclosed in parentheses
+        boolean extraParens =
+                !(child instanceof And || child instanceof Or || child instanceof PropertyIsNull);
+        append(extraData, "NOT ", extraParens ? "(" : "");
+        child.accept(this, extraData);
+        return append(extraData, extraParens ? ")" : "");
     }
 
     /**
@@ -588,17 +533,14 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         final PropertyName propertyName = (PropertyName) filter.getExpression();
         final String propertyTypesParam = propertyTypesParam(propertyName);
 
-        StringBuilder builder =
-                append(
-                        extraData,
-                        "(oid IN (select oid from object_property where property_type in (:",
-                        propertyTypesParam,
-                        ") and value IS NULL) OR oid NOT  in (select oid from object_property where property_type in (:"
-                                + propertyTypesParam
-                                + "))) /* ",
-                        filter.toString(),
-                        " */ \n");
-        return builder;
+        append(
+                extraData,
+                "(oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                propertyTypesParam,
+                ") AND value IS NULL) OR oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                propertyTypesParam,
+                ")))");
+        return dialect.appendComment(extraData, filter);
     }
 
     /**
@@ -610,15 +552,12 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         final PropertyName propertyName = (PropertyName) filter.getExpression();
         final String propertyTypesParam = propertyTypesParam(propertyName);
 
-        StringBuilder builder =
-                append(
-                        extraData,
-                        "oid IN (select oid from object_property where property_type in (:",
-                        propertyTypesParam,
-                        ") and value IS NULL) /* ",
-                        filter.toString(),
-                        " */ \n");
-        return builder;
+        append(
+                extraData,
+                "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                propertyTypesParam,
+                ") AND value IS NULL)");
+        return dialect.appendComment(extraData, filter);
     }
 
     /**

@@ -347,7 +347,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                 getResponseContent(
                         path + "application/openlayers",
                         firefoxAgent,
-                        OpenLayers3MapOutputFormat.MIME_TYPE);
+                        getBaseMimeType(OpenLayers3MapOutputFormat.MIME_TYPE));
         assertThat(contentFirefox, containsString("openlayers3/ol.js"));
 
         // generic request on browser not supporting OL3
@@ -355,7 +355,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                 getResponseContent(
                         path + "application/openlayers",
                         ie8Agent,
-                        OpenLayers2MapOutputFormat.MIME_TYPE);
+                        getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
         assertThat(contentIE8, containsString("OpenLayers.js"));
 
         // ask explicitly for OL2
@@ -363,7 +363,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                 getResponseContent(
                         path + "application/openlayers2",
                         firefoxAgent,
-                        OpenLayers2MapOutputFormat.MIME_TYPE);
+                        getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
         assertThat(contentOL2, containsString("OpenLayers.js"));
 
         // ask explicitly for OL3
@@ -371,7 +371,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                 getResponseContent(
                         path + "application/openlayers3",
                         firefoxAgent,
-                        OpenLayers3MapOutputFormat.MIME_TYPE);
+                        getBaseMimeType(OpenLayers3MapOutputFormat.MIME_TYPE));
         assertThat(contentOL3, containsString("openlayers3/ol.js"));
 
         // ask explicitly for OL3 on a non supporting browser
@@ -390,7 +390,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             request.addHeader("USER-AGENT", userAgent);
         }
         MockHttpServletResponse response = dispatch(request);
-        assertEquals(expectedMimeType, response.getContentType());
+        assertEquals(expectedMimeType, getBaseMimeType(response.getContentType()));
         return response.getContentAsString();
     }
 

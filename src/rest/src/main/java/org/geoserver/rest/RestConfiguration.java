@@ -8,11 +8,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.Styles;
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
@@ -31,24 +33,39 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.UrlPathHelper;
 import org.xml.sax.EntityResolver;
 
-/** Configure various aspects of Spring MVC, in particular message converters */
+/**
+ * Configure various aspects of Spring MVC, in particular message converters
+ *
+ * @implNote this class extends {@link DelegatingWebMvcConfiguration} in order to allow other
+ *     modules to extend the WebMvc configuration by contributing a {@link WebMvcConfigurer} to the
+ *     application context. {@link DelegatingWebMvcConfiguration} is a subclass of {@code
+ *     WebMvcConfigurationSupport} that detects and delegates to all beans of type {@link
+ *     WebMvcConfigurer} allowing them to customize the configuration provided by {@code
+ *     WebMvcConfigurationSupport}. This is the class actually imported by {@link
+ *     EnableWebMvc @EnableWebMvc}.
+ */
 @Configuration
-public class RestConfiguration extends WebMvcConfigurationSupport {
+public class RestConfiguration extends DelegatingWebMvcConfiguration {
 
     private ContentNegotiationManager contentNegotiationManager;
 
     @Autowired private ApplicationContext applicationContext;
+
+    @Autowired private GeoServer geoServer;
 
     /**
      * Return a {@link ContentNegotiationManager} instance to use to determine requested {@linkplain
@@ -124,16 +141,31 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
             converters.add(converter);
         }
 
+        // make sure that Jaxb2RootElementHttpMessageConverter is the first one, otherwise Jackson
+        // will override and ignore Jaxb annotations
+        converters.removeIf(Jaxb2RootElementHttpMessageConverter.class::isInstance);
+        converters.add(0, new Jaxb2RootElementHttpMessageConverter());
+
         // use the default ones as lowest priority
         super.addDefaultHttpMessageConverters(converters);
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.configureMessageConverters(converters);
     }
 
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new RestInterceptor());
         registry.addInterceptor(new CallbackInterceptor());
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.addInterceptors(registry);
     }
-
+    // ContentNegotiationConfigurer.favorPathExtension is deprecated because Spring wants to
+    // discourage extensions in paths.  See
+    // https://github.com/spring-projects/spring-framework/issues/24179
+    // for more details.  Removing extensions would cause REST API backwards compatibility issues
+    // that will have to be
+    // addressed in the future.  For now, we are suppressing the deprecation warning.
+    @SuppressWarnings("deprecation")
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         // scan and register media types for style handlers
@@ -158,26 +190,41 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
         configurer.mediaType("xslt", MediaType.valueOf("application/xslt+xml"));
         configurer.mediaType("ftl", MediaType.TEXT_PLAIN);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
-        configurer.favorParameter(true);
+        configurer.favorParameter(true).favorPathExtension(true);
 
         // allow extension point configuration of media types
         List<MediaTypeCallback> callbacks = GeoServerExtensions.extensions(MediaTypeCallback.class);
         for (MediaTypeCallback callback : callbacks) {
             callback.configure(configurer);
         }
+
         //        configurer.favorPathExtension(true);
         // todo properties files are only supported for test cases. should try to find a way to
         // support them without polluting prod code with handling
         //        configurer.mediaType("properties", MediaType.valueOf("application/prs.gs.psl"));
-    }
 
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.configureContentNegotiation(configurer);
+    }
+    // PathMatchConfigurer.setUseSuffixPatternMatch is deprecated because Spring wants to
+    // discourage extensions in paths
+    @SuppressWarnings("deprecation")
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         // Force MVC to use /restng endpoint. If we need something more advanced, we should make a
         // custom PathHelper
+
         GeoServerUrlPathHelper helper = new GeoServerUrlPathHelper();
         helper.setAlwaysUseFullPath(true);
         configurer.setUrlPathHelper(helper);
+        configurer.setUseSuffixPatternMatch(true);
+        configurer.setUseTrailingSlashMatch(
+                Optional.ofNullable(geoServer)
+                        .map(g -> g.getGlobal())
+                        .map(g -> g.isTrailingSlashMatch())
+                        .orElse(true));
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.configurePathMatch(configurer);
     }
 
     @Override
@@ -186,6 +233,8 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
         for (Converter converter : GeoServerExtensions.extensions(Converter.class)) {
             registry.addConverter(converter);
         }
+        // finally, allow any other WebMvcConfigurer in the application context to do its thing
+        super.addFormatters(registry);
     }
 
     static class GeoServerUrlPathHelper extends UrlPathHelper {

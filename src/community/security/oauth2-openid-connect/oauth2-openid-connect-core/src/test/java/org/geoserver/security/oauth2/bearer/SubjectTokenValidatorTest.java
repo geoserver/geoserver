@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class SubjectTokenValidatorTest {
 
     String userName = "MYUSERNAME";

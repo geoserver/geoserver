@@ -20,6 +20,7 @@ import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Identifiable;
+import org.geoserver.taskmanager.data.LatestBatchRun;
 import org.geoserver.taskmanager.data.Parameter;
 import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.SoftRemove;
@@ -86,12 +87,12 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
     @Override
     public Run save(final Run run) {
-        return saveObject(run);
+        return initInternal(saveObject(run));
     }
 
     @Override
     public BatchRun save(final BatchRun br) {
-        return saveObject(br);
+        return initInternal(saveObject(br));
     }
 
     @Override
@@ -138,94 +139,16 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                         cb.equal(root.get("configuration").get("removeStamp"), 0L)));
         query.distinct(true);
         return getSession().createQuery(query).getResultList();
-
-        /* Criteria criteria =
-                getSession()
-                        .createCriteria(BatchImpl.class)
-                        .createAlias("configuration", "configuration", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN)
-                        .setFetchMode("elements", FetchMode.JOIN)
-                        .add(Restrictions.eq("removeStamp", 0L))
-                        .add(
-                                Restrictions.or(
-                                        Restrictions.isNull("configuration"),
-                                        Restrictions.eq("configuration.removeStamp", 0L)));
-        return criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();*/
-    }
-
-    private void loadLatestBatchRuns() {
-        CriteriaBuilder cb = getSession().getCriteriaBuilder();
-        CriteriaQuery<BatchRunImpl> query = cb.createQuery(BatchRunImpl.class);
-        Root<BatchRunImpl> root = query.from(BatchRunImpl.class);
-        root.join("batch").join("configuration", JoinType.LEFT);
-        query.select(root);
-
-        Subquery<Number> subQuery = query.subquery(Number.class);
-        Root<RunImpl> subRoot = subQuery.from(RunImpl.class);
-        subRoot.join("batchRun").join("batch");
-        subQuery.select(
-                cb.max(subRoot.get("batchRun").get("id"))); // assuming sequential id generation
-        subQuery.where(
-                cb.equal(
-                        subRoot.get("batchRun").get("batch").get("id"),
-                        root.get("batch").get("id")));
-
-        query.where(
-                cb.equal(root.get("batch").get("removeStamp"), 0L),
-                cb.or(
-                        cb.isNull(root.get("batch").get("configuration")),
-                        cb.and(
-                                cb.equal(
-                                        root.get("batch").get("configuration").get("removeStamp"),
-                                        0L),
-                                cb.equal(
-                                        root.get("batch").get("configuration").get("validated"),
-                                        true),
-                                cb.not(cb.like(root.get("batch").get("name"), "@%")))),
-                cb.equal(root.get("id"), subQuery));
-        query.distinct(true);
-
-        /*Criteria criteria =
-                getSession()
-                        .createCriteria(BatchRunImpl.class, "outerBr")
-                        .createAlias("outerBr.batch", "outerBatch")
-                        .createAlias(
-                                "outerBatch.configuration",
-                                "configuration",
-                                org.hibernate.sql.JoinType.LEFT_OUTER_JOIN)
-                        .add(Restrictions.eq("outerBatch.removeStamp", 0L));
-        criteria.add(
-                Restrictions.or(
-                        Restrictions.isNull("outerBatch.configuration"),
-                        Restrictions.and(
-                                Restrictions.and(
-                                        Restrictions.eq("configuration.removeStamp", 0L),
-                                        Restrictions.eq("configuration.validated", true)),
-                                Restrictions.not(Restrictions.like("outerBatch.name", "@%")))));
-        criteria.add(
-                Subqueries.propertyEq(
-                        "outerBr.id",
-                        DetachedCriteria.forClass(RunImpl.class)
-                                .createAlias("batchRun", "innerBr")
-                                .createAlias("innerBr.batch", "innerBatch")
-                                .add(Restrictions.eqProperty("innerBatch.id", "outerBatch.id"))
-                                .setProjection(Projections.max("innerBr.id"))));
-
-        for (BatchRunImpl br :
-                (List<BatchRunImpl>)
-                        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list()) {*/
-
-        for (BatchRunImpl br : getSession().createQuery(query).getResultList()) {
-            ((BatchImpl) br.getBatch()).setLatestBatchRun(br);
-        }
     }
 
     @Override
     public List<Batch> getViewableBatches() {
-        loadLatestBatchRuns();
-
         CriteriaBuilder cb = getSession().getCriteriaBuilder();
         CriteriaQuery<Batch> query = cb.createQuery(Batch.class);
         Root<BatchImpl> root = query.from(BatchImpl.class);
+        root.fetch("latestBatchRun", JoinType.LEFT)
+                .fetch("batchRun", JoinType.LEFT)
+                .fetch("runs", JoinType.LEFT);
         root.join("configuration", JoinType.LEFT);
         query.select(root);
         query.where(
@@ -238,73 +161,22 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                                 cb.not(cb.like(root.get("name"), "@%")))));
         query.distinct(true);
         return getSession().createQuery(query).getResultList();
-
-        /* return getSession()
-        .createCriteria(BatchImpl.class)
-        .createAlias("configuration", "configuration", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN)
-        .add(Restrictions.eq("removeStamp", 0L))
-        .add(
-                Restrictions.or(
-                        Restrictions.isNull("configuration"),
-                        Restrictions.and(
-                                Restrictions.and(
-                                        Restrictions.eq("configuration.removeStamp", 0L),
-                                        Restrictions.eq("configuration.validated", true)),
-                                Restrictions.not(Restrictions.like("name", "@%")))))
-        .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
-        .list(); */
     }
 
     @Override
     public void loadLatestBatchRuns(Configuration config) {
         CriteriaBuilder cb = getSession().getCriteriaBuilder();
-        CriteriaQuery<BatchRunImpl> query = cb.createQuery(BatchRunImpl.class);
-        Root<BatchRunImpl> root = query.from(BatchRunImpl.class);
-        root.join("batch").join("configuration", JoinType.LEFT);
+        CriteriaQuery<LatestBatchRun> query = cb.createQuery(LatestBatchRun.class);
+        Root<LatestBatchRunImpl> root = query.from(LatestBatchRunImpl.class);
+        root.join("batch").join("configuration");
+        root.fetch("batchRun");
         query.select(root);
+        query.where(cb.equal(root.get("batch").get("configuration").get("id"), config.getId()));
 
-        Subquery<Number> subQuery = query.subquery(Number.class);
-        Root<RunImpl> subRoot = subQuery.from(RunImpl.class);
-        subRoot.join("batchRun").join("batch");
-        subQuery.select(
-                cb.max(subRoot.get("batchRun").get("id"))); // assuming sequential id generation
-        subQuery.where(
-                cb.equal(
-                        subRoot.get("batchRun").get("batch").get("id"),
-                        root.get("batch").get("id")));
-
-        query.where(
-                cb.equal(root.get("batch").get("configuration").get("id"), config.getId()),
-                cb.equal(root.get("id"), subQuery));
-        query.distinct(true);
-
-        /*Criteria criteria =
-                getSession()
-                        .createCriteria(BatchRunImpl.class, "outerBr")
-                        .createAlias("outerBr.batch", "outerBatch")
-                        .createAlias(
-                                "outerBatch.configuration",
-                                "configuration",
-                                org.hibernate.sql.JoinType.LEFT_OUTER_JOIN)
-                        .add(Restrictions.eq("outerBatch.removeStamp", 0L));
-        criteria.add(Restrictions.eq("configuration.id", config.getId()));
-        criteria.add(
-                Subqueries.propertyEq(
-                        "outerBr.id",
-                        DetachedCriteria.forClass(RunImpl.class)
-                                .createAlias("batchRun", "innerBr")
-                                .createAlias("innerBr.batch", "innerBatch")
-                                .add(Restrictions.eqProperty("innerBatch.id", "outerBatch.id"))
-                                .setProjection(Projections.max("innerBr.id"))));
-
-        for (BatchRunImpl br :
-                (List<BatchRunImpl>)
-                        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list()) {*/
-
-        for (BatchRunImpl br : getSession().createQuery(query).getResultList()) {
-            BatchImpl b = ((BatchImpl) config.getBatches().get(br.getBatch().getName()));
+        for (LatestBatchRun lbr : getSession().createQuery(query).getResultList()) {
+            BatchImpl b = ((BatchImpl) config.getBatches().get(lbr.getBatch().getName()));
             if (b != null) {
-                b.setLatestBatchRun(br);
+                b.setLatestBatchRun(lbr);
             }
         }
     }
@@ -324,15 +196,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         }
         query.distinct(true);
         return getSession().createQuery(query).getResultList();
-
-        /*Criteria criteria =
-                getSession()
-                        .createCriteria(ConfigurationImpl.class)
-                        .add(Restrictions.eq("removeStamp", 0L));
-        if (templates != null) {
-            criteria.add(Restrictions.eq("template", templates));
-        }
-        return criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();*/
     }
 
     @Override
@@ -347,12 +210,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         } catch (NoResultException e) {
             return null;
         }
-
-        /*return (Configuration)
-        getSession()
-                .createCriteria(ConfigurationImpl.class)
-                .add(Restrictions.idEq(id))
-                .uniqueResult();*/
     }
 
     @Override
@@ -367,12 +224,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         } catch (NoResultException e) {
             return null;
         }
-
-        /* return (Batch)
-        getSession()
-                .createCriteria(BatchImpl.class)
-                .add(Restrictions.idEq(id))
-                .uniqueResult(); */
     }
 
     @Override
@@ -387,13 +238,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         } catch (NoResultException e) {
             return null;
         }
-
-        /*return (Configuration)
-        getSession()
-                .createCriteria(ConfigurationImpl.class)
-                .add(Restrictions.eq("removeStamp", 0L))
-                .add(Restrictions.eq("name", name))
-                .uniqueResult();*/
     }
 
     @Override
@@ -425,30 +269,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                 cb.not(root.get("id").in(subQuery)));
 
         return getSession().createQuery(query).getResultList();
-
-        /*DetachedCriteria alreadyInBatch =
-                DetachedCriteria.forClass(BatchElementImpl.class)
-                        .createAlias("batch", "batch")
-                        .createAlias("task", "task")
-                        .add(Restrictions.eq("batch.id", batch.getId()))
-                        .add(Restrictions.eq("removeStamp", 0L))
-                        .setProjection(Projections.property("task.id"));
-        Criteria criteria =
-                getSession()
-                        .createCriteria(TaskImpl.class)
-                        .createAlias("configuration", "configuration")
-                        .createAlias("batchElements", "batchElements", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN)
-                        .add(Restrictions.eq("removeStamp", 0L))
-                        .add(Restrictions.eq("configuration.removeStamp", 0L))
-                        .add(Subqueries.propertyNotIn("id", alreadyInBatch));
-
-        if (batch.getConfiguration() == null) {
-            criteria.add(Restrictions.eq("configuration.template", false));
-        } else {
-            criteria.add(Restrictions.eq("configuration.id", batch.getConfiguration().getId()));
-        }
-
-        return (List<Task>) criteria.list();*/
     }
 
     @Override
@@ -472,22 +292,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         } catch (NoResultException e) {
             return null;
         }
-
-        /* Criteria criteria =
-                getSession()
-                        .createCriteria(BatchImpl.class)
-                        .add(Restrictions.eq("removeStamp", 0L));
-        if (splitName.length > 1) {
-            criteria.createAlias("configuration", "configuration")
-                    .add(Restrictions.eq("configuration.name", splitName[0]))
-                    .add(Restrictions.eq("name", splitName[1]))
-                    .add(Restrictions.eq("configuration.removeStamp", 0L));
-        } else {
-            criteria.add(Restrictions.isNull("configuration"))
-                    .add(Restrictions.eq("name", splitName[0]));
-        }
-
-        return (Batch) criteria.uniqueResult();*/
     }
 
     @Override
@@ -530,36 +334,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
         query.select(root);
         return getSession().createQuery(query).getResultList();
-
-        /*Criteria criteria =
-                getSession()
-                        .createCriteria(BatchImpl.class)
-                        .add(Restrictions.eq("removeStamp", 0L));
-
-        if (configNamePattern != null) {
-            criteria.createAlias("configuration", "configuration")
-                    .add(Restrictions.like("configuration.name", configNamePattern))
-                    .add(Restrictions.like("name", namePattern))
-                    .add(Restrictions.eq("configuration.removeStamp", 0L))
-                    .add(Restrictions.eq("configuration.template", false))
-                    .add(Restrictions.eq("configuration.validated", true))
-                    .add(Restrictions.not(Restrictions.like("name", "@%")));
-            if (workspacePattern == null) {
-                criteria.add(Restrictions.isNull("configuration.workspace"));
-            } else if (!"%".equals(workspacePattern)) {
-                criteria.add(Restrictions.like("configuration.workspace", workspacePattern));
-            }
-        } else {
-            criteria.add(Restrictions.isNull("configuration"))
-                    .add(Restrictions.like("name", namePattern));
-            if (workspacePattern == null) {
-                criteria.add(Restrictions.isNull("workspace"));
-            } else if (!"%".equals(workspacePattern)) {
-                criteria.add(Restrictions.like("workspace", workspacePattern));
-            }
-        }
-
-        return (List<Batch>) criteria.list();*/
     }
 
     @Override
@@ -588,26 +362,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
         query.select(root);
         return getSession().createQuery(query).getResultList();
-
-        /*
-        Criteria criteria =
-                getSession()
-                        .createCriteria(BatchImpl.class)
-                        .add(Restrictions.eq("removeStamp", 0L));
-
-        criteria.createAlias("configuration", "configuration")
-                .add(Restrictions.like("configuration.name", configNamePattern))
-                .add(Restrictions.like("name", InitConfigUtil.INIT_BATCH))
-                .add(Restrictions.eq("configuration.removeStamp", 0L))
-                .add(Restrictions.eq("configuration.template", false))
-                .add(Restrictions.eq("configuration.validated", false));
-        if (workspacePattern == null) {
-            criteria.add(Restrictions.isNull("configuration.workspace"));
-        } else if (!"%".equals(workspacePattern)) {
-            criteria.add(Restrictions.like("configuration.workspace", workspacePattern));
-        }
-
-        return (List<Batch>) criteria.list();*/
     }
 
     @Override
@@ -626,15 +380,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         } catch (NoResultException e) {
             return null;
         }
-
-        /*return (BatchElement)
-        getSession()
-                .createCriteria(BatchElementImpl.class)
-                .createAlias("batch", "batch")
-                .createAlias("task", "task")
-                .add(Restrictions.eq("batch.id", batch.getId()))
-                .add(Restrictions.eq("task.id", task.getId()))
-                .uniqueResult(); */
     }
 
     @Override
@@ -655,16 +400,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         } catch (NoResultException e) {
             return null;
         }
-
-        /* return (Run)
-        (getSession()
-                        .createCriteria(RunImpl.class)
-                        .setLockMode(LockMode.PESSIMISTIC_READ)
-                        .createAlias("batchElement", "batchElement")
-                        .createAlias("batchElement.task", "task")
-                        .add(Restrictions.eq("task.id", task.getId()))
-                        .add(Restrictions.isNull("end")))
-                .uniqueResult(); */
     }
 
     @Override
@@ -681,24 +416,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                 root.get("status")
                         .in(Run.Status.RUNNING, Run.Status.READY_TO_COMMIT, Run.Status.COMMITTING));
         return getSession().createQuery(query).getResultList();
-
-        /*return (List<BatchRun>)
-        (getSession()
-                .createCriteria(RunImpl.class)
-                .createAlias("batchRun", "batchRun")
-                .createAlias("batchRun.batch", "batch")
-                .add(Restrictions.eq("batch.id", batch.getId()))
-                .add(
-                        Restrictions.in(
-                                "status",
-                                (Object[])
-                                        new Run.Status[] {
-                                            Run.Status.RUNNING,
-                                            Run.Status.READY_TO_COMMIT,
-                                            Run.Status.COMMITTING
-                                        }))
-                .setProjection(Projections.groupProperty("batchRun"))
-                .list());*/
     }
 
     @Override
@@ -714,23 +431,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                 root.get("status")
                         .in(Run.Status.RUNNING, Run.Status.READY_TO_COMMIT, Run.Status.COMMITTING));
         return getSession().createQuery(query).getResultList();
-
-        /* return (List<BatchRun>)
-        (getSession()
-                .createCriteria(RunImpl.class)
-                .createAlias("batchRun", "batchRun")
-                .createAlias("batchRun.batch", "batch")
-                .add(
-                        Restrictions.in(
-                                "status",
-                                (Object[])
-                                        new Run.Status[] {
-                                            Run.Status.RUNNING,
-                                            Run.Status.READY_TO_COMMIT,
-                                            Run.Status.COMMITTING
-                                        }))
-                .setProjection(Projections.groupProperty("batchRun"))
-                .list()); */
     }
 
     @Override
@@ -746,14 +446,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         } catch (NoResultException e) {
             return null;
         }
-
-        /*return (BatchRun)
-        (getSession()
-                .createCriteria(BatchRunImpl.class)
-                .add(Restrictions.eq("schedulerReference", schedulerReference))
-                .addOrder(Order.desc("id")) // assuming sequential id generation
-                .setMaxResults(1)
-                .uniqueResult());*/
     }
 
     @Override
@@ -775,17 +467,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         } catch (NoResultException e) {
             return null;
         }
-
-        /* return (Run)
-        (getSession()
-                        .createCriteria(RunImpl.class)
-                        .setLockMode(LockMode.PESSIMISTIC_READ)
-                        .createAlias("batchElement", "batchElement")
-                        .createAlias("batchElement.task", "task")
-                        .add(Restrictions.eq("task.id", task.getId()))
-                        .add(Restrictions.isNotNull("end"))
-                        .add(Restrictions.eq("status", Run.Status.COMMITTING)))
-                .uniqueResult(); */
     }
 
     @Override
@@ -802,15 +483,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         } catch (NoResultException e) {
             return null;
         }
-
-        /* return (Run)
-        (getSession()
-                        .createCriteria(RunImpl.class)
-                        .createAlias("batchElement", "batchElement")
-                        .add(Restrictions.eq("batchElement.id", batchElement.getId()))
-                        .addOrder(Order.desc("start")))
-                .setMaxResults(1)
-                .uniqueResult(); */
     }
 
     @Override
@@ -895,6 +567,17 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     }
 
     /**
+     * Initialize lazy collection(s) in Batch Run
+     *
+     * @param be the Batch Run to be initialized
+     * @return return the initialized Batch
+     */
+    @Override
+    public BatchRun init(BatchRun br) {
+        return initInternal(reload(br));
+    }
+
+    /**
      * Initialize lazy collection(s) in Batch - not including run history
      *
      * @param be the Batch to be initialized
@@ -955,5 +638,17 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
             initInternal(b.getConfiguration());
         }
         return b;
+    }
+
+    protected BatchRun initInternal(BatchRun br) {
+        for (Run run : br.getRuns()) {
+            initInternal(run);
+        }
+        return br;
+    }
+
+    protected Run initInternal(Run run) {
+        Hibernate.initialize(run.getBatchElement());
+        return run;
     }
 }

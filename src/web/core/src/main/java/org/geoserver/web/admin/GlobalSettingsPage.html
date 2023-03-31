@@ -21,7 +21,7 @@
       </li>
       <li class="choiceItem">
       	<input type="checkbox" id="allowStoredQueriesPerWorkspace" wicket:id="allowStoredQueriesPerWorkspace"></input>
-        <label><wicket:message key="allowStoredQueriesPerWorkspace">Allow Per-Workspace Stored Queries</wicket:message></label>
+        <label for="allowStoredQueriesPerWorkspace"><wicket:message key="allowStoredQueriesPerWorkspace">Allow Per-Workspace Stored Queries</wicket:message></label>
       </li>
     </ul>
   </fieldset>
@@ -85,16 +85,16 @@
         <label for="requestLogging"><wicket:message key="requestLogging">Enable Request Logging</wicket:message></label>
           <ul wicket:id="requestLoggingSub">
             <li class="choiceItem">
-              <input id="requestLogging" type="checkbox" wicket:id="requestLoggingBodies" />
-              <label for="requestLogging"><wicket:message key="requestLoggingBodies">Log Request Bodies</wicket:message></label>
+              <input id="requestLoggingBodies" type="checkbox" wicket:id="requestLoggingBodies" />
+              <label for="requestLoggingBodies"><wicket:message key="requestLoggingBodies">Log Request Bodies</wicket:message></label>
             </li>
             <li>
               <label for="xmlPostRequestLogBufferSize"><wicket:message key="xmlPostRequestLogBufferSize">Number of characters to log for incoming POST requests</wicket:message></label><br/>
               <input id="xmlPostRequestLogBufferSize"class="field text" type="text" wicket:id="xmlPostRequestLogBufferSize" />
             </li>
             <li class="choiceItem">
-              <input id="requestLogging" type="checkbox" wicket:id="requestLoggingHeaders" />
-              <label for="requestLogging"><wicket:message key="requestLoggingHeaders">Log Request Headers</wicket:message></label>
+              <input id="requestLoggingHeaders" type="checkbox" wicket:id="requestLoggingHeaders" />
+              <label for="requestLoggingHeaders"><wicket:message key="requestLoggingHeaders">Log Request Headers</wicket:message></label>
             </li>
           </ul>
       </li>
@@ -125,7 +125,7 @@
   <fieldset>
     <legend><span><wicket:message key="i18nSettings">i18n Settings</wicket:message></span></legend>
     <ul>
-      <li>
+      <li class="choiceItem">
         <label><wicket:message key="defaultLocale">Default Language</wicket:message></label>
         <select id="defaultLocale" wicket:id="defaultLocale" />
       </li>
@@ -140,11 +140,15 @@
   <ul>
       <li class="choiceItem">
         <input id="showCreatedTimeCols" type="checkbox" wicket:id="showCreatedTimeCols" />
-        <label><wicket:message key="timeCreatedColChkBox">Display creation timestamps on administration lists</wicket:message></label>
+        <label for="showCreatedTimeCols"><wicket:message key="timeCreatedColChkBox">Display creation timestamps on administration lists</wicket:message></label>
       </li>
       <li class="choiceItem">
         <input id="showModifiedTimeCols" type="checkbox" wicket:id="showModifiedTimeCols" />
-        <label><wicket:message key="timeModifiedColChkBox">Display modification timestamps on administration lists</wicket:message></label>
+        <label for="showModifiedTimeCols"><wicket:message key="timeModifiedColChkBox">Display modification timestamps on administration lists</wicket:message></label>
+      </li>
+      <li class="choiceItem">
+        <input id="trailingSlashMatch" type="checkbox" wicket:id="trailingSlashMatch" />
+        <label for="trailingSlashMatch"><wicket:message key="trailingSlashMatch">Match URLs with Trailing Slash (Requires restart)</wicket:message></label>
       </li>
   </ul>
   <div class="button-group toolbar-sticky selfclear">

@@ -31,6 +31,10 @@ Configuration files
 
 Within each store there are multiple configuration files that determine how the mosaic is rendered.
 
+.. note:: The property file syntax uses a few reserved chars that need escaping in order to be used for keys or values. For example, the ``#`` character is used to comment out lines, in order to use it in values it needs to be escaped, like this: ``\#``. The same applies to the ``=`` character, which is used to separate the property name from its value: it should be specified as ``\=``. Finally, if there is a need to use the ``\`` itself, it will have to be escaped as well: ``\\``.
+
+
+
 Primary configuration file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -272,6 +276,9 @@ In addition to the required envelope and location attributes, the schema for the
      - N
      - Comma separate list of custom dimensions to be exposed. Each custom dimension declaration can be a simple attribute name from the
        schema, e.g., ``runtime``, a mapping from dimension name to attribute name, e.g. ``time2(runtime)``, or a mapping from a range dimension name to two attributes, e.g., ``timerange(timeStart,timeEnd)`` 
+   * - PropertySelection
+     - N
+     - Boolean value to enable/disable selection of properties from the mosaic index. Default is ``false``. When enabled, the ImageMosaic will try to load in memory only the properties needed to perform mosaicking. A typical use case is using a STAC API as a mosaic index, a STAC item typically contains many complex properties, and the API might be remote, reducing the payload improves both query time and memory usage.
 
 Here is a sample :file:`indexer.properties` file::
 
@@ -287,7 +294,8 @@ An example of optional CoverageNameCollectorSPI could be::
     CoverageNameCollectorSPI=org.geotools.gce.imagemosaic.namecollector.FileNameRegexNameCollectorSPI:regex=^([a-zA-Z0-9]+)
     
 This defines a regex-based name collector which extracts the coverage name from the prefix of the file name, so that an ImageMosaic with temperature_2015.tif, temperature_2016.tif, pressure_2015.tif, pressure_2016.tif will put temperature* granules on a ``temperature`` coverage and pressure* granules on a ``pressure`` coverage.
-    
+
+.. note:: The extraction works from the match of the full regular expression, if there are no capturing groups. If there are capturing groups instead, the match will be the concatenation of the text matched by all the capturing groups. This can be used to simplify the regular expression, for example, in order to match a string surrounded by underscores, ``regex=.*_(\\w+)_.*`` can be used instead of the more complex ``regex=(?<\=_)\\w+(?\=_)`` (using non capturing groups instead).
 
 Property collectors
 ~~~~~~~~~~~~~~~~~~~

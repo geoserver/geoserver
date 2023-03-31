@@ -41,7 +41,7 @@ public interface OAuth2FilterConfig {
     /** @return */
     public Boolean getForceUserAuthorizationUriHttps();
 
-    /** @param forceAccessTokenUriHttps */
+    /** @param forceUserAuthorizationUriHttps */
     public void setForceUserAuthorizationUriHttps(Boolean forceUserAuthorizationUriHttps);
 
     /** @return the userAuthorizationUri */
@@ -102,4 +102,10 @@ public interface OAuth2FilterConfig {
      * @return {@link AuthenticationEntryPoint}
      */
     public AuthenticationEntryPoint getAuthenticationEntryPoint();
+
+    public boolean isAllowUnSecureLogging();
+
+    public void setAllowUnSecureLogging(boolean allowUnSecureLogging);
+
+    StringBuilder buildAuthorizationUrl();
 }

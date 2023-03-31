@@ -92,6 +92,14 @@ public class FileSystemResourceStore implements ResourceStore {
             throw new IllegalArgumentException(
                     "Directory required, file present at this location " + resourceDirectory);
         }
+        if (!resourceDirectory.isAbsolute()) {
+            try {
+                resourceDirectory = resourceDirectory.getCanonicalFile();
+            } catch (IOException e) {
+                throw new IllegalArgumentException(
+                        "Unable to resolve " + resourceDirectory + " to an absolute location");
+            }
+        }
         if (!resourceDirectory.exists()) {
             boolean create = resourceDirectory.mkdirs();
             if (!create) {
@@ -193,7 +201,8 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public InputStream in() {
-            File actualFile = file();
+            // just take the File as is, don't create it.
+            File actualFile = this.file;
             if (!actualFile.exists()) {
                 throw new IllegalStateException("File not found " + actualFile);
             }

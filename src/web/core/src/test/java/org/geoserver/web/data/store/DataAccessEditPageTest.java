@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -58,7 +59,7 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testLoad() {
+    public void testLoad() throws IOException {
         tester.assertRenderedPage(DataAccessEditPage.class);
         tester.assertNoErrorMessage();
         print(tester.getLastRenderedPage(), true, true);
@@ -66,7 +67,8 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         tester.assertLabel("dataStoreForm:storeType", "Properties");
         tester.assertModelValue(
                 "dataStoreForm:dataStoreNamePanel:border:border_body:paramValue", "cite");
-        String expectedPath = new File(getTestData().getDataDirectoryRoot(), "cite").getPath();
+        String expectedPath =
+                new File(getTestData().getDataDirectoryRoot(), "cite").getCanonicalPath();
         tester.assertModelValue(
                 "dataStoreForm:parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
                 expectedPath);

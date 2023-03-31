@@ -19,7 +19,6 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
@@ -127,15 +126,15 @@ public abstract class ResourceTheoryTest {
     }
 
     @Theory
-    public void theoryUndefinedHaveIstreamAndBecomeResource(String path) throws Exception {
+    public void theoryUndefinedHaveNoIstreams(String path) throws Exception {
         Resource res = getResource(path);
 
         assumeThat(res, is(undefined()));
 
-        try (InputStream result = res.in()) {
-            assertThat(result, notNullValue());
-            assertThat(res, is(resource()));
-        }
+        assertThrows(IllegalStateException.class, () -> res.in().close());
+
+        // must not be created unintentionally.
+        assertThat(res, is(undefined()));
     }
 
     @Theory
@@ -408,9 +407,7 @@ public abstract class ResourceTheoryTest {
         assertThat(result, equalTo(testFile));
     }
 
-    // This is the behaviour of the file based implementation. Should this be required or left
-    // undefined with clear documentation indicating that it's implementation dependent?
-    // @Ignore
+    // This is the behaviour of the file based implementation is required
     @Theory
     public void theoryAddingFileToDirectoryAddsResource(String path) throws Exception {
         Resource res = getResource(path);
@@ -423,7 +420,7 @@ public abstract class ResourceTheoryTest {
 
         assumeTrue(file.createNewFile());
 
-        Resource child = getResource(Paths.path(res.path(), "newFileCreatedDirectly"));
+        Resource child = getResource(Paths.path(res.name(), "newFileCreatedDirectly"));
         Collection<Resource> children = res.list();
 
         assertThat(child, is(defined()));
@@ -486,10 +483,11 @@ public abstract class ResourceTheoryTest {
     }
 
     @Theory
-    public void theoryRootSlashIsIgnored(String path) throws Exception {
-        final Resource res = getResource(path);
-        final Resource res2 = getResource("/" + path);
-        assertEquals(res, res2);
-        assertEquals(res.path(), res2.path());
+    public void theoryRootIsAbsolute(String path) throws Exception {
+        File home = new File(System.getProperty("user.home")).getCanonicalFile();
+        File file = Paths.toFile(home, path);
+
+        final Resource res = getResource(Paths.convert(file.getPath()));
+        assertTrue(Paths.isAbsolute(res.path()));
     }
 }

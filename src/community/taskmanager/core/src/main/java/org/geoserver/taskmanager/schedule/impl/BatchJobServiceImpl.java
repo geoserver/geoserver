@@ -34,8 +34,6 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.TriggerListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Niels Charlier
  */
 @Service("batchJobService")
-public class BatchJobServiceImpl
-        implements BatchJobService, ApplicationListener<ContextRefreshedEvent>, TriggerListener {
+public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
 
     private static final Logger LOGGER = Logging.getLogger(BatchJobServiceImpl.class);
 
@@ -203,12 +200,23 @@ public class BatchJobServiceImpl
                 dao.save(batch);
             }
         }
+    }
 
+    public void startup() {
+        try {
+            scheduler.start();
+        } catch (SchedulerException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional("tmTransactionManager")
+    public void closeInactiveBatchruns() {
         for (BatchRun br : dao.getCurrentBatchRuns()) {
             LOGGER.log(
                     Level.WARNING,
-                    "Automatically closing inactive batch run at start-up: "
-                            + br.getBatch().getFullName());
+                    "Automatically closing inactive batch run: " + br.getBatch().getFullName());
             dataUtil.closeBatchRun(br, "closed at start-up");
         }
     }
@@ -224,24 +232,6 @@ public class BatchJobServiceImpl
     @PostConstruct
     public void initialize() throws SchedulerException {
         scheduler.getListenerManager().addTriggerListener(this);
-    }
-
-    @Override
-    @Transactional("tmTransactionManager")
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        // call only once at start-up, so not for child contexts.
-        if (event.getApplicationContext().getParent() == null) {
-            if (init) {
-                reloadFromData();
-            } else {
-                LOGGER.info("Skipping initialization as specified in configuration.");
-            }
-            try {
-                scheduler.start();
-            } catch (SchedulerException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            }
-        }
     }
 
     @Override

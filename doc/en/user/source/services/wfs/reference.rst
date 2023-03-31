@@ -25,15 +25,15 @@ All versions of WFS support these operations:
 
    * - Operation
      - Description
-   * - ``GetCapabilities``
+   * - `GetCapabilities`_
      - Generates a metadata document describing a WFS service provided by server  as well as valid WFS operations and parameters
-   * - ``DescribeFeatureType``
+   * - `DescribeFeatureType`_
      - Returns a description of feature types supported by a WFS service 
-   * - ``GetFeature``
+   * - `GetFeature`_
      - Returns a selection of features from a data source including geometry and attribute values
-   * - ``LockFeature``
+   * - `LockFeature`_
      - Prevents a feature from being edited through a persistent feature lock
-   * - ``Transaction`` 
+   * - `Transaction`_ 
      - Edits existing feature types by creating, updating, and deleting 
 
 The following operations are available in **version 2.0.0 only**:
@@ -44,17 +44,17 @@ The following operations are available in **version 2.0.0 only**:
 
    * - Operation
      - Description
-   * - ``GetPropertyValue``
+   * - `GetPropertyValue`_
      - Retrieves the value of a feature property or part of the value of a complex feature property from the data store for a set of features identified using a query expression
-   * - ``GetFeatureWithLock``
+   * - `GetFeatureWithLock`_
      - Returns a selection of features and also applies a lock on those features
-   * - ``CreateStoredQuery``
+   * - `CreateStoredQuery`_
      - Create a stored query on the WFS server
-   * - ``DropStoredQuery``
+   * - `DropStoredQuery`_
      - Deletes a stored query from the WFS server
-   * - ``ListStoredQueries``
+   * - `ListStoredQueries`_
      - Returns a list of the stored queries on a WFS server
-   * - ``DescribeStoredQueries``
+   * - `DescribeStoredQueries`_
      - Returns a metadata document describing the stored queries on a WFS server
 
 The following operations are available in **version 1.1.0 only**:
@@ -65,32 +65,11 @@ The following operations are available in **version 1.1.0 only**:
 
    * - Operation
      - Description
-   * - ``GetGMLObject``
+   * - `GetGMLObject`_
      - Retrieves features and elements by ID from a WFS 
 
 .. note:: In the examples that follow, the fictional URL ``http://example.com/geoserver/wfs`` is used for illustration. To test the examples, substitute the address of a valid WFS. Also, although the request would normally be defined on one line with no breaks, breaks are added for clarity in the examples provided. 
 
-Exceptions
-----------
-
-WFS also supports a number of formats for reporting exceptions. The supported values for exception reporting are:
-
-.. list-table::
-   :widths: 15 35 50
-   :header-rows: 1
-   
-   * - Format
-     - Syntax
-     - Description
-   * - XML
-     - ``exceptions=text/xml``
-     - *(default)* XML output
-   * - JSON
-     - ``exceptions=application/json``
-     - Simple JSON
-   * - JSONP
-     - ``exceptions=text/javascript``
-     - Return a JsonP in the form: parseResponse(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 .. _wfs_getcap:
 
 GetCapabilities
@@ -514,4 +493,26 @@ The same example in a POST request:
     service='WFS'>
      <wfs:StoredQueryId>urn:ogc:def:query:OGC-WFS::GetFeatureById</wfs:StoredQueryId>
    </wfs:DescribeStoredQueries>
+
+Exceptions
+----------
+
+WFS also supports a number of formats for reporting exceptions. The supported values for exception reporting are:
+
+.. list-table::
+   :widths: 15 35 50
+   :header-rows: 1
+
+   * - Format
+     - Syntax
+     - Description
+   * - XML
+     - ``exceptions=text/xml``
+     - *(default)* XML output
+   * - JSON
+     - ``exceptions=application/json``
+     - Simple JSON
+   * - JSONP
+     - ``exceptions=text/javascript``
+     - Return a JSONP in the form: parseResponse(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 

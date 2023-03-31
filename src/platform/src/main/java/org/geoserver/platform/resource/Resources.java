@@ -560,16 +560,16 @@ public class Resources {
     }
 
     /**
-     * Used to look up resources based on user provided url (or path).
+     * Used to look up resources based on user provided {@code url} (or path).
      *
-     * <p>This method is used to process a URL provided by a user: <i>iven a path, tries to
-     * interpret it as a file into the data directory, or as an absolute location, and returns the
+     * <p>This method is used to process a URL provided by a user: <i>given a path, tries to
+     * interpret it as a file into the data directory, or as an absolute location, to return the
      * actual absolute location of the file.</i>
      *
      * <p>Over time this url method has grown in the telling to support:
      *
      * <ul>
-     *   <li>Actual URL to external resoruce using http or ftp protocol - will return null
+     *   <li>Actual URL to external resource using http or ftp protocol - will return null
      *   <li>Resource URL - will support resources from resource store
      *   <li>File URL - will support absolute file references
      *   <li>File URL - will support relative file references - this is deprecated, use resource:
@@ -711,7 +711,7 @@ public class Resources {
                     "resource",
                     null,
                     -1,
-                    String.format(res.getType() == Type.DIRECTORY ? "/%s/" : "/%s", res.path()),
+                    String.format(res.getType() == Type.DIRECTORY ? "%s/" : "%s", res.path()),
                     new URLStreamHandler() {
 
                         @Override

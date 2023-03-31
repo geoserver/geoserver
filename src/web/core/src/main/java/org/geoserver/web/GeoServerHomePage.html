@@ -5,11 +5,11 @@
   <form wicket:id="form">
     <div class="select">
 			<img class="icon" src="#" wicket:id="workspace.icon" wicket:message="title:workspace"/>
-			<select wicket:id="workspace"/>
+			<span wicket:id="workspace"/>
 	  </div>
     <div class="select">
-			<img class="icon" src="#" wicket:id="layer.icon" wicket:message="title:layer"/>
-		  <select wicket:id="layer"/>
+		  <img class="icon" src="#" wicket:id="layer.icon" wicket:message="title:layer"/>
+		  <span wicket:id="layer"/>
 	  </div>
     <div id="refresh">
 		  <a href="#" wicket:id="refresh">refresh</a>
@@ -82,9 +82,15 @@
 <p>
 	<span wicket:id="footerMessage"></span> <span wicket:id="footerContact"></span>
 </p>
+
+	<wicket:fragment wicket:id="text">
+		<input type="text" wicket:id="text"/>
+	</wicket:fragment>
+
+	<wicket:fragment wicket:id="select">
+		<select wicket:id="select"/>
+	</wicket:fragment>
+	
 </wicket:extend>
-
-
-
 </body>
 </html>

@@ -1,8 +1,6 @@
-/*
- * (c) 2016-2022 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- *
  */
 
 package org.geoserver.security.oauth2;
@@ -100,6 +98,7 @@ public class GeoServerAccessTokenConverter extends DefaultAccessTokenConverter {
         else return Collections.singletonList(String.valueOf(aud));
     }
 
+    @SuppressWarnings("unchecked")
     private Set<String> parseScopes(Map<String, ?> map) {
         // Parsing of scopes coming back from GeoNode are slightly different from
         // the default implementation. Instead of it being a collection it is a

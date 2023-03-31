@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.ows.Request;
@@ -30,6 +31,7 @@ public interface HTMLExtensionCallback {
      * @param model The model value that will be used by the template
      * @param htmlExtensionArguments the arguments provided to the htmlExtension function
      */
-    public String getExtension(Request dr, Map<String, Object> model, List htmlExtensionArguments)
+    public String getExtension(
+            Request dr, Map<String, Object> model, Charset charset, List htmlExtensionArguments)
             throws IOException;
 }

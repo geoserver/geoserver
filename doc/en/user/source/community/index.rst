@@ -46,6 +46,7 @@ officially part of the GeoServer releases. They are however built along with the
    jdbcstore/index
    jms-cluster/index
    keycloak/index
+   libdeflate/index
    mbtiles/index
    monitor-hibernate/index
    ncwms/index
@@ -69,4 +70,4 @@ officially part of the GeoServer releases. They are however built along with the
    vector-mosaic/index
    vsi/index
    web-service-auth/index
-   libdeflate/index
+   webp/index

@@ -58,6 +58,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.codehaus.jettison.json.JSONArray;
@@ -468,6 +469,8 @@ public class XStreamPersister {
         // AttributeTypeInfo
         xs.omitField(impl(AttributeTypeInfo.class), "featureType");
         xs.omitField(impl(AttributeTypeInfo.class), "attribute");
+        xs.registerLocalConverter(
+                impl(AttributeTypeInfo.class), "description", new InternationalStringConverter());
 
         // LayerInfo
         // xs.omitField( LayerInfo.class), "resource");
@@ -594,6 +597,8 @@ public class XStreamPersister {
         xs.allowTypeHierarchy(Info.class);
         xs.allowTypeHierarchy(Multimap.class);
         xs.allowTypeHierarchy(JAIInfo.class);
+        xs.allowTypeHierarchy(JAIEXTInfo.class);
+        xs.allowTypeHierarchy(CoverageAccessInfo.class);
         xs.allowTypes(new Class[] {DynamicProxyMapper.DynamicProxy.class});
         xs.allowTypes(new String[] {"java.util.Collections$SingletonList"});
         xs.allowTypesByWildcard(new String[] {"org.geoserver.catalog.**"});
@@ -793,6 +798,9 @@ public class XStreamPersister {
         }
         if (interfce == ResourceInfo.class) {
             return ResourceInfoImpl.class;
+        }
+        if (interfce == AttributeTypeInfo.class) {
+            return AttributeTypeInfoImpl.class;
         }
 
         if (interfce == LayerGroupStyle.class) return LayerGroupStyleImpl.class;
@@ -2227,11 +2235,12 @@ public class XStreamPersister {
             if (assignedInfos != null) {
                 for (int i = 0; i < assignedInfos.size(); i++) {
                     PublishedInfo publishedInfo = assignedInfos.get(i);
-                    if (publishedInfo instanceof LayerGroupInfo) {
+                    if (publishedInfo instanceof LayerGroupInfo
+                            && CollectionUtils.isNotEmpty(styles)) {
                         // if the styles is not null then this is
                         // a StyleInfo simply holding the style name
                         // of a LayerGroupStyle. We do not resolve it
-                        // as usual since is not present in the catalog but
+                        // as usual siWnce is not present in the catalog but
                         // get the ref and create a new StyleInfo object.
                         StyleInfo styleInfo = styles.get(i);
                         String ref = ResolvingProxy.getRef(styleInfo);

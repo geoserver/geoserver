@@ -2,11 +2,16 @@
 <head></head>
 <body>
 <wicket:panel>
-  <div style="display:inline-block; vertical-align:top; margin:0.5em;">
-    <label><wicket:message key="defaultStyle">Default Style</wicket:message></label>
-    <select wicket:id="defaultValue" />
-  </div><div style="display:inline-block; vertical-align:top; margin:0.5em;">
-    <label><wicket:message key="alternateStyles">Alternate Styles</wicket:message></label>
+  <div class="py-1 me-3 align-top d-inline-block">
+    <label>
+      <wicket:message key="defaultStyle">Default Style</wicket:message>
+    </label>
+    <select wicket:id="defaultValue"/>
+  </div>
+  <div class="py-1 align-top d-inline-block">
+    <label>
+      <wicket:message key="alternateStyles">Alternate Styles</wicket:message>
+    </label>
     <ul wicket:id="styles" class="choiceList"></ul>
   </div>
 </wicket:panel>

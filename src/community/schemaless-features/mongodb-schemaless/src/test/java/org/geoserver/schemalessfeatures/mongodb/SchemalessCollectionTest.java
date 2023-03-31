@@ -161,4 +161,23 @@ public class SchemalessCollectionTest extends AbstractMongoDBOnlineTestSupport {
         }
         assertEquals(30, sum / denom);
     }
+
+    @Test
+    public void testNotExistingPropUnderUnboundedFeatures() throws Exception {
+        // test that when evaluating a property name traversing nested features
+        // with cardinality > 1 and not existing or null property for all the nested features
+        // the return value is null and not empty list.
+        FeatureTypeInfo fti =
+                getCatalog().getFeatureTypeByName("gs:" + StationsTestSetup.COLLECTION_NAME);
+        @SuppressWarnings("unchecked")
+        FeatureSource<FeatureType, Feature> source =
+                (FeatureSource<FeatureType, Feature>) fti.getFeatureSource(null, null);
+        FeatureCollection<FeatureType, Feature> collection =
+                source.getFeatures(FF.equals(FF.property("name"), FF.literal("station 1")));
+
+        FeatureIterator<Feature> it = collection.features();
+        PropertyName pn = FF.property("measurements.notExisting");
+        Feature f = it.next();
+        assertNull(pn.evaluate(f));
+    }
 }

@@ -59,7 +59,8 @@ public class MetadataMapModel<T> implements IModel<T> {
     @Override
     public void setObject(T object) {
         value = (Serializable) object;
-        model.getObject().put(expression, (Serializable) object);
+        if (object == null) model.getObject().remove(expression);
+        else model.getObject().put(expression, (Serializable) object);
     }
 
     @Override

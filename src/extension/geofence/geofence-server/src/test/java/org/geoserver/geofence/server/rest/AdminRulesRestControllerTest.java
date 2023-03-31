@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.geofence.GeofenceBaseTest;
 import org.geoserver.geofence.core.dao.DuplicateKeyException;
 import org.geoserver.geofence.core.model.AdminRule;
@@ -19,6 +20,7 @@ import org.geoserver.geofence.core.model.enums.AdminGrantType;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRuleList;
 import org.geoserver.geofence.services.AdminRuleAdminService;
+import org.geoserver.geofence.services.dto.ShortAdminRule;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.junit.Before;
 import org.junit.Test;
@@ -249,6 +251,44 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
         validateRules(1, 7, 8);
         validateRules(2, prefix, "user6", "user4");
         validateRules(2, 9, 11);
+    }
+
+    @Test
+    public void testAdminRulesXMLPayload() throws Exception {
+
+        this.adminService.getAll().stream()
+                .mapToLong(ShortAdminRule::getId)
+                .peek(id -> LOGGER.warning("deleting " + id))
+                .forEach(adminService::delete);
+
+        final String prefix = UUID.randomUUID().toString();
+        final String username = prefix + "-user";
+        final String rolename = prefix + "-role";
+        final long id =
+                adminService.insert(
+                        new AdminRule(
+                                5, username, rolename, null, null, "cite", AdminGrantType.ADMIN));
+
+        final String expected =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" //
+                        + "<AdminRules count=\"1\">" //
+                        + "<AdminRule id=\""
+                        + id
+                        + "\">" //
+                        + "<access>ADMIN</access>" //
+                        + "<priority>5</priority>" //
+                        + "<roleName>"
+                        + rolename
+                        + "</roleName>" //
+                        + "<userName>"
+                        + username
+                        + "</userName>" //
+                        + "<workspace>cite</workspace>" //
+                        + "</AdminRule>" //
+                        + "</AdminRules>";
+
+        String response = super.getAsString("/rest/geofence/adminrules");
+        XMLAssert.assertXMLEqual(expected, response);
     }
 
     /** Helper method that will validate a move result. */

@@ -41,6 +41,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.servlet.Filter;
+import javax.servlet.ReadListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -63,6 +64,11 @@ import javax.xml.validation.Validator;
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HeaderElement;
+import org.apache.http.message.BasicHeaderValueParser;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -122,8 +128,10 @@ import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.util.logging.Log4J2LoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.XSD;
+import org.jsoup.Jsoup;
 import org.junit.After;
 import org.junit.Before;
+import org.locationtech.jts.geom.Coordinate;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -353,7 +361,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         if (applicationContext == null) {
             return;
         }
-        getGeoServer().dispose();
+
         try {
             // dispose WFS XSD schema's - they will otherwise keep geoserver instance alive
             // forever!!
@@ -997,6 +1005,19 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletResponse response = getAsServletResponse(path);
         return new ByteArrayInputStream(response.getContentAsString().getBytes());
     }
+
+    /**
+     * Executes an ows request using the GET method.
+     *
+     * @param path The porition of the request after hte context, example:
+     *     'wms?request=GetMap&version=1.1.1&..."
+     * @param charset The character set to use when reading the response.
+     * @return An input stream which is the result of the request.
+     */
+    protected InputStream get(String path, String charset) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path, charset);
+        return new ByteArrayInputStream(response.getContentAsString().getBytes());
+    }
     /**
      * Executes an ows request using the GET method.
      *
@@ -1435,7 +1456,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected Document getAsDOM(final String path, final boolean skipDTD, String encoding)
             throws Exception {
-        return dom(get(path), skipDTD, encoding);
+        return dom(get(path, encoding), skipDTD, encoding);
     }
 
     /**
@@ -1506,6 +1527,10 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     protected String getAsString(String path) throws Exception {
         return string(get(path));
+    }
+
+    protected String getAsString(String path, String encoding) throws Exception {
+        return string(get(path, encoding));
     }
 
     /**
@@ -1579,17 +1604,33 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     protected MockHttpServletResponse dispatch(HttpServletRequest request, String charset)
             throws Exception {
-        if (charset == null) {
-            charset = Charset.defaultCharset().name();
-        }
+
         MockHttpServletResponse response = new MockHttpServletResponse();
-        response.setCharacterEncoding(charset);
+
+        if (charset != null) {
+            // if this is not set, it falls back on a default
+            response.setCharacterEncoding(charset);
+        }
 
         dispatch(request, response);
 
         this.lastResponse = response;
 
         return response;
+    }
+
+    /**
+     * Remove parameters from mime type.
+     *
+     * @param mimeType the mime type
+     * @return with mime type without parameters
+     */
+    protected String getBaseMimeType(String mimeType) {
+        if (mimeType == null) {
+            return null;
+        }
+        HeaderElement headerElement = BasicHeaderValueParser.parseHeaderElement(mimeType, null);
+        return headerElement.getName();
     }
 
     /**
@@ -1922,6 +1963,40 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
+     * Adds static start and end data range values to the specified layer.
+     *
+     * @param layer The layer name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param startValue The startValue
+     * @param endValue The endValue
+     */
+    protected void setupVectorStartAndEndValues(
+            QName layer, String dimensionName, String startValue, String endValue) {
+        ResourceInfo info = getCatalog().getResourceByName(getLayerId(layer), ResourceInfo.class);
+        DimensionInfo di = info.getMetadata().get(dimensionName, DimensionInfo.class);
+        di.setStartValue(startValue);
+        di.setEndValue(endValue);
+        getCatalog().save(info);
+    }
+
+    /**
+     * Adds static start and end data range values to the specified layer.
+     *
+     * @param layer The layer name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param startValue The startValue
+     * @param endValue The endValue
+     */
+    protected void setupRasterStartAndEndValues(
+            QName layer, String dimensionName, String startValue, String endValue) {
+        CoverageInfo info = getCatalog().getCoverageByName(layer.getLocalPart());
+        DimensionInfo di = info.getMetadata().get(dimensionName, DimensionInfo.class);
+        di.setStartValue(startValue);
+        di.setEndValue(endValue);
+        getCatalog().save(info);
+    }
+
+    /**
      * Asserts that the image is not blank, in the sense that there must be pixels different from
      * the passed background color.
      *
@@ -1973,6 +2048,22 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                         + " non bg pixels: "
                         + pixelsDiffer);
         return pixelsDiffer;
+    }
+
+    /**
+     * Executes an ows request using the GET method and returns the result as a JSoup document, that
+     * can be then queried using CSS selectors
+     */
+    protected org.jsoup.nodes.Document getAsJSoup(String url) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(url);
+        assertEquals(200, response.getStatus());
+        assertEquals("text/html", response.getContentType());
+
+        LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
+
+        // parse the HTML
+        org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());
+        return document;
     }
 
     //
@@ -2303,6 +2394,24 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
+     * Check coordinate at xpathExpression against provided coordiante. Coordinate values are
+     * compared as doubles (with small delta) rather than as strings to account for floating point
+     * differences.
+     *
+     * @param expected Expected coordinate
+     * @param xpathExpression XPath expression
+     * @param document Document
+     * @throws XpathException
+     */
+    public static void assertXpathCoordinate(
+            Coordinate expected, String xpathExpression, Document document) throws XpathException {
+        XpathEngine simpleXpathEngine = XMLUnit.newXpathEngine();
+        String value = simpleXpathEngine.evaluate(xpathExpression, document);
+
+        assertEquals(xpathExpression + " x", expected.x, Double.valueOf(value.split(" ")[0]), 1E-9);
+        assertEquals(xpathExpression + " y", expected.y, Double.valueOf(value.split(" ")[1]), 1E-9);
+    }
+    /**
      * Subclasses needed to do integration tests with servlet filters can override this method and
      * return the list of filters to be used during mocked requests
      */
@@ -2454,6 +2563,21 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             myOffset += i;
 
             return i;
+        }
+
+        @Override
+        public boolean isFinished() {
+            return available() < 1;
+        }
+
+        @Override
+        public boolean isReady() {
+            return false;
+        }
+
+        @Override
+        public void setReadListener(ReadListener readListener) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
     }
 

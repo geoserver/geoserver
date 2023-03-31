@@ -58,11 +58,17 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
+import org.geotools.coverage.grid.GeneralGridEnvelope;
+import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Integration tests for JMS that tests that GeoServer configurations events and GeoServer catalog
@@ -72,12 +78,12 @@ public final class IntegrationTest {
 
     // instantiate some GeoServer instances
 
-    private static final GeoServerInstance INSTANCE_A = new GeoServerInstance("INSTANCE-A");
-    private static final GeoServerInstance INSTANCE_B = new GeoServerInstance("INSTANCE-B");
-    private static final GeoServerInstance INSTANCE_C = new GeoServerInstance("INSTANCE-C");
-    private static final GeoServerInstance INSTANCE_D = new GeoServerInstance("INSTANCE-D");
+    private final GeoServerInstance INSTANCE_A = new GeoServerInstance("INSTANCE-A");
+    private final GeoServerInstance INSTANCE_B = new GeoServerInstance("INSTANCE-B");
+    private final GeoServerInstance INSTANCE_C = new GeoServerInstance("INSTANCE-C");
+    private final GeoServerInstance INSTANCE_D = new GeoServerInstance("INSTANCE-D");
 
-    private static final GeoServerInstance[] INSTANCES =
+    private final GeoServerInstance[] INSTANCES =
             new GeoServerInstance[] {INSTANCE_A, INSTANCE_B, INSTANCE_C, INSTANCE_D};
 
     @Before
@@ -96,8 +102,8 @@ public final class IntegrationTest {
         resetEventsCount(INSTANCES);
     }
 
-    @AfterClass
-    public static void tearDown() {
+    @After
+    public void tearDown() {
         // destroy all instances
         Arrays.stream(INSTANCES).forEach(GeoServerInstance::destroy);
     }
@@ -198,11 +204,12 @@ public final class IntegrationTest {
         // apply catalog add changes to master
         applyAddCatalogChanges(INSTANCE_B);
         // check instance C
-        waitAndCheckEvents(INSTANCE_C, 25);
+        waitAndCheckEvents(INSTANCE_C, 27);
         List<InfoDiff> differences = differences(INSTANCE_B, INSTANCE_C);
+        System.out.println(differences);
         assertThat(differences.size(), is(0));
         // check instance D
-        waitAndCheckEvents(INSTANCE_D, 25);
+        waitAndCheckEvents(INSTANCE_D, 27);
         differences = differences(INSTANCE_B, INSTANCE_D);
         assertThat(differences.size(), is(0));
         // check instance A
@@ -214,10 +221,12 @@ public final class IntegrationTest {
         // check instance C
         waitAndCheckEvents(INSTANCE_C, 20);
         differences = differences(INSTANCE_B, INSTANCE_C);
+        System.out.println(differences);
         assertThat(differences.size(), is(0));
         // check instance D
         waitAndCheckEvents(INSTANCE_D, 20);
         differences = differences(INSTANCE_B, INSTANCE_D);
+        System.out.println(differences);
         assertThat(differences.size(), is(0));
         // check instance A
         waitAndCheckEvents(INSTANCE_A, 0);
@@ -259,7 +268,7 @@ public final class IntegrationTest {
      * be reached and then checks if the expected number of events were consumed.
      */
     private void waitAndCheckEvents(GeoServerInstance instance, int expectedEvents) {
-        instance.waitEvents(expectedEvents, 2000);
+        instance.waitEvents(expectedEvents, 10_000);
         assertThat(instance.getConsumedEventsCount(), is(expectedEvents));
         instance.resetConsumedEventsCount();
     }
@@ -312,11 +321,14 @@ public final class IntegrationTest {
     }
 
     /** Helper method that add some new catalog elements to the provided GeoServer instance. */
-    private void applyAddCatalogChanges(GeoServerInstance instance) {
+    private void applyAddCatalogChanges(GeoServerInstance instance) throws FactoryException {
         // instantiate some common objects
         Catalog catalog = instance.getCatalog();
+        // going through wkt as otherwise the equality between in memory and deserialized will fail
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326", true);
+        String wkt = crs.toWKT();
         ReferencedEnvelope envelope =
-                new ReferencedEnvelope(-1.0, 1.0, -2.0, 2.0, DefaultGeographicCRS.WGS84);
+                new ReferencedEnvelope(-1.0, 1.0, -2.0, 2.0, CRS.parseWKT(wkt));
         AttributionInfo attribution = new AttributionInfoImpl();
         attribution.setTitle("attribution-Title");
         attribution.setHref("attribution-Href");
@@ -385,6 +397,7 @@ public final class IntegrationTest {
         featureType.setSkipNumberMatched(false);
         featureType.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         catalog.add(featureType);
+        featureType = catalog.getFeatureType(featureType.getId());
         // add coverage
         CoverageInfo coverage = new CoverageInfoImpl(catalog);
         coverage.setName("coverage-Name");
@@ -401,6 +414,10 @@ public final class IntegrationTest {
         coverage.setAdvertised(false);
         coverage.setNativeCoverageName("coverage-NativeCoverageName");
         coverage.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+        coverage.setGrid(
+                new GridGeometry2D(
+                        new GeneralGridEnvelope(new int[] {0, 0}, new int[] {100, 100}),
+                        new Envelope2D(envelope)));
         catalog.add(coverage);
         // add style info and style file
         copyStyle(instance, "/test_style.sld", "test_style.sld");
@@ -412,7 +429,7 @@ public final class IntegrationTest {
         // add layer info
         LayerInfo layer = new LayerInfoImpl();
         layer.setResource(featureType);
-        layer.setAbstract("layer-Abstract");
+        layer.setAbstract("layer-Abstract"); // this changes the underlying resource
         layer.setAttribution(attribution);
         layer.setType(PublishedType.VECTOR);
         layer.setDefaultStyle(style);
@@ -421,6 +438,7 @@ public final class IntegrationTest {
         layer.setOpaque(false);
         layer.setAdvertised(false);
         catalog.add(layer);
+        catalog.save(featureType);
         // add WMS layer info
         WMSLayerInfo wmsLayer = new WMSLayerInfoImpl(catalog);
         wmsLayer.setName("wmsLayer-Name");

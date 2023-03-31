@@ -44,6 +44,7 @@ public class GoogleAccessTokenConverter extends DefaultAccessTokenConverter {
         super.setUserTokenConverter(userTokenConverter);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public OAuth2Authentication extractAuthentication(Map<String, ?> map) {
         Map<String, String> parameters = new HashMap<>();
@@ -55,13 +56,14 @@ public class GoogleAccessTokenConverter extends DefaultAccessTokenConverter {
                 new LinkedHashSet<>(
                         map.containsKey(AUD)
                                 ? (Collection<String>) map.get(AUD)
-                                : Collections.<String>emptySet());
+                                : Collections.emptySet());
         OAuth2Request request =
                 new OAuth2Request(
                         parameters, clientId, null, true, scope, resourceIds, null, null, null);
         return new OAuth2Authentication(request, user);
     }
 
+    @SuppressWarnings("unchecked")
     private Set<String> parseScopes(Map<String, ?> map) {
         // Parsing of scopes coming back from Google are slightly different from
         // the default implementation. Instead of it being a collection it is a

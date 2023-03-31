@@ -81,7 +81,7 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         assertTrue(elevationInfo.isEnabled());
 
         // get the mapml doc for the layer
-        String path = "mapml/" + getLayerId(V_TIME_ELEVATION) + "/osmtile/";
+        String path = "mapml/" + getLayerId(V_TIME_ELEVATION) + "/osmtile";
         org.w3c.dom.Document doc = getMapML(path);
         // assure us it's actually working as a document
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
@@ -138,7 +138,7 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         assertTrue(timeInfo.isEnabled());
 
         // get the mapml doc for the layer
-        String path = "mapml/" + getLayerId(V_TIME_ELEVATION) + "/osmtile/";
+        String path = "mapml/" + getLayerId(V_TIME_ELEVATION) + "/osmtile";
         org.w3c.dom.Document doc = getMapML(path);
         // assure us it's actually working as a document
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);

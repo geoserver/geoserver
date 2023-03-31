@@ -6,14 +6,14 @@ package org.geoserver.rest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * Interceptor for all rest requests
  *
  * <p>Adds a {@link RequestInfo} to the request attributes
  */
-public class RestInterceptor extends HandlerInterceptorAdapter {
+public class RestInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(

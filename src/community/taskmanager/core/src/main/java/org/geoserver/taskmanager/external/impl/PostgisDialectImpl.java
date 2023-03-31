@@ -109,7 +109,8 @@ public class PostgisDialectImpl extends DefaultDialectImpl {
                         "select a.attname, a.attnotnull, format_type(a.atttypid, a.atttypmod) "
                                 + "from pg_attribute a where attrelid = '"
                                 + tableName
-                                + "'::regclass and attnum > 0");
+                                + "'::regclass and attnum > 0"
+                                + " and not attisdropped order by attnum");
 
         while (rsMetadata.next()) {
             String name = rsMetadata.getString(1);

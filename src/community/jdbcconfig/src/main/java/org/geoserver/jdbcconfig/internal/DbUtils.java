@@ -5,13 +5,16 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geotools.util.logging.Logging;
 
 public class DbUtils {
@@ -19,7 +22,10 @@ public class DbUtils {
     static final Logger LOGGER = Logging.getLogger(DbUtils.class.getPackage().getName());
 
     public static Map<String, ?> params(Object... kv) {
-        Map<String, Object> params = Maps.newHashMap();
+        if (kv.length == 0) {
+            return Collections.emptyMap();
+        }
+        Map<String, Object> params = new LinkedHashMap<>();
         String paramName;
         Object paramValue;
         for (int i = 0; i < kv.length; i += 2) {
@@ -32,44 +38,54 @@ public class DbUtils {
 
     public static void logStatement(CharSequence sql, Map<String, ?> namedParameters) {
         if (LOGGER.isLoggable(Level.FINER)) {
-            StringBuilder sb = new StringBuilder(sql);
-            for (Entry<String, ?> e : namedParameters.entrySet()) {
-                Object value = e.getValue();
-                String sval;
-                if (value instanceof Collection) {
-                    Collection<?> c = (Collection<?>) value;
-                    StringBuilder cv = new StringBuilder();
-                    for (Iterator<?> it = c.iterator(); it.hasNext(); ) {
-                        Object v = it.next();
-                        if (v == null) {
-                            cv.append("null");
-                        } else if (v instanceof Number) {
-                            cv.append(v);
-                        } else {
-                            cv.append("'").append(String.valueOf(v)).append("'");
-                        }
-                        if (it.hasNext()) {
-                            cv.append(", ");
-                        }
-                    }
-                    sval = cv.toString();
-                } else {
-                    sval =
-                            value == null
-                                    ? "null"
-                                    : (value instanceof Number
-                                            ? String.valueOf(value)
-                                            : "'" + String.valueOf(value) + "'");
-                }
-                String paramName = ":" + e.getKey();
-                int idx;
-                while ((idx = sb.indexOf(paramName)) > -1) {
-                    sb.replace(idx, idx + paramName.length(), sval);
-                }
-            }
-            LOGGER.finer(sb.toString());
+            LOGGER.finer("Querying: " + getLogStatement(sql, namedParameters));
         } else if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("querying " + sql + "\n with values: " + namedParameters);
+            if (namedParameters == null || namedParameters.isEmpty()) {
+                LOGGER.fine("Querying: " + sql);
+            } else {
+                LOGGER.fine("Querying: " + sql + "\n with values: " + namedParameters);
+            }
         }
+    }
+
+    public static String getLogStatement(CharSequence sql, Map<String, ?> namedParameters) {
+        if (namedParameters == null || namedParameters.isEmpty()) {
+            return sql.toString();
+        }
+        StringBuilder sb = new StringBuilder(sql);
+        if (namedParameters.size() >= 10) {
+            // replace the parameters in reverse order to correctly handle complex queries
+            // with 10+ of a certain type of parameter
+            List<Entry<String, ?>> list = new ArrayList<>(namedParameters.entrySet());
+            Collections.reverse(list);
+            list.forEach(parameter -> replaceParameter(sb, parameter));
+        } else {
+            namedParameters.entrySet().forEach(parameter -> replaceParameter(sb, parameter));
+        }
+        return sb.toString();
+    }
+
+    private static void replaceParameter(StringBuilder sb, Entry<String, ?> parameter) {
+        Object value = parameter.getValue();
+        String paramValue;
+        if (value instanceof Collection) {
+            Collection<?> c = (Collection<?>) value;
+            paramValue = c.stream().map(DbUtils::toString).collect(Collectors.joining(", "));
+        } else {
+            paramValue = toString(value);
+        }
+        String paramName = ":" + parameter.getKey();
+        for (int index; (index = sb.indexOf(paramName)) > -1; ) {
+            sb.replace(index, index + paramName.length(), paramValue);
+        }
+    }
+
+    private static String toString(Object value) {
+        if (value == null) {
+            return "null";
+        } else if (value instanceof Number) {
+            return value.toString();
+        }
+        return "'" + value.toString().replace("'", "''") + "'";
     }
 }

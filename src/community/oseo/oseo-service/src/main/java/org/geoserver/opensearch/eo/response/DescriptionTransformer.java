@@ -61,7 +61,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             namespaces.put("xmlns:geo", "http://a9.com/-/opensearch/extensions/geo/1.0/");
             namespaces.put("xmlns:time", "http://a9.com/-/opensearch/extensions/time/1.0/");
             namespaces.put("xmlns:eo", "http://a9.com/-/opensearch/extensions/eo/1.0/");
-            namespaces.put("xmlns:atom  ", "http://www.w3.org/2005/Atom");
+            namespaces.put("xmlns:atom", "http://www.w3.org/2005/Atom");
             element(
                     "OpenSearchDescription",
                     () -> describeOpenSearch(description),

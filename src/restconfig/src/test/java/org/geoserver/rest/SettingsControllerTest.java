@@ -5,6 +5,9 @@
 package org.geoserver.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -103,6 +106,18 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetContactAsHTML() throws Exception {
         getAsDOM(RestBaseController.ROOT_PATH + "/settings/contact.html", 200);
+    }
+
+    @Test
+    public void testGetContactAsHTMLXSS() throws Exception {
+        String decoded = "<foo>bar</foo>";
+        String encoded = "&lt;foo&gt;bar&lt;/foo&gt;";
+        GeoServerInfo geoServerInfo = geoServer.getGlobal();
+        geoServerInfo.getSettings().getContact().setAddress(decoded);
+        geoServer.save(geoServerInfo);
+        String html = getAsString(RestBaseController.ROOT_PATH + "/settings/contact.html");
+        assertThat(html, not(containsString(decoded)));
+        assertThat(html, containsString(encoded));
     }
 
     @Test
@@ -253,7 +268,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
                         + "}}";
         MockHttpServletResponse response =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/settings/", inputJson, "text/json");
+                        RestBaseController.ROOT_PATH + "/settings", inputJson, "text/json");
         assertEquals(200, response.getStatus());
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/settings.json");
         JSONObject jsonObject = (JSONObject) json;
@@ -323,7 +338,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
                         + "</global>";
 
         MockHttpServletResponse response =
-                putAsServletResponse(RestBaseController.ROOT_PATH + "/settings/", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/settings.xml");
         assertEquals("global", dom.getDocumentElement().getLocalName());

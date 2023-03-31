@@ -77,7 +77,8 @@ public final class Files {
 
         @Override
         public InputStream in() {
-            final File actualFile = file();
+            // just take the File as is, don't create it.
+            final File actualFile = this.file;
             if (!actualFile.exists()) {
                 throw new IllegalStateException("Cannot access " + actualFile);
             }
@@ -298,7 +299,7 @@ public final class Files {
      *
      * @param baseDirectory Optional base directory used to resolve relative file URLs
      * @param url File URL or path relative to data directory
-     * @return Resource indicated by provided URL
+     * @return File indicated by provided URL location
      */
     public static File url(File baseDirectory, String url) {
         String ss;

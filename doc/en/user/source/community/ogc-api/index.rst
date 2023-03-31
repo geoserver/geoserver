@@ -10,6 +10,7 @@ This plugin includes implementation of a set of OGC API service implementations
    :maxdepth: 1
    
    install
+   configure
    features/index
    tiles/index
    maps/index

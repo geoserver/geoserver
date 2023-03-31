@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.geoserver.community.security</groupId>
     <artifactId>gs-sec-oauth2</artifactId>
-    <version>2.23-SNAPSHOT</version>
+    <version>2.24-SNAPSHOT</version>
   </parent>
 
   <artifactId>gs-sec-oauth2-core</artifactId>
@@ -34,7 +34,6 @@
     <dependency>
       <groupId>org.springframework.security.oauth</groupId>
       <artifactId>spring-security-oauth2</artifactId>
-      <version>2.5.2.RELEASE</version>
     </dependency>
 
     <dependency>
@@ -65,6 +64,11 @@
     <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
     </dependency>
 
     <dependency>

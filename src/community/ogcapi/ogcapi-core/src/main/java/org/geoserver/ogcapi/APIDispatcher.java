@@ -99,9 +99,12 @@ public class APIDispatcher extends AbstractController {
     private List<HttpMessageConverter<?>> messageConverters;
     private List<APIExceptionHandler> exceptionHandlers;
 
-    public APIDispatcher() {
+    private final GeoServer geoServer;
+
+    public APIDispatcher(GeoServer geoServer) {
         // allow delete and put
         super(false);
+        this.geoServer = geoServer;
     }
 
     @Override
@@ -123,6 +126,15 @@ public class APIDispatcher extends AbstractController {
                     @Override
                     public UrlPathHelper getUrlPathHelper() {
                         return pathHelper;
+                    }
+
+                    @Override
+                    public boolean useTrailingSlashMatch() {
+                        if (geoServer != null && geoServer.getGlobal() != null) {
+                            return geoServer.getGlobal().isTrailingSlashMatch();
+                        } else {
+                            return true;
+                        }
                     }
                 };
         this.mappingHandler.setApplicationContext(context);
@@ -351,7 +363,7 @@ public class APIDispatcher extends AbstractController {
      * @return The first {@link APIService} found walking up the inheritance hierarchy, or null if
      *     not found
      */
-    static APIService getApiServiceAnnotation(Class<?> clazz) {
+    public static APIService getApiServiceAnnotation(Class<?> clazz) {
         APIService annotation = null;
         while (annotation == null && clazz != null) {
             annotation = (APIService) clazz.getAnnotation(APIService.class);

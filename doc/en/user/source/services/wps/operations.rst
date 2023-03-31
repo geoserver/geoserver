@@ -3,12 +3,24 @@
 WPS Operations
 ==============
 
-WPS defines three operations for the discovery and execution of geospatial processes.  
-The operations are:
+The WPS 1.0.0 standard defines three operations for the discovery and execution of geospatial processes, and GeoServer extends these with two further vendor or pseudo-operations.  The operations are:
 
-* GetCapabilities
-* DescribeProcess
-* Execute
+.. list-table::
+   :widths: 20 80
+
+   * - **Operation**
+     - **Description**
+   * - `GetCapabilities`_
+     - Retrieves details of the service offering, including service metadata and metadata describing the available processes 
+   * - `DescribeProcess`_
+     - Retrieves a description of a WPS process available through the service 
+   * - `Execute`_
+     - A request to perform the process with specified input values and required output data items 
+   * - `Dismiss`_ (vendor extension)
+     - Used to cancel the execution of a process 
+   * - `GetExecutions`_ (vendor extension)
+     - Retrieves a list of the current Execution Statuses
+
 
 .. _wps_getcaps:
 
@@ -175,6 +187,8 @@ For help in generating WPS requests you can use the built-in interactive :ref:`w
 Dismiss
 -------
 
+.. note:: This is a vendor extension of the GeoServer WPS Service. This operation is specific to GeoServer.
+
 According to the WPS specification, an asynchronous process execution returns a back link to a status 
 location that the client can ping to get progress report about the process, and eventually retrieve
 its final results.
@@ -184,7 +198,7 @@ has the following structure::
 
     http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=GetExecutionStatus&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb
 
-The ``executionId`` identifies the running request, and can be used in a the ``Dismiss`` vendor
+The ``executionId`` identifies the running request, and can be used in the ``Dismiss`` vendor
 operation in order to cancel the execution of the process:
 
    http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb
@@ -206,9 +220,9 @@ which cannot report progress. Here are three possible scenarios, depending on wh
 GetExecutions
 -------------
 
-.. note:: This is an extension of the GeoServer WPS Service. This operation is specific to this GeoServer instance.
+.. note:: This is a vendor extension of the GeoServer WPS Service. This operation is specific to GeoServer.
 
-This specific operation allows a client to recognize the list of WPS Executions.
+This operation allows a client to recognize the list of WPS Executions.
 
 .. figure:: images/getExecutions_001.png
    :align: center

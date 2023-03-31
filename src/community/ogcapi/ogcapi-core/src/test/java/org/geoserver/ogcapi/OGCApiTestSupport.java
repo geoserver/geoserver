@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import net.minidev.json.JSONAware;
@@ -31,8 +30,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matchers;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class OGCApiTestSupport extends GeoServerSystemTestSupport {
@@ -97,17 +94,6 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
      * manipulate the namespaces map as they see fit.
      */
     protected void registerNamespaces(Map<String, String> namespaces) {}
-
-    protected Document getAsJSoup(String url) throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse(url, 200);
-        assertEquals("text/html", response.getContentType());
-
-        LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
-
-        // parse the HTML
-        Document document = Jsoup.parse(response.getContentAsString());
-        return document;
-    }
 
     protected byte[] getAsByteArray(String url) throws Exception {
         MockHttpServletResponse response = getAsMockHttpServletResponse(url, 200);
@@ -216,5 +202,20 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     protected <T> void assertJSONList(DocumentContext json, String path, T... expected) {
         List<T> selfRels = json.read(path);
         assertThat(selfRels, Matchers.containsInAnyOrder(expected));
+    }
+
+    /**
+     * Verifies that the given header is present in the response, and that it contains the expected
+     * value
+     *
+     * @param response the response
+     * @param headerName the header name
+     * @param expectedValue the expected value
+     * @return true if the header is present and contains the expected value
+     */
+    protected boolean headerHasValue(
+            MockHttpServletResponse response, String headerName, String expectedValue) {
+        String headerValue = response.getHeader(headerName);
+        return headerValue != null && headerValue.contains(expectedValue);
     }
 }

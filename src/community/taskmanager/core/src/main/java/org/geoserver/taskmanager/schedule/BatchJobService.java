@@ -89,4 +89,10 @@ public interface BatchJobService {
             int waitInSeconds,
             int intervalInSeconds,
             Consumer<Batch> callback);
+
+    void closeInactiveBatchruns();
+
+    boolean isInit();
+
+    void startup();
 }

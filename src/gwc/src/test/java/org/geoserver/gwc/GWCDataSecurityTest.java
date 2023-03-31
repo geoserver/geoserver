@@ -542,12 +542,13 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         // Test that we have access when we should
         setRequestAuth("cite", "cite");
         MockHttpServletResponse response = getAsServletResponse(path);
-        assertThat(response, addBodyOnFail(hasProperty("contentType", equalTo(overlayFormat))));
+        String mime = getBaseMimeType(response.getContentType());
+        assertEquals(overlayFormat, mime);
 
         setRequestAuth("cite_mosaic2", "cite");
         response = getAsServletResponse(path2);
-        assertThat(response, addBodyOnFail(hasProperty("contentType", equalTo(overlayFormat))));
-
+        mime = getBaseMimeType(response.getContentType());
+        assertEquals(overlayFormat, mime);
         // try now as cite_mosaic2 user permission on sf:mosaic must be denied
         setRequestAuth("cite_mosaic2", "cite");
         response = getAsServletResponse(path);

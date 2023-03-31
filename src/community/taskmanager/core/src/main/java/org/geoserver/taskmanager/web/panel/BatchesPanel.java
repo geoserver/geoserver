@@ -242,6 +242,12 @@ public class BatchesPanel extends Panel {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
+                        if (configurationModel != null) {
+                            TaskManagerBeans.get()
+                                    .getDao()
+                                    .loadLatestBatchRuns(configurationModel.getObject());
+                        }
+
                         ((MarkupContainer) batchesPanel.get("listContainer").get("items"))
                                 .removeAll();
                         target.add(batchesPanel);

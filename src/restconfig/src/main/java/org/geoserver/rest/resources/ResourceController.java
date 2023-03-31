@@ -33,6 +33,7 @@ import org.geoserver.AtomLink;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
@@ -158,6 +159,22 @@ public class ResourceController extends RestBaseController {
         String path = request.getPathInfo();
         // Strip off "/resource"
         path = path.substring(9);
+        if (path.startsWith("//")) {
+            // Be relaxed if there is a double separator between "/resource/" and "/path"
+            path = path.substring(2);
+        } else if (path.startsWith("/")) {
+            // strip off "/" separator between "/resource/" and "path"
+            path = path.substring(1);
+        } else if (path.isEmpty()) {
+            // separator not used for base path
+            path = Paths.BASE;
+        } else {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Undefined resource path: '" + path + "'");
+            }
+            throw new ResourceNotFoundException("Undefined resource path:");
+        }
+
         // handle special characters
         try {
             path = URLDecoder.decode(path, "UTF-8");
@@ -327,6 +344,10 @@ public class ResourceController extends RestBaseController {
                         "Unable to read content:" + e.getMessage(),
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         e);
+            }
+            if (path.startsWith("/")) {
+                // be-relaxed if resource starts with a slash
+                path = path.substring(1);
             }
             Resource source = resources.get(path);
             if (source.getType() == Type.UNDEFINED) {
@@ -521,7 +542,7 @@ public class ResourceController extends RestBaseController {
             if (!resource.path().isEmpty()) {
                 parent =
                         new ResourceParentInfo(
-                                "/" + resource.parent().path(),
+                                resource.parent().path(),
                                 new AtomLink(
                                         href(resource.parent().path()),
                                         "alternate",

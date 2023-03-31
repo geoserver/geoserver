@@ -179,6 +179,7 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
 
         // sync layer
         final GSLayerEncoder layerEncoder = new GSLayerEncoder();
+        catalogUtil.syncMetadata(layer, layerEncoder);
         layerEncoder.setDefaultStyle(
                 layer.getDefaultStyle().getWorkspace() == null
                         ? null

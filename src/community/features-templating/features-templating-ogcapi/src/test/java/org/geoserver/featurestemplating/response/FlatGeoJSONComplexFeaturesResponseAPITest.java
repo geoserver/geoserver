@@ -45,7 +45,7 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTe
     public void testGeoJSONResponseOGCAPI() throws Exception {
         String condition = "requestParam('" + FLAT_MF_TEMPLATE + "')='true'";
         String path =
-                "ogc/features/collections/"
+                "ogc/features/v1/collections/"
                         + "gsml:MappedFeature"
                         + "/items?f=application%2Fgeo%2Bjson";
         path += FLAT_MF_PARAM;
@@ -62,7 +62,7 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTe
     @Test
     public void testGeoJSONQueryOGCAPI() throws Exception {
         StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
+                new StringBuilder("ogc/features/v1/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fgeo%2Bjson")
                         .append("&filter-lang=cql-text")
@@ -81,7 +81,7 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTe
     @Test
     public void testGeoJSONResponseWithCustomSeparator() throws Exception {
         String path =
-                "ogc/features/collections/"
+                "ogc/features/v1/collections/"
                         + "gsml:MappedFeature"
                         + "/items?f=application%2Fgeo%2Bjson";
         path += FLAT_MF_PARAM;

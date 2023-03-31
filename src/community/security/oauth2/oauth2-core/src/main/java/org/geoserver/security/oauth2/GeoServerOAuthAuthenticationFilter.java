@@ -251,14 +251,13 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
             final AccessTokenRequest accessTokenRequest =
                     restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
-            if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
-                restTemplate
-                        .getOAuth2ClientContext()
-                        .removePreservedState(accessTokenRequest.getStateKey());
-            }
-
             try {
-                accessTokenRequest.remove("access_token");
+                if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
+                    restTemplate
+                            .getOAuth2ClientContext()
+                            .removePreservedState(accessTokenRequest.getStateKey());
+                    accessTokenRequest.remove("access_token");
+                }
             } finally {
                 SecurityContextHolder.clearContext();
                 request.getSession(false).invalidate();
@@ -273,10 +272,10 @@ public abstract class GeoServerOAuthAuthenticationFilter
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             Cookie[] allCookies = request.getCookies();
 
-            for (int i = 0; i < allCookies.length; i++) {
-                String name = allCookies[i].getName();
+            for (Cookie cookie : allCookies) {
+                String name = cookie.getName();
                 if (name.equalsIgnoreCase("JSESSIONID")) {
-                    Cookie cookieToDelete = allCookies[i];
+                    Cookie cookieToDelete = cookie;
                     cookieToDelete.setMaxAge(-1);
                     cookieToDelete.setPath("/");
                     cookieToDelete.setComment("EXPIRING COOKIE at " + System.currentTimeMillis());
@@ -296,10 +295,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         PreAuthenticatedAuthenticationToken result = null;
         try {
             principal = getPreAuthenticatedPrincipal(request, response);
-        } catch (IOException e1) {
-            LOGGER.log(Level.FINE, e1.getMessage(), e1);
-            principal = null;
-        } catch (ServletException e1) {
+        } catch (IOException | ServletException e1) {
             LOGGER.log(Level.FINE, e1.getMessage(), e1);
             principal = null;
         }
@@ -352,9 +348,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
     protected String getPreAuthenticatedPrincipal(HttpServletRequest request) {
         try {
             return getPreAuthenticatedPrincipal(request, null);
-        } catch (IOException e) {
-            return null;
-        } catch (ServletException e) {
+        } catch (IOException | ServletException e) {
             return null;
         }
     }
@@ -430,6 +424,16 @@ public abstract class GeoServerOAuthAuthenticationFilter
                         || req.getRequestURI().endsWith(filterConfig.getLoginEndpoint())) {
                     // Intercepting a "UserRedirectRequiredException" and redirect to the OAuth2
                     // Provider login URI
+                    if (filterConfig.isAllowUnSecureLogging()) {
+                        LOGGER.log(
+                                Level.FINE,
+                                "OIDC: redirecting to identity provider for user login: "
+                                        + this.filterConfig.buildAuthorizationUrl());
+                        LOGGER.log(
+                                Level.FINE,
+                                "OIDC: When complete, identity provider will redirect to: "
+                                        + this.filterConfig.getRedirectUri());
+                    }
                     this.aep.commence(req, resp, null);
                 } else {
                     if (resp.getStatus() != 302) {

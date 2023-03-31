@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.keycloak;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -12,7 +14,6 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
-import junit.framework.TestCase;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,15 +22,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 
-public class KeycloakRESTClientTest extends TestCase {
+@SuppressWarnings("PMD.CloseResource") // full of mock closeables
+public class KeycloakRESTClientTest {
 
     private static final String accessToken = "generatedAccessToken";
     private KeycloakRESTClient client;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         client =
                 new KeycloakRESTClient(
                         "http://localhost:8080",

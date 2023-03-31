@@ -76,9 +76,9 @@ When logged in with administrative credentials a configuration overview is provi
 
 Click :guilabel:`Layers summary` link to navigate to the :ref:`Layers page <data_webadmin_layers>`, press :ref:`Add layers <data_webadmin_layers_add_a_layer>` to create a new layer.
 
-Click :guilabel:`Stores summary` link to navigate to the :ref:`Stores page <data_webadmin_stores>`, press :ref:`Add stores <data_webadmin_stores_add_a_store>` to create a new layer.
+Click :guilabel:`Stores summary` link to navigate to the :ref:`Stores page <data_webadmin_stores>`, press :ref:`Add stores <data_webadmin_stores_add_a_store>` to create a new store.
 
-Click :guilabel:`Workspaces summary` link to navigate to the :ref:`Workspaces page <data_webadmin_workspaces>`, press :ref:`Add workspaces <data_webadmin_workspaces_add_workspace>` to create a new layer.
+Click :guilabel:`Workspaces summary` link to navigate to the :ref:`Workspaces page <data_webadmin_workspaces>`, press :ref:`Add workspaces <data_webadmin_workspaces_add_workspace>` to create a new workspace.
 
 Information and Warnings
 ^^^^^^^^^^^^^^^^^^^^^^^^

@@ -32,6 +32,7 @@ import org.geoserver.jdbcconfig.internal.JDBCConfigProperties;
 import org.geoserver.jdbcconfig.internal.JDBCConfigXStreamPersisterInitializer;
 import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
+import org.geoserver.jdbcloader.JDBCLoaderProperties;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -176,7 +177,11 @@ public class JDBCConfigTestSupport {
             System.err.println("skipping " + name + " tests, enable via maven profile");
             return;
         }
-        if ("true".equals(System.getProperty("jdbcconfig." + name + ".skip"))) {
+        if ("true"
+                .equals(
+                        System.getProperty(
+                                "jdbcconfig." + name + ".skip",
+                                "h2".equals(name) ? "false" : "true"))) {
             System.err.println("skipping " + name + " tests, enable via maven profile");
             return;
         }
@@ -414,7 +419,9 @@ public class JDBCConfigTestSupport {
         @Bean
         public ConfigDatabase configDatabase() {
             return new ConfigDatabase(
-                    dataSource(), new XStreamInfoSerialBinding(new XStreamPersisterFactory()));
+                    new JDBCLoaderProperties(null),
+                    dataSource(),
+                    new XStreamInfoSerialBinding(new XStreamPersisterFactory()));
         }
 
         @Bean

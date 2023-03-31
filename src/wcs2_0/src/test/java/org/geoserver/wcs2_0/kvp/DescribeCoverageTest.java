@@ -25,6 +25,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.CoordinateXY;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -979,15 +980,19 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 "http://www.opengis.net/def/crs/EPSG/0/3857",
                 "//gml:boundedBy/gml:Envelope/@srsName",
                 dom);
-        assertXpathEvaluatesTo(
-                "-1.457024062347863E7 6199732.713729635",
+        WCSTestSupport.assertXpathCoordinate(
+                new CoordinateXY(-1.457024062347863E7, 6199732.713729635),
                 "//gml:boundedBy/gml:Envelope/gml:lowerCorner",
                 dom);
-        assertXpathEvaluatesTo(
-                "-1.3790593336628266E7 7197101.83024677",
+        WCSTestSupport.assertXpathCoordinate(
+                new CoordinateXY(-1.3790593336628266E7, 7197101.83024677),
                 "//gml:boundedBy/gml:Envelope/gml:upperCorner",
                 dom);
         // origin of grid to world is top/left, affine points downwards, screen like
+        WCSTestSupport.assertXpathCoordinate(
+                new CoordinateXY(-1.457024062347863E7, 7197101.83024677),
+                "//gml:RectifiedGrid/gml:origin/gml:Point/gml:pos",
+                dom);
         assertXpathEvaluatesTo(
                 "-1.457024062347863E7 7197101.83024677",
                 "//gml:RectifiedGrid/gml:origin/gml:Point/gml:pos",

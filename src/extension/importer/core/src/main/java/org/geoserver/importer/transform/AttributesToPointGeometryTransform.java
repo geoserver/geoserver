@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.geoserver.importer.ImportTask;
 import org.geotools.data.DataStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -21,13 +22,15 @@ public class AttributesToPointGeometryTransform extends AbstractTransform
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    private static final String POINT_NAME = "location";
+    static final String POINT_NAME = "location";
 
     private final String latField;
 
     private final String lngField;
 
     private final String pointFieldName;
+
+    private final Boolean preserveGeometry;
 
     private static GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
@@ -37,9 +40,17 @@ public class AttributesToPointGeometryTransform extends AbstractTransform
 
     public AttributesToPointGeometryTransform(
             String latField, String lngField, String pointFieldName) {
+        this(latField, lngField, pointFieldName, false);
+    }
+
+    public AttributesToPointGeometryTransform(
+            String latField, String lngField, String pointFieldName, Boolean preserveGeometry) {
         this.latField = latField;
         this.lngField = lngField;
-        this.pointFieldName = pointFieldName;
+        this.pointFieldName =
+                ObjectUtils.defaultIfNull(
+                        pointFieldName, AttributesToPointGeometryTransform.POINT_NAME);
+        this.preserveGeometry = preserveGeometry;
     }
 
     @Override
@@ -64,11 +75,13 @@ public class AttributesToPointGeometryTransform extends AbstractTransform
         }
 
         GeometryDescriptor geometryDescriptor = featureType.getGeometryDescriptor();
-        if (geometryDescriptor != null) {
+
+        if (!preserveGeometry && geometryDescriptor != null) {
             builder.remove(geometryDescriptor.getLocalName());
         }
         builder.remove(latField);
         builder.remove(lngField);
+
         builder.add(pointFieldName, Point.class);
 
         return builder.buildFeatureType();
@@ -114,6 +127,14 @@ public class AttributesToPointGeometryTransform extends AbstractTransform
         return lngField;
     }
 
+    public String getPointFieldName() {
+        return pointFieldName;
+    }
+
+    public boolean isPreserveGeometry() {
+        return preserveGeometry;
+    }
+
     @Override
     public String toString() {
         return "AttributesToPointGeometryTransform{"
@@ -125,6 +146,9 @@ public class AttributesToPointGeometryTransform extends AbstractTransform
                 + '\''
                 + ", pointFieldName='"
                 + pointFieldName
+                + '\''
+                + ", preserveGeometry='"
+                + preserveGeometry
                 + '\''
                 + '}';
     }

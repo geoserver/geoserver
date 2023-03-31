@@ -19,11 +19,11 @@
 >
 
   <!-- <mvc:annotation-driven/> -->
-  <context:component-scan base-package="org.geoserver.ogcapi.images"/>
+  <context:component-scan base-package="org.geoserver.ogcapi.v1.images"/>
 
   <bean id="imagesServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">
     <constructor-arg index="0" value="Images"/>
-    <constructor-arg index="1" value="1.0"/>
+    <constructor-arg index="1" value="1.0.1"/>
   </bean>
   
 </beans>

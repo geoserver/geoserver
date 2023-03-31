@@ -167,11 +167,11 @@ To override an OGC API Features template:
 
 #. Create a file in this location, using the GeoServer |release| examples below:
 
-   * :download:`ogc/features/collection.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/collection.ftl>`
-   * :download:`ogc/features/collection_include.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/collection_include.ftl>`
-   * :download:`ogc/features/collections.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/collections.ftl>`
+   * :download:`ogc/features/collection.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection.ftl>`
+   * :download:`ogc/features/collection_include.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection_include.ftl>`
+   * :download:`ogc/features/collections.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl>`
    * :download:`ogc/features/queryables.ftl  </../../../../src/community/ogcapi/ogcapi-core/src/main/resources/org/geoserver/ogcapi/queryables.ftl>`
-   * :download:`ogc/features/functions.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/functions.ftl>`
+   * :download:`ogc/features/functions.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/functions.ftl>`
    
    The above built-in examples are for GeoServer |release|, please check for any changes when upgrading GeoServer.
 
@@ -183,15 +183,15 @@ The templates for listing feature content are shared between OGC API services. T
    * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}`
    * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}` 
    * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}/{featuretype}` 
-   * :download:`ogc/features/landingPage.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/landingPage.ftl>`
+   * :download:`ogc/features/landingPage.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/landingPage.ftl>`
 
 #. Create a file in this location, using the GeoServer |release| examples below:
 
-   * :download:`ogc/features/getfeature-complex-content.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-complex-content.ftl>`
-   * :download:`ogc/features/getfeature-content.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-content.ftl>`
-   * :download:`ogc/features/getfeature-empty.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-empty.ftl>`
-   * :download:`ogc/features/getfeature-footer.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-footer.ftl>`
-   * :download:`ogc/features/getfeature-header.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-header.ftl>`
+   * :download:`ogc/features/getfeature-complex-content.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-complex-content.ftl>`
+   * :download:`ogc/features/getfeature-content.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-content.ftl>`
+   * :download:`ogc/features/getfeature-empty.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-empty.ftl>`
+   * :download:`ogc/features/getfeature-footer.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-footer.ftl>`
+   * :download:`ogc/features/getfeature-header.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-header.ftl>`
 
    The above built-in examples are for GeoServer |release|, please check for any changes when upgrading GeoServer.
 
@@ -199,7 +199,7 @@ As an example customize how collections are listed:
 
 #. The file :file:`ogc/features/collections.ftl` lists published collection:
 
-   .. literalinclude:: /../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/collections.ftl
+   .. literalinclude:: /../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl
 
 #. Save file to :file:`GEOSERVER_DATA_DIR/workspace/templates/ogc/collections.ftl`, and rewrite as:
    

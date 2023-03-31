@@ -202,6 +202,7 @@ It is possible to:
 * Remove an attribute using the "remove" icon at the end of the attribute row.
 * Add a new attribute, which will be computed based on the :guilabel:`Source` CQL expression.
 * Rename an attribute.
+* Add a description of the attribute, which will be visible wherever the feature type is described.
 * Change the nillability of the attribute, for example, making the attribute mandatory even if it's
   not in the data source, and vice-versa.
 * Change the type of the attribute using the `Type` column. The most common types are available in 
@@ -389,6 +390,16 @@ For each enabled dimension the following configuration options are available:
   Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to
   specify an asymmetric search range. Time distances should specified using the ISO period syntax. For example, ``PT1H/PT0H`` allows to search up to one hour before the user specified value,
   but not after.
+* **Begin of data range**—A manually declared start value for the data range. When specified, the ``End of data range`` has to be specified also.
+  Has to be either numeric, an ISO 8601 DateTime format or the string ``PRESENT``. If left blank GeoServer will determine the value automatically
+  based on the data. When using 'PRESENT' the current DateTime of the server will be used when the capabilities document is generated.
+  Setting this value manually may be desired when working with layers consisting of huge amounts of data where the automatic determination can get slow.
+  This parameter is only handled for WMS Layers in their capabilities document.
+* **End of data range**—A manually declared end value for the data range. When specified, the ``Begin of data range`` has to be specified also.
+  Has to be either numeric, an ISO 8601 DateTime format or the string ``PRESENT``. If left blank GeoServer will determine the value automatically
+  based on the data. When using 'PRESENT' the current DateTime of the server will be used when the capabilities document is generated.
+  Setting this value manually may be desired when working with layers consisting of huge amounts of data where the automatic determination can get slow.
+  This parameter is only handled for WMS Layers in their capabilities document.
 
 For time dimension the value must be in ISO 8601 DateTime format ``yyyy-MM-ddThh:mm:ss.SSSZ`` For elevation dimension, the value must be and integer of floating point number.
 
@@ -424,6 +435,16 @@ For each enabled dimension the following configuration options are available:
 * **Acceptable interval**—A maximum search distance from the specified value (available only when nearest match is enabled).
   Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to
   specify an asymmetric search range.
+* **Begin of data range**—A manually declared start value for the data range. When specified, the ``End of data range`` has to be specified also.
+  Has to be either numeric, an ISO 8601 DateTime format or the string ``PRESENT``. If left blank GeoServer will determine the value automatically
+  based on the data. When using 'PRESENT' the current DateTime of the server will be used when the capabilities document is generated.
+  Setting this value manually may be desired when working with layers consisting of huge amounts of data where the automatic determination can get slow.
+  This parameter is only handled for WMS Layers in their capabilities document.
+* **End of data range**—A manually declared end value for the data range. When specified, the ``Begin of data range`` has to be specified also.
+  Has to be either numeric, an ISO 8601 DateTime format or the string ``PRESENT``. If left blank GeoServer will determine the value automatically
+  based on the data. When using 'PRESENT' the current DateTime of the server will be used when the capabilities document is generated.
+  Setting this value manually may be desired when working with layers consisting of huge amounts of data where the automatic determination can get slow.
+  This parameter is only handled for WMS Layers in their capabilities document.
 
 Edit Layer: Security
 ^^^^^^^^^^^^^^^^^^^^^^^^

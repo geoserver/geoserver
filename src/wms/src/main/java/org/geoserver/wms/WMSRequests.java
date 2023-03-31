@@ -327,13 +327,13 @@ public class WMSRequests {
                 // semantics of feature id slightly different, replicate entire value
                 params.put("featureid", req.getRawKvp().get("featureid"));
             }
-            if (!StringUtils.isEmpty(kvpMap.get("interpolations"))) {
+            if (StringUtils.hasText(kvpMap.get("interpolations"))) {
                 List<String> interpolations = KvpUtils.readFlat(kvpMap.get("interpolations"));
                 if (!interpolations.get(index).isEmpty()) {
                     params.put("interpolations", interpolations.get(index));
                 }
             }
-            if (!StringUtils.isEmpty(kvpMap.get("sortby"))) {
+            if (StringUtils.hasText(kvpMap.get("sortby"))) {
                 List<String> sortBy =
                         KvpUtils.readFlat(kvpMap.get("sortby"), KvpUtils.OUTER_DELIMETER);
                 if (!sortBy.get(index).isEmpty()) {
@@ -350,10 +350,10 @@ public class WMSRequests {
             } else if (req.getRawKvp().get("featureid") != null) {
                 params.put("featureid", req.getRawKvp().get("featureid"));
             }
-            if (!StringUtils.isEmpty(kvpMap.get("interpolations"))) {
+            if (StringUtils.hasText(kvpMap.get("interpolations"))) {
                 params.put("interpolations", kvpMap.get("interpolations"));
             }
-            if (!StringUtils.isEmpty(kvpMap.get("sortby"))) {
+            if (StringUtils.hasText(kvpMap.get("sortby"))) {
                 params.put("sortby", kvpMap.get("sortby"));
             }
         }
@@ -398,7 +398,7 @@ public class WMSRequests {
         if (propertyName != null && !propertyName.isEmpty()) {
             params.put("propertyName", propertyName);
         }
-        if (!StringUtils.isEmpty(kvpMap.get("bgcolor"))) {
+        if (StringUtils.hasText(kvpMap.get("bgcolor"))) {
             params.put("bgcolor", kvpMap.get("bgcolor"));
         }
         if (!req.getExceptions().equals(GetMapRequest.SE_XML)) {

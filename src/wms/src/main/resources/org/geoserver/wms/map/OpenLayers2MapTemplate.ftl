@@ -450,7 +450,7 @@
         </script>
     </head>
     <body onload="init()">
-        <div id="toolbar" style="display: none;">
+        <div id="toolbar" class="d-none">
             <ul>
                 <li>
                     <a>WMS version:</a>

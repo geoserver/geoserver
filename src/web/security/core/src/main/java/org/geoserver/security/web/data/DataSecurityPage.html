@@ -33,25 +33,26 @@
     
     <div wicket:id="table"></div>
 
-    <form wicket:id="catalogModeForm" style="padding-top: 3em;">
-        <ul>
-          <li>
-            <fieldset>
-              <legend>
-                <span>Catalog Mode</span>
-                <a href="#" wicket:id="catalogModeHelp" class="help-link"></a>
-              </legend>
-              <span id="catalogMode" wicket:id="catalogMode">
-                <input type="radio"/>mode 1
-              </span>
-            </fieldset>
-          </li>
-        </ul>
-        <div class="button-group toolbar-sticky selfclear">
-          <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-          <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
-        </div>
-    </form>
+  <form wicket:id="catalogModeForm" class="pt-5">
+
+    <fieldset>
+      <legend>
+        <span>Catalog Mode</span>
+        <a href="#" wicket:id="catalogModeHelp" class="help-link"></a>
+      </legend>
+      <span id="catalogMode" wicket:id="catalogMode">
+        <input type="radio"/>mode 1</span>
+    </fieldset>
+
+    <div class="button-group toolbar-sticky selfclear">
+      <a href="#" class="form-button-save" wicket:id="save">
+        <wicket:message key="save">Save</wicket:message>
+      </a>
+      <a href="#" class="form-button-cancel" wicket:id="cancel">
+        <wicket:message key="cancel">Cancel</wicket:message>
+      </a>
+    </div>
+  </form>
     
 </wicket:extend>
 </body>

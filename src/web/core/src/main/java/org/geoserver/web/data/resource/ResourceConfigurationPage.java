@@ -210,6 +210,13 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                         rcp.onSave();
                     }
                 });
+        visitChildren(
+                (component, visit) -> {
+                    if (component instanceof PublishedConfigurationPanel) {
+                        PublishedConfigurationPanel rcp = (PublishedConfigurationPanel) component;
+                        rcp.save();
+                    }
+                });
         if (isNew) {
             // updating grid if is a coverage
             if (resourceInfo instanceof CoverageInfo) {

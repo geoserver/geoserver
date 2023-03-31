@@ -19,6 +19,6 @@
 >
 
     <!-- <mvc:annotation-driven/> -->
-    <context:component-scan base-package="org.geoserver.ogcapi.features.tiled"/>
+    <context:component-scan base-package="org.geoserver.ogcapi.v1.features.tiled"/>
 
 </beans>

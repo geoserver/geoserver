@@ -1,8 +1,6 @@
-/*
- * (c) 2018 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- *
  */
 package org.geoserver.security.oauth2;
 
@@ -60,7 +58,8 @@ class OpenIdConnectSecurityConfiguration extends GeoServerOAuth2SecurityConfigur
             return new ValidatingOAuth2RestTemplate(
                     geoServerOAuth2Resource(),
                     new DefaultOAuth2ClientContext(getAccessTokenRequest()),
-                    jwkUri);
+                    jwkUri,
+                    config);
         }
         return super.getOAuth2RestTemplate();
     }

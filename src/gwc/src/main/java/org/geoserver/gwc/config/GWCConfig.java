@@ -386,7 +386,7 @@ public class GWCConfig implements Cloneable, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         GWCConfig gwcConfig = (GWCConfig) o;
         return directWMSIntegrationEnabled == gwcConfig.directWMSIntegrationEnabled
-                && requireTiledParameter == gwcConfig.requireTiledParameter
+                && Objects.equals(requireTiledParameter, gwcConfig.requireTiledParameter)
                 && WMSCEnabled == gwcConfig.WMSCEnabled
                 && TMSEnabled == gwcConfig.TMSEnabled
                 && securityEnabled == gwcConfig.securityEnabled

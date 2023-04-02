@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs2_0;
 
+import static java.util.Map.entry;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -113,33 +114,30 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static Schema getWcs20Schema() {
         if (WCS20_SCHEMA == null) {
             final Map<String, String> namespaceMap =
-                    new HashMap<String, String>() {
-                        {
-                            put("http://www.opengis.net/wcs/2.0", "/schemas/wcs/2.0/");
-                            put("http://www.opengis.net/gmlcov/1.0", "/schemas/gmlcov/1.0/");
-                            put("http://www.opengis.net/gml/3.2", "/schemas/gml/3.2.1/");
-                            put("http://www.w3.org/1999/xlink", "/schemas/xlink/");
-                            put("http://www.w3.org/XML/1998/namespace", "/schemas/xml/");
-                            put(
+                    Map.ofEntries(
+                            entry("http://www.opengis.net/wcs/2.0", "/schemas/wcs/2.0/"),
+                            entry("http://www.opengis.net/gmlcov/1.0", "/schemas/gmlcov/1.0/"),
+                            entry("http://www.opengis.net/gml/3.2", "/schemas/gml/3.2.1/"),
+                            entry("http://www.w3.org/1999/xlink", "/schemas/xlink/"),
+                            entry("http://www.w3.org/XML/1998/namespace", "/schemas/xml/"),
+                            entry(
                                     "http://www.isotc211.org/2005/gmd",
-                                    "/schemas/iso/19139/20070417/gmd/");
-                            put(
+                                    "/schemas/iso/19139/20070417/gmd/"),
+                            entry(
                                     "http://www.isotc211.org/2005/gco",
-                                    "/schemas/iso/19139/20070417/gco/");
-                            put(
+                                    "/schemas/iso/19139/20070417/gco/"),
+                            entry(
                                     "http://www.isotc211.org/2005/gss",
-                                    "/schemas/iso/19139/20070417/gss/");
-                            put(
+                                    "/schemas/iso/19139/20070417/gss/"),
+                            entry(
                                     "http://www.isotc211.org/2005/gts",
-                                    "/schemas/iso/19139/20070417/gts/");
-                            put(
+                                    "/schemas/iso/19139/20070417/gts/"),
+                            entry(
                                     "http://www.isotc211.org/2005/gsr",
-                                    "/schemas/iso/19139/20070417/gsr/");
-                            put("http://www.opengis.net/swe/2.0", "/schemas/sweCommon/2.0/");
-                            put("http://www.opengis.net/ows/2.0", "/schemas/ows/2.0/");
-                            put("http://www.geoserver.org/wcsgs/2.0", "/schemas/wcs/2.0/");
-                        }
-                    };
+                                    "/schemas/iso/19139/20070417/gsr/"),
+                            entry("http://www.opengis.net/swe/2.0", "/schemas/sweCommon/2.0/"),
+                            entry("http://www.opengis.net/ows/2.0", "/schemas/ows/2.0/"),
+                            entry("http://www.geoserver.org/wcsgs/2.0", "/schemas/wcs/2.0/"));
 
             try {
                 final SchemaFactory factory =

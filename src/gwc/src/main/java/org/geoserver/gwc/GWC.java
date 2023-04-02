@@ -2135,9 +2135,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
             checkArgument(
                     !tileLayerExists(name),
-                    "Can't auto configure Layer, a tile layer named '",
-                    name,
-                    "' already exists.");
+                    "Can't auto configure Layer, a tile layer named '%s' already exists.",
+                    name);
 
             GeoServerTileLayer tileLayer = null;
             LayerInfo layer = catalog.getLayerByName(name);

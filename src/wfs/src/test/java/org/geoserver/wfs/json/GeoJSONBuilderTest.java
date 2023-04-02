@@ -5,12 +5,12 @@
  */
 package org.geoserver.wfs.json;
 
+import static java.util.Map.entry;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -328,13 +328,8 @@ public class GeoJSONBuilderTest {
     @Test
     public void testWriteStringStringMap() throws Exception {
         final Map<String, String> map =
-                new HashMap<String, String>() {
-                    {
-                        put("a", "1");
-                        put("b", "2");
-                        put("c", "3");
-                    }
-                };
+                Map.ofEntries(entry("a", "1"), entry("b", "2"), entry("c", "3"));
+
         builder.writeMap(map);
         final JSONObject root = JSONObject.fromObject(writer.toString());
         assertEquals(3, root.size());
@@ -346,13 +341,11 @@ public class GeoJSONBuilderTest {
     @Test
     public void testWriteStringIntMap() throws Exception {
         final Map<String, Integer> map =
-                new HashMap<String, Integer>() {
-                    {
-                        put("a", Integer.MAX_VALUE);
-                        put("b", Integer.MIN_VALUE);
-                        put("c", 3);
-                    }
-                };
+                Map.ofEntries(
+                        entry("a", Integer.MAX_VALUE),
+                        entry("b", Integer.MIN_VALUE),
+                        entry("c", 3));
+
         builder.writeMap(map);
         final JSONObject root = JSONObject.fromObject(writer.toString());
         assertEquals(3, root.size());
@@ -365,23 +358,11 @@ public class GeoJSONBuilderTest {
     public void testWriteListOfMaps() throws Exception {
         final UUID u1 = UUID.fromString("12345678-1234-1234-1234-123456781234");
         final Map<String, Object> tuple1 =
-                new HashMap<String, Object>() {
-                    {
-                        put("a", 1);
-                        put("b", u1);
-                        put("c", "object1");
-                    }
-                };
+                Map.ofEntries(entry("a", 1), entry("b", u1), entry("c", "object1"));
 
         final UUID u2 = UUID.fromString("00000000-0000-0000-0000-000000000000");
         final Map<String, Object> tuple2 =
-                new HashMap<String, Object>() {
-                    {
-                        put("a", 2);
-                        put("b", u2);
-                        put("c", "object2");
-                    }
-                };
+                Map.ofEntries(entry("a", 2), entry("b", u2), entry("c", "object2"));
 
         final List<Map<String, Object>> tupleList = Arrays.asList(tuple1, tuple2);
         builder.writeList(tupleList);

@@ -103,14 +103,7 @@ public class WCSDimensionsHelper {
             final GridCoverage2DReader reader,
             final String coverageId)
             throws IOException {
-        this(
-                new HashMap<String, DimensionInfo>() {
-                    {
-                        put(ResourceInfo.TIME, timeDimension);
-                    }
-                },
-                reader,
-                coverageId);
+        this(Map.of(ResourceInfo.TIME, timeDimension), reader, coverageId);
     }
 
     public WCSDimensionsHelper(

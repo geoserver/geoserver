@@ -8,7 +8,7 @@ package org.geoserver.wps.gs;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
+import java.util.List;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -47,12 +47,9 @@ public class PolygonExtractionProcessTest extends BaseRasterToVectorTest {
                         true,
                         null,
                         null,
-                        new ArrayList<Range>() {
-                            {
-                                add(new Range<>(0d, true, 1000d, false));
-                                add(new Range<>(1000d, true, 2000d, false));
-                            }
-                        },
+                        List.of(
+                                new Range<>(0d, true, 1000d, false),
+                                new Range<>(1000d, true, 2000d, false)),
                         new NullProgressListener());
 
         assertNotNull(fc);

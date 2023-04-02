@@ -137,7 +137,7 @@ public class Start {
                         }
                     };
             stopThread.setDaemon(true);
-            stopThread.run();
+            stopThread.start();
 
             // use this to test normal stop behaviour, that is, to check stuff that
             // need to be done on container shutdown (and yes, this will make

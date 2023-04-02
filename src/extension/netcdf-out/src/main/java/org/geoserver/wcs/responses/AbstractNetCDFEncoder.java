@@ -70,31 +70,21 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
      */
     @SuppressWarnings("serial")
     protected static final Set<String> COPY_ATTRIBUTES_BLACKLIST =
-            new HashSet<String>() {
-                {
+            Set.of(
                     // coordinate variable names are usually changed
-                    add("coordinates");
-                    // these do not survive type change or packing and should be set from nodata
-                    // value
-                    add("_FillValue");
-                    add("missing_value");
-                    // this one is better not copied over in case of subsetting instead
-                    add("_ChunkSizes");
-                }
-            };
+                    "coordinates",
+                    // do not survive type change or packing and should be set from no-data value
+                    "_FillValue",
+                    "missing_value",
+                    // this one is better not copied over in case of sub-setting instead
+                    "_ChunkSizes");
 
     /**
      * Global Attributes that are never copied from a NetCDF/GRIB source because they require
      * special handling.
      */
     @SuppressWarnings("serial")
-    protected static final Set<String> COPY_GLOBAL_ATTRIBUTES_BLACKLIST =
-            new HashSet<String>() {
-                {
-                    // Not copying this since the UCAR writer will create it again
-                    add("_NCProperties");
-                }
-            };
+    protected static final Set<String> COPY_GLOBAL_ATTRIBUTES_BLACKLIST = Set.of("_NCProperties");
 
     /** Bean related to the {@link NetCDFCFParser} */
     protected static NetCDFParserBean parserBean = GeoServerExtensions.bean(NetCDFParserBean.class);

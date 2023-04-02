@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -60,17 +59,14 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat
 
     /** The types of geometries a shapefile can handle */
     private static final Set<Class<?>> SHAPEFILE_GEOM_TYPES =
-            new HashSet<Class<?>>() {
-                {
-                    add(Point.class);
-                    add(LineString.class);
-                    add(LinearRing.class);
-                    add(Polygon.class);
-                    add(MultiPoint.class);
-                    add(MultiLineString.class);
-                    add(MultiPolygon.class);
-                }
-            };
+            Set.of(
+                    Point.class,
+                    LineString.class,
+                    LinearRing.class,
+                    Polygon.class,
+                    MultiPoint.class,
+                    MultiLineString.class,
+                    MultiPolygon.class);
 
     /** Factory to create the ogr2ogr wrapper. */
     ToolWrapperFactory ogrWrapperFactory;

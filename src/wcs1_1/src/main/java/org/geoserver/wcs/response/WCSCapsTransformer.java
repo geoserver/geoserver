@@ -13,7 +13,6 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -254,13 +253,7 @@ public class WCSCapsTransformer extends TransformerBase {
             start("ows:OperationsMetadata");
             handleOperation("GetCapabilities", null);
             handleOperation("DescribeCoverage", null);
-            handleOperation(
-                    "GetCoverage",
-                    new HashMap<String, List<String>>() {
-                        {
-                            put("store", Arrays.asList("True", "False"));
-                        }
-                    });
+            handleOperation("GetCoverage", Map.of("store", List.of("True", "False")));
 
             // specify that we do support xml post encoding, clause 8.3.2.2 of
             // the WCS 1.1.1 spec

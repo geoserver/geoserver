@@ -340,15 +340,11 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         if (targetNamespace.equals(FeatureChainingMockData.EX_URI)) {
             assertEquals(2, numberOfImports);
             assertEquals(3, numberOfIncludes);
-            @SuppressWarnings("serial")
             Set<String> expectedExSchemaLocations =
-                    new HashSet<String>() {
-                        {
-                            add(getExSchemaOneLocation());
-                            add(getExSchemaTwoLocation());
-                            add(getExSchemaThreeLocation());
-                        }
-                    };
+                    Set.of(
+                            getExSchemaOneLocation(),
+                            getExSchemaTwoLocation(),
+                            getExSchemaThreeLocation());
             // ensure expected schemaLocations are distinct
             assertEquals(numberOfIncludes, expectedExSchemaLocations.size());
             // check that found schemaLocations are as expected

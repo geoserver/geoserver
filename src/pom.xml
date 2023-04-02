@@ -153,7 +153,7 @@
     <pom.fmt.action>sort</pom.fmt.action>
     <pom.fmt.skip>${spotless.apply.skip}</pom.fmt.skip>
     <errorProneFlags></errorProneFlags>
-    <errorProne.version>2.10.0</errorProne.version>
+    <errorProne.version>2.18.0</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
     <pmd.version>6.42.0</pmd.version>
     <checkstyle.skip>false</checkstyle.skip>

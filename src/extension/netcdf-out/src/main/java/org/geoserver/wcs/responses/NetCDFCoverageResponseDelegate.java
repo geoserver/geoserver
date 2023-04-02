@@ -5,13 +5,18 @@
  */
 package org.geoserver.wcs.responses;
 
+import static java.util.Map.entry;
+import static org.geotools.imageio.netcdf.utilities.NetCDFUtilities.NETCDF;
+import static org.geotools.imageio.netcdf.utilities.NetCDFUtilities.NETCDF3_MIMETYPE;
+import static org.geotools.imageio.netcdf.utilities.NetCDFUtilities.NETCDF4;
+import static org.geotools.imageio.netcdf.utilities.NetCDFUtilities.NETCDF4_MIMETYPE;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -22,7 +27,6 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.wcs2_0.response.MultidimensionalCoverageResponse;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -47,30 +51,20 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
     public NetCDFCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList(NetCDFUtilities.NETCDF, NetCDFUtilities.NETCDF4),
-                new HashMap<String, String>() { // file extensions
-                    {
-                        put(NetCDFUtilities.NETCDF, "nc");
-                        put(NetCDFUtilities.NETCDF.toLowerCase(), "nc");
-                        put(NetCDFUtilities.NETCDF.toUpperCase(), "nc");
-                        put(NetCDFUtilities.NETCDF3_MIMETYPE, "nc");
-                        put(NetCDFUtilities.NETCDF4_MIMETYPE, "nc");
-                    }
-                },
-                new HashMap<String, String>() { // mime types
-                    {
-                        put(NetCDFUtilities.NETCDF, NetCDFUtilities.NETCDF3_MIMETYPE);
-                        put(NetCDFUtilities.NETCDF.toLowerCase(), NetCDFUtilities.NETCDF3_MIMETYPE);
-                        put(NetCDFUtilities.NETCDF.toUpperCase(), NetCDFUtilities.NETCDF3_MIMETYPE);
-                        put(NetCDFUtilities.NETCDF4, NetCDFUtilities.NETCDF4_MIMETYPE);
-                        put(
-                                NetCDFUtilities.NETCDF4.toLowerCase(),
-                                NetCDFUtilities.NETCDF4_MIMETYPE);
-                        put(
-                                NetCDFUtilities.NETCDF4.toUpperCase(),
-                                NetCDFUtilities.NETCDF4_MIMETYPE);
-                    }
-                });
+                Arrays.asList(NETCDF, NETCDF4),
+                Map.ofEntries(
+                        entry(NETCDF, "nc"),
+                        entry(NETCDF.toLowerCase(), "nc"),
+                        entry(NETCDF.toUpperCase(), "nc"),
+                        entry(NETCDF3_MIMETYPE, "nc"),
+                        entry(NETCDF4_MIMETYPE, "nc")),
+                Map.ofEntries(
+                        entry(NETCDF, NETCDF3_MIMETYPE),
+                        entry(NETCDF.toLowerCase(), NETCDF3_MIMETYPE),
+                        entry(NETCDF.toUpperCase(), NETCDF3_MIMETYPE),
+                        entry(NETCDF4, NETCDF4_MIMETYPE),
+                        entry(NETCDF4.toLowerCase(), NETCDF4_MIMETYPE),
+                        entry(NETCDF4.toUpperCase(), NETCDF4_MIMETYPE)));
     }
 
     @Override

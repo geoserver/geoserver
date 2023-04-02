@@ -67,7 +67,7 @@ public class GWCConfigPersister {
 
     private synchronized void loadConfig() throws IOException {
         Resource configFile = findConfigFile();
-        checkNotNull(configFile, "gwc config file does not exist: ", GWC_CONFIG_FILE);
+        checkNotNull(configFile, "gwc config file does not exist: %s", GWC_CONFIG_FILE);
 
         XStreamPersister xmlPersister = this.persisterFactory.createXMLPersister();
         configureXstream(xmlPersister.getXStream());

@@ -247,7 +247,7 @@ public class LDAPTestUtils {
         loadLdif(contextSource, ldifFile);
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "BanJNDI"})
     private static void loadLdif(DirContext context, Resource ldifFile) throws IOException {
         try {
             LdapName baseDn =

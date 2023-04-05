@@ -70,7 +70,7 @@ public class TemplateGetFeatureResponseHelper {
             case GML31:
             case GML32:
             case HTML:
-                XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+                XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newDefaultFactory();
                 // we do ourselves the escaping in the template writer since the one provided in the
                 // XMLStreamWriter implementation
                 // doesn't handle all the characters.

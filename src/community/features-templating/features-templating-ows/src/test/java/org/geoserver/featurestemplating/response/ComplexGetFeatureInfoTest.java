@@ -84,43 +84,44 @@ public class ComplexGetFeatureInfoTest extends TemplateComplexTestSupport {
     }
 
     @Test
-    public void testHTML() {
+    public void testHTML() throws Exception {
         String request =
                 "wms?request=GetFeatureInfo&SRS=EPSG:4326&BBOX=-1.3,52,0,52.5&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100&INFO_FORMAT=text/html"
                         + MF_HTML_PARAM;
-        Document doc = getAsDOM(request);
-        assertXpathCount(1, "//html/head/script", doc);
-        assertXpathCount(1, "//html/head/style", doc);
-        assertXpathCount(1, "//html/body/ul/li[./span = 'MappedFeature']", doc);
-        assertXpathCount(1, "//html/body/ul/li/ul[./li = 'mf2']", doc);
+        org.jsoup.nodes.Document doc = getAsJSoup(request);
+        assertEquals(1, doc.select("script").size());
+        assertEquals(1, doc.select("style").size());
+        assertEquals(1, doc.select("span.caret:contains(MappedFeature)").size());
+        assertEquals(1, doc.select("li ul li:contains(mf2)").size());
 
-        assertXpathCount(1, "//html/body/ul/li/ul/li/ul[./li = 'MERCIA MUDSTONE GROUP']", doc);
+        assertEquals(1, doc.select("ul li ul li ul li:contains(MERCIA MUDSTONE GROUP)").size());
 
-        assertXpathCount(1, "//html/body/ul/li/ul/li[./span = 'Shape']", doc);
+        assertEquals(1, doc.select("span:contains(Shape)").size());
 
-        assertXpathCount(1, "//html/body/ul/li/ul/li[./span = 'Specifications']", doc);
-        assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li[./span = 'Geologic Unit']", doc);
-        assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li[./span = 'Purpose']", doc);
-        assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'instance']", doc);
+        assertEquals(1, doc.select("ul li ul li span:contains(Specifications)").size());
+        assertEquals(1, doc.select("ul li ul li span:contains(Geologic Unit)").size());
+        assertEquals(1, doc.select("ul li ul li span:contains(Purpose)").size());
+        assertEquals(1, doc.select("ul li ul li ul li ul li ul li:contains(instance)").size());
 
-        assertXpathCount(
+        assertEquals(
                 1,
-                "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'Yaugher Volcanic Group 1']",
-                doc);
-        assertXpathCount(
+                doc.select("ul li ul li ul li ul li ul li:contains(Yaugher Volcanic Group 1)")
+                        .size());
+        assertEquals(
                 1,
-                "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'Yaugher Volcanic Group 2']",
-                doc);
-        assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = '-Py']", doc);
-        assertXpathCount(
-                2, "//html/body/ul/li/ul/li/ul/li/ul/li[./span = 'Composition Parts']", doc);
-        assertXpathCount(2, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Part']", doc);
-        assertXpathCount(
-                2, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Role']", doc);
-        assertXpathCount(
+                doc.select("ul li ul li ul li ul li ul li:contains(Yaugher Volcanic Group 2)")
+                        .size());
+
+        assertEquals(1, doc.select("ul li ul li ul li ul li ul li:contains(-Py)").size());
+        assertEquals(
+                2, doc.select("ul li ul li ul li ul li span:contains(Composition Parts)").size());
+        assertEquals(2, doc.select("ul li ul li ul li ul li ul li span:contains(Part)").size());
+        assertEquals(2, doc.select("ul li ul li ul li ul li ul li span:contains(Role)").size());
+        assertEquals(
                 2,
-                "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'interbedded component']",
-                doc);
+                doc.select(
+                                "ul li ul li ul li ul li ul li ul li ul li:contains(interbedded component)")
+                        .size());
     }
 
     @Test

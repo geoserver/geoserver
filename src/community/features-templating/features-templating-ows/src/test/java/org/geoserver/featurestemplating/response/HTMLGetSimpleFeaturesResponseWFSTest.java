@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.response;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collections;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
@@ -11,8 +13,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
-import org.w3c.dom.Document;
 
 public class HTMLGetSimpleFeaturesResponseWFSTest extends TemplateComplexTestSupport {
 
@@ -42,16 +44,17 @@ public class HTMLGetSimpleFeaturesResponseWFSTest extends TemplateComplexTestSup
                 htmlFeatures);
     }
 
+    /**
+     * Tests if GetFeature response is escaped correctly
+     *
+     * @throws Exception
+     */
     @Test
     public void testHtmlResponse() throws Exception {
         StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=cite:HtmlFeatures&outputFormat=");
         sb.append("text/html&cql_filter=NAME='Features1'&html=true");
-        String t = getAsString(sb.toString());
-        Document doc = getAsDOM(sb.toString());
-        assertXpathMatches(
-                "60&deg;",
-                "//html/body/ul/li[./span = 'HTML Features']/ul/li[./span = 'Degrees']/ul/li",
-                doc);
+        Document doc = getAsJSoup(sb.toString());
+        assertEquals(1, doc.select("ul.nested li ul.nested li:contains(60°)").size());
     }
 }

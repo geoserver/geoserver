@@ -1983,8 +1983,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected org.jsoup.nodes.Document getAsJSoup(String url) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(url);
         assertEquals(200, response.getStatus());
-        assertEquals("text/html", response.getContentType());
-
+        assertContentType("text/html", response);
         LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
 
         // parse the HTML

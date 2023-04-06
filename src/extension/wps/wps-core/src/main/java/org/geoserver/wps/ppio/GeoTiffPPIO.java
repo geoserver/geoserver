@@ -5,10 +5,12 @@
  */
 package org.geoserver.wps.ppio;
 
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +32,7 @@ import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.process.ProcessException;
 import org.geotools.util.logging.Logging;
+import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.parameter.ParameterValueGroup;
 
 /**
@@ -49,6 +52,8 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
     private static final Set<String> SUPPORTED_PARAMS = new HashSet<>();
 
     private static final String SUPPORTED_PARAMS_LIST;
+
+    private static final String DEFAULT_COMPRESSION = "Deflate";
 
     static {
         SUPPORTED_PARAMS.add(TILE_WIDTH_KEY);
@@ -100,9 +105,30 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
         }
     }
 
+    private Map<String, Object> getDefaultWritingParams(Object value) throws IOException {
+        GridCoverage2D coverage = (GridCoverage2D) value;
+        final RenderedImage renderedImage = coverage.getRenderedImage();
+        int tileWidth = renderedImage.getTileWidth();
+        int tileHeight = renderedImage.getTileHeight();
+
+        // avoid tiles bigger than the image
+        final GridEnvelope gr = coverage.getGridGeometry().getGridRange();
+        if (gr.getSpan(0) < tileWidth) {
+            tileWidth = gr.getSpan(0);
+        }
+        if (gr.getSpan(1) < tileHeight) {
+            tileHeight = gr.getSpan(1);
+        }
+        Map<String, Object> defaultsMap = new HashMap<>();
+        defaultsMap.put(TILE_WIDTH_KEY, String.valueOf(tileWidth));
+        defaultsMap.put(TILE_HEIGHT_KEY, String.valueOf(tileHeight));
+        defaultsMap.put(COMPRESSION_KEY, DEFAULT_COMPRESSION);
+        return defaultsMap;
+    }
+
     @Override
     public void encode(Object value, OutputStream os) throws Exception {
-        encode(value, null, os);
+        encode(value, getDefaultWritingParams(value), os);
     }
 
     @Override

@@ -33,6 +33,7 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.springframework.http.MediaType;
 
 /**
  * This {@link DispatcherCallback} implementation checks on operation dispatched event if a json-ld
@@ -59,7 +60,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
 
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
-        if (request.getService().toUpperCase().contains("WFS")) {
+        if (operationSupported(operation)) {
             try {
                 GetFeatureRequest getFeature =
                         GetFeatureRequest.adapt(operation.getParameters()[0]);
@@ -159,7 +160,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         Object[] params = operation.getParameters();
-        if (params.length > 0) {
+        if (operationSupported(operation) && params.length > 0) {
             Object param1 = params[0];
             Response replacer = findResponse(param1);
             if (replacer != null) response = replacer;
@@ -167,10 +168,30 @@ public class TemplateCallback extends AbstractDispatcherCallback {
         return super.responseDispatched(request, operation, result, response);
     }
 
+    /**
+     * Checks if operation is supported by features templating
+     *
+     * @param operation
+     * @return
+     */
+    private boolean operationSupported(Operation operation) {
+        String id = operation.getId();
+        String serviceId = operation.getService().getId();
+        return id.equals("GetFeatureInfo") && serviceId.equalsIgnoreCase("wms")
+                || id.equals("GetFeature") && serviceId.equalsIgnoreCase("wfs");
+    }
+
     private Response findResponse(Object param1) {
         Response response = null;
         if (param1 instanceof GetFeatureInfoRequest) {
-            response = getTemplateFeatureInfoResponse((GetFeatureInfoRequest) param1);
+            GetFeatureInfoRequest request = (GetFeatureInfoRequest) param1;
+            // Checking that template format is specified and that it's not text/plain because it's
+            // not supported,
+            // but is default if nothing is specified
+            if (request.getInfoFormat() != null
+                    && !request.getInfoFormat().equals(MediaType.TEXT_PLAIN_VALUE)) {
+                response = getTemplateFeatureInfoResponse(request);
+            }
         } else {
             GetFeatureRequest getFeature = GetFeatureRequest.adapt(param1);
             if (getFeature != null) {

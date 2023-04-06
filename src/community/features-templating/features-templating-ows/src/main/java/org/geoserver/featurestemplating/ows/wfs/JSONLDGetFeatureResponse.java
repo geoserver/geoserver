@@ -34,6 +34,8 @@ import org.opengis.feature.Feature;
  */
 public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
+    private static final String ELEMENT_NAME = "JSON-LD";
+
     public JSONLDGetFeatureResponse(GeoServer gs, TemplateLoader configuration) {
         super(gs, configuration, TemplateIdentifier.JSONLD);
         this.configuration = configuration;
@@ -137,5 +139,10 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
             result = Boolean.valueOf(value.toString());
         }
         return result;
+    }
+
+    @Override
+    public String getCapabilitiesElementName() {
+        return ELEMENT_NAME;
     }
 }

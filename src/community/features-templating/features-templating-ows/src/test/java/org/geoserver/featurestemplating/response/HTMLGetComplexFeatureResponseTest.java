@@ -125,7 +125,7 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
                         "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
                                 + "&outputFormat=text/html"
                                 + MF_HTML_PARAM);
-        assertFalse(doc.select("script").isEmpty());
+        assertFalse(doc.select("li:contains(60°)").isEmpty());
         assertHTMLResult(doc);
     }
 

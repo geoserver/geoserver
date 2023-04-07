@@ -68,7 +68,8 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
             else {
                 streamWriter.writeStartElement(name);
                 evaluateChildren(encodingHints);
-                streamWriter.writeCharacters(staticContent.toString());
+                streamWriter.writeCharacters(
+                        StringEscapeUtils.escapeHtml(staticContent.toString()));
                 streamWriter.writeEndElement();
             }
         } catch (XMLStreamException e) {

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://beta.schemas.opengis.net/json-fg/link.json",
+  "title": "the Link object",
+  "description": "This JSON Schema is part of JSON-FG version 0.1.1",
+  "type": "object",
+  "required": ["href", "rel"],
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "rel": {
+      "type": "string"
+    },
+    "anchor": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "hreflang": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "length": {
+      "type": "string"
+    }
+  }
+}

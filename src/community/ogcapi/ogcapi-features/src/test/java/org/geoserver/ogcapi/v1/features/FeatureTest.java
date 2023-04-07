@@ -4,6 +4,8 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
+import static org.geoserver.ogcapi.JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
+import static org.geoserver.ogcapi.v1.features.JSONFGFeaturesResponse.COORD_REF_SYS;
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -12,12 +14,15 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.PathNotFoundException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -38,6 +43,8 @@ import org.opengis.referencing.FactoryException;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FeatureTest extends FeaturesTestSupport {
+
+    private static final String WEB_MERCATOR_URI = "http://www.opengis.net/def/crs/EPSG/0/3857";
 
     @Test
     public void testContentDisposition() throws Exception {
@@ -813,5 +820,113 @@ public class FeatureTest extends FeaturesTestSupport {
                         "http://localhost:8080/geoserver/ogc/features/v1/collections/"
                                 + primitiveLayer
                                 + "?"));
+    }
+
+    @Test
+    public void testJSONFGSingleFeatureCRS84() throws Exception {
+        String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/v1/collections/"
+                                + bridges
+                                + "/items/Bridges.1107531599613"
+                                + "?crs=CRS:84&f="
+                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                        200);
+
+        assertEquals("Feature", json.read("type", String.class));
+        // the coord ref sys is not included in the response, as it's the default one
+        assertThrows(PathNotFoundException.class, () -> json.read(COORD_REF_SYS, String.class));
+        // we have geometry, but not place
+        assertThrows(PathNotFoundException.class, () -> json.read("place"));
+        assertEquals("Point", json.read("geometry.type"));
+        assertArrayEquals(
+                new double[] {2E-4, 7E-4}, json.read("geometry.coordinates", double[].class), 1e-4);
+    }
+
+    @Test
+    public void testJSONFGSingleFeatureWebMercator() throws Exception {
+        String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/v1/collections/"
+                                + bridges
+                                + "/items/Bridges.1107531599613"
+                                + "?crs=EPSG:3857&f="
+                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                        200);
+
+        assertEquals("Feature", json.read("type", String.class));
+        // the coord ref sys is not included in the response, as it's the default one
+        assertEquals(WEB_MERCATOR_URI, json.read(COORD_REF_SYS, String.class));
+        // we have place, but not geometry
+        assertThrows(PathNotFoundException.class, () -> json.read("geometry"));
+        assertEquals("Point", json.read("place.type"));
+        assertArrayEquals(
+                new double[] {22, 78}, json.read("place.coordinates", double[].class), 1d);
+        // check the link to the type information for single features
+        DocumentContext typeLink = readSingleContext(json, "links[?(@.rel == 'type')]");
+        assertEquals(SCHEMA_TYPE_VALUE, typeLink.read("type"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ABridges/schemas/fg/feature.json",
+                typeLink.read("href"));
+    }
+
+    @Test
+    public void testJSONFG_CRS84() throws Exception {
+        String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/v1/collections/"
+                                + bridges
+                                + "/items"
+                                + "?crs=CRS:84&f="
+                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                        200);
+
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // the coord ref sys is not included in the response, as it's the default one
+        assertThrows(PathNotFoundException.class, () -> json.read(COORD_REF_SYS, String.class));
+        // other basic meta information
+        assertEquals(0, json.read("geometryDimension", Integer.class).intValue());
+        assertEquals("cite:Bridges", json.read("featureType"));
+        // we have geometry, but not place
+        DocumentContext feature = readContext(json, "features[0]");
+        assertThrows(PathNotFoundException.class, () -> feature.read("place"));
+        assertEquals("Point", feature.read("geometry.type"));
+        assertArrayEquals(
+                new double[] {2E-4, 7E-4},
+                feature.read("geometry.coordinates", double[].class),
+                1e-4);
+        assertEquals("Point", feature.read("geometry.type"));
+        // check the link to the type information for collections
+        DocumentContext typeLink = readSingleContext(json, "links[?(@.rel == 'type')]");
+        assertEquals(SCHEMA_TYPE_VALUE, typeLink.read("type"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ABridges/schemas/fg/collection.json",
+                typeLink.read("href"));
+    }
+
+    @Test
+    public void testJSONFGWebMercator() throws Exception {
+        String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/v1/collections/"
+                                + bridges
+                                + "/items"
+                                + "?crs=EPSG:3857&f="
+                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                        200);
+
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // the coord ref sys is included in the response, not the default
+        assertEquals(WEB_MERCATOR_URI, json.read(COORD_REF_SYS, String.class));
+        // we have place, but not geometry
+        DocumentContext feature = readContext(json, "features[0]");
+        assertThrows(PathNotFoundException.class, () -> feature.read("geometry"));
+        assertEquals("Point", feature.read("place.type"));
+        assertArrayEquals(
+                new double[] {22, 78}, feature.read("place.coordinates", double[].class), 1d);
     }
 }

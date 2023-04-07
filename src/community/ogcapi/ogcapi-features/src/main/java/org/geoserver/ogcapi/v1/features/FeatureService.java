@@ -25,6 +25,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,8 +34,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import net.opengis.wfs20.Wfs20Factory;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -252,6 +255,22 @@ public class FeatureService {
         Queryables queryables = new QueryablesBuilder(id).forType(ft).build();
         queryables.addSelfLinks("collections/" + collectionId + "/queryables");
         return queryables;
+    }
+
+    @GetMapping(
+            path = "collections/{collectionId}/schemas/fg/{schemaId}.json",
+            name = "getJSONFGSchemas",
+            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+    public void getJSONFGSchemas(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "schemaId") String schemaId,
+            HttpServletResponse response)
+            throws IOException {
+        FeatureTypeInfo ft = getFeatureType(collectionId);
+        FeatureType featureType = ft.getFeatureType();
+        String schema = new JSONFGSchemaBuilder(featureType, schemaId).build();
+        response.setContentType(JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE);
+        IOUtils.write(schema, response.getOutputStream(), StandardCharsets.UTF_8);
     }
 
     private FeatureTypeInfo getFeatureType(String collectionId) {

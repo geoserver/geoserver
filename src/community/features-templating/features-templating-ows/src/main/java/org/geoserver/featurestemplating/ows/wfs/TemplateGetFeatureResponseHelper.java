@@ -4,15 +4,19 @@
  */
 package org.geoserver.featurestemplating.ows.wfs;
 
+import com.ctc.wstx.stax.WstxOutputFactory;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Optional;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.codehaus.stax2.io.EscapingWriterFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
@@ -70,7 +74,7 @@ public class TemplateGetFeatureResponseHelper {
             case GML31:
             case GML32:
             case HTML:
-                XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+                XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newDefaultFactory();
                 // we do ourselves the escaping in the template writer since the one provided in the
                 // XMLStreamWriter implementation
                 // doesn't handle all the characters.
@@ -93,6 +97,39 @@ public class TemplateGetFeatureResponseHelper {
                 break;
         }
         return outputWriter;
+    }
+
+    private static XMLOutputFactory getNonEscapingXmlOutputFactory() {
+        XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+        // we do ourselves the escaping in the template writer since the one provided in the
+        // XMLStreamWriter implementation
+        // doesn't handle all the characters.
+        if (xMLOutputFactory.isPropertySupported(ESCAPE_CHARS)) {
+            xMLOutputFactory.setProperty(ESCAPE_CHARS, false);
+        } else {
+            // If escaping property isn't available we will use WstxOutputFactory and provide
+            // anonymous implementation
+            // of EscapingWriterFactory that doesn't modify writer
+            if (!(xMLOutputFactory instanceof WstxOutputFactory)) {
+                xMLOutputFactory = new WstxOutputFactory();
+            }
+            ((WstxOutputFactory) xMLOutputFactory)
+                    .getConfig()
+                    .setTextEscaperFactory(
+                            new EscapingWriterFactory() {
+                                @Override
+                                public Writer createEscapingWriterFor(Writer writer, String s) {
+                                    return writer;
+                                }
+
+                                @Override
+                                public Writer createEscapingWriterFor(
+                                        OutputStream outputStream, String s) {
+                                    return new OutputStreamWriter(outputStream);
+                                }
+                            });
+        }
+        return xMLOutputFactory;
     }
 
     FeatureTypeInfo getFirstFeatureTypeInfo(Object request) {

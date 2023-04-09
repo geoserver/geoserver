@@ -210,7 +210,8 @@ public class MapMLController {
                 .append("<style>\n")
                 .append("html, body { height: 100%; }\n")
                 .append("* { margin: 0; padding: 0; }\n")
-                .append("mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; }\n")
+                .append(
+                        "mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; border: none; vertical-align: middle }\n")
                 .append("mapml-viewer:not(:defined) > * { display: none; } n")
                 .append("layer- { display: none; }\n")
                 .append("</style>\n")
@@ -231,7 +232,7 @@ public class MapMLController {
                 .append("\" ")
                 .append("lon=\"")
                 .append(longitude)
-                .append("\" controls>\n")
+                .append("\" controls controlslist=\"geolocation\">\n")
                 .append("<layer- label=\"")
                 .append(layerName)
                 .append("\" ")

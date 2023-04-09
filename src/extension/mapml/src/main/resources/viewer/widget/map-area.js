@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+=======
+/*! @maps4html/web-map-custom-element 28-04-2023 */
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+>>>>>>> 4af0ac91de ([GEOS-10940] Update MapML viewer to release 0.11.0)
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- * Copyright © 2019 World Wide Web Consortium, (Massachusetts Institute of Technology, 
+ * Copyright (c) 2023 Canada Centrre for Mapping and Earth Observation, Natural
+ * Resources Canada
+ * Copyright © 2023 World Wide Web Consortium, (Massachusetts Institute of Technology, 
  * European Research Consortium for Informatics and Mathematics, Keio    
  * University, Beihang). All Rights Reserved. This work is distributed under the 
  * W3C® Software License [1] in the hope that it will be useful, but WITHOUT ANY 

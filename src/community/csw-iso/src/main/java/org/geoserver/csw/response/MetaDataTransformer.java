@@ -83,12 +83,14 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                                     .getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
                     boolean nil =
                             prop == null || prop.getValue() == null || prop.getValue().equals("");
-                    atts.addAttribute(
-                            "http://www.w3.org/2001/XMLSchema-instance",
-                            "nil",
-                            "xsi:nil",
-                            "",
-                            nil ? "true" : "false");
+                    if (nil) {
+                        atts.addAttribute(
+                                "http://www.w3.org/2001/XMLSchema-instance",
+                                "nil",
+                                "xsi:nil",
+                                "",
+                                "true");
+                    }
                 }
 
                 for (Property p2 : ((ComplexAttribute) p).getProperties()) {

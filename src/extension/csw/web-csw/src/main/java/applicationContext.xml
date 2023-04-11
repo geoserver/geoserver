@@ -11,6 +11,7 @@
     <constructor-arg index="0" value="gs-web-csw"/>
     <constructor-arg index="1" value="GeoServer Catalog Service for the Web (CSW) Web UI"/>
   </bean>
+  <bean id="cswServiceDescriptor" class="org.geoserver.csw.web.CSWServiceDescriptionProvider"/>
   <bean id="cswServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="csw"/>
     <property name="titleKey" value="csw.title"/>

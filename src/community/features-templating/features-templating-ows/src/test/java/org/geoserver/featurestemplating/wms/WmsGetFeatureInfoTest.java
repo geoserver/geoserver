@@ -34,8 +34,9 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
         String response = getAsString(URL);
         assertFalse(response.contains("NullPointerException"));
     }
+
     /**
-     * Checks if submitting features templating request with text/html format doesn't throw
+     * Checks if submitting features templating request with not supported template format doesn't throw
      * exception
      *
      * @throws Exception

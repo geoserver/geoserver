@@ -19,7 +19,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
     /**
      * Checks if features templating specific result formats are present in output and represented
-     * correctly
+     * correctly.
      *
      * @throws Exception
      */

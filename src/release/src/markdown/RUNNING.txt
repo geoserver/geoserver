@@ -10,9 +10,9 @@ https://geoserver.org
 
 In order to install and run this application, follow these steps:
 
-1. Download and install a Java Development Kit
+1. Download and install Java:
 
-    * Download a Java Runtime Environment (Java 8 or Java 11) from:
+    * Download Java 11 or Java 17 from:
 
         https://adoptium.net
       
@@ -20,10 +20,10 @@ In order to install and run this application, follow these steps:
       
         http://openjdk.java.net/
 
-    * Install the JRE according to the instructions included with the release.
+    * Install according to the instructions included with the release.
 
     * Set an environment variable ``JAVA_HOME`` to the pathname of the directory
-      into which you installed the JDK.
+      into which you installed Java.
 
 2. Download and install the GeoServer binary 
 

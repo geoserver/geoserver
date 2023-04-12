@@ -33,7 +33,6 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.springframework.http.MediaType;
 
 /**
  * This {@link DispatcherCallback} implementation checks on operation dispatched event if a json-ld
@@ -185,11 +184,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
         Response response = null;
         if (param1 instanceof GetFeatureInfoRequest) {
             GetFeatureInfoRequest request = (GetFeatureInfoRequest) param1;
-            // Checking that template format is specified and that it's not text/plain because it's
-            // not supported,
-            // but is default if nothing is specified
-            if (request.getInfoFormat() != null
-                    && !request.getInfoFormat().equals(MediaType.TEXT_PLAIN_VALUE)) {
+            if (request.getInfoFormat() != null) {
                 response = getTemplateFeatureInfoResponse(request);
             }
         } else {
@@ -212,23 +207,27 @@ public class TemplateCallback extends AbstractDispatcherCallback {
         String infoFormat = request.getInfoFormat();
         TemplateIdentifier identifier =
                 TemplateIdentifier.fromOutputFormat(request.getInfoFormat());
-        int nTemplates = 0;
-        for (MapLayerInfo li : layerInfos) {
-            if (li != null && li.getResource() instanceof FeatureTypeInfo) {
-                if (ensureTemplatesExist(li.getFeature(), identifier.getOutputFormat()) != null)
-                    nTemplates++;
-            }
-        }
         Response result = null;
-        if (nTemplates > 0) {
-            int size = layerInfos.size();
-            if (size != nTemplates)
-                throw new ServiceException(
-                        "To get a features templating getFeatureInfo a template is needed for every FeatureType but "
-                                + (size - nTemplates)
-                                + " among the requested ones are missing a template");
+        if (identifier != null) {
+            int nTemplates = 0;
+            for (MapLayerInfo li : layerInfos) {
+                if (li != null && li.getResource() instanceof FeatureTypeInfo) {
+                    if (ensureTemplatesExist(li.getFeature(), identifier.getOutputFormat()) != null)
+                        nTemplates++;
+                }
+            }
+            if (nTemplates > 0) {
+                int size = layerInfos.size();
+                if (size != nTemplates)
+                    throw new ServiceException(
+                            "To get a features templating getFeatureInfo a template is needed for every FeatureType but "
+                                    + (size - nTemplates)
+                                    + " among the requested ones are missing a template");
 
-            result = OWSResponseFactory.getInstance().featureInfoResponse(identifier, infoFormat);
+                result =
+                        OWSResponseFactory.getInstance()
+                                .featureInfoResponse(identifier, infoFormat);
+            }
         }
         return result;
     }

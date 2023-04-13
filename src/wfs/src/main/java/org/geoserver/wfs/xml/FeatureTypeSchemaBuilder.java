@@ -73,6 +73,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.Schema;
+import org.opengis.util.InternationalString;
 import org.w3c.dom.Element;
 
 /**
@@ -813,13 +814,10 @@ public abstract class FeatureTypeSchemaBuilder {
         // adding the type to the schema and the particle to the group up here
         // because the schema linkage is required before createUserInformation is called to populate
         // the annotation
-        schema.getContents().add(xsdComplexType);
         XSDModelGroup group = factory.createXSDModelGroup();
         group.setCompositor(XSDCompositor.SEQUENCE_LITERAL);
-        XSDParticle particle = factory.createXSDParticle();
-        particle.setContent(group);
-        xsdComplexType.setContent(particle);
 
+        Map<XSDElementDeclaration, InternationalString> annotationCache = new HashMap<>();
         for (PropertyDescriptor pd : complexType.getDescriptors()) {
             if (pd instanceof AttributeDescriptor) {
                 AttributeDescriptor attribute = (AttributeDescriptor) pd;
@@ -834,24 +832,8 @@ public abstract class FeatureTypeSchemaBuilder {
                 XSDElementDeclaration element = factory.createXSDElementDeclaration();
                 element.setName(attribute.getLocalName());
                 element.setNillable(attribute.isNillable());
-                particle = factory.createXSDParticle();
-                particle.setMinOccurs(attribute.getMinOccurs());
-                particle.setMaxOccurs(attribute.getMaxOccurs());
-                particle.setContent(element);
-                group.getContents().add(particle);
-                // if the attributeDescriptor description is populated, use it as the annotation
-                AttributeType attributeType = attribute.getType();
-                if (attributeType.getDescription() != null) {
-                    XSDAnnotation annotation = factory.createXSDAnnotation();
-                    element.setAnnotation(annotation);
-                    Element documentation = annotation.createUserInformation(null);
-                    documentation.appendChild(
-                            documentation
-                                    .getOwnerDocument()
-                                    .createTextNode(attributeType.getDescription().toString()));
-                    annotation.getElement().appendChild(documentation);
-                }
 
+                AttributeType attributeType = attribute.getType();
                 Name typeName = attributeType.getName();
                 // skip if it's XS.AnyType. It's not added to XS.Profile, because
                 // a lot of types extend XS.AnyType causing it to be the returned
@@ -892,8 +874,42 @@ public abstract class FeatureTypeSchemaBuilder {
                 }
                 XSDTypeDefinition type = resolveTypeInSchema(schema, typeName);
                 element.setTypeDefinition(type);
+
+                XSDParticle particle = factory.createXSDParticle();
+                particle.setMinOccurs(attribute.getMinOccurs());
+                particle.setMaxOccurs(attribute.getMaxOccurs());
+                particle.setContent(element);
+                group.getContents().add(particle);
+
+                if (attributeType.getDescription() != null) {
+                    annotationCache.put(element, attributeType.getDescription());
+                }
             }
         }
+
+        XSDParticle particle = factory.createXSDParticle();
+        particle.setContent(group);
+
+        xsdComplexType.setContent(particle);
+
+        schema.getContents().add(xsdComplexType);
+
+        // Post process to add annotations. Annotations can only be added once the type is in the
+        // schema. This is much faster than adding the elements in the schema earlier and
+        // adding the annotation during the pass above, as early add causes many "patch" operations
+        // in the schema itself, much to detriment of performance.
+        annotationCache.forEach(
+                (element, description) -> {
+                    XSDAnnotation annotation = factory.createXSDAnnotation();
+                    element.setAnnotation(annotation);
+                    Element documentation = annotation.createUserInformation(null);
+                    documentation.appendChild(
+                            documentation
+                                    .getOwnerDocument()
+                                    .createTextNode(description.toString()));
+                    annotation.getElement().appendChild(documentation);
+                });
+
         return xsdComplexType;
     }
 

@@ -108,7 +108,18 @@ public class JSONFGFeaturesResponse extends RFCGeoJSONFeaturesResponse {
                         && !CRS.equalsIgnoreMetadata(
                                 DefaultGeographicCRS.WGS84,
                                 descriptor.getCoordinateReferenceSystem());
-        String key = otherCRS ? "place" : "geometry";
+        String key = "geometry";
+        if (otherCRS) {
+            // make sure the JSON writer does not try to un-flip the coordinates
+            // as per GeoJSON spec, quoting:
+            //  A position is an array of numbers.  There MUST be two or more
+            //   elements.  The first two elements are longitude and latitude, or
+            //   easting and northing, precisely in that order and using decimal
+            //   numbers.  Altitude or elevation MAY be included as an optional third
+            //   element.
+            jsonWriter.setAxisOrder(CRS.AxisOrder.EAST_NORTH);
+            key = "place";
+        }
         jsonWriter.key(key);
         if (aGeom != null) {
             jsonWriter.writeGeom(aGeom);

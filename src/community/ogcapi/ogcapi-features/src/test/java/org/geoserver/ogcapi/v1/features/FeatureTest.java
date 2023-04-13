@@ -872,6 +872,36 @@ public class FeatureTest extends FeaturesTestSupport {
                 typeLink.read("href"));
     }
 
+    /**
+     * JSON-FG output respect axis order as mandated by the authority
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testJSONFGSingleFeatureETRS89() throws Exception {
+        String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/v1/collections/"
+                                + bridges
+                                + "/items/Bridges.1107531599613"
+                                + "?crs=http://www.opengis.net/def/crs/EPSG/0/4258&f="
+                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                        200);
+
+        assertEquals("Feature", json.read("type", String.class));
+        // the coord ref sys is not included in the response, as it's the default one
+        assertEquals(
+                "http://www.opengis.net/def/crs/EPSG/0/4258",
+                json.read(COORD_REF_SYS, String.class));
+        // we have place, but not geometry
+        assertThrows(PathNotFoundException.class, () -> json.read("geometry"));
+        assertEquals("Point", json.read("place.type"));
+        // mind that axis flip
+        assertArrayEquals(
+                new double[] {7E-4, 2E-4}, json.read("place.coordinates", double[].class), 1e-4);
+    }
+
     @Test
     public void testJSONFG_CRS84() throws Exception {
         String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));

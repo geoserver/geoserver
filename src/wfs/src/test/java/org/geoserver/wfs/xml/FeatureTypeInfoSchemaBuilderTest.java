@@ -133,6 +133,8 @@ public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
         FeatureTypeSchemaBuilder builder = new FeatureTypeSchemaBuilder.GML2(getGeoServer());
         XSDSchema xsdSchema = builder.build(ftInfo, null);
 
+        print(xsdSchema.getDocument());
+
         assertEquals("comments", xpath.evaluate("//xsd:documentation", xsdSchema.getDocument()));
     }
 }

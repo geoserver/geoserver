@@ -7,6 +7,7 @@ package org.geoserver.wfs.v2_0;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.geoserver.data.test.CiteTestData.LAKES;
 import static org.geoserver.data.test.CiteTestData.PRIMITIVEGEOFEATURE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,7 +16,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.Serializable;
 import java.net.URLEncoder;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
@@ -25,15 +30,22 @@ import org.apache.commons.codec.binary.Base64;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
+import org.geotools.data.DataStore;
+import org.geotools.data.Transaction;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.gml3.v3_2.GML;
+import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.wfs.v2_0.WFS;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -52,6 +64,43 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
         di.setEnabled(false);
         getCatalog().save(di);
+
+        // prepare to run a test against a real database
+        Catalog cat = getCatalog();
+        DataStoreInfo ds = cat.getFactory().createDataStore();
+        ds.setName("h2");
+        WorkspaceInfo ws = cat.getDefaultWorkspace();
+        ds.setWorkspace(ws);
+        ds.setEnabled(true);
+
+        Map<String, Serializable> params = ds.getConnectionParameters();
+        params.put("dbtype", "h2");
+        File dbFile = new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2");
+        params.put("database", dbFile.getAbsolutePath());
+        cat.add(ds);
+
+        SimpleFeatureSource fsp = getFeatureSource(LAKES);
+
+        DataStore store = (DataStore) ds.getDataStore(null);
+        store.createSchema(fsp.getSchema());
+        SimpleFeatureStore featureStore =
+                (SimpleFeatureStore) store.getFeatureSource(LAKES.getLocalPart());
+        featureStore.addFeatures(fsp.getFeatures());
+
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(ds);
+        FeatureTypeInfo tft = cb.buildFeatureType(featureStore);
+        cat.add(tft);
+
+        // add the annotation
+        JDBCDataStore jds = (JDBCDataStore) ds.getDataStore(null);
+        try (Connection cx = jds.getConnection(Transaction.AUTO_COMMIT);
+                Statement st = cx.createStatement()) {
+            st.execute("COMMENT ON COLUMN \"Lakes\".\"NAME\" IS 'This is a text column'");
+        }
+
+        // force rebuilding the feature type cache for this store
+        getCatalog().getResourcePool().clear(ds);
     }
 
     @Override
@@ -518,5 +567,20 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='abstract']/@type", doc);
         assertXpathNotExists("//xsd:element[@name='surfaceProperty']", doc);
         assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='new']/@type", doc);
+    }
+
+    @Test
+    public void describeH2Table() throws Exception {
+        String layerId = getCatalog().getDefaultWorkspace().getName() + ":" + LAKES.getLocalPart();
+        String path =
+                "ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=" + layerId;
+        Document doc = getAsDOM(path);
+
+        // check the column description is setup as expected
+        assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='NAME']/@type", doc);
+        assertXpathEvaluatesTo(
+                "This is a text column",
+                "//xsd:element[@name='NAME']/xsd:annotation/xsd:documentation",
+                doc);
     }
 }

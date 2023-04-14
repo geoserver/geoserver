@@ -22,6 +22,27 @@ You can use `geopkg`, `geopackage`, or `gpkg` as the output format in the reques
 
     GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) format.
 
+WFS Output Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+GeoPackage output format configuration properties are available. For information on use of configuration properties see :ref:`running in a production environment <production_config>` instructions.
+
+geopackage.wfs.indexed
+''''''''''''''''''''''
+
+By default a spatial index is generated when generating GeoPackage output.
+
+Use java system property ``-Dgeopackage.wfs.indexed=false`` to suppress the generation of a spatial index in generated geopackage output. 
+
+geopackage.wfs.tempdir
+''''''''''''''''''''''
+
+The GeoPackage file format is an SQLite database which can only be managed as a file locally.  To produce a GeoPackage GeoServer makes use of a temporary file created in ``java.io.tmpdir`` location. This temporary file is removed once the response is completed.
+
+Some container environments recommend use of a network share for their ``java.io.tmpdir`` location. This approach is not compatible with SQLite database driver which requires a local disk location and file lock.
+
+To override the temporary file location used for GeoPackage output format file generation use property ``-Dgeopackage.wfs.tempdir=<path location>`` to provide an alternate path.
+
 WMS
 ^^^
 
@@ -46,8 +67,8 @@ You can use ``format=geopkg``, ``format=geopackage``, or ``format=gpkg`` as the 
 .. note::
     Regradless of of WMS axis order used for ``bbox`` the resulting GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) order as required by the specification.
 
-Format options
-~~~~~~~~~~~~~~
+WMS Format options
+''''''''''''''''''
 
 You can also add format options (``format_options=param1:value1;param2:value2;...``) to the request.   With all default values, you will get a GeoPackage with PNG tiles of multiple resolutions.  There will be a little more than 255 total tiles - all occupying the area in the request's bbox.
 
@@ -101,4 +122,3 @@ You can also add format options (``format_options=param1:value1;param2:value2;..
      - Do NOT set.
 
        default: TRUE (required for GeoPackage - `The tile coordinate (0,0) always refers to the tile in the upper left corner of the tile matrix...`)
-

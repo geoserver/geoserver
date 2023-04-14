@@ -24,20 +24,19 @@ To verify that the extension was installed successfully:
 
    .. code-block:: XML
 
-    <GetFeature>
-        <ResultFormat>
-            <GML2/>
-            <GML3/>
-            <SHAPE-ZIP/>
-            <CSV/>
-            <JSON/>
-            <KML/>
-            <geopackage/>
-            <geopkg/>
-            <gpkg/>
-        </ResultFormat>
-    </GetFeature>
-
+      <GetFeature>
+          <ResultFormat>
+              <GML2/>
+              <GML3/>
+              <SHAPE-ZIP/>
+              <CSV/>
+              <JSON/>
+              <KML/>
+              <geopackage/>
+              <geopkg/>
+              <gpkg/>
+          </ResultFormat>
+      </GetFeature>
 
 .. note::
 

@@ -47,7 +47,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
     protected static Logger LOGGER = Logging.getLogger(GeoPackageGetFeatureOutputFormat.class);
 
     public static final String PROPERTY_INDEXED = "geopackage.wfs.indexed";
-    public static final String CUSTOM_TEMP_DIR_PROPERTY = "geopackage.getfeatureoutput.tempdir";
+    public static final String CUSTOM_TEMP_DIR_PROPERTY = "geopackage.wfs.tempdir";
 
     public GeoPackageGetFeatureOutputFormat(GeoServer gs) {
         super(gs, Sets.union(Sets.newHashSet(MIME_TYPES), Sets.newHashSet(NAMES)));

@@ -1404,6 +1404,7 @@ definitions:
                 },
                 "projectionPolicy": "REPROJECT_TO_DECLARED",
                 "enabled": true,
+                "advertised": true,
                 "metadata": {
                   "entry": [
                     {

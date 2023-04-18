@@ -38,6 +38,7 @@ import javax.servlet.Filter;
 import javax.xml.namespace.QName;
 import net.opengis.ows11.BoundingBoxType;
 import org.apache.commons.codec.binary.Base64;
+import org.awaitility.Awaitility;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -2106,11 +2107,20 @@ public class ExecuteTest extends WPSTestSupport {
                 + "</wps:Execute>";
     }
 
+    /**
+     * Checks the progress is the one reported, waiting at most 5 seconds for the progress to match
+     * the expected value
+     */
     private void assertProgress(String statusLocation, String progress) throws Exception {
-        Document dom = getAsDOM(statusLocation);
-        // print(dom);
-        assertXpathExists("//wps:ProcessStarted", dom);
-        assertXpathEvaluatesTo(progress, "//wps:ProcessStarted/@percentCompleted", dom);
+        XpathEngine xp = XMLUnit.newXpathEngine();
+        Awaitility.await()
+                .atMost(5, SECONDS)
+                .until(
+                        () -> {
+                            Document dom = getAsDOM(statusLocation);
+                            String path = "//wps:ProcessStarted/@percentCompleted";
+                            return progress.equals(xp.evaluate(path, dom));
+                        });
     }
 
     private String submitMonkey(String id) throws Exception, XpathException {

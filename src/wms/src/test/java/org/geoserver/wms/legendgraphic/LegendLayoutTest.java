@@ -6,6 +6,7 @@
 package org.geoserver.wms.legendgraphic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -25,8 +26,11 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.xml.styling.SLDParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
@@ -89,6 +93,23 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         }
     }
 
+    private static Style readSLD(String sldName, Class<?> context) throws IOException {
+        StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
+        SLDParser stylereader = new SLDParser(styleFactory, context.getResource(sldName));
+        Style[] readStyles = stylereader.readXML();
+
+        Style style = readStyles[0];
+        return style;
+    }
+    /** Tests that rendering transformations can handle non-process functions */
+    @Test
+    public void testCheckForRenderingTransformations() throws Exception {
+        Style footprints = readSLD("footprints.sld", LegendLayoutTest.class);
+        LegendGraphicBuilder legendGraphicBuilder = this.legendProducer;
+        assertFalse(legendGraphicBuilder.hasVectorTransformation);
+        legendGraphicBuilder.checkForRenderingTransformations(footprints);
+        assertTrue(legendGraphicBuilder.hasVectorTransformation);
+    }
     /** Tests horizontal layout for raster with CLASSES */
     @org.junit.Test
     public void testClassesHorizontalRaster() throws Exception {

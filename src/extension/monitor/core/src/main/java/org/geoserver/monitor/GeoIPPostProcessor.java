@@ -43,7 +43,7 @@ public class GeoIPPostProcessor implements RequestPostProcessor {
         }
 
         if (geoIPLookup == null) {
-            synchronized (this) {
+            synchronized (GeoIPPostProcessor.class) {
                 if (geoIPLookup == null) {
                     geoIPLookup = lookupGeoIPDatabase();
                 }

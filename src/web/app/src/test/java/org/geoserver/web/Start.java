@@ -57,7 +57,7 @@ public class Start {
         try (ServerConnector http =
                         new ServerConnector(jettyServer, new HttpConnectionFactory(httpConfig));
                 ServerConnector https = getHTTPSConnector(jettyServer, httpConfig)) {
-            http.setPort(Integer.getInteger("jetty.port", 8080));
+            http.setPort(Integer.getInteger("jetty.port", 2080));
             http.setAcceptQueueSize(100);
             http.setIdleTimeout(1000 * 60 * 60);
             http.setSoLingerTime(-1);

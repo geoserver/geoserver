@@ -236,6 +236,12 @@
     </dependency>
   </dependencies>
   <build>
+    <resources>
+      <resource>
+        <targetPath>${project.build.directory}/geoserver/WEB-INF/lib</targetPath>
+        <directory>${basedir}/lib</directory>
+      </resource>
+    </resources>
     <plugins>
       <!-- Builds a valid data directory into the web app -->
       <plugin>

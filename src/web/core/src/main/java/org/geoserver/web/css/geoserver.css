@@ -3,7 +3,7 @@ General styles
 -----------------------*/
 body {
 background: #fff;
-color: #0076a1;
+color: #0b0b0b;
 font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
 text-align:left !important; /* override blueprint's ie.css */
 overflow-y: scroll;
@@ -26,13 +26,13 @@ body.help p {
 color: black;
 }
 
-h1, 
-h2, 
-h3, 
-h4, 
-h5, 
+h1,
+h2,
+h3,
+h4,
+h5,
 h6 {
-color: #0082b6;
+color: #0a0a0a;
 font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
 height: auto; /* override blueprint's screen.css */
 }
@@ -41,16 +41,16 @@ h1 { /* override blueprint.css */
 font-size: 2.1em;
 }
 
-strong, 
+strong,
 em,
-dt, 
-b, 
+dt,
+b,
 i {
 font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
 }
 
 a {
-color: #0076a1;
+color: #0b0b0b;
 text-decoration: none;
 outline: none !important; /* avoid ugly dotted border for Firefox */
 }
@@ -61,15 +61,15 @@ text-decoration: underline;
 }
 
 a img {
-border: none; 
+border: none;
 }
 
 div {
 outline: none !important; /* avoid ugly dotted border for Firefox, when listeners are added via js */
 }
 
-.error, 
-.notice, 
+.error,
+.notice,
 .success { /* override blueprint.css */
 border: 0 none transparent;
 margin-bottom: 0;
@@ -177,8 +177,8 @@ display: none;
 
 .wrap {
 width: 82em;
-min-width: 80%;
-margin: 0; 
+min-width: 95%;
+margin: 0;
 padding: 0;
 position: relative;
 }
@@ -265,10 +265,9 @@ padding: 5px;
 
 #main {
 border-top: 2px solid #c6e09b;
-background: url(../img/main-bg.png) repeat-x;
 }
 
-#sidebar, 
+#sidebar,
 #page {
 text-align: left; /* IE */
 }
@@ -278,8 +277,8 @@ position: absolute;
 top: 0;
 left: 0;
 width: 17em;
-padding: 38px 20px 0;
-} 
+padding: 20px 20px 0;
+}
 
 #page {
 margin: 0 0 -250px 19em;
@@ -304,8 +303,8 @@ background: transparent; /* override blueprint's settings */
 }
 
 thead th {
-background: #c6e09b;
-border: 1px solid #0076a1;
+background: #F0F2F5;
+border: 1px solid #0b0b0b;
 border-width: 0 0 1px;
 }
 
@@ -316,7 +315,7 @@ background: #f4f9eb;
 
 tr.even td,
 tr.even th {
-background: #e2efcd; /* override blueprint's settings */
+background: #fff; /* override blueprint's settings */
 }
 
 tr.dnd-drop-center td {
@@ -345,7 +344,7 @@ th.selection {
 }
 
 .alternating-rows tr:nth-child(even) {
-	background: #e2efcd;
+	background: #fff;
 }
 /*-----------------------
 Forms
@@ -406,7 +405,7 @@ legend {
 border: 0 none transparent;
 }
 
-legend span { 
+legend span {
 position: absolute;
 width: 29.2em;
 top: -1.5em;
@@ -438,7 +437,7 @@ line-height: 1.5em;
 }
 
 label.choice,ul.choiceList>li label, *.choiceItem label {
-color: #222; 
+color: #222;
 font-weight: normal;
 font-size: 100%;
 }
@@ -455,7 +454,7 @@ margin-right: -2em;
 /* For a "choiceList" create padding down leading side to act as a "hanging indent" then move the checkbox/radio into that padding. This allows the label to remain inline so it doesn't produce clickable whitespace. */
 ul.choiceList>li,*.choiceItem {
 position: relative;
-padding-left: 2em; 
+padding-left: 2em;
 }
 ul.choiceList>li:dir(rtl),*.choiceItem:dir(rtl){
 padding-left: 0;
@@ -476,7 +475,7 @@ right: 0;
 
 textarea.cql {
   height : 1.2em;
-  width : 95%;
+  width : 100%;
   padding: 3px 3px;
 }
 
@@ -496,8 +495,8 @@ input.text, input.file {
 padding: 2px 0;
 }
 
-input.text:focus, 
-input.title:focus, 
+input.text:focus,
+input.title:focus,
 textarea:focus {
 background: #fbf8dc;
 }
@@ -589,12 +588,12 @@ Button  Styles
 .button-group a,
 .button-group button,
 input.btnTxt {
-background: #c6e09b url(../img/button-gradient.png) top left repeat-x;
-border: 1px solid #c6e09b;
+background: #fff url(../img/button-gradient.png) top left repeat-x;
+border: 1px solid #0a0a0a;
 font-size: 0.9em;
 font-weight: bold;
 text-decoration: none;
-color: #0076a1;
+color: #00b0b0b;
 cursor: pointer;
 padding: 5px 10px 5px 7px;
 -moz-border-radius: 5px;
@@ -604,7 +603,7 @@ line-height:1.5;
 font-family:Tahoma, Arial, sans-serif;
 }
 
-/* Alpha transparency for IE6 
+/* Alpha transparency for IE6
 Redundant to .pngfix but added as otherwise
 we have to declare "pngfix" on every button
 */
@@ -842,7 +841,7 @@ padding: 3px 5px 7px;
 .navigation-tab-single,
 .navigation-tab-header {
 font-weight: bold;
-color: #0076a1;
+color: #00b0b0b;
 }
 
 .navigation-tab-content {
@@ -853,7 +852,7 @@ border-top: none;
 .navigation-tab-header a,
 .navigation-tab-content a {
 display: block;
-color: #0076a1;
+color: #0b0b0b;
 }
 
 li.nav-administer-service {
@@ -966,7 +965,7 @@ text-decoration: none;
 min-width: 5em;
 }
 #services a:hover .link-bordered .serviceVersion, #capabilities a:hover .link-bordered .serviceVersion {
-  color: #0076a1;
+  color: #0b0b0b;
 }
 #services a:hover, #capabilities a:hover {
   text-decoration: none;
@@ -977,7 +976,6 @@ min-width: 5em;
 Rounded corners for content
 -----------------------*/
 #main .wrap {
-background: url(../img/main-wrap-bg.png) 100% 0 no-repeat;
 padding: 0 19px 250px 0;
 margin: 0 0 -250px 0;
 }
@@ -991,7 +989,7 @@ background-position: 100% -2px;
 }
 
 #page {
-background: #fff url(../img/page-bg.png) no-repeat;
+background: #fff ;
 }
 
 * html #page { /* IE6 */
@@ -1003,7 +1001,7 @@ background-position: 0 -2px;
 }
 
 .page-header {
-background: #fff url(../img/page-header-bg.png) repeat-x;
+background: #fff ;
 margin-bottom: 1em;
 padding-top: 18px;
 }
@@ -1163,7 +1161,7 @@ list-style-type: none;
 display: inline;
 }
 
-.date li:nth-child(3){ 
+.date li:nth-child(3){
 padding-right: 10px;
 }
 
@@ -1267,7 +1265,7 @@ color: #aaa;
 }
 
 .paginator a:hover {
-background: #0076a1;
+background: #0b0b0b;
 color: #fff;
 }
 

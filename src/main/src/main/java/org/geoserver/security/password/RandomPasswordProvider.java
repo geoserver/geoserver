@@ -45,6 +45,13 @@ public class RandomPasswordProvider {
     public static int DefaultPasswordLength = 40;
 
     /**
+     * Cryptographically strong random number generator. As a subclass of {@link java.util.Random},
+     * it's guaranteed to be thread safe (although not necessarily scalable, but for this use case
+     * it should not be a problem).
+     */
+    SecureRandom random = new SecureRandom();
+
+    /**
      * Creates a random password of the specified length, if length <=0, return <code>null</code>
      */
     public char[] getRandomPassword(int length) {
@@ -62,7 +69,6 @@ public class RandomPasswordProvider {
 
     /** Creates a random password filling the specified character array. */
     public void getRandomPassword(char[] buff) {
-        SecureRandom random = new SecureRandom();
         for (int i = 0; i < buff.length; i++) {
             int index = random.nextInt(Integer.MAX_VALUE) % PRINTABLE_ALPHABET.length;
             if (index < 0) index += PRINTABLE_ALPHABET.length;
@@ -71,7 +77,6 @@ public class RandomPasswordProvider {
     }
     /** Creates a random password filling the specified byte array. */
     public void getRandomPassword(byte[] buff) {
-        SecureRandom random = new SecureRandom();
         for (int i = 0; i < buff.length; i++) {
             int index = random.nextInt(Integer.MAX_VALUE) % PRINTABLE_ALPHABET.length;
             if (index < 0) index += PRINTABLE_ALPHABET.length;

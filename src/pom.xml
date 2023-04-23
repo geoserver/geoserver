@@ -2543,7 +2543,7 @@
           <plugin>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>3.1.10</version>
+            <version>4.7.3.4</version>
             <executions>
               <execution>
                 <goals>
@@ -2557,7 +2557,6 @@
               <xmlOutput>true</xmlOutput>
               <maxRank>15</maxRank>
               <excludeFilterFile>${geoserverBaseDir}/../build/qa/spotbugs-exclude.xml</excludeFilterFile>
-              <jvmArgs>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</jvmArgs>
             </configuration>
           </plugin>
         </plugins>

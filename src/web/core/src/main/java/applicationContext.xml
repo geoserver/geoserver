@@ -111,51 +111,51 @@
     <property name="icon" value="../img/icons/silk/page_white_text.png" />
     <property name="order" value="15" />
   </bean>
-  <bean id="contactMenuPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="server.admin.contact" />
-    <property name="titleKey" value="ContactPage.title" />
-    <property name="descriptionKey" value="ContactPage.description" />
-    <property name="componentClass" value="org.geoserver.web.admin.ContactPage" />
-    <property name="category" ref="aboutStatusCategory" />
-    <property name="icon" value="../img/icons/silk/vcard.png" />
-    <property name="order" value="20" />
-  </bean>
-  <bean id="aboutMenuPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="server.about" />
-    <property name="titleKey" value="AboutGeoServerPage.title" />
-    <property name="descriptionKey" value="AboutGeoServerPage.description" />
-    <property name="componentClass" value="org.geoserver.web.AboutGeoServerPage" />
-    <property name="category" ref="aboutStatusCategory" />
-    <property name="icon" value="img/icons/silk/help.png" />
-    <property name="order" value="25" />
-  </bean>
-  <bean id="globalSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="server.admin.global" />
-    <property name="titleKey" value="global.title" />
-    <property name="descriptionKey" value="GlobalSettingsPage.description" />
-    <property name="componentClass" value="org.geoserver.web.admin.GlobalSettingsPage" />
-    <property name="category" ref="settingsCategory" />
-    <property name="icon" value="../img/icons/silk/server.png" />
-    <property name="order" value="30" />
-  </bean>
-  <bean id="JAIMenuPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="server.admin.jai" />
-    <property name="titleKey" value="jai.title" />
-    <property name="descriptionKey" value="JAIPage.description" />
-    <property name="componentClass" value="org.geoserver.web.admin.JAIPage" />
-    <property name="category" ref="settingsCategory" />
-    <property name="icon" value="../img/icons/silk/cog_photo.png" />
-    <property name="order" value="40" />
-  </bean>
-  <bean id="coverageAccessMenuPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="server.admin.coverageAccess" />
-    <property name="titleKey" value="coverageAccess.title" />
-    <property name="descriptionKey" value="CoverageAccessPage.description" />
-    <property name="componentClass" value="org.geoserver.web.admin.CoverageAccessPage" />
-    <property name="category" ref="settingsCategory" />
-    <property name="icon" value="../img/icons/silk/cog_photo.png" />
-    <property name="order" value="45" />
-  </bean>
+<!--  <bean id="contactMenuPage" class="org.geoserver.web.MenuPageInfo">-->
+<!--    <property name="id" value="server.admin.contact" />-->
+<!--    <property name="titleKey" value="ContactPage.title" />-->
+<!--    <property name="descriptionKey" value="ContactPage.description" />-->
+<!--    <property name="componentClass" value="org.geoserver.web.admin.ContactPage" />-->
+<!--    <property name="category" ref="aboutStatusCategory" />-->
+<!--    <property name="icon" value="../img/icons/silk/vcard.png" />-->
+<!--    <property name="order" value="20" />-->
+<!--  </bean>-->
+<!--  <bean id="aboutMenuPage" class="org.geoserver.web.MenuPageInfo">-->
+<!--    <property name="id" value="server.about" />-->
+<!--    <property name="titleKey" value="AboutGeoServerPage.title" />-->
+<!--    <property name="descriptionKey" value="AboutGeoServerPage.description" />-->
+<!--    <property name="componentClass" value="org.geoserver.web.AboutGeoServerPage" />-->
+<!--    <property name="category" ref="aboutStatusCategory" />-->
+<!--    <property name="icon" value="img/icons/silk/help.png" />-->
+<!--    <property name="order" value="25" />-->
+<!--  </bean>-->
+<!--  <bean id="globalSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">-->
+<!--    <property name="id" value="server.admin.global" />-->
+<!--    <property name="titleKey" value="global.title" />-->
+<!--    <property name="descriptionKey" value="GlobalSettingsPage.description" />-->
+<!--    <property name="componentClass" value="org.geoserver.web.admin.GlobalSettingsPage" />-->
+<!--    <property name="category" ref="settingsCategory" />-->
+<!--    <property name="icon" value="../img/icons/silk/server.png" />-->
+<!--    <property name="order" value="30" />-->
+<!--  </bean>-->
+<!--  <bean id="JAIMenuPage" class="org.geoserver.web.MenuPageInfo">-->
+<!--    <property name="id" value="server.admin.jai" />-->
+<!--    <property name="titleKey" value="jai.title" />-->
+<!--    <property name="descriptionKey" value="JAIPage.description" />-->
+<!--    <property name="componentClass" value="org.geoserver.web.admin.JAIPage" />-->
+<!--    <property name="category" ref="settingsCategory" />-->
+<!--    <property name="icon" value="../img/icons/silk/cog_photo.png" />-->
+<!--    <property name="order" value="40" />-->
+<!--  </bean>-->
+<!--  <bean id="coverageAccessMenuPage" class="org.geoserver.web.MenuPageInfo">-->
+<!--    <property name="id" value="server.admin.coverageAccess" />-->
+<!--    <property name="titleKey" value="coverageAccess.title" />-->
+<!--    <property name="descriptionKey" value="CoverageAccessPage.description" />-->
+<!--    <property name="componentClass" value="org.geoserver.web.admin.CoverageAccessPage" />-->
+<!--    <property name="category" ref="settingsCategory" />-->
+<!--    <property name="icon" value="../img/icons/silk/cog_photo.png" />-->
+<!--    <property name="order" value="45" />-->
+<!--  </bean>-->
 
 
 
@@ -204,36 +204,36 @@
   </bean>
 
   <!-- Demo menu item -->
-  <bean id="demoMenuPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="demos" />
-    <property name="titleKey" value="demo.title" />
-    <property name="descriptionKey" value="demo.description" />
-    <property name="componentClass" value="org.geoserver.web.DemoPage" />
-    <property name="authorizer">
-      <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
-        <property name="linkClasses" value="org.geoserver.web.DemoLinkInfo" />
-      </bean>
-    </property>
+<!--  <bean id="demoMenuPage" class="org.geoserver.web.MenuPageInfo">-->
+<!--    <property name="id" value="demos" />-->
+<!--    <property name="titleKey" value="demo.title" />-->
+<!--    <property name="descriptionKey" value="demo.description" />-->
+<!--    <property name="componentClass" value="org.geoserver.web.DemoPage" />-->
+<!--    <property name="authorizer">-->
+<!--      <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">-->
+<!--        <property name="linkClasses" value="org.geoserver.web.DemoLinkInfo" />-->
+<!--      </bean>-->
+<!--    </property>-->
 
-  </bean>
+<!--  </bean>-->
 
   <!-- Tool menu item -->
-  <bean id="toolMenuPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="tools" />
-    <property name="titleKey" value="tools.title" />
-    <property name="descriptionKey" value="tools.description" />
-    <property name="componentClass" value="org.geoserver.web.ToolPage" />
-    <property name="authorizer">
-      <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
-        <property name="linkClasses">
-          <list>
-            <value>org.geoserver.web.ToolLinkInfo</value>
-            <value>org.geoserver.web.ToolLinkExternalInfo</value>
-          </list>
-        </property>
-      </bean>
-    </property>
-  </bean>
+<!--  <bean id="toolMenuPage" class="org.geoserver.web.MenuPageInfo">-->
+<!--    <property name="id" value="tools" />-->
+<!--    <property name="titleKey" value="tools.title" />-->
+<!--    <property name="descriptionKey" value="tools.description" />-->
+<!--    <property name="componentClass" value="org.geoserver.web.ToolPage" />-->
+<!--    <property name="authorizer">-->
+<!--      <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">-->
+<!--        <property name="linkClasses">-->
+<!--          <list>-->
+<!--            <value>org.geoserver.web.ToolLinkInfo</value>-->
+<!--            <value>org.geoserver.web.ToolLinkExternalInfo</value>-->
+<!--          </list>-->
+<!--        </property>-->
+<!--      </bean>-->
+<!--    </property>-->
+<!--  </bean>-->
 
   <!-- Resource configuration panels -->
   <bean id="basicResourceConfigPanel"

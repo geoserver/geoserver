@@ -354,16 +354,6 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         test.testOrderBy();
     }
 
-    // not supported
-    @Override
-    @Test
-    public void testAddIsolatedWorkspace() {}
-
-    // not supported
-    @Override
-    @Test
-    public void testAddIsolatedNamespace() {}
-
     @Test
     public void testConcurrentListLoad() throws Exception {
         addDataStore();

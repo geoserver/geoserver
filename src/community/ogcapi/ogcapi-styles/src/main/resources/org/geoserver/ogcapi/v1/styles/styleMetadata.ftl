@@ -47,7 +47,7 @@
             <#list model.layers as layer>
               <li>
                 ${layer.id}: ${layer.type}. 
-                <#if layer.sampleData??><br/>Sample data available:
+                <#if layer.sampleData?has_content><br/>Sample data available:
                       <select onchange="window.open(this.options[this.selectedIndex].value);this.selectedIndex=0" >
                         <option value="none" selected>-- Please choose a format --</option>
                         <#list layer.sampleData as link>

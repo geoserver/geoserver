@@ -81,6 +81,7 @@
             <descriptor>release/ext-ogcapi-coverages.xml</descriptor>
             <descriptor>release/ext-ogcapi-dggs.xml</descriptor>
             <descriptor>release/ext-ogcapi-features.xml</descriptor>
+            <descriptor>release/ext-ogcapi-images.xml</descriptor>
             <descriptor>release/ext-ogcapi-maps.xml</descriptor>
             <descriptor>release/ext-ogcapi-styles.xml</descriptor>
             <descriptor>release/ext-ogcapi-tiles.xml</descriptor>

@@ -14,8 +14,6 @@
           <h2>API definition</h2>
           <p>The <a id="htmlApiLink" href="${model.getLinkUrl('api', 'text/html')!}"> API document</a> provides a machine processable description of this service API conformant to OpenAPI 3.
           <br/> 
-          This API document is also available as
-          <#list model.getLinksExcept("api", "application/json") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
           </p>
         </div>
       </div>

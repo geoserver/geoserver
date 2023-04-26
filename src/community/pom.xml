@@ -79,6 +79,7 @@
             <descriptor>release/ext-ogr-datastore.xml</descriptor>
             <descriptor>release/ext-ogcapi.xml</descriptor>
             <descriptor>release/ext-ogcapi-features.xml</descriptor>
+            <descriptor>release/ext-ogcapi-maps.xml</descriptor>
             <descriptor>release/ext-importer-jdbc.xml</descriptor>
             <descriptor>release/ext-features-templating.xml</descriptor>
             <descriptor>release/ext-gsr.xml</descriptor>

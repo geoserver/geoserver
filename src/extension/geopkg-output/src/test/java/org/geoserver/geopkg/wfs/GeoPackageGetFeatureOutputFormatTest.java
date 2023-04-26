@@ -3,19 +3,23 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geopkg;
+package org.geoserver.geopkg.wfs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
+import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.geopkg.wfs.GeoPackageGetFeatureOutputFormat;
+import org.geoserver.geopkg.GeoPkg;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -28,6 +32,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
@@ -128,7 +133,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
                         "wfs?request=getfeature&typename="
                                 + layerName
                                 + "&outputformat=geopackage");
-        assertEquals(GeoPkg.MIME_TYPE, resp.getContentType());
+        Assert.assertEquals(GeoPkg.MIME_TYPE, resp.getContentType());
 
         assertEquals(
                 "attachment; filename=" + layerName + ".gpkg",
@@ -229,5 +234,66 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         }
 
         return new GeoPackage(f);
+    }
+
+    public boolean isStandardTemp(File f, String standardTempDir, String customTempDir) {
+        String fileDir = f.getAbsoluteFile().getParent();
+        return fileDir.equals(standardTempDir);
+    }
+
+    public boolean isCustomTemp(File f, String standardTempDir, String customTempDir) {
+        String fileDir = f.getAbsoluteFile().getParent();
+        return fileDir.equals(customTempDir);
+    }
+
+    /**
+     * Tests that the CUSTOM_TEMP_DIR_PROPERTY property is being respected. This creates a temp dir
+     * and verifies where the temp file is being created (standard java temp dir or our custom temp
+     * dir).
+     */
+    @Test
+    public void testTempDir() throws Exception {
+        String standardTempDir = FileUtils.getTempDirectory().getAbsolutePath();
+        String customTempDir =
+                Files.createTempDirectory("geopkg.testcase").toAbsolutePath().toString();
+        try {
+
+            // 1. no property -> standard temp dir
+            System.clearProperty(format.CUSTOM_TEMP_DIR_PROPERTY);
+
+            File f = format.createTempFile("prefix", "suffix");
+            f.delete();
+            assertTrue(isStandardTemp(f, standardTempDir, customTempDir));
+            assertFalse(isCustomTemp(f, standardTempDir, customTempDir));
+
+            // 2. blank property ("") -> standard temp dir
+            System.setProperty(format.CUSTOM_TEMP_DIR_PROPERTY, "");
+            f = format.createTempFile("prefix", "suffix");
+            f.delete();
+            assertTrue(isStandardTemp(f, standardTempDir, customTempDir));
+            assertFalse(isCustomTemp(f, standardTempDir, customTempDir));
+
+            // 3. spaces only property  (" ")-> standard temp dir
+            System.setProperty(format.CUSTOM_TEMP_DIR_PROPERTY, " ");
+            f.delete();
+            f = format.createTempFile("prefix", "suffix");
+            assertTrue(isStandardTemp(f, standardTempDir, customTempDir));
+            assertFalse(isCustomTemp(f, standardTempDir, customTempDir));
+
+            // 4. create in our custom dir
+            System.setProperty(format.CUSTOM_TEMP_DIR_PROPERTY, customTempDir);
+            f = format.createTempFile("prefix", "suffix");
+            f.delete();
+            assertFalse(isStandardTemp(f, standardTempDir, customTempDir));
+            assertTrue(isCustomTemp(f, standardTempDir, customTempDir));
+
+            // 5. invalid custom path
+            System.setProperty(format.CUSTOM_TEMP_DIR_PROPERTY, "BADPATH.BADPATH");
+            assertThrows(IOException.class, () -> format.createTempFile("prefix", "suffix"));
+
+        } finally {
+            Files.delete((new File(customTempDir)).toPath());
+            System.clearProperty(format.CUSTOM_TEMP_DIR_PROPERTY);
+        }
     }
 }

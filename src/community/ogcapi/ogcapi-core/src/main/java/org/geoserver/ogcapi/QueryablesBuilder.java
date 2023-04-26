@@ -121,7 +121,13 @@ public class QueryablesBuilder {
         return schema;
     }
 
-    private static Schema<?> getAlphanumericSchema(Class<?> binding) {
+    /**
+     * Returns a schema for a given data type, assuming it is alphanumeric
+     *
+     * @param binding the data type
+     * @return the schema
+     */
+    public static Schema<?> getAlphanumericSchema(Class<?> binding) {
         Schema<?> schema = new Schema<>();
 
         schema.setType(org.geoserver.ogcapi.AttributeType.fromClass(binding).getType());

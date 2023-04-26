@@ -408,18 +408,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
                     }
                     // start writing the simple feature geometry JSON object
                     Geometry aGeom = (Geometry) simpleFeature.getDefaultGeometry();
+                    hasGeom |= aGeom != null;
                     if (aGeom != null || writeNullGeometries()) {
-                        jsonWriter.key("geometry");
-                        // Write the geometry, whether it is a null or not
-                        if (aGeom != null) {
-                            jsonWriter.writeGeom(aGeom);
-                            hasGeom = true;
-                        } else {
-                            jsonWriter.value(null);
-                        }
-                        if (defaultGeomType != null) {
-                            jsonWriter.key("geometry_name").value(defaultGeomType.getLocalName());
-                        }
+                        writeGeometry(jsonWriter, defaultGeomType, aGeom);
                     }
                     // start writing feature properties JSON object
                     jsonWriter.key("properties");
@@ -490,6 +481,28 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             }
         }
         return new FeaturesInfo(crs, hasGeom, featureCount);
+    }
+
+    /**
+     * Writes the "geometry" key and its value. May be overridden by subclasses to encode geometry
+     * in a different manner
+     *
+     * @param jsonWriter the GeoJSONBuilder to write to
+     * @param descriptor the geometry descriptor
+     * @param aGeom the geometry to write
+     */
+    protected void writeGeometry(
+            GeoJSONBuilder jsonWriter, GeometryDescriptor descriptor, Geometry aGeom) {
+        jsonWriter.key("geometry");
+        // Write the geometry, whether it is a null or not
+        if (aGeom != null) {
+            jsonWriter.writeGeom(aGeom);
+        } else {
+            jsonWriter.value(null);
+        }
+        if (descriptor != null) {
+            jsonWriter.key("geometry_name").value(descriptor.getLocalName());
+        }
     }
 
     /**

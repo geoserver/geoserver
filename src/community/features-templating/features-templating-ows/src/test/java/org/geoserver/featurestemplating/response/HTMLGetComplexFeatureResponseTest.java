@@ -1,6 +1,7 @@
 package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -66,13 +67,13 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
     }
 
     @Test
-    public void getMappedFeature() {
-        Document doc =
-                getAsDOM(
+    public void getMappedFeature() throws Exception {
+        org.jsoup.nodes.Document doc =
+                getAsJSoup(
                         "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
                                 + "&outputFormat=text/html"
                                 + MF_HTML_PARAM);
-        assertXpathCount(1, "//html/head/script", doc);
+        assertEquals(1, doc.select("script").size());
         assertHTMLResult(doc);
     }
 
@@ -104,7 +105,7 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
             }
         }
 
-        assertHTMLResult(doc);
+        assertHTMLResultXPath(doc);
     }
 
     @Test
@@ -118,20 +119,17 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
     }
 
     @Test
-    public void testEscaping() {
-        Document doc =
-                getAsDOM(
+    public void testEscaping() throws Exception {
+        org.jsoup.nodes.Document doc =
+                getAsJSoup(
                         "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
                                 + "&outputFormat=text/html"
                                 + MF_HTML_PARAM);
-        assertXpathMatches(
-                "60&deg;",
-                "//html/body/ul/li[./span = 'MappedFeature']/ul/li[./span = 'Degrees']/ul/li",
-                doc);
+        assertFalse(doc.select("li:contains(60°)").isEmpty());
         assertHTMLResult(doc);
     }
 
-    private void assertHTMLResult(Document doc) {
+    private void assertHTMLResultXPath(Document doc) {
         assertXpathCount(1, "//html/head/style", doc);
         assertXpathCount(5, "//html/body/ul/li[./span = 'MappedFeature']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul[./li = 'mf1']", doc);
@@ -178,5 +176,61 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
                 1,
                 "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'fictitious component']",
                 doc);
+    }
+
+    private void assertHTMLResult(org.jsoup.nodes.Document doc) {
+        assertEquals(1, doc.select("style").size());
+        assertEquals(5, doc.select("span.caret:contains(MappedFeature)").size());
+        assertEquals(1, doc.select("li ul li:contains(mf1)").size());
+        assertEquals(1, doc.select("li ul li:contains(mf2)").size());
+        assertEquals(1, doc.select("li ul li:contains(mf3)").size());
+        assertEquals(1, doc.select("li ul li:contains(mf4)").size());
+        assertEquals(1, doc.select("li ul li:contains(mf5)").size());
+
+        assertEquals(1, doc.select("ul li ul li ul li:contains(GUNTHORPE FORMATION)").size());
+        assertEquals(1, doc.select("ul li ul li ul li:contains(MERCIA MUDSTONE GROUP)").size());
+        assertEquals(1, doc.select("ul li ul li ul li:contains(CLIFTON FORMATION)").size());
+        assertEquals(1, doc.select("ul li ul li ul li:contains(MURRADUC BASALT)").size());
+        assertEquals(1, doc.select("ul li ul li ul li:contains(IDONTKNOW)").size());
+
+        assertEquals(5, doc.select("span:contains(Shape)").size());
+
+        assertEquals(4, doc.select("ul li ul li span:contains(Specifications)").size());
+        assertEquals(4, doc.select("ul li ul li span:contains(Geologic Unit)").size());
+        assertEquals(4, doc.select("ul li ul li span:contains(Purpose)").size());
+        assertEquals(4, doc.select("ul li ul li ul li ul li ul li:contains(instance)").size());
+        assertEquals(1, doc.select("ul li ul li ul li ul li ul li:contains(New Group)").size());
+        assertEquals(1, doc.select("ul li ul li ul li ul li ul li:contains(-Xy)").size());
+
+        assertEquals(
+                "Yaugher Volcanic Group",
+                doc.select(
+                                "ul li ul li ul li ul li ul li:contains(Yaugher Volcanic Group):first-child")
+                        .get(0)
+                        .text());
+        assertEquals(
+                2,
+                doc.select("ul li ul li ul li ul li ul li:contains(Yaugher Volcanic Group 1)")
+                        .size());
+        assertEquals(
+                2,
+                doc.select("ul li ul li ul li ul li ul li:contains(Yaugher Volcanic Group 2)")
+                        .size());
+
+        assertEquals(3, doc.select("ul li ul li ul li ul li ul li:contains(-Py)").size());
+        assertEquals(
+                6, doc.select("ul li ul li ul li ul li span:contains(Composition Parts)").size());
+        assertEquals(6, doc.select("ul li ul li ul li ul li ul li span:contains(Part)").size());
+        assertEquals(6, doc.select("ul li ul li ul li ul li ul li span:contains(Role)").size());
+        assertEquals(
+                5,
+                doc.select(
+                                "ul li ul li ul li ul li ul li ul li ul li:contains(interbedded component)")
+                        .size());
+        assertEquals(
+                1,
+                doc.select(
+                                "ul li ul li ul li ul li ul li ul li ul li:contains(fictitious component)")
+                        .size());
     }
 }

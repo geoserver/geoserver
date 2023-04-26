@@ -32,17 +32,29 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.Feature;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /** A subclass of GeoJSONGetFeatureResponse that encodes a RFC compliant document */
-@Component
+@Component("RFCGeoJSONFeaturesResponse")
 public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 
+    @Autowired // Spring is otherwise confused by the presence of the other constructor
     public RFCGeoJSONFeaturesResponse(GeoServer gs) {
         super(gs, OGCAPIMediaTypes.GEOJSON_VALUE);
+    }
+
+    /**
+     * Courtesy constructor for subclasses extending RCF GeoJSON output
+     *
+     * @param gs GeoServer
+     * @param mimeType MIME type
+     */
+    protected RFCGeoJSONFeaturesResponse(GeoServer gs, String mimeType) {
+        super(gs, mimeType);
     }
 
     @Override
@@ -61,7 +73,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     /** Returns the featureId, or null if it's missing or the request is not for OGC API Features */
-    private String getItemId() {
+    protected String getItemId() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
                 .map(
                         att ->
@@ -123,9 +135,21 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         FeatureTypeInfo featureType = getFeatureType(request);
-        String baseUrl = request.getBaseUrl();
         jw.key("links");
         jw.array();
+        addLinks(response, request, jw, featureId, featureType);
+        jw.endArray();
+    }
+
+    protected void addLinks(
+            FeatureCollectionResponse response,
+            GetFeatureRequest request,
+            GeoJSONBuilder jw,
+            String featureId,
+            FeatureTypeInfo featureType) {
+        String baseUrl = request.getBaseUrl();
+        APIRequestInfo requestInfo = APIRequestInfo.get();
+
         // paging links
         if (response != null) {
             if (response.getPrevious() != null) {
@@ -170,7 +194,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             }
             writeLink(jw, linkTitle, format.toString(), linkType, href);
         }
-        // backpointer to the collection
+        // back-pointer to the collection
         for (MediaType format :
                 requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
             String href =
@@ -183,7 +207,6 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             String linkTitle = "The collection description as " + format;
             writeLink(jw, linkTitle, format.toString(), linkType, href);
         }
-        jw.endArray();
     }
 
     protected FeatureTypeInfo getFeatureType(GetFeatureRequest request) {

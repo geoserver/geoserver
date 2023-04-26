@@ -19,7 +19,9 @@ You can volunteer on the developer list to make additional releases, or engage w
 
 If you encounter a security vulnerability in GeoServer please take care to report in a responsible fashion:
 
-* Keep exploit details out of mailing list and issue tracker (send details to geoserver-security@lists.osgeo.org)
+* Keep exploit details out of mailing list and issue tracker
+* Send details to geoserver-security@lists.osgeo.org which is monitored by volunteers
+* GitHub [security](https://github.com/geoserver/geoserver/security) page for *Private vulnerability reporting*
 * Be prepared to work with Project Steering Committee (PSC) members on a solution
 * Keep in mind PSC members are volunteers and an extensive fix may require fundraising / resources
 

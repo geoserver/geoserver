@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://beta.schemas.opengis.net/json-fg/time.json",
+  "title": "the time member",
+  "description": "This JSON Schema is part of JSON-FG version 0.1.1",
+  "oneOf": [
+    {
+      "type": "null"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "interval": {
+          "$ref": "#/$defs/interval"
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "interval": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/date"
+          },
+          {
+            "$ref": "#/$defs/timestamp"
+          },
+          {
+            "type": "string",
+            "enum": [".."]
+          }
+        ]
+      }
+    }
+  }
+}

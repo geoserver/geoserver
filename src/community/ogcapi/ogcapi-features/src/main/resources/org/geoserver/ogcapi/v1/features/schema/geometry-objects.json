@@ -1,0 +1,396 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://beta.schemas.opengis.net/json-fg/geometry-objects.json",
+  "title": "the geometry objects",
+  "description": "This JSON Schema is part of JSON-FG version 0.1.1",
+  "$defs": {
+    "CustomGeometry": {
+      "title": "A custom geometry object",
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "not": {
+            "enum": [
+              "Point",
+              "MultiPoint",
+              "LineString",
+              "MultiLineString",
+              "Polygon",
+              "MultiPolygon",
+              "Polyhedron",
+              "MultiPolyhedron",
+              "Prism",
+              "MultiPrism",
+              "GeometryCollection"
+            ]
+          }
+        }
+      }
+    },
+    "Point": {
+      "title": "GeoJSON Point with additional 'coordRefSys' member",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["Point"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "coordinates": {
+          "$ref": "#/$defs/position"
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox"
+        }
+      }
+    },
+    "LineString": {
+      "title": "GeoJSON LineString with additional 'coordRefSys' member",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["LineString"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "coordinates": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/position"
+          }
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox"
+        }
+      }
+    },
+    "Polygon": {
+      "title": "GeoJSON Polygon with additional 'coordRefSys' member",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["Polygon"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 4,
+            "items": {
+              "$ref": "#/$defs/position"
+            }
+          }
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox"
+        }
+      }
+    },
+    "MultiPoint": {
+      "title": "GeoJSON MultiPoint with additional 'coordRefSys' member",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["MultiPoint"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/position"
+          }
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox"
+        }
+      }
+    },
+    "MultiLineString": {
+      "title": "GeoJSON MultiLineString with additional 'coordRefSys' member",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["MultiLineString"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "$ref": "#/$defs/position"
+            }
+          }
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox"
+        }
+      }
+    },
+    "MultiPolygon": {
+      "title": "GeoJSON MultiPolygon with additional 'coordRefSys' member",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["MultiPolygon"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "minItems": 4,
+              "items": {
+                "$ref": "#/$defs/position"
+              }
+            }
+          }
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox"
+        }
+      }
+    },
+    "Polyhedron": {
+      "title": "JSON-FG Polyhedron",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["Polyhedron"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "coordinates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "array",
+                "minItems": 4,
+                "items": {
+                  "$ref": "#/$defs/position3d"
+                }
+              }
+            }
+          }
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox3d"
+        }
+      }
+    },
+    "MultiPolyhedron": {
+      "title": "JSON-FG MultiPolyhedron",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["MultiPolyhedron"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "array",
+                  "minItems": 4,
+                  "items": {
+                    "$ref": "#/$defs/position3d"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox3d"
+        }
+      }
+    },
+    "Prism": {
+      "title": "JSON-FG Prism",
+      "type": "object",
+      "required": ["type","base","upper"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["Prism"]
+        },
+        "base": {
+          "oneOf": [
+            { "$ref": "#/$defs/Point" },
+            { "$ref": "#/$defs/LineString" },
+            { "$ref": "#/$defs/Polygon" },
+            { "$ref": "#/$defs/MultiPoint" },
+            { "$ref": "#/$defs/MultiLineString" },
+            { "$ref": "#/$defs/MultiPolygon" }
+          ]
+        },
+        "lower": {
+          "type": "number"
+        },
+        "upper": {
+          "type": "number"
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox3d"
+        }
+      }
+    },
+    "MultiPrism": {
+      "title": "JSON-FG Multi-Prism",
+      "type": "object",
+      "required": ["type","prisms"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["MultiPrism"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "prisms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Prism"
+          }
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox3d"
+        }
+      }
+    },
+    "GeometryCollection": {
+      "title": "GeoJSON GeometryCollection with additional 'coordRefSys' member",
+      "type": "object",
+      "required": ["type", "geometries"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["GeometryCollection"]
+        },
+        "coordRefSys": {
+          "$ref": "coordrefsys.json"
+        },
+        "geometries": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Point"
+              },
+              {
+                "$ref": "#/$defs/MultiPoint"
+              },
+              {
+                "$ref": "#/$defs/LineString"
+              },
+              {
+                "$ref": "#/$defs/MultiLineString"
+              },
+              {
+                "$ref": "#/$defs/Polygon"
+              },
+              {
+                "$ref": "#/$defs/MultiPolygon"
+              }
+            ]
+          }
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox"
+        }
+      }
+    },
+    "position": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3,
+      "items": {
+        "type": "number"
+      }
+    },
+    "position3d": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "number"
+      }
+    },
+    "bbox": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/bbox2d"
+        },
+        {
+          "$ref": "#/$defs/bbox3d"
+        }
+      ]
+    },
+    "bbox2d": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "number"
+      }
+    },
+    "bbox3d": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "number"
+      }
+    }
+  }
+}

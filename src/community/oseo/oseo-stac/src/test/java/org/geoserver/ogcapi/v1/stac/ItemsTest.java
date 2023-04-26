@@ -116,7 +116,7 @@ public class ItemsTest extends STACTestSupport {
         // check it's only landsat8 data
         List<String> collections = json.read("features[*].collection");
         assertThat(new HashSet<>(collections), containsInAnyOrder("LANDSAT8"));
-        assertEquals(Integer.valueOf(1), json.read("features.length()", Integer.class));
+        assertEquals(Integer.valueOf(2), json.read("features.length()", Integer.class));
 
         // read single reference feature, will test only peculiarities of this
         DocumentContext l8Sample = readSingleContext(json, "features[?(@.id == 'LS8_TEST.02')]");
@@ -364,10 +364,10 @@ public class ItemsTest extends STACTestSupport {
         DocumentContext result = getAsJSONPath("ogc/stac/v1/collections/LANDSAT8/items", 200);
 
         // tests before the dynamic merge with expression on overlay
-        String href = result.read("features[0].assets.thumbnail.href");
-        String title = result.read("features[0].assets.thumbnail.title");
-        String type = result.read("features[0].assets.thumbnail.type");
-        int additional = result.read("features[0].assets.thumbnail.additional");
+        String href = result.read("features[1].assets.thumbnail.href");
+        String title = result.read("features[1].assets.thumbnail.title");
+        String type = result.read("features[1].assets.thumbnail.type");
+        int additional = result.read("features[1].assets.thumbnail.additional");
 
         assertEquals("will replace", href);
         assertEquals("will replace", type);
@@ -380,11 +380,11 @@ public class ItemsTest extends STACTestSupport {
         DocumentContext result = getAsJSONPath("ogc/stac/v1/collections/LANDSAT8/items", 200);
 
         // tests before the dynamic merge with expression on overlay
-        String randomNumber = result.read("features[0].dynamicIncludeFlatTest.randomNumber");
-        String href = result.read("features[0].dynamicIncludeFlatTest.thumbnail.href");
-        String title = result.read("features[0].dynamicIncludeFlatTest.thumbnail.title");
-        String type = result.read("features[0].dynamicIncludeFlatTest.thumbnail.type");
-        String thumbnail2 = result.read("features[0].dynamicIncludeFlatTest.thumbnail2");
+        String randomNumber = result.read("features[1].dynamicIncludeFlatTest.randomNumber");
+        String href = result.read("features[1].dynamicIncludeFlatTest.thumbnail.href");
+        String title = result.read("features[1].dynamicIncludeFlatTest.thumbnail.title");
+        String type = result.read("features[1].dynamicIncludeFlatTest.thumbnail.type");
+        String thumbnail2 = result.read("features[1].dynamicIncludeFlatTest.thumbnail2");
 
         assertEquals("23", randomNumber);
         assertEquals(
@@ -514,14 +514,14 @@ public class ItemsTest extends STACTestSupport {
                         200);
 
         // empty fields param only mandatory attributes should be there.
-        String id = result.read("features[0].id");
-        String type = result.read("features[0].type");
-        Map<String, Object> geom = result.read("features[0].geometry");
-        JSONArray bbox = result.read("features[0].bbox");
-        Map<String, Object> properties = result.read("features[0].properties");
-        Map<String, Object> assets = result.read("features[0].assets");
-        String thumbnailType = result.read("features[0].assets.thumbnail.type");
-        JSONArray links = result.read("features[0].links");
+        String id = result.read("features[1].id");
+        String type = result.read("features[1].type");
+        Map<String, Object> geom = result.read("features[1].geometry");
+        JSONArray bbox = result.read("features[1].bbox");
+        Map<String, Object> properties = result.read("features[1].properties");
+        Map<String, Object> assets = result.read("features[1].assets");
+        String thumbnailType = result.read("features[1].assets.thumbnail.type");
+        JSONArray links = result.read("features[1].links");
 
         assertEquals("LS8_TEST.02", id);
         assertEquals("Feature", type);
@@ -547,13 +547,13 @@ public class ItemsTest extends STACTestSupport {
                         200);
 
         // empty fields param only mandatory attributes should be there.
-        String id = result.read("features[0].id");
-        String type = result.read("features[0].type");
-        Map<String, Object> geom = result.read("features[0].geometry");
-        JSONArray bbox = result.read("features[0].bbox");
-        Map<String, Object> properties = result.read("features[0].properties");
-        Map<String, Object> assets = result.read("features[0].assets");
-        JSONArray links = result.read("features[0].links");
+        String id = result.read("features[1].id");
+        String type = result.read("features[1].type");
+        Map<String, Object> geom = result.read("features[1].geometry");
+        JSONArray bbox = result.read("features[1].bbox");
+        Map<String, Object> properties = result.read("features[1].properties");
+        Map<String, Object> assets = result.read("features[1].assets");
+        JSONArray links = result.read("features[1].links");
 
         assertEquals("LS8_TEST.02", id);
         assertEquals("Feature", type);
@@ -679,9 +679,9 @@ public class ItemsTest extends STACTestSupport {
     public void dynamicIncludeFlatArrayTest() throws Exception {
         DocumentContext result = getAsJSONPath("ogc/stac/v1/collections/LANDSAT8/items", 200);
 
-        JSONArray array = result.read("features[0].includeFlatArray");
-        String title = result.read("features[0].includeFlatArray[4].title");
-        String titleMTL = result.read("features[0].includeFlatArray[4].titleMTL");
+        JSONArray array = result.read("features[1].includeFlatArray");
+        String title = result.read("features[1].includeFlatArray[4].title");
+        String titleMTL = result.read("features[1].includeFlatArray[4].titleMTL");
         assertEquals(5, array.size());
         assertTrue(array.contains("thumbnail"));
         assertTrue(array.contains("thumbnail2"));
@@ -698,7 +698,7 @@ public class ItemsTest extends STACTestSupport {
                         "ogc/stac/v1/collections/LANDSAT8/items?fields=includeFlatArray,-includeFlatArray.titleMTL",
                         200);
 
-        JSONArray array = result.read("features[0].includeFlatArray");
+        JSONArray array = result.read("features[1].includeFlatArray");
         assertEquals(5, array.size());
         int i = array.indexOf("thumbnail");
         assertNotEquals(-1, i);
@@ -716,5 +716,20 @@ public class ItemsTest extends STACTestSupport {
         Map<String, Object> map = (Map<String, Object>) array.get(0);
         assertEquals(1, map.size());
         assertFalse(map.containsKey("titleMTL"));
+    }
+
+    @Test
+    public void testJSONBKeySort() throws Exception {
+        // assetsb object inserted into test table as
+        // '{"g":1,"m":2,"f":3,"h":4,"c":5,"a":{"hello":6,"archive":7,"meh":{"working":8,"aver":9}},"opt:cloudCover":34}'
+        DocumentContext json =
+                getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items/JSONB_TEST.02", 200);
+        assertEquals(
+                "{a={archive=7, hello=6, meh={aver=9, working=8}}, c=5, f=3, g=1, h=4, m=2, opt:cloudCover=34}",
+                json.read("assetsb").toString());
+        // assets object is json, not jsonb, so it is not sorted
+        assertEquals(
+                "{g=1, m=2, f=3, h=4, c=5, a={hello=6, archive=7, meh={working=8, aver=9}}, opt:cloudCover=34, thumbnail={additional=0, href=will replace, type=will replace}}",
+                json.read("assets").toString());
     }
 }

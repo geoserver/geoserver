@@ -45,7 +45,8 @@ public class LandingPageTest extends TiledFeaturesTestSupport {
                         "describeTileset",
                         "describeTilesets",
                         "getTile",
-                        "getTilesMetadata"));
+                        "getTilesMetadata",
+                        "getJSONFGSchemas"));
     }
 
     @Test

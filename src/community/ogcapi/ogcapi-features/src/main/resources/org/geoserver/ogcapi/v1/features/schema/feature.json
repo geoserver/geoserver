@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://beta.schemas.opengis.net/json-fg/feature.json",
+  "title": "a JSON-FG Feature",
+  "description": "This JSON Schema is part of JSON-FG version 0.1.1",
+  "type": "object",
+  "required": ["type", "time", "place", "geometry", "properties"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["Feature"]
+    },
+    "id": {
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "featureType": {
+      "$ref": "featuretype.json"
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "link.json"
+      }
+    },
+    "time": {
+      "$ref": "time.json"
+    },
+    "coordRefSys": {
+      "$ref": "coordrefsys.json"
+    },
+    "place": {
+      "$ref": "place.json"
+    },
+    "geometry": {
+      "$ref": "geometry.json"
+    },
+    "properties": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    }
+  }
+}

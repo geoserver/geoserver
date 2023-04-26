@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://beta.schemas.opengis.net/json-fg/coordrefsys.json",
+  "title": "the coordRefSys member",
+  "description": "This JSON Schema is part of JSON-FG version 0.1.1",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/single-refsys"
+    },
+    {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/single-refsys"
+      }
+    }
+  ],
+  "$defs": {
+    "single-refsys": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/refsys-simpleref"
+        },
+        {
+          "$ref": "#/$defs/refsys-byref"
+        },
+        {
+          "$ref": "#/$defs/refsys-custom"
+        }
+      ]
+    },
+    "refsys-simpleref": {
+      "type": "string",
+      "format": "uri"
+    },
+    "refsys-byref": {
+      "type": "object",
+      "required": ["type", "href"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["Reference"]
+        },
+        "href": {
+          "type": "string",
+          "format": "uri"
+        },
+        "epoch": {
+          "type": "number"
+        }
+      }
+    },
+    "refsys-custom": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "not": {
+            "enum": ["Reference"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -59,7 +59,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
 
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
-        if (request.getService().toUpperCase().contains("WFS")) {
+        if (operationSupported(operation)) {
             try {
                 GetFeatureRequest getFeature =
                         GetFeatureRequest.adapt(operation.getParameters()[0]);
@@ -159,7 +159,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         Object[] params = operation.getParameters();
-        if (params.length > 0) {
+        if (operationSupported(operation) && params.length > 0) {
             Object param1 = params[0];
             Response replacer = findResponse(param1);
             if (replacer != null) response = replacer;
@@ -167,10 +167,26 @@ public class TemplateCallback extends AbstractDispatcherCallback {
         return super.responseDispatched(request, operation, result, response);
     }
 
+    /**
+     * Checks if operation is supported by features templating
+     *
+     * @param operation
+     * @return
+     */
+    private boolean operationSupported(Operation operation) {
+        String id = operation.getId();
+        String serviceId = operation.getService().getId();
+        return "GetFeatureInfo".equalsIgnoreCase(id) && "wms".equalsIgnoreCase(serviceId)
+                || "GetFeature".equalsIgnoreCase(id) && "wfs".equalsIgnoreCase(serviceId);
+    }
+
     private Response findResponse(Object param1) {
         Response response = null;
         if (param1 instanceof GetFeatureInfoRequest) {
-            response = getTemplateFeatureInfoResponse((GetFeatureInfoRequest) param1);
+            GetFeatureInfoRequest request = (GetFeatureInfoRequest) param1;
+            if (request.getInfoFormat() != null) {
+                response = getTemplateFeatureInfoResponse(request);
+            }
         } else {
             GetFeatureRequest getFeature = GetFeatureRequest.adapt(param1);
             if (getFeature != null) {
@@ -186,30 +202,56 @@ public class TemplateCallback extends AbstractDispatcherCallback {
         return response;
     }
 
+    /**
+     * Helper method to find the response for a WMS GetFeatureInfo request.
+     *
+     * <p>If none of the requested layers uses a feature template for the requested info format,
+     * then we delegate on whatever is the default response for the requested info format.
+     *
+     * <p>If at least one of the requested layers uses a feature template for the requested info
+     * format, then all the requested layers need to have a matching feature template for the
+     * requested info format, otherwise an exception will be thrown.
+     */
     private Response getTemplateFeatureInfoResponse(GetFeatureInfoRequest request) {
-        List<MapLayerInfo> layerInfos = request.getQueryLayers();
         String infoFormat = request.getInfoFormat();
         TemplateIdentifier identifier =
                 TemplateIdentifier.fromOutputFormat(request.getInfoFormat());
-        int nTemplates = 0;
-        for (MapLayerInfo li : layerInfos) {
-            if (li != null && li.getResource() instanceof FeatureTypeInfo) {
-                if (ensureTemplatesExist(li.getFeature(), identifier.getOutputFormat()) != null)
-                    nTemplates++;
+        if (identifier == null) {
+            // features templating doesn't support the requested info type,
+            // hence we delegate on whatever is the default response
+            return null;
+        }
+        // the request info format is supported by features templating
+        // let's check if the requested layers all have a template supporting
+        // the requested info format
+        List<MapLayerInfo> layers = request.getQueryLayers();
+        int matchingTemplates = 0;
+        for (MapLayerInfo layer : layers) {
+            if (layer != null
+                    && layer.getResource() instanceof FeatureTypeInfo
+                    && ensureTemplatesExist(layer.getFeature(), identifier.getOutputFormat())
+                            != null) {
+                matchingTemplates++;
             }
         }
-        Response result = null;
-        if (nTemplates > 0) {
-            int size = layerInfos.size();
-            if (size != nTemplates)
-                throw new ServiceException(
-                        "To get a features templating getFeatureInfo a template is needed for every FeatureType but "
-                                + (size - nTemplates)
-                                + " among the requested ones are missing a template");
-
-            result = OWSResponseFactory.getInstance().featureInfoResponse(identifier, infoFormat);
+        // no requested layer is using features templating, hence we delegate in whatever is the
+        // default info format
+        if (matchingTemplates == 0) {
+            return null;
         }
-        return result;
+        // if one of the requested layer uses a features template, then all the other need to have
+        // one too
+        int matchTemplatesDiff = layers.size() - matchingTemplates;
+        if (matchTemplatesDiff != 0) {
+            // there is at least one requested layer that doesn't have template matching the
+            // requested info format
+            // this situation is currently not supported
+            throw new ServiceException(
+                    "To get a features templating getFeatureInfo a template is needed for every FeatureType but "
+                            + matchTemplatesDiff
+                            + " among the requested ones are missing a template");
+        }
+        return OWSResponseFactory.getInstance().featureInfoResponse(identifier, infoFormat);
     }
 
     private Response getTemplateFeatureResponse(

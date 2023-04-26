@@ -5,6 +5,7 @@
 package org.geoserver.csw.store.internal.iso;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -180,8 +181,7 @@ public class FeatureCatalogueTest extends MDTestSupport {
                 "//gfc:FC_FeatureCatalogue/gfc:featureType/gfc:FC_FeatureType/gfc:carrierOfCharacteristics[1]/gfc:FC_FeatureAttribute/gfc:cardinality/gco:Multiplicity/gco:range/gco:MultiplicityRange/gco:upper/gco:UnlimitedInteger/@isInfinite",
                 d);
 
-        assertXpathEvaluatesTo(
-                "false",
+        assertXpathNotExists(
                 "//gfc:FC_FeatureCatalogue/gfc:featureType/gfc:FC_FeatureType/gfc:carrierOfCharacteristics[1]/gfc:FC_FeatureAttribute/gfc:cardinality/gco:Multiplicity/gco:range/gco:MultiplicityRange/gco:upper/gco:UnlimitedInteger/@xsi:nil",
                 d);
 

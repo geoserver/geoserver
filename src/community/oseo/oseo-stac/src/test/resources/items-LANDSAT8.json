@@ -21,6 +21,7 @@
           "type":"will replace"
         }
       },
+      "assetsb": "${assetsb}",
       "dynamicIncludeFlatTest": {
         "randomNumber":"23",
         "thumbnail2":"thumbnail2",

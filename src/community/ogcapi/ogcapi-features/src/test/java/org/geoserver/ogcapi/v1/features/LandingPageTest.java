@@ -42,7 +42,8 @@ public class LandingPageTest extends FeaturesTestSupport {
                         "getFeatures",
                         "getLandingPage",
                         "getQueryables",
-                        "getFunctions"));
+                        "getFunctions",
+                        "getJSONFGSchemas"));
     }
 
     @Test

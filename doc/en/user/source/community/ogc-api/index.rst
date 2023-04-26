@@ -1,20 +1,20 @@
 .. _community_ogcapi:
 
-OGC API Extension
-=================
+OGC API modules
+===============
 This plugin includes implementation of a set of OGC API service implementations 
 
 
 .. toctree::
-   :caption: documentation
    :maxdepth: 1
    
-   install
    configure
    features/index
    tiles/index
    maps/index
+   coverages/index
    styles
+   tiled-features/index
    testbed
 
 .. warning::

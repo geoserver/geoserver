@@ -1,9 +1,23 @@
 .. _ogcapi-features:
 
-OGC API Features
-================
+OGC API- Features
+=================
 
 An `OGC Features API <https://github.com/opengeospatial/ogcapi-features>`_ publishing feature data using an OpenAPI web service.
+
+Installing the GeoServer OGC API Features module
+------------------------------------------------
+
+#. Download the OGC API nightly GeoServer community module from :download_community:`ogcapi-features`.
+   
+   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|release|-ogcapi-features-plugin.zip above).
+
+#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+
+#. On restart the services are listed at http://localhost:8080/geoserver
+
+Implementation status
+---------------------
 
 .. list-table::
    :widths: 30, 20, 50
@@ -13,20 +27,20 @@ An `OGC Features API <https://github.com/opengeospatial/ogcapi-features>`_ publi
      - Version
      - Implementation status
    * - Part 1: Core
-     - `Editor's draft <http://docs.ogc.org/DRAFTS/17-069r4.html>`__
-     - Additional errata and clarifications not yet reviewed.
-   * - 
-     - `1.0.0 <http://docs.ogc.org/is/17-069r3/17-069r3.html>`__
-     - Up to date with 1.0.0 release version.
-   * - Part 2: CRS by Reference
-     - `1.0.0 <http://docs.ogc.org/DRAFTS/19-079r1.html>`__
-     - Not yet implemented
-   * - 
-     - Draft
-     - Draft implemented, update to final release required.
-   * - Part 3: Filtering and CQL
+     - `1.0.0 <https://docs.opengeospatial.org/is/17-069r4/17-069r4.html>`__
+     - Passes compliance tests
+   * - Part 2: Coordinate Systems by Reference
+     - `1.0.0 <https://docs.opengeospatial.org/is/18-058r1/18-058r1.htmll>`__
+     - Passes compliance tests
+   * - Part 3: Filtering
      - `Draft <http://docs.ogc.org/DRAFTS/19-079r1.html>`__
-     - Draft implemented
+     - Draft implemented (mind, the draft does not include a filtering language)
+   * - Part 4: Create, Replace, Update and Delete
+     - `Draft <http://docs.ogc.org/DRAFTS/20-002.html>`__
+     - Not implemented (volunteers/sponsoring wanted)
+   * - Common Query Language (CQL2)
+     - `Draft <https://docs.ogc.org/DRAFTS/21-065.html>`__
+     - Implements an earlier draft for for both text and JSON encodings. To be updated.
 
 Service
 -------
@@ -116,15 +130,6 @@ Data can be browsed as web pages, or downloaded in a range of formats such as :f
    
    Collection sf:roads download formats
 
-Tile matrix sets (extension)
-''''''''''''''''''''''''''''
-
-Addition from :ref:`ogcapi-tiles` extension listing tile matrix sets, linking to their definition.
-
-.. figure:: img/tilematrix.png
-   
-   Tile matrix EPSG:4326 definition
-
 Conformance
 '''''''''''
 
@@ -152,6 +157,8 @@ The service does not require any additional configuration to use. The service is
   
 * Built-in templates used for html generation
 
+* Extra links can be added on a per-service or per-collection basis as indicated in :ref:`ogcapi_links`.
+
 
 HTML Templates
 ''''''''''''''
@@ -160,18 +167,18 @@ To override an OGC API Features template:
 
 #. Create a directory :file:`ogc/features` in the location you wish to override:
    
-   * :file:`GEOSERVER_DATA_DIR/templates/ogc/features`
-   * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/ogc/features`
-   * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}/ogc/features` 
-   * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}/{featuretype}/ogc/features` 
+   * :file:`GEOSERVER_DATA_DIR/templates/ogc/features/v1`
+   * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/ogc/features/v1`
+   * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}/ogc/features/v1` 
+   * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}/{featuretype}/ogc/features/v1` 
 
 #. Create a file in this location, using the GeoServer |release| examples below:
 
-   * :download:`ogc/features/collection.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection.ftl>`
-   * :download:`ogc/features/collection_include.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection_include.ftl>`
-   * :download:`ogc/features/collections.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl>`
-   * :download:`ogc/features/queryables.ftl  </../../../../src/community/ogcapi/ogcapi-core/src/main/resources/org/geoserver/ogcapi/queryables.ftl>`
-   * :download:`ogc/features/functions.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/functions.ftl>`
+   * :download:`ogc/features/v1/collection.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection.ftl>`
+   * :download:`ogc/features/v1/collection_include.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection_include.ftl>`
+   * :download:`ogc/features/v1/collections.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl>`
+   * :download:`ogc/features/v1/queryables.ftl  </../../../../src/community/ogcapi/ogcapi-core/src/main/resources/org/geoserver/ogcapi/queryables.ftl>`
+   * :download:`ogc/features/v1/functions.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/functions.ftl>`
    
    The above built-in examples are for GeoServer |release|, please check for any changes when upgrading GeoServer.
 

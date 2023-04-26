@@ -1,3 +1,5 @@
+.. _ogcapi_links:
+
 Configuring the GeoServer OGC API module
 ========================================
 

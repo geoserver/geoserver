@@ -77,7 +77,6 @@
             <descriptor>release/ext-s3-geotiff.xml</descriptor>
             <descriptor>release/ext-wmts-styles.xml</descriptor>
             <descriptor>release/ext-ogr-datastore.xml</descriptor>
-            <descriptor>release/ext-ogcapi.xml</descriptor>
             <descriptor>release/ext-ogcapi-coverages.xml</descriptor>
             <descriptor>release/ext-ogcapi-dggs.xml</descriptor>
             <descriptor>release/ext-ogcapi-features.xml</descriptor>

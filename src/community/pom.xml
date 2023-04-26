@@ -84,6 +84,7 @@
             <descriptor>release/ext-ogcapi-images.xml</descriptor>
             <descriptor>release/ext-ogcapi-maps.xml</descriptor>
             <descriptor>release/ext-ogcapi-styles.xml</descriptor>
+            <descriptor>release/ext-ogcapi-tiled-features.xml</descriptor>
             <descriptor>release/ext-ogcapi-tiles.xml</descriptor>
             <descriptor>release/ext-importer-jdbc.xml</descriptor>
             <descriptor>release/ext-features-templating.xml</descriptor>

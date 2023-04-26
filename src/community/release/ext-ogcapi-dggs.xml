@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>	
         <include>gs-ogcapi-core-*.jar</include>
+        <include>gs-web-ogcapi-*.jar</include>
         <!-- DGGS extends some OGC API features classes -->
         <include>gs-ogcapi-features-*.jar</include>
         <include>*dggs*.jar</include>
@@ -17,15 +18,10 @@
          <include>gt-cql2-*.jar</include>
         <include>swagger-core-*.jar</include>
         <include>jackson-dataformat-*.jar</include>
-        <include>jackson-databind-*.jar</include>
-        <include>jackson-annotation*.jar</include>
         <include>jackson-module-jaxb*.jar</include>
         <include>swagger-models-*.jar</include>
         <include>snakeyaml-*.jar</include>
-        <include>commons-lang3*.jar</include>
         <include>validation-api*.jar</include>
-        <include>woodstox*.jar</include>
-        <include>stax2-api*.jar</include>
         <include>h3*.jar</include>
         <include>jep*.jar</include>
         <include>*clickhouse*.jar</include>

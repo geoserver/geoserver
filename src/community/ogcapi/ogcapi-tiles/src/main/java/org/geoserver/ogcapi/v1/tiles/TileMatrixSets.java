@@ -6,6 +6,8 @@ package org.geoserver.ogcapi.v1.tiles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geowebcache.grid.GridSetBroker;
@@ -20,7 +22,8 @@ public class TileMatrixSets extends AbstractDocument {
         addSelfLinks("ogc/tiles/v1/tileMatrixSets");
 
         GridSetBroker gridSets = gwc.getGridSetBroker();
-        for (String gridSetName : gridSets.getGridSetNames()) {
+        Set<String> gridSetNames = new TreeSet<>(gridSets.getGridSetNames());
+        for (String gridSetName : gridSetNames) {
             tileMatrixSets.add(new TileMatrixSetDocument(gridSets.get(gridSetName), true));
         }
     }

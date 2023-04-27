@@ -58,8 +58,8 @@ public class STACTemplates extends AbstractTemplates {
     }
 
     /** Copies over all HTML templates, to allow customization */
-    private void copyHTMLTemplates() throws IOException {
-        Resource stac = dd.get("templates/ogc/stac");
+    protected void copyHTMLTemplates() throws IOException {
+        Resource stac = dd.get("templates/ogc/stac/v1");
         stac.dir();
         String path =
                 "classpath:/" + getClass().getPackage().getName().replace(".", "/") + "/*.ftl";
@@ -111,7 +111,7 @@ public class STACTemplates extends AbstractTemplates {
     private void reloadItemTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
             throws IOException {
         // setup the items template
-        Resource items = dd.get("templates/ogc/stac/items.json");
+        Resource items = dd.get("templates/ogc/stac/v1/items.json");
         copyDefault(items, "items.json");
         this.defaultItemTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
     }
@@ -119,7 +119,7 @@ public class STACTemplates extends AbstractTemplates {
     private void reloadCollectionTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
             throws IOException {
         // setup the collections template
-        Resource collections = dd.get("templates/ogc/stac/collections.json");
+        Resource collections = dd.get("templates/ogc/stac/v1/collections.json");
         copyDefault(collections, "collections.json");
         TemplateReaderConfiguration configuration =
                 new TemplateReaderConfiguration(namespaces, COLLECTIONS);
@@ -134,7 +134,8 @@ public class STACTemplates extends AbstractTemplates {
         Template template = defaultCollectionTemplate;
         // See if a collection specific template has been setup, if so use it as an override
         if (collectionId != null) {
-            Resource resource = dd.get("templates/ogc/stac/collections-" + collectionId + ".json");
+            Resource resource =
+                    dd.get("templates/ogc/stac/v1/collections-" + collectionId + ".json");
             if (resource.getType().equals(Resource.Type.RESOURCE)) {
                 template = collectionTemplates.get(collectionId);
                 if (template == null) {
@@ -173,7 +174,7 @@ public class STACTemplates extends AbstractTemplates {
      * @return
      */
     public Set<String> getCustomItemTemplates() throws IOException {
-        Resource resource = dd.get("templates/ogc/stac/");
+        Resource resource = dd.get("templates/ogc/stac/v1/");
         if (resource.getType() != Resource.Type.DIRECTORY) return Collections.emptySet();
 
         Set<String> candidates =
@@ -215,7 +216,7 @@ public class STACTemplates extends AbstractTemplates {
         Template template = defaultItemTemplate;
         // See if a collection specific template has been setup, if so use it as an override
         if (collectionId != null) {
-            Resource resource = dd.get("templates/ogc/stac/items-" + collectionId + ".json");
+            Resource resource = dd.get("templates/ogc/stac/v1/items-" + collectionId + ".json");
             if (resource.getType().equals(Resource.Type.RESOURCE)) {
                 template = itemTemplates.get(collectionId);
                 if (template == null) {

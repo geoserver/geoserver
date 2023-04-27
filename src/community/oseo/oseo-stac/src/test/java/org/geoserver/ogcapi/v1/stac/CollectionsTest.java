@@ -42,7 +42,7 @@ public class CollectionsTest extends STACTestSupport {
     @Test
     public void testTemplatesCopy() throws Exception {
         GeoServerDataDirectory dd = getDataDirectory();
-        Resource templates = dd.get("templates/ogc/stac");
+        Resource templates = dd.get("templates/ogc/stac/v1");
         assertEquals(Resource.Type.RESOURCE, templates.get("collections.json").getType());
         assertEquals(Resource.Type.RESOURCE, templates.get("items.json").getType());
     }

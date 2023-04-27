@@ -16,6 +16,9 @@ Missing functionality at the time of writing, and known issues:
 - Support for multi-collection map representation
 - HTML representation of a map with OpenLayers is only partially functional
 
+OGC API - Maps Implementation status
+------------------------------------
+
 .. list-table::
    :widths: 30, 20, 50
    :header-rows: 1
@@ -41,9 +44,11 @@ Installing the GeoServer OGC API - Maps module
 
 #. On restart the services are listed at http://localhost:8080/geoserver
 
-Using the OGC API - Maps module
--------------------------------
+Configuration of OGC API - Maps module
+--------------------------------------
 
 The module is based on the GeoServer WMS one, follows the same configuration and exposes
 the same layers. As a significant difference, Maps does not have a concept of layer tree,
 so only individual layers and groups can be exposed.
+
+

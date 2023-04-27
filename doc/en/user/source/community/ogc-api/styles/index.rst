@@ -6,6 +6,9 @@ A `OGC Styles API <https://github.com/opengeospatial/ogcapi-styles>`_ based on t
 This service describes, retrieves and updates the styles present on the server. 
 Styles are cross linked with their associated collections in both the Features and Tiles API.
 
+OGC API - Styles Implementation status
+--------------------------------------
+
 .. list-table::
    :widths: 30, 20, 50
    :header-rows: 1
@@ -28,8 +31,8 @@ Installing the GeoServer OGC API - Styles module
 
 #. On restart the services are listed at http://localhost:8080/geoserver
 
-Module configuration
---------------------
+Configuration of OGC API - Styles module
+----------------------------------------
 
 At the time of writing the module has no configuration, it's simply exposing all available
 GeoServer styles.

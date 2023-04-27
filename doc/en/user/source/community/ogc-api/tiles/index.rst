@@ -3,8 +3,12 @@
 OGC API - Tiles
 ===============
 
-A `OGC Tiles API <https://github.com/opengeospatial/OGC-API-Tiles>`_ based on an ealier specification draft (the specification is now finalized), 
-delivering both tiled data (vector tiles) and tiled maps (classic map tiles).
+A `OGC Tiles API <https://github.com/opengeospatial/OGC-API-Tiles>`_ delivering both tiled data (vector tiles) and tiled maps (classic map tiles).
+
+GeoServer implementation is based on an ealier specification draft (the specification is now finalized). 
+
+OGC API - Tiles Implementation status
+-------------------------------------
 
 .. list-table::
    :widths: 30, 20, 50
@@ -29,9 +33,10 @@ Installing the GeoServer OGC API - Tiles module
 
 #. On restart the services are listed at http://localhost:8080/geoserver
 
-     
-Using the OGC API - Tiles module
---------------------------------
 
-The module exposes all Tiled layers configured for GWC using the OGC API - Tiles specification.
-As such, it follows the same configuration as the GWC module.
+Configuration of OGC API - Tiles module
+---------------------------------------
+
+The module exposes all Tiled layers configured for GeoWebCache using the OGC API - Tiles specification.
+
+As such, it follows the same WMTS and Tile Caching configuration used to manage GeoWebCache.

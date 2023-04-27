@@ -1,23 +1,12 @@
 .. _ogcapi-features:
 
-OGC API- Features
-=================
+OGC API - Features
+==================
 
 An `OGC Features API <https://github.com/opengeospatial/ogcapi-features>`_ publishing feature data using an OpenAPI web service.
 
-Installing the GeoServer OGC API Features module
-------------------------------------------------
-
-#. Download the OGC API nightly GeoServer community module from :download_community:`ogcapi-features`.
-   
-   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|release|-ogcapi-features-plugin.zip above).
-
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
-
-#. On restart the services are listed at http://localhost:8080/geoserver
-
-Implementation status
----------------------
+Features Implementation status
+------------------------------
 
 .. list-table::
    :widths: 30, 20, 50
@@ -42,8 +31,19 @@ Implementation status
      - `Draft <https://docs.ogc.org/DRAFTS/21-065.html>`__
      - Implements an earlier draft for for both text and JSON encodings. To be updated.
 
-Service
--------
+Installing the GeoServer OGC API Features module
+------------------------------------------------
+
+#. Download the OGC API nightly GeoServer community module from :download_community:`ogcapi-features`.
+   
+   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|release|-ogcapi-features-plugin.zip above).
+
+#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+
+#. On restart the services are listed at http://localhost:8080/geoserver
+
+Use of OGC API - Features service
+---------------------------------
 
 The OGC API Features Service is accessed via the :guilabel:`FEATURES` version :guilabel:`1.0` link on the home page.
 
@@ -146,14 +146,14 @@ Advertises contact information for the service.
 
 Defined by defined in by :ref:`config_contact`.
 
-Service Configuration
----------------------
+Configuration of OGC API - Features module
+------------------------------------------
 
 The service does not require any additional configuration to use. The service is configured using:
 
 * The existing :ref:`wfs` settings to define title, abstract, and output formats.
   
-  This is why the service page is titled :kbd:`GeoServer Web Feature Service`` by default.
+  This is why the service page is titled ``GeoServer Web Feature Service`` by default.
   
 * Built-in templates used for html generation
 

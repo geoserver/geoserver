@@ -28,13 +28,13 @@ Upon installation, the OGC API - Features API will show the following extensions
 * Conformance classes are expanded with OGC API - Tiles ones
 * Tile matrix sets links from the home page
 
-.. figure:: img/tilematrix.png
+  .. figure:: img/tilematrix.png
    
-   Tile matrix EPSG:4326 definition
+     Tile matrix EPSG:4326 definition
 
 * Collections with vector tiles enabled will have a "data tiles" link pointing at the tiles endpoint
 
-.. figure:: img/dataTiles.png
+  .. figure:: img/dataTiles.png
    
-   Data tiles link  
+     Data tiles link  
 

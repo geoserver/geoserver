@@ -17,6 +17,20 @@ Missing functionality at the time of writing, and known issues:
 - Scaling
 - CRS transformation
 
+OGC API - Coverages Implementation status
+-----------------------------------------
+
+.. list-table::
+   :widths: 30, 20, 50
+   :header-rows: 1
+
+   * - `OGC API - Coverages <https://github.com/opengeospatial/ogcapi-coverages>`__
+     - Version
+     - Implementation status
+   * - Part 1: Core
+     - `Draft <https://docs.ogc.org/DRAFTS/19-087.html>`__
+     - Implementation based on early specification draft, not yet updated to final version
+
 Installing the GeoServer OGC API - Coverages module
 ---------------------------------------------------
 
@@ -28,8 +42,8 @@ Installing the GeoServer OGC API - Coverages module
 
 #. On restart the services are listed at http://localhost:8080/geoserver
 
-Using the OGC API - Coverages module
-------------------------------------
+Configuration of OGC API - Covearges module
+-------------------------------------------
 
 The module is based on the GeoServer WCS one, follows the same configuration and exposes
 the same coverages.

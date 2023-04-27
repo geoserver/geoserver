@@ -100,7 +100,6 @@ public class ProxyBaseExtRuleDAO {
      *
      * @param proxyBaseExtRule the {@link ProxyBaseExtensionRule} to write
      * @param input the input {@link Resource}
-     * @param output the output {@link Resource}
      */
     public static void saveOrUpdateProxyBaseExtRule(
             ProxyBaseExtensionRule proxyBaseExtRule, Resource input) {
@@ -133,7 +132,6 @@ public class ProxyBaseExtRuleDAO {
      * Delete a {@link ProxyBaseExtensionRule} from the {@link GeoServerDataDirectory}.
      *
      * @param inputResource the input {@link Resource}
-     * @param outputResource the output {@link Resource}
      * @param forwardParameterIds the {@link ProxyBaseExtensionRule} ids to delete
      */
     public static void deleteProxyBaseExtRules(

@@ -19,7 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.apache.commons.lang.StringUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.HTTPHeadersCollector;
 import org.geoserver.ows.URLMangler;
@@ -118,9 +117,6 @@ public class ProxyBaseExtUrlMangler implements URLMangler {
                 new StringBuilder(url.getProtocol() + PROTOCOL_SEPARATOR + url.getHost());
         StringBuilder path = new StringBuilder(url.getPath());
         getURL(baseURL, path, Optional.ofNullable(headersAsProperties), true);
-        if (url.getPort() != -1 && StringUtils.countMatches(baseURL.toString(), ":") < 2) {
-            baseURL.append(":").append(url.getPort());
-        }
         return baseURL.toString() + path.toString();
     }
 

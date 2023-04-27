@@ -24,7 +24,7 @@ public class ProxyBaseExtensionTest {
         manglerRules.add(
                 new ProxyBaseExtensionRule(
                         "1",
-                        "geoserver/ogc/stac/v1/collections2/",
+                        "ogc/stac/v1/collections2/",
                         "https://stac.example.com/v1/collections/",
                         true,
                         1));
@@ -40,8 +40,8 @@ public class ProxyBaseExtensionTest {
 
     @Test
     public void testMangleWildCard() throws Exception {
-        StringBuilder baseURL = new StringBuilder("http://localhost:8080/");
-        StringBuilder path = new StringBuilder("geoserver/ogc/stac/v1/collections2/");
+        StringBuilder baseURL = new StringBuilder("http://localhost:8080/geoserver");
+        StringBuilder path = new StringBuilder("ogc/stac/v1/collections2/");
         mangler.mangleURL(baseURL, path, Collections.emptyMap(), URLMangler.URLType.SERVICE);
         assertEquals("https://stac.example.com", baseURL.toString());
         assertEquals("/v1/collections/", path.toString());
@@ -49,19 +49,21 @@ public class ProxyBaseExtensionTest {
 
     @Test
     public void testMangleTemplateLiteralNoHeader() throws Exception {
-        StringBuilder baseURL = new StringBuilder("http://localhost:8080/");
-        StringBuilder path = new StringBuilder("geoserver/ogc/stac/v1/collections/yourCollection");
+        StringBuilder baseURL = new StringBuilder("http://localhost:8080/geoserver");
+        StringBuilder path = new StringBuilder("ogc/stac/v1/collections/yourCollection");
         mangler.mangleURL(baseURL, path, Collections.emptyMap(), URLMangler.URLType.SERVICE);
-        assertEquals("http://localhost:8080/", baseURL.toString()); // no change, because no header
         assertEquals(
-                "geoserver/ogc/stac/v1/collections/yourCollection",
+                "http://localhost:8080/geoserver",
+                baseURL.toString()); // no change, because no header
+        assertEquals(
+                "ogc/stac/v1/collections/yourCollection",
                 path.toString()); // no change, because no header
     }
 
     @Test
     public void testMangleTemplateLiteralHeader() throws Exception {
-        StringBuilder baseURL = new StringBuilder("http://localhost:8080/");
-        StringBuilder path = new StringBuilder("geoserver/ogc/stac/v1/collections/yourCollection");
+        StringBuilder baseURL = new StringBuilder("http://localhost:8080/geoserver");
+        StringBuilder path = new StringBuilder("ogc/stac/v1/collections/yourCollection");
         String urlString =
                 mangler.transformURL(
                         baseURL.toString() + path.toString(), "fixedCollection=myCollection");

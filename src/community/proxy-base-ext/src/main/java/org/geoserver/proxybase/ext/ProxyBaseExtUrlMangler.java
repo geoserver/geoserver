@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -113,9 +114,32 @@ public class ProxyBaseExtUrlMangler implements URLMangler {
      */
     public String transformURL(String urlString, String headersAsProperties) throws IOException {
         URL url = new URL(urlString);
-        StringBuilder baseURL =
-                new StringBuilder(url.getProtocol() + PROTOCOL_SEPARATOR + url.getHost());
-        StringBuilder path = new StringBuilder(url.getPath());
+        Path p = Path.of(url.getPath());
+        // separate in baseURL (which contains the context path) and path inside the application
+        // also handling odd situations where path or contex path are missing, just in case
+        StringBuilder baseURL, path;
+        if (p.getNameCount() == 0) {
+            baseURL = new StringBuilder(url.getProtocol() + PROTOCOL_SEPARATOR + url.getHost());
+            path = new StringBuilder(p.subpath(1, p.getNameCount()).toString());
+        } else if (p.getNameCount() == 1) {
+            baseURL =
+                    new StringBuilder(
+                            url.getProtocol()
+                                    + PROTOCOL_SEPARATOR
+                                    + url.getHost()
+                                    + PROTOCOL_SEPARATOR
+                                    + p.getName(0));
+            path = new StringBuilder("");
+        } else {
+            baseURL =
+                    new StringBuilder(
+                            url.getProtocol()
+                                    + PROTOCOL_SEPARATOR
+                                    + url.getHost()
+                                    + PROTOCOL_SEPARATOR
+                                    + p.getName(0));
+            path = new StringBuilder(p.subpath(1, p.getNameCount()).toString());
+        }
         getURL(baseURL, path, Optional.ofNullable(headersAsProperties), true);
         return baseURL.toString() + path.toString();
     }
@@ -139,11 +163,14 @@ public class ProxyBaseExtUrlMangler implements URLMangler {
             URL url = new URL(transformerReplacedLiterals);
             baseURL.setLength(0);
             baseURL.append(url.getProtocol() + PROTOCOL_SEPARATOR + url.getHost());
+            // add port if necessary
+            if (url.getPort() != -1
+                    && (("http".equals(url.getProtocol()) && url.getPort() != 8080)
+                            || ("https".equals(url.getProtocol()) && url.getPort() != 443))) {
+                baseURL.append(":" + url.getPort());
+            }
             path.setLength(0);
             path.append(url.getPath());
-            if (url.getPort() != -1) {
-                baseURL.append(":").append(url.getPort());
-            }
         } catch (MalformedURLException e) {
             String message =
                     "The transformer, after header template replacement (if headers were provided): "

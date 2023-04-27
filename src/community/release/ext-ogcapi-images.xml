@@ -32,5 +32,12 @@
         <include>hatbox-*.jar</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>GPL.html</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>

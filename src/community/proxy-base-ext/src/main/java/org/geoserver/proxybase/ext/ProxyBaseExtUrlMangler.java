@@ -165,7 +165,7 @@ public class ProxyBaseExtUrlMangler implements URLMangler {
             baseURL.append(url.getProtocol() + PROTOCOL_SEPARATOR + url.getHost());
             // add port if necessary
             if (url.getPort() != -1
-                    && (("http".equals(url.getProtocol()) && url.getPort() != 8080)
+                    && (("http".equals(url.getProtocol()) && url.getPort() != 80)
                             || ("https".equals(url.getProtocol()) && url.getPort() != 443))) {
                 baseURL.append(":" + url.getPort());
             }

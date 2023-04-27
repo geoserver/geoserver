@@ -8,7 +8,7 @@
     <fileSet>
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
-      <includes>	
+      <includes>
         <include>gs-ogcapi-coverages-*.jar</include>
         <include>gs-ogcapi-core-*.jar</include>
         <include>gs-web-ogcapi-*.jar</include>
@@ -19,6 +19,13 @@
         <include>swagger-models-*.jar</include>
         <include>snakeyaml-*.jar</include>
         <include>validation-api*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>GPL.html</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -8,11 +8,17 @@ package org.geoserver.security;
 import java.io.Serializable;
 
 /**
- * Base class for all AccessLimits declared by a {@link ResourceAccessManager}
+ * Base class for all AccessLimits declared by a {@link ResourceAccessManager}.
+ *
+ * <p>AccessLimits are used to limit the access to a resource (workspace, layer, style, catalog *
+ * resource). While the hierarchy of access limits has well known classes matching the associated
+ * resource, a ResourceAccessManager can also create subclasses of them, thus, if any customization
+ * to access limits is needed, one can clone the {@link AccessLimits} object and change its
+ * settings. For this purpose, AccessLimits implements {@link Cloneable}.
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class AccessLimits implements Serializable {
+public class AccessLimits implements Serializable, Cloneable {
     private static final long serialVersionUID = 8521276966116962954L;
 
     /** Gets the catalog mode for this layer */
@@ -46,5 +52,14 @@ public class AccessLimits implements Serializable {
             if (other.mode != null) return false;
         } else if (!mode.equals(other.mode)) return false;
         return true;
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

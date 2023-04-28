@@ -76,9 +76,36 @@ public class VectorAccessLimits extends DataAccessLimits {
         return readAttributes;
     }
 
+    /**
+     * The list of attributes the user is allowed to read
+     *
+     * @param readAttributes the list of attributes the user is allowed to read
+     */
+    public void setReadAttributes(List<PropertyName> readAttributes) {
+        this.readAttributes = readAttributes;
+    }
+
     /** The list of attributes the user is allowed to write */
     public List<PropertyName> getWriteAttributes() {
         return writeAttributes;
+    }
+
+    /**
+     * Sets the list of attributes the user is allowed to write
+     *
+     * @param writeAttributes
+     */
+    public void setWriteAttributes(List<PropertyName> writeAttributes) {
+        this.writeAttributes = writeAttributes;
+    }
+
+    /**
+     * Sets the filter that limits the features the user can write onto
+     *
+     * @param writeFilter
+     */
+    public void setWriteFilter(Filter writeFilter) {
+        this.writeFilter = writeFilter;
     }
 
     /** Identifies the features the user can write onto */

@@ -34,6 +34,15 @@ public class WMTSAccessLimits extends DataAccessLimits {
         return rasterFilter;
     }
 
+    /**
+     * Sets the polygon that will clip the returned images
+     *
+     * @param rasterFilter the polygon that will clip the returned images
+     */
+    public void setRasterFilter(MultiPolygon rasterFilter) {
+        this.rasterFilter = rasterFilter;
+    }
+
     @Override
     public String toString() {
         return "WMTSAccessLimits [rasterFilter=" + rasterFilter + ", mode=" + mode + "]";

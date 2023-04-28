@@ -52,6 +52,15 @@ public class DataAccessLimits extends AccessLimits {
         return readFilter;
     }
 
+    /**
+     * Updates the read filter for this access limits object
+     *
+     * @param readFilter the new read filter
+     */
+    public void setReadFilter(Filter readFilter) {
+        this.readFilter = readFilter;
+    }
+
     /** The catalog mode for this layer */
     @Override
     public CatalogMode getMode() {

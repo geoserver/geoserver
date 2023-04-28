@@ -124,13 +124,9 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
     private WrapperPolicy computeWrapperPolicy(Request request) {
         if (isGetCapabilities(request) && policy.getLimits() instanceof VectorAccessLimits) {
             VectorAccessLimits accessLimits = (VectorAccessLimits) policy.getLimits();
-            VectorAccessLimits newLimits =
-                    new VectorAccessLimits(
-                            accessLimits.getMode(),
-                            null,
-                            Filter.INCLUDE,
-                            accessLimits.getWriteAttributes(),
-                            accessLimits.getWriteFilter());
+            VectorAccessLimits newLimits = (VectorAccessLimits) accessLimits.clone();
+            newLimits.setReadAttributes(null);
+            newLimits.setReadFilter(Filter.INCLUDE);
             WrapperPolicy newPolicy = WrapperPolicy.readOnlyChallenge(newLimits);
             return newPolicy;
         }

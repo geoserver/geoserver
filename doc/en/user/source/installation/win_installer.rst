@@ -13,6 +13,19 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
 #. Select the version of GeoServer that you wish to download.  If you're not sure, select :website:`Stable <release/stable>` release.
 
+   .. only:: snapshot
+      
+      This documentation covers GeoServer |version|-SNAPSHOT which is under development and
+      is available as a :website:`Nightly <release/main>` release.
+      
+      Nightly releases are used to
+      test out try out new features and test community modules and do not provide a windows
+      installer. When GeoServer |version|.0 is released a windows installer will be provided.
+      
+   .. only:: not snapshot
+
+      These instructions are for GeoServer |release|.
+
 #. Click the link for the :guilabel:`Windows Installer`.
 
    .. figure:: images/win_download.png

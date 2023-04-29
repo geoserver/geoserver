@@ -16,7 +16,17 @@ Installation
 
 #. Navigate to the :website:`GeoServer Download page <download>`.
 
-#. Select the version of GeoServer that you wish to download.  If you're not sure, select :website:`Stable <release/stable>` release.
+#. Select the version of GeoServer that you wish to download. If you're not sure, select :website:`Stable <release/stable>` release.
+
+   .. only:: snapshot
+      
+      These instructions are for GeoServer |version|-SNAPSHOT which is provided as a :website:`Nightly <release/main>` release.
+      Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases
+      change on an ongoing basis and are not suitable for a production environment.
+      
+   .. only:: not snapshot
+
+      These instructions are for GeoServer |release|.
 
 #. Select :guilabel:`Platform Independent Binary` on the download page: :download_release:`bin`
 
@@ -26,23 +36,23 @@ Installation
 
 #. Add an environment variable to save the location of GeoServer by typing the following command:
 
-    .. code-block:: bash
-    
-       echo "export GEOSERVER_HOME=/usr/share/geoserver" >> ~/.profile
-       . ~/.profile
+   .. code-block:: bash
+   
+      echo "export GEOSERVER_HOME=/usr/share/geoserver" >> ~/.profile
+      . ~/.profile
 
 #. Make yourself the owner of the ``geoserver`` folder.  Type the following command in the terminal window, replacing ``USER_NAME`` with your own username :
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-       sudo chown -R USER_NAME /usr/share/geoserver/
+      sudo chown -R USER_NAME /usr/share/geoserver/
 
 #. Start GeoServer by changing into the directory ``geoserver/bin`` and executing the ``startup.sh`` script:
 
-    .. code-block:: bash
-       
-       cd geoserver/bin
-       sh startup.sh
+   .. code-block:: bash
+      
+      cd geoserver/bin
+      sh startup.sh
 
 #. In a web browser, navigate to ``http://localhost:8080/geoserver``.
 

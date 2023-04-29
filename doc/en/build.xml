@@ -1,8 +1,5 @@
 <project name="user" default="full">
 
-  <!-- This is the most recent release available on geoserver.org -->
-  <property name="project.release" value="2.23.0"/>
-
   <target name="init">
     <property environment="env"/>
 
@@ -43,11 +40,10 @@
     <condition property="project.version" value="${project.version}" else="2.24-SNAPSHOT">
       <isset property="project.version" />
     </condition>
-
+    
     <echo>Base directory is ${basedir}</echo>
     <echo>Build directory is ${build.directory}</echo>
     <echo>project version is ${project.version}</echo>
-    <echo>project release is ${project.release}</echo>
     
   </target>
 
@@ -145,6 +141,7 @@
     <property name="argLine" value="-D release=${project.version} -q -W --keep-going -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
     <echo message="Running sphinx-build ${argLine}"/> 
     <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}/source">
+      <env key="project.version" value="${project.version}"/>
       <arg line="${argLine}"/>
     </exec>
   </target>
@@ -154,6 +151,7 @@
     <property name="argLine" value="-D release=${project.version} -q -W -b html -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/html&quot;"/>
     <echo message="Running sphinx-autobuild ${argLine}"/> 
     <exec executable="sphinx-autobuild" failonerror="true" dir="${basedir}/${id}/source">
+      <env key="project.version" value="${project.version}"/>
       <arg line="${argLine} --open-browser"/>
     </exec>
   </target>

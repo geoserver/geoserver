@@ -51,14 +51,24 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 version = '2.24'
 
 # The full version, including alpha/beta/rc tags.
-release = '2.24-SNAPSHOT'
+
+# sphinx-build -D release=${project.version} overrides release configuration
+# but only after conf.py has been used...
+
+# check environmental variable to see if ant build.xml passed in project.version
+project_version = os.getenv("project.version")
+if project_version == None: 
+  release = '2.24-SNAPSHOT'
+else:
+  release =project_version
 
 # Used in build and documentation links
 branch = 'main'
 
-# Users don't need to see the "SNAPSHOT" notation when it's there
+# Users don't need to see the "SNAPSrHOT" notation when it's there
 download = release
 if release.find('SNAPSHOT') != -1:
+   tags.add('snapshot')
    release = '2.24.x'
    download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
    download_extension = 'https://build.geoserver.org/geoserver/'+branch+'/ext-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'

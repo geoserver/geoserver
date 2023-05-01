@@ -176,23 +176,23 @@ For the current list see GeoServer `build server <https://build.geoserver.org/ge
     activeMQ-broker            jdbcconfig                 pgraster                    
     backup-restore             jdbcstore                  proxy-base-ext              
     cog                        jms-cluster                s3-geotiff                  
-    colormap                   libdeflate                 saml                        
-    cov-json                   mbtiles                    sec-keycloak                
-    dds                        mbtiles-store              sec-oauth2-geonode          
-    dyndimension               mongodb-schemaless         sec-oauth2-github           
-    elasticsearch              ncwms                      sec-oauth2-google           
-    features-templating        netcdf-ghrsst              sec-oauth2-openid-connect   
-    flatgeobuf                 notification               smart-data-loader           
-    gdal-wcs                   nsg-wmts-profile           solr                        
-    gdal-wps                   ogcapi-coverages           spatialjson                 
-    geopkg                     ogcapi-dggs                stac-datastore              
-    gpx                        ogcapi-features            taskmanager-core            
-    gsr                        ogcapi-images              taskmanager-s3              
-    gwc-azure-blobstore        ogcapi-maps                teradata                    
-    gwc-distributed            ogcapi-styles              vector-mosaic               
-    gwc-mbtiles                ogcapi-tiled-features      vsi                         
-    gwc-sqlite                 ogcapi-tiles               webp                        
-    hz-cluster                 ogr-datastore              wmts-styles
-    importer-jdbc              opensearch-eo              wps-remote                  
+    colormap                   libdeflate                 sec-keycloak             
+    cov-json                   mbtiles                    sec-oauth2-geonode          
+    dds                        mbtiles-store              sec-oauth2-github           
+    dyndimension               mongodb-schemaless         sec-oauth2-google           
+    elasticsearch              ncwms                      sec-oauth2-openid-connect   
+    features-templating        netcdf-ghrsst              smart-data-loader           
+    flatgeobuf                 notification               solr                        
+    gdal-wcs                   nsg-wmts-profile           spatialjson                 
+    gdal-wps                   ogcapi-coverages           stac-datastore              
+    geopkg                     ogcapi-dggs                taskmanager-core            
+    gpx                        ogcapi-features            taskmanager-s3              
+    gsr                        ogcapi-images              teradata                    
+    gwc-azure-blobstore        ogcapi-maps                vector-mosaic               
+    gwc-distributed            ogcapi-styles              vsi                         
+    gwc-mbtiles                ogcapi-tiled-features      webp                        
+    gwc-sqlite                 ogcapi-tiles               wmts-styles   
+    hz-cluster                 ogr-datastore              wps-remote               
+    importer-jdbc              opensearch-eo                 
     jdbc-metrics               ows-simulate                                
 

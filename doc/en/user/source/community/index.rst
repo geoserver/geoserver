@@ -61,7 +61,6 @@ officially part of the GeoServer releases. They are however built along with the
    proxy-base-ext/index
    remote-wps/index
    s3-geotiff/index
-   saml/index
    schemaless-features/index
    smart-data-loader/index
    spatialjson/index

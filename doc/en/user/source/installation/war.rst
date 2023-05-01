@@ -18,6 +18,16 @@ Installation
 
 #. Select the version of GeoServer that you wish to download.  If you're not sure, select :website:`Stable <release/stable>` release.
 
+   .. only:: snapshot
+      
+      These instructions are for GeoServer |version|-SNAPSHOT which is provided as a :website:`Nightly <release/main>` release.
+      Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases
+      change on an ongoing basis and are not suitable for a production environment.
+      
+   .. only:: not snapshot
+
+      These instructions are for GeoServer |release|.
+
 #. Select :guilabel:`Web Archive` on the download page: :download_release:`war`
 
 #. Download and unpack the archive.

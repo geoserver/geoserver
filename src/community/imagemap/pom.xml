@@ -10,11 +10,11 @@
 
   <parent>
     <groupId>org.geoserver</groupId>
-    <artifactId>extension</artifactId>
+    <artifactId>community</artifactId>
     <version>2.24-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.extension</groupId>
+  <groupId>org.geoserver</groupId>
   <artifactId>gs-imagemap</artifactId>
   <packaging>jar</packaging>
   <name>ImageMap Output Format</name>

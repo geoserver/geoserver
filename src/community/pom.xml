@@ -99,6 +99,7 @@
             <descriptor>release/ext-stac-datastore.xml</descriptor>
             <descriptor>release/ext-vector-mosaic-datastore.xml</descriptor>
             <descriptor>release/ext-proxy-base-ext.xml</descriptor>
+            <descriptor>release/ext-imagemap.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -253,6 +254,7 @@
         <module>libdeflate</module>
         <module>vector-mosaic</module>
         <module>proxy-base-ext</module>
+        <module>imagemap</module>
       </modules>
     </profile>
     <profile>
@@ -698,6 +700,12 @@
       <id>proxy-base-ext</id>
       <modules>
         <module>proxy-base-ext</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>imagemap</id>
+      <modules>
+        <module>imagemap</module>
       </modules>
     </profile>
   </profiles>

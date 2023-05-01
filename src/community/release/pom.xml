@@ -445,6 +445,11 @@
       <artifactId>gs-proxy-base-ext</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-imagemap</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

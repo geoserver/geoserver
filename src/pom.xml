@@ -1803,7 +1803,6 @@
             <descriptor>release/ext-gdal.xml</descriptor>
             <descriptor>release/ext-h2.xml</descriptor>
             <descriptor>release/ext-sqlserver.xml</descriptor>
-            <descriptor>release/ext-imagemap.xml</descriptor>
             <descriptor>release/ext-ogr-wfs.xml</descriptor>
             <descriptor>release/ext-ogr-wps.xml</descriptor>
             <descriptor>release/ext-excel.xml</descriptor>

@@ -130,13 +130,6 @@
     </profile>
 
     <profile>
-      <id>imagemap</id>
-      <modules>
-        <module>imagemap</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>ogr</id>
       <modules>
         <module>ogr</module>
@@ -419,7 +412,6 @@
         <module>oracle</module>
         <module>mysql</module>
         <module>db2</module>
-        <module>imagemap</module>
         <module>gdal</module>
         <module>jp2k</module>
         <module>ogr</module>
@@ -472,7 +464,6 @@
         <module>oracle</module>
         <module>mysql</module>
         <module>db2</module>
-        <module>imagemap</module>
         <module>gdal</module>
         <module>jp2k</module>
         <module>ogr</module>

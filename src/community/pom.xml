@@ -63,7 +63,6 @@
             <descriptor>release/ext-oauth2-openid-connect.xml</descriptor>
             <descriptor>release/ext-keycloak.xml</descriptor>
             <descriptor>release/ext-backup-restore.xml</descriptor>
-            <descriptor>release/ext-saml.xml</descriptor>
             <descriptor>release/ext-notification.xml</descriptor>
             <descriptor>release/ext-ows-simulate.xml</descriptor>
             <descriptor>release/ext-jdbc-metrics.xml</descriptor>
@@ -178,12 +177,6 @@
       </modules>
     </profile>
     <profile>
-      <id>saml</id>
-      <modules>
-        <module>saml</module>
-      </modules>
-    </profile>
-    <profile>
       <id>notification</id>
       <modules>
         <module>notification-common</module>
@@ -225,7 +218,6 @@
         <module>gwc-sqlite</module>
         <module>security</module>
         <module>wmts-styles</module>
-        <module>saml</module>
         <module>notification</module>
         <module>notification-common</module>
         <module>notification-geonode</module>

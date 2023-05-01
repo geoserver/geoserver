@@ -1398,16 +1398,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>saml</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-saml</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>notification</id>
       <dependencies>
         <dependency>

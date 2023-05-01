@@ -66,8 +66,7 @@ public class StylesInfoConverter implements HttpMessageConverter<StyleInfo> {
     }
 
     private Optional<StyleWriterConverter> getWriter(MediaType mediaType) {
-        return writers.entrySet()
-                .stream()
+        return writers.entrySet().stream()
                 .filter(e -> e.getKey().isCompatibleWith(mediaType))
                 .map(e -> e.getValue())
                 .findFirst();

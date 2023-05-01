@@ -72,9 +72,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
         /** Returns a sorted list of global layer group names */
         List<String> getGlobalLayerGroupNames() {
             Stream<String> names =
-                    getCatalog()
-                            .getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE)
-                            .stream()
+                    getCatalog().getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE).stream()
                             .map(lg -> lg.getName())
                             .sorted();
             return Stream.concat(Stream.of("*"), names).collect(Collectors.toList());
@@ -197,9 +195,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
                 }
             }
             // collect also layer groups
-            getCatalog()
-                    .getLayerGroupsByWorkspace(rootName)
-                    .stream()
+            getCatalog().getLayerGroupsByWorkspace(rootName).stream()
                     .map(lg -> lg.getName())
                     .forEach(
                             name -> {

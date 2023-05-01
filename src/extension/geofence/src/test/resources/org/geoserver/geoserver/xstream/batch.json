@@ -1,0 +1,35 @@
+{
+  "Batch": {
+    "operations": [
+      {
+        "@service": "rules",
+        "@type": "update",
+        "@id": "3",
+        "Rule": {
+          "access": "ALLOW",
+          "layer": "layer",
+          "priority": 5,
+          "request": "GETMAP",
+          "service": "WMS",
+          "roleName": "ROLE_AUTHENTICATED",
+          "workspace": "ws"
+        }
+      },
+      {
+        "@service": "rules",
+        "@type": "delete",
+        "@id": 5
+      },
+      {
+        "@service": "adminrules",
+        "@type": "insert",
+        "AdminRule": {
+          "priority": 2,
+          "roleName": "ROLE_USER",
+          "workspace": "ws",
+          "access": "ADMIN"
+        }
+      }
+    ]
+  }
+}

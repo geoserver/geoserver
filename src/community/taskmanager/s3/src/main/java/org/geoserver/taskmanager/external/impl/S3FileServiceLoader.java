@@ -32,8 +32,7 @@ public class S3FileServiceLoader {
     @PostConstruct
     public void initializeS3GeotiffFileServices() {
         Properties prop = readProperties();
-        prop.stringPropertyNames()
-                .stream()
+        prop.stringPropertyNames().stream()
                 .filter(key -> key.endsWith(".s3.rootfolder"))
                 .forEach(
                         key ->

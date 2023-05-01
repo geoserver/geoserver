@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -94,9 +96,16 @@ public class DefaultIdTest extends AbstractAppSchemaTestSupport {
     /** Test GetFeature with filters. */
     @Test
     public void testGetFeatureWithFilter() {
-        Document doc =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&BBOX=-35,96,-12,118");
+        Document doc;
+        if (!isGeopkgTest()) {
+            doc =
+                    getAsDOM(
+                            "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&BBOX=-35,96,-12,118");
+        } else {
+            doc =
+                    getAsDOM(
+                            "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&BBOX=96,-35,118,-12");
+        }
         LOGGER.info(
                 "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&BBOX=-35,96,-12,118 response:\n"
                         + prettyString(doc));

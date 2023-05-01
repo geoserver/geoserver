@@ -84,6 +84,7 @@ public class WPSInitializer implements GeoServerInitializer {
             // by convention, for infinite URLConnection timeouts, we need to use zero.
             executionManager.setConnectionTimeout(0);
         }
+        executionManager.setRemoteInputDisabled(info.isRemoteInputDisabled());
 
         // handle the resource expiration timeout
         int expirationTimeout = info.getResourceExpirationTimeout() * 1000;

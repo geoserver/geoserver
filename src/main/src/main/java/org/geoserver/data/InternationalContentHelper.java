@@ -108,8 +108,7 @@ public class InternationalContentHelper {
         }
         for (String language : withoutVariant) {
             requestedLocales.addAll(
-                    supportedLocales
-                            .stream()
+                    supportedLocales.stream()
                             .filter(l -> l != null && l.getLanguage().equals(language))
                             .collect(Collectors.toSet()));
             requestedLocales.add(Locale.forLanguageTag(language));
@@ -352,8 +351,7 @@ public class InternationalContentHelper {
             GrowableInternationalString growable =
                     (GrowableInternationalString) internationalString;
             found =
-                    growable.getLocales()
-                            .stream()
+                    growable.getLocales().stream()
                             .filter(l -> l != null)
                             .collect(Collectors.toSet());
         } else {
@@ -365,8 +363,7 @@ public class InternationalContentHelper {
     public void verify() {
         if (requestedLocales != null && !requestedLocales.isEmpty()) {
             String requested =
-                    requestedLocales
-                            .stream()
+                    requestedLocales.stream()
                             .map(l -> l.toLanguageTag())
                             .collect(Collectors.joining(","));
             if (supportedLocales == null || supportedLocales.isEmpty()) {
@@ -377,8 +374,7 @@ public class InternationalContentHelper {
             } else {
                 if (anyMatch) return;
                 String supported =
-                        supportedLocales
-                                .stream()
+                        supportedLocales.stream()
                                 .filter(l -> l != null)
                                 .map(l -> l.toLanguageTag())
                                 .collect(Collectors.joining(","));

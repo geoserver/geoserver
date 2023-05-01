@@ -396,8 +396,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
                         String ns = namespaceSupport.getURI(localNsPrefix);
                         if (ns != null) {
                             Optional<String> wsName =
-                                    featureTypes
-                                            .stream()
+                                    featureTypes.stream()
                                             .filter(
                                                     ft ->
                                                             ns.equals(

@@ -14,6 +14,11 @@ initdb=true
 initScript=jdbcconfig/scripts/initdb.h2.sql
 import=true
 
+# Flag controlling whether to add comments and some pretty-printing to SQL queries to
+# assist with debugging.  Setting this to false may allow the module to better take
+# advantage of prepared statement caching.
+debugMode=false
+
 jdbcUrl=jdbc:h2:file:${GEOSERVER_DATA_DIR}/jdbcconfig/catalog;AUTO_SERVER=TRUE
 driverClassName=org.h2.Driver
 username=sa

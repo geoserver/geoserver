@@ -29,9 +29,9 @@ jobs:
         restore-keys: |
           gs-${{ runner.os }}-maven-
     - name: Build with Maven
-      run: mvn -B -U -T3 -fae -Dfmt.action=check -Dpom.fmt.action=verify -Dqa -DskipTests=true -Prelease -f src/pom.xml clean install
+      run: mvn -B -U -T3 -fae -Dspotless.action=check -Dpom.fmt.action=verify -Dqa -DskipTests=true -Prelease -f src/pom.xml clean install
     - name: Build community modules
-      run: mvn -nsu -B -U -T4 -fae -Dfmt.action=check -Dpom.fmt.action=verify -DskipTests -Prelease -PcommunityRelease -f src/community/pom.xml clean install
+      run: mvn -nsu -B -U -T4 -fae -Dspotless.action=check -Dpom.fmt.action=verify -DskipTests -Prelease -PcommunityRelease -f src/community/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

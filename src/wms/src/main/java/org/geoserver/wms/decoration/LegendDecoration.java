@@ -272,8 +272,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                     }
                 };
         StyleInfo sInfo =
-                info.getStyles()
-                        .stream()
+                info.getStyles().stream()
                         .filter(predicate)
                         .findFirst()
                         .orElseGet(() -> defaultStyle);

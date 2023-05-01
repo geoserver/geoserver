@@ -57,6 +57,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -67,12 +68,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = {
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/featuretypes",
-        RestBaseController.ROOT_PATH
-                + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes"
-    }
-)
+        path = {
+            RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/featuretypes",
+            RestBaseController.ROOT_PATH
+                    + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes"
+        })
 public class FeatureTypeController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
@@ -83,12 +83,11 @@ public class FeatureTypeController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        produces = {
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        }
-    )
+            produces = {
+                MediaType.TEXT_HTML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE
+            })
     public Object featureTypesGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -156,13 +155,12 @@ public class FeatureTypeController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE
+            })
     public ResponseEntity featureTypePost(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -306,13 +304,12 @@ public class FeatureTypeController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "/{featureTypeName}",
-        produces = {
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        }
-    )
+            path = "/{featureTypeName}",
+            produces = {
+                MediaType.TEXT_HTML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE
+            })
     public RestWrapper featureTypeGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -334,13 +331,12 @@ public class FeatureTypeController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        path = "/{featureTypeName}",
-        produces = {
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        }
-    )
+            path = "/{featureTypeName}",
+            produces = {
+                MediaType.TEXT_HTML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE
+            })
     public void featureTypePut(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -384,13 +380,12 @@ public class FeatureTypeController extends AbstractCatalogController {
     }
 
     @DeleteMapping(
-        path = "{featureTypeName}",
-        produces = {
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        }
-    )
+            path = "{featureTypeName}",
+            produces = {
+                MediaType.TEXT_HTML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE
+            })
     public void featureTypeDelete(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -417,6 +412,20 @@ public class FeatureTypeController extends AbstractCatalogController {
 
         catalog.remove(ftInfo);
         LOGGER.info("DELETE feature type" + storeName + "," + featureTypeName);
+    }
+
+    @RequestMapping(
+            value = "{featureTypeName}/reset",
+            method = {RequestMethod.POST, RequestMethod.PUT})
+    public void reset(
+            @PathVariable String workspaceName,
+            @PathVariable(required = false) String storeName,
+            @PathVariable String featureTypeName) {
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
+        FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, storeName, featureTypeName);
+
+        catalog.getResourcePool().clear(ftInfo);
     }
 
     /** If the feature type doesn't exists throws a REST exception with HTTP 404 code. */

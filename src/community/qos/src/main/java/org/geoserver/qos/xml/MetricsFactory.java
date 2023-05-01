@@ -56,20 +56,17 @@ public class MetricsFactory {
             return asList(new String[] {"%"});
         }
         // ms
-        if (asList(new String[] {"MinimumRequestResponsePerformance", "AvailabilityDaily"})
-                .stream()
+        if (asList(new String[] {"MinimumRequestResponsePerformance", "AvailabilityDaily"}).stream()
                 .anyMatch(x -> metricCode.equals(x))) {
             return asList(new String[] {"%"});
         }
         // cases of ms, s
-        if (asList(new String[] {"ResponseTime", "InitialResponsePerformance"})
-                .stream()
+        if (asList(new String[] {"ResponseTime", "InitialResponsePerformance"}).stream()
                 .anyMatch(x -> metricCode.equals(x))) {
             return asList(new String[] {"s", "ms"});
         }
         // s-1
-        if (asList(new String[] {"RequestCapacityPerSecond"})
-                .stream()
+        if (asList(new String[] {"RequestCapacityPerSecond"}).stream()
                 .anyMatch(x -> metricCode.equals(x))) {
             return asList(new String[] {"s-1"});
         }

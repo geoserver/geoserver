@@ -210,6 +210,9 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
             roles.remove(role);
             setModified(true);
         }
+        if (helper.group_roleMap.get(groupname) != null && roles != null && roles.isEmpty()) {
+            helper.group_roleMap.remove(groupname);
+        }
     }
 
     /* (non-Javadoc)
@@ -253,6 +256,9 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
         if (roles != null && roles.contains(role)) {
             roles.remove(role);
             setModified(true);
+        }
+        if (helper.user_roleMap.get(username) != null && roles != null && roles.size() == 0) {
+            helper.user_roleMap.remove(username);
         }
     }
 

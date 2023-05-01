@@ -53,6 +53,8 @@ public abstract class AbstractInputProvider implements InputProvider {
                 provider = new InternalWCSInputProvider(input, ppio, context);
             } else if (href.startsWith("http://geoserver/wps")) {
                 provider = new InternalWPSInputProvider(input, ppio, executor, context);
+            } else if (executor.isRemoteInputDisabled()) {
+                throw new WPSException("Remote complex input references are disabled");
             } else {
                 int maxSizeMB = Validators.getMaxSizeMB(validators);
                 validators = Validators.filterOutClasses(validators, MaxSizeValidator.class);

@@ -13,8 +13,7 @@ import org.geoserver.util.HTTPWarningAppender;
 public class AnimationMetadata extends DownloadMetadata {
 
     public void accumulateWarnings(int frameCounter) {
-        HTTPWarningAppender.getWarnings()
-                .stream()
+        HTTPWarningAppender.getWarnings().stream()
                 .map(w -> new FrameWarning(w, frameCounter))
                 .forEach(fw -> warnings.add(fw));
     }

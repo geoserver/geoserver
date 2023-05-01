@@ -52,9 +52,7 @@ class HistogramTransformer extends TransformerBase {
             element("Domain", histogram.first);
             element(
                     "Values",
-                    histogram
-                            .second
-                            .stream()
+                    histogram.second.stream()
                             .map(Object::toString)
                             .collect(Collectors.joining(",")));
             end("Histogram");

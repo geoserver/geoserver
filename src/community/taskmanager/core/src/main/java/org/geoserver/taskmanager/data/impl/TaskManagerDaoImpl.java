@@ -815,9 +815,8 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
     @Override
     @Transactional(
-        transactionManager = "tmTransactionManager",
-        propagation = Propagation.REQUIRES_NEW
-    )
+            transactionManager = "tmTransactionManager",
+            propagation = Propagation.REQUIRES_NEW)
     public Configuration copyConfiguration(String configName) {
         ConfigurationImpl clone = (ConfigurationImpl) getConfiguration(configName);
         initInternal(clone);

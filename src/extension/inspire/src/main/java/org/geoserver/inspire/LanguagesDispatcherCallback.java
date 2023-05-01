@@ -30,8 +30,7 @@ public class LanguagesDispatcherCallback extends AbstractDispatcherCallback {
                 Properties mappings = InspireDirectoryManager.get().getLanguagesMappings();
                 String isoLang = mappings.getProperty(value);
                 String supportedLanguages =
-                        mappings.keySet()
-                                .stream()
+                        mappings.keySet().stream()
                                 .map(s -> s.toString())
                                 .collect(Collectors.joining(","));
                 if (isoLang == null) {

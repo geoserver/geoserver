@@ -24,10 +24,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.GetMapOutputFormat;
@@ -245,9 +251,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
      */
     private boolean supportsFiltering(WMSMapContent mapContent) {
         // returns TRUE if at least one layer supports filtering
-        return mapContent
-                .layers()
-                .stream()
+        return mapContent.layers().stream()
                 .anyMatch(
                         layer -> {
                             if (layer instanceof FeatureLayer) {
@@ -281,11 +285,41 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     }
 
     private List<String> styleNames(WMSMapContent mapContent) {
-        if (mapContent.layers().size() != 1 || mapContent.getRequest() == null)
-            return Collections.emptyList();
+        List<String> result;
+        if (mapContent.layers().size() != 1 || mapContent.getRequest() == null) {
+            result = getGroupStyleOrEmpty(mapContent);
+        } else {
+            MapLayerInfo info = mapContent.getRequest().getLayers().get(0);
+            result = info.getOtherStyleNames();
+        }
+        return result;
+    }
 
-        MapLayerInfo info = mapContent.getRequest().getLayers().get(0);
-        return info.getOtherStyleNames();
+    private List<String> getGroupStyleOrEmpty(WMSMapContent mapContent) {
+        List<String> styles = Collections.emptyList();
+        GetMapRequest request = mapContent.getRequest();
+        LayerGroupInfo groupInfo = getLayerGroup(request);
+        if (groupInfo != null) {
+            List<LayerGroupStyle> lgStyles = groupInfo.getLayerGroupStyles();
+            if (lgStyles != null && !lgStyles.isEmpty()) {
+                styles =
+                        lgStyles.stream()
+                                .map(s -> s.getName().getName())
+                                .collect(Collectors.toList());
+            }
+        }
+        return styles;
+    }
+
+    private LayerGroupInfo getLayerGroup(GetMapRequest getMapRequest) {
+        LayerGroupInfo groupInfo = null;
+        List<String> layers = KvpUtils.readFlat(getMapRequest.getRawKvp().get("layers"));
+        if (layers.size() == 1) {
+            String name = layers.get(0);
+            Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
+            groupInfo = catalog.getLayerGroupByName(name);
+        }
+        return groupInfo;
     }
 
     /**

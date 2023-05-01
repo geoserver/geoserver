@@ -75,8 +75,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
                     (Collection<Collection<QName>>) kvp.get("TYPENAMES");
 
             List<List<QName>> qualifiedNames =
-                    nestedTypeNames
-                            .stream()
+                    nestedTypeNames.stream()
                             .map(l -> qualifyTypeNames(request, ns, l))
                             .collect(Collectors.toList());
 
@@ -86,8 +85,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
 
     private List<QName> qualifyTypeNames(
             Request request, NamespaceInfo ns, Collection<QName> typeNames) {
-        return typeNames
-                .stream()
+        return typeNames.stream()
                 .map(name -> qualifyTypeName(request, ns, name))
                 .collect(Collectors.toList());
     }

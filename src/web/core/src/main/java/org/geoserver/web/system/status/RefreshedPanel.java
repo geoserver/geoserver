@@ -104,11 +104,18 @@ public class RefreshedPanel extends Panel {
         list.setOutputMarkupId(true);
         add(list);
 
+        // Check every 5 seconds, or less frequently if metrics collection is slow
+        long start = System.currentTimeMillis();
+        systemInfoCollector.retrieveAllSystemInfo();
+        long complete = System.currentTimeMillis();
+        long sampleTime = complete - start;
+        Duration updateInternval = Duration.milliseconds(Math.max(5000, sampleTime * 5));
+
         /*
          * Refresh every seconds
          */
         this.add(
-                new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)) {
+                new AjaxSelfUpdatingTimerBehavior(updateInternval) {
                     private static final long serialVersionUID = -7009847252782601466L;
 
                     @Override

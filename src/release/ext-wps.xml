@@ -17,6 +17,9 @@
         <include>serializer*</include>
         <include>gt-csv*</include>
         <include>opencsv*</include>
+        <!-- kmlppio dependencies -->
+        <include>gs-wps-kml-ppio*</include>
+        <include>gt-xsd-kml*</include>
       </includes>
     </fileSet>
     <fileSet>

@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -35,7 +36,10 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
+import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -522,6 +526,38 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
         public List<LoggingEvent> getLog() {
             return new ArrayList<>(log);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStylesInDropdown() throws Exception {
+        // tests that layer groups style are available from the styles dropdown in ol preview
+        LayerGroupInfo group = null;
+        Catalog catalog = getCatalog();
+        try {
+            createLakesPlacesLayerGroup(
+                    catalog, "lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
+            group = catalog.getLayerGroupByName("lakes_and_places_group");
+            LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
+            StyleInfo styleName = new StyleInfoImpl(getCatalog());
+            styleName.setName("nature-style");
+            groupStyle.setName(styleName);
+            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
+            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
+            groupStyle.getStyles().add(null);
+            groupStyle.getStyles().add(null);
+            group.getLayerGroupStyles().add(groupStyle);
+            catalog.save(group);
+            String url =
+                    "wms?LAYERS="
+                            + group.getName()
+                            + "&STYLES=&format=application/openlayers"
+                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse response = getAsServletResponse(url);
+            String content = response.getContentAsString();
+            assertTrue(content.contains("<option value=\"nature-style\">nature-style</option>"));
+        } finally {
+            if (group != null) catalog.remove(group);
         }
     }
 }

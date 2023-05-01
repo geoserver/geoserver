@@ -32,6 +32,9 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
     /** System property set to totally disable any online tests */
     public static final String ONLINE_TEST_PROFILE = "onlineTestProfile";
 
+    /** Geopkg file path to setup correctly */
+    protected String geopkgDir;
+
     protected Logger LOGGER = Logger.getLogger(AbstractReferenceDataSetup.class);
 
     /**
@@ -91,6 +94,14 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
                 if (exists == null || exists.booleanValue()) {
                     if (fixtureFile.exists()) {
                         fixture = GSFixtureUtilitiesDelegate.loadProperties(fixtureFile);
+                        // update jdbc connection url. take geopkg file from resources and use that
+                        // geopkg in the tests
+                        if (fixtureId.equals("geopkg")) {
+                            fixture.setProperty(
+                                    "url",
+                                    fixture.getProperty("url").substring(0, 11)
+                                            + geopkgDir.substring(4));
+                        }
                         found.put(fixtureFile.getCanonicalPath(), true);
                         System.setProperty("app-schema.properties", fixtureFile.getPath());
                     } else {

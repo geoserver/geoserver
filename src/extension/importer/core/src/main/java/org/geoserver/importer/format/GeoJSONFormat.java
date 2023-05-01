@@ -29,6 +29,7 @@ import org.geoserver.importer.Directory;
 import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
 import org.geoserver.importer.VectorFormat;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geotools.data.FeatureReader;
@@ -124,6 +125,10 @@ public class GeoJSONFormat extends VectorFormat {
     public StoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
             throws IOException {
         // direct import not supported
+        LOG.log(
+                Level.INFO,
+                "Direct import of GeoJSON is not supported.  "
+                        + "You mush select a supported target data store");
         return null;
     }
 
@@ -149,8 +154,6 @@ public class GeoJSONFormat extends VectorFormat {
 
         // get the composite feature type
         SimpleFeatureType featureType = new FeatureJSON().readFeatureCollectionSchema(file, false);
-        LOG.log(Level.FINE, featureType.toString());
-
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.init(featureType);
         tb.setName(FilenameUtils.getBaseName(file.getName()));
@@ -190,7 +193,7 @@ public class GeoJSONFormat extends VectorFormat {
         // bounds
         ft.setNativeBoundingBox(EMPTY_BOUNDS);
         ft.setLatLonBoundingBox(EMPTY_BOUNDS);
-        ft.getMetadata().put("recalculate-bounds", Boolean.TRUE);
+        ft.getMetadata().put(Importer.CALCULATE_BOUNDS, Boolean.TRUE);
 
         LayerInfo layer = catalogBuilder.buildLayer((ResourceInfo) ft);
 

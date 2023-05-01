@@ -17,7 +17,7 @@ import org.w3c.dom.Document;
 public class BBox3DTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected BBox3DMockData createTestData() {
+    protected AbstractAppSchemaMockData createTestData() {
         return new BBox3DMockData();
     }
 

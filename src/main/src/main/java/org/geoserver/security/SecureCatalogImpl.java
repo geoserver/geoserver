@@ -56,7 +56,6 @@ import org.geoserver.security.decorators.SecuredWMSLayerInfo;
 import org.geoserver.security.decorators.SecuredWMSStoreInfo;
 import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
 import org.geoserver.security.decorators.SecuredWMTSStoreInfo;
-import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.DefaultResourceAccessManager;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.type.Name;
@@ -102,19 +101,27 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     static ResourceAccessManager lookupResourceAccessManager() throws Exception {
-        ResourceAccessManager manager = GeoServerExtensions.bean(ResourceAccessManager.class);
-        if (manager == null) {
-            manager = buildDefaultResourceAccessManager();
+        List<ResourceAccessManager> managers =
+                GeoServerExtensions.extensions(ResourceAccessManager.class);
+        ResourceAccessManager manager = null;
+        int size = managers.size();
+        if (size == 1) {
+            manager = managers.get(0);
+        } else {
+            for (ResourceAccessManager resourceAccessManager : managers) {
+                if (!DefaultResourceAccessManager.class.equals(resourceAccessManager.getClass())) {
+                    manager = resourceAccessManager;
+                    break;
+                }
+            }
         }
+        // should never happen,just in case we have multiple singleton beans
+        // of type DefaultResourceAccessManager
+        if (manager == null) manager = managers.get(0);
+
         CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);
         return lwManager;
-    }
-
-    private static DefaultResourceAccessManager buildDefaultResourceAccessManager() {
-        return new DefaultResourceAccessManager(
-                GeoServerExtensions.bean(DataAccessRuleDAO.class),
-                (Catalog) GeoServerExtensions.bean("rawCatalog"));
     }
 
     public SecureCatalogImpl(Catalog catalog, ResourceAccessManager manager) {
@@ -221,6 +228,26 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     @Override
     public List<CoverageStoreInfo> getCoverageStores() {
         return filterStores(user(), delegate.getCoverageStores());
+    }
+
+    @Override
+    public WMSStoreInfo getWMSStore(String id) {
+        return checkAccess(user(), delegate.getWMSStore(id), MixedModeBehavior.CHALLENGE);
+    }
+
+    @Override
+    public WMSStoreInfo getWMSStoreByName(String name) {
+        return checkAccess(user(), delegate.getWMSStoreByName(name), MixedModeBehavior.CHALLENGE);
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStore(String id) {
+        return checkAccess(user(), delegate.getWMTSStore(id), MixedModeBehavior.CHALLENGE);
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStoreByName(String name) {
+        return checkAccess(user(), delegate.getWMTSStoreByName(name), MixedModeBehavior.CHALLENGE);
     }
 
     @Override

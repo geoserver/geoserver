@@ -104,8 +104,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
                         return envelope;
                     }
                 };
-        return collections
-                .stream()
+        return collections.stream()
                 .map(mapper)
                 .reduce(
                         (e1, e2) -> {
@@ -142,8 +141,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
 
     @Override
     public int size() {
-        return collections
-                .stream()
+        return collections.stream()
                 .mapToInt(
                         c -> {
                             int size = c.size();

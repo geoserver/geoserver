@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
@@ -70,12 +71,11 @@ public class CoverageStoreController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper<CoverageStoreInfo> coverageStoresGet(@PathVariable String workspaceName) {
 
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
@@ -87,13 +87,12 @@ public class CoverageStoreController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "{storeName}",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            path = "{storeName}",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper<CoverageStoreInfo> coverageStoreGet(
             @PathVariable String workspaceName, @PathVariable String storeName) {
 
@@ -102,13 +101,12 @@ public class CoverageStoreController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public ResponseEntity<String> coverageStorePost(
             @RequestBody CoverageStoreInfo coverageStore,
             @PathVariable String workspaceName,
@@ -129,14 +127,13 @@ public class CoverageStoreController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = "{storeName}",
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            value = "{storeName}",
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void coverageStorePut(
             @RequestBody CoverageStoreInfo info,
             @PathVariable String workspaceName,
@@ -201,6 +198,14 @@ public class CoverageStoreController extends AbstractCatalogController {
                 ((StructuredGridCoverage2DReader) reader).delete(deleteData);
             }
         }
+    }
+
+    @RequestMapping(
+            value = "{storeName}/reset",
+            method = {RequestMethod.POST, RequestMethod.PUT})
+    public void reset(@PathVariable String workspaceName, @PathVariable String storeName) {
+        CoverageStoreInfo cs = getExistingCoverageStore(workspaceName, storeName);
+        catalog.getResourcePool().clear(cs);
     }
 
     void clear(CoverageStoreInfo info) {

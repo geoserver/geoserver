@@ -55,9 +55,8 @@ import org.springframework.util.MimeType;
  */
 @SuppressWarnings("deprecation")
 @DescribeProcess(
-    title = "Enterprise Download Process",
-    description = "Downloads Layer Stream and provides a ZIP."
-)
+        title = "Enterprise Download Process",
+        description = "Downloads Layer Stream and provides a ZIP.")
 public class DownloadProcess implements GeoServerProcess, ApplicationContextAware {
 
     /** The LOGGER. */
@@ -129,114 +128,100 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
      * @throws ProcessException the process exception
      */
     @DescribeResult(
-        name = "result",
-        description = "The produced download",
-        meta = {"mimeTypes=image/tiff, " + ZIP, "chosenMimeType=resultFormat"}
-    )
+            name = "result",
+            description = "The produced download",
+            meta = {"mimeTypes=image/tiff, " + ZIP, "chosenMimeType=resultFormat"})
     public RawData execute(
             @DescribeParameter(
-                        name = "layerName",
-                        min = 1,
-                        description = "Original layer to download"
-                    )
+                            name = "layerName",
+                            min = 1,
+                            description = "Original layer to download")
                     String layerName,
             @DescribeParameter(name = "filter", min = 0, description = "Optional Vector Filter")
                     Filter filter,
             @DescribeParameter(name = "outputFormat", min = 1, description = "format Mime-Type")
                     String mimeType,
             @DescribeParameter(
-                        name = "resultFormat",
-                        min = 0,
-                        description =
-                                "The Mime-Type of the returned object. Default is application/zip, "
-                                        + "to archive the result"
-                    )
+                            name = "resultFormat",
+                            min = 0,
+                            description =
+                                    "The Mime-Type of the returned object. Default is application/zip, "
+                                            + "to archive the result")
                     String resultFormat,
             @DescribeParameter(name = "targetCRS", min = 0, description = "Optional Target CRS")
                     CoordinateReferenceSystem targetCRS,
             @DescribeParameter(
-                        name = "RoiCRS",
-                        min = 0,
-                        description = "Optional Region Of Interest CRS"
-                    )
+                            name = "RoiCRS",
+                            min = 0,
+                            description = "Optional Region Of Interest CRS")
                     CoordinateReferenceSystem roiCRS,
             @DescribeParameter(
-                        name = "ROI",
-                        min = 0,
-                        description = "Optional Region Of Interest (Polygon)"
-                    )
+                            name = "ROI",
+                            min = 0,
+                            description = "Optional Region Of Interest (Polygon)")
                     Geometry roi,
             @DescribeParameter(name = "cropToROI", min = 0, description = "Crop to ROI")
                     Boolean clip,
             @DescribeParameter(
-                        name = "interpolation",
-                        description =
-                                "Interpolation function to use when reprojecting / scaling raster data.  Values are NEAREST (default), BILINEAR, BICUBIC2, BICUBIC",
-                        min = 0
-                    )
+                            name = "interpolation",
+                            description =
+                                    "Interpolation function to use when reprojecting / scaling raster data.  Values are NEAREST (default), BILINEAR, BICUBIC2, BICUBIC",
+                            min = 0)
                     Interpolation interpolation,
             @DescribeParameter(
-                        name = "targetSizeX",
-                        min = 0,
-                        minValue = 1,
-                        description =
-                                "X Size of the Target Image (applies to raster data only), or native resolution if missing"
-                    )
+                            name = "targetSizeX",
+                            min = 0,
+                            minValue = 1,
+                            description =
+                                    "X Size of the Target Image (applies to raster data only), or native resolution if missing")
                     Integer targetSizeX,
             @DescribeParameter(
-                        name = "targetSizeY",
-                        min = 0,
-                        minValue = 1,
-                        description =
-                                "Y Size of the Target Image (applies to raster data only), or native resolution if missing"
-                    )
+                            name = "targetSizeY",
+                            min = 0,
+                            minValue = 1,
+                            description =
+                                    "Y Size of the Target Image (applies to raster data only), or native resolution if missing")
                     Integer targetSizeY,
             @DescribeParameter(
-                        name = "selectedBands",
-                        description = "Band Selection Indices",
-                        min = 0
-                    )
+                            name = "selectedBands",
+                            description = "Band Selection Indices",
+                            min = 0)
                     int[] bandIndices,
             @DescribeParameter(
-                        name = "writeParameters",
-                        description = "Optional writing parameters",
-                        min = 0
-                    )
+                            name = "writeParameters",
+                            description = "Optional writing parameters",
+                            min = 0)
                     Parameters writeParameters,
             @DescribeParameter(
-                        name = "minimizeReprojections",
-                        description =
-                                "When dealing with a Heterogeneous CRS mosaic, avoid reprojections of "
-                                        + "the granules within the ROI, having their nativeCRS equal to the targetCRS",
-                        min = 0
-                    )
+                            name = "minimizeReprojections",
+                            description =
+                                    "When dealing with a Heterogeneous CRS mosaic, avoid reprojections of "
+                                            + "the granules within the ROI, having their nativeCRS equal to the targetCRS",
+                            min = 0)
                     Boolean minimizeReprojections,
             @DescribeParameter(
-                        name = "bestResolutionOnMatchingCRS",
-                        description =
-                                "When dealing with a Heterogeneous CRS mosaic given a ROI "
-                                        + "and a TargetCRS, with no target size being specified, get the best "
-                                        + " resolution of data having nativeCrs matching the TargetCRS",
-                        min = 0
-                    )
+                            name = "bestResolutionOnMatchingCRS",
+                            description =
+                                    "When dealing with a Heterogeneous CRS mosaic given a ROI "
+                                            + "and a TargetCRS, with no target size being specified, get the best "
+                                            + " resolution of data having nativeCrs matching the TargetCRS",
+                            min = 0)
                     Boolean bestResolutionOnMatchingCRS,
             @DescribeParameter(
-                        name = "resolutionsDifferenceTolerance",
-                        description =
-                                "the parameter allows to specify a tolerance value to control the use of native"
-                                        + " resolution of the data, when no target size has been specified and granules are reprojected. If "
-                                        + " the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,"
-                                        + " native resolutions is the same for all the requested granules,"
-                                        + " the unit of measure is the same for native and target CRS, "
-                                        + "the reprojected coverage will be forced to use native resolutions",
-                        min = 0
-                    )
+                            name = "resolutionsDifferenceTolerance",
+                            description =
+                                    "the parameter allows to specify a tolerance value to control the use of native"
+                                            + " resolution of the data, when no target size has been specified and granules are reprojected. If "
+                                            + " the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,"
+                                            + " native resolutions is the same for all the requested granules,"
+                                            + " the unit of measure is the same for native and target CRS, "
+                                            + "the reprojected coverage will be forced to use native resolutions",
+                            min = 0)
                     Double resolutionsDifferenceTolerance,
             @DescribeParameter(
-                        name = "targetVerticalCRS",
-                        description = "Optional Target VerticalCRS ",
-                        min = 0
-                    )
+                            name = "targetVerticalCRS",
+                            description = "Optional Target VerticalCRS ",
+                            min = 0)
                     CoordinateReferenceSystem targetVerticalCRS,
             final ProgressListener progressListener)
             throws ProcessException {

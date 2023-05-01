@@ -6,10 +6,14 @@
 package org.geoserver.web.data.layergroup;
 
 import java.io.Serializable;
+import java.util.List;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.web.GeoServerApplication;
 
 /** Represents one layer in the layer group */
@@ -35,6 +39,7 @@ public class LayerGroupEntry implements Serializable {
     }
 
     String styleId;
+    String layerGroupStyle;
     String layerId;
     String layerGroupId;
 
@@ -54,26 +59,37 @@ public class LayerGroupEntry implements Serializable {
     }
 
     public StyleInfo getStyle() {
-        if (styleId == null) return null;
-        else return GeoServerApplication.get().getCatalog().getStyle(styleId);
+        Catalog catalog = GeoServerApplication.get().getCatalog();
+        StyleInfo result = null;
+        if (styleId != null) result = catalog.getStyle(styleId);
+        else if (layerGroupStyle != null) {
+            StyleInfo lgStyleName = new StyleInfoImpl(catalog);
+            lgStyleName.setName(layerGroupStyle);
+            result = lgStyleName;
+        }
+        return result;
     }
 
     public boolean isDefaultStyle() {
-        return styleId == null;
+        return styleId == null && layerGroupStyle == null;
     }
 
     public void setDefaultStyle(boolean defaultStyle) {
         if (getLayer() == null) {
             setStyle(getStyle());
-        } else if (defaultStyle || (getLayer() instanceof LayerGroupInfo)) {
+        } else if (defaultStyle) {
             setStyle(null);
-        } else {
+        } else if (getLayer() instanceof LayerInfo) {
             setStyle(((LayerInfo) getLayer()).getDefaultStyle());
+        } else if (getLayer() instanceof LayerGroupInfo) {
+            List<LayerGroupStyle> styleList = ((LayerGroupInfo) getLayer()).getLayerGroupStyles();
+            if (styleList != null && !styleList.isEmpty()) setStyle(styleList.get(0).getName());
         }
     }
 
     public void setStyle(StyleInfo style) {
         if (style == null) styleId = null;
+        else if (layerGroupId != null) layerGroupStyle = style.getName();
         else styleId = style.getId();
     }
 

@@ -63,13 +63,29 @@ Additional configuration parameters can be specified in the ImageMosaic indexer 
      - A boolean flag (true/false) to be set (Cog=true) in order to signal that the ImageMosaic is a COG data mosaic.
    * - CogRangeReader
      - N
-     - Specifies the desired RangeReader implementation performing the Range Reads requests. Currently supported values are ``it.geosolutions.imageioimpl.plugins.cog.HttpRangeReader`` and ``it.geosolutions.imageioimpl.plugins.cog.S3RangeReader``, with the latter using an S3 Client to access S3 buckets. Default implementation uses HTTP.
+     - Specifies the desired RangeReader implementation performing the Range Reads requests. 
    * - CogUser
      - N
      - Credential to be set whenever basic HTTP authentication is needed to access the COG Datasets or an S3 Access KeyID is required
    * - CogPassword
      - N
      - Password for the above user OR Secret Access Key for the above S3 KeyId.
+
+The following table provides the values for the ``CogRangeReader`` based on the type of target storage:
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+   :stub-columns: 1
+   
+   * - Storage type
+     - Class name
+   * - HTTP
+     - Can be omitted, or set to ``it.geosolutions.imageioimpl.plugins.cog.HttpRangeReader``
+   * - AWS S3
+     - ``it.geosolutions.imageioimpl.plugins.cog.S3RangeReader``
+   * - Google Cloud
+     - ``it.geosolutions.imageioimpl.plugins.cog.GSRangeReader``
 
 COG Global Settings
 -------------------
@@ -80,6 +96,15 @@ The GeoServer Global Settings page contains the default COG settings presented w
 
    Default Global COG Settings
 
+Image locations
+---------------
+
+For images served by a HTTP server, a HTTP URL must be used.
+For images served by S3 or Google Cloud, it's possible to use both the public HTTP URL,
+or the idiomatic URIS, for example:
+
+* ``s3://landsat-pds/c1/L8/153/075/LC08_L1TP_153075_20190515_20190515_01_RT/LC08_L1TP_153075_20190515_20190515_01_RT_B2.TIF``
+* ``gs://gcp-public-data-landsat/LC08/01/044/034/LC08_L1GT_044034_20130330_20170310_01_T2/LC08_L1GT_044034_20130330_20170310_01_T2_B11.TIF`` 
 
 HTTP Client (OkHttp) configuration
 ----------------------------------
@@ -124,6 +149,17 @@ On the table below, replace the "$ALIAS$" template with HTTP or HTTPS or S3 if y
      - Default user (access key ID) for AWS basic authentication credentials
    * - IIO_$ALIAS$_AWS_PASSWORD
      - Default password (secret access key) for AWS basic authentication credentials
+
+Google Cloud storage configuration
+----------------------------------
+
+The credentials to access Google Cloud cannot be provided as username and password (an authentication
+method that Google Cloud does not support), but need to be provided via a system variable pointing
+to the key file::
+
+    set GOOGLE_APPLICATION_CREDENTIALS=/path/to/the/key-file.json
+    export GOOGLE_APPLICATION_CREDENTIALS
+
 
 Client configuration (System Properties)
 ----------------------------------------

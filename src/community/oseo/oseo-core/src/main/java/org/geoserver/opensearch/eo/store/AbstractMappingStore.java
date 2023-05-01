@@ -601,8 +601,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             throws IOException {
         // remove all related OGC links
         List<Filter> filters =
-                collectionIdentifiers
-                        .stream()
+                collectionIdentifiers.stream()
                         .map(
                                 id ->
                                         FF.equal(

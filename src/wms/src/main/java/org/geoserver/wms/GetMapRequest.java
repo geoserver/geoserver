@@ -8,6 +8,7 @@ package org.geoserver.wms;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.image.IndexColorModel;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -144,11 +145,11 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * Gets the url specified by the "SLD" parameter.
+     * Gets the uri specified by the "SLD" parameter.
      *
      * <p>This parameter is an alias for "STYLE_URL".
      */
-    public URL getSld() {
+    public URI getSld() {
         return getStyleUrl();
     }
 
@@ -157,7 +158,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
      *
      * <p>This parameter is used to point to a remote style via url.
      */
-    public URL getStyleUrl() {
+    public URI getStyleUrl() {
         return this.optionalParams.styleUrl;
     }
 
@@ -210,8 +211,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * Gets the value of the "VALIDATESCHEMA" parameter which controls wether the value of the "SLD
-     * paramter is schema validated.
+     * Gets the value of the "VALIDATESCHEMA" parameter which controls wether the value of the
+     * "SLD_BODY" paramter is schema validated.
      */
     public Boolean getValidateSchema() {
         return this.optionalParams.validateSLD;
@@ -374,22 +375,50 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
                 interpolations == null ? Collections.emptyList() : interpolations;
     }
 
-    /** Sets the url specified by the "SLD" parameter. */
-    public void setSld(URL sld) {
+    /**
+     * Style resource defined by the "SLD" parameter.
+     *
+     * <p>The style resource can be provided by either {@link #setSld(URI)} or {@link
+     * #setStyleUrl(URI)}.
+     *
+     * @param sld Style resource defined by "SLD" parameter.
+     */
+    public void setSld(URI sld) {
         setStyleUrl(sld);
     }
 
-    /** Sets the url specified by the "STYLE_URL" parameter. */
-    public void setStyleUrl(URL styleUrl) {
-        this.optionalParams.styleUrl = styleUrl;
+    /**
+     * Style resource defined by the "STYLE_URL" parameter.
+     *
+     * <p>The style resource can be provided by either {@link #setSld(URI)} or {@link
+     * #setStyleUrl(URI)}.
+     *
+     * @param styleUri Style resource defined by "STYLE_URL" parameter.
+     */
+    public void setStyleUrl(URI styleUri) {
+        this.optionalParams.styleUrl = styleUri;
     }
 
-    /** Sets the string specified by the "SLD_BODY" parameter */
+    /**
+     * Style document defined by the "SLD_BODY" parameter.
+     *
+     * <p>The sld document contents can be provided by either {@link #setSldBody(String)} or {@link
+     * #setStyleBody(String)}.
+     *
+     * @param sldBody Contents forming SLD document to use
+     */
     public void setSldBody(String sldBody) {
         setStyleBody(sldBody);
     }
 
-    /** Sets the url specified by the "STYLE_BODY" parameter. */
+    /**
+     * Style documented defined by the "STYLE_BODY" parameter.
+     *
+     * <p>The style document contents can be provided by either {@link #setSldBody(String)} or
+     * {@link #setStyleBody(String)}.
+     *
+     * @param styleBody Contents forming style document to use
+     */
     public void setStyleBody(String styleBody) {
         this.optionalParams.styleBody = styleBody;
     }
@@ -399,17 +428,21 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         setStyleVersion(sldVersion);
     }
 
-    /** Sets the url specified by the "STYLE_VERSION" parameter. */
+    /** Sets the style document version specified by the "STYLE_VERSION" parameter. */
     public void setStyleVersion(String styleVersion) {
         this.optionalParams.styleVersion = styleVersion;
     }
 
-    /** Sets the string specified by the "STYLE_FORMAT" parameter */
+    /** Sets the style document format specified by the "STYLE_FORMAT" parameter */
     public void setStyleFormat(String styleFormat) {
         this.optionalParams.styleFormat = styleFormat;
     }
 
-    /** Sets the flag to validate the "SLD" parameter or not. //TODO */
+    /**
+     * Sets the flag to validate the style document.
+     *
+     * @param validateSLD Use true to enable style document validation
+     */
     public void setValidateSchema(Boolean validateSLD) {
         this.optionalParams.validateSLD = validateSLD;
     }
@@ -557,9 +590,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         if (this.optionalParams.sortBy == null) {
             return null;
         } else {
-            return this.optionalParams
-                    .sortBy
-                    .stream()
+            return this.optionalParams.sortBy.stream()
                     .map(l -> l.toArray(new SortBy[l.size()]))
                     .collect(Collectors.toList());
         }
@@ -671,10 +702,10 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
          */
         List<Object> elevation = Collections.emptyList();
 
-        /** STYLE_URL parameter */
-        URL styleUrl;
+        /** URI provided by STYLE_URL parameter or (SLD_URL parameter). */
+        URI styleUrl;
 
-        /** STYLE_BODY parameter */
+        /** Style document provided by STYLE_BODY parameter (or SLD_BODY parameter). */
         String styleBody;
 
         /** STYLE_VERSION parameter */

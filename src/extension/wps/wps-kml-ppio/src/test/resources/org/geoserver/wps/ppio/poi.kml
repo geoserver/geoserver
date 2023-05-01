@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:ns2="http://www.google.com/kml/ext/2.2" xmlns:ns3="http://www.w3.org/2005/Atom" xmlns:ns4="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0">
+    <Document>
+        <Schema name="poi_1" id="poi_1">
+            <SimpleField type="string" name="NAME"/>
+            <SimpleField type="string" name="THUMBNAIL"/>
+            <SimpleField type="string" name="MAINPAGE"/>
+        </Schema>
+        <Folder>
+            <name>poi</name>
+            <Placemark id="poi.1">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#poi_1">
+                        <SimpleData name="NAME">museam</SimpleData>
+                        <SimpleData name="THUMBNAIL">pics/22037827-Ti.jpg</SimpleData>
+                        <SimpleData name="MAINPAGE">pics/22037827-L.jpg</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <Point>
+                    <coordinates>-74.01046109936333,40.707587626256554</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark id="poi.2">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#poi_1">
+                        <SimpleData name="NAME">stock</SimpleData>
+                        <SimpleData name="THUMBNAIL">pics/22037829-Ti.jpg</SimpleData>
+                        <SimpleData name="MAINPAGE">pics/22037829-L.jpg</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <Point>
+                    <coordinates>-74.0108375113659,40.70754683896324</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark id="poi.3">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#poi_1">
+                        <SimpleData name="NAME">art</SimpleData>
+                        <SimpleData name="THUMBNAIL">pics/22037856-Ti.jpg</SimpleData>
+                        <SimpleData name="MAINPAGE">pics/22037856-L.jpg</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <Point>
+                    <coordinates>-74.01053023879955,40.70938711687079</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark id="poi.4">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#poi_1">
+                        <SimpleData name="NAME">lox</SimpleData>
+                        <SimpleData name="THUMBNAIL">pics/22037884-Ti.jpg</SimpleData>
+                        <SimpleData name="MAINPAGE">pics/22037884-L.jpg</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <Point>
+                    <coordinates>-74.00857344353275,40.711945649065406</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark id="poi.5">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#poi_1">
+                        <SimpleData name="NAME">church</SimpleData>
+                        <SimpleData name="THUMBNAIL">pics/22037839-Ti.jpg</SimpleData>
+                        <SimpleData name="MAINPAGE">pics/22037839-L.jpg</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <Point>
+                    <coordinates>-74.0118315772888,40.708529961953786</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark id="poi.6">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#poi_1">
+                        <SimpleData name="NAME">fire</SimpleData>
+                        <SimpleData name="THUMBNAIL">pics/28640984-Ti.jpg</SimpleData>
+                        <SimpleData name="MAINPAGE">pics/28640984-L.jpg</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <Point>
+                    <coordinates>-74.00153046439813,40.719885123828675</coordinates>
+                </Point>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

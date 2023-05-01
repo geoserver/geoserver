@@ -45,9 +45,13 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
@@ -577,5 +581,30 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         // compare the parsed double value with the expected one
         double difference = Math.abs(expected - value);
         assertThat(difference <= precision, is(true));
+    }
+
+    protected LayerGroupInfo lakesAndPlacesWithGroupStyle(
+            String lgName,
+            Mode mode,
+            String lgStyleName,
+            List<PublishedInfo> styleLayers,
+            List<StyleInfo> styleStyles)
+            throws Exception {
+        createLakesPlacesLayerGroup(getCatalog(), lgName, mode, null);
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName(lgName);
+        addLayerGroupStyle(groupInfo, lgStyleName, styleLayers, styleStyles);
+        return getCatalog().getLayerGroupByName(lgName);
+    }
+
+    protected void addLayerGroupStyle(
+            LayerGroupInfo group, String name, List<PublishedInfo> layers, List<StyleInfo> styles) {
+        LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
+        StyleInfo styleName = new StyleInfoImpl(getCatalog());
+        styleName.setName(name);
+        groupStyle.setName(styleName);
+        groupStyle.getLayers().addAll(layers);
+        groupStyle.getStyles().addAll(styles);
+        group.getLayerGroupStyles().add(groupStyle);
+        getCatalog().save(group);
     }
 }

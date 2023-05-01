@@ -31,6 +31,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Niels Charlier
  */
+@Deprecated
 @PropertySource("classpath*:application.properties")
 public class InternalUserResolver implements UserResolver {
 

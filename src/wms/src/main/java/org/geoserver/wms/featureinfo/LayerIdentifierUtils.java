@@ -43,8 +43,7 @@ public final class LayerIdentifierUtils {
             return featureCollections;
         }
         // try to reproject features collections to the target CRS
-        return featureCollections
-                .stream()
+        return featureCollections.stream()
                 .map(featureCollection -> reproject(featureCollection, targetCrs))
                 .collect(Collectors.toList());
     }

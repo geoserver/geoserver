@@ -16,11 +16,6 @@
         <include>http-client-spi-2*.jar</include>
         <include>http*-osgi*.jar</include>
         <include>imageio-ext-*rangereader*.jar</include>
-        <include>jackson-annotations*.jar</include>
-        <include>jackson-core-asl*.jar</include>
-        <include>jackson-data*.jar</include>
-        <include>jackson-mapper-asl*.jar</include>
-        <include>jackson-module-asl*.jar</include>
         <include>kotlin-stdlib*.jar</include>
         <include>*netty*.jar</include>
         <include>okhttp*.jar</include>

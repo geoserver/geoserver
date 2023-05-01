@@ -100,9 +100,7 @@ public class ApplicationSchemaXSD1 extends XSD {
     @Override
     protected XSDSchema buildSchema() throws IOException {
         FeatureTypeInfo[] types =
-                this.featureTypes
-                        .values()
-                        .stream()
+                this.featureTypes.values().stream()
                         .flatMap(Collection::stream)
                         .toArray(FeatureTypeInfo[]::new);
         XSDSchema schema;

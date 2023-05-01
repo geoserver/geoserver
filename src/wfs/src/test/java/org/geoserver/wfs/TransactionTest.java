@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -56,6 +57,8 @@ public class TransactionTest extends WFSTestSupport {
         revertLayer(CiteTestData.FIFTEEN);
         revertLayer(CiteTestData.LINES);
         revertLayer(CiteTestData.POLYGONS);
+        revertLayer(CiteTestData.NAMED_PLACES);
+        revertLayer(CiteTestData.BUILDINGS);
     }
 
     @Test
@@ -329,6 +332,80 @@ public class TransactionTest extends WFSTestSupport {
         // do another get feature
         dom = postAsDOM("wfs", getFeature);
         XMLAssert.assertXpathEvaluatesTo("13", "count(//gml:featureMember)", dom);
+    }
+
+    /**
+     * Verifies two deletes on different types having the same attributes are aggreated properly
+     * respecting the types.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testBatchDoubleDifferentTypesDelete() throws Exception {
+        String getFeatureNamedPlaces =
+                "<wfs:GetFeature "
+                        + "service=\"WFS\" "
+                        + "version=\"1.0.0\" "
+                        + "xmlns:cite=\"http://www.opengis.net/cite\" "
+                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                        + "> "
+                        + "<wfs:Query typeName=\"cite:NamedPlaces\"/> "
+                        + "</wfs:GetFeature>";
+
+        String getFeatureBuildings =
+                "<wfs:GetFeature "
+                        + "service=\"WFS\" "
+                        + "version=\"1.0.0\" "
+                        + "xmlns:cite=\"http://www.opengis.net/cite\" "
+                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                        + "> "
+                        + "<wfs:Query typeName=\"cite:Buildings\"/> "
+                        + "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", getFeatureNamedPlaces);
+        print(dom);
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//gml:featureMember)", dom);
+
+        dom = postAsDOM("wfs", getFeatureBuildings);
+        print(dom);
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//gml:featureMember)", dom);
+
+        // perform a delete
+        String delete =
+                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                        + "xmlns:cite=\"http://www.opengis.net/cite\" "
+                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs\"> "
+                        + "<wfs:Delete typeName=\"cite:NamedPlaces\"> "
+                        + "<ogc:Filter> "
+                        + "<ogc:PropertyIsEqualTo>\n"
+                        + "        <ogc:PropertyName>cite:NAME</ogc:PropertyName>\n"
+                        + "        <ogc:Literal>ASHTON</ogc:Literal>\n"
+                        + "</ogc:PropertyIsEqualTo>"
+                        + "</ogc:Filter> "
+                        + "</wfs:Delete> "
+                        + "<wfs:Delete typeName=\"cite:Buildings\"> "
+                        + "<ogc:Filter> "
+                        + "<ogc:PropertyIsEqualTo>\n"
+                        + "        <ogc:PropertyName>cite:ADDRESS</ogc:PropertyName>\n"
+                        + "        <ogc:Literal>123 Main Street</ogc:Literal>\n"
+                        + "</ogc:PropertyIsEqualTo>"
+                        + "</ogc:Filter> "
+                        + "</wfs:Delete> "
+                        + "</wfs:Transaction>";
+
+        dom = postAsDOM("wfs", delete);
+        assertEquals("WFS_TransactionResponse", dom.getDocumentElement().getLocalName());
+        assertEquals(1, dom.getElementsByTagName("wfs:SUCCESS").getLength());
+
+        // do another get feature
+        dom = postAsDOM("wfs", getFeatureBuildings);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//gml:featureMember)", dom);
+
+        dom = postAsDOM("wfs", getFeatureBuildings);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//gml:featureMember)", dom);
     }
 
     @Test
@@ -997,5 +1074,31 @@ public class TransactionTest extends WFSTestSupport {
                 + "    </xxx_all_service_city>\n"
                 + "  </Insert>\n"
                 + "</Transaction>";
+    }
+
+    @Test
+    public void testBrokenDelete() throws Exception {
+        try {
+            // perform a delete
+            String delete =
+                    "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                            + "xmlns:cgf=\"Not a URI\" "
+                            + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                            + "xmlns:wfs=\"http://www.opengis.net/wfs\"> "
+                            + "<wfs:Delete typeName=\"cgf:Points\"> "
+                            + "<ogc:Filter> "
+                            + "<ogc:PropertyIsEqualTo> "
+                            + "<ogc:PropertyName>cgf:id</ogc:PropertyName> "
+                            + "<ogc:Literal>t0000</ogc:Literal> "
+                            + "</ogc:PropertyIsEqualTo> "
+                            + "</ogc:Filter> "
+                            + "</wfs:Delete> "
+                            + "</wfs:Transaction>";
+
+            Document dom = postAsDOM("wfs", delete);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getLocalName());
+        } catch (Exception e) {
+            fail("Should not throw an exception");
+        }
     }
 }

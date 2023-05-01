@@ -33,16 +33,14 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"threeOrMoreCoordinatePairs"}
-)
+        name = "",
+        propOrder = {"threeOrMoreCoordinatePairs"})
 public class Polygon {
 
     @XmlElementRef(
-        name = "map-coordinates",
-        type = JAXBElement.class,
-        namespace = "http://www.w3.org/1999/xhtml"
-    )
+            name = "map-coordinates",
+            type = JAXBElement.class,
+            namespace = "http://www.w3.org/1999/xhtml")
     protected List<JAXBElement<List<String>>> threeOrMoreCoordinatePairs;
 
     /**

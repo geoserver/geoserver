@@ -80,9 +80,23 @@
         <input id="stdOutLogging" type="checkbox" wicket:id="stdOutLogging" />
         <label for="stdOutLogging"><wicket:message key="stdOutLogging">Enable logging to STDOUT</wicket:message></label>
       </li>
-      <li>
-        <label for="xmlPostRequestLogBufferSize"><wicket:message key="xmlPostRequestLogBufferSize">Number of characters to log for incoming POST requests</wicket:message></label>
-        <input id="xmlPostRequestLogBufferSize"class="field text" type="text" wicket:id="xmlPostRequestLogBufferSize" />
+      <li class="choiceItem">
+        <input id="requestLogging" type="checkbox" wicket:id="requestLogging" />
+        <label for="requestLogging"><wicket:message key="requestLogging">Enable Request Logging</wicket:message></label>
+          <ul wicket:id="requestLoggingSub">
+            <li class="choiceItem">
+              <input id="requestLogging" type="checkbox" wicket:id="requestLoggingBodies" />
+              <label for="requestLogging"><wicket:message key="requestLoggingBodies">Log Request Bodies</wicket:message></label>
+            </li>
+            <li>
+              <label for="xmlPostRequestLogBufferSize"><wicket:message key="xmlPostRequestLogBufferSize">Number of characters to log for incoming POST requests</wicket:message></label><br/>
+              <input id="xmlPostRequestLogBufferSize"class="field text" type="text" wicket:id="xmlPostRequestLogBufferSize" />
+            </li>
+            <li class="choiceItem">
+              <input id="requestLogging" type="checkbox" wicket:id="requestLoggingHeaders" />
+              <label for="requestLogging"><wicket:message key="requestLoggingHeaders">Log Request Headers</wicket:message></label>
+            </li>
+          </ul>
       </li>
     </ul>
   </fieldset>

@@ -70,11 +70,10 @@ import tech.units.indriya.format.SimpleUnitFormat;
 
 /** Implementation of OGC Coverages API service */
 @APIService(
-    service = "Coverages",
-    version = "1.0",
-    landingPage = "ogc/coverages",
-    serviceClass = WCSInfo.class
-)
+        service = "Coverages",
+        version = "1.0",
+        landingPage = "ogc/coverages",
+        serviceClass = WCSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/coverages")
 public class CoveragesService {
 
@@ -108,8 +107,7 @@ public class CoveragesService {
     public static List<String> getCoverageCRS(CoverageInfo coverage, List<String> defaultCRS) {
         if (coverage.getResponseSRS() != null) {
             List<String> result =
-                    coverage.getResponseSRS()
-                            .stream()
+                    coverage.getResponseSRS().stream()
                             // the GUI allows to enter codes as "EPSG:XYZW"
                             .map(c -> c.startsWith("EPSG:") ? c.substring(5) : c)
                             .map(c -> CRS_PREFIX + c)
@@ -155,14 +153,13 @@ public class CoveragesService {
     }
 
     @GetMapping(
-        path = "api",
-        name = "getApi",
-        produces = {
-            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-            "application/x-yaml",
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "api",
+            name = "getApi",
+            produces = {
+                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+                "application/x-yaml",
+                MediaType.TEXT_XML_VALUE
+            })
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -306,8 +303,7 @@ public class CoveragesService {
         if (result == null || result.isEmpty()) {
             // consult the EPSG databasee
             result =
-                    CRS.getSupportedCodes("EPSG")
-                            .stream()
+                    CRS.getSupportedCodes("EPSG").stream()
                             .filter(c -> INTEGER.matcher(c).matches())
                             .map(c -> CRS_PREFIX + c)
                             .collect(Collectors.toList());
@@ -322,9 +318,8 @@ public class CoveragesService {
 
     @ResponseBody
     @GetMapping(
-        path = "collections/{collectionId}/coverage/domainset",
-        name = "getCoverageDomainSet"
-    )
+            path = "collections/{collectionId}/coverage/domainset",
+            name = "getCoverageDomainSet")
     @DefaultContentType("application/json")
     public DomainSet items(@PathVariable(name = "collectionId") String collectionId)
             throws Exception {

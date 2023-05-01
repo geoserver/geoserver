@@ -51,8 +51,7 @@ public class CoveragesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WCS
         Parameter collectionId = parameters.get("collectionId");
         Catalog catalog = wcs.getGeoServer().getCatalog();
         List<String> validCollectionIds =
-                catalog.getCoverages()
-                        .stream()
+                catalog.getCoverages().stream()
                         .map(ci -> ci.prefixedName())
                         .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);

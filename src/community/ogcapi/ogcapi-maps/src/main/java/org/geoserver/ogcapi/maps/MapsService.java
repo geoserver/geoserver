@@ -48,11 +48,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @APIService(
-    service = "Maps",
-    version = "1.0",
-    landingPage = "ogc/maps",
-    serviceClass = WMSInfo.class
-)
+        service = "Maps",
+        version = "1.0",
+        landingPage = "ogc/maps",
+        serviceClass = WMSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps")
 public class MapsService {
 
@@ -194,10 +193,7 @@ public class MapsService {
     private List<MapLayerInfo> getMapLayers(PublishedInfo p) {
         if (p instanceof LayerGroupInfo) {
             return ((LayerGroupInfo) p)
-                    .layers()
-                    .stream()
-                    .map(l -> new MapLayerInfo(l))
-                    .collect(Collectors.toList());
+                    .layers().stream().map(l -> new MapLayerInfo(l)).collect(Collectors.toList());
         } else if (p instanceof LayerInfo) {
             return Arrays.asList(new MapLayerInfo((LayerInfo) p));
         } else {
@@ -224,9 +220,8 @@ public class MapsService {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/styles/{styleId}/map/info",
-        name = "getCollectionInfo"
-    )
+            path = "collections/{collectionId}/styles/{styleId}/map/info",
+            name = "getCollectionInfo")
     @ResponseBody
     public FeatureInfoResponse info(
             @PathVariable(name = "collectionId") String collectionId,

@@ -20,10 +20,10 @@ import org.opengis.filter.identity.FeatureId;
  *
  * @author Andrea Aime
  */
-class FidTransformeVisitor extends DuplicatingFilterVisitor {
+class FidTransformerVisitor extends DuplicatingFilterVisitor {
     private FeatureTypeMap map;
 
-    public FidTransformeVisitor(FeatureTypeMap map) {
+    public FidTransformerVisitor(FeatureTypeMap map) {
         super(CommonFactoryFinder.getFilterFactory2(null));
         this.map = map;
     }

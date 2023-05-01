@@ -94,13 +94,12 @@ public class RasterizerController extends BaseSLDServiceController {
     }
 
     @GetMapping(
-        path = "/{layerName}/rasterize",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            path = "/{layerName}/rasterize",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public Object rasterize(
             @PathVariable String layerName,
             @RequestParam(value = "min", required = false, defaultValue = DEFAULT_MIN) double min,
@@ -200,9 +199,8 @@ public class RasterizerController extends BaseSLDServiceController {
     }
 
     @ResponseStatus(
-        value = HttpStatus.EXPECTATION_FAILED,
-        reason = "RasterSymbolizer SLD expected!"
-    )
+            value = HttpStatus.EXPECTATION_FAILED,
+            reason = "RasterSymbolizer SLD expected!")
     private class InvalidSymbolizer extends RuntimeException {
         private static final long serialVersionUID = 5453377766415209696L;
     }

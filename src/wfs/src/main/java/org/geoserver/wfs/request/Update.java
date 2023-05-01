@@ -96,8 +96,7 @@ public abstract class Update extends TransactionElement {
         public void setUpdateProperties(List<Property> properties) {
             UpdateType update = (UpdateType) adaptee;
             update.getProperty().clear();
-            properties
-                    .stream()
+            properties.stream()
                     .map(p -> (net.opengis.wfs20.PropertyType) p.getAdaptee())
                     .forEach(p -> update.getProperty().add(p));
         }

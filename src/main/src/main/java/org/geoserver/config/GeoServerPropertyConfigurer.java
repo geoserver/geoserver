@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 
 /**
@@ -52,7 +52,7 @@ import org.springframework.core.io.Resource;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
+public class GeoServerPropertyConfigurer extends PropertySourcesPlaceholderConfigurer {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.config");
 
@@ -93,7 +93,7 @@ public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
     }
 
     @Override
-    public void setLocations(Resource[] locations) {
+    public void setLocations(Resource... locations) {
         throw new UnsupportedOperationException("Only a single location is supported");
     }
 

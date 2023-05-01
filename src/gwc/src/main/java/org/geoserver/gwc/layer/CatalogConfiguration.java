@@ -172,8 +172,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
             // see
             // org.geoserver.gwc.layer.CatalogConfigurationLayerConformanceTest.testModifyCallRequiredToChangeInfoFromGetInfo()
             return Lists.newArrayList(
-                    layerNames
-                            .stream()
+                    layerNames.stream()
                             .map(lazyLayerFetch)
                             .filter(Optional::isPresent)
                             .map(Optional::get)

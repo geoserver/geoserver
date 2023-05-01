@@ -4,11 +4,15 @@
  */
 package org.geoserver.geofence.integration;
 
+import java.util.Set;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.geofence.core.model.LayerAttribute;
+import org.geoserver.geofence.core.model.LayerDetails;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.RuleLimits;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
+import org.geoserver.geofence.core.model.enums.LayerType;
 import org.geoserver.geofence.core.model.enums.SpatialFilterType;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.wms.WMSTestSupport;
@@ -99,5 +103,25 @@ public class GeofenceWMSTestSupport extends WMSTestSupport {
             }
         }
         logout();
+    }
+
+    static void addLayerDetails(
+            RuleAdminService ruleService,
+            Long ruleId,
+            Set<String> allowedStyles,
+            Set<LayerAttribute> attributes,
+            CatalogMode mode,
+            String cqlRead,
+            String cqlWrite,
+            LayerType layerType)
+            throws org.locationtech.jts.io.ParseException {
+        LayerDetails details = new LayerDetails();
+        details.setType(layerType);
+        details.setAttributes(attributes);
+        details.setAllowedStyles(allowedStyles);
+        details.setCatalogMode(mode);
+        details.setCqlFilterWrite(cqlWrite);
+        details.setCqlFilterRead(cqlRead);
+        ruleService.setDetails(ruleId, details);
     }
 }

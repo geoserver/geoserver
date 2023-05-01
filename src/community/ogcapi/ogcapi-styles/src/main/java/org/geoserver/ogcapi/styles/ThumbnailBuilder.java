@@ -108,13 +108,11 @@ public class ThumbnailBuilder {
                 group.getLayers().add(null);
                 group.getStyles().add(styleInfo);
                 request.setLayers(
-                        group.layers()
-                                .stream()
+                        group.layers().stream()
                                 .map(l -> new MapLayerInfo(l))
                                 .collect(Collectors.toList()));
                 request.setStyles(
-                        group.styles()
-                                .stream()
+                        group.styles().stream()
                                 .map(
                                         s -> {
                                             try {

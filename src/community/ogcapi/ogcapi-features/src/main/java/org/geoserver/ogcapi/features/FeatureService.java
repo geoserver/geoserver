@@ -74,11 +74,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 /** Implementation of OGC Features API service */
 @APIService(
-    service = "Features",
-    version = "1.0",
-    landingPage = "ogc/features",
-    serviceClass = WFSInfo.class
-)
+        service = "Features",
+        version = "1.0",
+        landingPage = "ogc/features",
+        serviceClass = WFSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class FeatureService {
 
@@ -120,9 +119,7 @@ public class FeatureService {
         // by default use the provided list, unless there is an override
         if (featureType.isOverridingServiceSRS()) {
             List<String> result =
-                    featureType
-                            .getResponseSRS()
-                            .stream()
+                    featureType.getResponseSRS().stream()
                             .map(c -> CRS_PREFIX + c)
                             .collect(Collectors.toList());
             result.remove(FeatureService.DEFAULT_CRS);
@@ -138,8 +135,7 @@ public class FeatureService {
         if (result == null || result.isEmpty()) {
             // consult the EPSG databasee
             result =
-                    CRS.getSupportedCodes("EPSG")
-                            .stream()
+                    CRS.getSupportedCodes("EPSG").stream()
                             .filter(c -> INTEGER.matcher(c).matches())
                             .map(c -> CRS_PREFIX + c)
                             .collect(Collectors.toList());
@@ -168,14 +164,13 @@ public class FeatureService {
     }
 
     @GetMapping(
-        path = "api",
-        name = "getApi",
-        produces = {
-            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-            "application/x-yaml",
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "api",
+            name = "getApi",
+            produces = {
+                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+                "application/x-yaml",
+                MediaType.TEXT_XML_VALUE
+            })
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -209,10 +204,9 @@ public class FeatureService {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/queryables",
-        name = "getQueryables",
-        produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE
-    )
+            path = "collections/{collectionId}/queryables",
+            name = "getQueryables",
+            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
     public Queryables queryables(@PathVariable(name = "collectionId") String collectionId)
@@ -277,7 +271,18 @@ public class FeatureService {
             @PathVariable(name = "itemId") String itemId,
             @RequestParam(name = "crs", required = false) String crs)
             throws Exception {
-        return items(collectionId, startIndex, limit, bbox, bboxCRS, crs, time, null, null, itemId);
+        return items(
+                collectionId,
+                startIndex,
+                limit,
+                bbox,
+                bboxCRS,
+                crs,
+                time,
+                null,
+                null,
+                null,
+                itemId);
     }
 
     @GetMapping(path = "collections/{collectionId}/items", name = "getFeatures")
@@ -293,6 +298,7 @@ public class FeatureService {
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "filter-lang", required = false) String filterLanguage,
+            @RequestParam(name = "filter-crs", required = false) String filterCRS,
             @RequestParam(name = "crs", required = false) String crs,
             String itemId)
             throws Exception {
@@ -316,8 +322,9 @@ public class FeatureService {
         if (itemId != null) {
             filters.add(FF.id(FF.featureId(itemId)));
         }
+
         if (filter != null) {
-            Filter parsedFilter = filterParser.parse(filter, filterLanguage);
+            Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
             filters.add(parsedFilter);
         }
         query.setFilter(mergeFiltersAnd(filters));
@@ -383,8 +390,7 @@ public class FeatureService {
 
     private List<String> getTimeProperties(FeatureTypeInfo ft) throws IOException {
         FeatureType schema = ft.getFeatureType();
-        return schema.getDescriptors()
-                .stream()
+        return schema.getDescriptors().stream()
                 .filter(pd -> Date.class.isAssignableFrom(pd.getType().getBinding()))
                 .map(pd -> pd.getName().getLocalPart())
                 .collect(Collectors.toList());

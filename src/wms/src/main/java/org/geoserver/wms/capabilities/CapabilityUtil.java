@@ -8,6 +8,7 @@ package org.geoserver.wms.capabilities;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
@@ -211,10 +212,7 @@ public final class CapabilityUtil {
 
     /** Checks if a default style name for layer groups should be used, or not */
     public static boolean encodeGroupDefaultStyle(WMS wms, LayerGroupInfo lgi) {
-        LayerGroupInfo.Mode mode = lgi.getMode();
-        boolean opaqueOrSingle =
-                mode.equals(LayerGroupInfo.Mode.SINGLE)
-                        || mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER);
+        boolean opaqueOrSingle = LayerGroupHelper.isSingleOrOpaque(lgi);
         return opaqueOrSingle || wms.isDefaultGroupStyleEnabled();
     }
 

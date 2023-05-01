@@ -233,8 +233,7 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
     }
 
     private Map<String, Attribute> getGlobalAttributeMap(NetcdfDataset dataset) {
-        return dataset.getGlobalAttributes()
-                .stream()
+        return dataset.getGlobalAttributes().stream()
                 .collect(Collectors.toMap(Attribute::getShortName, Function.identity()));
     }
 

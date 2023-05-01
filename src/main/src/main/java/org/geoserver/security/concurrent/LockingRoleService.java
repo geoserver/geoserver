@@ -45,8 +45,14 @@ public class LockingRoleService extends AbstractLockingService
 
     @Override
     public GeoServerRoleStore createStore() throws IOException {
-        GeoServerRoleStore store = getService().createStore();
-        return store != null ? new LockingRoleStore(store) : null;
+        // the store will duplicate the role service internal data structures, so read lock
+        readLock();
+        try {
+            GeoServerRoleStore store = getService().createStore();
+            return store != null ? new LockingRoleStore(store) : null;
+        } finally {
+            readUnLock();
+        }
     }
 
     /**

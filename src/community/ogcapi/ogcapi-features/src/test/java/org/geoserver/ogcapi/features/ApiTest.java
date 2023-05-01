@@ -158,6 +158,7 @@ public class ApiTest extends FeaturesTestSupport {
                         "#/components/parameters/datetime",
                         "#/components/parameters/filter",
                         "#/components/parameters/filter-lang",
+                        "#/components/parameters/filter-crs",
                         "#/components/parameters/crs",
                         "#/components/parameters/bbox-crs",
                         "#/components/parameters/otherParameters"));
@@ -172,9 +173,7 @@ public class ApiTest extends FeaturesTestSupport {
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypes()
-                        .stream()
+                getCatalog().getFeatureTypes().stream()
                         .map(ft -> ft.prefixedName())
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
@@ -207,8 +206,7 @@ public class ApiTest extends FeaturesTestSupport {
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
+                getCatalog().getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
                         .stream()
                         .map(ft -> ft.getName())
                         .collect(Collectors.toList());

@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.legendgraphic;
 
+import static org.geoserver.catalog.LayerGroupHelper.isSingleOrOpaque;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +26,7 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
@@ -31,6 +34,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.KvpRequestReader;
@@ -176,7 +180,10 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     LayerGroupInfo layerGroupInfo = wms.getLayerGroupByName(layer);
                     if (layerGroupInfo != null) {
                         // add all single layers of the group
-                        for (LayerInfo singleLayer : layerGroupInfo.layers()) {
+                        String lgStyleName = (String) rawKvp.get("STYLE");
+                        List<LayerInfo> groupLayers =
+                                getLayerGroupLayers(lgStyleName, layerGroupInfo);
+                        for (LayerInfo singleLayer : groupLayers) {
                             LegendRequest legend = null;
                             // for WMS cascaded layer
                             if (singleLayer.getResource() instanceof WMSLayerInfo)
@@ -196,6 +203,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             } catch (NoSuchElementException ne) {
                 throw new ServiceException(
                         new StringBuffer(layer).append(" layer does not exists.").toString(), ne);
+            } catch (ServiceException se) {
+                throw se;
             } catch (Exception te) {
                 throw new ServiceException("Can't obtain the schema for the required layer.", te);
             }
@@ -226,6 +235,23 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         }
 
         return request;
+    }
+
+    private List<LayerInfo> getLayerGroupLayers(String styleName, LayerGroupInfo layerGroup) {
+        List<LayerInfo> layers = null;
+        if (styleName != null && !"".equals(styleName)) {
+            boolean defaultStyle = isGroupDefaultStyle(styleName, layerGroup);
+            boolean singleOrOpaque = isSingleOrOpaque(layerGroup);
+            if (!defaultStyle && singleOrOpaque) {
+                try {
+                    layers = layerGroup.layers(styleName);
+                } catch (NoSuchElementException e) {
+                    throwNoSuchStyle(styleName);
+                }
+            }
+        }
+        if (layers == null) layers = layerGroup.layers();
+        return layers;
     }
 
     /**
@@ -460,6 +486,10 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         String sldUrl = (String) rawKvp.get("SLD");
         String sldBody = (String) rawKvp.get("SLD_BODY");
 
+        if ((sldBody != null || sldUrl != null) && wms.isDynamicStylingDisabled()) {
+            throw new ServiceException("Dynamic style usage is forbidden");
+        }
+
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(new StringBuffer("looking for styles ").append(listOfStyles).toString());
         }
@@ -487,11 +517,13 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 // use the default one for the layer in the current position
                 if (infoObj instanceof LayerGroupInfo) {
                     LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
-                    if (isGroupDefaultStyle(styleName, layerGroupInfo)) {
-                        addLayerGroupStyles(req, layerGroupInfo, sldStyles);
-                    } else {
-                        throwNoSuchStyle(styleName);
+                    boolean groupDefaultStyle = isGroupDefaultStyle(styleName, layerGroupInfo);
+                    LayerGroupStyle lgStyle = null;
+                    if (!groupDefaultStyle && isSingleOrOpaque(layerGroupInfo)) {
+                        lgStyle = LayerGroupHelper.getGroupStyleByName(layerGroupInfo, styleName);
+                        if (lgStyle == null) throwNoSuchStyle(styleName);
                     }
+                    addLayerGroupStyles(req, layerGroupInfo, sldStyles, lgStyle);
                 } else {
                     Style style = wms.getStyleByName(styleName);
                     if (style == null) throwNoSuchStyle(styleName);
@@ -534,7 +566,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     }
                 }
             } else if (infoObj instanceof LayerGroupInfo) {
-                addLayerGroupStyles(req, (LayerGroupInfo) infoObj, sldStyles);
+                addLayerGroupStyles(req, (LayerGroupInfo) infoObj, sldStyles, null);
             }
         }
 
@@ -561,11 +593,20 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     }
 
     private void addLayerGroupStyles(
-            GetLegendGraphicRequest req, LayerGroupInfo infoObj, List<Style> sldStyles)
+            GetLegendGraphicRequest req,
+            LayerGroupInfo infoObj,
+            List<Style> sldStyles,
+            LayerGroupStyle lgStyle)
             throws IOException {
         LayerGroupInfo layerGroupInfo = infoObj;
-        List<LayerInfo> groupLayers = layerGroupInfo.layers();
-        List<StyleInfo> groupStyles = layerGroupInfo.styles();
+        List<LayerInfo> groupLayers =
+                lgStyle == null
+                        ? layerGroupInfo.layers()
+                        : layerGroupInfo.layers(lgStyle.getName().getName());
+        List<StyleInfo> groupStyles =
+                lgStyle == null
+                        ? layerGroupInfo.styles()
+                        : layerGroupInfo.styles(lgStyle.getName().getName());
         for (int count = 0; count < groupLayers.size(); count++) {
             LayerInfo layerInfo = groupLayers.get(count);
             StyleInfo styleInfo = null;

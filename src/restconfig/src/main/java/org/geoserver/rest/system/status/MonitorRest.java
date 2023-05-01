@@ -47,13 +47,12 @@ public class MonitorRest extends RestBaseController {
     @Autowired SystemInfoCollector systemInfoCollector;
 
     @GetMapping(
-        value = "",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            value = "",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     @ResponseStatus(HttpStatus.OK)
     public RestWrapper<Metrics> getData(HttpServletRequest request, HttpServletResponse response) {
         Metrics si = systemInfoCollector.retrieveAllSystemInfo();

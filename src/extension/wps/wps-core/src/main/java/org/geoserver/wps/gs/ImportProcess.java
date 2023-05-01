@@ -28,8 +28,12 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.AdminRequest;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.wps.WPSException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -66,6 +70,7 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.ProgressListener;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.vfny.geoserver.util.WCSUtils;
 
 /**
@@ -74,9 +79,8 @@ import org.vfny.geoserver.util.WCSUtils;
  * @author Andrea Aime - OpenGeo
  */
 @DescribeProcess(
-    title = "Import to Catalog",
-    description = "Imports a feature collection into the catalog"
-)
+        title = "Import to Catalog",
+        description = "Imports a feature collection into the catalog")
 public class ImportProcess implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(ImportProcess.class);
@@ -106,44 +110,38 @@ public class ImportProcess implements GeoServerProcess {
             @DescribeParameter(name = "coverage", min = 0, description = "Input raster")
                     GridCoverage2D coverage,
             @DescribeParameter(
-                        name = "workspace",
-                        min = 0,
-                        description = "Target workspace (default is the system default)"
-                    )
+                            name = "workspace",
+                            min = 0,
+                            description = "Target workspace (default is the system default)")
                     String workspace,
             @DescribeParameter(
-                        name = "store",
-                        min = 0,
-                        description = "Target store (default is the workspace default)"
-                    )
+                            name = "store",
+                            min = 0,
+                            description = "Target store (default is the workspace default)")
                     String store,
             @DescribeParameter(
-                        name = "name",
-                        min = 0,
-                        description =
-                                "Name of the new featuretype/coverage (default is the name of the features in the collection)"
-                    )
+                            name = "name",
+                            min = 0,
+                            description =
+                                    "Name of the new featuretype/coverage (default is the name of the features in the collection)")
                     String name,
             @DescribeParameter(
-                        name = "srs",
-                        min = 0,
-                        description =
-                                "Target coordinate reference system (default is based on source when possible)"
-                    )
+                            name = "srs",
+                            min = 0,
+                            description =
+                                    "Target coordinate reference system (default is based on source when possible)")
                     CoordinateReferenceSystem srs,
             @DescribeParameter(
-                        name = "srsHandling",
-                        min = 0,
-                        description =
-                                "Desired SRS handling (default is FORCE_DECLARED, others are REPROJECT_TO_DECLARED or NONE)"
-                    )
+                            name = "srsHandling",
+                            min = 0,
+                            description =
+                                    "Desired SRS handling (default is FORCE_DECLARED, others are REPROJECT_TO_DECLARED or NONE)")
                     ProjectionPolicy srsHandling,
             @DescribeParameter(
-                        name = "styleName",
-                        min = 0,
-                        description =
-                                "Name of the style to be associated with the layer (default is a standard geometry-specific style)"
-                    )
+                            name = "styleName",
+                            min = 0,
+                            description =
+                                    "Name of the style to be associated with the layer (default is a standard geometry-specific style)")
                     String styleName,
             ProgressListener listener)
             throws ProcessException {
@@ -154,7 +152,8 @@ public class ImportProcess implements GeoServerProcess {
         listener.started();
         listener.progress(0);
 
-        // first off, decide what is the target store
+        // first off, decide what is the target workspace
+        // call getWorkspaceByName before setting the AdminRequest
         WorkspaceInfo ws;
         if (workspace != null) {
             ws = catalog.getWorkspaceByName(workspace);
@@ -168,6 +167,39 @@ public class ImportProcess implements GeoServerProcess {
                         "The catalog is empty, could not find a default workspace");
             }
         }
+
+        // set the AdminRequest thread local for the rest of this request
+        try {
+            AdminRequest.start(this);
+            return executeAsAdminRequest(
+                    features,
+                    coverage,
+                    workspace,
+                    ws,
+                    store,
+                    name,
+                    srs,
+                    srsHandling,
+                    styleName,
+                    listener);
+        } finally {
+            AdminRequest.finish();
+        }
+    }
+
+    private String executeAsAdminRequest(
+            SimpleFeatureCollection features,
+            GridCoverage2D coverage,
+            String workspace,
+            WorkspaceInfo ws,
+            String store,
+            String name,
+            CoordinateReferenceSystem srs,
+            ProjectionPolicy srsHandling,
+            String styleName,
+            ProgressListener listener) {
+        // verify that the user has admin privileges for the target workspace
+        checkAdminAccess(ws);
 
         // create a builder to help build catalog objects
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -252,6 +284,17 @@ public class ImportProcess implements GeoServerProcess {
         }
 
         return null;
+    }
+
+    private static void checkAdminAccess(WorkspaceInfo info) {
+        WorkspaceAccessLimits wl =
+                GeoServerExtensions.bean(SecureCatalogImpl.class)
+                        .getResourceAccessManager()
+                        .getAccessLimits(
+                                SecurityContextHolder.getContext().getAuthentication(), info);
+        if (wl == null || !wl.isAdminable()) {
+            throw new ProcessException("Operation unallowed with the current privileges");
+        }
     }
 
     private String importCoverage(

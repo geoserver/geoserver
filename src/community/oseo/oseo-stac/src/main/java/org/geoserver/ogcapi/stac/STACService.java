@@ -85,11 +85,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /** Implementation of OGC Features API service */
 @APIService(
-    service = "STAC",
-    version = "1.0",
-    landingPage = "ogc/stac",
-    serviceClass = OSEOInfo.class
-)
+        service = "STAC",
+        version = "1.0",
+        landingPage = "ogc/stac",
+        serviceClass = OSEOInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/stac")
 public class STACService {
 
@@ -178,14 +177,13 @@ public class STACService {
     }
 
     @GetMapping(
-        path = "api",
-        name = "getApi",
-        produces = {
-            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-            "application/x-yaml",
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "api",
+            name = "getApi",
+            produces = {
+                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+                "application/x-yaml",
+                MediaType.TEXT_XML_VALUE
+            })
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -513,8 +511,7 @@ public class STACService {
             filters.add(filter);
 
             filters.addAll(
-                    collectionIds
-                            .stream()
+                    collectionIds.stream()
                             .map(cid -> FF.equals(FF.property(EO_IDENTIFIER), FF.literal(cid)))
                             .collect(Collectors.toList()));
             filter = FF.and(filters);
@@ -523,8 +520,7 @@ public class STACService {
         q.setProperties(Arrays.asList(FF.property(EO_IDENTIFIER)));
         FeatureCollection<FeatureType, Feature> collections =
                 accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
-        return DataUtilities.list(collections)
-                .stream()
+        return DataUtilities.list(collections).stream()
                 .map(f -> (String) f.getProperty(EO_IDENTIFIER).getValue())
                 .collect(Collectors.toList());
     }
@@ -546,8 +542,7 @@ public class STACService {
 
     private Filter getCollectionsFilter(List<String> collectionIds) {
         FilterMerger filters = new FilterMerger();
-        collectionIds
-                .stream()
+        collectionIds.stream()
                 .map(id -> FF.equals(FF.property("parentIdentifier"), FF.literal(id)))
                 .forEach(f -> filters.add(f));
         return filters.or();
@@ -595,10 +590,9 @@ public class STACService {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/queryables",
-        name = "getCollectionQueryables",
-        produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE
-    )
+            path = "collections/{collectionId}/queryables",
+            name = "getCollectionQueryables",
+            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables-collection.ftl", fileName = "queryables.html")
     public Queryables collectionQueryables(@PathVariable(name = "collectionId") String collectionId)
@@ -623,10 +617,9 @@ public class STACService {
     }
 
     @GetMapping(
-        path = "queryables",
-        name = "getSearchQueryables",
-        produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE
-    )
+            path = "queryables",
+            name = "getSearchQueryables",
+            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables-global.ftl", fileName = "queryables.html")
     public Queryables searchQueryables() throws IOException {

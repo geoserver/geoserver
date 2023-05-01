@@ -22,8 +22,7 @@ import org.junit.Test;
 public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected StationsMockData createTestData() {
-        // instantiate our custom complex types
+    protected AbstractAppSchemaMockData createTestData() {
         return new MockData();
     }
 

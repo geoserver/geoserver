@@ -8,6 +8,7 @@ package org.geoserver.platform;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+/** Report system environment details to server status page. */
 public class SystemEnvironmentStatus implements ModuleStatus {
 
     @Override
@@ -17,17 +18,17 @@ public class SystemEnvironmentStatus implements ModuleStatus {
 
     @Override
     public Optional<String> getComponent() {
-        return Optional.ofNullable("system-environment");
+        return Optional.ofNullable(System.getProperty("os.name"));
     }
 
     @Override
     public String getName() {
-        return "system-environment";
+        return "System Environment";
     }
 
     @Override
     public Optional<String> getVersion() {
-        return Optional.ofNullable(null);
+        return Optional.ofNullable(System.getProperty("os.version"));
     }
 
     @Override

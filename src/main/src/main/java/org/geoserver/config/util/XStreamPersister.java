@@ -109,6 +109,8 @@ import org.geoserver.catalog.impl.DefaultCatalogFacade;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
+import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
 import org.geoserver.catalog.impl.LayerIdentifier;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.LegendInfoImpl;
@@ -502,9 +504,17 @@ public class XStreamPersister {
                 "styles",
                 new ReferenceCollectionConverter(StyleInfo.class));
         xs.registerLocalConverter(
+                impl(LayerGroupInfo.class),
+                "layerGroupStyles",
+                new LayerGroupStyleCollectionConverter());
+        xs.registerLocalConverter(
                 impl(LayerGroupInfo.class), "metadata", new MetadataMapConverter());
         xs.registerLocalConverter(
                 impl(LayerGroupInfo.class), "keywords", new KeywordListConverter());
+        xs.registerLocalConverter(
+                impl(LayerGroupInfo.class),
+                "styles",
+                new ReferenceCollectionConverter(StyleInfo.class));
 
         // ReferencedEnvelope
         xs.registerLocalConverter(ReferencedEnvelope.class, "crs", new SRSConverter());
@@ -536,7 +546,17 @@ public class XStreamPersister {
                 impl(LayerGroupInfo.class),
                 "internationalAbstract",
                 new GrowableInternationalStringConverter());
-
+        xs.registerLocalConverter(
+                impl(LayerGroupStyle.class),
+                "layers",
+                new ReferenceCollectionConverter(
+                        PublishedInfo.class, LayerInfo.class, LayerGroupInfo.class));
+        xs.registerLocalConverter(
+                impl(LayerGroupStyle.class),
+                "styles",
+                new ReferenceCollectionConverter(StyleInfo.class));
+        xs.registerLocalConverter(
+                impl(LayerGroupStyle.class), "name", new OnlyStyleNameConverter());
         // ServiceInfo
         xs.registerConverter(new ServiceInfoConverter());
         xs.omitField(impl(ServiceInfo.class), "geoServer");
@@ -554,8 +574,10 @@ public class XStreamPersister {
         xs.registerConverter(new VirtualTableConverter());
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
+        xs.registerConverter(new GeoServerInfoConverter());
         xs.registerConverter(new WMSLayerInfoConverter());
         xs.registerConverter(new GrowableInternationalStringConverter());
+        xs.registerConverter(new LayerGroupStyleConverter());
         // this should have been a metadata map too, but was not registered as such and got a plain
         // map converter. Switched to SettingsTolerantMapConverter to make it work when plugins get
         // removed and leave configuration that cannot be parsed anymore in there
@@ -776,6 +798,8 @@ public class XStreamPersister {
         if (interfce == ResourceInfo.class) {
             return ResourceInfoImpl.class;
         }
+
+        if (interfce == LayerGroupStyle.class) return LayerGroupStyleImpl.class;
 
         Class<?> clazz = getXStream().getMapper().defaultImplementationOf(interfce);
         if (clazz == null) {
@@ -2139,6 +2163,8 @@ public class XStreamPersister {
 
             lgi.convertLegacyLayers();
 
+            resolveLayerGroupStyleName(lgi);
+
             MetadataMap metadata = lgi.getMetadata();
 
             /**
@@ -2185,6 +2211,43 @@ public class XStreamPersister {
                 lgi.setIdentifiers(identifiers);
             }
             return lgi;
+        }
+
+        private void resolveLayerGroupStyleName(LayerGroupInfo groupInfo) {
+            List<PublishedInfo> layers = groupInfo.getLayers();
+            List<StyleInfo> styles = groupInfo.getStyles();
+            resolveLayerGroupStyleName(layers, styles);
+            List<LayerGroupStyle> groupStyles = groupInfo.getLayerGroupStyles();
+            if (groupStyles != null) {
+                for (LayerGroupStyle lgStyle : groupStyles) {
+                    resolveLayerGroupStyleName(lgStyle.getLayers(), lgStyle.getStyles());
+                }
+            } else {
+                groupInfo.setLayerGroupStyles(new ArrayList<>());
+            }
+        }
+
+        private void resolveLayerGroupStyleName(
+                List<PublishedInfo> assignedInfos, List<StyleInfo> styles) {
+            if (assignedInfos != null) {
+                for (int i = 0; i < assignedInfos.size(); i++) {
+                    PublishedInfo publishedInfo = assignedInfos.get(i);
+                    if (publishedInfo instanceof LayerGroupInfo) {
+                        // if the styles is not null then this is
+                        // a StyleInfo simply holding the style name
+                        // of a LayerGroupStyle. We do not resolve it
+                        // as usual since is not present in the catalog but
+                        // get the ref and create a new StyleInfo object.
+                        StyleInfo styleInfo = styles.get(i);
+                        String ref = ResolvingProxy.getRef(styleInfo);
+                        if (ref != null) {
+                            StyleInfo lgStyleName = new StyleInfoImpl(catalog);
+                            lgStyleName.setName(ref);
+                            styles.set(i, lgStyleName);
+                        }
+                    }
+                }
+            }
         }
 
         @Override
@@ -2495,6 +2558,42 @@ public class XStreamPersister {
         }
     }
 
+    /** Converter for GeoServerInfo class */
+    class GeoServerInfoConverter extends AbstractReflectionConverter {
+
+        public GeoServerInfoConverter() {
+            super(GeoServerInfo.class);
+        }
+
+        @Override
+        @SuppressWarnings("deprecation")
+        protected void doMarshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            GeoServerInfo geoServerInfo = (GeoServerInfo) source;
+            SettingsInfo settings = geoServerInfo.getSettings();
+            if (settings.isUseHeadersProxyURL() == null) {
+                settings.setUseHeadersProxyURL(geoServerInfo.isUseHeadersProxyURL());
+                if (geoServerInfo instanceof GeoServerInfoImpl)
+                    ((GeoServerInfoImpl) geoServerInfo).setUseHeadersProxyURLRaw(null);
+            }
+            super.doMarshal(source, writer, context);
+        }
+
+        @Override
+        @SuppressWarnings("deprecation")
+        public Object doUnmarshal(
+                Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
+            // migrate proxy headers to settings if needed
+            GeoServerInfoImpl info = (GeoServerInfoImpl) super.doUnmarshal(result, reader, context);
+            if (info.getSettings().isUseHeadersProxyURL() == null
+                    && info.isUseHeadersProxyURL() != null) {
+                info.getSettings().setUseHeadersProxyURL(info.isUseHeadersProxyURL());
+                info.setUseHeadersProxyURLRaw(null);
+            }
+            return info;
+        }
+    }
+
     /**
      * Converter for all {@link ServiceInfo} resources. Obtains the appropriate service object in
      * {@link #instantiateNewInstance(HierarchicalStreamReader, UnmarshallingContext)} prior to
@@ -2663,6 +2762,107 @@ public class XStreamPersister {
                 reader.moveUp();
             }
             return growableInternationalString;
+        }
+    }
+
+    class LayerGroupStyleCollectionConverter extends LaxCollectionConverter {
+
+        public LayerGroupStyleCollectionConverter() {
+            super(getXStream().getMapper());
+        }
+
+        @Override
+        public void marshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            @SuppressWarnings("unchecked")
+            Collection<LayerGroupStyle> styles = (Collection<LayerGroupStyle>) source;
+            for (LayerGroupStyle gs : styles) {
+                writer.startNode("LayerGroupStyle");
+                context.convertAnother(gs, new LayerGroupStyleConverter());
+                writer.endNode();
+            }
+        }
+
+        @Override
+        protected Object readBareItem(
+                HierarchicalStreamReader reader, UnmarshallingContext context, Object current) {
+            return context.convertAnother(current, LayerGroupStyle.class);
+        }
+    }
+
+    class LayerGroupStyleConverter extends AbstractReflectionConverter {
+        @Override
+        @SuppressWarnings("unchecked")
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+            return LayerGroupStyle.class.isAssignableFrom(type);
+        }
+
+        @Override
+        protected Object instantiateNewInstance(
+                HierarchicalStreamReader reader, UnmarshallingContext context) {
+            Object object = context.currentObject();
+            if (object == null) {
+                object = new LayerGroupStyleImpl();
+            }
+            return object;
+        }
+
+        @Override
+        protected void doMarshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            super.doMarshal(source, writer, context);
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+            LayerGroupStyle result = (LayerGroupStyle) super.unmarshal(reader, context);
+            // resolve the internal lists of PublishedInfo and StyleInfo.
+            List<PublishedInfo> publishedInfos = result.getLayers();
+            List<StyleInfo> styles = result.getStyles();
+            if (publishedInfos != null) {
+                for (int i = 0; i < publishedInfos.size(); i++) {
+                    PublishedInfo publishedInfo = publishedInfos.get(i);
+                    PublishedInfo unproxied = null;
+                    if (catalog != null) {
+                        unproxied = ResolvingProxy.resolve(catalog, publishedInfo);
+                    }
+                    if (unproxied != null || ResolvingProxy.getRef(publishedInfo) == null)
+                        publishedInfos.set(i, unproxied);
+                }
+            }
+
+            if (styles != null)
+                for (int i = 0; i < styles.size(); i++) {
+                    StyleInfo styleInfo = styles.get(i);
+                    StyleInfo unproxied = null;
+                    if (catalog != null) unproxied = ResolvingProxy.resolve(catalog, styleInfo);
+                    if (unproxied != null || ResolvingProxy.getRef(styleInfo) == null)
+                        styles.set(i, unproxied);
+                }
+            return result;
+        }
+    }
+
+    /** Converter used locally only for the style name of a LayerGroupStyle. */
+    class OnlyStyleNameConverter extends AbstractReflectionConverter {
+        @Override
+        public boolean canConvert(Class type) {
+            return super.canConvert(StyleInfo.class);
+        }
+
+        @Override
+        protected void doMarshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            StyleInfo styleInfo = (StyleInfo) source;
+            writer.setValue(styleInfo.getName());
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+            StyleInfo groupStyleName = new StyleInfoImpl(catalog);
+
+            groupStyleName.setName(reader.getValue());
+            return groupStyleName;
         }
     }
 }

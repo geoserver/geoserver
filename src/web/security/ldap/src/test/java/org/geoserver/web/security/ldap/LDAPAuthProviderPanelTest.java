@@ -33,13 +33,11 @@ import org.junit.Test;
 
 /** @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it" */
 @CreateLdapServer(
-    transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
-    allowAnonymousAccess = true
-)
+        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
+        allowAnonymousAccess = true)
 @CreateDS(
-    name = "myDS",
-    partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
-)
+        name = "myDS",
+        partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)})
 @ApplyLdifFiles({"data.ldif"})
 public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport {
 

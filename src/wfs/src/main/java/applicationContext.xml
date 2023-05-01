@@ -255,11 +255,6 @@
         <constructor-arg value="org.geoserver.wfs.WFSInfo"/>
 	</bean>
 	
-	<!-- XML Log Buffer Size Interceptor -->
-	<bean id="xmlPostRequestLogBufferSize" class="org.geoserver.wfs.XmlPostRequestLogBufferSize">
-		<constructor-arg ref="geoServer"/>
-	</bean>
-	
 	<!-- test servlet -->
 	<bean id="wfsTestServlet" class="org.springframework.web.servlet.mvc.ServletWrappingController">
 	  <property name="servletClass" value="org.vfny.geoserver.wfs.servlets.TestWfsPost"/>
@@ -274,7 +269,6 @@
 		<property name="interceptors">
 			<list>
 				<ref bean="wfsCiteComplianceHack"/>
-				<ref bean="xmlPostRequestLogBufferSize"/>
 			</list>
 		</property>
 	

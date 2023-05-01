@@ -31,9 +31,8 @@ import org.opengis.util.ProgressListener;
  * @author "Alessio Fabiani - alessio.fabiani@geo-solutions.it"
  */
 @DescribeProcess(
-    title = "Estimator Process",
-    description = "Checks if the input file does not exceed the limits"
-)
+        title = "Estimator Process",
+        description = "Checks if the input file does not exceed the limits")
 public class DownloadEstimatorProcess implements GeoServerProcess {
 
     /** The Constant LOGGER. */
@@ -71,10 +70,9 @@ public class DownloadEstimatorProcess implements GeoServerProcess {
     @DescribeResult(name = "result", description = "Download Limits are respected or not!")
     public Boolean execute(
             @DescribeParameter(
-                        name = "layerName",
-                        min = 1,
-                        description = "Original layer to download"
-                    )
+                            name = "layerName",
+                            min = 1,
+                            description = "Original layer to download")
                     String layerName,
             @DescribeParameter(name = "filter", min = 0, description = "Optional Vectorial Filter")
                     Filter filter,
@@ -87,26 +85,23 @@ public class DownloadEstimatorProcess implements GeoServerProcess {
             @DescribeParameter(name = "cropToROI", min = 0, description = "Crop to ROI")
                     Boolean clip,
             @DescribeParameter(
-                        name = "targetSizeX",
-                        min = 0,
-                        minValue = 1,
-                        description =
-                                "X Size of the Target Image (applies to raster data only), or native resolution if missing"
-                    )
+                            name = "targetSizeX",
+                            min = 0,
+                            minValue = 1,
+                            description =
+                                    "X Size of the Target Image (applies to raster data only), or native resolution if missing")
                     Integer targetSizeX,
             @DescribeParameter(
-                        name = "targetSizeY",
-                        min = 0,
-                        minValue = 1,
-                        description =
-                                "Y Size of the Target Image (applies to raster data only), or native resolution if missing"
-                    )
+                            name = "targetSizeY",
+                            min = 0,
+                            minValue = 1,
+                            description =
+                                    "Y Size of the Target Image (applies to raster data only), or native resolution if missing")
                     Integer targetSizeY,
             @DescribeParameter(
-                        name = "selectedBands",
-                        description = "Band Selection Indices",
-                        min = 0
-                    )
+                            name = "selectedBands",
+                            description = "Band Selection Indices",
+                            min = 0)
                     int[] bandIndices,
             ProgressListener progressListener)
             throws Exception {

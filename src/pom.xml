@@ -39,6 +39,7 @@
     <module>kml</module>
     <module>ows</module>
     <module>gwc</module>
+    <module>gwc-rest</module>
     <module>rest</module>
     <module>restconfig</module>
     <module>restconfig-wcs</module>
@@ -91,16 +92,17 @@
     <gt.version>26-SNAPSHOT</gt.version>
     <gwc.version>1.20-SNAPSHOT</gwc.version>
     <jts.version>1.18.2</jts.version>
-    <spring.version>5.1.20.RELEASE</spring.version>
+    <spring.version>5.2.22.RELEASE</spring.version>
     <spring.security.version>5.1.13.RELEASE</spring.security.version>
     <servlet-api.version>3.0.1</servlet-api.version>
+    <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <jetty.version>9.4.36.v20210114</jetty.version>
     <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
-    <poi.version>4.0.0</poi.version>
+    <poi.version>4.1.1</poi.version>
     <wicket.version>7.18.0</wicket.version>
     <ant.version>1.10.11</ant.version>
-    <imageio-ext.version>1.3.10</imageio-ext.version>
-    <jaiext.version>1.1.21</jaiext.version>
+    <imageio-ext.version>1.3.13</imageio-ext.version>
+    <jaiext.version>1.1.24</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
     <jvm.opts></jvm.opts>
@@ -119,7 +121,7 @@
     <image.tests>true</image.tests>
     <interactive.image>false</interactive.image>
     <windows.leniency>true</windows.leniency>
-    <gf.version>3.5.0</gf.version>
+    <gf.version>3.5.1</gf.version>
     <jasypt.version>1.9.2</jasypt.version>
     <hibernate-version>3.6.9.Final</hibernate-version>
     <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
@@ -132,23 +134,23 @@
     <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <jackson1.version>1.9.13</jackson1.version>
-    <jackson2.version>2.10.5</jackson2.version>
-    <jackson2.databind.version>2.10.5.1</jackson2.databind.version>
+    <jackson2.version>2.13.2</jackson2.version>
+    <jackson2.databind.version>2.13.2.1</jackson2.databind.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <marlin.version>0.9.3</marlin.version>
-    <postgresql.jdbc.version>42.2.25</postgresql.jdbc.version>
+    <postgresql.jdbc.version>42.4.3</postgresql.jdbc.version>
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
     <oracle.jdbc.version>19.10.0.0</oracle.jdbc.version>
-    <mysql.jdbc.version>8.0.23</mysql.jdbc.version>
+    <mysql.jdbc.version>8.0.28</mysql.jdbc.version>
     <solrj.version>7.2.1</solrj.version>
     <mockito.version>3.8.0</mockito.version>
     <jacoco.version>0.8.6</jacoco.version>
     <hazelcast.version>3.11.1</hazelcast.version>
     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
-    <fmt.action>format</fmt.action>
-    <fmt.skip>false</fmt.skip>
+    <spotless.action>apply</spotless.action>
+    <spotless.apply.skip>false</spotless.apply.skip>
     <pom.fmt.action>sort</pom.fmt.action>
-    <pom.fmt.skip>${fmt.skip}</pom.fmt.skip>
+    <pom.fmt.skip>${spotless.apply.skip}</pom.fmt.skip>
     <errorProneFlags></errorProneFlags>
     <errorProne.version>2.3.4</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
@@ -238,6 +240,11 @@
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-gwc</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-gwc-rest</artifactId>
         <version>${gs.version}</version>
       </dependency>
       <dependency>
@@ -816,9 +823,24 @@
         <version>3.2.2</version>
       </dependency>
       <dependency>
+        <groupId>commons-cli</groupId>
+        <artifactId>commons-cli</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>1.1.6</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
         <version>4.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.10.0</version>
       </dependency>
       <dependency>
         <groupId>commons-dbcp</groupId>
@@ -834,11 +856,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
         <version>1.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-text</artifactId>
-        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>com.jayway.jsonpath</groupId>
@@ -954,6 +971,11 @@
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-cas</artifactId>
         <version>${spring.security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security.oauth</groupId>
+        <artifactId>spring-security-oauth2</artifactId>
+        <version>${spring.security.oauth2.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jasypt</groupId>
@@ -1139,6 +1161,16 @@
         <version>${jackson2.databind.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${jackson2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson2.version}</version>
+      </dependency>
+      <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
         <version>6.2.6</version>
@@ -1317,7 +1349,7 @@
       <dependency>
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
-        <version>1.14.2</version>
+        <version>1.15.3</version>
       </dependency>
       <dependency>
         <groupId>com.github.svenmeier.wicket-dnd</groupId>
@@ -1339,7 +1371,7 @@
       <dependency>
         <groupId>com.github.oshi</groupId>
         <artifactId>oshi-core</artifactId>
-        <version>5.8.6</version>
+        <version>6.2.2</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -1821,21 +1853,28 @@
       </plugin>
 
       <plugin>
-        <groupId>com.coveo</groupId>
-        <artifactId>fmt-maven-plugin</artifactId>
-        <version>2.4.0</version>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.20.0</version>
         <executions>
           <execution>
+            <phase>validate</phase>
             <goals>
-              <goal>${fmt.action}</goal>
+              <goal>${spotless.action}</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <verbose>false</verbose>
-          <filesNamePattern>.*\.java</filesNamePattern>
-          <skip>${fmt.skip}</skip>
-          <style>aosp</style>
+          <java>
+            <googleJavaFormat>
+              <version>1.7</version>
+              <style>AOSP</style>
+            </googleJavaFormat>
+          </java>
+          <upToDateChecking>
+            <enabled>true</enabled>
+            <indexFile>${project.basedir}/.spotless-index</indexFile>
+          </upToDateChecking>
         </configuration>
       </plugin>
 

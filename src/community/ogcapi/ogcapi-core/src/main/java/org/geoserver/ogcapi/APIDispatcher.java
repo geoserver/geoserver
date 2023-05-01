@@ -132,7 +132,7 @@ public class APIDispatcher extends AbstractController {
         APIConfigurationSupport configurationSupport =
                 context.getAutowireCapableBeanFactory().createBean(APIConfigurationSupport.class);
         configurationSupport.setCallbacks(callbacks);
-        handlerAdapter = configurationSupport.requestMappingHandlerAdapter();
+        handlerAdapter = configurationSupport.createRequestMappingHandlerAdapter();
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
         // force GeoServer version of jackson as the first choice
@@ -170,8 +170,7 @@ public class APIDispatcher extends AbstractController {
         // been provided
         List<HandlerMethodReturnValueHandler> returnValueHandlers =
                 Optional.ofNullable(handlerAdapter.getReturnValueHandlers())
-                        .orElse(Collections.emptyList())
-                        .stream()
+                        .orElse(Collections.emptyList()).stream()
                         .map(
                                 f -> {
                                     if (f instanceof RequestResponseBodyMethodProcessor) {
@@ -430,8 +429,7 @@ public class APIDispatcher extends AbstractController {
     }
 
     private APIExceptionHandler getExceptionHandler(Throwable t, APIRequestInfo request) {
-        return exceptionHandlers
-                .stream()
+        return exceptionHandlers.stream()
                 .filter(h -> h.canHandle(t, request))
                 .findFirst()
                 .orElse(null);

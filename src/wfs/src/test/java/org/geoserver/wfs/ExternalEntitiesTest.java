@@ -5,20 +5,60 @@
  */
 package org.geoserver.wfs;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.util.AllowListEntityResolver;
+import org.geoserver.util.EntityResolverProvider;
+import org.geoserver.wfs.kvp.Filter_1_1_0_KvpParser;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opengis.filter.Id;
+import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.spatial.Intersects;
 import org.w3c.dom.Document;
 
 public class ExternalEntitiesTest extends WFSTestSupport {
+
+    private static final String FILTER =
+            "<Filter xmlns=\"http://www.opengis.net/ogc\">\n"
+                    + "  <FeatureId fid=\"states.1\"/>\n"
+                    + "</Filter>";
+
+    private static final String FILTER_OGC_NAMESPACE =
+            "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                    + "xmlns:gml=\"http://www.opengis.net/gml\">"
+                    + "<ogc:Intersects><ogc:PropertyName>the_geom</ogc:PropertyName>"
+                    + "<gml:Polygon><gml:exterior><gml:LinearRing>"
+                    + "<gml:posList>-112 46 -109 46 -109 47 -112 47 -112 46</gml:posList>"
+                    + "</gml:LinearRing></gml:exterior></gml:Polygon></ogc:Intersects></ogc:Filter>";
+
+    private static final String FILTER_OGC_SCHEMA_LOCATION =
+            "<Filter xmlns=\"http://www.opengis.net/ogc\"\n"
+                    + "      xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd\">\n"
+                    + "  <FeatureId fid=\"states.1\"/>\n"
+                    + "</Filter>";
+
+    private static final String FILTER_RESTRICTED_SCHEMA_SCHEMA_LOCATION =
+            "<Filter xmlns=\"http://invalid/schema\"\n"
+                    + "      xsi:schemaLocation=\"http://invalid/schema http://schemas.opengis.net/filter/1.1.0/filter.xsd\">\n"
+                    + "  <FeatureId fid=\"states.1\"/>\n"
+                    + "</Filter>";
+
+    private static final String FILTER_RESTRICTED_NAMESPACE =
+            "<Filter xmlns=\"http://invalid/schema\"\n"
+                    + "      xsi:schemaLocation=\"http://invalid/schema http://schemas.opengis.net/filter/1.1.0/filter.xsd\">\n"
+                    + "  <FeatureId fid=\"states.1\"/>\n"
+                    + "</Filter>";
 
     private static final String WFS_1_0_0_REQUEST =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
@@ -104,6 +144,59 @@ public class ExternalEntitiesTest extends WFSTestSupport {
                     + "                </fes:Filter>\r\n"
                     + "        </wfs:Query>\r\n"
                     + "</wfs:GetFeature>";
+
+    @Test
+    public void testAllowListFilter() throws Exception {
+        GeoServerInfo cfg = getGeoServer().getGlobal();
+        try {
+            EntityResolverProvider.setEntityResolver(
+                    new AllowListEntityResolver(getGeoServer(), "http://localhost:8080/"));
+
+            Filter_1_1_0_KvpParser kvpParser = new Filter_1_1_0_KvpParser(getGeoServer());
+
+            List filters = (List) kvpParser.parse(FILTER);
+            assertEquals("parsed id filter", 1, filters.size());
+            Id id = (Id) filters.get(0);
+            assertTrue("parsed id filter", id.getIDs().contains("states.1"));
+
+            filters = (List) kvpParser.parse(FILTER_OGC_NAMESPACE);
+            assertEquals("parsed intsersect filter", 1, filters.size());
+            Intersects intersect = (Intersects) filters.get(0);
+            assertEquals(
+                    "parsed intsersect filter",
+                    "the_geom",
+                    ((PropertyName) intersect.getExpression1()).getPropertyName());
+
+            filters = (List) kvpParser.parse(FILTER_OGC_SCHEMA_LOCATION);
+            assertEquals("parsed ogc filter", 1, filters.size());
+            id = (Id) filters.get(0);
+            assertTrue("parsed ogc filter", id.getIDs().contains("states.1"));
+
+            filters = (List) kvpParser.parse(FILTER_RESTRICTED_SCHEMA_SCHEMA_LOCATION);
+            assertEquals("parsed restricted filter", 1, filters.size());
+            id = (Id) filters.get(0);
+            assertTrue("parsed restricted filter", id.getIDs().contains("states.1"));
+
+            filters = (List) kvpParser.parse(FILTER_RESTRICTED_NAMESPACE);
+            assertEquals("parsed restricted namespace filter", 1, filters.size());
+            id = (Id) filters.get(0);
+            assertTrue("parsed restricted namespace filter", id.getIDs().contains("states.1"));
+
+            final String LOCALHOST =
+                    "<dmt xmlns=\"http://a.b/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://a.b/ http://localhost:8080/dmt.xsd\">dmt</dmt>";
+            filters = (List) kvpParser.parse(LOCALHOST);
+            assertTrue(filters.isEmpty());
+
+            EntityResolverProvider.setEntityResolver(new AllowListEntityResolver(getGeoServer()));
+            filters = (List) kvpParser.parse(LOCALHOST);
+            assertTrue(filters.isEmpty());
+        } finally {
+            cfg.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(cfg);
+            EntityResolverProvider.setEntityResolver(
+                    GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
+        }
+    }
 
     @Test
     public void testWfs1_0() throws Exception {

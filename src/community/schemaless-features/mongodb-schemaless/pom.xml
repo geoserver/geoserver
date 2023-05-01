@@ -33,7 +33,7 @@
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
-      <version>4.0.2</version>
+      <version>4.0.6</version>
     </dependency>
 
     <!--   Test dependencies   -->
@@ -81,6 +81,13 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-ows</artifactId>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-features-templating-core</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
 

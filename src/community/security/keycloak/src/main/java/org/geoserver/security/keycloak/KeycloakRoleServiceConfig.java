@@ -12,6 +12,7 @@ public class KeycloakRoleServiceConfig extends KeycloakSecurityServiceConfig
 
     protected String adminRoleName;
     protected String groupAdminRoleName;
+    private String idsOfClientsList;
 
     public KeycloakRoleServiceConfig() {}
 
@@ -39,5 +40,13 @@ public class KeycloakRoleServiceConfig extends KeycloakSecurityServiceConfig
     @Override
     public void setGroupAdminRoleName(String groupAdminRoleName) {
         this.groupAdminRoleName = groupAdminRoleName;
+    }
+
+    public String getIdsOfClientsList() {
+        return idsOfClientsList;
+    }
+
+    public void setIdsOfClientsList(String idsOfClientsList) {
+        this.idsOfClientsList = idsOfClientsList;
     }
 }

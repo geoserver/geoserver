@@ -6,7 +6,11 @@ package org.geoserver.platform;
 
 import java.util.Optional;
 
-/** @author Morgan Thompson - Boundless */
+/**
+ * Report java rendering engine used (for troubleshooting marlin installation and configuration).
+ *
+ * @author Morgan Thompson - Boundless
+ */
 public class RenderingEngineStatus implements ModuleStatus {
 
     private static final String DEFAULT = "PLATFORM DEFAULT";
@@ -24,7 +28,7 @@ public class RenderingEngineStatus implements ModuleStatus {
 
     @Override
     public Optional<String> getComponent() {
-        return Optional.ofNullable("java2d");
+        return Optional.ofNullable("Java2d");
     }
 
     @Override
@@ -59,7 +63,6 @@ public class RenderingEngineStatus implements ModuleStatus {
 
     @Override
     public Optional<String> getDocumentation() {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+        return Optional.of("production/container.html#enable-the-marlin-rasterizer");
     }
 }

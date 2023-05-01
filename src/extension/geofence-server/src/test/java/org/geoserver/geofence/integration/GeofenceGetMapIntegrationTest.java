@@ -5,24 +5,39 @@
 
 package org.geoserver.geofence.integration;
 
+import static org.geoserver.catalog.LayerGroupInfo.Mode.NAMED;
+import static org.geoserver.catalog.LayerGroupInfo.Mode.OPAQUE_CONTAINER;
+import static org.geoserver.catalog.LayerGroupInfo.Mode.SINGLE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import javax.imageio.ImageIO;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.geofence.config.GeoFenceConfiguration;
+import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
+import org.geoserver.geofence.core.model.enums.LayerType;
 import org.geoserver.geofence.core.model.enums.SpatialFilterType;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
+
+    private GeoFenceConfigurationManager configurationManager;
 
     @Test
     public void testLimitRuleWithAllowedAreaLayerGroup() throws Exception {
@@ -49,7 +64,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
                     "MULTIPOLYGON (((0.0006 -0.0018, 0.001 -0.0006, 0.0024 -0.0001, 0.0031 -0.0015, 0.0006 -0.0018), (0.0017 -0.0011, 0.0025 -0.0011, 0.0025 -0.0006, 0.0017 -0.0006, 0.0017 -0.0011)))";
             addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326, ruleService);
             // check the group works without workspace qualification;
-            group = addLakesPlacesLayerGroup(LayerGroupInfo.Mode.SINGLE, "lakes_and_places");
+            group = addLakesPlacesLayerGroup(SINGLE, "lakes_and_places");
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             String url =
@@ -66,6 +81,87 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
             deleteRules(ruleService, ruleId1, ruleId2);
             logout();
             removeLayerGroup(group);
+        }
+    }
+
+    /**
+     * Tests that the user cannot access based on the roles of other users
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testRoleOnlyMatch() throws Exception {
+
+        configurationManager =
+                applicationContext.getBean(
+                        "geofenceConfigurationManager", GeoFenceConfigurationManager.class);
+        GeoFenceConfiguration config = configurationManager.getConfiguration();
+        config.setUseRolesToFilter(true);
+        config.getRoles().add("ROLE_USER");
+
+        LayerGroupInfo group = addLakesPlacesLayerGroup(NAMED, "lakes_and_places");
+
+        Long ruleId1 = null;
+        Long ruleId2 = null;
+        try {
+            ruleId1 =
+                    addRule(GrantType.DENY, "john", null, "WMS", null, null, null, 1, ruleService);
+            ruleId2 =
+                    addRule(GrantType.ALLOW, "jane", null, "WMS", null, null, null, 0, ruleService);
+
+            login("john", "", "ROLE_USER");
+            String url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers=Lakes"
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse resp = getAsServletResponse(url);
+
+            assertTrue(resp.getContentAsString().contains("Could not find layer Lakes"));
+        } finally {
+            deleteRules(ruleService, ruleId1, ruleId2);
+            config.setUseRolesToFilter(false);
+            config.getRoles().remove("ROLE_USER");
+            removeLayerGroup(group);
+            logout();
+        }
+    }
+
+    /**
+     * Tests that the user can access with rules assigned personally and not to a role
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAccessWithoutRole() throws Exception {
+
+        configurationManager =
+                applicationContext.getBean(
+                        "geofenceConfigurationManager", GeoFenceConfigurationManager.class);
+        GeoFenceConfiguration config = configurationManager.getConfiguration();
+        config.setUseRolesToFilter(true);
+
+        LayerGroupInfo group = addLakesPlacesLayerGroup(NAMED, "lakes_and_places");
+
+        Long ruleId1 = null;
+        try {
+            ruleId1 =
+                    addRule(GrantType.ALLOW, "john", null, "WMS", null, null, null, 1, ruleService);
+
+            login("john", "");
+            String url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers=Lakes"
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse resp = getAsServletResponse(url);
+
+            assertEquals(200, resp.getStatus());
+        } finally {
+            deleteRules(ruleService, ruleId1);
+            config.setUseRolesToFilter(false);
+            removeLayerGroup(group);
+            logout();
         }
     }
 
@@ -155,7 +251,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
                     "MULTIPOLYGON (((0.0006 -0.0018, 0.001 -0.0006, 0.0024 -0.0001, 0.0031 -0.0015, 0.0006 -0.0018), (0.0017 -0.0011, 0.0025 -0.0011, 0.0025 -0.0006, 0.0017 -0.0006, 0.0017 -0.0011)))";
             addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326, ruleService);
             // check the group works without workspace qualification;
-            group = addLakesPlacesLayerGroup(LayerGroupInfo.Mode.NAMED, "lakes_and_places");
+            group = addLakesPlacesLayerGroup(NAMED, "lakes_and_places");
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             String url =
@@ -264,9 +360,7 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
             addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326, ruleService);
             // check the group works without workspace qualification;
             WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.CITE_PREFIX);
-            group =
-                    createLakesPlacesLayerGroup(
-                            getCatalog(), "lakes_and_places", ws, LayerGroupInfo.Mode.NAMED, null);
+            group = createLakesPlacesLayerGroup(getCatalog(), "lakes_and_places", ws, NAMED, null);
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             String url =
@@ -294,9 +388,9 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
         try {
             ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
 
-            addLakesPlacesLayerGroup(LayerGroupInfo.Mode.SINGLE, "nested");
+            addLakesPlacesLayerGroup(SINGLE, "nested");
 
-            addLakesPlacesLayerGroup(LayerGroupInfo.Mode.OPAQUE_CONTAINER, "container");
+            addLakesPlacesLayerGroup(OPAQUE_CONTAINER, "container");
 
             login("admin", "geoserver", "ROLE_ADMINISTRATOR");
             group = getCatalog().getLayerGroupByName("container");
@@ -322,6 +416,147 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
             logout();
             removeLayerGroup(group);
             removeLayerGroup(nested);
+        }
+    }
+
+    @Test
+    public void testLayerGroupAndStyleRules() throws Exception {
+
+        Long ruleId1 = null;
+        Long ruleId2 = null;
+        LayerGroupInfo group = null;
+        String layerGroupName = "lakes_and_places_style";
+        try {
+            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
+            ruleId2 =
+                    addRule(
+                            GrantType.ALLOW,
+                            null,
+                            "ROLE_ANONYMOUS",
+                            "WMS",
+                            null,
+                            "cite",
+                            "Forests",
+                            0,
+                            ruleService);
+
+            // setting the allowed styles
+            List<String> allowedStyles = Arrays.asList("Lakes", "NamedPlaces");
+            addLayerDetails(
+                    ruleService,
+                    ruleId2,
+                    new HashSet<>(allowedStyles),
+                    Collections.emptySet(),
+                    CatalogMode.HIDE,
+                    null,
+                    null,
+                    LayerType.VECTOR);
+
+            addLakesPlacesLayerGroup(SINGLE, layerGroupName);
+
+            login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+            group = getCatalog().getLayerGroupByName(layerGroupName);
+
+            // polygon is not among the allowed styles
+            StyleInfo polygonStyle = getCatalog().getStyleByName("polygon");
+            LayerInfo forest = getCatalog().getLayerByName(getLayerId(MockData.FORESTS));
+            forest.getStyles().add(polygonStyle);
+            getCatalog().save(forest);
+            List<StyleInfo> styles = new ArrayList<>();
+            styles.add(polygonStyle);
+            // layergroup style containing style not among the allowed ones
+            addLayerGroupStyle(group, "forests_style", Arrays.asList(forest), styles);
+            logout();
+
+            login("anonymousUser", "", "ROLE_ANONYMOUS");
+            String url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers="
+                            + group.getName()
+                            + "&styles="
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse response = getAsServletResponse(url);
+            // first request default style should work
+            assertEquals(response.getContentType(), "image/png");
+
+            url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers="
+                            + group.getName()
+                            + "&styles=forests_style"
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            response = getAsServletResponse(url);
+            // should get an error since the polygon style is contained in the lg forest_style
+            assertEquals(response.getContentType(), "text/xml");
+            assertTrue(
+                    response.getContentAsString().contains("style is not available on this layer"));
+        } finally {
+            deleteRules(ruleService, ruleId1, ruleId2);
+            logout();
+            removeLayerGroup(group);
+        }
+    }
+
+    /**
+     * Tests that the user can access based on any role
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAnyRoleMatch() throws Exception {
+
+        configurationManager =
+                applicationContext.getBean(
+                        "geofenceConfigurationManager", GeoFenceConfigurationManager.class);
+        GeoFenceConfiguration config = configurationManager.getConfiguration();
+        config.setUseRolesToFilter(true);
+        config.getRoles().add("*");
+
+        LayerGroupInfo group =
+                addLakesPlacesLayerGroup(LayerGroupInfo.Mode.NAMED, "lakes_and_places");
+
+        Long ruleId1 = null;
+        try {
+            ruleId1 =
+                    addRule(
+                            GrantType.ALLOW,
+                            null,
+                            "ROLE_WMS",
+                            null,
+                            null,
+                            null,
+                            null,
+                            0,
+                            ruleService);
+
+            login("john", "", "ROLE_WMS");
+            String url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers=Lakes"
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse resp = getAsServletResponse(url);
+
+            assertEquals(200, resp.getStatus());
+
+            // check that user is able to access the layer
+            assertEquals("image/png", resp.getContentType());
+            logout();
+
+            login("jane", "", "ROLE_USER");
+            MockHttpServletResponse resp2 = getAsServletResponse(url);
+
+            assertEquals(200, resp2.getStatus());
+            // check that user is not allowed to access the layer
+            assertTrue(resp2.getContentAsString().contains("Could not find layer Lakes"));
+        } finally {
+            deleteRules(ruleService, ruleId1);
+            config.setUseRolesToFilter(false);
+            config.getRoles().remove("*");
+            removeLayerGroup(group);
+            logout();
         }
     }
 }

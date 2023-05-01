@@ -248,8 +248,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
                     Arrays.asList(JDBCDataStoreFactoryFinder.SupportedStoreType.values());
             boolean isSupported =
                     dbType != null
-                            && supportedStoreTypes
-                                    .stream()
+                            && supportedStoreTypes.stream()
                                     .anyMatch(st -> dbType.toUpperCase().contains(st.name()));
             if (isSupported) {
                 postgisDSs.add(new DataStoreSummmary(ds));

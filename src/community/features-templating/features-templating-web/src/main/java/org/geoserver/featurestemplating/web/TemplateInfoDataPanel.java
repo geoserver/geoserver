@@ -161,8 +161,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
     private List<String> getFeatureTypesInfo(String workspaceName) {
         Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
         NamespaceInfo namespaceInfo = catalog.getNamespaceByPrefix(workspaceName);
-        return catalog.getFeatureTypesByNamespace(namespaceInfo)
-                .stream()
+        return catalog.getFeatureTypesByNamespace(namespaceInfo).stream()
                 .map(fti -> fti.getName())
                 .collect(Collectors.toList());
     }

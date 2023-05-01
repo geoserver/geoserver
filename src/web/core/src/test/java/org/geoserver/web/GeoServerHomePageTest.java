@@ -5,6 +5,7 @@
  */
 package org.geoserver.web;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -12,6 +13,11 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
@@ -21,6 +27,15 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         super.setUpSpring(springContextLocations);
         springContextLocations.add(
                 "classpath*:/org/geoserver/web/GeoServerHomePageTestContext.xml");
+    }
+
+    @Before
+    public void resetMail() {
+        GeoServer gs = getGeoServer();
+        GeoServerInfo global = gs.getGlobal();
+        SettingsInfo settings = global.getSettings();
+        settings.getContact().setContactEmail("andrea@geoserver.org");
+        gs.save(global);
     }
 
     @Test
@@ -59,6 +74,24 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         assertEquals(
                 "andrea@geoserver.org",
                 contactEmail == null ? "andrea@geoserver.org" : contactEmail);
+    }
+
+    @Test
+    public void testEmailEscape() {
+        // try adding a HTML bit
+        GeoServerApplication geoServerApplication = getGeoServerApplication();
+        GeoServer gs = geoServerApplication.getGeoServer();
+        GeoServerInfo global = gs.getGlobal();
+        SettingsInfo settings = global.getSettings();
+        settings.getContact().setContactEmail("<b>hello</b>test@mail.com");
+        gs.save(global);
+
+        tester.startPage(GeoServerHomePage.class);
+        String html = tester.getLastResponseAsString();
+        assertThat(
+                html,
+                CoreMatchers.containsString(
+                        " <a href=\"mailto:&lt;b&gt;hello&lt;/b&gt;test@mail.com\">administrator</a>"));
     }
 
     public static class MockHomePageContentProvider implements GeoServerHomePageContentProvider {

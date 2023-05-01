@@ -24,6 +24,18 @@
         "landsat:tier": "pre-collection",
         "landsat:orbit": "${eop:orbitNumber}" // just to have a custom queriable
       },
+      "assets": {
+        "thumbnail": {
+          "additional": "$${opt:cloudCover}",
+          "href":"will replace",
+          "type":"will replace"
+        }
+      },
+      "dynamicIncludeFlatTest": {
+        "randomNumber":"23",
+        "thumbnail2":"thumbnail2",
+        "$includeFlat":"${assets}"
+      },
       "links": [ // custom link here
         "$includeFlat{mandatoryLinks.json}",
         "$${jsonPointer(assets, '/MTL')}",

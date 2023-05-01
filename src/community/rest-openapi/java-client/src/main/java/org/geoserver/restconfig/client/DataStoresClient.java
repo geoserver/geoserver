@@ -115,8 +115,7 @@ public class DataStoresClient {
     }
 
     public Map<String, String> toConnectionParameters(@NonNull ConnectionParameters params) {
-        return params.getEntry()
-                .stream()
+        return params.getEntry().stream()
                 .collect(
                         Collectors.toMap(
                                 ConnectionParameterEntry::getAtKey,
@@ -126,8 +125,7 @@ public class DataStoresClient {
     public ConnectionParameters toConnectionParameters(@NonNull Map<String, String> params) {
         return new ConnectionParameters()
                 .entry(
-                        params.entrySet()
-                                .stream()
+                        params.entrySet().stream()
                                 .map(this::connectionParameterEntry)
                                 .collect(Collectors.toList()));
     }

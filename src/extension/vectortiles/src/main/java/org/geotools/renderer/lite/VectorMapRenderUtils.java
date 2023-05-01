@@ -121,8 +121,7 @@ public class VectorMapRenderUtils {
         final int bufferScreen;
         if (requestBufferScreen <= 0) {
             MetaBufferEstimator bufferEstimator = new MetaBufferEstimator();
-            styleList
-                    .stream()
+            styleList.stream()
                     .flatMap(
                             fts ->
                                     Stream.concat(

@@ -9,14 +9,18 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.MetadataMap;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -200,6 +204,11 @@ class RasterEstimator {
 
         // Use sample info type for each output band to estimate size
         List<CoverageDimensionInfo> coverageDimensionInfoList = coverageInfo.getDimensions();
+
+        if (coverageDimensionInfoList.stream().anyMatch(cdi -> cdi.getDimensionType() == null)) {
+            LOGGER.log(Level.FINE, "Recalculating Band Dimensions Types");
+            coverageDimensionInfoList = getBandDimensionsFromCoverageInfo(coverageInfo);
+        }
         int accumulatedPixelSizeInBits = 0;
 
         // Use only selected bands for output, if specified
@@ -249,5 +258,25 @@ class RasterEstimator {
                             + ")");
         }
         return true;
+    }
+
+    private List<CoverageDimensionInfo> getBandDimensionsFromCoverageInfo(CoverageInfo ci)
+            throws Exception {
+        String nativeName = ci.getNativeCoverageName();
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setStore(ci.getStore());
+        MetadataMap metadata = ci.getMetadata();
+        CoverageInfo rebuilt;
+        if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
+            GridCoverage2DReader reader =
+                    (GridCoverage2DReader)
+                            catalog.getResourcePool()
+                                    .getGridCoverageReader(
+                                            ci, nativeName, GeoTools.getDefaultHints());
+            rebuilt = cb.buildCoverage(reader, nativeName, null);
+        } else {
+            rebuilt = cb.buildCoverage(nativeName);
+        }
+        return rebuilt.getDimensions();
     }
 }

@@ -145,8 +145,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
     public void testGetAllInWorkspaceAsXML() throws Exception {
         Document dom = getAsDOM(ROOT_PATH + "/workspaces/cite/layers.xml", 200);
         int count =
-                catalog.getResourcesByNamespace("cite", ResourceInfo.class)
-                        .stream()
+                catalog.getResourcesByNamespace("cite", ResourceInfo.class).stream()
                         .mapToInt(info -> catalog.getLayers(info).size())
                         .sum();
         assertXpathEvaluatesTo(count + "", "count(//layer)", dom);

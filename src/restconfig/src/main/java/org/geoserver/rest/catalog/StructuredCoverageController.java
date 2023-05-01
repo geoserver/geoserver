@@ -66,10 +66,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path =
-            RestBaseController.ROOT_PATH
-                    + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{coverageName}/index"
-)
+        path =
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{coverageName}/index")
 public class StructuredCoverageController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(StructuredCoverageController.class);
@@ -95,12 +94,11 @@ public class StructuredCoverageController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        produces = {
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            produces = {
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public RestWrapper<IndexSchema> indexGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
@@ -117,14 +115,13 @@ public class StructuredCoverageController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "/granules",
-        produces = {
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            path = "/granules",
+            produces = {
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     @ResponseBody
     public SimpleFeatureCollection granulesGet(
             @PathVariable String workspaceName,
@@ -165,9 +162,8 @@ public class StructuredCoverageController extends AbstractCatalogController {
      * interpreted as format extension
      */
     @GetMapping(
-        path = "/granules/{granuleId:.+}",
-        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "/granules/{granuleId:.+}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public FormatCollectionWrapper granuleGet(
             @PathVariable String workspaceName,
@@ -391,8 +387,7 @@ public class StructuredCoverageController extends AbstractCatalogController {
             throw new ResourceNotFoundException("No such coverage store: " + storeName);
         }
         Optional<CoverageInfo> optCoverage =
-                catalog.getCoveragesByStore(store)
-                        .stream()
+                catalog.getCoveragesByStore(store).stream()
                         .filter(si -> coverageName.equals(si.getName()))
                         .findFirst();
         if (!optCoverage.isPresent()) {

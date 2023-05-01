@@ -23,7 +23,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 @XmlRootElement(name = "Rule")
-public class JaxbRule {
+public class JaxbRule extends AbstractPayload {
 
     /** Specification for "LIMIT" rules. */
     public static class Limits {

@@ -334,8 +334,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
             fileName = (String) request.getFormatOptions().get("FILENAME");
         } else if (response.getTypeNames() != null) {
             fileName =
-                    response.getTypeNames()
-                            .stream()
+                    response.getTypeNames().stream()
                             .map(tn -> tn.getLocalPart())
                             .collect(Collectors.joining("_"));
         } else if (response.getTypeName() != null) {
@@ -344,8 +343,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
             Query query = request.getQueries().get(0);
             if (query.getTypeNames() != null) {
                 fileName =
-                        query.getTypeNames()
-                                .stream()
+                        query.getTypeNames().stream()
                                 .map(tn -> tn.getLocalPart())
                                 .collect(Collectors.joining("_"));
             } else {

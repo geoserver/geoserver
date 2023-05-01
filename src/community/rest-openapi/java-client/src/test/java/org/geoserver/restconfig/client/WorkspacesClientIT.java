@@ -44,8 +44,7 @@ public class WorkspacesClientIT {
 
         final String currentDefault = defaultWorkspace.get().getName();
         final String newDefault =
-                client.findAllNames()
-                        .stream()
+                client.findAllNames().stream()
                         .filter(name -> !currentDefault.equals(name))
                         .findFirst()
                         .get();

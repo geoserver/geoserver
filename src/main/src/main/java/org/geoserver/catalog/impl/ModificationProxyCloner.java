@@ -88,6 +88,10 @@ class ModificationProxyCloner {
             return (T) ModificationProxy.create(cis, getDeepestCatalogInfoInterface(cis));
         }
 
+        if (source instanceof LayerGroupStyle) {
+            return (T) ModificationProxy.create(source, LayerGroupStyle.class);
+        }
+
         // if a known immutable?
         if (source instanceof String
                 || source instanceof Byte

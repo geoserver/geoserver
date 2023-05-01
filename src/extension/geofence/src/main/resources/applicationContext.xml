@@ -85,6 +85,7 @@
             <constructor-arg index="0" ref="${ruleReaderFrontend}" />
             <constructor-arg index="1" ref="rawCatalog" />
             <constructor-arg index="2" ref="geofenceConfigurationManager" />
+            <property name="groupsCache" ref="layerGroupContainmentCache"/>
     </bean>
 
     <bean id="geofenceConfigurationController" class="org.geoserver.geofence.config.GeoFenceConfigurationController">
@@ -124,7 +125,7 @@
     </bean>
 
     <bean id="geoFenceXStreamInitializer" 
-          class="org.geoserver.geoserver.authentication.GeoFenceXStreamPersisterInitializer"
+          class="org.geoserver.geoserver.xstream.GeoFenceXStreamPersisterInitializer"
           lazy-init="false">
     </bean>
 

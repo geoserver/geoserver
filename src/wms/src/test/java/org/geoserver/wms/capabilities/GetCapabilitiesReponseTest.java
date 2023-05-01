@@ -6,6 +6,8 @@
 package org.geoserver.wms.capabilities;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
 import java.util.Locale;
 import org.geoserver.catalog.Catalog;
@@ -14,6 +16,10 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -341,6 +347,88 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
             GeoServerInfo global = getGeoServer().getGlobal();
             global.getSettings().setContact(old);
             getGeoServer().save(global);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo groupInfo = null;
+        try {
+            String layerGroupName = "test_group_style";
+            createLakesPlacesLayerGroup(catalog, layerGroupName, LayerGroupInfo.Mode.SINGLE, null);
+            groupInfo = catalog.getLayerGroupByName(layerGroupName);
+            LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
+            StyleInfo groupStyleName = new StyleInfoImpl(catalog);
+            groupStyleName.setName("group-style-name");
+            groupStyle.setName(groupStyleName);
+            groupStyle.getLayers().add(catalog.getLayerByName("cite:Forests"));
+            groupStyle.getStyles().add(null);
+            groupInfo.getLayerGroupStyles().add(groupStyle);
+            catalog.save(groupInfo);
+            String request = "wms?version=1.1.1&request=GetCapabilities&service=WMS";
+            Document result = getAsDOM(request);
+
+            String groupStyleEl =
+                    "//Layer[Name = '" + layerGroupName + "']/Style[Name = 'group-style-name']";
+            assertXpathExists(groupStyleEl, result);
+        } finally {
+            if (groupInfo != null) catalog.remove(groupInfo);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleOpaque() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo groupInfo = null;
+        try {
+            String layerGroupName = "test_group_style";
+            createLakesPlacesLayerGroup(
+                    catalog, layerGroupName, LayerGroupInfo.Mode.OPAQUE_CONTAINER, null);
+            groupInfo = catalog.getLayerGroupByName(layerGroupName);
+            LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
+            StyleInfo groupStyleName = new StyleInfoImpl(catalog);
+            groupStyleName.setName("group-style-name");
+            groupStyle.setName(groupStyleName);
+            groupStyle.getLayers().add(catalog.getLayerByName("cite:Forests"));
+            groupStyle.getStyles().add(null);
+            groupInfo.getLayerGroupStyles().add(groupStyle);
+            catalog.save(groupInfo);
+            String request = "wms?version=1.1.1&request=GetCapabilities&service=WMS";
+            Document result = getAsDOM(request);
+
+            String groupStyleEl =
+                    "//Layer[Name = '" + layerGroupName + "']/Style[Name = 'group-style-name']";
+            assertXpathExists(groupStyleEl, result);
+        } finally {
+            if (groupInfo != null) catalog.remove(groupInfo);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleSkippedWhenTree() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo groupInfo = null;
+        try {
+            String layerGroupName = "test_group_style";
+            createLakesPlacesLayerGroup(catalog, layerGroupName, LayerGroupInfo.Mode.NAMED, null);
+            groupInfo = catalog.getLayerGroupByName(layerGroupName);
+            LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
+            StyleInfo groupStyleName = new StyleInfoImpl(catalog);
+            groupStyleName.setName("group-style-name");
+            groupStyle.setName(groupStyleName);
+            groupStyle.getLayers().add(catalog.getLayerByName("cite:Forests"));
+            groupStyle.getStyles().add(null);
+            groupInfo.getLayerGroupStyles().add(groupStyle);
+            catalog.save(groupInfo);
+            String request = "wms?version=1.1.1&request=GetCapabilities&service=WMS";
+            Document result = getAsDOM(request);
+
+            String groupStyleEl =
+                    "//Layer[Name = '" + layerGroupName + "']/Style[Name = 'group-style-name']";
+            assertXpathNotExists(groupStyleEl, result);
+        } finally {
+            if (groupInfo != null) catalog.remove(groupInfo);
         }
     }
 }

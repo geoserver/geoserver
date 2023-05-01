@@ -51,8 +51,7 @@ public class TaskParameterPanel extends Panel {
                             return new AutoCompleteTextFieldPanel(
                                     id,
                                     (IModel<String>) property.getModel(itemModel),
-                                    attModel.getItems()
-                                            .stream()
+                                    attModel.getItems().stream()
                                             .map(s -> "${" + s.getName() + "}")
                                             .collect(Collectors.toList()));
                         }

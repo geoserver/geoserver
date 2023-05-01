@@ -110,10 +110,9 @@ public class MapMLController {
      * @return a text/html representation
      */
     @RequestMapping(
-        value = "/{layer}/{proj}",
-        method = {RequestMethod.GET, RequestMethod.POST},
-        produces = {"text/html", "text/html;charset=UTF-8", "!" + MAPML_MIME_TYPE}
-    )
+            value = "/{layer}/{proj}",
+            method = {RequestMethod.GET, RequestMethod.POST},
+            produces = {"text/html", "text/html;charset=UTF-8", "!" + MAPML_MIME_TYPE})
     public String Html(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -269,10 +268,9 @@ public class MapMLController {
      * @throws IOException - IOException
      */
     @RequestMapping(
-        value = "/{layer}/{proj}",
-        method = {RequestMethod.GET, RequestMethod.POST},
-        produces = {MAPML_MIME_TYPE, "!text/html;charset=UTF-8"}
-    )
+            value = "/{layer}/{proj}",
+            method = {RequestMethod.GET, RequestMethod.POST},
+            produces = {MAPML_MIME_TYPE, "!text/html;charset=UTF-8"})
     public Mapml mapML(
             HttpServletRequest request,
             HttpServletResponse response,

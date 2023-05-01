@@ -100,8 +100,7 @@ public class TimeoutCallback extends AbstractDispatcherCallback {
                         (FeatureCollectionResponse) result;
                 List<FeatureCollection> collections = featureCollectionResponse.getFeatures();
                 List<FeatureCollection> wrappers =
-                        collections
-                                .stream()
+                        collections.stream()
                                 .map(fc -> TimeoutFeatureCollection.wrap(timeoutVerifier, fc))
                                 .collect(Collectors.toList());
 

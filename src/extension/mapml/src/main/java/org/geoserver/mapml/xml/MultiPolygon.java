@@ -34,9 +34,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"polygon"}
-)
+        name = "",
+        propOrder = {"polygon"})
 public class MultiPolygon {
 
     @XmlElement(name = "map-polygon", required = true, namespace = "http://www.w3.org/1999/xhtml")

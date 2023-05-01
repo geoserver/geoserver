@@ -59,19 +59,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = {
-        RestBaseController.ROOT_PATH + "/templates",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/templates",
-        RestBaseController.ROOT_PATH
-                + "/workspaces/{workspaceName}/datastores/{storeName}/templates",
-        RestBaseController.ROOT_PATH
-                + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates",
-        RestBaseController.ROOT_PATH
-                + "/workspaces/{workspaceName}/coveragestores/{storeName}/templates",
-        RestBaseController.ROOT_PATH
-                + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{featureTypeName}/templates"
-    }
-)
+        path = {
+            RestBaseController.ROOT_PATH + "/templates",
+            RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/templates",
+            RestBaseController.ROOT_PATH
+                    + "/workspaces/{workspaceName}/datastores/{storeName}/templates",
+            RestBaseController.ROOT_PATH
+                    + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates",
+            RestBaseController.ROOT_PATH
+                    + "/workspaces/{workspaceName}/coveragestores/{storeName}/templates",
+            RestBaseController.ROOT_PATH
+                    + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{featureTypeName}/templates"
+        })
 public class TemplateController extends AbstractCatalogController {
 
     private GeoServerResourceLoader resources;
@@ -108,9 +107,8 @@ public class TemplateController extends AbstractCatalogController {
 
     /** Template definition. */
     @GetMapping(
-        value = "/{templateName}",
-        produces = {MediaTypeExtensions.TEXT_FTL_VALUE}
-    )
+            value = "/{templateName}",
+            produces = {MediaTypeExtensions.TEXT_FTL_VALUE})
     public void templateGet(
             @PathVariable(required = false) String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -144,9 +142,8 @@ public class TemplateController extends AbstractCatalogController {
 
     /** All templates as JSON, XML or HTML. */
     @PutMapping(
-        value = "/{templateName}",
-        consumes = {MediaTypeExtensions.TEXT_FTL_VALUE, MediaType.TEXT_PLAIN_VALUE}
-    )
+            value = "/{templateName}",
+            consumes = {MediaTypeExtensions.TEXT_FTL_VALUE, MediaType.TEXT_PLAIN_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public void templatePut(
             @PathVariable(required = false) String workspaceName,
@@ -177,12 +174,11 @@ public class TemplateController extends AbstractCatalogController {
      * @return All templates
      */
     @GetMapping(
-        produces = {
-            MediaType.TEXT_HTML_VALUE, // this is the default
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        }
-    )
+            produces = {
+                MediaType.TEXT_HTML_VALUE, // this is the default
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE
+            })
     public RestWrapper<TemplateInfo> templatesGet(
             @PathVariable(required = false) String workspaceName,
             @PathVariable(required = false) String storeName,

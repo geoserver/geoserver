@@ -15,18 +15,7 @@ import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.utils.BackupUtils;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.ValidationResult;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
@@ -970,7 +959,139 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                         }
                     }
                 }
+
+                for (WMSStoreInfo wms :
+                        getCatalog().getStoresByWorkspace(ws.getName(), WMSStoreInfo.class)) {
+                    if (!filteredResource(wms, ws, true, StoreInfo.class)) {
+                        restoreWMSStoreInfo(sourceRestoreFodler, ws, wsFolder, wms);
+                    }
+                }
+
+                for (WMTSStoreInfo wmts :
+                        getCatalog().getStoresByWorkspace(ws.getName(), WMTSStoreInfo.class)) {
+                    if (!filteredResource(wmts, ws, true, StoreInfo.class)) {
+                        restoreWMTSStoreInfo(sourceRestoreFodler, ws, wsFolder, wmts);
+                    }
+                }
             }
+        }
+    }
+
+    private void restoreWMTSStoreInfo(
+            Resource sourceRestoreFodler, WorkspaceInfo ws, Resource wsFolder, WMTSStoreInfo wmts)
+            throws Exception {
+        // - Prepare Folder
+        Resource wmtsFolder = BackupUtils.dir(wsFolder, wmts.getName());
+
+        wmts.setWorkspace(ws);
+
+        doWrite(wmts, wmtsFolder, "wmtsstore.xml");
+        // Restore Resources
+        List<WMTSLayerInfo> wmtsLayers =
+                getCatalog().getResourcesByStore(wmts, WMTSLayerInfo.class);
+        for (WMTSLayerInfo wl : wmtsLayers) {
+            if (!filteredResource(wl, ws, true, ResourceInfo.class)) {
+                restoreWTMSLayer(sourceRestoreFodler, ws, wmts, wmtsFolder, wl);
+            }
+        }
+    }
+
+    private void restoreWMSStoreInfo(
+            Resource sourceRestoreFodler, WorkspaceInfo ws, Resource wsFolder, WMSStoreInfo wms)
+            throws Exception {
+        // - Prepare Folder
+        Resource wmsFolder = BackupUtils.dir(wsFolder, wms.getName());
+
+        wms.setWorkspace(ws);
+
+        doWrite(wms, wmsFolder, "wmsstore.xml");
+        // Restore Resources
+        List<WMSLayerInfo> wmsLayerInfoList =
+                getCatalog().getResourcesByStore(wms, WMSLayerInfo.class);
+        for (WMSLayerInfo wl : wmsLayerInfoList) {
+            if (!filteredResource(wl, ws, true, ResourceInfo.class)) {
+                restoreWMSLayer(sourceRestoreFodler, ws, wms, wmsFolder, wl);
+            }
+        }
+    }
+
+    private void restoreWTMSLayer(
+            Resource sourceRestoreFodler,
+            WorkspaceInfo ws,
+            WMTSStoreInfo wms,
+            Resource wmsFolder,
+            WMTSLayerInfo wl)
+            throws Exception {
+        // - Prepare Folder
+        Files.delete(wmsFolder.get(wl.getName()).dir());
+        Resource ftFolder = BackupUtils.dir(wmsFolder, wl.getName());
+
+        doWrite(wl, ftFolder, "wmtslayer.xml");
+
+        // Restore Layers
+        for (LayerInfo ly : getCatalog().getLayers(wl)) {
+            if (!filteredResource(ly, ws, true, LayerInfo.class)) {
+                String wmtsLayerInfoName = wl.getName();
+                restoreLayerResources(
+                        sourceRestoreFodler, ws, wms, ftFolder, ly, wmtsLayerInfoName);
+            }
+        }
+    }
+
+    private void restoreWMSLayer(
+            Resource sourceRestoreFodler,
+            WorkspaceInfo ws,
+            WMSStoreInfo wms,
+            Resource wmsFolder,
+            WMSLayerInfo wl)
+            throws Exception {
+        // - Prepare Folder
+        Files.delete(wmsFolder.get(wl.getName()).dir());
+        Resource ftFolder = BackupUtils.dir(wmsFolder, wl.getName());
+
+        doWrite(wl, ftFolder, "wmslayer.xml");
+
+        // Restore Layers
+        for (LayerInfo ly : getCatalog().getLayers(wl)) {
+            if (!filteredResource(ly, ws, true, LayerInfo.class)) {
+                String wmsLayerInfoName = wl.getName();
+                restoreLayerResources(sourceRestoreFodler, ws, wms, ftFolder, ly, wmsLayerInfoName);
+            }
+        }
+    }
+
+    private void restoreLayerResources(
+            Resource sourceRestoreFodler,
+            WorkspaceInfo ws,
+            HTTPStoreInfo httpStoreInfo,
+            Resource ftFolder,
+            LayerInfo ly,
+            String wmsLayerInfoName)
+            throws Exception {
+        doWrite(ly, ftFolder, "layer.xml");
+
+        Resource ftResource =
+                sourceRestoreFodler.get(
+                        Paths.path(
+                                "workspaces/" + ws.getName() + "/" + httpStoreInfo.getName(),
+                                wmsLayerInfoName));
+        List<Resource> resources =
+                Resources.list(
+                        ftResource,
+                        new Filter<Resource>() {
+                            @Override
+                            public boolean accept(Resource res) {
+                                if (res.getType() == Type.RESOURCE
+                                        && !res.name().endsWith(".xml")) {
+                                    return true;
+                                }
+                                return false;
+                            }
+                        },
+                        true);
+
+        for (Resource resource : resources) {
+            Resources.copy(resource.in(), ftFolder, resource.name());
         }
     }
 

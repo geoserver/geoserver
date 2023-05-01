@@ -51,8 +51,7 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
 
     public void setResults(Map<List<Object>, List<Object>> results) {
         Map<List<Object>, List<CalcResult>> wrapped = new LinkedHashMap<>();
-        results.entrySet()
-                .stream()
+        results.entrySet().stream()
                 .forEach(e -> wrapped.put(e.getKey(), toCalcResults(e.getValue())));
         this.result = new MemoryResult(wrapped);
     }
@@ -96,9 +95,7 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
         if (this.result instanceof IterableResult) return result;
 
         Map<List<Object>, List<CalcResult>> wrapped = new LinkedHashMap<>();
-        calculators
-                .entrySet()
-                .stream()
+        calculators.entrySet().stream()
                 .forEach(e -> wrapped.put(e.getKey(), getResult(e.getValue())));
         MemoryResult computed = new MemoryResult(wrapped);
         if (this.result == null) return computed;
@@ -229,9 +226,7 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
                                 mergedMap.put(e.getKey(), mergeResults(thisResults, otherResults));
                             });
             // append all other results that do not match this map
-            other.results
-                    .entrySet()
-                    .stream()
+            other.results.entrySet().stream()
                     .filter(e -> results.get(e.getKey()) == null)
                     .forEach(e -> mergedMap.put(e.getKey(), e.getValue()));
 

@@ -91,6 +91,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     protected Date dateModified;
 
+    protected List<LayerGroupStyle> layerGroupStyles = new ArrayList<>();
+
     @Override
     public List<KeywordInfo> getKeywords() {
         return keywords;
@@ -418,5 +420,28 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     @Override
     public void setInternationalAbstract(InternationalString internationalAbstract) {
         this.internationalAbstract = InternationalStringUtils.growable(internationalAbstract);
+    }
+
+    @Override
+    public List<LayerInfo> layers(String layerGroupStyleName) {
+        LayerGroupHelper helper = new LayerGroupHelper(this);
+        return helper.allLayersForRendering(layerGroupStyleName);
+    }
+
+    @Override
+    public List<StyleInfo> styles(String layerGroupStyleName) {
+        LayerGroupHelper helper = new LayerGroupHelper(this);
+        return helper.allStylesForRendering(layerGroupStyleName);
+    }
+
+    @Override
+    public List<LayerGroupStyle> getLayerGroupStyles() {
+        if (layerGroupStyles == null) layerGroupStyles = new ArrayList<>();
+        return layerGroupStyles;
+    }
+
+    @Override
+    public void setLayerGroupStyles(List<LayerGroupStyle> styles) {
+        this.layerGroupStyles = styles;
     }
 }

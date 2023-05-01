@@ -6,6 +6,7 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -223,6 +224,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testNestedSpatialFilterEncoding() throws IOException, FilterToSQLException {
+        if (isGeopkgTest()) return;
         FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("ex", "geomContainer");
         FeatureSource fs = ftInfo.getFeatureSource(new NullProgressListener(), null);
         AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();

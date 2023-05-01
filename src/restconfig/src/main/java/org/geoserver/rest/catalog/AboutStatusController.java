@@ -39,20 +39,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/about/status",
-    produces = {
-        MediaType.TEXT_HTML_VALUE,
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE
-    }
-)
+        path = RestBaseController.ROOT_PATH + "/about/status",
+        produces = {
+            MediaType.TEXT_HTML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+        })
 public class AboutStatusController extends RestBaseController {
 
     @GetMapping
     protected RestWrapper<ModuleStatus> statusGet() throws Exception {
         List<ModuleStatus> applicationStatus =
-                GeoServerExtensions.extensions(ModuleStatus.class)
-                        .stream()
+                GeoServerExtensions.extensions(ModuleStatus.class).stream()
                         .map(ModuleStatusImpl::new)
                         .collect(Collectors.toList());
         return wrapList(applicationStatus, ModuleStatus.class);
@@ -61,8 +59,7 @@ public class AboutStatusController extends RestBaseController {
     @GetMapping(value = "/{target}")
     protected RestWrapper<ModuleStatus> statusGet(@PathVariable String target) throws Exception {
         List<ModuleStatus> applicationStatus =
-                GeoServerExtensions.extensions(ModuleStatus.class)
-                        .stream()
+                GeoServerExtensions.extensions(ModuleStatus.class).stream()
                         .map(ModuleStatusImpl::new)
                         .filter(getModule(target))
                         .collect(Collectors.toList());

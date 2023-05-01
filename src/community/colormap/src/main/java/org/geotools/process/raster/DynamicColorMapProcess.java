@@ -34,13 +34,12 @@ public class DynamicColorMapProcess implements RasterProcess {
             @DescribeParameter(name = "colorRamp", description = "The name of the color ramp.")
                     ColorMap colorMap,
             @DescribeParameter(
-                        name = "opacity",
-                        description = "The opacity level, between 0 and 1.",
-                        defaultValue = "1",
-                        min = 0,
-                        minValue = 0,
-                        maxValue = 1
-                    )
+                            name = "opacity",
+                            description = "The opacity level, between 0 and 1.",
+                            defaultValue = "1",
+                            min = 0,
+                            minValue = 0,
+                            maxValue = 1)
                     float opacity)
             throws ProcessException {
 

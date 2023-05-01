@@ -53,8 +53,7 @@ public class ValidationResult {
      * @return concatenation of all exceptions messages
      */
     public String getErrosAsString(String separator) {
-        return errorList
-                .stream()
+        return errorList.stream()
                 .map(RuntimeException::getMessage)
                 .collect(Collectors.joining(separator));
     }

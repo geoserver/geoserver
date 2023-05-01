@@ -9,10 +9,12 @@ package org.geoserver.wps.response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wps.GetExecutionResultType;
 import org.geoserver.wps.GetExecutionStatusType;
 import org.geoserver.wps.WPSException;
@@ -46,11 +48,26 @@ public class StoredResourceResponse extends Response {
             return "text/xml";
         } else if (request instanceof GetExecutionResultType) {
             GetExecutionResultType ger = (GetExecutionResultType) request;
-            if (ger.getMimeType() != null) {
-                return ger.getMimeType();
-            } else {
-                // generic binary output...
-                return "application/octet-stream";
+            Resource mimeResource =
+                    manager.getOutputResource(ger.getExecutionId(), ger.getOutputId() + ".mime");
+            if (mimeResource == null || mimeResource.getType() == Type.UNDEFINED) {
+                throw new WPSException(
+                        "Unknown output "
+                                + ger.getOutputId()
+                                + " for execution id "
+                                + ger.getExecutionId()
+                                + ", either the execution was never submitted or too much time "
+                                + "elapsed since the process completed");
+            }
+            try (InputStream input = mimeResource.in()) {
+                String mimeType = IOUtils.toString(input, StandardCharsets.UTF_8);
+                if (ger.getMimeType() == null || ger.getMimeType().equals(mimeType)) {
+                    return mimeType;
+                }
+                throw new WPSException(
+                        "Requested mime type does not match the output resource mime type");
+            } catch (IOException e) {
+                throw new WPSException("Error validating the output resource mime type", e);
             }
         } else {
             throw new WPSException(

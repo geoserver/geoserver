@@ -71,8 +71,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
         public Object visit(Id filter, Object extraData) {
             Set<Identifier> identifiers = filter.getIdentifiers();
             Set<Identifier> renamedIdentifiers =
-                    identifiers
-                            .stream()
+                    identifiers.stream()
                             .map(
                                     id -> {
                                         String name = id.getID().toString();

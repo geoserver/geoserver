@@ -23,8 +23,7 @@ public class NetCDFOutStatusTest {
             assertNotNull(context);
 
             Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context)
-                            .stream()
+                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
                             .filter(s -> s.getModule().equalsIgnoreCase("gs-netcdf-out"))
                             .findFirst();
             assertTrue(status.isPresent());

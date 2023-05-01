@@ -90,8 +90,7 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
 
     @Override
     public List<Name> getNames() throws IOException {
-        return delegate.getNames()
-                .stream()
+        return delegate.getNames().stream()
                 .filter(
                         n -> {
                             try {

@@ -357,9 +357,7 @@ public class SimulateCallback implements DispatcherCallback {
     Stream<Property> propsOf(Object obj) {
         if (obj instanceof EObject) {
             EObject eobj = (EObject) obj;
-            return eobj.eClass()
-                    .getEAllStructuralFeatures()
-                    .stream()
+            return eobj.eClass().getEAllStructuralFeatures().stream()
                     .map(
                             f ->
                                     new Property(
@@ -368,9 +366,7 @@ public class SimulateCallback implements DispatcherCallback {
                                             () -> eobj.eGet(f)));
         } else {
             ClassProperties classProps = OwsUtils.getClassProperties(obj.getClass());
-            return classProps
-                    .properties()
-                    .stream()
+            return classProps.properties().stream()
                     .map(
                             p ->
                                     new Property(

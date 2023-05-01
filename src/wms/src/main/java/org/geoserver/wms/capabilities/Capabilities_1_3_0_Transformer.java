@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.capabilities;
 
+import static org.geoserver.catalog.LayerGroupHelper.isSingleOrOpaque;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.asc;
 import static org.geoserver.catalog.Predicates.equal;
@@ -52,6 +53,7 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -1291,7 +1293,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          *
          * @param layerName the layer name, used to construct the LegendURL block
          */
-        private void handleLayerGroupStyles(String layerName) {
+        private void handleLayerGroupDefaultStyle(String layerName) {
             start("Style");
             element("Name", CapabilityUtil.getGroupDefaultStyleName(layerName));
             element(
@@ -1306,6 +1308,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                             .concat(LAYER_GROUP_STYLE_ABSTRACT_SUFFIX));
             handleLegendURL(layerName, null, null, null);
             end("Style");
+        }
+
+        private void handleLayerGroupStyles(String layerName, List<LayerGroupStyle> groupStyles) {
+
+            for (LayerGroupStyle style : groupStyles) {
+                start("Style");
+                element("Name", style.getName().getName());
+                handleTitleAndAbstract(style);
+                handleLegendURL(layerName, null, style.getName(), null);
+                end("Style");
+            }
         }
 
         private void handleCommonStyleElements(StyleInfo defaultStyle) {
@@ -1525,10 +1538,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 metadataLinks = aggregatedLinks;
             }
             handleMetadataList(metadataLinks);
-
-            // add the layer group style
             if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup))
-                handleLayerGroupStyles(layerName);
+                handleLayerGroupDefaultStyle(layerName);
+            if (isSingleOrOpaque(layerGroup))
+                // add the layer group style
+                handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
 
             // the layer style is not provided since the group does just have
             // one possibility, the lack of styles that will make it use
@@ -1871,6 +1885,28 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
         }
 
+        private void handleTitleAndAbstract(LayerGroupStyle groupStyle) {
+            if (!i18nRequested) {
+                if (StringUtils.isEmpty(groupStyle.getTitle())) {
+                    element("Title", groupStyle.getName().getName());
+                } else {
+                    element("Title", groupStyle.getTitle());
+                }
+
+                element("Abstract", groupStyle.getAbstract());
+
+            } else {
+                String title =
+                        internationalContentHelper.getString(
+                                groupStyle.getInternationalTitle(), false);
+                String abstrct =
+                        internationalContentHelper.getString(
+                                groupStyle.getInternationalAbstract(), true);
+                element("Title", title);
+                element("Abstract", abstrct);
+            }
+        }
+
         private void handleTitleAndAbstract(PublishedInfo publishedInfo, String layerName) {
             if (!i18nRequested) {
                 if (StringUtils.isEmpty(publishedInfo.getTitle())) {
@@ -1878,11 +1914,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 } else {
                     element("Title", publishedInfo.getTitle());
                 }
-                if (StringUtils.isEmpty(publishedInfo.getAbstract())) {
-                    element("Abstract", "Layer-Group type layer: " + layerName);
-                } else {
-                    element("Abstract", publishedInfo.getAbstract());
-                }
+                element("Abstract", publishedInfo.getAbstract());
             } else {
                 String title = internationalContentHelper.getTitle(publishedInfo);
                 String abstrct = internationalContentHelper.getAbstract(publishedInfo);

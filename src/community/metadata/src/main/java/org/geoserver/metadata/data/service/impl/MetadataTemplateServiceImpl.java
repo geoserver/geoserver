@@ -223,8 +223,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
     private void persistList() throws IOException {
         synchronized (templates) {
             List<String> priorities =
-                    templates
-                            .stream()
+                    templates.stream()
                             .map(template -> template.getId())
                             .collect(Collectors.toList());
             try (OutputStream out = getFolder().get(LIST_FILE).out()) {
@@ -239,8 +238,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
     @Override
     public List<MetadataTemplate> list() {
         synchronized (templates) {
-            return templates
-                    .stream()
+            return templates.stream()
                     .map(template -> template.clone())
                     .collect(Collectors.toList());
         }

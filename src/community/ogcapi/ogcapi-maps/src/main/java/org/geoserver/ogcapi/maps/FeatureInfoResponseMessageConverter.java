@@ -50,15 +50,13 @@ public class FeatureInfoResponseMessageConverter
     public boolean canWrite(Class<?> aClass, MediaType mediaType) {
         return FeatureInfoResponse.class.isAssignableFrom(aClass)
                 && (mediaType == null
-                        || getSupportedMediaTypes()
-                                .stream()
+                        || getSupportedMediaTypes().stream()
                                 .anyMatch(mt -> mt.isCompatibleWith(mediaType)));
     }
 
     @Override
     public List<MediaType> getSupportedMediaTypes() {
-        return outputFormats
-                .stream()
+        return outputFormats.stream()
                 .map(
                         of -> {
                             try {

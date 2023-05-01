@@ -450,6 +450,11 @@
       <artifactId>gs-imagemap</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-xslt</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

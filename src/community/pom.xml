@@ -100,6 +100,7 @@
             <descriptor>release/ext-vector-mosaic-datastore.xml</descriptor>
             <descriptor>release/ext-proxy-base-ext.xml</descriptor>
             <descriptor>release/ext-imagemap.xml</descriptor>
+            <descriptor>release/ext-xslt.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -254,6 +255,7 @@
         <module>libdeflate</module>
         <module>vector-mosaic</module>
         <module>proxy-base-ext</module>
+        <module>xslt</module>
         <module>imagemap</module>
       </modules>
     </profile>
@@ -700,6 +702,12 @@
       <id>proxy-base-ext</id>
       <modules>
         <module>proxy-base-ext</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>xslt</id>
+      <modules>
+        <module>xslt</module>
       </modules>
     </profile>
     <profile>

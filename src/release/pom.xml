@@ -233,11 +233,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-xslt</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-inspire</artifactId>
       <version>${project.version}</version>

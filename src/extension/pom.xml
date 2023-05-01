@@ -191,13 +191,6 @@
     </profile>
 
     <profile>
-      <id>xslt</id>
-      <modules>
-        <module>xslt</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>inspire</id>
       <modules>
         <module>inspire</module>
@@ -423,7 +416,6 @@
         <module>querylayer</module>
         <module>monitor</module>
         <module>security</module>
-        <module>xslt</module>
         <module>inspire</module>
         <module>css</module>
         <module>csw</module>
@@ -475,7 +467,6 @@
         <module>querylayer</module>
         <module>monitor</module>
         <module>security</module>
-        <module>xslt</module>
         <module>inspire</module>
         <module>css</module>
         <module>csw</module>

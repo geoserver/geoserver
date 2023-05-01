@@ -159,7 +159,7 @@ Testing Geoserver Community modules
 
 Working with a Nightly build is a good way to test community modules and provide feedback to developers working on new functionality.
 
-To work with a community module you must be using the GeoServer |version|.x nightly build:
+To work with community modules you must be using the GeoServer |version|.x nightly build that matches the community module build:
 
 .. parsed-literal::
 

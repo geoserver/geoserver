@@ -7,6 +7,51 @@ For writing guide please generate and review [docguide](https://docs.geoserver.o
 
 GeoServer documentation is released using [Creative Commons Attribution 4.0 International](LICENSE.md).
 
+## Python and Sphinx Setup
+
+The documentation is written with [sphinx-build](https://www.sphinx-doc.org/en/master/), which is a Python documentation generator.
+
+Install Python (macOS example):
+```
+brew install python
+```
+
+To install ``sphinx-build`` and ``sphinx-autobuild`` using ``requirements.txt``:
+```
+pip3 install -r requirements.txt
+```
+
+To confirm installation:
+```
+sphinx-build --version
+sphinx-autobuild --version
+```
+
+### Python Virtual Environment Setup (Optional)
+
+To establish a virtual environment just for this project (macOS example):
+
+```
+brew install virtualenv
+virtualenv venv
+```
+
+To activate python:
+```
+source venv/bin/activate
+```
+
+To install requirements into virtual environment:
+```
+pip install -r requirements.txt
+```
+
+To confirm installation:
+```
+sphinx-build --version
+sphinx-autobuild --version
+```
+
 ## Building with Maven
 
 To build:
@@ -71,53 +116,11 @@ This uses ``sphinx-autobuild`` to serve docs on next available port, opening a b
 Additional targets are available:
 
     ant developer
+    ant developer-site
     ant docguide
+    ant docguide-site
 
-Customize output with current ``project.version`` and most recent ``project.release`` name:
+Customize output with current ``project.version`` name:
 
-    ant user -Dproject.version=2.23-SNAPSHOT -Dproject.release=2.23.1
+    ant user -Dproject.version=2.23.1
 
-## Python and Sphinx Setup
-
-The documentation is written with [sphinx-build](https://www.sphinx-doc.org/en/master/), which is a Python documentation generator.
-
-Install Python (macOS example):
-```
-brew install python
-```
-
-To install ``sphinx-build`` and ``sphinx-autobuild`` using ``requirements.txt``:
-```
-pip3 install -r requirements.txt
-```
-
-To confirm installation:
-```
-sphinx-build --version
-sphinx-autobuild --version
-```
-
-## Python Virtual Environment Setup
-
-Optional: To establish a virtual environment just for this project (macOS example):
-
-```
-brew install virtualenv
-virtualenv venv
-```
-
-To activate python:
-```
-source venv/bin/activate
-```
-
-To install requirements into virtual environment:
-```
-pip install -r requirements.txt
-```
-
-To confirm installation:
-```
-sphinx-build --version
-sphinx-autobuild --version
-```

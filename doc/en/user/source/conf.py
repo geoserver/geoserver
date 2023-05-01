@@ -47,10 +47,10 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
-# The short X.Y version.
+# The replacement |version| provides short X.Y version.
 version = '2.24'
 
-# The full version, including alpha/beta/rc tags.
+# The relacement |release| provides the full version, including alpha/beta/rc tags.
 
 # sphinx-build -D release=${project.version} overrides release configuration
 # but only after conf.py has been used...
@@ -60,12 +60,13 @@ project_version = os.getenv("project.version")
 if project_version == None: 
   release = '2.24-SNAPSHOT'
 else:
-  release =project_version
+  release = project_version
 
 # Used in build and documentation links
+# branch = version+'.x'
 branch = 'main'
 
-# Users don't need to see the "SNAPSrHOT" notation when it's there
+# Users don't need to see the "SNAPSHOT" notation when it's there
 download = release
 if release.find('SNAPSHOT') != -1:
    tags.add('snapshot')

@@ -125,8 +125,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         ParameterValueGroup readParameters = format.getReadParameters();
         List<GeneralParameterValue> parameterValues = readParameters.values();
         List<String> paramNames =
-                parameterValues
-                        .stream()
+                parameterValues.stream()
                         .map(p -> p.getDescriptor())
                         .filter(p -> p instanceof DefaultParameterDescriptor)
                         .map(p -> p.getName().getCode())
@@ -141,8 +140,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
             ParameterValueGroup readParameters = format.getReadParameters();
             List<GeneralParameterValue> parameterValues = readParameters.values();
             parameterDescriptorMap =
-                    parameterValues
-                            .stream()
+                    parameterValues.stream()
                             .map(p -> p.getDescriptor())
                             .filter(p -> p instanceof DefaultParameterDescriptor)
                             .map(p -> (DefaultParameterDescriptor) p)

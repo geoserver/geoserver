@@ -4,7 +4,8 @@
 <beans>
   <bean class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-importer-web"/>
-    <constructor-arg index="1" value="Importer Web"/>
+    <constructor-arg index="1" value="Importer Web UI"/>
+    <constructor-arg index="2" value="Importer Page"/>
   </bean>
   <!-- 
     wicket ui stuff

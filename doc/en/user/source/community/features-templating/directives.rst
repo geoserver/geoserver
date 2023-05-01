@@ -1096,9 +1096,20 @@ Notes:
 4) The ``subArray.json`` template (line 6) must be an array itself, the container array will be stripped and
    its values directly integrated inside ``anArray``.
 
-In case of an includeFlat directive is specified and it's attribute value is a property interpolation directive, if the property name evaluates to a json it gets included flat in the final output.
+In case an includeFlat directive is specified and it's attribute value is a property interpolation directive, if the property name evaluates to a json it gets included flat in the final output e.g
 
-${property}:
+including json:
+
+.. code-block:: json
+   :linenos: 
+
+    {
+       "property":"${property}", 
+       "bProperty":"15",
+       "cProperty":"30"
+    }
+
+${property} value:
 
 .. code-block:: json
    :linenos: 
@@ -1108,7 +1119,19 @@ ${property}:
        "bProperty": "20"
     }
 
-The ``${property}`` template (line 7) evaluates to a json, its properties will be passed to parent json without ``"$includeFlat"`` keyword.
+result:
+
+.. code-block:: json
+   :linenos: 
+
+    {
+       "aProperty":"10", 
+       "bProperty":"20",
+       "cProperty":"30"
+    }
+
+
+The ``${property}`` directive evaluates to a JSON that will be merged with the including one. In case the including JSON as an attribute with the name equal to one of the attributes in the included JSON, the included will override the property with the same name in the including one.
 
 
 XML based templates (GML)
@@ -1385,6 +1408,31 @@ As it is possible to see this template has some differences comparing to the one
 .. warning:: the :code:`propertyPath('propertyPath')` cql function is meant to be used only in the scope of this plugin. It is not currently possible to reference domain property outside the context of a template file.
 
 This functionality is particularly useful when defining templates on top of Smart Data Loader based Complex Features.
+
+Controlling Attributes With N Cardinality
+------------------------------------------
+
+When a property interpolation targets an attribute with multiple cardinality in a Complex Feature, feature templating will output the result as an array. This default behaviour can be controlled and modified with the usage of a set of CQL functions that are available in the plug-in, which allow to control how the list should be encoded in the template.
+
+* ``aggregate``: takes as arguments an expression (a property name or a function) that returns a list of values and a literal with the aggregation type eg. ``aggregate(my.property.name,'MIN')``. The supported aggregation type are the following:
+
+   - ``MIN`` will return the minimum value from a list of numeric values.
+   - ``MAX`` will return the max value from a list of numeric values.
+   - ``AVG`` will return the average value from a list of numeric values.
+   - ``UNIQUE`` will remove duplicates values from a list of values.
+   - ``JOIN`` will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: ``aggregate(my.property.name,'JOIN(,)')`` .
+
+* ``stream``: takes an undefined number of expressions as parameters and chain them so that each expression evaluate on top of the output of the previous expression: eg. ``stream(aPropertyName,aFunction,anotherPropertyName)`` while evaluate the ``aFunction`` on the output of ``aPropertyName`` evaluation and finally ``anotherPropertyName`` will evaluate on top of the result of ``aFunction``.
+
+* ``filter``: takes a literal cql filter as a parameter and evaluates it. Every string literal value in the cql filter must be between double quotes escaped: eg. ``filter('aProperty = \"someValue\"')``.
+
+* ``sort``: sort the list of values in ascending or descending order. It accepts as a parameter the sort order (``ASC``,``DESC``) and optionally a property name to target the property on which the sorting should be executed. If no property name is defined the sorting will be applied on the current node on which the function evaluates: ``sort('DESC',nested.property)``, ``sort('ASC')``.
+
+The above functions can be combined allowing fine grained control over the encoding of list values in a template. Assuming to write a template for the `meteo stations use case <#source-and-filter-complex-feature-example>`__, these are some example of the usage of the functions (simplified property access is used in the example below):
+
+- ``aggregate(stream(->meteo_observations,filter('value > 35')),AVG)`` will compute and return the average value of all the Observation nested feature value attribute.
+
+- ``aggregate(stream(->meteo_observations.->meteo_parameters,sort("ASC",param_name),param_unit),JOIN(,))`` will pick up the ``meteo_parameter`` nested features for each station feature, will sort them in ascending order based on the value of the ``param_name`` and will concatenate the ``param_unit`` values in a single string, comma separated.
 
 Template Validation
 -------------------

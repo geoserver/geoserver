@@ -370,9 +370,7 @@ public class OWSContextWriter {
         List<Map<String, Object>> result = new ArrayList<>();
         List<PublishedInfo> layers = layerGroup.getLayers();
         Map<LayerInfo, String> targetLayers =
-                layerStyles
-                        .entrySet()
-                        .stream()
+                layerStyles.entrySet().stream()
                         .collect(Collectors.toMap(e -> e.getValue(), e -> e.getKey()));
         int size = layers.size();
         // OWS context lists the layers top to bottom, the opposite of painter's order
@@ -404,9 +402,7 @@ public class OWSContextWriter {
     private List<LayerGroupInfo> getGroupsByLayerStyles() {
 
         Collection<LayerInfo> layers = layerStyles.values();
-        return gs.getCatalog()
-                .getLayerGroups()
-                .stream()
+        return gs.getCatalog().getLayerGroups().stream()
                 .filter(lg -> stylesMatch(lg, layers))
                 .collect(Collectors.toList());
     }

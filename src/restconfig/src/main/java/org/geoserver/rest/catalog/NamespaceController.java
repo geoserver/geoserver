@@ -53,13 +53,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/namespaces",
-    produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE
-    }
-)
+        path = RestBaseController.ROOT_PATH + "/namespaces",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        })
 public class NamespaceController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(NamespaceController.class);
@@ -70,13 +69,12 @@ public class NamespaceController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        value = "/{namespaceName}",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        }
-    )
+            value = "/{namespaceName}",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.TEXT_HTML_VALUE,
+                MediaType.APPLICATION_XML_VALUE
+            })
     public RestWrapper<NamespaceInfo> namespaceGet(@PathVariable String namespaceName) {
 
         NamespaceInfo namespace = catalog.getNamespaceByPrefix(namespaceName);
@@ -98,13 +96,12 @@ public class NamespaceController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_JSON_VALUE
-        }
-    )
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> namespacePost(
             @RequestBody NamespaceInfo namespace, UriComponentsBuilder builder) {
@@ -132,14 +129,13 @@ public class NamespaceController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = "/{prefix}",
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_JSON_VALUE
-        }
-    )
+            value = "/{prefix}",
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     public void namespacePut(
             @RequestBody NamespaceInfo namespace,
             @PathVariable String prefix,

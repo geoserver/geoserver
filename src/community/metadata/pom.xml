@@ -16,7 +16,7 @@
   <name>GeoServer Metadata Customizer</name>
   <description>GeoServer Metadata Customizer
 
-        use before committing: mvn fmt:format</description>
+        use before committing: mvn spotless:apply</description>
 
   <dependencies>
     <dependency>
@@ -39,7 +39,6 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
-      <version>2.3.0</version>
     </dependency>
 
     <dependency>

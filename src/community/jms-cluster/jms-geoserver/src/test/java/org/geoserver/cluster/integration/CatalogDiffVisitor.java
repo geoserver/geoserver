@@ -249,8 +249,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
     private <T extends CatalogInfo> void listDiffOther(
             Collection<T> collection, Collection<T> otherCollection) {
         differences.addAll(
-                otherCollection
-                        .stream()
+                otherCollection.stream()
                         .filter(info -> !containsElementWithId(info.getId(), collection))
                         .map(info -> new InfoDiff(null, info))
                         .collect(Collectors.toList()));

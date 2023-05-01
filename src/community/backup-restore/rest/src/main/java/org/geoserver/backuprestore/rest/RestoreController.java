@@ -50,13 +50,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/br/",
-    produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE
-    }
-)
+        path = RestBaseController.ROOT_PATH + "/br/",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        })
 public class RestoreController extends AbstractBackupRestoreController {
 
     @Autowired
@@ -66,13 +65,12 @@ public class RestoreController extends AbstractBackupRestoreController {
     }
 
     @GetMapping(
-        path = "restore{.+}",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        }
-    )
+            path = "restore{.+}",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE
+            })
     public RestWrapper restoreGet(@RequestParam(name = "format", required = false) String format) {
 
         Object lookup = lookupRestoreExecutionsContext(null, true, false);
@@ -90,14 +88,13 @@ public class RestoreController extends AbstractBackupRestoreController {
     }
 
     @GetMapping(
-        path = "restore/{restoreId:.+}",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.ALL_VALUE
-        }
-    )
+            path = "restore/{restoreId:.+}",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.ALL_VALUE
+            })
     public RestWrapper restoreGet(
             @RequestParam(name = "format", required = false) String format,
             @PathVariable String restoreId,
@@ -134,13 +131,12 @@ public class RestoreController extends AbstractBackupRestoreController {
     }
 
     @DeleteMapping(
-        path = "restore/{restoreId:.+}",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        }
-    )
+            path = "restore/{restoreId:.+}",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE
+            })
     public RestWrapper restoreDelete(
             @RequestParam(name = "format", required = false) String format,
             @PathVariable String restoreId)
@@ -167,15 +163,14 @@ public class RestoreController extends AbstractBackupRestoreController {
     }
 
     @PostMapping(
-        value = {"/restore"},
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        },
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
+            value = {"/restore"},
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            },
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public RestWrapper restorePost(

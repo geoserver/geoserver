@@ -79,8 +79,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             GeoServerInfo gs = description.getGeoserverInfo();
             element("Contact", gs.getSettings().getContact().getContactEmail());
             String tags =
-                    oseo.getKeywords()
-                            .stream()
+                    oseo.getKeywords().stream()
                             .map(k -> k.getValue())
                             .collect(Collectors.joining(" "));
             tags = tags + " " + CEOS_SUPPORTED_VERSION;
@@ -152,9 +151,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             String base = buildURL(baseURL, "oseo/search", params, URLType.SERVICE);
             // the template must not be url encoded instead
             String paramSpec =
-                    description
-                            .getSearchParameters()
-                            .stream()
+                    description.getSearchParameters().stream()
                             .map(
                                     p -> {
                                         String spec = p.key + "={";

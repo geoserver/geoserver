@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.measure.Unit;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.PlanarImage;
+import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.StoreInfoImpl;
@@ -872,7 +873,7 @@ public class CatalogBuilder {
 
         CoordinateReferenceSystem nativeCRS = cinfo.getNativeCRS();
 
-        if (nativeCRS != null) {
+        if (nativeCRS != null && cinfo.getSRS() == null) {
             try {
                 Integer code = CRS.lookupEpsgCode(nativeCRS, false);
                 if (code != null) {
@@ -1136,6 +1137,34 @@ public class CatalogBuilder {
         cinfo.getParameters().putAll(CoverageUtils.getParametersKVP(readParams));
 
         return cinfo;
+    }
+
+    /**
+     * Reloads the {@link CoverageInfo} dimensions from the reader. Can be used to gather the
+     * current band definitions from the reader
+     */
+    public void reloadDimensions(CoverageInfo ci) throws Exception {
+        String nativeName = ci.getNativeCoverageName();
+        setStore(ci.getStore());
+        MetadataMap metadata = ci.getMetadata();
+        CoverageInfo rebuilt;
+        if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
+            GridCoverage2DReader reader =
+                    (GridCoverage2DReader)
+                            catalog.getResourcePool()
+                                    .getGridCoverageReader(
+                                            ci, nativeName, GeoTools.getDefaultHints());
+            rebuilt = buildCoverage(reader, nativeName, null);
+        } else {
+            rebuilt = buildCoverage(nativeName);
+        }
+        if (ci instanceof CoverageInfoImpl) {
+            // null safe path, if ci was loaded via XStream
+            ((CoverageInfoImpl) ci).setDimensions(rebuilt.getDimensions());
+        } else {
+            ci.getDimensions().clear();
+            ci.getDimensions().addAll(rebuilt.getDimensions());
+        }
     }
 
     private GridSampleDimension[] getCoverageSampleDimensions(

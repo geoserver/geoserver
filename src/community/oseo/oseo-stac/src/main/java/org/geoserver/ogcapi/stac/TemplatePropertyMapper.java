@@ -119,8 +119,7 @@ class TemplatePropertyMapper {
 
     private Filter getCollectionsFilter(List<String> collectionIds) {
         FilterMerger filters = new FilterMerger();
-        collectionIds
-                .stream()
+        collectionIds.stream()
                 .map(id -> FF.equals(FF.property("parentIdentifier"), FF.literal(id)))
                 .forEach(f -> filters.add(f));
         return filters.or();

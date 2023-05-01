@@ -105,9 +105,7 @@ public abstract class NearestMatchFinder {
     private static DimensionDescriptor getDimensionDescriptor(
             StructuredGridCoverage2DReader structured, String dimensionName) throws IOException {
         String coverageName = structured.getGridCoverageNames()[0];
-        return structured
-                .getDimensionDescriptors(coverageName)
-                .stream()
+        return structured.getDimensionDescriptors(coverageName).stream()
                 .filter(dd -> dimensionName.equalsIgnoreCase(dd.getName()))
                 .findFirst()
                 .orElseThrow(

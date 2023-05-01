@@ -13,6 +13,7 @@
 	<bean class="org.geoserver.platform.ModuleStatusImpl">
 		<constructor-arg index="0" value="gs-importer-rest" />
 		<constructor-arg index="1" value="Importer REST" />
+		<constructor-arg index="2" value="Importer REST API" />
 	</bean>
 
 	<!-- <mvc:annotation-driven/> -->

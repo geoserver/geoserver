@@ -241,9 +241,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         assertThat(dimension.getDefaultValue().getStrategyType(), equalTo(Strategy.MAXIMUM));
         // ... has the expected bands
         String[] names =
-                coverageInfo
-                        .getDimensions()
-                        .stream()
+                coverageInfo.getDimensions().stream()
                         .map(cd -> cd.getName())
                         .toArray(String[]::new);
         assertThat(expectedNames, equalTo(names));

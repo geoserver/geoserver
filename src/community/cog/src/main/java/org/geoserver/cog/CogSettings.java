@@ -4,6 +4,7 @@
  */
 package org.geoserver.cog;
 
+import it.geosolutions.imageioimpl.plugins.cog.GSRangeReader;
 import it.geosolutions.imageioimpl.plugins.cog.HttpRangeReader;
 import it.geosolutions.imageioimpl.plugins.cog.S3RangeReader;
 import java.io.Serializable;
@@ -25,6 +26,7 @@ public class CogSettings implements Serializable {
     public CogSettings() {}
 
     public enum RangeReaderType {
+        /** Generic HTTP range reader */
         HTTP {
 
             @Override
@@ -32,11 +34,20 @@ public class CogSettings implements Serializable {
                 return HttpRangeReader.class.getName();
             }
         },
+        /** Reader using the S3 API (with security support and whatnot) */
         S3 {
 
             @Override
             String getRangeReaderClassName() {
                 return S3RangeReader.class.getName();
+            }
+        },
+        /** Reader using the Google Storage API (again, with security support) */
+        GS {
+
+            @Override
+            String getRangeReaderClassName() {
+                return GSRangeReader.class.getName();
             }
         };
 

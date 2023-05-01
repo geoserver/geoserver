@@ -32,11 +32,7 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
         }
 
         // TODO: we should cache this result somehow
-        if (isWorkspaceAdmin(authentication)) {
-            return true;
-        }
-
-        return false;
+        return isWorkspaceAdmin(authentication);
     }
 
     /** Check if the current user has any admin privilege on at least one workspace. */

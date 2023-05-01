@@ -47,8 +47,7 @@ public class DGGSAPIBuilder extends OpenAPIBuilder<DGGSInfo> {
         Parameter collectionId = parameters.get("collectionId");
         Catalog catalog = service.getGeoServer().getCatalog();
         List<String> validCollectionIds =
-                catalog.getFeatureTypes()
-                        .stream()
+                catalog.getFeatureTypes().stream()
                         .filter(ft -> DGGSService.isDGGSType(ft))
                         .map(ft -> ft.prefixedName())
                         .collect(Collectors.toList());

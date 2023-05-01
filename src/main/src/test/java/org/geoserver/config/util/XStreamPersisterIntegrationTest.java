@@ -5,15 +5,21 @@
 package org.geoserver.config.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
@@ -103,5 +109,30 @@ public class XStreamPersisterIntegrationTest extends GeoServerSystemTestSupport 
         wms.setPassword("password");
 
         return wms;
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testProxyUseHeaderMigrationOnRead() throws Exception {
+        try (InputStream is = getClass().getResourceAsStream("global.xml")) {
+            GeoServerInfoImpl info = persister.load(is, GeoServerInfoImpl.class);
+            assertTrue(info.isUseHeadersProxyURL());
+            assertTrue(info.getSettings().isUseHeadersProxyURL());
+            assertNull(info.getUseHeadersProxyURLRaw());
+        }
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testProxyUseHeaderMigrationOnWrite() throws Exception {
+        GeoServerInfoImpl info = new GeoServerInfoImpl();
+        info.setUseHeadersProxyURLRaw(true);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        persister.save(info, bos);
+        String xml = new String(bos.toByteArray(), StandardCharsets.UTF_8);
+        Document doc = XMLUnit.buildTestDocument(xml);
+        // the setting has been migrated on write
+        XMLAssert.assertXpathNotExists("/global/useHeadersProxyURL", doc);
+        XMLAssert.assertXpathEvaluatesTo("true", "/global/settings/useHeadersProxyURL", doc);
     }
 }

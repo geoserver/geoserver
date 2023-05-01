@@ -32,6 +32,7 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.security.CatalogMode;
@@ -119,7 +120,15 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         this.dao = dao;
         this.rawCatalog = rawCatalog;
         this.root = buildAuthorizationTree(dao);
-        this.groupsCache = new LayerGroupContainmentCache(rawCatalog);
+    }
+
+    /**
+     * Sets the layer group cache
+     *
+     * @param groupsCache
+     */
+    public void setGroupsCache(LayerGroupContainmentCache groupsCache) {
+        this.groupsCache = groupsCache;
     }
 
     public CatalogMode getMode() {
@@ -206,7 +215,8 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
         // grab the groups containing the resource, if any. If none, there is no group related logic
         // to apply
-        Collection<LayerGroupSummary> containers = groupsCache.getContainerGroupsFor(resource);
+        Collection<LayerGroupSummary> containers =
+                getLayerGroupsCache().getContainerGroupsFor(resource);
         if (containers.isEmpty()) {
             return rulesAllowAccess;
         }
@@ -214,8 +224,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         // there are groups, so there might be more specific rules overriding the catalog one,
         // search for them
         List<LayerGroupSummary> groupOverrides =
-                containers
-                        .stream()
+                containers.stream()
                         .filter(
                                 sg -> {
                                     LayerGroupInfo gi = rawCatalog.getLayerGroup(sg.getId());
@@ -230,8 +239,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         if (!groupOverrides.isEmpty()) {
             // if there are overrides, see if at least one of them allows access
             rulesAllowAccess =
-                    groupOverrides
-                            .stream()
+                    groupOverrides.stream()
                             .anyMatch(
                                     sg -> {
                                         if (directAccess && sg.getMode() == Mode.OPAQUE_CONTAINER) {
@@ -252,8 +260,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
         // the rules allow no access, but there might still be a non secured layer group allowing
         // access to the resource
-        return containers
-                .stream()
+        return containers.stream()
                 .anyMatch(
                         sg -> {
                             if (directAccess && sg.getMode() == Mode.OPAQUE_CONTAINER) {
@@ -440,8 +447,8 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         CatalogMode mode = getMode();
 
         if (readable && writable) {
-            if (AdminRequest.get() == null) {
-                // not admin request, read+write means full acesss
+            if (!adminable && AdminRequest.get() == null) {
+                // It is not an admin request, read+write means full access
                 return null;
             }
         }
@@ -473,15 +480,14 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
             // grab the groups containing the group, if any. If none, there is no group related
             // logic to apply
             Collection<LayerGroupSummary> directContainers =
-                    groupsCache.getContainerGroupsFor(layerGroup);
+                    getLayerGroupsCache().getContainerGroupsFor(layerGroup);
             if (directContainers.isEmpty()) {
                 allowAccess = true;
             } else {
                 // do we have at least one path that authorizes access to this group? need to check
                 // group by group
                 allowAccess =
-                        directContainers
-                                .stream()
+                        directContainers.stream()
                                 .anyMatch(
                                         sg -> {
                                             if (directAccess
@@ -682,5 +688,17 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
     @Override
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup) {
         return getAccessLimits(user, layerGroup, Collections.emptyList());
+    }
+
+    /**
+     * Retrieves the layer group containment cache. If empty, it will fetch it from the context
+     *
+     * @return The layer group cantainment cache
+     */
+    protected LayerGroupContainmentCache getLayerGroupsCache() {
+        if (groupsCache == null) {
+            groupsCache = GeoServerExtensions.bean(LayerGroupContainmentCache.class);
+        }
+        return groupsCache;
     }
 }

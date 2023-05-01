@@ -34,8 +34,7 @@ public class ModuleStatusTest extends GeoServerSystemTestSupport {
                 new ClassPathXmlApplicationContext("applicationContext.xml")) {
 
             Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context)
-                            .stream()
+                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
                             .filter(s -> s.getModule().equalsIgnoreCase("gs-db2"))
                             .findFirst();
             assertEquals(expect, status.isPresent());

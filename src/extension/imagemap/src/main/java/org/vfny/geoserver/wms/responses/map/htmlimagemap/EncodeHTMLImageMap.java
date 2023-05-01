@@ -185,9 +185,7 @@ public class EncodeHTMLImageMap extends WebMap {
 
             // does this style apply to the feature collection
             if (featureTypeStyle.featureTypeNames().isEmpty()
-                    || featureTypeStyle
-                            .featureTypeNames()
-                            .stream()
+                    || featureTypeStyle.featureTypeNames().stream()
                             .anyMatch(tn -> FeatureTypes.matches(featureType, tn))) {
                 filtered.add(featureTypeStyle);
             }

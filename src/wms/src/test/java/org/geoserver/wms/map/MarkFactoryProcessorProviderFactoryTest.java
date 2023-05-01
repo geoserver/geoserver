@@ -68,8 +68,7 @@ public class MarkFactoryProcessorProviderFactoryTest extends WMSTestSupport {
                 IteratorUtils.toList(DynamicSymbolFactoryFinder.getMarkFactories(hints));
         assertEquals(
                 Arrays.asList("WKTMarkFactory", "WellKnownMarkFactory", "TTFMarkFactory"),
-                processedFactories
-                        .stream()
+                processedFactories.stream()
                         .map(mf -> mf.getClass().getSimpleName())
                         .collect(Collectors.toList()));
     }
@@ -104,8 +103,7 @@ public class MarkFactoryProcessorProviderFactoryTest extends WMSTestSupport {
                     IteratorUtils.toList(DynamicSymbolFactoryFinder.getMarkFactories(hints));
             assertEquals(
                     Arrays.asList("WKTMarkFactory", "WellKnownMarkFactory", "TTFMarkFactory"),
-                    processedFactories
-                            .stream()
+                    processedFactories.stream()
                             .map(mf -> mf.getClass().getSimpleName())
                             .collect(Collectors.toList()));
         } finally {

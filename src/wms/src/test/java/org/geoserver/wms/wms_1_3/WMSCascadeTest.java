@@ -97,8 +97,15 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 new URL(
                         wms13BaseURL
                                 + "?SERVICE=WMS&INFO_FORMAT=application/vnd.ogc.gml&LAYERS=world4326"
-                                + "&CRS=EPSG:4326&FEATURE_COUNT=50&FORMAT=image%2Fpng&HEIGHT=101&TRANSPARENT=TRUE&J=-609621&REQUEST=GetFeatureInfo"
-                                + "&I=-875268&WIDTH=101&BBOX=-103.829117187,44.3898919295,-103.804563429,44.4069939679&STYLES=&QUERY_LAYERS=world4326&VERSION=1.3.0"),
+                                + "&CRS=EPSG:4326&FEATURE_COUNT=50&FORMAT=image%2Fpng&HEIGHT=101&TRANSPARENT=TRUE&J=50&REQUEST=GetFeatureInfo"
+                                + "&I=50&WIDTH=101&BBOX=44.3898919295,-103.829117187,44.4069939679,-103.804563429&STYLES=&QUERY_LAYERS=world4326&VERSION=1.3.0"),
+                new MockHttpResponse(featureInfo, "application/vnd.ogc.gml"));
+        wms13Client.expectGet(
+                new URL(
+                        wms13BaseURL
+                                + "?SERVICE=WMS&INFO_FORMAT=application/vnd.ogc.gml&LAYERS=world4326"
+                                + "&CRS=EPSG:4326&FEATURE_COUNT=50&FORMAT=image%2Fpng&HEIGHT=101&TRANSPARENT=TRUE&J=50&REQUEST=GetFeatureInfo"
+                                + "&I=50&WIDTH=101&BBOX=-103.829117187,44.3898919295,-103.804563429,44.4069939679&STYLES=&QUERY_LAYERS=world4326&VERSION=1.3.0"),
                 new MockHttpResponse(featureInfo, "application/vnd.ogc.gml"));
     }
 
@@ -154,7 +161,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                         + "&STYLES&LAYERS="
                         + WORLD4326_130
                         + "&INFO_FORMAT=text/xml; subtype=gml/3.1.1"
-                        + "&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&WIDTH=101&HEIGHT=101&BBOX=-103.829117187,44.3898919295,-103.804563429,44.4069939679";
+                        + "&FEATURE_COUNT=50&X=50&Y=50&CRS=EPSG:4326&WIDTH=101&HEIGHT=101&BBOX=44.3898919295,-103.829117187,44.4069939679,-103.804563429";
         Document result = getAsDOM(url);
         // setup XPATH engine namespaces
         Map<String, String> namespaces = new HashMap<>();

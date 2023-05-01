@@ -170,9 +170,7 @@ public class ApiTest extends StylesTestSupport {
         Parameter styleId = params.get("styleId");
         List<String> styleIdValues = styleId.getSchema().getEnum();
         List<String> expectedStyleIds =
-                getCatalog()
-                        .getStyles()
-                        .stream()
+                getCatalog().getStyles().stream()
                         .filter(
                                 s ->
                                         s.getWorkspace() == null
@@ -195,9 +193,7 @@ public class ApiTest extends StylesTestSupport {
         Parameter collectionId = params.get("styleId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedStyleIds =
-                getCatalog()
-                        .getStyles()
-                        .stream()
+                getCatalog().getStyles().stream()
                         .filter(s -> s.getWorkspace() == null)
                         .map(s -> s.getName())
                         .collect(Collectors.toList());

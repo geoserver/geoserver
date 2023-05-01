@@ -188,8 +188,7 @@ public class StyleEncoder {
                 rules.stream()
                         .filter(
                                 r ->
-                                        r.symbolizers()
-                                                .stream()
+                                        r.symbolizers().stream()
                                                 .anyMatch(s -> (!(s instanceof TextSymbolizer))))
                         .collect(Collectors.toList());
 
@@ -235,9 +234,7 @@ public class StyleEncoder {
         if (map.size() == 1 && rulesOther.size() <= 1) {
             ClassBreaksRenderer classBreaksRenderer = map.values().iterator().next();
             classBreaksRenderer.setMinValue(
-                    classBreaksRenderer
-                            .getClassBreakInfos()
-                            .stream()
+                    classBreaksRenderer.getClassBreakInfos().stream()
                             .map(cb -> cb.getClassMinValue())
                             .filter(min -> min != null)
                             .min(Double::compare)
@@ -272,9 +269,7 @@ public class StyleEncoder {
                     // renderer
                     if (keySets.size() == 1 && properties.size() == 1) {
                         List<Double> keys =
-                                keySets.iterator()
-                                        .next()
-                                        .stream()
+                                keySets.iterator().next().stream()
                                         .map(
                                                 k -> {
                                                     Double v = Converters.convert(k, Double.class);
@@ -342,8 +337,7 @@ public class StyleEncoder {
 
         Filter filter = rule.getFilter();
         Optional<PropertyRange> range =
-                propertyRangeExtractors
-                        .stream()
+                propertyRangeExtractors.stream()
                         .map(re -> re.getRange(filter))
                         .filter(pr -> pr != null)
                         .findFirst();

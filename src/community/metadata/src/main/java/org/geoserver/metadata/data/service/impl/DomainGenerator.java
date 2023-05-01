@@ -97,8 +97,7 @@ public class DomainGenerator implements ComplexAttributeGenerator {
                 final UniqueVisitor visitor = new UniqueVisitor(attName);
                 features.accepts(visitor, null);
                 AtomicInteger index = new AtomicInteger(0);
-                visitor.getUnique()
-                        .stream()
+                visitor.getUnique().stream()
                         .filter(value -> value != null)
                         .sorted()
                         .forEach(

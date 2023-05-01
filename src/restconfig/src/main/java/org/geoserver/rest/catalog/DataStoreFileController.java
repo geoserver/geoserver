@@ -74,10 +74,9 @@ import org.vfny.geoserver.util.DataStoreUtils;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path =
-            RestBaseController.ROOT_PATH
-                    + "/workspaces/{workspaceName}/datastores/{storeName}/{method}.{format}"
-)
+        path =
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/{workspaceName}/datastores/{storeName}/{method}.{format}")
 public class DataStoreFileController extends AbstractStoreUploadController {
 
     @Autowired

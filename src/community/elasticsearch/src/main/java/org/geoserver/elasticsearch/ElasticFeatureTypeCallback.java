@@ -53,9 +53,7 @@ class ElasticFeatureTypeCallback implements FeatureTypeCallback {
         final ElasticLayerConfiguration layerConfig =
                 (ElasticLayerConfiguration) info.getMetadata().get(KEY);
         if (layerConfig != null) {
-            layerConfig
-                    .getAttributes()
-                    .stream()
+            layerConfig.getAttributes().stream()
                     .filter(attr -> attr.getName().equals(info.getName()))
                     .findFirst()
                     .ifPresent(attribute -> layerConfig.getAttributes().remove(attribute));

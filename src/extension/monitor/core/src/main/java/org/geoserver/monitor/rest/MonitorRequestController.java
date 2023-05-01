@@ -34,11 +34,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(
-    path = {
-        RestBaseController.ROOT_PATH + "/monitor/requests/{request}",
-        RestBaseController.ROOT_PATH + "/monitor/requests"
-    }
-)
+        path = {
+            RestBaseController.ROOT_PATH + "/monitor/requests/{request}",
+            RestBaseController.ROOT_PATH + "/monitor/requests"
+        })
 public class MonitorRequestController extends RestBaseController {
 
     static final String CSV_MEDIATYPE_VALUE = "application/csv";
@@ -75,12 +74,11 @@ public class MonitorRequestController extends RestBaseController {
     }
 
     @GetMapping(
-        produces = {
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE
-        }
-    )
+            produces = {
+                MediaType.TEXT_HTML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     @ResponseBody
     protected RestWrapper handleObjectGetRestWrapper(
             @PathVariable(name = "request", required = false) String req,

@@ -5,12 +5,15 @@
  */
 package org.geoserver.wms.map;
 
+import static org.geoserver.catalog.LayerGroupHelper.isSingleOrOpaque;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -366,9 +369,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 if (o instanceof LayerInfo) {
                     newLayers.add(new MapLayerInfo((LayerInfo) o));
                 } else if (o instanceof LayerGroupInfo) {
-                    for (LayerInfo l : ((LayerGroupInfo) o).layers()) {
-                        newLayers.add(new MapLayerInfo(l, ((LayerGroupInfo) o).getMetadata()));
-                    }
+                    addGroupLayers(newLayers, (LayerGroupInfo) o, i, styleNameList);
                 } else if (o instanceof MapLayerInfo) {
                     // it was a remote OWS layer, add it directly
                     newLayers.add((MapLayerInfo) o);
@@ -466,6 +467,35 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         return getMap;
     }
 
+    private void addGroupLayers(
+            List<MapLayerInfo> newLayers,
+            LayerGroupInfo lg,
+            int index,
+            List<String> requestedStyles) {
+        if (index < requestedStyles.size()) {
+            String style = requestedStyles.get(index);
+            addLayersFromGroup(lg, newLayers, style);
+        } else {
+            addLayersFromGroup(lg, newLayers, null);
+        }
+    }
+
+    private void addLayersFromGroup(
+            LayerGroupInfo groupInfo, List<MapLayerInfo> newLayers, String styleName) {
+        List<LayerInfo> layers;
+        boolean isDefault = isDefaultLgStyle(styleName, groupInfo);
+        if (!isDefault && isGroupStyleName(styleName, groupInfo)) {
+            layers = groupInfo.layers(styleName);
+        } else {
+            layers = groupInfo.layers();
+        }
+        if (layers != null && !layers.isEmpty()) {
+            for (LayerInfo l : layers) {
+                newLayers.add(new MapLayerInfo(l, groupInfo.getMetadata()));
+            }
+        }
+    }
+
     private void applyViewParams(GetMapRequest getMap, List<Map<String, String>> viewParams) {
         int layerCount = getMap.getLayers().size();
 
@@ -498,10 +528,16 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             LOGGER.fine("Getting layers and styles from LAYERS and STYLES");
         }
 
+        // different List for LayerGroup style name since the list
+        // for layers use the Style type while for LayerGroup we have named configurations.
+        // The size of this list is kept in sync with the Style one adding null for empty
+        // style names or for layers' styles.
+        List<String> groupStyleNames = new ArrayList<>();
         // ok, parse the styles parameter in isolation
         if (!styleNameList.isEmpty()) {
-            List<Style> parseStyles = parseStyles(styleNameList, requestedLayerInfos);
-            getMap.setStyles(parseStyles);
+            List<Style> parsedStyle = new ArrayList<>();
+            parseStyles(styleNameList, requestedLayerInfos, parsedStyle, groupStyleNames);
+            getMap.setStyles(parsedStyle);
         }
 
         // first, expand base layers and default styles
@@ -513,36 +549,21 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             List<Style> newStyles = new ArrayList<>();
             List<Filter> newFilters = filters == null ? null : new ArrayList<>();
             List<List<SortBy>> newSortBy = sortBy == null ? null : new ArrayList<>();
-
             for (int i = 0; i < requestedLayerInfos.size(); i++) {
                 Object o = requestedLayerInfos.get(i);
                 Style style = oldStyles.isEmpty() ? null : oldStyles.get(i);
 
                 if (o instanceof LayerGroupInfo) {
                     LayerGroupInfo groupInfo = (LayerGroupInfo) o;
-                    List<LayerInfo> layers = groupInfo.layers();
-                    List<StyleInfo> styles = groupInfo.styles();
-                    for (int j = 0; j < styles.size(); j++) {
-                        StyleInfo si = styles.get(j);
-                        if (si != null) {
-                            newStyles.add(si.getStyle());
-                        } else {
-                            LayerInfo layer = layers.get(j);
-                            newStyles.add(getDefaultStyle(layer));
-                        }
-                    }
-                    // expand the filter on the layer group to all its sublayers
-                    if (filters != null) {
-                        for (int j = 0; j < layers.size(); j++) {
-                            newFilters.add(getFilter(filters, i));
-                        }
-                    }
-                    if (sortBy != null) {
-                        for (int j = 0; j < layers.size(); j++) {
-                            newSortBy.add(getSortBy(sortBy, i));
-                        }
-                    }
-
+                    resolveLayerGroup(
+                            i,
+                            groupStyleNames,
+                            groupInfo,
+                            newStyles,
+                            newFilters,
+                            newSortBy,
+                            filters,
+                            sortBy);
                 } else if (o instanceof LayerInfo) {
                     style = oldStyles.isEmpty() ? null : oldStyles.get(i);
                     if (style != null) {
@@ -644,6 +665,56 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
     }
 
+    // add to newStyles, newFilters and newSortBy lists values according to the request lg style.
+    private void resolveLayerGroup(
+            int i,
+            List<String> groupStyleNames,
+            LayerGroupInfo groupInfo,
+            List<Style> newStyles,
+            List<Filter> newFilters,
+            List<List<SortBy>> newSortBy,
+            List<Filter> filters,
+            List<List<SortBy>> sortBy)
+            throws IOException {
+        List<LayerInfo> layers = null;
+        List<StyleInfo> styles = null;
+        if (!groupStyleNames.isEmpty()) {
+            String styleName = groupStyleNames.get(i);
+            if (!isDefaultLgStyle(styleName, groupInfo) && isGroupStyleName(styleName, groupInfo)) {
+                layers = groupInfo.layers(styleName);
+                styles = groupInfo.styles(styleName);
+            }
+        }
+        if (layers == null) {
+            layers = groupInfo.layers();
+            styles = groupInfo.styles();
+        }
+        for (int j = 0; j < styles.size(); j++) {
+            StyleInfo si = styles.get(j);
+            if (si != null) {
+                newStyles.add(si.getStyle());
+            } else {
+                LayerInfo layer = layers.get(j);
+                newStyles.add(getDefaultStyle(layer));
+            }
+        }
+        // expand the filter on the layer group to all its sublayers
+        if (filters != null) {
+            int j = 0;
+            while (j < layers.size()) {
+                newFilters.add(getFilter(filters, i));
+                j++;
+            }
+        }
+        if (sortBy != null) {
+            int j = 0;
+            while (j < layers.size()) {
+                newSortBy.add(getSortBy(sortBy, i));
+                j++;
+            }
+        }
+    }
+
     private void processSLDLink(
             GetMapRequest getMap,
             List<Object> requestedLayerInfos,
@@ -655,7 +726,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             LOGGER.fine("Getting layers and styles from reomte SLD");
         }
 
-        URL styleUrl = getMap.getStyleUrl();
+        URI styleUrl = getMap.getStyleUrl();
 
         try (InputStream input = getStream(styleUrl)) {
             if (input != null) {
@@ -681,12 +752,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     LOGGER.log(l, "Exception while getting SLD.", ex);
                     // KMS: Replace with a generic exception so it can't be used to port scan
                     // the local network.
-                    if (LOGGER.isLoggable(l)) {
-                        throw new ServiceException(
-                                "Error while getting SLD.  See the log for details.");
-                    } else {
-                        throw new ServiceException("Error while getting SLD.");
-                    }
+                    throw new ServiceException("Error while getting SLD.");
                 }
             }
         }
@@ -747,6 +813,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                         WMSErrorCode.INVALID_CRS.get(getMap.getVersion()));
             }
         }
+    }
+
+    private InputStream getStream(URI styleUrl) throws IOException {
+        return getStream(styleUrl.toURL());
     }
 
     private InputStream getStream(URL styleUrl) throws IOException {
@@ -815,8 +885,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
             // KMS: Replace with a generic exception so it can't be used to port scan the
-            // local
-            // network.
+            // local network.
             throw new ServiceException("Error while getting SLD.");
         }
     }
@@ -1503,15 +1572,19 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     // return cv;
     // }
 
-    protected List<Style> parseStyles(List<String> styleNames, List<Object> requestedLayerInfos)
+    protected void parseStyles(
+            List<String> styleNames,
+            List<Object> requestedLayerInfos,
+            List<Style> styles,
+            List<String> groupStyles)
             throws Exception {
-        List<Style> styles = new ArrayList<>();
         for (int i = 0; i < styleNames.size(); i++) {
             String styleName = styleNames.get(i);
-            if ("".equals(styleName)) {
+            if (styleName == null || "".equals(styleName)) {
                 // return null, this should flag request reader to use default for
                 // the associated layer
                 styles.add(null);
+                groupStyles.add(null);
             } else {
                 Object layer = requestedLayerInfos.get(i);
                 if (isRemoteWMSLayer(layer)) {
@@ -1521,31 +1594,41 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     // instead of local WMS
                     WMSLayerInfo remoteWMSLayer = (WMSLayerInfo) ((LayerInfo) layer).getResource();
                     Optional<Style> remoteStyle = remoteWMSLayer.findRemoteStyleByName(styleName);
-                    if (remoteStyle.isPresent()) styles.add(remoteStyle.get());
-                    else
+                    if (remoteStyle.isPresent()) {
+                        styles.add(remoteStyle.get());
+                        groupStyles.add(null);
+                    } else
                         throw new ServiceException(
                                 "No such remote style: " + styleName, "StyleNotDefined");
                 } else {
-                    final Style style = wms.getStyleByName(styleName);
-                    if (style == null) {
-                        // default style for layer groups?
-                        if (layer instanceof LayerGroupInfo
-                                && CapabilityUtil.encodeGroupDefaultStyle(
-                                        wms, (LayerGroupInfo) layer)
-                                && styleName.equals(
-                                        CapabilityUtil.getGroupDefaultStyleName(
-                                                ((LayerGroupInfo) layer)))) {
-                            styles.add(null);
-                        } else {
-                            String msg = "No such style: " + styleName;
-                            throw new ServiceException(msg, "StyleNotDefined");
-                        }
-                    }
-                    styles.add(style);
+                    parseStyle(layer, styleName, groupStyles, styles);
                 }
             }
         }
-        return styles;
+    }
+
+    private void parseStyle(
+            Object layer, String styleName, List<String> groupStyles, List<Style> styles)
+            throws IOException {
+        if (layer instanceof LayerGroupInfo) {
+            LayerGroupInfo groupInfo = (LayerGroupInfo) layer;
+            boolean isDefaultStyle = isDefaultLgStyle(styleName, groupInfo);
+            if (!isDefaultStyle && isGroupStyleName(styleName, groupInfo)) {
+                groupStyles.add(styleName);
+            } else {
+                groupStyles.add(null);
+            }
+            styles.add(null);
+        } else {
+            groupStyles.add(null);
+            final Style style = wms.getStyleByName(styleName);
+            if (style != null) {
+                styles.add(style);
+            } else {
+                String msg = "No such style: " + styleName;
+                throw new ServiceException(msg, "StyleNotDefined");
+            }
+        }
     }
 
     /**
@@ -1592,5 +1675,15 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         return null;
+    }
+
+    private boolean isDefaultLgStyle(String styleName, LayerGroupInfo groupInfo) {
+        return CapabilityUtil.encodeGroupDefaultStyle(wms, groupInfo)
+                && styleName != null
+                && styleName.equals(CapabilityUtil.getGroupDefaultStyleName(groupInfo));
+    }
+
+    private boolean isGroupStyleName(String styleName, LayerGroupInfo groupInfo) {
+        return styleName != null && !"".equals(styleName) && isSingleOrOpaque(groupInfo);
     }
 }

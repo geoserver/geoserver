@@ -52,8 +52,7 @@ public class ConformanceTest extends CoveragesTestSupport {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/coverages/conformance?f=text/html");
         assertEquals("GeoServer OGC API Coverages Conformance", document.select("#title").text());
         List<String> classes =
-                document.select("#content li")
-                        .stream()
+                document.select("#content li").stream()
                         .map(e -> e.text())
                         .collect(Collectors.toList());
         assertThat(classes, containsInAnyOrder(getExpectedConformanceClasses()));

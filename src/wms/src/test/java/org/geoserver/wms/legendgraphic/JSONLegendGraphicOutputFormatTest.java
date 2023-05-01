@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +31,8 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -1840,5 +1843,143 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setStyle(style);
         req.setFormat(JSONFormat);
         return req;
+    }
+
+    @Test
+    public void testLayerGroupStyleSingle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = null;
+        try {
+            String lgStyleName = "nature-style";
+            String lgName = "single_lake_and_places";
+            LayerInfo forestL = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakesL = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            lgStyleName,
+                            Arrays.asList(forestL, lakesL),
+                            Arrays.asList(null, null));
+            String url =
+                    "wms?LAYER="
+                            + group.getName()
+                            + "&STYLE=nature-style&FORMAT=application/json"
+                            + "&SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&WIDTH=20&HEIGHT=20";
+            JSONObject legend = (JSONObject) getAsJSON(url);
+            JSONObject forest = legend.getJSONArray("Legend").getJSONObject(0);
+            JSONObject lakes = legend.getJSONArray("Legend").getJSONObject(1);
+            assertEquals("Forests", forest.get("layerName"));
+            assertEquals("Lakes", lakes.get("layerName"));
+        } finally {
+            if (group != null) {
+                catalog.remove(group);
+            }
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleOpaque() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = null;
+        try {
+            String lgStyleName = "nature-style";
+            String lgName = "opaque_lakes_and_places";
+            LayerInfo forestL = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakesL = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.OPAQUE_CONTAINER,
+                            lgStyleName,
+                            Arrays.asList(forestL, lakesL),
+                            Arrays.asList(null, null));
+            String url =
+                    "wms?LAYER="
+                            + group.getName()
+                            + "&STYLE=nature-style&FORMAT=application/json"
+                            + "&SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&WIDTH=20&HEIGHT=20";
+            JSONObject legend = (JSONObject) getAsJSON(url);
+            JSONObject forest = legend.getJSONArray("Legend").getJSONObject(0);
+            JSONObject lakes = legend.getJSONArray("Legend").getJSONObject(1);
+            assertEquals("Forests", forest.get("layerName"));
+            assertEquals("Lakes", lakes.get("layerName"));
+        } finally {
+            if (group != null) catalog.remove(group);
+        }
+    }
+
+    @Test
+    public void testNestedGroupWithStyle() throws Exception {
+        LayerGroupInfo nested = null;
+        LayerGroupInfo container = null;
+        Catalog catalog = getCatalog();
+
+        try {
+            String lgName = "nested-lakes_and_places_group";
+            LayerInfo forestL = getCatalog().getLayerByName("cite:Forests");
+            List<StyleInfo> styles = new ArrayList<>();
+            styles.add(null);
+            nested =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            "forest-style",
+                            Arrays.asList(forestL),
+                            styles);
+
+            createLakesPlacesLayerGroup(
+                    catalog, "lakes-and-place", LayerGroupInfo.Mode.SINGLE, null);
+            container = catalog.getLayerGroupByName("lakes-and-place");
+            container.getLayers().add(0, nested);
+            container.getStyles().add(0, nested.getLayerGroupStyles().get(0).getName());
+            catalog.save(container);
+
+            String url =
+                    "wms?LAYER="
+                            + container.getName()
+                            + "&STYLE=&FORMAT=application/json"
+                            + "&SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&WIDTH=20&HEIGHT=20";
+            JSONObject legend = (JSONObject) getAsJSON(url);
+            JSONObject forest = legend.getJSONArray("Legend").getJSONObject(0);
+            JSONObject lakes = legend.getJSONArray("Legend").getJSONObject(1);
+            JSONObject places = legend.getJSONArray("Legend").getJSONObject(2);
+            assertEquals("Forests", forest.get("layerName"));
+            assertEquals("Lakes", lakes.get("layerName"));
+            assertEquals("NamedPlaces", places.get("layerName"));
+        } finally {
+            if (container != null) catalog.remove(container);
+            if (nested != null) catalog.remove(nested);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleIngnoredIfTree() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = null;
+        try {
+            String lgName = "lakes_and_places_named";
+            LayerInfo forestL = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakesL = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.NAMED,
+                            "nature-style",
+                            Arrays.asList(forestL, lakesL),
+                            Arrays.asList(null, null));
+            String url =
+                    "wms?LAYER="
+                            + group.getName()
+                            + "&STYLE=nature-style&FORMAT=application/json"
+                            + "&SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&WIDTH=20&HEIGHT=20";
+            JSONObject legend = (JSONObject) getAsJSON(url);
+            JSONObject lakes = legend.getJSONArray("Legend").getJSONObject(0);
+            JSONObject places = legend.getJSONArray("Legend").getJSONObject(1);
+            assertEquals("Lakes", lakes.get("layerName"));
+            assertEquals("NamedPlaces", places.get("layerName"));
+        } finally {
+            if (group != null) catalog.remove(group);
+        }
     }
 }

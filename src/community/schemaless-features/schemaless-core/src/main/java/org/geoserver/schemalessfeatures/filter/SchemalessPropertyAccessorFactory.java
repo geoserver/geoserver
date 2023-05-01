@@ -77,7 +77,7 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
             if (object instanceof ComplexAttribute) {
                 String[] pathParts;
                 if (xpath.indexOf('/') != -1) pathParts = xpath.split("/");
-                else pathParts = xpath.split(":");
+                else pathParts = xpath.split("\\.");
                 return (T) walkComplexAttribute((ComplexAttribute) object, pathParts);
             } else if (object instanceof DynamicComplexType) {
                 return (T) ANYTYPE_TYPE;
@@ -98,14 +98,18 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
             for (int i = 0; i < path.length; i++) {
                 String pathPart = path[i];
                 result = walkComplexAttribute(complexAttribute, pathPart);
-                if (result instanceof ComplexAttribute)
+                if (result instanceof ComplexAttribute) {
                     complexAttribute = (ComplexAttribute) result;
-                else if (result instanceof List) {
+                } else if (result instanceof List) {
                     @SuppressWarnings("unchecked")
                     List<Object> attributes = List.class.cast(result);
                     List<Object> results = walkList(attributes, path, i);
-                    if (results.size() == 1) return results.get(0);
-                    else return results;
+                    if (results.size() == 1) result = results.get(0);
+                    else if (results.isEmpty()) result = null;
+                    else result = results;
+                    break;
+                } else if (result == null) {
+                    break;
                 }
             }
             return result;
@@ -124,6 +128,8 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
         }
 
         private List<Object> walkList(List<Object> attributes, String[] path, int currentIndex) {
+            boolean lastPathPart = (currentIndex + 1) == path.length;
+            if (lastPathPart) return attributes;
             List<Object> results = new ArrayList<>();
             for (Object value : attributes) {
                 if (value == null) continue;

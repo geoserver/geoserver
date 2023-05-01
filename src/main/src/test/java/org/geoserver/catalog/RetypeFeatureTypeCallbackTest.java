@@ -424,9 +424,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
                 // no fields were sent, use all fields excluding geom field
                 if (query.getPropertyNames() == null) {
                     properties =
-                            info.getFeatureType()
-                                    .getDescriptors()
-                                    .stream()
+                            info.getFeatureType().getDescriptors().stream()
                                     .filter(
                                             propertyDescriptor ->
                                                     !propertyDescriptor

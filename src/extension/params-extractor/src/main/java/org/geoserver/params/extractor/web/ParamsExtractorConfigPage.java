@@ -85,9 +85,7 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
                             UrlTransform urlTransform =
                                     new UrlTransform(
                                             requestUri, Utils.parseParameters(queryRequest));
-                            rulesPanel
-                                    .getSelection()
-                                    .stream()
+                            rulesPanel.getSelection().stream()
                                     .filter(rule -> !rule.isEchoOnly())
                                     .map(RuleModel::toRule)
                                     .forEach(rule -> rule.apply(urlTransform));
@@ -118,9 +116,7 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         RulesModel.delete(
-                                rulesPanel
-                                        .getSelection()
-                                        .stream()
+                                rulesPanel.getSelection().stream()
                                         .map(RuleModel::getId)
                                         .toArray(String[]::new));
                         target.add(rulesPanel);

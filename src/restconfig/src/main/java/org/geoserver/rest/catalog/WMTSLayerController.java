@@ -69,11 +69,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = {
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/wmtslayers",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/wmtsstores/{storeName}/layers"
-    }
-)
+        path = {
+            RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/wmtslayers",
+            RestBaseController.ROOT_PATH
+                    + "/workspaces/{workspaceName}/wmtsstores/{storeName}/layers"
+        })
 public class WMTSLayerController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WMTSLayerController.class);
@@ -84,12 +84,11 @@ public class WMTSLayerController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public Object layersGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -150,8 +149,7 @@ public class WMTSLayerController extends AbstractCatalogController {
                                         e);
                             }
                             final List<WMTSLayer> layerList = ds.getCapabilities().getLayerList();
-                            return layerList
-                                    .stream()
+                            return layerList.stream()
                                     .map(Layer::getName)
                                     .filter(Objects::nonNull)
                                     .filter(name -> !name.isEmpty())
@@ -181,13 +179,12 @@ public class WMTSLayerController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        value = "/{layerName}",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            value = "/{layerName}",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper<WMTSLayerInfo> layerGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -248,14 +245,13 @@ public class WMTSLayerController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = "/{layerName}",
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            value = "/{layerName}",
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void layerPut(
             @RequestBody WMTSLayerInfo update,
             @PathVariable String workspaceName,
@@ -302,13 +298,12 @@ public class WMTSLayerController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public ResponseEntity<String> layerPost(
             @RequestBody WMTSLayerInfo resource,
             @PathVariable String workspaceName,

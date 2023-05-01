@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -166,6 +168,7 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
 
     @Test
     public void testGetFeatureNumberMatchedWithGeomComplexFilter() throws Exception {
+        if (isGeopkgTest()) return;
         Document doc =
                 getAsDOM(
                         "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
@@ -177,6 +180,7 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
 
     @Test
     public void testGetFeatureNumberMatchedWithGeomComplexFilterWithPagination() throws Exception {
+        if (isGeopkgTest()) return;
         Document doc =
                 getAsDOM(
                         "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
@@ -188,6 +192,7 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
 
     @Test
     public void testGetFeatureNumberMatchedWithGeomComplexFilterManyAND() throws Exception {
+        if (isGeopkgTest()) return;
         Document doc =
                 getAsDOM(
                         "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"

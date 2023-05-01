@@ -121,8 +121,7 @@ public class BruteForceListener
             return false;
         }
 
-        return config.getWhitelistAddressMatchers()
-                .stream()
+        return config.getWhitelistAddressMatchers().stream()
                 .anyMatch(matcher -> matcher.matches(request));
     }
 

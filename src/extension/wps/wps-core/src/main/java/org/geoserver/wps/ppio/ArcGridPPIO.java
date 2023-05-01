@@ -7,24 +7,30 @@ package org.geoserver.wps.ppio;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
+import org.geoserver.wps.WPSException;
+import org.geoserver.wps.resource.GridCoverageReaderResource;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridFormat;
+import org.geotools.gce.arcgrid.ArcGridReader;
 import org.geotools.parameter.Parameter;
 
 /**
- * Decodes/encodes a GeoTIFF file
+ * Decodes/encodes an ArcGrid file
  *
  * @author Andrea Aime - OpenGeo
  */
 public class ArcGridPPIO extends CDataPPIO {
 
-    protected ArcGridPPIO() {
+    private final WPSResourceManager resources;
+
+    protected ArcGridPPIO(WPSResourceManager resources) {
         super(GridCoverage2D.class, GridCoverage2D.class, "application/arcgrid");
+        this.resources = resources;
     }
 
     @Override
@@ -32,12 +38,23 @@ public class ArcGridPPIO extends CDataPPIO {
         // in order to read a grid coverage we need to first store it on disk
         File root = new File(System.getProperty("java.io.tmpdir", "."));
         File f = File.createTempFile("wps", "asc", root);
-        try (FileOutputStream os = new FileOutputStream(f)) {
-            IOUtils.copy(input, os);
+        GridCoverageReaderResource resource = null;
+        try {
+            FileUtils.copyInputStreamToFile(input, f);
+            ArcGridFormat format = new ArcGridFormat();
+            if (!format.accepts(f)) {
+                throw new WPSException("Could not read " + getMimeType() + " coverage");
+            }
+            ArcGridReader reader = format.getReader(f);
+            resource = new GridCoverageReaderResource(reader, f);
+            return reader.read(null);
+        } finally {
+            if (resource != null) {
+                resources.addResource(resource);
+            } else {
+                f.delete();
+            }
         }
-
-        // and then we try to read it as a asc
-        return new ArcGridFormat().getReader(f).read(null);
     }
 
     @Override
@@ -46,8 +63,7 @@ public class ArcGridPPIO extends CDataPPIO {
         if (!arcgrid.endsWith("\n")) {
             arcgrid += "\n";
         }
-        ByteArrayInputStream in = new ByteArrayInputStream(arcgrid.getBytes());
-        return new ArcGridFormat().getReader(in).read(null);
+        return decode(new ByteArrayInputStream(arcgrid.getBytes()));
     }
 
     @Override

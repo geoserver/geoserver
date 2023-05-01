@@ -464,7 +464,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         // if so, try to build an override feature type
         Connection cx = null;
         try {
-            store.getConnection(Transaction.AUTO_COMMIT);
+            cx = store.getConnection(Transaction.AUTO_COMMIT);
             SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
             tb.setName(base.getName());
             for (AttributeDescriptor ad : base.getAttributeDescriptors()) {
@@ -494,7 +494,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             }
             return tb.buildFeatureType();
         } catch (SQLException e) {
-            throw (IOException) new IOException(e.getMessage()).initCause(e);
+            throw new IOException(e.getMessage(), e);
         } finally {
             store.closeSafe(cx);
         }

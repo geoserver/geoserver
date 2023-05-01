@@ -27,10 +27,22 @@ Configure the following settings here:
 - Authenticated users can write
 
 - Use GeoServer roles to get authorizations
+  
+   - Disabled: For each authorization request, GeoServer sends only the user info to GeoFence.
+      GeoFence will retrieve all the roles associated to the user, and will merge 
+      the permissions granted for each role.
+
+   - Enabled: For each authorization request, GeoServer sends to GeoFence the user info AND the roles assigned in the current request session.
+      GeoFence will retrieve all the roles associated to the user, and will only consider the requested roles 
+      that are really associated to the user.    
 
 - Comma delimited list of mutually exclusive roles for authorization
 
-
+   - This field is mandatory when the previous option is enabled. 
+      GeoServer will send to GeoFence the roles in the current request session which match the entries in this list.
+      You can use the '*' symbol to match any session role.
+      When using "*", you can use the format "`-ROLENAME`" to exclude one or more roles from the the session roles list.
+      
 Cache
 -----
 

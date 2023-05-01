@@ -67,9 +67,7 @@ class CustomDimensionFilterConverter {
             final MetadataMap metadataMap = typeInfo.getMetadata();
             final FeatureType featureType = typeInfo.getFeatureType();
             final Map<String, Pair<DimensionInfo, String>> rawValuesMap =
-                    metadataMap
-                            .entrySet()
-                            .stream()
+                    metadataMap.entrySet().stream()
                             .filter(
                                     e ->
                                             e.getValue() instanceof DimensionInfo
@@ -245,8 +243,7 @@ class CustomDimensionFilterConverter {
             if (rangeValue.isPresent()) {
                 // range value present, only process it as unique value
                 final List<Object> rangeValues =
-                        splitRangeValues(rangeValue.get())
-                                .stream()
+                        splitRangeValues(rangeValue.get()).stream()
                                 .map(v -> Converters.convert(v, binding))
                                 .collect(Collectors.toList());
                 @SuppressWarnings("unchecked")
@@ -259,8 +256,7 @@ class CustomDimensionFilterConverter {
             } else {
                 // no range value present, convert all values
                 // filter null results
-                return rawValues
-                        .stream()
+                return rawValues.stream()
                         .map(v -> Converters.convert(v, binding))
                         .filter(v -> v != null)
                         .collect(Collectors.toList());
@@ -298,8 +294,7 @@ class CustomDimensionFilterConverter {
             // no range supported
             // filter unsupported values
             // convert values
-            return rawValues
-                    .stream()
+            return rawValues.stream()
                     .filter(v -> !isRange(v) && isValidBoolean(v))
                     .map(v -> Converters.convert(v.trim(), Boolean.class))
                     .collect(Collectors.toList());
@@ -328,8 +323,7 @@ class CustomDimensionFilterConverter {
             if (rangeValue.isPresent()) {
                 // range value present, only process it as unique value
                 final List<Object> rangeValues =
-                        splitRangeValues(rangeValue.get())
-                                .stream()
+                        splitRangeValues(rangeValue.get()).stream()
                                 .map(v -> Converters.convert(v, binding))
                                 .collect(Collectors.toList());
                 @SuppressWarnings("unchecked")
@@ -340,8 +334,7 @@ class CustomDimensionFilterConverter {
                                 (Comparable) rangeValues.get(1));
                 return Arrays.asList(range);
             } else {
-                return rawValues
-                        .stream()
+                return rawValues.stream()
                         .map(v -> Converters.convert(v, binding))
                         .filter(v -> v != null)
                         .collect(Collectors.toList());

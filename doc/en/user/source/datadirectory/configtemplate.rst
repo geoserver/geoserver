@@ -3,28 +3,41 @@
 Parameterize catalog settings
 =============================
 
-This feature allows to parameterize some of the settings in GeoServer's catalog.
+Environment parametrization allows to parameterize some of the settings in GeoServer's catalog by means of a templating mechanism to tailor GeoServer's settings to the environment in which is run.
 
-What we mean with that is that you are able to use a templating mechanism to tailor GeoServer's settings to the environment in which is run.
+For example, there might be the need to  move the latest changes made from a GeoServer instance running on machine **A** to another instance running on machine **B**, but there are some differences in the way the two environments are set up (eg. the password used to connect to the database is different). In such scenario if a simple backup of the catalog from instance **A** is created and restored on instance **B**, the stores configured on the database will not be accessible and the corresponding layers will not work properly.
 
-For example, you'd want to move the latest changes you've made from a GeoServer instance running on machine **A** to another instance running on machine **B** but there are some differences in the way the two environments are set up, let's say the password used to connect to the database is different.
+Another example can be the need to have different connection pool configuration for two different GeoServer instances, with respect to the max number of connections available in the pool.
 
-If you simply create a backup of the catalog from instance **A** and restore it on instance **B**, the stores configured on the database will not be accessible and the corresponding layers will not work properly.
-
-Another example would be the max number of connections available in the connection pool to the database. You might want to have a different pool configuration in the two environments (maybe GeoServer on machine **A** is a test instance and GeoServer on machine **B** is used in production).
-
-To overcome such limitation (to have the environment set up in the exact same way on the source machine and on the destination machine) the ENV parametrization allows you to customize the catalog configuration via the use of a templating system.
-
-First of all to be able to use this feature, set the following flag via system variable to GeoServer's environment:
+To enable env parametrization the following flag needs to be set via system variable to GeoServer's environment:
 
     ::
     
         -DALLOW_ENV_PARAMETRIZATION=true
 
-Then create a file called ``geoserver-environment.properties`` in the root of GeoServer's datadir. 
-This file will contain the definitions for the variables parameterized in the catalog configuration.
+A  ``properties`` file holding the parametrized settings needs to be created. It can be provided by naming it ``geoserver-environment.properties``  and by placing it in the root directory of the GeoServer's datadir.
 
-Now edit GeoServer's configuration files of the source machine that you want to be parametric, for example let's parameterize the URL of a store 
+GeoServer is also able to use a  ``properties`` outside the GeoServer's datadir. In this case the path to the  ``properties`` file must be defined in one of the following ways:
+
+  * By providing a system variable ``-DENV_PROPERTIES={properties filepath}``.
+
+  * By provinding an environment variable named  ``ENV_PROPERTIES`` and the path to the properties file as value.à
+
+  * By providing a context parameter in the ``WEB-INF/web.xml`` file for the GeoServer application.
+
+.. code-block:: xml
+
+   <web-app>
+     ...
+     <context-param>
+       <param-name>ENV_PROPERTIES</param-name>
+       <param-value>/var/lib/geoserver_data</param-value>
+     </context-param>
+     ...
+   </web-app>
+
+
+Once a strategy to load the ``ENV_PROPERTIES`` has been defined and set, it is possible to edit GeoServer's configuration files of the source machine that needs to be parametrized. For example let's parameterize the URL of a store 
 (this can also be done via GeoServer admin UI):
 
     ``vim coveragestore.xml`` ::
@@ -38,21 +51,20 @@ Now edit GeoServer's configuration files of the source machine that you want to 
           <url>${store_url}</url>
         </coverageStore>
 
-Add a definition for the variable **store_url** in your 
+A definition for the variable **store_url** needs to be added in
 
     ``geoserver-environment.properties`` ::
 
         store_url = file:///var/geoserver/store/teststore
 
-Now restart GeoServer and navigate to the store config
+Once GeoServer has been restarterd, it is possible to see that the URL in "Connection Parameters" settings now refers the variable **store_url** whose value is defined in the ``geoserver-environment.properties`` file.
 
 .. figure:: img/configtemplate001.png
    :align: center
    
-As you can see the URL in "Connection Parameters" settings now refers the variable **store_url** whose value is defined in the ``geoserver-environment.properties`` file.
 
 Another common use case is parameterizing connection details for a vector datastore. Hostname, credentials and connection pool parameters for the databases tend to change between environments.
-Once you set the variables in the ``geoserver-environment.properties`` file, you can configure the Datastore from the GeoServer UI as follows:
+Once the variables are set in the ``geoserver-environment.properties`` file, the Datastore can be configured as follows:
 
 .. figure:: img/configtemplate002.png
    :align: center

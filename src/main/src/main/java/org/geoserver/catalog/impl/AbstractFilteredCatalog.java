@@ -27,6 +27,8 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -141,6 +143,26 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     @Override
     public List<CoverageStoreInfo> getCoverageStores() {
         return filterStores(delegate.getCoverageStores());
+    }
+
+    @Override
+    public WMSStoreInfo getWMSStore(String id) {
+        return checkAccess(delegate.getWMSStore(id));
+    }
+
+    @Override
+    public WMSStoreInfo getWMSStoreByName(String name) {
+        return checkAccess(delegate.getWMSStoreByName(name));
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStore(String id) {
+        return checkAccess(delegate.getWMTSStore(id));
+    }
+
+    @Override
+    public WMTSStoreInfo getWMTSStoreByName(String name) {
+        return checkAccess(delegate.getWMTSStoreByName(name));
     }
 
     @Override

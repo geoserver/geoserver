@@ -232,6 +232,11 @@
   <bean id="catalogRepository" class="org.geoserver.catalog.CatalogRepository">
     <constructor-arg ref="catalog"/>
   </bean>
+
+    <!-- Request Logging Filter -->
+    <bean id="loggingFilter" class="org.geoserver.filters.LoggingFilter">
+        <constructor-arg ref="geoServer"/>
+    </bean>
   
   <!-- the proxyfing URL mangler, along with machinery to support headers expansion usage in asynch requests -->
   <bean id="proxyfier" class="org.geoserver.ows.ProxifyingURLMangler">
@@ -329,4 +334,15 @@
   <bean id="coverageReaderFileConverter" class="org.geoserver.catalog.CoverageReaderFileConverter">
     <constructor-arg ref="catalog"/>
   </bean>
+
+  <bean id="defaultResourceAccessManager" class="org.geoserver.security.impl.DefaultResourceAccessManager">
+    <constructor-arg ref="accessRulesDao"/>
+    <constructor-arg ref="rawCatalog"/>
+    <property name="groupsCache" ref="layerGroupContainmentCache"/>
+  </bean>
+
+  <bean id="layerGroupContainmentCache" class="org.geoserver.security.impl.LayerGroupContainmentCache">
+    <constructor-arg ref="rawCatalog"/>
+  </bean>
+
 </beans>

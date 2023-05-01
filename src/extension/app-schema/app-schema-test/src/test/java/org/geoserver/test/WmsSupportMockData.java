@@ -7,7 +7,6 @@
 package org.geoserver.test;
 
 /** @author Niels Charlier */
-
 import org.geoserver.data.test.MockData;
 import org.geotools.data.complex.AppSchemaDataAccess;
 

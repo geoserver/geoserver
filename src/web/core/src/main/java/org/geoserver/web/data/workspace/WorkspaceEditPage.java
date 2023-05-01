@@ -472,6 +472,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     new DropDownChoice<>("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
             // Formerly provided a new UrlValidator(), but removed with placeholder compatibility
             otherSettingsPanel.add(new TextField<String>("proxyBaseUrl"));
+            otherSettingsPanel.add(new CheckBox("useHeadersProxyURL"));
 
             // Addition of pluggable extension points
             ListView<SettingsPluginPanelInfo> extensions =

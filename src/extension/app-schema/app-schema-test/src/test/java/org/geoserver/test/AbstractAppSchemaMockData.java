@@ -3,13 +3,13 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-
 package org.geoserver.test;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,10 +22,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.onlineTest.setup.AppSchemaTestGeopackageSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
@@ -126,7 +128,11 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
 
     private final Map<String, String> layerStyles = new LinkedHashMap<>();
 
+    private File appschema;
+
     private File styles;
+
+    private String geopkgDir;
 
     /** the 'featureTypes' directory, under 'data' */
     protected File featureTypesBaseDir;
@@ -172,6 +178,9 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         styles = new File(data, "styles");
         styles.mkdir();
 
+        appschema = new File(data, "appschema");
+        appschema.mkdir();
+
         propertiesFiles = new HashMap<>();
 
         addContent();
@@ -192,6 +201,10 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
 
     public boolean isPostgisOnlineTest() {
         return "postgis".equals(onlineTestId);
+    }
+
+    public boolean isGeopackageOnlineTest() {
+        return "geopkg".equals(onlineTestId);
     }
 
     /** @param catalogLocation file location relative to test-data dir. */
@@ -558,6 +571,11 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             // Run the sql script through setup
             setup.setUp();
             setup.tearDown();
+        } else if (isGeopackageOnlineTest()) {
+            setup = AppSchemaTestGeopackageSetup.getInstance(propertiesFiles, geopkgDir);
+            // Run the sql script through setup
+            setup.setUp();
+            setup.tearDown();
         }
     }
 
@@ -721,13 +739,15 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param mappingFileName Mapping file to be copied
      * @return Modified content string
      */
-    private String modifyOnlineMappingFileContent(String mappingFileName) throws IOException {
+    private String modifyOnlineMappingFileContent(String mappingFileName) throws Exception {
         try (InputStream is = openResource(mappingFileName);
                 BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
             StringBuffer content = new StringBuffer();
             boolean parametersStartFound = false;
             boolean parametersEndFound = false;
             boolean isOracle = onlineTestId.equals("oracle");
+            boolean isPostgis = onlineTestId.equals("postgis");
+            boolean isGeoPkg = onlineTestId.equals("geopkg");
             for (String line = br.readLine(); line != null; line = br.readLine()) {
                 if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {
                     // before <parameters> or after </parameters>
@@ -738,8 +758,27 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                             // copy <parameters> with new db params
                             if (isOracle) {
                                 content.append(AppSchemaTestOracleSetup.DB_PARAMS);
-                            } else {
+                            } else if (isPostgis) {
                                 content.append(AppSchemaTestPostgisSetup.DB_PARAMS);
+                            } else if (isGeoPkg) {
+                                copy(
+                                        getClass()
+                                                .getClassLoader()
+                                                .getResourceAsStream("appschema/stations.gpkg"),
+                                        "appschema/stations.gpkg");
+                                File[] stations =
+                                        Objects.requireNonNull(data.listFiles(getAppschema()))[0]
+                                                .listFiles(getGpkgFile());
+                                File resourceFile = null;
+                                if (stations.length > 0) {
+                                    resourceFile = stations[0];
+                                }
+
+                                geopkgDir = resourceFile.toURI().toString();
+                                String DB_PARAMS =
+                                        AppSchemaTestGeopackageSetup.DB_PARAMS.replace(
+                                                "PATH_TO_BE_REPLACED", geopkgDir);
+                                content.append(DB_PARAMS);
                             }
                         } else {
                             // copy content
@@ -772,5 +811,13 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             }
             return content.toString();
         }
+    }
+
+    private FilenameFilter getAppschema() {
+        return (dir, name) -> name.startsWith("appschema");
+    }
+
+    private FilenameFilter getGpkgFile() {
+        return (dir, name) -> name.endsWith("gpkg");
     }
 }

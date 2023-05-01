@@ -14,5 +14,6 @@ In the integrated version, the users and roles service configured in geoserver a
    gui
    rest
    rest-adminrule
+   rest-batch-op
    tutorial
    migration

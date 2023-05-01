@@ -215,10 +215,18 @@ export class MapLayer extends HTMLElement {
             let type = layerTypes[j];
             if(this.checked && layer[type]){
               if(type === "_templatedLayer"){
-                for(let j =0;j<layer[type]._templates.length;j++){
-                  if(layer[type]._templates[j].rel ==="query") continue;
-                  total++;
-                  if(!(layer[type]._templates[j].layer.isVisible))count++;
+                for(let i =0;i<layer._extent._mapExtents.length;i++){
+                  for(let j = 0; j < layer._extent._mapExtents[i].templatedLayer._templates.length; j++){
+                    if(layer._extent._mapExtents[i].templatedLayer._templates[j].rel ==="query") continue;
+                    total++;
+                    layer._extent._mapExtents[i].removeAttribute("disabled");
+                    layer._extent._mapExtents[i].disabled = false;
+                    if(!(layer._extent._mapExtents[i].templatedLayer._templates[j].layer.isVisible)){
+                      count++;
+                      layer._extent._mapExtents[i].setAttribute("disabled", "");
+                      layer._extent._mapExtents[i].disabled = true;
+                    }
+                  }  
                 }
               } else {
                 total++;
@@ -341,35 +349,40 @@ export class MapLayer extends HTMLElement {
       bR = this.extent.bottomRight.pcrs,
       layerBounds = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
       center = map.options.crs.unproject(layerBounds.getCenter(true)),
-      currentZoom = map.getZoom();
+      newZoom = map.getZoom();
 
-    map.setView(center, currentZoom, {animate:false});
-    let mapBounds = M.pixelToPCRSBounds(
-      map.getPixelBounds(),
-      map.getZoom(),
-      map.options.projection);
+    let maxZoom = this.extent.zoom.maxZoom, minZoom = this.extent.zoom.minZoom;
 
-    //fits the bounds to the map view
-    if(mapBounds.contains(layerBounds)){
-      while(mapBounds.contains(layerBounds) && (currentZoom + 1) <= this.extent.zoom.maxZoom){
-        currentZoom++;
-        map.setView(center, currentZoom, {animate:false});
-        mapBounds = M.pixelToPCRSBounds(
-          map.getPixelBounds(),
-          map.getZoom(),
-          map.options.projection);
-      }
-      if(currentZoom - 1 >= 0) map.flyTo(center, (currentZoom - 1));
-    } else {
-      while(!(mapBounds.contains(layerBounds)) && (currentZoom - 1) >= this.extent.zoom.minZoom){
-        currentZoom--;
-        map.setView(center, currentZoom, {animate:false});
-        mapBounds = M.pixelToPCRSBounds(
-          map.getPixelBounds(),
-          map.getZoom(),
-          map.options.projection);
-      }
+    let scale = map.options.crs.scale(newZoom),
+      mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
+
+    let mapHalf = map.getSize().divideBy(2),
+      mapTlNew = mapCenterTCRS.subtract(mapHalf).round(),
+      mapBrNew = mapCenterTCRS.add(mapHalf).round();
+
+    let mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection),
+      mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+    let mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
+
+    let zOffset = mapPCRS.contains(layerBounds) ? 1 : -1;
+
+    while((zOffset === -1 && !(mapPCRS.contains(layerBounds)) && (newZoom - 1) >= minZoom)  ||
+          (zOffset === 1 && mapPCRS.contains(layerBounds) && (newZoom + 1) <= maxZoom)) {
+      newZoom += zOffset;
+
+      scale = map.options.crs.scale(newZoom);
+      mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
+
+      mapTlNew = mapCenterTCRS.subtract(mapHalf).round();
+      mapBrNew = mapCenterTCRS.add(mapHalf).round();
+      mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
+      mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+      mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
     }
+    if(zOffset === 1 && newZoom - 1 >= 0) newZoom--;
+    map.setView(center, newZoom, {animate: false});
   }
 }
 =======

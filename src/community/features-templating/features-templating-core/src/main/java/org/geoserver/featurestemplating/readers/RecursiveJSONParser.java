@@ -22,7 +22,8 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
     private static final String INCLUDE_KEY = "$include";
     private static final String MERGE_KEY = "$merge";
     public static final String INCLUDE_FLAT_KEY = "$includeFlat";
-    public static final String DYNAMIC_INCLUDE_FLAT_KEY = "$dynamicIncludeFlat_";
+    public static final String INCLUDE_FLAT_EXPR = "$includeExpression";
+    public static final String INCLUDING_NODE = "$includingNode";
 
     private final ObjectMapper mapper;
     private final String rootCollectionName;
@@ -46,7 +47,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
     }
 
     public JsonNode parse() throws IOException {
-        // read and close before doing recursion, avoids keeping severa files open in parallel
+        // read and close before doing recursion, avoids keeping several files open in parallel
         JsonNode root = readResource();
         JsonNode result = expandIncludes(root);
         return result;
@@ -103,6 +104,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
                                     + " key must be the path of the file being included");
                 }
                 if (!isDynamicIncludeFlat(node)) {
+                    // ok we need to include a json file
                     Resource resource = getResource(this.resource, node.asText());
                     JsonNode processed = new RecursiveJSONParser(this, resource).parse();
                     Iterator<String> fields = processed.fieldNames();
@@ -129,7 +131,23 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         if (result.has(MERGE_KEY)) {
             result = processMergeDirective(result);
         }
+        if (result.has(INCLUDE_FLAT_KEY)) {
+            // we have still an include flat directive
+            // it means is dynamic inclusion let's wrap the base json
+            // and the expression in container. The builder will handle it.
+            result = buildContainer(result);
+        }
         return result;
+    }
+
+    private ObjectNode buildContainer(ObjectNode result) {
+        JsonNode dynamicIncludeFlat = result.remove(INCLUDE_FLAT_KEY);
+        ObjectNode objectNode = mapper.getNodeFactory().objectNode();
+        objectNode.set(INCLUDING_NODE, result);
+        objectNode.set(INCLUDE_FLAT_EXPR, dynamicIncludeFlat);
+        ObjectNode container = mapper.getNodeFactory().objectNode();
+        container.set(INCLUDE_FLAT_KEY, objectNode);
+        return container;
     }
 
     private ArrayNode expandIncludesInArray(ArrayNode array) throws IOException {

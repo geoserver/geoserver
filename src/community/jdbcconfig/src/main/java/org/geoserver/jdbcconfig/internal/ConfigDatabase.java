@@ -103,6 +103,7 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
+import org.geoserver.jdbcloader.JDBCLoaderProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.CacheProvider;
@@ -159,6 +160,8 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private Dialect dialect;
 
+    private JDBCLoaderProperties properties;
+
     private DataSource dataSource;
 
     private DbMappings dbMappings;
@@ -197,15 +200,19 @@ public class ConfigDatabase implements ApplicationContextAware {
         //
     }
 
-    public ConfigDatabase(final DataSource dataSource, final XStreamInfoSerialBinding binding) {
-        this(dataSource, binding, null);
+    public ConfigDatabase(
+            JDBCLoaderProperties properties,
+            DataSource dataSource,
+            XStreamInfoSerialBinding binding) {
+        this(properties, dataSource, binding, null);
     }
 
     public ConfigDatabase(
+            JDBCLoaderProperties properties,
             final DataSource dataSource,
             final XStreamInfoSerialBinding binding,
             CacheProvider cacheProvider) {
-
+        this.properties = properties;
         this.binding = binding;
         this.template = new NamedParameterJdbcTemplate(dataSource);
         // cannot use dataSource at this point due to spring context config hack
@@ -226,16 +233,15 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private Dialect dialect() {
         if (dialect == null) {
-            this.dialect = Dialect.detect(dataSource);
+            this.dialect = Dialect.detect(dataSource, properties.isDebugMode());
         }
         return dialect;
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        rollbackFor = Exception.class
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            rollbackFor = Exception.class)
     public void initDb(@Nullable Resource resource) throws IOException {
         this.dbMappings = new DbMappings(dialect());
         if (resource != null) {
@@ -290,7 +296,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(dialect, of, dbMappings).filter(filter);
 
-        final StringBuilder sql = sqlBuilder.build();
+        final String sql = sqlBuilder.build();
         final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
         final boolean fullySupported = Filter.INCLUDE.equals(unsupportedFilter);
         if (LOGGER.isLoggable(Level.FINER)) {
@@ -303,7 +309,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
             logStatement(sql, namedParameters);
 
-            count = template.queryForObject(sql.toString(), namedParameters, Integer.class);
+            count = template.queryForObject(sql, namedParameters, Integer.class);
         } else {
             LOGGER.fine(
                     "Filter is not fully supported, doing scan of supported part to return the number of matches");
@@ -319,10 +325,9 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public <T extends Info> CloseableIterator<T> query(
             final Class<T> of,
             final Filter filter,
@@ -337,10 +342,9 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public <T extends Info> CloseableIterator<T> query(
             final Class<T> of,
             final Filter filter,
@@ -359,7 +363,7 @@ public class ConfigDatabase implements ApplicationContextAware {
                         .offset(offset)
                         .limit(limit)
                         .sortOrder(sortOrder);
-        final StringBuilder sql = sqlBuilder.build();
+        final String sql = sqlBuilder.build();
 
         List<String> ids = null;
 
@@ -402,7 +406,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             // with rownum in the 2nd - queryForList will throw an exception
             ids =
                     template.query(
-                            sql.toString(),
+                            sql,
                             namedParameters,
                             new RowMapper<String>() {
                                 @Override
@@ -453,10 +457,9 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public <T extends Info> CloseableIterator<String> queryIds(
             final Class<T> of, final Filter filter) {
 
@@ -465,7 +468,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(dialect, of, dbMappings).filter(filter);
 
-        final StringBuilder sql = sqlBuilder.build();
+        final String sql = sqlBuilder.build();
         final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
         final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
         final boolean fullySupported = Filter.INCLUDE.equals(unsupportedFilter);
@@ -482,7 +485,7 @@ public class ConfigDatabase implements ApplicationContextAware {
         // with rownum in the 2nd - queryForList will throw an exception
         List<String> ids =
                 template.query(
-                        sql.toString(),
+                        sql,
                         namedParameters,
                         new RowMapper<String>() {
                             @Override
@@ -523,10 +526,9 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public <T extends Info> List<T> queryAsList(
             final Class<T> of,
             final Filter filter,
@@ -545,12 +547,11 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public <T extends CatalogInfo> T getDefault(final String key, Class<T> type) {
-        String sql = "SELECT ID FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
+        String sql = "SELECT id FROM default_object WHERE def_key = :key";
 
         String defaultObjectId;
         try {
@@ -564,10 +565,9 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        rollbackFor = Exception.class
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            rollbackFor = Exception.class)
     public <T extends Info> T add(final T info) {
         checkNotNull(info);
         checkNotNull(info.getId(), "Object has no id");
@@ -584,7 +584,7 @@ public class ConfigDatabase implements ApplicationContextAware {
         Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
         final String statement =
                 String.format(
-                        "insert into object (oid, type_id, id, blob) values (%s, :type_id, :id, :blob)",
+                        "INSERT INTO object (oid, type_id, id, blob) VALUES (%s, :type_id, :id, :blob)",
                         dialect.nextVal("seq_OBJECT"));
         logStatement(statement, params);
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -666,9 +666,9 @@ public class ConfigDatabase implements ApplicationContextAware {
         Map<String, ?> params = params("value", storedValue);
 
         final String insertPropertySQL =
-                "insert into object_property " //
-                        + "(oid, property_type, related_oid, related_property_type, colindex, value, id) " //
-                        + "values (:object_id, :property_type, :related_oid, :related_property_type, :colindex, :value, :id)";
+                "INSERT INTO object_property "
+                        + "(oid, property_type, related_oid, related_property_type, colindex, value, id) "
+                        + "VALUES (:object_id, :property_type, :related_oid, :related_property_type, :colindex, :value, :id)";
         final Number propertyType = prop.getPropertyType().getOid();
         final String id = info.getId();
 
@@ -786,10 +786,9 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     /** @param info */
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        rollbackFor = Exception.class
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            rollbackFor = Exception.class)
     public void remove(Info info) {
         Integer oid;
         try {
@@ -798,8 +797,8 @@ public class ConfigDatabase implements ApplicationContextAware {
             return;
         }
 
-        String deleteObject = "delete from object where id = :id";
-        String deleteRelatedProperties = "delete from object_property where related_oid = :oid";
+        String deleteObject = "DELETE FROM object WHERE id = :id";
+        String deleteRelatedProperties = "DELETE FROM object_property WHERE related_oid = :oid";
 
         Map<String, ?> params = ImmutableMap.of("id", info.getId());
         logStatement(deleteObject, params);
@@ -820,10 +819,9 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     /** @param info */
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        rollbackFor = Exception.class
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            rollbackFor = Exception.class)
     public <T extends Info> T save(T info) {
         checkNotNull(info);
 
@@ -867,7 +865,7 @@ public class ConfigDatabase implements ApplicationContextAware {
         final Integer objectId = findObjectId(info);
         byte[] value = binding.objectToEntry(info);
         final String blob = new String(value, StandardCharsets.UTF_8);
-        String updateStatement = "update object set blob = :blob where oid = :oid";
+        String updateStatement = "UPDATE object SET blob = :blob WHERE oid = :oid";
         params = params("blob", blob, "oid", objectId);
         logStatement(updateStatement, params);
         template.update(updateStatement, params);
@@ -925,7 +923,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private Integer findObjectId(final Info info) {
         final String id = info.getId();
-        final String oidQuery = "select oid from object where id = :id";
+        final String oidQuery = "SELECT oid FROM object WHERE id = :id";
         Map<String, ?> params = params("id", id);
         logStatement(oidQuery, params);
         final Integer objectId = template.queryForObject(oidQuery, params, Integer.class);
@@ -934,14 +932,13 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        rollbackFor = Exception.class
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            rollbackFor = Exception.class)
     public void repopulateQueryableProperties() {
         InfoRowMapper<Info> mapper = new InfoRowMapper<Info>(Info.class, binding, 2);
         template.query(
-                "select oid, blob from object",
+                "SELECT oid, blob FROM object",
                 new ResultSetExtractor<Void>() {
 
                     @Override
@@ -1010,11 +1007,11 @@ public class ConfigDatabase implements ApplicationContextAware {
                     relatedPropertyType = null;
                 }
                 String sql =
-                        "update object_property set " //
-                                + "related_oid = :related_oid, " //
-                                + "related_property_type = :related_property_type, " //
-                                + "value = :value " //
-                                + "where oid = :oid and property_type = :property_type and colindex = :colindex";
+                        "UPDATE object_property SET "
+                                + "related_oid = :related_oid, "
+                                + "related_property_type = :related_property_type, "
+                                + "value = :value "
+                                + "WHERE oid = :oid AND property_type = :property_type AND colindex = :colindex";
                 params =
                         params(
                                 "related_oid",
@@ -1046,8 +1043,8 @@ public class ConfigDatabase implements ApplicationContextAware {
                     // prop existed already, lets update any related property that points to its old
                     // value
                     String updateRelated =
-                            "update object_property set value = :value "
-                                    + "where related_oid = :oid and related_property_type = :property_type and colindex = :colindex";
+                            "UPDATE object_property SET value = :value "
+                                    + "WHERE related_oid = :oid AND related_property_type = :property_type AND colindex = :colindex";
                     params =
                             params(
                                     "oid",
@@ -1077,8 +1074,8 @@ public class ConfigDatabase implements ApplicationContextAware {
             if (changedProp.isCollectionProperty()) {
                 // delete any remaining collection value that's no longer in the value list
                 String sql =
-                        "delete from object_property where oid=:oid and property_type=:property_type "
-                                + "and colindex > :maxIndex";
+                        "DELETE FROM object_property WHERE oid = :oid AND property_type = :property_type "
+                                + "AND colindex > :maxIndex";
                 Integer maxIndex = Integer.valueOf(values.size());
                 params = params("oid", oid, "property_type", propertyType, "maxIndex", maxIndex);
                 logStatement(sql, params);
@@ -1198,10 +1195,9 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     @Nullable
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public ServiceInfo getService(
             final WorkspaceInfo ws, final Class<? extends ServiceInfo> clazz) {
         Assert.notNull(clazz, "clazz");
@@ -1310,15 +1306,14 @@ public class ConfigDatabase implements ApplicationContextAware {
     /** @return immutable list of results */
     @Nullable
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public <T extends Info> List<T> getAll(final Class<T> clazz) {
 
         Map<String, ?> params = params("types", typesParam(clazz));
 
-        final String sql = "select id from object where type_id in ( :types ) order by id";
+        final String sql = "SELECT id FROM object WHERE type_id IN (:types) ORDER BY id";
 
         logStatement(sql, params);
         Stopwatch sw = Stopwatch.createStarted();
@@ -1358,17 +1353,16 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        rollbackFor = Exception.class
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            rollbackFor = Exception.class)
     public void setDefault(final String key, @Nullable final String id) {
-        String sql = "DELETE FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
+        String sql = "DELETE FROM default_object WHERE def_key = :key";
         Map<String, ?> params = params("key", key);
         logStatement(sql, params);
         template.update(sql, params);
         if (id != null) {
-            sql = "INSERT INTO DEFAULT_OBJECT (DEF_KEY, ID) VALUES(:key, :id)";
+            sql = "INSERT INTO default_object (def_key, id) VALUES (:key, :id)";
             params = params("key", key, "id", id);
             logStatement(sql, params);
             template.update(sql, params);
@@ -1409,15 +1403,14 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     @Nullable
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public CatalogInfo loadCatalog(String id) {
 
         CatalogInfo info;
         try {
-            String sql = "select blob from object where id = :id";
+            String sql = "SELECT blob FROM object WHERE id = :id";
             Map<String, String> params = ImmutableMap.of("id", id);
             logStatement(sql, params);
             info = template.queryForObject(sql, params, catalogRowMapper);
@@ -1443,10 +1436,9 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     @Nullable
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public String loadIdentity(InfoIdentity identity) {
         Filter filter = Filter.INCLUDE;
         for (int i = 0; i < identity.getDescriptor().length; i++) {
@@ -1594,14 +1586,13 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     @Nullable
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public Info loadConfig(String id) {
         Info info;
         try {
-            String sql = "select blob from object where id = :id";
+            String sql = "SELECT blob FROM object WHERE id = :id";
             Map<String, String> params = ImmutableMap.of("id", id);
             logStatement(sql, params);
             info = template.queryForObject(sql, params, configRowMapper);
@@ -1679,10 +1670,9 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
         CloseableIterator<T> it =
@@ -1703,10 +1693,9 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
+            transactionManager = "jdbcConfigTransactionManager",
+            propagation = Propagation.REQUIRED,
+            readOnly = true)
     public <T extends Info> String getId(Class<T> type, Filter filter)
             throws IllegalArgumentException {
 

@@ -42,13 +42,11 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
 
     @RunWith(FrameworkRunner.class)
     @CreateLdapServer(
-        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
-        allowAnonymousAccess = true
-    )
+            transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
+            allowAnonymousAccess = true)
     @CreateDS(
-        name = "myDS",
-        partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
-    )
+            name = "myDS",
+            partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)})
     @ApplyLdifFiles({"data.ldif"})
     public static class LDAPAuthenticationProviderDataTest extends LDAPAuthenticationProviderTest {
 
@@ -222,12 +220,10 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             assertEquals("nestedUser", result.getName());
             assertEquals(3, result.getAuthorities().size());
             assertTrue(
-                    result.getAuthorities()
-                            .stream()
+                    result.getAuthorities().stream()
                             .anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
             assertTrue(
-                    result.getAuthorities()
-                            .stream()
+                    result.getAuthorities().stream()
                             .anyMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
         }
 
@@ -248,12 +244,10 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             assertEquals("nestedUser", result.getName());
             assertEquals(3, result.getAuthorities().size());
             assertTrue(
-                    result.getAuthorities()
-                            .stream()
+                    result.getAuthorities().stream()
                             .anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
             assertTrue(
-                    result.getAuthorities()
-                            .stream()
+                    result.getAuthorities().stream()
                             .anyMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
         }
 
@@ -273,25 +267,21 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             assertEquals("nestedUser", result.getName());
             assertEquals(2, result.getAuthorities().size());
             assertTrue(
-                    result.getAuthorities()
-                            .stream()
+                    result.getAuthorities().stream()
                             .anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
             assertTrue(
-                    result.getAuthorities()
-                            .stream()
+                    result.getAuthorities().stream()
                             .noneMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
         }
     }
 
     @RunWith(FrameworkRunner.class)
     @CreateLdapServer(
-        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
-        allowAnonymousAccess = true
-    )
+            transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
+            allowAnonymousAccess = true)
     @CreateDS(
-        name = "myDS",
-        partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
-    )
+            name = "myDS",
+            partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)})
     @ApplyLdifFiles({"data3.ldif"})
     public static class LDAPAuthenticationProviderData3Test extends LDAPAuthenticationProviderTest {
 

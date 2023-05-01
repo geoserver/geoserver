@@ -10,18 +10,27 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-sec-oauth2-core*</include>
+        <include>gs-sec-oauth2-web*</include>
         <include>gs-sec-oauth2-openid-connect*</include>
-        <include>spring-security*</include>
+        <include>spring-security-core-*</include>
+        <include>spring-security-config-*</include>
+        <include>spring-security-web-*</include>
         <include>spring-security-oauth2*</include>
-        <include>commons-codec*</include>
-        <include>jackson*</include>
-        <include>jettison*</include>
-        <include>json*</include>
-        <include>org.json*</include>
-        <include>spring-aop*</include>
-        <include>spring-context*</include>
-        <include>spring-webmvc*</include>
         <include>spring-security-jwt*</include>
+        <include>commons-codec*</include>
+        <include>jackson-core-*</include>
+        <include>jackson-mapper-asl-*</include>
+        <include>jackson-databind-*</include>
+        <include>jackson-annotations-*</include>
+        <include>jettison-*</include>
+        <include>json-lib-2.4.2-*</include>
+        <include>spring-aop-*</include>
+        <include>spring-context-*</include>
+        <include>spring-webmvc-*</include>
+        <include>json-path-*</include>
+        <include>json-smart*.jar</include>
+        <include>accessors-smart*</include>
+        <include>json-simple*</include>
       </includes>
     </fileSet>
   </fileSets>

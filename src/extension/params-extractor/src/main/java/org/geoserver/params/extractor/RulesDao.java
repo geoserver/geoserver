@@ -104,8 +104,7 @@ public final class RulesDao {
             Supplier<OutputStream> outputStream,
             String... ruleIds) {
         List<Rule> rules =
-                getRules(inputStream)
-                        .stream()
+                getRules(inputStream).stream()
                         .filter(rule -> !matchesAnyRuleId(rule, ruleIds))
                         .collect(Collectors.toList());
         writeRules(rules, outputStream);

@@ -12,7 +12,9 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class URLKvpParserTest {
+
     URLKvpParser parser;
 
     @Before
@@ -29,7 +31,7 @@ public class URLKvpParserTest {
             assertEquals(
                     "http://localhost:8080/geoserver/rest/sldservice/topp:states/classify.xml?attribute=PERSONS&intervals=8&method=quantile&ramp=custom&colors=%23000000%2C%23240000%2C%23490000%2C%236d0000%2C%23920000%2C%23b60000%2C%23db0000%2C%23ff0000&open=false&strokeWeight=-1&strokeColor=%23ff0000&customClasses=1.1011%2C22.518%2C%23000000%3B22.518%2C48.445%2C%23240000%3B48.445%2C81.193%2C%23490000%3B81.193%2C118.905%2C%236D0000%3B118.905%2C168.246%2C%23920000%3B168.246%2C232.83%2C%23B60000%3B232.83%2C338.04%2C%23DB0000%3B338.04%2C16597.660000000003%2C%23FF0000&fullSLD=true",
                     url.toExternalForm());
-            assertNotEquals(URLKvpParser.fixURL(validUrl), url.toExternalForm());
+            assertNotEquals(URIKvpParser.uriEncode(validUrl), url.toExternalForm());
         } catch (Exception e) {
             fail();
         }

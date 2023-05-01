@@ -29,21 +29,19 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  */
 @RestController
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH,
-    produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE
-    }
-)
+        path = RestBaseController.ROOT_PATH,
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        })
 public class IndexController extends RestBaseController {
 
     @Autowired private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @GetMapping(
-        value = {"", "index"},
-        produces = {MediaType.TEXT_HTML_VALUE}
-    )
+            value = {"", "index"},
+            produces = {MediaType.TEXT_HTML_VALUE})
     public RestWrapper get() {
 
         SimpleHash model = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));

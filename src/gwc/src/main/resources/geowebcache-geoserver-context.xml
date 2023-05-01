@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-gwc"/>
+    <constructor-arg index="1" value="GeoWebCache"/>
+    <constructor-arg index="2" value="Tile services"/>
+  </bean>
+
   <bean id="GWCGeoServerConfigurationProvider" class="org.geoserver.gwc.layer.GWCGeoServerConfigurationProvider">
     <description>
       XmlConfiguration contributor to set up XStream with GeoServer provided configuration objects for GWC configuration storage
     </description>
-  </bean>
-  <bean id="GWCGeoServerRESTConfigurationProvider" class="org.geoserver.gwc.layer.GWCGeoServerRESTConfigurationProvider">
-    <description>
-      XmlConfiguration contributor to set up XStream with GeoServer provided configuration objects for GWC's REST API
-    </description>
-    <constructor-arg ref="catalog"/>
   </bean>
   
   <bean id="GeoSeverTileLayerCatalog" class="org.geoserver.gwc.layer.DefaultTileLayerCatalog">

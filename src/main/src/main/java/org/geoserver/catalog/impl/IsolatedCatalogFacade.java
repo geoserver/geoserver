@@ -675,8 +675,7 @@ final class IsolatedCatalogFacade implements CatalogFacade {
         // filter the non visible catalog objects and wrap the resulting list with a modification
         // proxy
         return ModificationProxy.createList(
-                unwrapped
-                        .stream()
+                unwrapped.stream()
                         .filter(store -> filter.apply(store) != null)
                         .collect(Collectors.toList()),
                 type);

@@ -74,13 +74,12 @@ import org.xml.sax.EntityResolver;
 /** Example style resource controller */
 @RestController
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH,
-    produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE
-    }
-)
+        path = RestBaseController.ROOT_PATH,
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        })
 public class StyleController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(StyleController.class);
@@ -91,8 +90,7 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"}
-    )
+            value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"})
     public RestWrapper<?> stylesGet(
             @PathVariable(required = false) String layerName,
             @PathVariable(required = false) String workspaceName) {
@@ -111,15 +109,14 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"},
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        },
-        produces = MediaType.TEXT_PLAIN_VALUE
-    )
+            value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"},
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            },
+            produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public String stylePost(
             @RequestBody StyleInfo style,
@@ -159,9 +156,8 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        value = {"/styles", "/workspaces/{workspaceName}/styles"},
-        consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE}
-    )
+            value = {"/styles", "/workspaces/{workspaceName}/styles"},
+            consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE})
     public ResponseEntity<String> stylePost(
             InputStream stream,
             @RequestParam(required = false) String name,
@@ -202,9 +198,8 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        value = {"/styles", "/workspaces/{workspaceName}/styles"},
-        consumes = {MediaType.ALL_VALUE}
-    )
+            value = {"/styles", "/workspaces/{workspaceName}/styles"},
+            consumes = {MediaType.ALL_VALUE})
     public ResponseEntity<String> styleSLDPost(
             InputStream inputStream,
             @PathVariable(required = false) String workspaceName,
@@ -253,9 +248,8 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
-        produces = {MediaType.ALL_VALUE}
-    )
+            path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+            produces = {MediaType.ALL_VALUE})
     protected RestWrapper<StyleInfo> styleGet(
             @PathVariable String styleName, @PathVariable(required = false) String workspaceName) {
 
@@ -263,9 +257,8 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
-        produces = {SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11}
-    )
+            path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+            produces = {SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11})
     protected StyleInfo styleSLDGet(
             @PathVariable String styleName, @PathVariable(required = false) String workspaceName) {
 
@@ -324,9 +317,8 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
-        consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE}
-    )
+            value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+            consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE})
     public void styleZipPut(
             InputStream is,
             @PathVariable String styleName,
@@ -382,8 +374,9 @@ public class StyleController extends AbstractCatalogController {
         PutIgnoringExtensionContentNegotiationStrategy stylePutContentNegotiationStrategy() {
             return new PutIgnoringExtensionContentNegotiationStrategy(
                     new PatternsRequestCondition(
-                            "/styles/{styleName}",
-                            "/workspaces/{workspaceName}/styles/{styleName}"),
+                            RestBaseController.ROOT_PATH + "/styles/{styleName}",
+                            RestBaseController.ROOT_PATH
+                                    + "/workspaces/{workspaceName}/styles/{styleName}"),
                     Arrays.asList(
                             MediaType.APPLICATION_JSON,
                             MediaType.APPLICATION_XML,
@@ -392,9 +385,8 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
-        consumes = {MediaType.ALL_VALUE}
-    )
+            value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+            consumes = {MediaType.ALL_VALUE})
     public void stylePut(
             InputStream inputStream,
             @PathVariable String styleName,
@@ -452,14 +444,13 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public void stylePut(
             @RequestBody StyleInfo info,
             @PathVariable String styleName,
@@ -519,6 +510,7 @@ public class StyleController extends AbstractCatalogController {
                 && sld.getStyledLayers().length <= 1
                 && SLDHandler.VERSION_10.equals(version)) {
             info.setFormat(handler.getFormat());
+            info.setFormatVersion(version);
             resourcePool.writeStyle(info, style, true);
         } else {
             info.setFormat(handler.getFormat());

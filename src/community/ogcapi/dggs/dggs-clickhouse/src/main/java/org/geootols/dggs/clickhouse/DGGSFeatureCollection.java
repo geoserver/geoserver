@@ -59,8 +59,7 @@ public class DGGSFeatureCollection implements SimpleFeatureCollection {
     }
 
     public String[] getSchemaProperties(SimpleFeatureType schema) {
-        return schema.getAttributeDescriptors()
-                .stream()
+        return schema.getAttributeDescriptors().stream()
                 .map(ad -> ad.getLocalName())
                 .toArray(n -> new String[n]);
     }

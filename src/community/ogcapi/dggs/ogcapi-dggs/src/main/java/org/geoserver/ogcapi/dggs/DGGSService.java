@@ -78,11 +78,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /** Implementation of OGC API - DGGS */
 @APIService(
-    service = "DGGS",
-    version = "1.0",
-    landingPage = "ogc/dggs",
-    serviceClass = DGGSInfo.class
-)
+        service = "DGGS",
+        version = "1.0",
+        landingPage = "ogc/dggs",
+        serviceClass = DGGSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/dggs")
 public class DGGSService {
 
@@ -135,14 +134,13 @@ public class DGGSService {
     }
 
     @GetMapping(
-        path = "api",
-        name = "getApi",
-        produces = {
-            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-            "application/x-yaml",
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "api",
+            name = "getApi",
+            produces = {
+                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+                "application/x-yaml",
+                MediaType.TEXT_XML_VALUE
+            })
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -220,10 +218,9 @@ public class DGGSService {
             @RequestParam(name = "zones", required = false) String zones,
             @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(
-                        name = "f",
-                        required = false,
-                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
-                    )
+                            name = "f",
+                            required = false,
+                            defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE)
                     String format)
             throws Exception {
         // handle possible geometry filters
@@ -303,10 +300,9 @@ public class DGGSService {
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(name = "distance", required = false, defaultValue = "1") int distance,
             @RequestParam(
-                        name = "f",
-                        required = false,
-                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
-                    )
+                            name = "f",
+                            required = false,
+                            defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE)
                     String format)
             throws Exception {
         if (distance <= 0)
@@ -357,10 +353,9 @@ public class DGGSService {
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(
-                        name = "f",
-                        required = false,
-                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
-                    )
+                            name = "f",
+                            required = false,
+                            defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE)
                     String format)
             throws Exception {
         DGGSInstance ddgs = getDGGSInstance(collectionId);
@@ -474,10 +469,9 @@ public class DGGSService {
             @RequestParam(name = "resolution", required = false) Integer resolution,
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(
-                        name = "f",
-                        required = false,
-                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
-                    )
+                            name = "f",
+                            required = false,
+                            defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE)
                     String format)
             throws Exception {
         DGGSInstance dggs = getDGGSInstance(collectionId);
@@ -518,10 +512,9 @@ public class DGGSService {
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(
-                        name = "f",
-                        required = false,
-                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
-                    )
+                            name = "f",
+                            required = false,
+                            defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE)
                     String format)
             throws Exception {
         DGGSInstance dggs = getDGGSInstance(collectionId);
@@ -619,10 +612,9 @@ public class DGGSService {
             @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(
-                        name = "f",
-                        required = false,
-                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
-                    )
+                            name = "f",
+                            required = false,
+                            defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE)
                     String format)
             throws Exception {
         Point point = getPoint(pointSpec);
@@ -671,10 +663,9 @@ public class DGGSService {
             @RequestParam(name = "compact", required = true, defaultValue = "true") boolean compact,
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(
-                        name = "f",
-                        required = false,
-                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
-                    )
+                            name = "f",
+                            required = false,
+                            defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE)
                     String format)
             throws Exception {
         Polygon polygon = getPolygon(polygonWKT);

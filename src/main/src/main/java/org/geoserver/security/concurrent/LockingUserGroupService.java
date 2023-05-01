@@ -47,8 +47,13 @@ public class LockingUserGroupService extends AbstractLockingService
 
     @Override
     public GeoServerUserGroupStore createStore() throws IOException {
-        GeoServerUserGroupStore store = getService().createStore();
-        return store != null ? new LockingUserGroupStore(store) : null;
+        readLock();
+        try {
+            GeoServerUserGroupStore store = getService().createStore();
+            return store != null ? new LockingUserGroupStore(store) : null;
+        } finally {
+            readUnLock();
+        }
     }
 
     /**

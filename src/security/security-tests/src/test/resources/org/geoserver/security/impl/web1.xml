@@ -99,31 +99,6 @@
    </filter>
 
    <filter>
-     <filter-name>Request Logging Filter</filter-name>
-     <filter-class>org.geoserver.filters.LoggingFilter</filter-class>
-     <init-param>
-         <!-- The 'enabled' parameter is a boolean value, "true" (case-insensitive) for true or
-              any other value for false.  If enabled, then the logging will be performed;
-              otherwise the logging filter will have no effect.  If not specified, this 
-              parameter defaults to false.
-              -->
-         <param-name>enabled</param-name>
-         <param-value>false</param-value>
-     </init-param>
-     <init-param>
-     <!-- The 'log-request-bodies' parameter is a boolean value, "true" (case-insensitive) for
-          true or any other value for false.  If enabled, then the logging will include the body
-          of POST and PUT requests.  If not specified, this parameter defaults to false.
-          Note that this may noticeably degrade responsiveness of your geoserver since it will
-          not begin to process requests until the entire request body has been received by the 
-          server.
-          -->
-     <param-name>log-request-bodies</param-name>
-     <param-value>false</param-value>
-     </init-param>
-   </filter>
-   
-   <filter>
      <filter-name>Advanced Dispatch Filter</filter-name>
      <filter-class>org.geoserver.platform.AdvancedDispatchFilter</filter-class>
      <!-- 
@@ -161,11 +136,6 @@
 
     <filter-mapping>
       <filter-name>GZIP Compression Filter</filter-name>
-      <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    
-    <filter-mapping>
-      <filter-name>Request Logging Filter</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
    

@@ -102,6 +102,29 @@ Security tab allows to set data access rules at layer group level.
 To create/edit layergroup's data access rules simply check/uncheck checkboxes according to desidered access mode and role. 
 The Grant access to any role checkbox grant each role for each access mode.
 
+Layer Group Styles
+^^^^^^^^^^^^^^^^^^^
+
+The user can also define styles for a Layer Group. By style in this context we mean a different group definition that, while carrying the same meaning, uses a different set of styles, or even a different set of layers (e.g., night versus day style, or full versus simplified). The styles are named and can be thus be referenced through the styles parameter in the various WMS operations (GetMap, GetLegendGraphic, GetFeatureInfo), while the usual Layer Group configuration is kept as the default style.
+
+To add a new style on the :guilabel:`Data` tab scroll down untill reaching the :guilabel:`Layer Group Styles` section and click on :guilabel:`Add new`.
+
+.. figure:: img/add-group-style.png
+
+A form will pop up. Once defined a :guilabel:`name` (mandatory), it is possible to select the a list of layers and  corresponding styles for the group style definition.
+
+.. figure:: img/group-style-definition.png
+
+In the above example the style uses the same list of layers, but different styles have been defined for the ``tiger:giant_polygon`` and ``tiger:poly_landmarks`` layers, respectively ``giant-polygon-2`` and ``poly_landmarks-2``. 
+However the Layer Group Style might also contain a different list of layers comparing to the default one.
+
+Once a style has been defined it will appear in the ``GetCapabilities`` document and clients will be able to reference it in the ``styles`` parameter of ``GetMap``, ``GetLegendGraphic`` and ``GetFeatureInfo`` operations, using the :guilabel:`name` defined at configuration time.
+
+The base configuration will be treated as the default Style of the Layer Group and used when either no style name is provided or the style name matches the default Layer Group Style name.
+
+.. note:: The overall functionality is available only for Layer Group with mode SINGLE or OPAQUE. If a Layer Group is defined with another mode, the style name eventually present in a WMS operation will be ignored if not matching the default style name. Moreover the Layer Group Style section will not be available and the Style will not be advertised in the GetCapabilities response. This is due to the group internal structure appearing in the capabilities layer tree: only one list of sub-layers and sub-groups can be advertised.
+
+
 Add a Layer Group
 -----------------
 

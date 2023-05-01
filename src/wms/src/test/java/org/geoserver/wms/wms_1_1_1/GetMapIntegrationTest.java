@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.ThrowableInformation;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -57,6 +59,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -67,6 +70,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.data.test.TestData;
 import org.geoserver.feature.retype.RetypingDataStore;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
@@ -577,6 +581,46 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         l4jField.setAccessible(true);
         org.apache.log4j.Logger l4jLogger = (org.apache.log4j.Logger) l4jField.get(jlogger);
         return l4jLogger;
+    }
+
+    @Test
+    public void testInvalidDateNotLogged() throws Exception {
+        org.apache.log4j.Logger l4jLogger = getLog4JLogger(Dispatcher.class, "logger");
+        l4jLogger.addAppender(
+                new AppenderSkeleton() {
+
+                    @Override
+                    public boolean requiresLayout() {
+                        return false;
+                    }
+
+                    @Override
+                    public void close() {}
+
+                    @Override
+                    protected void append(LoggingEvent event) {
+                        if (event.getThrowableInformation() != null) {
+                            ThrowableInformation info = event.getThrowableInformation();
+                            String message = info.getThrowable().getMessage();
+                            if (message.startsWith("Invalid")) {
+                                fail("The error message is still there!");
+                            }
+                        }
+                    }
+                });
+
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bbox=-9.6450076761637E7,-3.9566251818225E7,9.6450076761637E7,3.9566251818225E7"
+                                + "&styles=&layers="
+                                + layers
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:900913"
+                                + "&time=\"2022-6-20T5:30:0:00.000Z\"");
+        assertEquals("text/xml", response.getContentType());
     }
 
     @Test
@@ -1857,16 +1901,19 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         getCatalog().add(ftInfo);
 
         // setting mock feature type as resource of Layer from Test Data
-        LayerInfo layerInfo = getCatalog().getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart());
+        LayerInfo layerInfo = new LayerInfoImpl();
         layerInfo.setResource(ftInfo);
+        layerInfo.setName(ftInfo.getName());
+        layerInfo.setTitle(ftInfo.getTitle());
         layerInfo.setDefaultStyle(getCatalog().getStyleByName("line"));
+
+        getCatalog().add(layerInfo);
+
         // Injecting Mock Http client in WFS Data Store to read mock respones from XML
         DataAccess dac = ftInfo.getStore().getDataStore(null);
         RetypingDataStore retypingDS = (RetypingDataStore) dac;
         WFSDataStore wfsDS = (WFSDataStore) retypingDS.getWrapped();
         wfsDS.getWfsClient().setHttpClient(client);
-
-        getCatalog().save(layerInfo);
 
         // test starts now
         // a WMS request with EPSG:4326 should result in a remote WFS call with EPSG:4326 filter and
@@ -2531,6 +2578,133 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         } finally {
             wms.setCiteCompliant(false);
             gs.save(wms);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleSingle() throws Exception {
+        LayerGroupInfo group = null;
+        Catalog catalog = getCatalog();
+        try {
+            String lgStyleName = "nature-style";
+            String lgName = "single_lakes_and_places";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakes = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            lgStyleName,
+                            Arrays.asList(forest, lakes),
+                            Arrays.asList(null, null));
+            String url =
+                    "wms?LAYERS="
+                            + group.getName()
+                            + "&STYLES=nature-style&FORMAT=image%2Fpng"
+                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            BufferedImage image = getAsImage(url, "image/png");
+            File expected = new File(getClass().getResource("nature.png").toURI());
+            ImageAssert.assertEquals(expected, image, 250);
+        } finally {
+            if (group != null) catalog.remove(group);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleOpaque() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = null;
+        try {
+            String lgStyleName = "nature-style";
+            String lgName = "opaque_lakes_and_places";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakes = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.OPAQUE_CONTAINER,
+                            lgStyleName,
+                            Arrays.asList(forest, lakes),
+                            Arrays.asList(null, null));
+            String url =
+                    "wms?LAYERS="
+                            + group.getName()
+                            + "&STYLES=nature-style&FORMAT=image%2Fpng"
+                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            File expected = new File(getClass().getResource("nature.png").toURI());
+            ImageAssert.assertEquals(expected, image, 250);
+        } finally {
+            if (group != null) catalog.remove(group);
+        }
+    }
+
+    @Test
+    public void testNestedGroupWithStyle() throws Exception {
+        LayerGroupInfo nested = null;
+        LayerGroupInfo container = null;
+        Catalog catalog = getCatalog();
+
+        try {
+            String lgName = "nested-lakes_and_places_group";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            List<StyleInfo> styles = new ArrayList<>();
+            styles.add(null);
+            nested =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            "forest-style",
+                            Arrays.asList(forest),
+                            styles);
+
+            createLakesPlacesLayerGroup(
+                    catalog, "lakes-and-place", LayerGroupInfo.Mode.SINGLE, null);
+            container = catalog.getLayerGroupByName("lakes-and-place");
+            container.getLayers().add(0, nested);
+            container.getStyles().add(0, nested.getLayerGroupStyles().get(0).getName());
+            catalog.save(container);
+            String url =
+                    "wms?LAYERS="
+                            + container.getName()
+                            + "&STYLES=&FORMAT=image%2Fpng"
+                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            File expected = new File(getClass().getResource("lakes_place_forests.png").toURI());
+            ImageAssert.assertEquals(expected, image, 250);
+        } finally {
+            if (container != null) catalog.remove(container);
+            if (nested != null) catalog.remove(nested);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleIgnoredIfTree() throws Exception {
+        LayerGroupInfo group = null;
+        Catalog catalog = getCatalog();
+        try {
+            String lgName = "lakes_and_places_named";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakes = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.NAMED,
+                            "nature-style",
+                            Arrays.asList(forest, lakes),
+                            Arrays.asList(null, null));
+            String url =
+                    "wms?LAYERS="
+                            + lgName
+                            + "&STYLES=nature-style&FORMAT=image%2Fpng"
+                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            BufferedImage image = getAsImage(url, "image/png");
+            File expected = new File(getClass().getResource("lakes_and_places.png").toURI());
+            ImageAssert.assertEquals(expected, image, 250);
+        } finally {
+            if (group != null) catalog.remove(group);
         }
     }
 }

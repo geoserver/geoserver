@@ -79,14 +79,12 @@ class TileIterator implements Iterator<long[]> {
 
         // compute the starting column and end column for this row
         this.x =
-                rowSubsets
-                        .stream()
+                rowSubsets.stream()
                         .map(ss -> ss.getCoverage(z)[0])
                         .min((l1, l2) -> Long.compare(l1, l2))
                         .get();
         this.rowMaxX =
-                rowSubsets
-                        .stream()
+                rowSubsets.stream()
                         .map(ss -> ss.getCoverage(z)[2])
                         .max((l1, l2) -> Long.compare(l1, l2))
                         .get();

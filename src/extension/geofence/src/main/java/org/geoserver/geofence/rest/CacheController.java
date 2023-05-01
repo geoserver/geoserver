@@ -24,11 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = {
-        RestBaseController.ROOT_PATH + "/geofence/ruleCache",
-        RestBaseController.ROOT_PATH + "/ruleCache"
-    }
-) // legacy entrypoint
+        path = {
+            RestBaseController.ROOT_PATH + "/geofence/ruleCache",
+            RestBaseController.ROOT_PATH + "/ruleCache"
+        }) // legacy entrypoint
 public class CacheController extends AbstractCatalogController {
 
     static final Logger LOGGER = Logging.getLogger(CacheController.class);
@@ -40,9 +39,8 @@ public class CacheController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "/info",
-        produces = {MediaType.TEXT_PLAIN_VALUE}
-    )
+            path = "/info",
+            produces = {MediaType.TEXT_PLAIN_VALUE})
     public String getCacheInfo() {
         CacheStats stats = cachedRuleReader.getStats();
 

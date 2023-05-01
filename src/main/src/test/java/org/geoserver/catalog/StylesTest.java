@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.MemoryLockProvider;
@@ -100,6 +101,20 @@ public class StylesTest extends GeoServerSystemTestSupport {
             String message = e.getMessage();
             assertThat(message, containsString("Entity resolution disallowed"));
             assertThat(message, containsString("/this/file/does/not/exist"));
+        }
+    }
+
+    @Test
+    public void testVendorOptionsInNormalize() throws Exception {
+        URL url = getClass().getResource("../data/test/normalized.sld");
+        try {
+            List<Exception> exceptions =
+                    Styles.handler("SLD")
+                            .validate(
+                                    url, null, getCatalog().getResourcePool().getEntityResolver());
+            assertThat("Exceptions found", exceptions.isEmpty());
+        } catch (Exception e) {
+            fail("Should allow normaize to contain vendor options");
         }
     }
 }

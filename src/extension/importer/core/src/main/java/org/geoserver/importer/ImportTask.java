@@ -267,7 +267,9 @@ public class ImportTask implements Serializable {
 
     public void reattach(Catalog catalog, boolean lookupByName) {
         store = resolve(store, catalog, lookupByName);
-        layer = resolve(layer, catalog, lookupByName);
+        if (store != null) {
+            layer = resolve(layer, catalog, lookupByName);
+        }
     }
 
     public boolean readyForImport() {

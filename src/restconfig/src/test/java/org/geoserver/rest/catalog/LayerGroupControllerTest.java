@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import net.sf.json.JSON;
@@ -32,6 +33,8 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -986,5 +989,60 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         LayerGroupInfo lg = catalog.getLayerGroupByName("sfLayerGroup");
         assertEquals("abstract italiano", lg.getInternationalAbstract().toString(Locale.ITALIAN));
         assertEquals("english abstract", lg.getInternationalAbstract().toString(Locale.ENGLISH));
+    }
+
+    @Test
+    public void testPutAndGetLayerGroupStyle() throws Exception {
+        LayerGroupInfo lg = catalog.getLayerGroupByName("citeLayerGroup");
+        assertEquals(0, lg.getLayerGroupStyles().size());
+        try {
+            StyleInfo styleName = new StyleInfoImpl(catalog);
+            styleName.setName("theGroupStyleName");
+            String xml =
+                    "<layerGroup>"
+                            + "<layerGroupStyles>\n"
+                            + "    <LayerGroupStyle>\n"
+                            + "      <name>theGroupStyle</name>\n"
+                            + "      <internationalTitle/>\n"
+                            + "      <internationalAbstract/>\n"
+                            + "      <layers>\n"
+                            + "        <published type=\"layer\">Ponds</published>"
+                            + "        <published type=\"layer\">Forests</published>"
+                            + "      </layers>\n"
+                            + "      <styles>\n"
+                            + "        <style>polygon</style>\n"
+                            + "        <style/>\n"
+                            + "      </styles>\n"
+                            + "    </LayerGroupStyle>\n"
+                            + "  </layerGroupStyles>"
+                            + "</layerGroup>";
+
+            MockHttpServletResponse response =
+                    putAsServletResponse(
+                            RestBaseController.ROOT_PATH + "/layergroups/citeLayerGroup",
+                            xml,
+                            "text/xml");
+            assertEquals(200, response.getStatus());
+
+            lg = catalog.getLayerGroupByName("citeLayerGroup");
+            assertEquals(1, lg.getLayerGroupStyles().size());
+            LayerGroupStyle groupStyle = lg.getLayerGroupStyles().get(0);
+            assertEquals(2, groupStyle.getLayers().size());
+            assertEquals(2, groupStyle.getStyles().size());
+            Document dom =
+                    getAsDOM(RestBaseController.ROOT_PATH + "/layergroups/citeLayerGroup.xml");
+            assertXpathEvaluatesTo(
+                    "theGroupStyle", "/layerGroup/layerGroupStyles/LayerGroupStyle/name", dom);
+
+            assertXpathEvaluatesTo("cite:Ponds", "//LayerGroupStyle/layers/published[1]/name", dom);
+            assertXpathEvaluatesTo(
+                    "cite:Forests", "//LayerGroupStyle/layers/published[2]/name", dom);
+
+            assertXpathEvaluatesTo("polygon", "//LayerGroupStyle/styles/style[1]/name", dom);
+            assertXpathEvaluatesTo("", "//LayerGroupStyle/styles/style[2]", dom);
+        } finally {
+            lg.setLayerGroupStyles(Collections.emptyList());
+            catalog.save(lg);
+        }
     }
 }

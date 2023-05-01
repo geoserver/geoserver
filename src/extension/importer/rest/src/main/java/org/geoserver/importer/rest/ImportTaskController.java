@@ -72,9 +72,8 @@ import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 
 @RestController
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/imports/{id}/tasks",
-    produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE}
-)
+        path = RestBaseController.ROOT_PATH + "/imports/{id}/tasks",
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE})
 public class ImportTaskController extends ImportBaseController {
 
     static final Logger LOGGER = Logging.getLogger(ImportTaskController.class);
@@ -154,11 +153,10 @@ public class ImportTaskController extends ImportBaseController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.MULTIPART_FORM_DATA_VALUE,
-            MediaType.APPLICATION_FORM_URLENCODED_VALUE
-        }
-    )
+            consumes = {
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                MediaType.APPLICATION_FORM_URLENCODED_VALUE
+            })
     public Object taskPost(
             @PathVariable Long id,
             @RequestParam(required = false) String expand,
@@ -195,9 +193,8 @@ public class ImportTaskController extends ImportBaseController {
     }
 
     @PutMapping(
-        path = "/{taskId}",
-        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE}
-    )
+            path = "/{taskId}",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE})
     public ImportWrapper taskPut(
             @PathVariable Long id,
             @PathVariable Integer taskId,
@@ -214,7 +211,8 @@ public class ImportTaskController extends ImportBaseController {
         @Bean
         PutIgnoringExtensionContentNegotiationStrategy importTaskPutContentNegotiationStrategy() {
             return new PutIgnoringExtensionContentNegotiationStrategy(
-                    new PatternsRequestCondition("/imports/{id}/tasks/{taskId:.+}"),
+                    new PatternsRequestCondition(
+                            RestBaseController.ROOT_PATH + "/imports/{id}/tasks/{taskId:.+}"),
                     Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML));
         }
     }

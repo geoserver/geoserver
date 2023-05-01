@@ -82,6 +82,9 @@ public class WPSExecutionManager
     /** The HTTP connection timeout for remote resources */
     private int connectionTimeout;
 
+    /** The flag indicating whether remote inputs are enabled. */
+    private boolean remoteInputDisabled;
+
     /**
      * The status tracker, that will be periodically informed about processes still running, even if
      * they are not issuing events to the process listener
@@ -267,6 +270,16 @@ public class WPSExecutionManager
     /** Sets the HTTP connection timeout for remote resource fetching */
     public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
+    }
+
+    /** Returns the flag indicating whether remote inputs are enabled. */
+    public boolean isRemoteInputDisabled() {
+        return remoteInputDisabled;
+    }
+
+    /** Sets the flag indicating whether remote inputs are enabled. */
+    public void setRemoteInputDisabled(boolean remoteInputDisabled) {
+        this.remoteInputDisabled = remoteInputDisabled;
     }
 
     /**

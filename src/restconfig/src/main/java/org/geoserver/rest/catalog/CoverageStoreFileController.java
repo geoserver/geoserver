@@ -56,10 +56,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path =
-            RestBaseController.ROOT_PATH
-                    + "/workspaces/{workspaceName}/coveragestores/{storeName}/{method}.{format}"
-)
+        path =
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/{workspaceName}/coveragestores/{storeName}/{method}.{format}")
 public class CoverageStoreFileController extends AbstractStoreUploadController {
 
     /** Keys every known coverage format by lowercase name */
@@ -460,13 +459,11 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
     }
 
     /** Return the remote URL provided in the request. */
-    protected URL handleRemoteUrl(HttpServletRequest request) {
+    protected String handleRemoteUrl(HttpServletRequest request) {
 
         try {
-            // get the URL to be harvested
-            final String stringURL = IOUtils.toString(request.getReader());
-            URL remoteUrl = new URL(stringURL);
-            return remoteUrl;
+            // get the URL/URI to be harvested
+            return IOUtils.toString(request.getReader());
         } catch (RestException re) {
             throw re;
         } catch (Throwable t) {

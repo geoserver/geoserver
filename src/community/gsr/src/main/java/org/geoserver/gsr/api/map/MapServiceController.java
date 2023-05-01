@@ -52,9 +52,8 @@ import org.springframework.web.bind.annotation.RestController;
 /** Controller for the root Map Service endpoint */
 @RestController
 @RequestMapping(
-    path = "/gsr/services/{workspaceName}/MapServer",
-    produces = MediaType.APPLICATION_JSON_VALUE
-)
+        path = "/gsr/services/{workspaceName}/MapServer",
+        produces = MediaType.APPLICATION_JSON_VALUE)
 public class MapServiceController extends AbstractGSRController {
 
     private static final Logger LOGGER =
@@ -98,9 +97,8 @@ public class MapServiceController extends AbstractGSRController {
     }
 
     @GetMapping(
-        path = {"/{layerId}"},
-        name = "MapServerGetLayer"
-    )
+            path = {"/{layerId}"},
+            name = "MapServerGetLayer")
     @HTMLResponseBody(templateName = "maplayer.ftl", fileName = "maplayer.html")
     public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId)
             throws IOException {
@@ -125,10 +123,9 @@ public class MapServiceController extends AbstractGSRController {
     public IdentifyServiceResult identify(
             @PathVariable String workspaceName,
             @RequestParam(
-                        name = "geometryType",
-                        required = false,
-                        defaultValue = "esriGeometryPoint"
-                    )
+                            name = "geometryType",
+                            required = false,
+                            defaultValue = "esriGeometryPoint")
                     String geometryTypeName,
             @RequestParam(name = "geometry", required = false) String geometryText,
             @RequestParam(name = "sr", required = false) String srCode,

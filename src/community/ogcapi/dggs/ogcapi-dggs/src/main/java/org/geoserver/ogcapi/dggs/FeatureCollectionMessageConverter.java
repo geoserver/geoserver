@@ -58,8 +58,7 @@ public class FeatureCollectionMessageConverter
     public Optional<Response> getResponse(MediaType mediaType) {
         Operation originalOperation = Dispatcher.REQUEST.get().getOperation();
         Operation op = wrapOperation(null, originalOperation);
-        return responses
-                .stream()
+        return responses.stream()
                 .filter(r -> getMediaTypeStream(r).anyMatch(mt -> mediaType.isCompatibleWith(mt)))
                 .filter(r -> r.canHandle(op))
                 .findFirst();

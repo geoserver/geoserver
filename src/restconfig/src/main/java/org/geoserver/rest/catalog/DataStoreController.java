@@ -52,6 +52,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
@@ -75,12 +76,11 @@ public class DataStoreController extends AbstractCatalogController {
      */
 
     @GetMapping(
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper<DataStoreInfo> dataStoresGet(@PathVariable String workspaceName) {
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
         if (ws == null) {
@@ -91,13 +91,12 @@ public class DataStoreController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "{storeName}",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            path = "{storeName}",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper<DataStoreInfo> dataStoreGet(
             @PathVariable String workspaceName, @PathVariable String storeName) {
 
@@ -106,13 +105,12 @@ public class DataStoreController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public ResponseEntity<String> dataStorePost(
             @RequestBody DataStoreInfo dataStore,
             @PathVariable String workspaceName,
@@ -174,14 +172,13 @@ public class DataStoreController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = "{storeName}",
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            value = "{storeName}",
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void dataStorePut(
             @RequestBody DataStoreInfo info,
             @PathVariable String workspaceName,
@@ -218,6 +215,14 @@ public class DataStoreController extends AbstractCatalogController {
         }
 
         LOGGER.info("DELETE datastore " + workspaceName + ":s" + workspaceName);
+    }
+
+    @RequestMapping(
+            value = "{storeName}/reset",
+            method = {RequestMethod.POST, RequestMethod.PUT})
+    public void reset(@PathVariable String workspaceName, @PathVariable String storeName) {
+        DataStoreInfo ds = getExistingDataStore(workspaceName, storeName);
+        catalog.getResourcePool().clear(ds);
     }
 
     private DataStoreInfo getExistingDataStore(String workspaceName, String storeName) {

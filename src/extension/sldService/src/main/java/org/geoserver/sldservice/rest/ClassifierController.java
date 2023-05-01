@@ -122,13 +122,12 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     @GetMapping(
-        path = "/{layerName}/classify",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            path = "/{layerName}/classify",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public Object classify(
             @PathVariable String layerName,
             @RequestParam(value = "attribute", required = false) String property,
@@ -552,8 +551,7 @@ public class ClassifierController extends BaseSLDServiceController {
                     "Could not find property "
                             + property
                             + ", available attributes are: "
-                            + ftType.getDescriptors()
-                                    .stream()
+                            + ftType.getDescriptors().stream()
                                     .map(p -> p.getName().getLocalPart())
                                     .collect(Collectors.joining(", ")),
                     HttpStatus.BAD_REQUEST);

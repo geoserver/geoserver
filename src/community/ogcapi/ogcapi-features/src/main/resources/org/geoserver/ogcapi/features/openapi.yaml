@@ -150,6 +150,7 @@ paths:
         - $ref: '#/components/parameters/datetime'
         - $ref: '#/components/parameters/filter'
         - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
         - $ref: '#/components/parameters/crs'
         - $ref: '#/components/parameters/bbox-crs'
         - $ref: '#/components/parameters/otherParameters'
@@ -297,6 +298,15 @@ components:
         enum:
           - cql-text
         default: cql-text
+    filter-crs:
+      name: filter-crs
+      in: query
+      required: false
+      schema:
+        type: string
+        format: uri-reference
+      style: form
+      explode: false
     otherParameters:
       style: form
       in: query
@@ -799,7 +809,7 @@ components:
       type: string
       format: date-time
       example: '2017-08-17T08:05:32Z'
-      
+
     functions:
       type: object
       required:

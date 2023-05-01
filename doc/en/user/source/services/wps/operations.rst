@@ -69,9 +69,25 @@ The response XML document contains the following information:
 
        **capstyle**: "The buffer cap style, round, flat, square" *(literal value, optional)*
    * - **Output formats**
-     - One of GML 3.1.1, GML 2.1.2, or WKT
-     
-     
+     - One of the GeoServer supported formats for Geometry encoding
+
+In general, GeoServer processes use complex objects as inputs and objects, like geometries,
+feature collections and raster data.
+
+The formats available for input and output of each of those complex processes are commonly
+managed by Process Parameter IO classes, generic encoders/decoders that are attached to each 
+process by the WPS machinery.
+
+In the core of GeoServer WPS, the following PPIOs are available:
+
+* For geometries, GML 2 and 3, GeoJSON, Well Known Text.
+* For feature collections, GML2 and 3, GeoJSON, Zipped shapefile, and KML.
+* For rasters, GeoTIFF, PNG, JPEG.
+
+The set of PPIOs can be extended by installing plugins. 
+For example, the :ref:`DXF extension<dxf>` comes with a PPIO that can encode feature collections in DXF:
+when plugged in, most processes generating feature collections in output will offer to 
+encode them also in DXF.
 
 Execute
 -------

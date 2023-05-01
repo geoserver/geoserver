@@ -60,9 +60,7 @@ public class MetadataTemplateSyncTaskTypeImpl implements TaskType {
 
                 @Override
                 public List<String> getDomain(List<String> dependsOnRawValues) {
-                    return templateService
-                            .list()
-                            .stream()
+                    return templateService.list().stream()
                             .map(t -> t.getName())
                             .collect(Collectors.toList());
                 }

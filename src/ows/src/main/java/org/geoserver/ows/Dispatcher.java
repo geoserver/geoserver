@@ -123,9 +123,6 @@ public class Dispatcher extends AbstractController {
     /** flag to control wether the dispatcher is cite compliant */
     boolean citeCompliant = false;
 
-    /** buffer size for incoming XML POST requests */
-    int xmlPostRequestLogBufferSize = 1024;
-
     /** thread local variable for the request */
     public static final ThreadLocal<Request> REQUEST = new InheritableThreadLocal<>();
 
@@ -373,17 +370,6 @@ public class Dispatcher extends AbstractController {
                 request.setInput(null);
             } else {
                 request.getInput().reset();
-            }
-            if (request.getInput() != null && logger.isLoggable(Level.FINE)) {
-                char[] req = new char[xmlPostRequestLogBufferSize];
-                final int read = request.getInput().read(req, 0, xmlPostRequestLogBufferSize);
-                request.getInput().reset();
-
-                if (read < xmlPostRequestLogBufferSize) {
-                    logger.fine("Raw XML request: " + new String(req));
-                } else {
-                    logger.fine("Raw XML request starts with: " + new String(req) + "...");
-                }
             }
         }
         // parse the request path into two components. (1) the 'path' which
@@ -1715,17 +1701,33 @@ public class Dispatcher extends AbstractController {
                 logger.log(Level.FINER, "", t);
             }
         } else {
-            logger.log(Level.SEVERE, "", t);
+            String errorCode = null;
+            String message = t.getMessage();
+            Level level = Level.SEVERE;
 
             // unwind the exception stack until we find one we know about
             Throwable cause = t;
             while (cause != null) {
                 if (cause instanceof ServiceException) {
+                    errorCode = ((ServiceException) cause).getCode();
                     break;
                 }
-
                 cause = cause.getCause();
             }
+            // Some pieces of code catch the exception and add it to the error list
+            // (e.g. KvpUtils during parsing) without rethrowing it or wrapping it
+            // since the service might not be known in advance. Therefore, there
+            // might be the case that it isn't a ServiceException and therefore no
+            // errorCode available. Let's use the error message in that case.
+            if ((errorCode != null && errorCode.toUpperCase().startsWith("INVALID"))
+                    || (errorCode == null
+                            && message != null
+                            && message.toUpperCase().startsWith("INVALID"))) {
+                // Log Exceptions dealing with "Invalid" to INFO
+                level = Level.INFO;
+            }
+
+            logger.log(level, "", t);
 
             if (cause == null) {
                 // did not fine a "special" exception, create a service exception by default
@@ -1804,13 +1806,5 @@ public class Dispatcher extends AbstractController {
     public static boolean isSecurityException(Throwable t) {
         return t != null
                 && t.getClass().getPackage().getName().startsWith("org.springframework.security");
-    }
-
-    public int getXMLPostRequestLogBufferSize() {
-        return xmlPostRequestLogBufferSize;
-    }
-
-    public void setXMLPostRequestLogBufferSize(int bufferSize) {
-        this.xmlPostRequestLogBufferSize = bufferSize;
     }
 }

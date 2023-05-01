@@ -62,8 +62,7 @@ public class PurgeRestoreTest extends BackupRestoreTestSupport {
         waitRestoreFinish(restoreExecution);
 
         List<LayerInfo> citeLayers =
-                catalog.getLayers()
-                        .stream()
+                catalog.getLayers().stream()
                         .filter(li -> li.prefixedName().startsWith("cite:"))
                         .collect(Collectors.toList());
         assertEquals(1, citeLayers.size());

@@ -42,7 +42,6 @@
             <descriptor>release/ext-pgraster.xml</descriptor>
             <descriptor>release/ext-dyndimension.xml</descriptor>
             <descriptor>release/ext-flatgeobuf.xml</descriptor>
-            <descriptor>release/ext-kmlppio.xml</descriptor>
             <descriptor>release/ext-gpx.xml</descriptor>
             <descriptor>release/ext-jms-cluster.xml</descriptor>
             <descriptor>release/ext-hz-cluster.xml</descriptor>
@@ -74,7 +73,6 @@
             <descriptor>release/ext-taskmanager-s3.xml</descriptor>
             <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
             <descriptor>release/ext-cog.xml</descriptor>
-            <descriptor>release/ext-wfs3.xml</descriptor>
             <descriptor>release/ext-qos.xml</descriptor>
             <descriptor>release/ext-s3-geotiff.xml</descriptor>
             <descriptor>release/ext-wmts-styles.xml</descriptor>
@@ -212,7 +210,6 @@
         <module>dyndimension</module>
         <module>flatgeobuf</module>
         <module>gpxppio</module>
-        <module>kmlppio</module>
         <module>jms-cluster</module>
         <module>hz-cluster</module>
         <module>solr</module>
@@ -228,12 +225,6 @@
         <module>gwc-sqlite</module>
         <module>geostyler</module>
         <module>security</module>
-        <module>security/oauth2-core</module>
-        <module>security/oauth2-google</module>
-        <module>security/oauth2-github</module>
-        <module>security/oauth2-geonode</module>
-        <module>security/oauth2-openid-connect</module>
-        <module>security/keycloak</module>
         <module>wmts-styles</module>
         <module>saml</module>
         <module>notification</module>
@@ -246,7 +237,6 @@
         <module>nsg-profiles</module>
         <module>netcdf-ghrsst</module>
         <module>taskmanager</module>
-        <module>wfs3</module>
         <module>qos</module>
         <module>web-ogr</module>
         <module>ogcapi</module>
@@ -359,12 +349,6 @@
       </build>
       <modules>
         <module>rest-ext</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>kmlppio</id>
-      <modules>
-        <module>kmlppio</module>
       </modules>
     </profile>
     <profile>
@@ -509,35 +493,37 @@
     <profile>
       <id>oauth2-google</id>
       <modules>
-        <module>security/oauth2-core</module>
-        <module>security/oauth2-google</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-github</id>
       <modules>
-        <module>security/oauth2-core</module>
-        <module>security/oauth2-github</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-geonode</id>
       <modules>
-        <module>security/oauth2-core</module>
-        <module>security/oauth2-geonode</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-openid-connect</id>
       <modules>
-        <module>security/oauth2-core</module>
-        <module>security/oauth2-openid-connect</module>
+        <module>security</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oauth2-all</id>
+      <modules>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
       <id>keycloak</id>
       <modules>
-        <module>security/keycloak</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
@@ -622,12 +608,6 @@
       <id>metadata</id>
       <modules>
         <module>metadata</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wfs3</id>
-      <modules>
-        <module>wfs3</module>
       </modules>
     </profile>
     <profile>

@@ -40,38 +40,32 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"pointOrLineStringOrPolygon"}
-)
+        name = "",
+        propOrder = {"pointOrLineStringOrPolygon"})
 public class GeometryCollection {
 
     @XmlElements({
         @XmlElement(name = "point", type = Point.class, namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "map-linestring",
-            type = LineString.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        ),
+                name = "map-linestring",
+                type = LineString.class,
+                namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "map-polygon",
-            type = Polygon.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        ),
+                name = "map-polygon",
+                type = Polygon.class,
+                namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "map-multipoint",
-            type = MultiPoint.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        ),
+                name = "map-multipoint",
+                type = MultiPoint.class,
+                namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "map-multilinestring",
-            type = MultiLineString.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        ),
+                name = "map-multilinestring",
+                type = MultiLineString.class,
+                namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "map-multipolygon",
-            type = MultiPolygon.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        )
+                name = "map-multipolygon",
+                type = MultiPolygon.class,
+                namespace = "http://www.w3.org/1999/xhtml")
     })
     protected List<Object> pointOrLineStringOrPolygon;
 

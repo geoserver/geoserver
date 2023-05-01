@@ -72,13 +72,12 @@ public class ListAttributesController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "/{layerName}/attributes",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            path = "/{layerName}/attributes",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public Object attributes(
             @PathVariable String layerName,
             @RequestParam(value = "cache", required = false, defaultValue = "600") long cachingTime,

@@ -42,11 +42,10 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     private BatchImpl batch;
 
     @OneToMany(
-        fetch = FetchType.EAGER,
-        targetEntity = RunImpl.class,
-        mappedBy = "batchRun",
-        cascade = CascadeType.ALL
-    )
+            fetch = FetchType.EAGER,
+            targetEntity = RunImpl.class,
+            mappedBy = "batchRun",
+            cascade = CascadeType.ALL)
     @OrderBy("start")
     @Fetch(FetchMode.SUBSELECT)
     private List<Run> runs = new ArrayList<Run>();

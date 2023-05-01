@@ -558,8 +558,7 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
                             tester.getComponentFromLastRenderedPage("theForm:tabbedPanel:panel");
             List<Cookie> httpCookies = getCookiesFromPreviewRequest(previewPanel);
             Cookie cookie =
-                    httpCookies
-                            .stream()
+                    httpCookies.stream()
                             .filter(c -> c.getName().equals("JSESSIONID"))
                             .findFirst()
                             .get();

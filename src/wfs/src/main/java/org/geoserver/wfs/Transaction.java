@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -27,12 +27,9 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.security.SecurityUtils;
 import org.geoserver.wfs.request.Delete;
 import org.geoserver.wfs.request.Insert;
-import org.geoserver.wfs.request.Native;
-import org.geoserver.wfs.request.Replace;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
-import org.geoserver.wfs.request.Update;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureLockException;
 import org.geotools.data.FeatureSource;
@@ -298,14 +295,8 @@ public class Transaction {
 
         try {
             BatchManager batchManager =
-                    new BatchManager(request, multiplexer, stores, result, elementHandlers);
-            for (Entry<TransactionElement, TransactionElementHandler>
-                    transactionElementTransactionElementHandlerEntry : elementHandlers.entrySet()) {
-                Entry entry = transactionElementTransactionElementHandlerEntry;
-                batchManager.addToBatch(entry);
-            }
-
-            batchManager.executeRemainingBatch();
+                    createBatchManager(request, multiplexer, stores, elementHandlers, result);
+            batchManager.run();
         } catch (WFSTransactionException e) {
             LOGGER.log(Level.SEVERE, "Transaction failed", e);
 
@@ -429,6 +420,24 @@ public class Transaction {
         // we will commit in the writeTo method
         // after user has got the response
         // response = build;
+    }
+
+    /**
+     * @param request
+     * @param multiplexer
+     * @param stores
+     * @param elementHandlers
+     * @param result
+     * @return a new {@link BatchManager} batching INSERT and DELETE operations where possible.
+     */
+    protected BatchManager createBatchManager(
+            TransactionRequest request,
+            TransactionListenerMux multiplexer,
+            Map<QName, FeatureStore> stores,
+            Map<TransactionElement, TransactionElementHandler> elementHandlers,
+            TransactionResponse result) {
+        return new BatchManager(
+                request, multiplexer, stores, result, elementHandlers, DELETE_BATCH_SIZE);
     }
 
     private TransactionRequest fireBeforeTransaction(TransactionRequest request) {
@@ -634,181 +643,134 @@ public class Transaction {
         }
     }
 
-    private static class BatchManager {
+    /**
+     * {@link BatchManager} restructures the contents of the transaction in order to enable batched
+     * execution in the data stores. When processing the {@link TransactionElement}s it aggregates
+     * INSERT and DELETE operations where possible before calling the corresponding {@link
+     * TransactionElementHandler}s.
+     */
+    protected static class BatchManager {
         private TransactionRequest request;
-        private TransactionListenerMux multiplexer;
+        private TransactionListener multiplexer;
         private Map<QName, FeatureStore> stores;
         private TransactionResponse result;
         private Map<TransactionElement, TransactionElementHandler> elementHandlers;
+        private int maxDeleteCount;
 
-        private Insert insertElement = null;
-        private Delete deleteElement = null;
-        private TransactionElementHandler insertElementHandler = null;
-        private TransactionElementHandler deleteElementHandler = null;
-
-        enum BatchType {
-            DEFAULT,
-            INSERT,
-            DELETE;
-        }
-
-        private BatchType batchType;
-
+        /**
+         * Creates a new {@link BatchManager}, ready to {@link #run()} and process the transactions
+         * content.
+         *
+         * @param request The current request
+         * @param multiplexer the current transaction listener
+         * @param stores The map of stores
+         * @param result The result
+         * @param elementHandlers Mapping of {@link TransactionElement} to its corresponding {@link
+         *     TransactionElementHandler}
+         * @param maxDeleteCount Maximum number of deletes to be aggregated into and existing delete
+         */
         public BatchManager(
                 TransactionRequest request,
-                TransactionListenerMux multiplexer,
+                TransactionListener multiplexer,
                 Map<QName, FeatureStore> stores,
                 TransactionResponse result,
-                Map<TransactionElement, TransactionElementHandler> elementHandlers) {
+                Map<TransactionElement, TransactionElementHandler> elementHandlers,
+                int maxDeleteCount) {
             this.request = request;
             this.multiplexer = multiplexer;
             this.stores = stores;
             this.result = result;
             this.elementHandlers = elementHandlers;
-            batchType = BatchType.DEFAULT;
-            initElementHandlers();
+            this.maxDeleteCount = maxDeleteCount;
         }
 
-        private void initElementHandlers() {
-            // transactionType is set to first TransactionElements type found in the collection.
-            Optional<TransactionElement> firstKey = elementHandlers.keySet().stream().findFirst();
-            if (firstKey.isPresent()) {
-                TransactionElement transactionElement = firstKey.get();
-                if (transactionElement instanceof Insert) {
-                    insertElement = (Insert) transactionElement;
-                    batchType = BatchType.INSERT;
-                } else if (transactionElement instanceof Delete) {
-                    deleteElement = (Delete) transactionElement;
-                    batchType = BatchType.DELETE;
+        private TransactionElement aggrTargetElement;
+        private TransactionElementHandler aggrTargetHandler;
+        private int aggrDeleteCount = 0;
+
+        /**
+         * Runs the aggregation of the {@link TransactionElement}s and invokes the required {@link
+         * TransactionElementHandler}s.
+         */
+        public void run() {
+            Set<Entry<TransactionElement, TransactionElementHandler>> lEntries =
+                    elementHandlers.entrySet();
+
+            for (Entry<TransactionElement, TransactionElementHandler> lEntry : lEntries) {
+                TransactionElement lCurrentElem = lEntry.getKey();
+                TransactionElementHandler lCurrentHandler = lEntry.getValue();
+                if (aggrTargetElement == null) {
+                    aggrTargetElement = lCurrentElem;
+                    aggrTargetHandler = lCurrentHandler;
+                } else if (canAggregate(lCurrentElem)) {
+                    aggregate(lCurrentElem);
+                } else {
+                    runAggregated();
+                    aggrTargetElement = lCurrentElem;
+                    aggrTargetHandler = lCurrentHandler;
                 }
             }
+
+            if (aggrTargetElement != null) {
+                runAggregated();
+            }
         }
 
-        private void addToBatch(Entry entry) {
-            /*iterate over the collection until another transactionType is found. When it is found execute
-            the bulk transaction until that point. If it is not found, combine features of the same transaction
-            elements.
-            */
-
-            TransactionElement element = (TransactionElement) entry.getKey();
-            if (element instanceof Insert) {
-                if (insertElementHandler == null) {
-                    insertElementHandler = (TransactionElementHandler) entry.getValue();
+        /**
+         * @param pElem
+         * @return true, if the current target element for aggregation can accept the given element
+         *     to aggregate
+         */
+        private boolean canAggregate(TransactionElement pElem) {
+            if (aggrTargetElement instanceof Insert && pElem instanceof Insert) {
+                return true;
+            }
+            if (aggrTargetElement instanceof Delete && pElem instanceof Delete) {
+                if (aggrDeleteCount >= maxDeleteCount - 1) {
+                    return false;
                 }
-                insertElement =
-                        executeBulkAndGetInsert(
-                                insertElement,
-                                deleteElement,
-                                deleteElementHandler,
-                                (Insert) element);
-            } else if (element instanceof Delete) {
-                if (deleteElementHandler == null) {
-                    deleteElementHandler = (TransactionElementHandler) entry.getValue();
+                Delete lTarget = (Delete) aggrTargetElement;
+                Delete lElem = (Delete) pElem;
+                QName lTargetType = lTarget.getTypeName();
+                QName lElemType = lElem.getTypeName();
+                if (lTargetType != null && lTargetType.equals(lElemType)) {
+                    return true;
                 }
-                deleteElement =
-                        executeBulkAndGetDelete(
-                                insertElement,
-                                deleteElement,
-                                insertElementHandler,
-                                deleteElementHandler,
-                                (Delete) element);
             }
-
-            /* Bathing update, replace and native statements will be inefficient since updated target values
-            in those statements should be the same or it will fail. Finding and merging them will not have a
-            great effect.
-             */
-            executeNonBatchedStatements(entry, element);
+            return false;
         }
 
-        private void executeRemainingBatch() {
-            // execute remaining elements if anything left uncommitted
-            if (insertElement != null
-                    && insertElement.getFeatures() != null
-                    && insertElement.getFeatures().size() > 0) {
-                insertElementHandler.execute(insertElement, request, stores, result, multiplexer);
+        /**
+         * Aggregates the given element into the current aggregation target.
+         *
+         * @param pElem
+         */
+        private void aggregate(TransactionElement pElem) {
+            boolean lRemoveFromRequest = false;
+            if (aggrTargetElement instanceof Insert) {
+                Insert lTarget = (Insert) aggrTargetElement;
+                Insert lElem = (Insert) pElem;
+                lTarget.addFeatures(lElem.getFeatures());
+                lRemoveFromRequest = true;
+            } else if (aggrTargetElement instanceof Delete) {
+                Delete lTarget = (Delete) aggrTargetElement;
+                Delete lElem = (Delete) pElem;
+                lTarget.addFilter(lElem.getFilter());
+                aggrDeleteCount++;
+                lRemoveFromRequest = true;
             }
-
-            if (deleteElement != null
-                    && deleteElement.getFilters() != null
-                    && deleteElement.getFilters().size() > 0) {
-                deleteElementHandler.execute(deleteElement, request, stores, result, multiplexer);
-            }
-        }
-
-        private void executeNonBatchedStatements(Entry entry, TransactionElement element) {
-            if (element instanceof Update
-                    || element instanceof Replace
-                    || element instanceof Native) {
-                TransactionElementHandler handler = (TransactionElementHandler) entry.getValue();
-                handler.execute(element, request, stores, result, multiplexer);
+            if (lRemoveFromRequest) {
+                // contents of the element have been added to target element. To avoid contents
+                // being at multiple locations in the request, remove prior element. Otherwise
+                // potential transactionListeners etc will receive inconsistent request.
+                request.remove(pElem);
             }
         }
 
-        private Delete executeBulkAndGetDelete(
-                Insert insertElement,
-                Delete deleteElement,
-                TransactionElementHandler insertElementHandler,
-                TransactionElementHandler deleteElementHandler,
-                Delete element) {
-            // since batching is only enabled for INSERT and DELETE, push batches of INSERT
-            // operations
-            if (batchType != BatchType.DELETE) {
-                executeInsertBulkTransaction(insertElement, insertElementHandler);
-            }
-            if (deleteElement != null) {
-                Delete delete = element;
-                deleteElement.addFilter(delete.getFilters());
-                // if DELETE_BATCH_SIZE is reached execute current batch of DELETE
-                if (deleteElement.getFilters() != null
-                        && deleteElement.getFilters().size() == DELETE_BATCH_SIZE) {
-                    deleteElementHandler.execute(
-                            deleteElement, request, stores, result, multiplexer);
-                    deleteElement.deleteFilter();
-                }
-            } else {
-                deleteElement = element;
-            }
-            return deleteElement;
-        }
-
-        private Insert executeBulkAndGetInsert(
-                Insert insertElement,
-                Delete deleteElement,
-                TransactionElementHandler deleteElementHandler,
-                Insert element) {
-            // since batching is only enabled for INSERT and DELETE, push batches of DELETE
-            // operations
-            if (batchType != BatchType.INSERT) {
-                executeDeleteBulkTransaction(deleteElement, deleteElementHandler);
-            }
-            if (insertElement != null) {
-                Insert insert = element;
-                insertElement.addFeature(insert.getFeatures());
-            } else {
-                insertElement = element;
-            }
-            return insertElement;
-        }
-
-        // execute batch inserts then clean the batch
-        private void executeInsertBulkTransaction(
-                Insert insertElement, TransactionElementHandler insertElementHandler) {
-            if (insertElement != null && batchType == BatchType.INSERT) {
-                insertElementHandler.execute(insertElement, request, stores, result, multiplexer);
-                insertElement.setFeatures(new ArrayList());
-                batchType = BatchType.DELETE;
-            }
-        }
-
-        // execute batch deletes then clean the batch
-        private void executeDeleteBulkTransaction(
-                Delete deleteElement, TransactionElementHandler deleteElementHandler) {
-            if (deleteElement != null && batchType == BatchType.DELETE) {
-                deleteElementHandler.execute(deleteElement, request, stores, result, multiplexer);
-                deleteElement.deleteFilter();
-                batchType = BatchType.INSERT;
-            }
+        /** Calls the current handler with the current element, resetting the delete counter. */
+        private void runAggregated() {
+            aggrTargetHandler.execute(aggrTargetElement, request, stores, result, multiplexer);
+            aggrDeleteCount = 0;
         }
     }
 }

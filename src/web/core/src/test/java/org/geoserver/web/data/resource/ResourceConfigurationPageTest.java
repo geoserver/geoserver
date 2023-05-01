@@ -170,7 +170,6 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                     }
                 });
         tester.executeAjaxEvent(page, "ondblclick");
-        print(tester.getLastRenderedPage(), true, true);
 
         // verify contents were updated
         tester.assertContains("the_geom");
@@ -365,8 +364,6 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         login();
         tester.startPage(new ResourceConfigurationPage(layer, false));
-
-        print(tester.getLastRenderedPage(), true, true);
 
         FormTester ft = tester.newFormTester("publishedinfo");
         String newTitle = "A test title";

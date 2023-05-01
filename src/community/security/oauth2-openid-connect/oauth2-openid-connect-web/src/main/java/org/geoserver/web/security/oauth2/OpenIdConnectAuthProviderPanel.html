@@ -1,0 +1,42 @@
+<html>
+    <body>
+        <wicket:extend>
+            <li>
+                <label for="jwkURI"><span><wicket:message
+                        key="jwkURI"></wicket:message></span></label>
+                <input id="jwkURI" wicket:id="jwkURI" type="text"
+                       class="field text"/>
+                <a href="#" wicket:id="jwkURIHelp" class="help-link"></a>
+            </li>
+            <li>
+                <label for="principalKey"><span><wicket:message
+                        key="principalKey"></wicket:message></span></label>
+                <input id="principalKey" wicket:id="principalKey" type="text"
+                       class="field text"/>
+                <a href="#" wicket:id="principalKeyHelp" class="help-link"></a>
+            </li>
+            <li>
+                <label for="responseMode"><span><wicket:message
+                        key="responseMode"></wicket:message></span></label>
+                <input id="responseMode" wicket:id="responseMode" type="text"
+                       class="field text"/>
+                <a href="#" wicket:id="responseModeHelp" class="help-link"></a>
+            </li>
+            <li>
+                <label for="postLogoutRedirectUri"><span><wicket:message
+                        key="postLogoutRedirectUri"></wicket:message></span></label>
+                <input id="postLogoutRedirectUri" wicket:id="postLogoutRedirectUri" type="text"
+                       class="field text"/>
+                <a href="#" wicket:id="postLogoutRedirectUriHelp" class="help-link"></a>
+            </li>
+            <li>
+                <label for="sendClientSecret"><span><wicket:message
+                        key="sendClientSecret"></wicket:message></span></label>
+            </li>
+            <li>
+                <input id="sendClientSecret" wicket:id="sendClientSecret" type="checkbox"/>
+                <a href="#" wicket:id="sendClientSecretHelp" class="help-link"></a>
+            </li>
+        </wicket:extend>
+    </body>
+</html>

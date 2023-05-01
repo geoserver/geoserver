@@ -69,6 +69,7 @@
         <module>app-schema-mongo-test</module>
         <module>app-schema-solr-test</module>
         <module>app-schema-indexes-test</module>
+        <module>app-schema-geopkg-test</module>
       </modules>
       <dependencies>
         <dependency>

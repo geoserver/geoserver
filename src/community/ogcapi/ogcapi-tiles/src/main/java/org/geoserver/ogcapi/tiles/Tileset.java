@@ -126,8 +126,7 @@ public class Tileset extends AbstractDocument {
             // links depend on the data type
             List<MimeType> tileTypes = tileLayer.getMimeTypes();
             if (dataType == DataType.vector) {
-                tileTypes
-                        .stream()
+                tileTypes.stream()
                         .filter(mt -> mt.isVector())
                         .collect(Collectors.toList())
                         .forEach(
@@ -152,8 +151,7 @@ public class Tileset extends AbstractDocument {
                         "describedBy");
             } else if (dataType == DataType.map) {
                 List<MimeType> imageFormats =
-                        tileTypes
-                                .stream()
+                        tileTypes.stream()
                                 .filter(mt -> !mt.isVector())
                                 .collect(Collectors.toList());
                 String base =

@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.geoserver.taskmanager.external.DbSource;
@@ -58,17 +57,9 @@ public class PostgisJndiDbSourceImpl extends SecuredImpl implements DbSource {
 
     @Override
     public DataSource getDataSource() throws SQLException {
-        Context ctx = null;
         DataSource ds = null;
-
         try {
-            ctx = GeoTools.getInitialContext(GeoTools.getDefaultHints());
-        } catch (NamingException e) {
-            throw new IllegalStateException(e);
-        }
-
-        try {
-            ds = (DataSource) ctx.lookup(jndiName);
+            ds = (DataSource) GeoTools.jndiLookup(jndiName);
         } catch (NamingException e) {
             throw new SQLException(e);
         }

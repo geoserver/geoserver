@@ -83,14 +83,12 @@ public class VectorTilesIntegrationTest extends WMSTestSupport {
         assertEquals(5, featuresList.size());
         assertEquals(
                 3,
-                featuresList
-                        .stream()
+                featuresList.stream()
                         .filter(f -> "Route 5".equals(f.getAttributes().get("NAME")))
                         .count());
         assertEquals(
                 1,
-                featuresList
-                        .stream()
+                featuresList.stream()
                         .filter(f -> "Main Street".equals(f.getAttributes().get("NAME")))
                         .count());
         assertEquals("Extent should be 12288", 12288, featuresList.get(0).getExtent());

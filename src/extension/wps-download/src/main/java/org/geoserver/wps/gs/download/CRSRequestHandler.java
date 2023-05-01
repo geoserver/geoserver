@@ -189,9 +189,7 @@ class CRSRequestHandler {
         if (structuredReader != null) {
             String coverageName = structuredReader.getGridCoverageNames()[0];
             descriptors =
-                    structuredReader
-                            .getDimensionDescriptors(coverageName)
-                            .stream()
+                    structuredReader.getDimensionDescriptors(coverageName).stream()
                             .collect(Collectors.toMap(dd -> dd.getName(), dd -> dd));
             DimensionDescriptor crsDescriptor = descriptors.get(DimensionDescriptor.CRS);
             crsAttribute = crsDescriptor != null ? crsDescriptor.getStartAttribute() : null;

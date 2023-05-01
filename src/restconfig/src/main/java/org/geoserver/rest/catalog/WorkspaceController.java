@@ -59,13 +59,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/workspaces",
-    produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE
-    }
-)
+        path = RestBaseController.ROOT_PATH + "/workspaces",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        })
 public class WorkspaceController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WorkspaceController.class);
@@ -97,13 +96,12 @@ public class WorkspaceController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_JSON_VALUE
-        }
-    )
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> workspacePost(
             @RequestBody WorkspaceInfo workspace,
@@ -145,14 +143,13 @@ public class WorkspaceController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = "/{workspaceName}",
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_JSON_VALUE
-        }
-    )
+            value = "/{workspaceName}",
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     public void workspacePut(
             @RequestBody WorkspaceInfo workspace,
             @PathVariable String workspaceName,

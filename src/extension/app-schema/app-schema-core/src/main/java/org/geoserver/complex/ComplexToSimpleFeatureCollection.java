@@ -203,8 +203,7 @@ public class ComplexToSimpleFeatureCollection implements SimpleFeatureCollection
             }
             // not rule based, look up simple feature based on simple name
             Optional<Property> propertyOpt =
-                    feature.getProperties()
-                            .stream()
+                    feature.getProperties().stream()
                             .filter(prop -> simpleName.equals(prop.getName().getLocalPart()))
                             .findFirst();
             if (propertyOpt.isPresent()) {

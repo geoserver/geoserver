@@ -182,6 +182,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                         Collection c = (Collection) g.invoke(proxyObject, null);
                         c.clear();
                         for (Object o : (Collection) v) {
+                            // element of a collection
+                            commitIfNeeded(o);
                             c.add(unwrap(o));
                         }
                     } else if (Map.class.isAssignableFrom(g.getReturnType())) {
@@ -205,12 +207,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                             Info modified = (Info) unwrap(v);
                             if (original == modified) {
                                 // case 1, in this case get the proxy and commit it
-                                if (v instanceof Proxy) {
-                                    ModificationProxy h = handler(v);
-                                    if (h != null && h.isDirty()) {
-                                        h.commit();
-                                    }
-                                }
+                                commitIfNeeded(v);
                             } else if (s != null) {
                                 // case 2, just call the setter with the new object
                                 s.invoke(proxyObject, v);
@@ -230,6 +227,17 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
             // reset
             properties = null;
+        }
+    }
+
+    // commit modifications from ModificationProxy
+    // to the object if new values are present
+    private void commitIfNeeded(Object v) {
+        if (v instanceof Proxy) {
+            ModificationProxy h = handler(v);
+            if (h != null && h.isDirty()) {
+                h.commit();
+            }
         }
     }
 

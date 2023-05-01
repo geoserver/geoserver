@@ -44,8 +44,7 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter {
             List<String> disabledServices = disabledServices(resource);
             // if any disabled service match with current service -> hide resource
             String service = request().getService();
-            return disabledServices
-                    .stream()
+            return disabledServices.stream()
                     .anyMatch(s -> service.toLowerCase().equals(s.trim().toLowerCase()));
         }
         return false;

@@ -8,6 +8,7 @@ package org.geoserver.web.admin;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.config.ContactInfo;
+import org.geoserver.web.EmailAddressValidator;
 import org.geoserver.web.StringAndInternationalStringPanel;
 
 public class ContactPanel extends Panel {
@@ -53,7 +54,7 @@ public class ContactPanel extends Panel {
         String address = "address";
         add(
                 new StringAndInternationalStringPanel(
-                        address, model, address, address, "internationalAddress", this));
+                        address, model, address, address, "internationalAddress", this, null));
         String addressDeliveryPt = "addressDeliveryPoint";
         add(
                 new StringAndInternationalStringPanel(
@@ -126,6 +127,7 @@ public class ContactPanel extends Panel {
                         contactEmail,
                         contactEmail,
                         "internationalContactEmail",
-                        this));
+                        this,
+                        EmailAddressValidator.getInstance()));
     }
 }

@@ -49,6 +49,8 @@ public class SettingsInfoImpl implements SettingsInfo {
 
     protected Locale defaultLocale;
 
+    protected Boolean useHeadersProxyURL;
+
     @Override
     public String getId() {
         return id;
@@ -174,6 +176,16 @@ public class SettingsInfoImpl implements SettingsInfo {
 
     public void setClientProperties(Map<Object, Object> properties) {
         this.clientProperties = properties;
+    }
+
+    @Override
+    public Boolean isUseHeadersProxyURL() {
+        return useHeadersProxyURL;
+    }
+
+    @Override
+    public void setUseHeadersProxyURL(Boolean useHeadersProxyURL) {
+        this.useHeadersProxyURL = useHeadersProxyURL;
     }
 
     @Override

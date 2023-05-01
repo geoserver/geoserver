@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
 public class XlinkGeometryTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected XlinkGeometryMockData createTestData() {
+    protected AbstractAppSchemaMockData createTestData() {
         return new XlinkGeometryMockData();
     }
 

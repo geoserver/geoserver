@@ -68,8 +68,7 @@ public class GetFeatureWaitOnEncodeCallback extends AbstractDispatcherCallback
                     (FeatureCollectionResponse) result;
             List<FeatureCollection> collections = featureCollectionResponse.getFeatures();
             List<FeatureCollection> wrappers =
-                    collections
-                            .stream()
+                    collections.stream()
                             .map(fc -> new DelayFeatureCollection((SimpleFeatureCollection) fc))
                             .collect(Collectors.toList());
 

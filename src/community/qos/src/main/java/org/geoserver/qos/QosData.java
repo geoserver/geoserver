@@ -29,8 +29,7 @@ public class QosData {
     public List<String> getOperationalStatusList() {
         String url = OperationalStatus.URL;
         List<String> list =
-                OperationalStatus.valuesStringList()
-                        .stream()
+                OperationalStatus.valuesStringList().stream()
                         .map(x -> url.concat(x))
                         .collect(Collectors.toList());
         return list;

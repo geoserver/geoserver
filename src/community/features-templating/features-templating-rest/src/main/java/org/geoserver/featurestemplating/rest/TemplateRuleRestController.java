@@ -86,14 +86,13 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules",
-        produces = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules",
+            produces = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public RestWrapper<TemplateRuleList> findAll(
             @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype) {
@@ -104,14 +103,13 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}",
-        produces = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}",
+            produces = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public RestWrapper<TemplateRule> findById(
             @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype,
@@ -119,9 +117,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         FeatureTypeInfo info = checkFeatureType(workspace, featuretype);
         TemplateLayerConfig layerConfig = checkRules(info);
         Optional<TemplateRule> rule =
-                layerConfig
-                        .getTemplateRules()
-                        .stream()
+                layerConfig.getTemplateRules().stream()
                         .filter(r -> r.getRuleId().equals(identifier))
                         .findFirst();
         if (!rule.isPresent()) {
@@ -132,14 +128,13 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}",
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}",
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public ResponseEntity<String> putRule(
             @RequestBody TemplateRule rule,
             @PathVariable(name = "workspace") String workspace,
@@ -156,14 +151,13 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     }
 
     @PatchMapping(
-        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}",
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}",
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public ResponseEntity<String> patchRule(
             HttpServletRequest request,
             @RequestHeader("Content-Type") String contentType,
@@ -189,14 +183,13 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules",
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules",
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public ResponseEntity<String> postRule(
             @RequestBody TemplateRule rule,
             @PathVariable(name = "workspace") String workspace,
@@ -214,8 +207,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     }
 
     @DeleteMapping(
-        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}"
-    )
+            value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}")
     public ResponseEntity<String> deleteRule(
             @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype,

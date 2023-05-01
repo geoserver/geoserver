@@ -39,6 +39,14 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
 
     private List<XStreamPersisterInitializer> initializers;
 
+    /**
+     * Application context provided during initialization.
+     *
+     * <p>This may be null during initial startup, or during tests, when {@link
+     * #setApplicationContext(ApplicationContext)} has not been called.
+     */
+    private ApplicationContext applicationContext;
+
     /** Creates an instance configured to persist XML. */
     public XStreamPersister createXMLPersister() {
         return buildPersister(null);
@@ -62,17 +70,25 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
     }
 
     private List<XStreamPersisterInitializer> getInitializers() {
-        if (initializers == null) {
-            initializers =
-                    new ArrayList<>(
-                            GeoServerExtensions.extensions(XStreamPersisterInitializer.class));
+        if (initializers == null || initializers.isEmpty()) {
+            // the factory is created also programmatically, and without
+            if (applicationContext == null) {
+                initializers =
+                        new ArrayList<>(
+                                GeoServerExtensions.extensions(XStreamPersisterInitializer.class));
+            } else {
+                initializers =
+                        new ArrayList<>(
+                                GeoServerExtensions.extensions(
+                                        XStreamPersisterInitializer.class, applicationContext));
+            }
         }
-
         return initializers;
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
         initializers =
                 new ArrayList<>(
                         GeoServerExtensions.extensions(

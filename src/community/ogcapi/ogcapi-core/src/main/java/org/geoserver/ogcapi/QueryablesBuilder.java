@@ -6,7 +6,6 @@ package org.geoserver.ogcapi;
 
 import io.swagger.v3.oas.models.media.Schema;
 import java.io.IOException;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +23,16 @@ import org.opengis.feature.type.AttributeType;
 
 public class QueryablesBuilder {
 
+    public static final String POINT_SCHEMA_REF = "https://geojson.org/schema/Point.json";
+    public static final String MULTIPOINT_SCHEMA_REF = "https://geojson.org/schema/MultiPoint.json";
+    public static final String LINESTRING_SCHEMA_REF = "https://geojson.org/schema/LineString.json";
+    public static final String MULTILINESTRING_SCHEMA_REF =
+            "https://geojson.org/schema/MultiLineString.json";
+    public static final String POLYGON_SCHEMA_REF = "https://geojson.org/schema/Polygon.json";
+    public static final String MULTIPOLYGON_SCHEMA_REF =
+            "https://geojson.org/schema/MultiPolygon.json";
+    public static final String GEOMETRY_SCHEMA_REF = "https://geojson.org/schema/Geometry.json";
+
     Queryables queryables;
 
     public QueryablesBuilder(String id) {
@@ -40,8 +49,7 @@ public class QueryablesBuilder {
 
     public QueryablesBuilder forType(SimpleFeatureType ft) {
         Map<String, Schema> properties =
-                ft.getAttributeDescriptors()
-                        .stream()
+                ft.getAttributeDescriptors().stream()
                         .collect(
                                 Collectors.toMap(
                                         ad -> ad.getLocalName(),
@@ -77,25 +85,25 @@ public class QueryablesBuilder {
         String ref;
         String description;
         if (Point.class.isAssignableFrom(binding)) {
-            ref = "https://geojson.org/schema/Point.json";
+            ref = POINT_SCHEMA_REF;
             description = "Point";
         } else if (MultiPoint.class.isAssignableFrom(binding)) {
-            ref = "https://geojson.org/schema/MultiPoint.json";
+            ref = MULTIPOINT_SCHEMA_REF;
             description = "MultiPoint";
         } else if (LineString.class.isAssignableFrom(binding)) {
-            ref = "https://geojson.org/schema/LineString.json";
+            ref = LINESTRING_SCHEMA_REF;
             description = "LineString";
         } else if (MultiLineString.class.isAssignableFrom(binding)) {
-            ref = "https://geojson.org/schema/MultiLineString.json";
+            ref = MULTILINESTRING_SCHEMA_REF;
             description = "MultiLineString";
         } else if (Polygon.class.isAssignableFrom(binding)) {
-            ref = "https://geojson.org/schema/Polygon.json";
+            ref = POLYGON_SCHEMA_REF;
             description = "Polygon";
         } else if (MultiPolygon.class.isAssignableFrom(binding)) {
-            ref = "https://geojson.org/schema/MultiPolygon.json";
+            ref = MULTIPOLYGON_SCHEMA_REF;
             description = "MultiPolygon";
         } else {
-            ref = "https://geojson.org/schema/Geometry.json";
+            ref = GEOMETRY_SCHEMA_REF;
             description = "Generic geometry";
         }
 
@@ -109,7 +117,13 @@ public class QueryablesBuilder {
 
         schema.setType(org.geoserver.ogcapi.AttributeType.fromClass(binding).getType());
         schema.setDescription(schema.getType());
-        if (Date.class.isAssignableFrom(binding)) {
+        if (java.sql.Date.class.isAssignableFrom(binding)) {
+            schema.setFormat("date");
+            schema.setDescription("Date");
+        } else if (java.sql.Time.class.isAssignableFrom(binding)) {
+            schema.setFormat("time");
+            schema.setDescription("Time");
+        } else if (java.util.Date.class.isAssignableFrom(binding)) {
             schema.setFormat("date-time");
             schema.setDescription("DateTime");
         }

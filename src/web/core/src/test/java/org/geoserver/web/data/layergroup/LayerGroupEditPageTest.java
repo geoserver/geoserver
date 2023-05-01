@@ -9,9 +9,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -29,6 +32,9 @@ import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.InternationalStringPanel;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
@@ -701,5 +707,410 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         assertEquals("empty lang international title", i18nTitle.toString(null));
         InternationalString i18nAbstract = groupInfo.getInternationalAbstract();
         assertEquals("empty lang international abstract", i18nAbstract.toString(null));
+    }
+
+    @Test
+    public void testLayerGroupStyle() {
+        // test layerGroup Style UI.
+        LayerGroupInfo groupInfo = null;
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(
+                            new PageParameters().add("workspace", "cite").add("group", "bridges"));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:addNew", "click");
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayer",
+                    "click");
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:1:itemProperties:0:component:link",
+                    "click");
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayerGroup",
+                    "click");
+
+            FormTester ft = tester.newFormTester("publishedinfo");
+            ft.setValue(
+                    "tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupStyleName",
+                    "LgStyleTest");
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            groupInfo = getCatalog().getLayerGroupByName("cite:bridges");
+            List<LayerGroupStyle> styles = groupInfo.getLayerGroupStyles();
+            assertEquals(1, styles.size());
+            LayerGroupStyle groupStyle = styles.get(0);
+            assertEquals(1, groupStyle.getLayers().size());
+            assertEquals(1, groupStyle.getStyles().size());
+            assertEquals("LgStyleTest", groupStyle.getName().getName());
+        } finally {
+            if (groupInfo != null) {
+                groupInfo.setLayerGroupStyles(new ArrayList<>());
+                getCatalog().save(groupInfo);
+            }
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyle2() throws Exception {
+        // test LayerGroupStyle with nested group.
+        buildLayerGroup("testLgStyles");
+
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStyles");
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(new PageParameters().add("group", "testLgStyles"));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:addNew", "click");
+
+            // add a nested LayerGroup
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayerGroup",
+                    "click");
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:3:itemProperties:0:component:link",
+                    "click");
+
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayer",
+                    "click");
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:1:itemProperties:0:component:link",
+                    "click");
+
+            FormTester ft = tester.newFormTester("publishedinfo");
+            ft.setValue(
+                    "tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupStyleName",
+                    "anotherLgStyleTest");
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            groupInfo = getCatalog().getLayerGroupByName("testLgStyles");
+            List<LayerGroupStyle> styles = groupInfo.getLayerGroupStyles();
+            assertEquals(1, styles.size());
+            LayerGroupStyle theStyle = styles.get(0);
+            assertEquals(2, theStyle.getLayers().size());
+            assertEquals(2, theStyle.getStyles().size());
+            assertNull(theStyle.getStyles().get(0));
+            assertEquals("anotherLgStyleTest", theStyle.getName().getName());
+        } finally {
+            if (groupInfo != null) {
+                getCatalog().remove(groupInfo);
+            }
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleSelection() throws Exception {
+        // tests the possibility to select a layerGroupStyle as a style for an entry.
+        buildLayerGroup("testLgStyles-2");
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStyles-2");
+
+        // get the a LayerGroup that will be added as an entry and adds two styles.
+        LayerGroupInfo nestedGroup = getCatalog().getLayerGroupByName("nestedLayerGroup");
+        LayerGroupStyle nestedGroupStyle = new LayerGroupStyleImpl();
+        StyleInfo styleName = new StyleInfoImpl(getCatalog());
+        styleName.setName("nestedGroupStyle");
+        nestedGroupStyle.setName(styleName);
+        nestedGroupStyle.getStyles().add(getCatalog().getStyleByName("BasicPolygons"));
+        nestedGroupStyle.getLayers().add(getCatalog().getLayerByName("cite:BasicPolygons"));
+        nestedGroup.getLayerGroupStyles().add(nestedGroupStyle);
+
+        LayerGroupStyle nestedGroupStyle2 = new LayerGroupStyleImpl();
+        StyleInfo styleName2 = new StyleInfoImpl(getCatalog());
+        styleName2.setName("nestedGroupStyle2");
+        nestedGroupStyle2.setName(styleName2);
+        nestedGroupStyle2.getStyles().add(null);
+        nestedGroupStyle2.getLayers().add(getCatalog().getLayerByName(getLayerId(MockData.LAKES)));
+        nestedGroup.getLayerGroupStyles().add(nestedGroupStyle2);
+        getCatalog().save(nestedGroup);
+
+        // create a style for the containing group
+        LayerGroupStyle groupStyleTest = new LayerGroupStyleImpl();
+        styleName = new StyleInfoImpl(getCatalog());
+        styleName.setName("styleWithNestedGroup");
+        groupStyleTest.setName(styleName);
+        groupStyleTest.getLayers().add(nestedGroup);
+        groupStyleTest.getStyles().add(null);
+        groupInfo.getLayerGroupStyles().add(groupStyleTest);
+        getCatalog().save(groupInfo);
+
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(new PageParameters().add("group", "testLgStyles-2"));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+
+            // change from default style for the nested layerGroup
+            FormTester ft = tester.newFormTester("publishedinfo");
+            ft.setValue(
+                    "tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:layers:listContainer:items:1:itemProperties:4:component:checkbox",
+                    false);
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:layers:listContainer:items:1:itemProperties:4:component:checkbox",
+                    "change");
+            // click on the style name to open the style selector.
+            tester.clickLink(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:layers:listContainer:items:2:itemProperties:5:component:link");
+
+            // select the LayerGroupStyle.
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:2:itemProperties:0:component:link",
+                    "click");
+
+            // forces the model of the default style checkbox to be set to false
+            // to avoid that the recreation of the FormTester loose the already set value.
+            // this seems to happens in Linux and MacOs
+            CheckBox checkBox =
+                    (CheckBox)
+                            tester.getComponentFromLastRenderedPage(
+                                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:layers:listContainer:items:3:itemProperties:4:component:checkbox");
+            checkBox.setModelObject(false);
+            ft = tester.newFormTester("publishedinfo");
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            groupInfo = getCatalog().getLayerGroupByName("testLgStyles-2");
+            List<LayerGroupStyle> styles = groupInfo.getLayerGroupStyles();
+            assertEquals(1, styles.size());
+            LayerGroupStyle theStyle = styles.get(0);
+            assertEquals(1, theStyle.getLayers().size());
+            assertEquals(1, theStyle.getStyles().size());
+            assertEquals("nestedGroupStyle2", theStyle.getStyles().get(0).getName());
+        } finally {
+            if (nestedGroup != null) {
+                nestedGroup.setLayerGroupStyles(new ArrayList<>());
+                getCatalog().save(nestedGroup);
+            }
+            if (groupInfo != null) {
+                getCatalog().remove(groupInfo);
+            }
+        }
+    }
+
+    @Test
+    public void testRemoveStyleBtn() throws Exception {
+        // add many LayerGroupStyle form to the UI and then remove  them.
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("nestedLayerGroup");
+        LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
+        StyleInfo styleName = new StyleInfoImpl(getCatalog());
+        styleName.setName("nestedGroupStyle");
+        groupStyle.setName(styleName);
+        groupStyle.getStyles().add(getCatalog().getStyleByName("BasicPolygons"));
+        groupStyle.getLayers().add(getCatalog().getLayerByName("cite:BasicPolygons"));
+        groupInfo.getLayerGroupStyles().add(groupStyle);
+        getCatalog().save(groupInfo);
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(new PageParameters().add("group", "nestedLayerGroup"));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+            // Click on the link
+
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:addNew", "click");
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:addNew", "click");
+
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:2:layerGroupStylePanel:remove",
+                    "click");
+
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:1:layerGroupStylePanel:remove",
+                    "click");
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:remove",
+                    "click");
+
+            FormTester ft = tester.newFormTester("publishedinfo");
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            groupInfo = getCatalog().getLayerGroupByName("nestedLayerGroup");
+            List<LayerGroupStyle> styles = groupInfo.getLayerGroupStyles();
+            assertEquals(0, styles.size());
+        } finally {
+            if (groupInfo != null) {
+                groupInfo.setLayerGroupStyles(new ArrayList<>());
+                getCatalog().save(groupInfo);
+            }
+        }
+    }
+
+    @Test
+    public void testCopyGroupDefaultStyle() throws Exception {
+        // tests the copy style UI functionality.
+        buildLayerGroup("testLgStylesCopyDef", LayerGroupInfo.Mode.SINGLE);
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStylesCopyDef");
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(
+                            new PageParameters().add("group", "testLgStylesCopyDef"));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+            FormTester ft = tester.newFormTester("publishedinfo");
+            ft.select("tabs:panel:layerGroupStyles:availableStyles", 0);
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:availableStyles", "change");
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:copy", "click");
+            ft = tester.newFormTester("publishedinfo");
+            ft.setValue(
+                    "tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupStyleName",
+                    "copiedStyleLg");
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            groupInfo = getCatalog().getLayerGroupByName("testLgStylesCopyDef");
+            List<LayerGroupStyle> styles = groupInfo.getLayerGroupStyles();
+            assertEquals(1, styles.size());
+            LayerGroupStyle groupStyle1 = styles.get(0);
+            assertEquals(groupStyle1.getLayers(), groupInfo.getLayers());
+            assertEquals(groupStyle1.getStyles(), groupInfo.getStyles());
+        } finally {
+            if (groupInfo != null) {
+                groupInfo.setLayerGroupStyles(new ArrayList<>());
+                getCatalog().save(groupInfo);
+            }
+        }
+    }
+
+    @Test
+    public void testCopyGroupStyle() throws Exception {
+        // tests the copy style UI functionality.
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("nestedLayerGroup");
+        LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
+        StyleInfo styleName = new StyleInfoImpl(getCatalog());
+        styleName.setName("nestedGroupStyle");
+        groupStyle.setName(styleName);
+        groupStyle.getStyles().add(getCatalog().getStyleByName("BasicPolygons"));
+        groupStyle.getLayers().add(getCatalog().getLayerByName("cite:BasicPolygons"));
+        groupInfo.getLayerGroupStyles().add(groupStyle);
+        getCatalog().save(groupInfo);
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(new PageParameters().add("group", "nestedLayerGroup"));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+            FormTester ft = tester.newFormTester("publishedinfo");
+            ft.select("tabs:panel:layerGroupStyles:availableStyles", 1);
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:availableStyles", "change");
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:copy", "click");
+            ft = tester.newFormTester("publishedinfo");
+            ft.setValue(
+                    "tabs:panel:layerGroupStyles:listContainer:styleList:1:layerGroupStylePanel:layerGroupStyleName",
+                    "copiedStyleLg");
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            groupInfo = getCatalog().getLayerGroupByName("nestedLayerGroup");
+            List<LayerGroupStyle> styles = groupInfo.getLayerGroupStyles();
+            assertEquals(2, styles.size());
+            LayerGroupStyle groupStyle1 = styles.get(0);
+            LayerGroupStyle groupStyle2 = styles.get(1);
+            assertEquals(groupStyle1.getLayers(), groupStyle2.getLayers());
+            assertEquals(groupStyle1.getStyles(), groupStyle2.getStyles());
+        } finally {
+            if (groupInfo != null) {
+                groupInfo.setLayerGroupStyles(new ArrayList<>());
+                getCatalog().save(groupInfo);
+            }
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleVisibility() throws Exception {
+        // check that if the mode is one that not support styles the LayerGroupStyle panel is not
+        // visible.
+        // check also that visibility switch when mode changes.
+        buildLayerGroup("testLgStylesNamed", LayerGroupInfo.Mode.NAMED);
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStylesNamed");
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(new PageParameters().add("group", groupInfo.getName()));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+
+            assertNull(
+                    tester.getComponentFromLastRenderedPage(
+                            "publishedinfo:tabs:panel:layerGroupStyles"));
+
+            FormTester ft = tester.newFormTester("publishedinfo");
+            // select mode single
+            ft.select("tabs:panel:mode", 0);
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:mode", "change");
+
+            // now visible
+            assertNotNull(
+                    tester.getComponentFromLastRenderedPage(
+                            "publishedinfo:tabs:panel:layerGroupStyles"));
+
+        } finally {
+            if (groupInfo != null) {
+                getCatalog().remove(groupInfo);
+            }
+        }
+    }
+
+    private void buildLayerGroup(String groupName) throws Exception {
+        buildLayerGroup(groupName, LayerGroupInfo.Mode.SINGLE);
+    }
+
+    private void buildLayerGroup(String groupName, LayerGroupInfo.Mode mode) throws Exception {
+        Catalog catalog = getCatalog();
+        String lakes = MockData.BASIC_POLYGONS.getLocalPart();
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.setName(groupName);
+        lg.setMode(mode);
+        lg.getLayers().add(catalog.getLayerByName(lakes));
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+        builder.calculateLayerGroupBounds(lg);
+        catalog.add(lg);
+    }
+
+    @Test
+    public void testLayerGroupStyleEditingIsolation() throws Exception {
+        buildLayerGroup("testLgStylesEditing", LayerGroupInfo.Mode.OPAQUE_CONTAINER);
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStylesEditing");
+        LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
+        StyleInfo styleName = new StyleInfoImpl(getCatalog());
+        styleName.setName("editingGroupStyle");
+        groupStyle.setName(styleName);
+        groupStyle.getStyles().add(getCatalog().getStyleByName("BasicPolygons"));
+        groupStyle.getLayers().add(getCatalog().getLayerByName("cite:BasicPolygons"));
+        groupInfo.getLayerGroupStyles().add(groupStyle);
+        getCatalog().save(groupInfo);
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(
+                            new PageParameters().add("group", "testLgStylesEditing"));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+            // Click on the link
+            FormTester ft = tester.newFormTester("publishedinfo");
+            ft.setValue(
+                    "tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupStyleName",
+                    "changeName");
+
+            groupInfo = getCatalog().getLayerGroupByName(groupInfo.prefixedName());
+            String savedName = groupInfo.getLayerGroupStyles().get(0).getName().getName();
+            assertFalse("changeName".equals(savedName));
+            assertEquals("editingGroupStyle", savedName);
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            groupInfo = getCatalog().getLayerGroupByName(groupInfo.prefixedName());
+            savedName = groupInfo.getLayerGroupStyles().get(0).getName().getName();
+            assertEquals("changeName", savedName);
+        } finally {
+            if (groupInfo != null) {
+                groupInfo.setLayerGroupStyles(new ArrayList<>());
+                getCatalog().save(groupInfo);
+            }
+        }
     }
 }

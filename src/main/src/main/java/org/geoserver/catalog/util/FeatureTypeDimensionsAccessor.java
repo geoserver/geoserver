@@ -43,9 +43,7 @@ public class FeatureTypeDimensionsAccessor {
      * @param removePrefix Removes the dimension name prefix if true.
      */
     public Map<String, DimensionInfo> getCustomDimensions(boolean removePrefix) {
-        return typeInfo.getMetadata()
-                .entrySet()
-                .stream()
+        return typeInfo.getMetadata().entrySet().stream()
                 .filter(
                         e ->
                                 e.getValue() instanceof DimensionInfo
@@ -76,8 +74,7 @@ public class FeatureTypeDimensionsAccessor {
         final Optional<String> attributeNameOpt =
                 dimEntry.map(x -> x.getValue()).map(x -> x.getAttribute());
         if (!attributeNameOpt.isPresent()) return Optional.empty();
-        return typeInfo.getAttributes()
-                .stream()
+        return typeInfo.getAttributes().stream()
                 .filter(a -> Objects.equals(a.getName(), attributeNameOpt.get()))
                 .map(a -> (Class) getBinding(a))
                 .findFirst();

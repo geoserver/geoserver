@@ -37,6 +37,11 @@ The process access mode configuration specifies how GeoServer will advertise sec
 * **CHALLENGE**: All processes will be shown in the capabilities documents, but an authentication request will be raised if a secured process is specifically requested by a user that does not have sufficient access rights
 * **MIXED**: The secured processes will not be shown in the capabilities documents for users not having sufficient access rights, but an authentication request will still be raised if a secured process is requested. 
 
+Complex Inputs
+--------------
+
+By default, Execute requests support loading complex inputs from references to local files and external servers. This behavior can be restricted in the **Complex Inputs** section. When the flag is checked, an Execute request with an input reference that is not an internal WCS/WFS/WPS request will result in a service exception reporting the error.
+
 Input limits
 ------------
 

@@ -158,3 +158,83 @@ Retrieving manifests
        curl -u admin:geoserver -XGET -H "Accept: text/xml"
          http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule&value=extension
 
+
+System Status
+-------------
+
+It is possible to request the available system information (monitoring data) through the GeoServer REST API. The supported formats are XML, JSON and HTML. 
+
+The available REST endpoints are: ::
+
+    /geoserver/rest/about/system-status
+    
+    /geoserver/rest/about/system-status.json
+
+    /geoserver/rest/about/system-status.xml
+
+    /geoserver/rest/about/system-status.html
+
+The HTML representation of the system data is equal to the ``System status`` tab representation:
+
+.. figure:: img/resthtml.png
+   
+   System status
+
+The XML and JSON representations are quite similar.  For each system information metric, the following attributes will be available:
+
+.. list-table::
+   :widths: 40 60
+
+   * - **Name**
+     - **Description**
+   * - name
+     - name of the metric
+   * - available
+     - TRUE if the system information value is available
+   * - description
+     - description of this system information
+   * - unit
+     - unit of the system information, can be empty 
+   * - category
+     - category of this system information
+   * - priority
+     - this value can be used to render the metrics in a predefined order
+   * - identifier
+     - identifies the resource associated with the metric, e.g. file partition name
+
+Example of XML representation:
+
+.. code-block:: xml
+
+   <metrics>
+     <metric>
+      <value>99614720</value>
+      <available>true</available>
+      <description>Partition [/dev/nvme0n1p2] total space</description>
+      <name>PARTITION_TOTAL</name>
+      <unit>bytes</unit>
+      <category>FILE_SYSTEM</category>
+      <identifier>/dev/nvme0n1p2</identifier>
+      <priority>507</priority>
+    </metric>
+    (...)
+
+Example of JSON representation:
+
+.. code-block:: json
+
+    {
+        "metrics": {
+            "metric": [
+                {
+                  "available": true,
+                  "category": "FILE_SYSTEM",
+                  "description": "Partition [/dev/nvme0n1p2] total space",
+                  "identifier": "/dev/nvme0n1p2",
+                  "name": "PARTITION_TOTAL",
+                  "priority": 507,
+                  "unit": "bytes",
+                  "value": 99614720
+                },
+              
+

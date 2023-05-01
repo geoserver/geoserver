@@ -97,8 +97,7 @@ public class ChangeSet {
         this.summaryOfChangedItems.add(
                 new ChangedItem(Priority.medium, modifiedTiles.getModifiedTiles()));
         this.extentOfChangedItems =
-                extentOfChangedItems
-                        .stream()
+                extentOfChangedItems.stream()
                         .map(re -> new BoundsAndCRS(re))
                         .collect(Collectors.toList());
         this.modifiedTiles = modifiedTiles;

@@ -112,7 +112,7 @@ public class GeoServerResourcePersister implements CatalogListener {
 
     private void removeStyle(StyleInfo s) throws IOException {
         Resource sld = dd.style(s);
-        if (Resources.exists(sld)) {
+        if (Resources.exists(sld) && sld.getType() == Type.RESOURCE) {
             Resource sldBackup = dd.get(sld.path() + ".bak");
             int i = 1;
             while (Resources.exists(sldBackup)) {

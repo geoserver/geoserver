@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
@@ -63,14 +64,13 @@ public class CoverageController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "coveragestores/{storeName}/coverages",
-        produces = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            path = "coveragestores/{storeName}/coverages",
+            produces = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public Object coveragesGet(
             @RequestParam(name = "list", required = false) String list,
             @PathVariable String workspaceName,
@@ -88,15 +88,14 @@ public class CoverageController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "coverages",
-        produces = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_HTML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            path = "coverages",
+            produces = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.TEXT_HTML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public Object coveragesGet(
             @RequestParam(name = "list", required = false) String list,
             @PathVariable String workspaceName) {
@@ -111,8 +110,7 @@ public class CoverageController extends AbstractCatalogController {
             // we need to ask the coverage reader of each available coverage store which coverages
             // are available
             List<String> coverages =
-                    catalog.getCoverageStores()
-                            .stream()
+                    catalog.getCoverageStores().stream()
                             .flatMap(store -> getStoreCoverages(store).stream())
                             .collect(Collectors.toList());
             return new StringsList(coverages, "coverageName");
@@ -123,15 +121,14 @@ public class CoverageController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "coveragestores/{storeName}/coverages/{coverageName}",
-        produces = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_HTML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            path = "coveragestores/{storeName}/coverages/{coverageName}",
+            produces = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.TEXT_HTML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public RestWrapper<CoverageInfo> coverageGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
@@ -152,15 +149,14 @@ public class CoverageController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "coverages/{coverageName}",
-        produces = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_HTML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            path = "coverages/{coverageName}",
+            produces = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.TEXT_HTML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public RestWrapper<CoverageInfo> coverageGet(
             @PathVariable String workspaceName, @PathVariable String coverageName) {
         // get the workspace name space
@@ -176,13 +172,12 @@ public class CoverageController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        path = {"coverages", "coveragestores/{storeName}/coverages"},
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE
-        }
-    )
+            path = {"coverages", "coveragestores/{storeName}/coverages"},
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     public ResponseEntity<String> coveragePost(
             @RequestBody CoverageInfo coverage,
             @PathVariable String workspaceName,
@@ -209,13 +204,12 @@ public class CoverageController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        path = "coveragestores/{storeName}/coverages/{coverageName}",
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE
-        }
-    )
+            path = "coveragestores/{storeName}/coverages/{coverageName}",
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     public void coveragePut(
             @RequestBody CoverageInfo coverage,
             @PathVariable String workspaceName,
@@ -263,6 +257,19 @@ public class CoverageController extends AbstractCatalogController {
         catalog.remove(c);
         catalog.getResourcePool().clear(c.getStore());
         LOGGER.info("DELETE coverage " + storeName + "," + coverageName);
+    }
+
+    @RequestMapping(
+            value = "coveragestores/{storeName}/coverages/{coverageName}/reset",
+            method = {RequestMethod.POST, RequestMethod.PUT})
+    public void reset(
+            @PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable String coverageName) {
+        CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspaceName, storeName);
+        CoverageInfo original = catalog.getCoverageByCoverageStore(cs, coverageName);
+        checkCoverageExists(original, workspaceName, coverageName);
+        catalog.getResourcePool().clear(original);
     }
 
     private List<String> getStoreCoverages(CoverageStoreInfo coverageStore) {

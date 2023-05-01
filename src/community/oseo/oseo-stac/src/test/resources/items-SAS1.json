@@ -33,6 +33,10 @@
       },
       "collection": "${eop:parentIdentifier}",
       "assets": "${assets}",
+      "dynamicIncludeFlatTest": {
+        "thumbnail2":"thumbnail2",
+        "$includeFlat":"${assets}"
+      },
       "links": [
         "$include{parentLink.json}",
         {

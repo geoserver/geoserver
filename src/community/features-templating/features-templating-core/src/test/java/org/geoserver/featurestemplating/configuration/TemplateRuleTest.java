@@ -71,8 +71,7 @@ public class TemplateRuleTest {
         rule3.setPriority(2);
         // test selection and sorting
         List<TemplateRule> rules =
-                Arrays.asList(rule, rule2, rule3)
-                        .stream()
+                Arrays.asList(rule, rule2, rule3).stream()
                         .filter(r -> r.applyRule(Dispatcher.REQUEST.get()))
                         .sorted(new TemplateRule.TemplateRuleComparator())
                         .collect(Collectors.toList());

@@ -918,10 +918,18 @@
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="Normalize">
-    <xsd:complexType/>
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="sld:VendorOption"></xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
   </xsd:element>
   <xsd:element name="Histogram">
-    <xsd:complexType/>
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="sld:VendorOption"></xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
   </xsd:element>
   <xsd:element name="GammaValue" type="xsd:double"/>
 

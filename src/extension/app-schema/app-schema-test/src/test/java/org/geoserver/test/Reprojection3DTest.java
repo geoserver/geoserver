@@ -6,6 +6,7 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -32,49 +33,86 @@ public class Reprojection3DTest extends AbstractAppSchemaTestSupport {
                         "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4891");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
 
-        assertEquals(
-                "3",
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension",
-                        doc));
-        assertEquals(
-                "http://www.opengis.net/gml/srs/epsg.xml#4891",
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsName",
-                        doc));
+        if (!isGeopkgTest()) {
+            assertEquals(
+                    "3",
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension",
+                            doc));
+            assertEquals(
+                    "http://www.opengis.net/gml/srs/epsg.xml#4891",
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsName",
+                            doc));
 
-        String point =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/gml:pos",
-                        doc);
-        assertTrue(Double.parseDouble(point.split(" ")[2]) - (112 - 7.91243825667) < 0.00001);
+            String point =
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/gml:pos",
+                            doc);
+            assertTrue(Double.parseDouble(point.split(" ")[2]) - (112 - 7.91243825667) < 0.00001);
 
-        point =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos",
-                        doc);
-        assertTrue(Double.parseDouble(point.split(" ")[2]) - (7 - 7.87193142436) < 0.00001);
+            point =
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos",
+                            doc);
+            assertTrue(Double.parseDouble(point.split(" ")[2]) - (7 - 7.87193142436) < 0.00001);
 
-        point =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gsml:shape/gml:Point/gml:pos",
-                        doc);
-        assertTrue(Double.parseDouble(point.split(" ")[2]) - (5 - 7.97579399217) < 0.00001);
+            point =
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gsml:shape/gml:Point/gml:pos",
+                            doc);
+            assertTrue(Double.parseDouble(point.split(" ")[2]) - (5 - 7.97579399217) < 0.00001);
 
-        point =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gsml:shape/gml:Point/gml:pos",
-                        doc);
-        assertTrue(Double.parseDouble(point.split(" ")[2]) - (88 - 7.82161881682) < 0.00001);
+            point =
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gsml:shape/gml:Point/gml:pos",
+                            doc);
+            assertTrue(Double.parseDouble(point.split(" ")[2]) - (88 - 7.82161881682) < 0.00001);
 
-        point =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf5']/gsml:shape/gml:LineString/gml:posList",
-                        doc);
-        String[] coords = point.split(" ");
-        assertTrue(Double.parseDouble(coords[2]) - (112 - 7.91243825667) < 0.00001);
-        assertTrue(Double.parseDouble(coords[5]) - (7 - 7.87193142436) < 0.00001);
-        assertTrue(Double.parseDouble(coords[8]) - (5 - 7.97579399217) < 0.00001);
-        assertTrue(Double.parseDouble(coords[11]) - (88 - 7.82161881682) < 0.00001);
+            point =
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf5']/gsml:shape/gml:LineString/gml:posList",
+                            doc);
+            String[] coords = point.split(" ");
+            assertTrue(Double.parseDouble(coords[2]) - (112 - 7.91243825667) < 0.00001);
+            assertTrue(Double.parseDouble(coords[5]) - (7 - 7.87193142436) < 0.00001);
+            assertTrue(Double.parseDouble(coords[8]) - (5 - 7.97579399217) < 0.00001);
+            assertTrue(Double.parseDouble(coords[11]) - (88 - 7.82161881682) < 0.00001);
+        } else {
+            assertEquals(
+                    "2",
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension",
+                            doc));
+            assertEquals(
+                    "http://www.opengis.net/gml/srs/epsg.xml#4891",
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsName",
+                            doc));
+
+            String point =
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/gml:pos",
+                            doc);
+            assertTrue(Double.parseDouble(point.split(" ")[1]) - (112 - 7.91243825667) < 0.00001);
+
+            point =
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos",
+                            doc);
+            assertTrue(Double.parseDouble(point.split(" ")[1]) - (7 - 7.87193142436) < 0.00001);
+
+            point =
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gsml:shape/gml:Point/gml:pos",
+                            doc);
+            assertTrue(Double.parseDouble(point.split(" ")[1]) - (5 - 7.97579399217) < 0.00001);
+
+            point =
+                    evaluate(
+                            "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gsml:shape/gml:Point/gml:pos",
+                            doc);
+            assertTrue(Double.parseDouble(point.split(" ")[1]) - (88 - 7.82161881682) < 0.00001);
+        }
     }
 }

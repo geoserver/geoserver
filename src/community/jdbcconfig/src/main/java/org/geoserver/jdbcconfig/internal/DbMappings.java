@@ -280,7 +280,7 @@ public class DbMappings {
     private Map<Integer, Map<String, PropertyType>> loadPropertyTypes(
             NamedParameterJdbcOperations template) {
         final String query =
-                "select oid, target_property, type_id, name, collection, text from property_type";
+                "SELECT oid, target_property, type_id, name, collection, text FROM property_type";
         RowMapper<PropertyType> rowMapper =
                 new RowMapper<PropertyType>() {
                     @Override
@@ -329,7 +329,7 @@ public class DbMappings {
     }
 
     private BiMap<Integer, Class<?>> loadTypes(NamedParameterJdbcOperations template) {
-        String sql = "select oid, typename from type";
+        String sql = "SELECT oid, typename FROM type";
         SqlRowSet rowSet = template.queryForRowSet(sql, params("", ""));
         BiMap<Integer, Class<?>> types = HashBiMap.create();
         if (rowSet.first()) {
@@ -354,7 +354,7 @@ public class DbMappings {
         final String typeName = clazz.getName();
         String sql =
                 String.format(
-                        "insert into type (typename, oid) values (:typeName, %s)",
+                        "INSERT INTO type (typename, oid) VALUES (:typeName, %s)",
                         dialect.nextVal("seq_TYPE"));
         int update = template.update(sql, params("typeName", typeName));
         if (1 == update) {
@@ -487,8 +487,8 @@ public class DbMappings {
 
         log("Checking for ", propertyName);
         String query =
-                "select count(*) from property_type " //
-                        + "where type_id = :objectType and name = :propName";
+                "SELECT COUNT(*) FROM property_type "
+                        + "WHERE type_id = :objectType AND name = :propName";
         params = params("objectType", typeId, "propName", propertyName);
         logStatement(query, params);
         final int exists = template.queryForObject(query, params, Integer.class);
@@ -502,8 +502,8 @@ public class DbMappings {
 
             String insert =
                     String.format(
-                            "insert into property_type (oid, target_property, type_id, name, collection, text) "
-                                    + "values (%s, :target, :type, :name, :collection, :isText)",
+                            "INSERT INTO property_type (oid, target_property, type_id, name, collection, text) "
+                                    + "VALUES (%s, :target, :type, :name, :collection, :isText)",
                             dialect.nextVal("seq_PROPERTY_TYPE"));
 
             params =

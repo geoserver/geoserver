@@ -78,6 +78,9 @@
 		<constructor-arg index="0" ref="JMSManager" />
 	</bean>
 
+	<bean id="JMSXStreamInitializer"
+		  class="org.geoserver.cluster.JMSXStreamPersisterInitializer" />
+
     <!-- turn of default webui redirect -->
     <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer" >
         <property name="properties"> 

@@ -38,8 +38,7 @@ public class TilesSampleDataProvider implements SampleDataProvider {
             if (tileLayer != null) {
                 List<MimeType> mimeTypes = tileLayer.getMimeTypes();
                 // is there any vector format, that is, actual "data"?
-                return mimeTypes
-                        .stream()
+                return mimeTypes.stream()
                         .filter(m -> m.isVector())
                         .map(
                                 m -> {

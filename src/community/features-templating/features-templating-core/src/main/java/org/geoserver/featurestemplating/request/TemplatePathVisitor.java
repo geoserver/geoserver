@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -16,12 +17,14 @@ import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
+import org.geoserver.featurestemplating.expressions.aggregate.StreamFunction;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.PropertyName;
 
 /**
@@ -31,12 +34,17 @@ import org.opengis.filter.expression.PropertyName;
 public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     protected int currentEl;
-    protected String currentSource;
+    protected Stack<String> currentSource = new Stack<>();
+    private int contextPos = 0;
     boolean isSimple;
     private List<Filter> filters = new ArrayList<>();
 
     public TemplatePathVisitor(FeatureType type) {
-        this.isSimple = type instanceof SimpleFeatureType;
+        this(type instanceof SimpleFeatureType);
+    }
+
+    TemplatePathVisitor(boolean isSimple) {
+        this.isSimple = isSimple;
     }
 
     @Override
@@ -68,10 +76,10 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         }
 
         try {
-            currentSource = null;
+            currentSource = new Stack<>();
             currentEl = 0;
-            Expression newExpression = findFunction(builder, Arrays.asList(elements));
-            newExpression = (Expression) findXpathArg(newExpression);
+            Expression expression = findFunction(builder, Arrays.asList(elements));
+            Expression newExpression = findXpathArg(expression);
             if (newExpression != null) {
                 return newExpression;
             }
@@ -84,26 +92,14 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         return null;
     }
 
-    private Object findXpathArg(Object newExpression) {
-        DuplicatingFilterVisitor duplicatingFilterVisitor =
-                new DuplicatingFilterVisitor() {
-                    @Override
-                    public Object visit(PropertyName filter, Object extraData) {
-                        filter = (PropertyName) super.visit(filter, extraData);
-                        if (filter instanceof AttributeExpressionImpl) {
-                            AttributeExpressionImpl pn = (AttributeExpressionImpl) filter;
-                            pn.setPropertyName(completeXPath(pn.getPropertyName()));
-                            filter = pn;
-                        }
-                        return filter;
-                    }
-                };
-        if (newExpression instanceof Expression) {
-            return ((Expression) newExpression).accept(duplicatingFilterVisitor, null);
-        } else if (newExpression instanceof Filter) {
-            return ((Filter) newExpression).accept(duplicatingFilterVisitor, null);
-        }
-        return null;
+    private Expression findXpathArg(Expression expression) {
+        PropertyNameCompleterVisitor completerVisitor = new PropertyNameCompleterVisitor();
+        return (Expression) expression.accept(completerVisitor, null);
+    }
+
+    private Filter findXpathArg(Filter expression) {
+        PropertyNameCompleterVisitor completerVisitor = new PropertyNameCompleterVisitor();
+        return (Filter) expression.accept(completerVisitor, null);
     }
 
     /**
@@ -133,6 +129,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
                 addFilter(dvb.getFilter());
+                this.contextPos = dvb.getContextPos();
                 if (dvb.getXpath() != null) return (PropertyName) super.visit(dvb.getXpath(), null);
                 else {
                     return super.visit(dvb.getCql(), null);
@@ -217,23 +214,10 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
     private void pickSourceAndFilter(SourceBuilder sb) {
         String source = sb.getStrSource();
         if (source != null) {
-            if (currentSource != null) {
-                source = "/" + source;
-                currentSource += source;
-            } else {
-                currentSource = source;
-            }
+            if (source.indexOf(".") != -1) source = source.replace(".", "/");
+            currentSource.add(source);
         }
         addFilter(sb.getFilter());
-    }
-
-    /**
-     * Add to the xpath, xpath parts taken from the $source attribute. This is done for Complex
-     * Features only
-     */
-    private String completeXPath(String xpath) {
-        if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
-        return xpath;
     }
 
     private void addFilter(Filter filter) {
@@ -259,5 +243,86 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
                 result = true;
         }
         return result;
+    }
+
+    /**
+     * A visitor that completes the property name extracted for backwards mapping, using the sources
+     * if present.
+     */
+    private class PropertyNameCompleterVisitor extends DuplicatingFilterVisitor {
+        @Override
+        public Object visit(PropertyName filter, Object extraData) {
+            filter = (PropertyName) super.visit(filter, extraData);
+            if (filter instanceof AttributeExpressionImpl) {
+                AttributeExpressionImpl pn = (AttributeExpressionImpl) filter;
+                String property;
+                if (canCompleteXpath(extraData)) property = completeXPath(pn.getPropertyName());
+                else property = pn.getPropertyName();
+                pn.setPropertyName(property);
+                filter = pn;
+            }
+            return filter;
+        }
+
+        /**
+         * Add to the xpath, xpath parts taken from the $source attribute. This is done for Complex
+         * Features only
+         */
+        private String completeXPath(String xpath) {
+            if (!currentSource.isEmpty() && !isSimple) {
+                Stack<String> sourceParts = new Stack<>();
+                sourceParts.addAll(currentSource);
+                xpath = completeXpath(sourceParts, xpath);
+            }
+            return xpath;
+        }
+
+        /**
+         * Check if extradata is the flag sent by the Function visit method for Stream Function.
+         *
+         * @param extradata
+         * @return true if extradata is true, false otherwise.
+         */
+        private boolean canCompleteXpath(Object extradata) {
+            return extradata == null
+                    || (extradata instanceof Boolean && ((Boolean) extradata).booleanValue());
+        }
+
+        private String completeXpath(Stack<String> source, String xpath) {
+            String result = null;
+            int ctxPos = contextPos;
+            while (!source.isEmpty()) {
+                String sourcePart = source.pop();
+                if (ctxPos <= 0)
+                    if (result == null) result = sourcePart.concat("/");
+                    else result = sourcePart.concat("/").concat(result);
+                ctxPos--;
+            }
+            if (result == null) result = xpath;
+            else result = result.concat(xpath);
+            return result;
+        }
+
+        @Override
+        public Object visit(Function expression, Object extraData) {
+            // Stream Function is a special case since after the first property name
+            // all the next ones evaluate on the result of the first one.
+            if (expression instanceof StreamFunction) {
+                StreamFunction streamFunction = (StreamFunction) expression;
+                List<Expression> expressions = streamFunction.getParameters();
+                int size = expressions.size();
+                int pnCounter = 0;
+                for (int i = 0; i < size; i++) {
+                    Expression e = expressions.get(i);
+                    if (e instanceof PropertyName) {
+                        e = (Expression) visit((PropertyName) e, pnCounter == 0);
+                        pnCounter++;
+                    } else e = visit(e, extraData);
+                    expressions.set(i, e);
+                }
+                return expression;
+            }
+            return super.visit(expression, extraData);
+        }
     }
 }

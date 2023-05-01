@@ -33,17 +33,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"coordinates"}
-)
+        name = "",
+        propOrder = {"coordinates"})
 public class MultiPoint {
 
     @XmlList
     @XmlElement(
-        required = true,
-        name = "map-coordinates",
-        namespace = "http://www.w3.org/1999/xhtml"
-    )
+            required = true,
+            name = "map-coordinates",
+            namespace = "http://www.w3.org/1999/xhtml")
     protected List<String> coordinates;
 
     /**

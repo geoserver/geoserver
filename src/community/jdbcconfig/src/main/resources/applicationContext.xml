@@ -33,6 +33,7 @@
   </bean>
 
   <bean id="JDBCConfigDB" class="org.geoserver.jdbcconfig.internal.ConfigDatabase">
+    <constructor-arg ref="jdbcConfigProperties" />
     <constructor-arg ref="jdbcConfigDataSource" />
     <constructor-arg ref="jdbcPersistenceBinding" />
   </bean>

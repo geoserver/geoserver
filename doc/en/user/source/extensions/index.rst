@@ -27,7 +27,6 @@ This section describes most of the extensions available for GeoServer. Other dat
    printing/index
    querylayer/index
    vectortiles/index
-   xslt/index
    wcs20eo/index
    mongodb/index
    sldservice/index

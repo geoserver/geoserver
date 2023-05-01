@@ -1809,7 +1809,6 @@
             <descriptor>release/ext-cas.xml</descriptor>
             <descriptor>release/ext-monitor.xml</descriptor>
             <descriptor>release/ext-mongodb.xml</descriptor>
-            <descriptor>release/ext-xslt.xml</descriptor>
             <descriptor>release/ext-inspire.xml</descriptor>
             <descriptor>release/ext-css.xml</descriptor>
             <descriptor>release/ext-csw.xml</descriptor>

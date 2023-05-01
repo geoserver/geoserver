@@ -47,23 +47,36 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
-# The short X.Y version.
+# The replacement |version| provides short X.Y version.
 version = '2.23'
 
-# The full version, including alpha/beta/rc tags.
-release = '2.23-SNAPSHOT'
+# The relacement |release| provides the full version, including alpha/beta/rc tags.
+
+# sphinx-build -D release=${project.version} overrides release configuration
+# but only after conf.py has been used...
+
+# check environmental variable to see if ant build.xml passed in project.version
+project_version = os.getenv("project.version")
+if project_version == None: 
+  release = '2.23-SNAPSHOT'
+else:
+  release = project_version
 
 # Used in build and documentation links
-branch = 'main'
+# branch = version+'.x'
+branch = version+'.x'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
-download = release
 if release.find('SNAPSHOT') != -1:
-   release = '2.23.x'
+   tags.add('snapshot')
+   download = version+'.x'
+   latest = '-latest'
    download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
    download_extension = 'https://build.geoserver.org/geoserver/'+branch+'/ext-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
    download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
 else:
+   download = release
+   latest = ''
    download_release = 'http://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/geoserver-'+release+'-%s.zip'
    download_extension = 'http://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/extensions/geoserver-'+release+'-%s-plugin.zip'
    download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'.x-SNAPSHOT-%s-plugin.zip'
@@ -115,7 +128,7 @@ extlinks = {
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-%s'),
     'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s', None),
     'geotools': ('https://docs.geotools.org/latest/userguide/%s', None),
-    'download_release': (download_release,'geoserver-'+download+'-%s.zip'),
+    'download_release': (download_release,'geoserver-'+download+latest+'-%s.zip'),
     'download_extension': (download_extension,'geoserver-'+download+'-%s-plugin.zip'),
     'download_community': (download_community,'geoserver-'+download+'-%s-plugin.zip')
 }

@@ -41,6 +41,7 @@ officially part of the GeoServer releases. They are however built along with the
    gwc-mbtiles/index
    gwc-sqlite/index
    hana/index
+   imagemap
    importer-jdbc/index
    jdbcconfig/index
    jdbcstore/index

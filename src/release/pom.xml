@@ -154,11 +154,6 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-imagemap</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-geopkg-output</artifactId>
       <version>${project.version}</version>
     </dependency>

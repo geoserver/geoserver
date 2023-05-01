@@ -34,7 +34,6 @@
           <descriptors>
             <descriptor>release/ext-jdbcconfig.xml</descriptor>
             <descriptor>release/ext-dds.xml</descriptor>
-            <descriptor>release/ext-wms-eo.xml</descriptor>
             <descriptor>release/ext-colormap.xml</descriptor>
             <descriptor>release/ext-mbtiles.xml</descriptor>
             <descriptor>release/ext-mbtiles-store.xml</descriptor>
@@ -202,7 +201,6 @@
       <modules>
         <module>dds</module>
         <module>jdbcconfig</module>
-        <module>wms-eo</module>
         <module>colormap</module>
         <module>mbtiles</module>
         <module>geopkg</module>
@@ -281,17 +279,6 @@
       </activation>
       <modules>
         <module>pgraster</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wms-eo</id>
-      <activation>
-        <property>
-          <name>wms-eo</name>
-        </property>
-      </activation>
-      <modules>
-        <module>wms-eo</module>
       </modules>
     </profile>
     <profile>

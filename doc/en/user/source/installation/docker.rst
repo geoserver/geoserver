@@ -192,7 +192,7 @@ For the current list see GeoServer `build server <https://build.geoserver.org/ge
     gwc-distributed            ogcapi-styles              vector-mosaic               
     gwc-mbtiles                ogcapi-tiled-features      vsi                         
     gwc-sqlite                 ogcapi-tiles               webp                        
-    hz-cluster                 ogr-datastore              wms-eo                      
-    importer-jdbc              opensearch-eo              wmts-styles                 
-    jdbc-metrics               ows-simulate               wps-remote                  
+    hz-cluster                 ogr-datastore              wmts-styles
+    importer-jdbc              opensearch-eo              wps-remote                  
+    jdbc-metrics               ows-simulate                                
 

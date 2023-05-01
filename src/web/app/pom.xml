@@ -856,21 +856,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>wms-eo</id>
-      <activation>
-        <property>
-          <name>wms-eo</name>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-wms-eo</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>wcs2_0-eo</id>
       <dependencies>
         <dependency>

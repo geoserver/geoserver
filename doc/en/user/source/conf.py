@@ -67,14 +67,17 @@ else:
 branch = 'main'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
-download = release
 if release.find('SNAPSHOT') != -1:
    tags.add('snapshot')
+   download = version+'.x'
    release = '2.24.x'
+   latest = '-latest'
    download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
    download_extension = 'https://build.geoserver.org/geoserver/'+branch+'/ext-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
    download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
 else:
+   download = release
+   latest = ''
    download_release = 'http://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/geoserver-'+release+'-%s.zip'
    download_extension = 'http://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/extensions/geoserver-'+release+'-%s-plugin.zip'
    download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'.x-SNAPSHOT-%s-plugin.zip'
@@ -126,7 +129,7 @@ extlinks = {
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-%s'),
     'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s', None),
     'geotools': ('https://docs.geotools.org/latest/userguide/%s', None),
-    'download_release': (download_release,'geoserver-'+download+'-%s.zip'),
+    'download_release': (download_release,'geoserver-'+download+latest+'-%s.zip'),
     'download_extension': (download_extension,'geoserver-'+download+'-%s-plugin.zip'),
     'download_community': (download_community,'geoserver-'+download+'-%s-plugin.zip')
 }

@@ -171,6 +171,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         Query query = new Query();
         query.setFilter(FF.equal(FF.property("name"), FF.literal(collectionName), true));
         queryDecorator.accept(query);
+        // This method is only called by REST API endpoints that should ignore the workspace
         FeatureCollection<FeatureType, Feature> fc = queryCollections(query);
         Feature feature = DataUtilities.first(fc);
         if (feature == null) {

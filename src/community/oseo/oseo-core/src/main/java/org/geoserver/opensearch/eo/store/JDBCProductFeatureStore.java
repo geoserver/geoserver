@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
+import org.geoserver.ows.LocalWorkspace;
 import org.geotools.data.Join;
 import org.geotools.data.Query;
 import org.geotools.data.collection.ListFeatureCollection;
@@ -68,7 +70,10 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
 
     @Override
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
-        return openSearchAccess.getDelegateStore().getFeatureSource(JDBCOpenSearchAccess.PRODUCT);
+        WorkspaceInfo workspaceInfo = LocalWorkspace.get();
+        SimpleFeatureSource delegate =
+                openSearchAccess.getDelegateStore().getFeatureSource(JDBCOpenSearchAccess.PRODUCT);
+        return new WorkspaceFeatureSource(delegate, workspaceInfo, openSearchAccess);
     }
 
     @Override

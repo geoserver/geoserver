@@ -6,9 +6,14 @@ package org.geoserver.opensearch.eo.store;
 
 import java.io.IOException;
 import java.util.logging.Logger;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.LocalWorkspace;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.FilterFactory2;
 
 /**
  * Maps joined simple features up to a complex Collection feature
@@ -18,6 +23,7 @@ import org.opengis.feature.type.FeatureType;
 public class JDBCCollectionFeatureStore extends AbstractMappingStore {
 
     static final Logger LOGGER = Logging.getLogger(JDBCCollectionFeatureStore.class);
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     public JDBCCollectionFeatureStore(
             JDBCOpenSearchAccess openSearchAccess, FeatureType collectionFeatureType)
@@ -27,9 +33,18 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
 
     @Override
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
-        return openSearchAccess
-                .getDelegateStore()
-                .getFeatureSource(JDBCOpenSearchAccess.COLLECTION);
+        SimpleFeatureSource delegate =
+                openSearchAccess
+                        .getDelegateStore()
+                        .getFeatureSource(JDBCOpenSearchAccess.COLLECTION);
+        // if we're in a OWS Dispatcher handled request, check for workspace
+        if (Dispatcher.REQUEST.get() != null) {
+            WorkspaceInfo workspaceInfo = LocalWorkspace.get();
+            return new WorkspaceFeatureSource(delegate, workspaceInfo, openSearchAccess);
+        } else {
+            // otherwise just return the delegate because its coming from the REST API
+            return delegate;
+        }
     }
 
     @Override

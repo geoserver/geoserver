@@ -181,7 +181,11 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     protected abstract SimpleFeatureSource getDelegateCollectionSource() throws IOException;
 
     protected SimpleFeatureStore getDelegateCollectionStore() throws IOException {
-        SimpleFeatureStore fs = (SimpleFeatureStore) getDelegateCollectionSource();
+        SimpleFeatureSource simpleFeatureSource = getDelegateCollectionSource();
+        if (simpleFeatureSource instanceof WorkspaceFeatureSource) {
+            simpleFeatureSource = ((WorkspaceFeatureSource) simpleFeatureSource).getDelegate();
+        }
+        SimpleFeatureStore fs = (SimpleFeatureStore) simpleFeatureSource;
         if (transaction != null) {
             fs.setTransaction(transaction);
         }
@@ -815,6 +819,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         SimpleFeatureSource fs = getDelegateCollectionSource();
         Transaction t = getTransaction();
         if (t != Transaction.AUTO_COMMIT && t != null) {
+            if (fs instanceof WorkspaceFeatureSource) {
+                fs = ((WorkspaceFeatureSource) fs).getDelegate();
+            }
             ((SimpleFeatureStore) fs).setTransaction(transaction);
         }
         SimpleFeatureCollection idFeatureCollection = fs.getFeatures(filter);

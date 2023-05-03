@@ -173,9 +173,11 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         JSONObject feature = (JSONObject) getAsJSON("/rest/oseo/collections/TEST123");
         JSONObject properties = feature.getJSONObject("properties");
         JSONArray queryables = properties.getJSONArray("queryables");
+        JSONArray workspaces = properties.getJSONArray("workspaces");
         properties.element("eo:productType", "PT-123");
         properties.element("timeStart", "2017-01-01T00:00:00Z");
         queryables.element(0, "eo:orbitType");
+        workspaces.element(0, "cite");
 
         // send it back
         response =
@@ -191,6 +193,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 "[\"eo:orbitType\",\"eo:productType\",\"eo:platform\",\"eo:platformSerialIdentifier\",\"eo:instrument\",\"eo:sensorType\",\"eo:compositeType\"]",
                 json.read("$.properties['queryables']").toString());
+        assertEquals("cite", json.read("$.properties['workspaces'][0]"));
     }
 
     @Test

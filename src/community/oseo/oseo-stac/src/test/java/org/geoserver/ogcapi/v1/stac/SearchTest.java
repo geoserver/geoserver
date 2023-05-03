@@ -100,6 +100,28 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testCollectionsCqlGetWorkspace() throws Exception {
+        DocumentContext docMatchingWorkspace =
+                getAsJSONPath(
+                        "sf/ogc/stac/v1/search?"
+                                + "&filter=collection='SENTINEL2'&filter-lang=cql2-text",
+                        200);
+        assertEquals(Integer.valueOf(10), docMatchingWorkspace.read("numberReturned"));
+        DocumentContext docMismatchingWorkspace =
+                getAsJSONPath(
+                        "cite/ogc/stac/v1/search?"
+                                + "&filter=collection='SENTINEL2'&filter-lang=cql2-text",
+                        200);
+        assertEquals(Integer.valueOf(0), docMismatchingWorkspace.read("numberReturned"));
+        DocumentContext docMismatchedButNullInArray =
+                getAsJSONPath(
+                        "ogc/stac/v1/search?"
+                                + "&filter=collection='LANDSAT8'&filter-lang=cql2-text",
+                        200);
+        assertEquals(Integer.valueOf(2), docMismatchedButNullInArray.read("numberReturned"));
+    }
+
+    @Test
     public void testCollectionsCqlGetQueryableNotInList() throws Exception {
         // constellation is queryable only for LANDSAT8 not SENTINEL2
         DocumentContext doc =

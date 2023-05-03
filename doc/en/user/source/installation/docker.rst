@@ -163,7 +163,7 @@ To work with community modules you must be using the GeoServer |version|.x night
 
 .. parsed-literal::
 
-   docker run -it -p8080:8080 docker.osgeo.org/geoserver:|version|.x \\
+   docker run -it -p8080:8080 \\
      \-\-env INSTALL_EXTENSIONS=true \\
      \-\-env STABLE_EXTENSIONS="ysld,h2" \\
      \-\-env COMMUNITY_EXTENSIONS="ogcapi" \\

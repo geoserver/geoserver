@@ -54,7 +54,8 @@ a more up to date version of it):
       "eoSecurityConstraints" boolean,
       "eoDissemination" varchar,
       "eoAcquisitionStation" varchar,
-      "queryables" varchar[]
+      "queryables" varchar[],
+      "workspaces" varchar[]
     );
 
 Most of the attributes should be rather self-explanatory to those familiar with OGC Earth Observation terminology.
@@ -71,6 +72,10 @@ Specific attributes notes:
   temporal ones
 * The ``htmlDescription`` drives the generation of the visible part of the Atom OpenSearch response, see the
   dedicated section later to learn more about filling it
+* The ``workspaces`` field is an array used to specify the GeoServer workspaces that the collection is associated with.
+  If the field is left empty or null, or if the array contains a null value, the collection will be associated with all
+  workspaces.  If the field is populated, the collection will only be associated with the specified workspaces and will
+  be hidden from workspace specific STAC calls.
 
 The ``collection_ogclink`` table contains the OGC links towards the services providing visualization and
 download access to the collection contents. See the "OGC links" section to gather more information about it.

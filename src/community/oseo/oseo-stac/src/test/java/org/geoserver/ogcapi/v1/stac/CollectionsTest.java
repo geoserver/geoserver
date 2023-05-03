@@ -102,6 +102,32 @@ public class CollectionsTest extends STACTestSupport {
     }
 
     @Test
+    public void testCollectionsWorkspaceJSON() throws Exception {
+        DocumentContext jsonCite = getAsJSONPath("cite/ogc/stac/v1/collections?f=json", 200);
+        // all collections are accounted for (one is disabled, two have a workspace other than cite)
+        OpenSearchAccess osa = getOpenSearchAccess();
+        Integer collectionCountCite = osa.getCollectionSource().getCount(Query.ALL) - 3;
+        assertEquals(collectionCountCite, jsonCite.read("$.collections.length()"));
+        // no Sentinel2 collection in cite workspace because it has a workspace other than cite
+        List listCite = jsonCite.read("collections[?(@.id == 'SENTINEL2')]", List.class);
+        assertEquals(0, listCite.size());
+        // sf workspace has Sentinel2 collection because it explicitly has a sf workspace reference
+        DocumentContext jsonSf = getAsJSONPath("sf/ogc/stac/v1/collections?f=json", 200);
+        Integer collectionCountSf = osa.getCollectionSource().getCount(Query.ALL) - 2;
+        assertEquals(collectionCountSf, jsonSf.read("$.collections.length()"));
+        List listSf = jsonSf.read("collections[?(@.id == 'SENTINEL2')]", List.class);
+        assertEquals(1, listSf.size());
+        // sf workspace has Sentinel1 collection because its workspaces array is null
+        List listSf2 = jsonSf.read("collections[?(@.id == 'SENTINEL1')]", List.class);
+        assertEquals(1, listSf2.size());
+        // global workspace has Landsat8 collection because thereis a null value in the workspaces
+        // array
+        DocumentContext jsonGlobal = getAsJSONPath("ogc/stac/v1/collections?f=json", 200);
+        List listGlobal = jsonGlobal.read("collections[?(@.id == 'LANDSAT8')]", List.class);
+        assertEquals(1, listGlobal.size());
+    }
+
+    @Test
     public void testCollectionHTML() throws Exception {
         Document document = getAsJSoup("ogc/stac/v1/collections/SENTINEL2?f=html");
         // page title (it's the right page?)

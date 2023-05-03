@@ -6,6 +6,7 @@ package org.geoserver.opensearch.eo;
 
 import java.io.IOException;
 import java.util.List;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
@@ -20,9 +21,11 @@ import org.geotools.data.DataAccess;
 public class OpenSearchAccessProvider {
 
     private GeoServer geoServer;
+    private Catalog rawCatalog;
 
-    public OpenSearchAccessProvider(GeoServer geoServer) {
+    public OpenSearchAccessProvider(GeoServer geoServer, Catalog rawCatalog) {
         this.geoServer = geoServer;
+        this.rawCatalog = rawCatalog;
     }
 
     public OSEOInfo getService() {
@@ -68,7 +71,8 @@ public class OpenSearchAccessProvider {
                     "OpenSearchAccess is not configured in the"
                             + " OpenSearch for EO panel, please do so");
         }
-        DataStoreInfo dataStore = this.geoServer.getCatalog().getDataStore(openSearchAccessStoreId);
+        // using rawCatalog to avoid issues with mismatch between workspace and OSEO delegate store
+        DataStoreInfo dataStore = this.rawCatalog.getDataStore(openSearchAccessStoreId);
 
         return dataStore;
     }

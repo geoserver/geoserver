@@ -88,6 +88,20 @@ public class ItemsTest extends STACTestSupport {
     }
 
     @Test
+    public void testSentinelItemsJSONWorkspace() throws Exception {
+        // Mismatched workspace
+        getAsMockHttpServletResponse("cite/ogc/stac/v1/collections/SENTINEL2/items?limit=50", 404);
+        // Matched workspace
+        DocumentContext docMatchingWorkspace =
+                getAsJSONPath("sf/ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
+        assertEquals(Integer.valueOf(19), docMatchingWorkspace.read("numberReturned"));
+        // No match, but has null in workspace array and this is the global workspace
+        DocumentContext docNullWorkspace =
+                getAsJSONPath("ogc/stac/v1/collections/SAS1/items?limit=50", 200);
+        assertEquals(Integer.valueOf(19), docMatchingWorkspace.read("numberReturned"));
+    }
+
+    @Test
     public void testSentinelItemJSON() throws Exception {
         DocumentContext json =
                 getAsJSONPath(
@@ -96,6 +110,23 @@ public class ItemsTest extends STACTestSupport {
 
         assertEquals("Feature", json.read("type"));
         checkSentinel2Sample(json);
+    }
+
+    @Test
+    public void testSentinelItemJSONWorkspace() throws Exception {
+        // matched workspace
+        DocumentContext json =
+                getAsJSONPath(
+                        "sf/ogc/stac/v1/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
+                        200);
+
+        // Mismatched workspace
+        getAsMockHttpServletResponse(
+                "cite/ogc/stac/v1/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
+                404);
+        // No workspace set
+        DocumentContext jsonNoWorkspaceSet =
+                getAsJSONPath("sf/ogc/stac/v1/collections/SAS1/items/SAS1_20180227102021.02", 200);
     }
 
     @Test

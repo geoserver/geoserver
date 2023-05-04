@@ -40,7 +40,7 @@ As of GeoServer 2.24, remote requests control has been added, and enabled by def
 * WMS "feature portrayal" with dynamic remote WFS references provided in the request (``REMOTE_OWS_TYPE`` and ``REMOTE_OWS_URL`` parameters).
 * WPS remote inputs via either GET or POST request (e.g., remote GeoJSON file source).
 
-The list of locations that are safe to contact can be configured in the "URL checks" menu. 
+The list of locations that are safe to contact can be configured using the :ref:`security_urlchecks` page.
 
 Log4J Upgrade (GeoServer 2.21 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

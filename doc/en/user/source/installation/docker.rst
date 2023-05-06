@@ -187,12 +187,20 @@ For the current list see GeoServer `build server <https://build.geoserver.org/ge
     gdal-wps                   ogcapi-coverages           stac-datastore              
     geopkg                     ogcapi-dggs                taskmanager-core            
     gpx                        ogcapi-features            taskmanager-s3              
-    gsr                        ogcapi-images              teradata                    
-    gwc-azure-blobstore        ogcapi-maps                vector-mosaic               
-    gwc-distributed            ogcapi-styles              vsi                         
-    gwc-mbtiles                ogcapi-tiled-features      webp                        
-    gwc-sqlite                 ogcapi-tiles               wmts-styles   
-    hz-cluster                 ogr-datastore              wps-remote               
+    gsr                        ogcapi-images              vector-mosaic
+    gwc-azure-blobstore        ogcapi-maps                vsi                         
+    gwc-distributed            ogcapi-styles              webp                        
+    gwc-mbtiles                ogcapi-tiled-features      wmts-styles                 
+    gwc-sqlite                 ogcapi-tiles               wps-remote    
+    hz-cluster                 ogr-datastore                          
     importer-jdbc              opensearch-eo                 
     jdbc-metrics               ows-simulate                                
+             
+             
+             
+             
+             
+             
+             
+
 

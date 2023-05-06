@@ -726,16 +726,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>teradata</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-teradata</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>cas</id>
       <dependencies>
         <dependency>

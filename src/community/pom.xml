@@ -92,7 +92,6 @@
             <descriptor>release/ext-web-service-auth.xml</descriptor>
             <descriptor>release/ext-gwc-mbtiles.xml</descriptor>
             <descriptor>release/ext-vsi.xml</descriptor>
-            <descriptor>release/ext-teradata.xml</descriptor>
             <descriptor>release/ext-libdeflate.xml</descriptor>
             <descriptor>release/ext-stac-datastore.xml</descriptor>
             <descriptor>release/ext-vector-mosaic-datastore.xml</descriptor>
@@ -241,7 +240,6 @@
         <module>web-service-auth</module>
         <module>gwc-mbtiles</module>
         <module>vsi</module>
-        <module>teradata</module>
         <module>libdeflate</module>
         <module>vector-mosaic</module>
         <module>proxy-base-ext</module>
@@ -651,12 +649,6 @@
       <id>vsi</id>
       <modules>
         <module>vsi</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>teradata</id>
-      <modules>
-        <module>teradata</module>
       </modules>
     </profile>
     <profile>

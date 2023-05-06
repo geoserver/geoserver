@@ -67,7 +67,6 @@ officially part of the GeoServer releases. They are however built along with the
    stac-datastore/index
    solr/index
    taskmanager/index
-   teradata/index
    vector-mosaic/index
    vsi/index
    xslt/index

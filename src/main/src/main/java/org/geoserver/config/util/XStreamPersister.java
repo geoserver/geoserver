@@ -91,6 +91,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -1417,10 +1418,8 @@ public class XStreamPersister {
         public String toString(Object obj) {
             CoordinateReferenceSystem crs = (CoordinateReferenceSystem) obj;
             try {
-                Integer epsg = CRS.lookupEpsgCode(crs, false);
-                if (epsg != null) {
-                    return "EPSG:" + epsg;
-                }
+                String identifier = ResourcePool.lookupIdentifier(crs, false);
+                if (identifier != null) return identifier;
             } catch (FactoryException e) {
                 XStreamPersister.LOGGER.warning(
                         "Could not determine epsg code of crs, encoding as WKT");

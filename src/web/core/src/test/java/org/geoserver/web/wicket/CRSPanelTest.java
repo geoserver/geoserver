@@ -197,6 +197,36 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(CRS.decode(AUTO), crsPanel.getCRS()));
     }
 
+    @Test
+    public void testPlanetary() throws Exception {
+        // create a test page that will check the updated SRS is a planetary code
+        final String sun = "IAU:1000";
+        tester.startPage(new CRSPanelTestPage(sun));
+
+        // write try out an IAU code case
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("crs:srs", sun);
+        ft.submit();
+        tester.assertNoErrorMessage();
+        CRSPanel crsPanel = (CRSPanel) tester.getComponentFromLastRenderedPage("form:crs");
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode(sun), crsPanel.getCRS()));
+    }
+
+    @Test
+    public void testPlanetaryPopupWindow() throws Exception {
+        CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
+        tester.startPage(new CRSPanelTestPage(crs));
+
+        ModalWindow window =
+                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        assertFalse(window.isShown());
+
+        tester.clickLink("form:crs:wkt", true);
+        assertTrue(window.isShown());
+
+        tester.assertModelValue("form:crs:popup:content:wkt", crs.toWKT());
+    }
+
     static class Foo implements Serializable {
         public CoordinateReferenceSystem crs;
 

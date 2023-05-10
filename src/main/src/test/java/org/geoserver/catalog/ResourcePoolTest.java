@@ -100,6 +100,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.ows.ServiceException;
+import org.geotools.referencing.CRS;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PolygonSymbolizer;
@@ -1438,5 +1439,49 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         }
         assertFalse(storeInfo.isEnabled());
         rp.dispose();
+    }
+
+    @Test
+    public void testEPSGLookup() throws Exception {
+        // UTM 32 North, without EPSG codes
+        String wkt =
+                "PROJCS[\"WGS 84 / UTM zone 32N\",\n"
+                        + "    GEOGCS[\"WGS 84\",\n"
+                        + "        DATUM[\"WGS_1984\",\n"
+                        + "            SPHEROID[\"WGS 84\",6378137,298.257223563,\n"
+                        + "                AUTHORITY[\"EPSG\",\"7030\"]]],\n"
+                        + "        PRIMEM[\"Greenwich\",0,\n"
+                        + "            AUTHORITY[\"EPSG\",\"8901\"]],\n"
+                        + "        UNIT[\"degree\",0.0174532925199433,\n"
+                        + "            AUTHORITY[\"EPSG\",\"9122\"]]],\n"
+                        + "    PROJECTION[\"Transverse_Mercator\"],\n"
+                        + "    PARAMETER[\"latitude_of_origin\",0],\n"
+                        + "    PARAMETER[\"central_meridian\",9],\n"
+                        + "    PARAMETER[\"scale_factor\",0.9996],\n"
+                        + "    PARAMETER[\"false_easting\",500000],\n"
+                        + "    PARAMETER[\"false_northing\",0],\n"
+                        + "    UNIT[\"metre\",1,\n"
+                        + "        AUTHORITY[\"EPSG\",\"9001\"]],\n"
+                        + "    AXIS[\"Easting\",EAST],\n"
+                        + "    AXIS[\"Northing\",NORTH]]";
+        CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
+        assertEquals("EPSG:32632", ResourcePool.lookupIdentifier(crs, true));
+    }
+
+    @Test
+    public void testIAULookup() throws Exception {
+        // Sun CRS, without authority and code
+        String wkt =
+                "GEOGCS[\"Sun (2015) - Sphere / Ocentric\",\n"
+                        + "    DATUM[\"Sun (2015) - Sphere\",\n"
+                        + "        SPHEROID[\"Sun (2015) - Sphere\",695700000,0,\n"
+                        + "            AUTHORITY[\"IAU\",\"1000\"]],\n"
+                        + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
+                        + "    PRIMEM[\"Reference Meridian\",0,\n"
+                        + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
+                        + "    UNIT[\"degree\",0.0174532925199433,\n"
+                        + "        AUTHORITY[\"EPSG\",\"9122\"]]]";
+        CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
+        assertEquals("IAU:1000", ResourcePool.lookupIdentifier(crs, true));
     }
 }

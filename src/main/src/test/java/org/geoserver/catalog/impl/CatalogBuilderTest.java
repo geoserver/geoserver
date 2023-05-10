@@ -829,4 +829,44 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertEquals("GREEN_BAND", dimensions.get(1).getName());
         assertEquals("BLUE_BAND", dimensions.get(2).getName());
     }
+
+    @Test
+    public void testLookupSRSPlanetary() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+
+        cb.setStore(cat.getDataStoreByName(MockData.LINES.getPrefix()));
+        FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.LINES));
+        fti.setNativeCRS(CRS.decode("IAU:1000")); // Sun geographic crs
+
+        cb.lookupSRS(fti, false);
+        assertEquals("IAU:1000", fti.getSRS());
+    }
+
+    @Test
+    public void testLookupSRSPlanetaryExtensive() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+
+        cb.setStore(cat.getDataStoreByName(MockData.LINES.getPrefix()));
+        FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.LINES));
+
+        // Sun CRS, without authority and code
+        String wkt =
+                "GEOGCS[\"Sun (2015) - Sphere / Ocentric\",\n"
+                        + "    DATUM[\"Sun (2015) - Sphere\",\n"
+                        + "        SPHEROID[\"Sun (2015) - Sphere\",695700000,0,\n"
+                        + "            AUTHORITY[\"IAU\",\"1000\"]],\n"
+                        + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
+                        + "    PRIMEM[\"Reference Meridian\",0,\n"
+                        + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
+                        + "    UNIT[\"degree\",0.0174532925199433,\n"
+                        + "        AUTHORITY[\"EPSG\",\"9122\"]]]";
+        CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
+        fti.setNativeCRS(crs);
+
+        // no codes available, thus, extensive lookup needed
+        cb.lookupSRS(fti, true);
+        assertEquals("IAU:1000", fti.getSRS());
+    }
 }

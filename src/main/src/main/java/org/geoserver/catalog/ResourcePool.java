@@ -131,6 +131,7 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.crs.SingleCRS;
@@ -189,6 +190,7 @@ public class ResourcePool {
 
     Catalog catalog;
     Map<String, CoordinateReferenceSystem> crsCache;
+
     DataStoreCache dataStoreCache;
     Map<String, FeatureType> featureTypeCache;
     Map<String, List<AttributeTypeInfo>> featureTypeAttributeCache;
@@ -466,9 +468,9 @@ public class ResourcePool {
      * <p>The <tt>srsName</tt> parameter should have one of the forms:
      *
      * <ul>
-     *   <li>EPSG:XXXX
-     *   <li>http://www.opengis.net/gml/srs/epsg.xml#XXXX
-     *   <li>urn:x-ogc:def:crs:EPSG:XXXX
+     *   <li><authority>:XXXX
+     *   <li>http://www.opengis.net/gml/srs/<authority>.xml#XXXX
+     *   <li>urn:x-ogc:def:crs:<authority>:XXXX
      * </ul>
      *
      * OR be something parsable by {@link CRS#decode(String)}.
@@ -497,6 +499,30 @@ public class ResourcePool {
         }
 
         return crs;
+    }
+
+    /**
+     * Looks up the identifier of a given {@link CoordinateReferenceSystem} object, giving a
+     * preference to EPSG codes expressed as <code>EPSG:xyzw</code>, when possible, and returning
+     * another code, otherwise. This behavior is specific to GeoServer, thus, it has not been
+     * included in the GeoTools {@link CRS} facade.
+     *
+     * <p>TODO: method placed in ResourcePool since it already has some CRS handling. Should we roll
+     * a GeoServer CRSUtils class instead? (calling it just CRS
+     *
+     * @param crs The coordinate reference system.
+     * @param fullScan If {@code true}, an exhaustive full scan against all registered objects will
+     *     be performed (may be slow). Otherwise only a fast lookup based on embedded identifiers
+     *     and names will be performed.
+     */
+    public static String lookupIdentifier(CoordinateReferenceSystem crs, boolean fullScan)
+            throws FactoryException {
+        Integer code = CRS.lookupEpsgCode(crs, fullScan);
+        if (code != null) {
+            return "EPSG:" + code;
+        } else {
+            return CRS.lookupIdentifier(crs, fullScan);
+        }
     }
 
     /**

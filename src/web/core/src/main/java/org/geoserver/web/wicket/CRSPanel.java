@@ -6,6 +6,7 @@
 package org.geoserver.web.wicket;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.data.resource.BasicResourceConfig;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -310,20 +312,13 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     String toSRS(CoordinateReferenceSystem crs) {
         try {
             if (crs != null) {
-                Integer epsgCode = CRS.lookupEpsgCode(crs, false);
-                String srs = srsTextField.getModelObject();
-                if (useSRSFromList) srs = getSupportedSRS(crs);
-                // do not append
-                if (srs != null
-                        && srs.contains(
-                                epsgCode.toString()) // assert that text field is in sync with
-                        // passed crs
-                        && (srs.startsWith(BasicResourceConfig.URN_OGC_PREFIX)
-                                || srs.startsWith(BasicResourceConfig.EPSG_PREFIX))) {
-                    return srs;
+                if (useSRSFromList) {
+                    String srs = getSupportedSRS(crs);
+                    if (srs != null) return srs;
                 }
-                // prefix if text field only had the EPSG code.
-                return epsgCode != null ? BasicResourceConfig.EPSG_PREFIX + epsgCode : "UNKNOWN";
+
+                String idenfier = ResourcePool.lookupIdentifier(crs, false);
+                return Optional.ofNullable(idenfier).orElse("UNKNOWN");
             } else {
                 return "UNKNOWN";
             }

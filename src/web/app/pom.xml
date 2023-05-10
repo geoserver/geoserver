@@ -1869,5 +1869,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>iau</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-iau-wkt</artifactId>
+          <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

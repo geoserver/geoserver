@@ -31,4 +31,13 @@ public class SRSToCRSModelTest {
         crs.setObject(CRS.decode("EPSG:4326"));
         assertEquals("EPSG:4326", srs.getObject());
     }
+
+    @Test
+    public void testPlanetary() throws Exception {
+        Model<String> srs = new Model<>("IAU:30100"); // Moon, geographic
+        SRSToCRSModel crs = new SRSToCRSModel(srs);
+        assertEquals(CRS.decode("IAU:30100"), crs.getObject());
+        crs.setObject(CRS.decode("IAU:1000")); // Sun, geographic
+        assertEquals("IAU:1000", srs.getObject());
+    }
 }

@@ -8,6 +8,7 @@ package org.geoserver.web.wicket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.model.IModel;
+import org.geoserver.catalog.ResourcePool;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -40,8 +41,7 @@ public class SRSToCRSModel implements IModel<CoordinateReferenceSystem> {
     public void setObject(CoordinateReferenceSystem object) {
         CoordinateReferenceSystem crs = object;
         try {
-            Integer epsgCode = CRS.lookupEpsgCode(crs, false);
-            String srs = epsgCode != null ? "EPSG:" + epsgCode : null;
+            String srs = ResourcePool.lookupIdentifier(object, false);
             srsModel.setObject(srs);
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Failed to lookup the SRS code for " + crs);

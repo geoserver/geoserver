@@ -507,9 +507,6 @@ public class ResourcePool {
      * another code, otherwise. This behavior is specific to GeoServer, thus, it has not been
      * included in the GeoTools {@link CRS} facade.
      *
-     * <p>TODO: method placed in ResourcePool since it already has some CRS handling. Should we roll
-     * a GeoServer CRSUtils class instead? (calling it just CRS
-     *
      * @param crs The coordinate reference system.
      * @param fullScan If {@code true}, an exhaustive full scan against all registered objects will
      *     be performed (may be slow). Otherwise only a fast lookup based on embedded identifiers

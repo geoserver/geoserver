@@ -691,8 +691,8 @@ public class CatalogBuilder {
         }
         if (crs != null) {
             try {
-                Integer code = CRS.lookupEpsgCode(crs, extensive);
-                if (code != null) ftinfo.setSRS("EPSG:" + code);
+                String code = ResourcePool.lookupIdentifier(crs, extensive);
+                if (code != null) ftinfo.setSRS(code);
             } catch (FactoryException e) {
                 throw (IOException) new IOException().initCause(e);
             }
@@ -875,9 +875,9 @@ public class CatalogBuilder {
 
         if (nativeCRS != null && cinfo.getSRS() == null) {
             try {
-                Integer code = CRS.lookupEpsgCode(nativeCRS, false);
+                String code = ResourcePool.lookupIdentifier(nativeCRS, true);
                 if (code != null) {
-                    cinfo.setSRS("EPSG:" + code);
+                    cinfo.setSRS(code);
                     cinfo.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
                 }
             } catch (FactoryException e) {
@@ -1025,9 +1025,9 @@ public class CatalogBuilder {
         // force if missing
         if (nativeCRS != null) {
             try {
-                Integer code = CRS.lookupEpsgCode(nativeCRS, false);
+                String code = ResourcePool.lookupIdentifier(nativeCRS, true);
                 if (code != null) {
-                    cinfo.setSRS("EPSG:" + code);
+                    cinfo.setSRS(code);
                     cinfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
                 }
             } catch (FactoryException e) {

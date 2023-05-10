@@ -1141,6 +1141,14 @@ public class XStreamPersisterTest {
     }
 
     @Test
+    public void testPlanetarySRS() throws Exception {
+        CoordinateReferenceSystem crs = CRS.decode("IAU:1000");
+        SRSConverter c = new SRSConverter();
+
+        assertEquals("IAU:1000", c.toString(crs));
+    }
+
+    @Test
     public void testCRSConverterInvalidWKT() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("EPSG:3575");
         try {

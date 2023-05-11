@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Locale;
 import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
@@ -20,7 +21,9 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.coverage.grid.GridGeometry;
+import org.opengis.util.InternationalString;
 
 public class JMSXStreamFactory {
 
@@ -66,6 +69,11 @@ public class JMSXStreamFactory {
         this.xs.allowTypeHierarchy(GridGeometry.class);
         this.xs.registerConverter(
                 persisterXStream.getConverterLookup().lookupConverterForType(GridGeometry2D.class));
+        // allow envelopes (show up directly in proxies when changing the bbox)
+        this.xs.allowTypeHierarchy(ReferencedEnvelope.class);
+        // allow international strings
+        this.xs.allowTypeHierarchy(InternationalString.class);
+        this.xs.allowTypeHierarchy(Locale.class);
     }
 
     public XStream createXStream() {

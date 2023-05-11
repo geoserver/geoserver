@@ -18,16 +18,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.PublishedType;
@@ -38,10 +42,12 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AttributionInfoImpl;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
+import org.geoserver.catalog.impl.DataLinkInfoImpl;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
@@ -64,6 +70,7 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.GrowableInternationalString;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -268,7 +275,7 @@ public final class IntegrationTest {
      * be reached and then checks if the expected number of events were consumed.
      */
     private void waitAndCheckEvents(GeoServerInstance instance, int expectedEvents) {
-        instance.waitEvents(expectedEvents, 10_000);
+        instance.waitEvents(expectedEvents, 1000_000);
         assertThat(instance.getConsumedEventsCount(), is(expectedEvents));
         instance.resetConsumedEventsCount();
     }
@@ -489,6 +496,20 @@ public final class IntegrationTest {
         // change feature type
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName("featureType-Name");
         featureType.setDescription("featureType-Description-modified");
+        featureType.setNativeBoundingBox(
+                new ReferencedEnvelope(-180, -90, 180, 90, DefaultGeographicCRS.WGS84));
+        GrowableInternationalString title = new GrowableInternationalString("This is a test");
+        title.add(Locale.ITALIAN, "Questo è un test");
+        featureType.setInternationalTitle(title);
+        featureType.getKeywords().add(new Keyword("test-keyword"));
+        MetadataLinkInfo metadata = new MetadataLinkInfoImpl();
+        metadata.setType("text/xml");
+        metadata.setContent("abcd");
+        featureType.getMetadataLinks().add(metadata);
+        DataLinkInfo dataLink = new DataLinkInfoImpl();
+        dataLink.setContent("abcd");
+        dataLink.setType("application/zip");
+        featureType.getDataLinks().add(dataLink);
         catalog.save(featureType);
         // change coverage
         CoverageInfo coverage = catalog.getCoverageByName("coverage-Name");

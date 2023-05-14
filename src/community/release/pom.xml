@@ -167,11 +167,6 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-wmts-styles</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-sec-oauth2-google</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -96,8 +98,14 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
         JSONObject jsonObject = (JSONObject) json;
         JSONArray features = jsonObject.getJSONArray("features");
         assertEquals(2, features.size());
-        assertEquals("58e5889ce4b02461ad5af080", features.getJSONObject(0).getString("id"));
-        assertEquals("58e5889ce4b02461ad5af084", features.getJSONObject(1).getString("id"));
+        // extract the returned ids
+        List<String> ids = new ArrayList<>();
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            ids.add(feature.getString("id"));
+        }
+        assertTrue(ids.contains("58e5889ce4b02461ad5af080"));
+        assertTrue(ids.contains("58e5889ce4b02461ad5af084"));
     }
 
     @Test

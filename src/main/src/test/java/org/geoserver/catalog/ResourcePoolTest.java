@@ -894,6 +894,19 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testGetParamsFixesCSVFilePath() {
+        Catalog catalog = getCatalog();
+        ResourcePool pool = new ResourcePool(catalog);
+        DataStoreInfo ds = getCatalog().getFactory().createDataStore();
+        ds.getConnectionParameters().put("file", "file:data/locations.csv");
+        Map newParams = pool.getParams(ds.getConnectionParameters(), getResourceLoader());
+        GeoServerDataDirectory dataDir = new GeoServerDataDirectory(getResourceLoader());
+        String absolutePath = dataDir.get("data/locations.csv").file().getAbsolutePath();
+        assertNotEquals(newParams.get("file"), "file:locations.csv");
+        assertTrue(((String) newParams.get("file")).contains(absolutePath));
+    }
+
+    @Test
     public void testEmptySort() throws IOException, IllegalAccessException {
         SimpleFeatureSource fsp = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
         Query q = new Query();

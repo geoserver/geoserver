@@ -759,7 +759,7 @@ public class ResourcePool {
                                 true);
                 entry.setValue((V) URLs.fileToUrl(fixedPath));
             } else if ((key != null)
-                    && (key.equals("directory") || key.equals("database"))
+                    && (key.equals("directory") || key.equals("database") || key.equals("file"))
                     && value instanceof String) {
                 String path = (String) value;
                 // if a url is used for a directory (for example property store), convert it to path

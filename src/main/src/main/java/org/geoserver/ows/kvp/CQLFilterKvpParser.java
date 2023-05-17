@@ -24,6 +24,9 @@ public class CQLFilterKvpParser extends KvpParser {
     @Override
     public Object parse(String value) throws Exception {
         try {
+            if (value == null || value.isEmpty()) {
+                return null;
+            }
             return XCQL.toFilterList(value);
         } catch (CQLException pe) {
             throw new ServiceException("Could not parse CQL filter list.", pe);

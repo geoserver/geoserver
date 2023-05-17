@@ -176,7 +176,9 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             @SuppressWarnings("unchecked")
             List<Filter> filter = (List) kvp.get("filter");
             querySet(eObject, "filter", filter);
-        } else if (kvp.containsKey("cql_filter")) {
+        }
+        // when cql_filter is empty, its type will be a string and we will skip it
+        else if (kvp.containsKey("cql_filter") && kvp.get("cql_filter") instanceof List) {
             @SuppressWarnings("unchecked")
             List<Filter> filter = (List) kvp.get("cql_filter");
             querySet(eObject, "filter", filter);

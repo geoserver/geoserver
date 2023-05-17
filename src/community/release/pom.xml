@@ -436,6 +436,11 @@
       <artifactId>gs-datadir-catalog-loader</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-wps-longitudinal-profile</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

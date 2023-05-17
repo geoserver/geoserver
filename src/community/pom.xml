@@ -91,6 +91,7 @@
             <descriptor>release/ext-vsi.xml</descriptor>
             <descriptor>release/ext-teradata.xml</descriptor>
             <descriptor>release/ext-libdeflate.xml</descriptor>
+            <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -251,6 +252,7 @@
         <module>vsi</module>
         <module>teradata</module>
         <module>libdeflate</module>
+        <module>wps-longitudinal-profile</module>
       </modules>
     </profile>
     <profile>
@@ -690,6 +692,12 @@
       <id>libdeflate</id>
       <modules>
         <module>libdeflate</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wps-longitudinal-profile</id>
+      <modules>
+        <module>wps-longitudinal-profile</module>
       </modules>
     </profile>
   </profiles>

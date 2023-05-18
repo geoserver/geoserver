@@ -204,6 +204,16 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(Color.GREEN, getPixelColor(image, 5, 10));
     }
 
+    @Test
+    public void testEmptyCQLFilter() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false&CQL_FILTER=");
+
+        assertEquals("image/png", response.getContentType());
+    }
+
     /**
      * Clip on rasters used to lose the request parameters, that included the CQL_FILTER, among the
      * others

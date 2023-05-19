@@ -118,7 +118,9 @@ paths:
       description: |
         Retrieves a single style. Used to both request the style info and the style definition body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
         
-        The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
+        The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header.
+        Be aware that by default, if extension is specified, it will override media type. For example if you use SLD 1.1.0 style and specify .sld extension (which provides SLD 1.0.0 result), but use application/vnd.ogc.se+xml media type (which provides SLD 1.1.0 result), response still will be presented in sld version 1.0.0
+        Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
         
         - application/vnd.ogc.sld+xml for SLD 1.0.0 SLDs
         - application/vnd.ogc.se+xml for SLD 1.1.0 SLDs
@@ -412,7 +414,9 @@ paths:
       description: |
         Retrieves a single style. Used to both request the style info and the style definition body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
         
-        The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
+        The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header.
+        Be aware that by default, if extension is specified, it will override media type. For example if you use SLD 1.1.0 style and specify .sld extension (which provides SLD 1.0.0 result), but use application/vnd.ogc.se+xml media type (which provides SLD 1.1.0 result), response still will be presented in sld version 1.0.0
+        Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
         
         - application/vnd.ogc.sld+xml for SLD 1.0.0 SLDs
         - application/vnd.ogc.se+xml for SLD 1.1.0 SLDs

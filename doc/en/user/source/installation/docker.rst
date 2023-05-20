@@ -183,15 +183,15 @@ For the current list see GeoServer `build server <https://build.geoserver.org/ge
     elasticsearch              ncwms                      sec-oauth2-openid-connect   
     features-templating        netcdf-ghrsst              smart-data-loader           
     flatgeobuf                 notification               solr                        
-    gdal-wcs                   nsg-wmts-profile           spatialjson                 
-    gdal-wps                   ogcapi-coverages           stac-datastore              
-    geopkg                     ogcapi-dggs                taskmanager-core            
-    gpx                        ogcapi-features            taskmanager-s3              
-    gsr                        ogcapi-images              vector-mosaic
-    gwc-azure-blobstore        ogcapi-maps                vsi                         
-    gwc-distributed            ogcapi-styles              webp                        
-    gwc-mbtiles                ogcapi-tiled-features      wps-remote
-    gwc-sqlite                 ogcapi-tiles               
-    hz-cluster                 ogr-datastore                          
-    importer-jdbc              opensearch-eo                 
-    jdbc-metrics               ows-simulate                                
+    gdal-wcs                   ogcapi-coverages           spatialjson                 
+    gdal-wps                   ogcapi-dggs                stac-datastore              
+    geopkg                     ogcapi-features            taskmanager-core            
+    gpx                        ogcapi-images              taskmanager-s3              
+    gsr                        ogcapi-maps                vector-mosaic
+    gwc-azure-blobstore        ogcapi-styles              vsi                         
+    gwc-distributed            ogcapi-tiled-features      webp                        
+    gwc-mbtiles                ogcapi-tiles               wps-remote
+    gwc-sqlite                 ogr-datastore              
+    hz-cluster                 opensearch-eo                          
+    importer-jdbc              ows-simulate                  
+    jdbc-metrics                                      

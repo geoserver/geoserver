@@ -64,7 +64,6 @@
             <descriptor>release/ext-keycloak.xml</descriptor>
             <descriptor>release/ext-backup-restore.xml</descriptor>
             <descriptor>release/ext-notification.xml</descriptor>
-            <descriptor>release/ext-ows-simulate.xml</descriptor>
             <descriptor>release/ext-jdbc-metrics.xml</descriptor>
             <descriptor>release/ext-opensearch-eo.xml</descriptor>
             <descriptor>release/ext-taskmanager-core.xml</descriptor>
@@ -217,7 +216,6 @@
         <module>notification</module>
         <module>notification-common</module>
         <module>notification-geonode</module>
-        <module>ows-simulate</module>
         <module>jdbc-metrics</module>
         <module>oseo</module>
         <module>s3-geotiff</module>
@@ -488,12 +486,6 @@
       <id>keycloak</id>
       <modules>
         <module>security</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>ows-simulate</id>
-      <modules>
-        <module>ows-simulate</module>
       </modules>
     </profile>
     <profile>

@@ -1458,16 +1458,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>nsg-wmts-profile</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-nsg-wmts-profile</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>ghrsst</id>
       <dependencies>
         <dependency>

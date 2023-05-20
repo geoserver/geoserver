@@ -193,5 +193,5 @@ For the current list see GeoServer `build server <https://build.geoserver.org/ge
     gwc-mbtiles                ogcapi-tiles               wps-remote
     gwc-sqlite                 ogr-datastore              
     hz-cluster                 opensearch-eo                          
-    importer-jdbc              ows-simulate                  
+    importer-jdbc              
     jdbc-metrics                                      

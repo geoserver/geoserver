@@ -5,6 +5,8 @@
  */
 package org.geoserver.test;
 
+import static java.util.Map.entry;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -63,38 +64,30 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     /** Map of namespace prefix to namespace URI for GML 32 schema. */
     @SuppressWarnings("serial")
     protected static final Map<String, String> GML32_NAMESPACES =
-            Collections.unmodifiableMap(
-                    new TreeMap<String, String>() {
-                        {
-                            put("cgu", "urn:cgi:xmlns:CGI:Utilities:3.0.0");
-                            put("gco", "http://www.isotc211.org/2005/gco");
-                            put("gmd", "http://www.isotc211.org/2005/gmd");
-                            put("gml", "http://www.opengis.net/gml/3.2");
-                            put("gsml", "urn:cgi:xmlns:CGI:GeoSciML-Core:3.0.0");
-                            put("sa", "http://www.opengis.net/sampling/2.0");
-                            put("spec", "http://www.opengis.net/samplingSpecimen/2.0");
-                            put("swe", "http://www.opengis.net/swe/1.0/gml32");
-                            put("wfs", "http://www.opengis.net/wfs/2.0");
-                            put("xlink", "http://www.w3.org/1999/xlink");
-                        }
-                    });
+            Map.ofEntries(
+                    entry("cgu", "urn:cgi:xmlns:CGI:Utilities:3.0.0"),
+                    entry("gco", "http://www.isotc211.org/2005/gco"),
+                    entry("gmd", "http://www.isotc211.org/2005/gmd"),
+                    entry("gml", "http://www.opengis.net/gml/3.2"),
+                    entry("gsml", "urn:cgi:xmlns:CGI:GeoSciML-Core:3.0.0"),
+                    entry("sa", "http://www.opengis.net/sampling/2.0"),
+                    entry("spec", "http://www.opengis.net/samplingSpecimen/2.0"),
+                    entry("swe", "http://www.opengis.net/swe/1.0/gml32"),
+                    entry("wfs", "http://www.opengis.net/wfs/2.0"),
+                    entry("xlink", "http://www.w3.org/1999/xlink"));
 
     /** Map of namespace prefix to namespace URI. */
     @SuppressWarnings("serial")
     private static final Map<String, String> NAMESPACES =
-            Collections.unmodifiableMap(
-                    new LinkedHashMap<String, String>() {
-                        {
-                            put(GSML_PREFIX, GSML_URI);
-                            put("gml", "http://www.opengis.net/gml");
-                            put("xlink", "http://www.w3.org/1999/xlink");
-                            put("sa", "http://www.opengis.net/sampling/1.0");
-                            put("om", "http://www.opengis.net/om/1.0");
-                            put("cv", "http://www.opengis.net/cv/0.2.1");
-                            put("swe", "http://www.opengis.net/swe/1.0.1");
-                            put("sml", "http://www.opengis.net/sensorML/1.0.1");
-                        }
-                    });
+            Map.ofEntries(
+                    entry(GSML_PREFIX, GSML_URI),
+                    entry("gml", "http://www.opengis.net/gml"),
+                    entry("xlink", "http://www.w3.org/1999/xlink"),
+                    entry("sa", "http://www.opengis.net/sampling/1.0"),
+                    entry("om", "http://www.opengis.net/om/1.0"),
+                    entry("cv", "http://www.opengis.net/cv/0.2.1"),
+                    entry("swe", "http://www.opengis.net/swe/1.0.1"),
+                    entry("sml", "http://www.opengis.net/sensorML/1.0.1"));
 
     /** Use FeatureTypeInfo constants for srs handling as values */
     static final String KEY_SRS_HANDLINGS = "srsHandling";
@@ -497,16 +490,14 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             final File featureTypesBaseDir,
             final String dataStoreName) {
         try {
-            return new LinkedHashMap<String, Serializable>() {
-                {
-                    put("dbtype", "app-schema");
-                    put(
+            return Map.ofEntries(
+                    entry("dbtype", "app-schema"),
+                    entry(
                             "url",
                             new File(new File(featureTypesBaseDir, dataStoreName), mappingFileName)
                                     .toURI()
-                                    .toURL());
-                }
-            };
+                                    .toURL()));
+
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

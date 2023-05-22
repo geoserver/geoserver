@@ -5,10 +5,11 @@
  */
 package org.geoserver.wcs.responses;
 
+import static java.util.Map.entry;
+
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
@@ -31,32 +32,24 @@ import org.opengis.parameter.ParameterValueGroup;
 public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate
         implements CoverageResponseDelegate {
 
-    @SuppressWarnings("serial")
     public IMGCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList(
-                        "png", "jpeg", "JPEG", "PNG", "image/png", "image/jpeg"), // output formats
-                new HashMap<String, String>() { // file extensions
-                    {
-                        put("png", "png");
-                        put("jpeg", "jpeg");
-                        put("JPEG", "jpeg");
-                        put("PNG", "png");
-                        put("image/png", "png");
-                        put("image/jpeg", "jpeg");
-                    }
-                },
-                new HashMap<String, String>() { // mime types
-                    {
-                        put("png", "image/png");
-                        put("jpeg", "image/jpeg");
-                        put("PNG", "image/png");
-                        put("JPEG", "image/jpeg");
-                        put("image/png", "image/png");
-                        put("image/jpeg", "image/jpeg");
-                    }
-                });
+                List.of("png", "jpeg", "JPEG", "PNG", "image/png", "image/jpeg"), // output formats
+                Map.ofEntries( // file extensions
+                        entry("png", "png"),
+                        entry("jpeg", "jpeg"),
+                        entry("JPEG", "jpeg"),
+                        entry("PNG", "png"),
+                        entry("image/png", "png"),
+                        entry("image/jpeg", "jpeg")),
+                Map.ofEntries( // mime types
+                        entry("png", "image/png"),
+                        entry("jpeg", "image/jpeg"),
+                        entry("PNG", "image/png"),
+                        entry("JPEG", "image/jpeg"),
+                        entry("image/png", "image/png"),
+                        entry("image/jpeg", "image/jpeg")));
     }
 
     @Override

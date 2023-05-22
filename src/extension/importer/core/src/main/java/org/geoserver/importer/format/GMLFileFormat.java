@@ -4,6 +4,7 @@
  */
 package org.geoserver.importer.format;
 
+import static java.util.Map.entry;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.io.File;
@@ -84,12 +85,9 @@ public class GMLFileFormat extends VectorFormat {
             Arrays.asList("name", "description", "boundedBy", "location");
 
     private static final Map<Class<?>, Class<?>> TYPE_PROMOTIONS =
-            new HashMap<Class<?>, Class<?>>() {
-                {
-                    put(Integer.class, Long.class);
-                    put(Long.class, Double.class);
-                }
-            };
+            Map.ofEntries(
+                    entry(Integer.class, Long.class), //
+                    entry(Long.class, Double.class));
 
     private static final String GML_VERSION_KEY = "version";
 

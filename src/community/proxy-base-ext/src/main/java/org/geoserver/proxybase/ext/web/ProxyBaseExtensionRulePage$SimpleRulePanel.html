@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <ul>
+        <li>
+            <fieldset>
+                <ul>
+                    <li class="pt-3">
+                        <label for="position">
+                            <wicket:message key="position"></wicket:message>
+                        </label>
+                        <input id="position" wicket:id="position" type="number" class="number"/>
+                        <span class="text-smaller"><wicket:message key="positionDescription"></wicket:message></span>
+                    </li>
+                    <li class="pt-3">
+                        <label for="matcher">
+                            <wicket:message key="matcher"></wicket:message>
+                        </label>
+                        <input id="matcher" wicket:id="matcher" type="text" class="text"/>
+                        <span class="text-smaller"><wicket:message key="matcherDescription"></wicket:message></span>
+                    </li>
+                    <li class="pt-3">
+                        <label for="transformer">
+                            <wicket:message key="transformer"></wicket:message>
+                        </label>
+                        <input id="transformer" wicket:id="transformer" type="text" class="text"/>
+                        <span class="text-smaller"><wicket:message key="transformerDescription"></wicket:message></span>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
+</wicket:panel>
+</body>
+</html>

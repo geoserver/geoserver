@@ -431,7 +431,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     @Override
     public synchronized void addLayer(final TileLayer tl) {
         checkNotNull(tl);
-        checkArgument(canSave(tl), "Can't save TileLayer of type ", tl.getClass());
+        checkArgument(canSave(tl), "Can't save TileLayer of type %s", tl.getClass());
         GeoServerTileLayer tileLayer = (GeoServerTileLayer) tl;
         checkNotNull(tileLayer.getInfo(), "GeoServerTileLayerInfo is null");
         checkNotNull(tileLayer.getInfo().getId(), "id is null");
@@ -474,7 +474,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     @Override
     public synchronized void modifyLayer(TileLayer tl) throws NoSuchElementException {
         checkNotNull(tl, "TileLayer is null");
-        checkArgument(canSave(tl), "Can't save TileLayer of type ", tl.getClass());
+        checkArgument(canSave(tl), "Can't save TileLayer of type: %s ", tl.getClass());
 
         GeoServerTileLayer tileLayer = (GeoServerTileLayer) tl;
 
@@ -511,7 +511,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
                                 () ->
                                         new NullPointerException(
                                                 "TileLayer " + oldName + " not found"));
-        checkArgument(canSave(tl), "Can't rename TileLayer of type ", tl.getClass());
+        checkArgument(canSave(tl), "Can't rename TileLayer of type %s", tl.getClass());
 
         GeoServerTileLayer tileLayer = (GeoServerTileLayer) tl;
 

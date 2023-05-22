@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProxyBaseExtensionRules>
+    <ProxyBaseExtensionRule id="0"
+                        matcher="wfs"
+                        transformer="https://wfs.example.com/${fixedCollection}"
+                        activated="true"
+                        position="3" />
+    <ProxyBaseExtensionRule id="2"
+                        matcher="schemas/(.*)"
+                        transformer="https://wfs.example.com/${fixedCollection}/${fixedFeature}"
+                        activated="true"
+                        position="1" />
+    <ProxyBaseExtensionRule id="1"
+                        matcher="geoserver/basic"
+                        transformer="https://basic.example.com"
+                        activated="true"
+                        position="2" />
+</ProxyBaseExtensionRules>

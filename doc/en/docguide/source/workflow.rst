@@ -81,29 +81,53 @@ Documentation in Sphinx is written in `reStructuredText <https://docutils.source
 Build and test locally
 ----------------------
 
-You should install Sphinx on your local system (see :ref:`install_sphinx`) to build the documentation locally and view any changes made.  Sphinx builds the reStructuredText files into HTML pages and PDF files.
+You should install Sphinx on your local system (see the next page on :ref:`install_sphinx`) to build the documentation locally and view any changes made.  Sphinx builds the reStructuredText files into HTML pages and PDF files.
+
+#. Confirm availability of Python 3:
+
+   .. code-block:: bash
+
+      python --version
+
+#. Install sphinx and sphinx-autobuild:
+
+   .. code-block:: bash
+   
+      cd doc\en
+      pip3 install -r requirements.txt
 
 HTML
 ````
 
 #. On a terminal, navigate to your GeoServer source checkout and change to the :file:`doc/en` directory (or whichever project you wish to build).
 
-#. Run the following command::
+#. Run the following command to build the docs and open the browser with a live preview:
+   
+   .. code-block:: bash
+   
+      ant user-site
+      
+   The documentation will refresh as you edit individual files.
 
+#. Run the following command to only build the docs:
+
+   .. code-block:: bash
+   
       ant user
 
    The resulting HTML pages will be contained in :file:`doc/en/target/user/html`.
 
-#. Watch the output of the above command for any errors and warnings.  These could be indicative of problems with your markup.  Please fix any errors and warnings before continuing.
+#. Watch the output of the above commands for any errors and warnings.  These could be indicative of problems with your markup.  Please fix any errors and warnings before continuing.
 
 PDF
 ```
 
 #. On a terminal, navigate to your GeoServer source checkout and change to the :file:`doc/en` directory (or whichever project you wish to build).
 
-#. Run the following command::
+#. Run the following command:
 
-    
+   .. code-block:: bash
+   
       ant user-pdf
 
    This will create a PDF file called :file:`{GeoServerProject}.pdf` in the same directory

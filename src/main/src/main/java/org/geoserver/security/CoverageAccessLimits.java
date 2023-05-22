@@ -44,12 +44,40 @@ public class CoverageAccessLimits extends DataAccessLimits {
         this.params = params;
     }
 
+    /**
+     * Returns the clipping polygon
+     *
+     * @return The clipping polygon
+     */
     public MultiPolygon getRasterFilter() {
         return rasterFilter;
     }
 
+    /**
+     * Returns the read parameters overrides
+     *
+     * @return
+     */
     public GeneralParameterValue[] getParams() {
         return params;
+    }
+
+    /**
+     * Sets the polygon that will clip the raster data
+     *
+     * @param rasterFilter The polygon clip
+     */
+    public void setRasterFilter(MultiPolygon rasterFilter) {
+        this.rasterFilter = rasterFilter;
+    }
+
+    /**
+     * Sets the read parameters overrides
+     *
+     * @param params The read parameters overrides
+     */
+    public void setParams(GeneralParameterValue[] params) {
+        this.params = params;
     }
 
     @Override

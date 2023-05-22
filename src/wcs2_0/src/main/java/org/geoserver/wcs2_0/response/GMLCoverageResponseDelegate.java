@@ -5,10 +5,11 @@
  */
 package org.geoserver.wcs2_0.response;
 
+import static java.util.Map.entry;
+
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.transform.TransformerException;
 import org.geoserver.config.GeoServer;
@@ -41,19 +42,14 @@ public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate
             EnvelopeAxesLabelsMapper envelopeDimensionsMapper, GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList(FILE_EXTENSION, MIME_TYPE), // output formats
-                new HashMap<String, String>() { // file extensions
-                    {
-                        put(MIME_TYPE, FILE_EXTENSION);
-                        put(FILE_EXTENSION, FILE_EXTENSION);
-                    }
-                },
-                new HashMap<String, String>() { // mime types
-                    {
-                        put(MIME_TYPE, MIME_TYPE);
-                        put(FILE_EXTENSION, MIME_TYPE);
-                    }
-                });
+                List.of(FILE_EXTENSION, MIME_TYPE), // output formats
+                Map.ofEntries( // file extensions
+                        entry(MIME_TYPE, FILE_EXTENSION), //
+                        entry(FILE_EXTENSION, FILE_EXTENSION)),
+                Map.ofEntries( // mime types
+                        entry(MIME_TYPE, MIME_TYPE), //
+                        entry(FILE_EXTENSION, MIME_TYPE)));
+
         this.envelopeDimensionsMapper = envelopeDimensionsMapper;
     }
 

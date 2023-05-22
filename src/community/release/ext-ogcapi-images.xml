@@ -1,0 +1,43 @@
+<assembly>
+  <id>ogcapi-images-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>	
+        <!-- changesets and images are deployed toghether -->
+        <include>gs-ogcapi-images-*.jar</include>
+        <include>gs-ogcapi-changeset-*.jar</include>
+        <!-- code dependencies on both features and tiles -->
+        <include>gs-ogcapi-features-*.jar</include>
+        <include>gs-ogcapi-tiles-*.jar</include>
+        <include>gs-ogcapi-core-*.jar</include>
+        <include>gs-web-ogcapi-*.jar</include>
+        <include>gt-cql2-*.jar</include>
+        <include>swagger-core-*.jar</include>
+        <include>jackson-dataformat-*.jar</include>
+        <include>jackson-module-jaxb*.jar</include>
+        <include>swagger-models-*.jar</include>
+        <include>snakeyaml-*.jar</include>
+        <include>commons-lang3*.jar</include>
+        <include>validation-api*.jar</include>
+        <!-- to include H2 -->
+        <include>gt-jdbc-h2-*.jar</include>
+        <include>h2-*.jar</include>
+        <include>geodb-*.jar</include>
+        <include>hatbox-*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>GPL.html</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

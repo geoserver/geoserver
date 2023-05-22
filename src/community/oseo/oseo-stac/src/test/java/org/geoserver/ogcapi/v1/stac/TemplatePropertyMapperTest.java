@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.filter.text.ecql.ECQL;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,12 +26,33 @@ public class TemplatePropertyMapperTest extends STACTestSupport {
         copyTemplate("/items-LANDSAT8.json");
     }
 
+    private STACTemplates getTemplates() {
+        return GeoServerExtensions.bean(STACTemplates.class);
+    }
+
     public TemplatePropertyMapper getPropertyMapper() {
-        STACTemplates templates = GeoServerExtensions.bean(STACTemplates.class);
+        STACTemplates templates = getTemplates();
         SampleFeatures sampleFeatures = GeoServerExtensions.bean(SampleFeatures.class);
         CollectionsCache collectionsCache = GeoServerExtensions.bean(CollectionsCache.class);
         OSEOInfo oseoInfo = GeoServerExtensions.bean(OSEOInfo.class);
         return new TemplatePropertyMapper(templates, sampleFeatures, collectionsCache, oseoInfo);
+    }
+
+    /**
+     * Test that the templates are copied to the right place
+     *
+     * @throws Exception Issue with copying the templates
+     */
+    @Test
+    public void testCopyHTMLTemplates() throws Exception {
+        STACTemplates templates = getTemplates();
+        templates.copyHTMLTemplates();
+        assertEquals(
+                Resource.Type.RESOURCE,
+                getDataDirectory().get("templates/ogc/stac/v1/collections.ftl").getType());
+        assertEquals(
+                Resource.Type.UNDEFINED,
+                getDataDirectory().get("templates/ogc/stac/collections.ftl").getType());
     }
 
     @Test

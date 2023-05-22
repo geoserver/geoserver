@@ -49,6 +49,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
 
     public static final QName SF_STATES = new QName(MockData.SF_URI, "states", MockData.SF_PREFIX);
     private static final String SF_STATES_ID = "sf:states";
+    private static final String FOOTPRINTS_STYLE = "footprints";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -62,6 +63,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         testData.addStyle("Population", "Population.sld", getClass(), catalog);
         testData.addStyle("uom", "uomStroke.sld", getClass(), catalog);
         testData.addStyle("scaleDependent", "scaleDependent.sld", getClass(), catalog);
+        testData.addStyle(FOOTPRINTS_STYLE, "footprints.sld", getClass(), catalog);
 
         testData.addVectorLayer(
                 SF_STATES, Collections.emptyMap(), "states.properties", getClass(), catalog);
@@ -114,6 +116,25 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                                 + "&format=image/png&width=20&height=20",
                         "image/png");
         assertPixel(image, 10, 10, Converters.convert("#4040C0", Color.class));
+    }
+
+    /**
+     * Tests that GetLegendGraphic works with a style that has a non-process function
+     *
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void testFootprints() throws Exception {
+        BufferedImage image =
+                getAsImage(
+                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                                + "&layer="
+                                + getLayerId(MockData.LAKES)
+                                + "&style="
+                                + FOOTPRINTS_STYLE
+                                + "&format=image/png&width=20&height=20",
+                        "image/png");
+        assertPixel(image, 10, 10, Converters.convert("#d4d4d4", Color.class));
     }
 
     @Test

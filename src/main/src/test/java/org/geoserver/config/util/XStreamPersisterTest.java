@@ -5,6 +5,7 @@
  */
 package org.geoserver.config.util;
 
+import static java.util.Map.entry;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
@@ -27,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1277,36 +1277,29 @@ public class XStreamPersisterTest {
         assertEquals(vtc.getName(), "sqlview");
     }
 
-    @SuppressWarnings("serial")
     @Test
     public void testVirtualTableMultipleGeoms() throws IOException {
         Map<String, String> types =
-                new HashMap<String, String>() {
-                    {
-                        put("southernmost_point", "org.locationtech.jts.geom.Geometry");
-                        put("location_polygon", "org.locationtech.jts.geom.Geometry");
-                        put("centroid", "org.locationtech.jts.geom.Geometry");
-                        put("northernmost_point", "org.locationtech.jts.geom.Geometry");
-                        put("easternmost_point", "org.locationtech.jts.geom.Geometry");
-                        put("location", "org.locationtech.jts.geom.Geometry");
-                        put("location_original", "org.locationtech.jts.geom.Geometry");
-                        put("westernmost_point", "org.locationtech.jts.geom.Geometry");
-                    }
-                };
+                Map.ofEntries(
+                        entry("southernmost_point", "org.locationtech.jts.geom.Geometry"),
+                        entry("location_polygon", "org.locationtech.jts.geom.Geometry"),
+                        entry("centroid", "org.locationtech.jts.geom.Geometry"),
+                        entry("northernmost_point", "org.locationtech.jts.geom.Geometry"),
+                        entry("easternmost_point", "org.locationtech.jts.geom.Geometry"),
+                        entry("location", "org.locationtech.jts.geom.Geometry"),
+                        entry("location_original", "org.locationtech.jts.geom.Geometry"),
+                        entry("westernmost_point", "org.locationtech.jts.geom.Geometry"));
 
         Map<String, Integer> srids =
-                new HashMap<String, Integer>() {
-                    {
-                        put("southernmost_point", 4326);
-                        put("location_polygon", 3003);
-                        put("centroid", 3004);
-                        put("northernmost_point", 3857);
-                        put("easternmost_point", 4326);
-                        put("location", 3003);
-                        put("location_original", 3004);
-                        put("westernmost_point", 3857);
-                    }
-                };
+                Map.ofEntries(
+                        entry("southernmost_point", 4326),
+                        entry("location_polygon", 3003),
+                        entry("centroid", 3004),
+                        entry("northernmost_point", 3857),
+                        entry("easternmost_point", 4326),
+                        entry("location", 3003),
+                        entry("location_original", 3004),
+                        entry("westernmost_point", 3857));
 
         FeatureTypeInfo ft =
                 persister.load(

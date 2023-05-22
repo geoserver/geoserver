@@ -5,14 +5,15 @@
  */
 package org.geoserver.wcs.responses;
 
+import static java.util.Map.entry;
+
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
@@ -31,20 +32,13 @@ public class DebugCoverageResponseDelegate extends BaseCoverageResponseDelegate
     public DebugCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList("DEBUG", "text/debug"), // output formats
-                new HashMap<String, String>() { // file extensions
-                    {
-                        put("DEBUG", "txt");
-                        put("text/debug", "txt");
-                        put("text/plain", "txt");
-                    }
-                },
-                new HashMap<String, String>() { // mime types
-                    {
-                        put("DEBUG", "text/plain");
-                        put("text/debug", "text/plain");
-                    }
-                });
+                List.of("DEBUG", "text/debug"), // output formats
+                Map.ofEntries( // file extensions
+                        entry("DEBUG", "txt"),
+                        entry("text/debug", "txt"),
+                        entry("text/plain", "txt")),
+                Map.ofEntries( // mime types
+                        entry("DEBUG", "text/plain"), entry("text/debug", "text/plain")));
     }
 
     @Override

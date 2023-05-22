@@ -5,10 +5,11 @@
  */
 package org.geoserver.wcs.responses;
 
+import static java.util.Map.entry;
+
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import org.geoserver.config.GeoServer;
@@ -34,33 +35,28 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate
     private static final String ARCGRID_FILE_EXTENSION = "asc";
     private static final String ARCGRID_COMPRESSED_FILE_EXTENSION = "asc.gz";
 
-    @SuppressWarnings("serial")
     public AscCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList(
+                List.of(
                         ARCGRID_COVERAGE_FORMAT,
                         ARCGRID_COMPRESSED_COVERAGE_FORMAT,
                         "ArcGrid",
                         "ArcGrid-GZIP"), // output formats
-                new HashMap<String, String>() { // file extensions
-                    {
-                        put("ArcGrid", ARCGRID_FILE_EXTENSION);
-                        put("ArcGrid-GZIP", ARCGRID_COMPRESSED_FILE_EXTENSION);
-                        put(ARCGRID_MIME_TYPE, ARCGRID_FILE_EXTENSION);
-                        put(ARCGRID_COMPRESSED_MIME_TYPE, ARCGRID_COMPRESSED_FILE_EXTENSION);
-                        put(ARCGRID_COVERAGE_FORMAT, ARCGRID_FILE_EXTENSION);
-                        put(ARCGRID_COMPRESSED_COVERAGE_FORMAT, ARCGRID_COMPRESSED_FILE_EXTENSION);
-                    }
-                },
-                new HashMap<String, String>() { // mime types
-                    {
-                        put("ArcGrid", ARCGRID_MIME_TYPE);
-                        put("ArcGrid-GZIP", ARCGRID_COMPRESSED_MIME_TYPE);
-                        put(ARCGRID_COVERAGE_FORMAT, ARCGRID_MIME_TYPE);
-                        put(ARCGRID_COMPRESSED_COVERAGE_FORMAT, ARCGRID_COMPRESSED_MIME_TYPE);
-                    }
-                });
+                Map.ofEntries( // file extensions
+                        entry("ArcGrid", ARCGRID_FILE_EXTENSION),
+                        entry("ArcGrid-GZIP", ARCGRID_COMPRESSED_FILE_EXTENSION),
+                        entry(ARCGRID_MIME_TYPE, ARCGRID_FILE_EXTENSION),
+                        entry(ARCGRID_COMPRESSED_MIME_TYPE, ARCGRID_COMPRESSED_FILE_EXTENSION),
+                        entry(ARCGRID_COVERAGE_FORMAT, ARCGRID_FILE_EXTENSION),
+                        entry(
+                                ARCGRID_COMPRESSED_COVERAGE_FORMAT,
+                                ARCGRID_COMPRESSED_FILE_EXTENSION)),
+                Map.ofEntries( // mime types
+                        entry("ArcGrid", ARCGRID_MIME_TYPE),
+                        entry("ArcGrid-GZIP", ARCGRID_COMPRESSED_MIME_TYPE),
+                        entry(ARCGRID_COVERAGE_FORMAT, ARCGRID_MIME_TYPE),
+                        entry(ARCGRID_COMPRESSED_COVERAGE_FORMAT, ARCGRID_COMPRESSED_MIME_TYPE)));
     }
 
     private boolean isOutputCompressed(String outputFormat) {

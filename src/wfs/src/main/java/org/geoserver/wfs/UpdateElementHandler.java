@@ -5,10 +5,10 @@
  */
 package org.geoserver.wfs;
 
+import static java.util.Map.entry;
+
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -70,22 +70,18 @@ import org.opengis.referencing.operation.MathTransform;
 public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
     static final Map<String, Class<?>> GML_PROPERTIES_BINDINGS =
-            new HashMap<String, Class<?>>() {
-                {
-                    put("name", String.class);
-                    put("description", String.class);
-                    put("boundedBy", Geometry.class);
-                    put("location", Geometry.class);
-                    put("metaDataProperty", String.class);
-                }
-            };
+            Map.ofEntries(
+                    entry("name", String.class),
+                    entry("description", String.class),
+                    entry("boundedBy", Geometry.class),
+                    entry("location", Geometry.class),
+                    entry("metaDataProperty", String.class));
 
     static final Set<String> GML_NAMESPACES =
-            new HashSet<>(
-                    Arrays.asList(
-                            GML.NAMESPACE,
-                            org.geotools.gml3.GML.NAMESPACE,
-                            org.geotools.gml3.v3_2.GML.NAMESPACE));
+            Set.of(
+                    GML.NAMESPACE,
+                    /* org.geotools.gml3.GML.NAMESPACE, same as GML.NAMESPACE */
+                    org.geotools.gml3.v3_2.GML.NAMESPACE);
 
     /** logger */
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wfs");

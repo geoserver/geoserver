@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -54,15 +53,12 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
     static Logger LOGGER = Logging.getLogger(ImporterTestSupport.class);
 
     static final Set<String> DEFAULT_STYLEs =
-            new HashSet<String>() {
-                {
-                    add(StyleInfo.DEFAULT_POINT);
-                    add(StyleInfo.DEFAULT_LINE);
-                    add(StyleInfo.DEFAULT_GENERIC);
-                    add(StyleInfo.DEFAULT_POLYGON);
-                    add(StyleInfo.DEFAULT_RASTER);
-                }
-            };
+            Set.of(
+                    StyleInfo.DEFAULT_POINT,
+                    StyleInfo.DEFAULT_LINE,
+                    StyleInfo.DEFAULT_GENERIC,
+                    StyleInfo.DEFAULT_POLYGON,
+                    StyleInfo.DEFAULT_RASTER);
 
     protected Importer importer;
 

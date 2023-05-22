@@ -77,7 +77,14 @@
             <descriptor>release/ext-s3-geotiff.xml</descriptor>
             <descriptor>release/ext-wmts-styles.xml</descriptor>
             <descriptor>release/ext-ogr-datastore.xml</descriptor>
-            <descriptor>release/ext-ogcapi.xml</descriptor>
+            <descriptor>release/ext-ogcapi-coverages.xml</descriptor>
+            <descriptor>release/ext-ogcapi-dggs.xml</descriptor>
+            <descriptor>release/ext-ogcapi-features.xml</descriptor>
+            <descriptor>release/ext-ogcapi-images.xml</descriptor>
+            <descriptor>release/ext-ogcapi-maps.xml</descriptor>
+            <descriptor>release/ext-ogcapi-styles.xml</descriptor>
+            <descriptor>release/ext-ogcapi-tiled-features.xml</descriptor>
+            <descriptor>release/ext-ogcapi-tiles.xml</descriptor>
             <descriptor>release/ext-importer-jdbc.xml</descriptor>
             <descriptor>release/ext-features-templating.xml</descriptor>
             <descriptor>release/ext-gsr.xml</descriptor>
@@ -91,6 +98,7 @@
             <descriptor>release/ext-libdeflate.xml</descriptor>
             <descriptor>release/ext-stac-datastore.xml</descriptor>
             <descriptor>release/ext-vector-mosaic-datastore.xml</descriptor>
+            <descriptor>release/ext-proxy-base-ext.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -244,6 +252,7 @@
         <module>teradata</module>
         <module>libdeflate</module>
         <module>vector-mosaic</module>
+        <module>proxy-base-ext</module>
       </modules>
     </profile>
     <profile>
@@ -683,6 +692,12 @@
       <id>vector-mosaic</id>
       <modules>
         <module>vector-mosaic</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>proxy-base-ext</id>
+      <modules>
+        <module>proxy-base-ext</module>
       </modules>
     </profile>
   </profiles>

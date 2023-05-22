@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -131,29 +130,16 @@ public class SampleDataAccessMockData extends SystemTestData {
     protected void setUpCatalog() throws IOException {
         CatalogWriter writer = new CatalogWriter();
         writer.dataStores(
-                new HashMap<String, Map<String, Serializable>>() {
-                    {
-                        put(DATASTORE_NAME, SampleDataAccessFactory.PARAMS);
-                    }
-                },
-                new HashMap<String, String>() {
-                    {
-                        put(DATASTORE_NAME, SampleDataAccessData.NAMESPACE_PREFIX);
-                    }
-                },
+                Map.of(DATASTORE_NAME, SampleDataAccessFactory.PARAMS),
+                Map.of(DATASTORE_NAME, SampleDataAccessData.NAMESPACE_PREFIX),
                 Collections.<String>emptySet());
         writer.coverageStores(
                 new HashMap<String, Map<String, String>>(),
                 new HashMap<String, String>(),
                 Collections.<String>emptySet());
         writer.namespaces(
-                new HashMap<String, String>() {
-                    {
-                        put(
-                                SampleDataAccessData.NAMESPACE_PREFIX,
-                                SampleDataAccessData.NAMESPACE_URI);
-                    }
-                });
+                Map.of(SampleDataAccessData.NAMESPACE_PREFIX, SampleDataAccessData.NAMESPACE_URI));
+
         writer.styles(Collections.<String, String>emptyMap());
         writer.write(new File(data, "catalog.xml"));
     }

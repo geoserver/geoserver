@@ -1,4 +1,5 @@
 <project name="user" default="full">
+
   <target name="init">
     <property environment="env"/>
 
@@ -9,6 +10,15 @@
         <available file="sphinx-build.exe" filepath="${env.PATH}"/>
       </or>
     </condition>
+    
+    <condition property="autobuild.available">
+      <or>
+        <available file="sphinx-autobuild" filepath="${env.PATH}"/>
+        <available file="sphinx-autobuild.exe" filepath="${env.Path}"/>
+        <available file="sphinx-autobuild.exe" filepath="${env.PATH}"/>
+      </or>
+    </condition>
+  
     <condition property="rst2pdf.available">
       <or>
         <available file="rst2pdf" filepath="${env.PATH}"/>
@@ -16,6 +26,7 @@
         <available file="rst2pdf.exe" filepath="${env.PATH}"/>
       </or>
     </condition>
+
     <condition property="pdflatex.available">
       <or>
         <available file="pdflatex" filepath="${env.PATH}"/>
@@ -29,9 +40,11 @@
     <condition property="project.version" value="${project.version}" else="2.24-SNAPSHOT">
       <isset property="project.version" />
     </condition>
-
-    <echo message="Base directory is ${basedir}"/>
-    <echo message="Build directory is ${build.directory} and project version is ${project.version}"/>
+    
+    <echo>Base directory is ${basedir}</echo>
+    <echo>Build directory is ${build.directory}</echo>
+    <echo>project version is ${project.version}</echo>
+    
   </target>
 
   <target name="clean" depends="init">
@@ -42,12 +55,21 @@
     </delete>
   </target>
   
-  <target name="user" depends="init"
+  <target name="user" depends="init" if="sphinx.available"
     description="Generate user html documentation for GeoServer">
     <mkdir dir="${build.directory}"/>
     <antcall target="sphinx">
       <param name="id" value="user" />
       <param name="build" value="html" />
+    </antcall>
+  </target>
+  
+  <target name="user-site" depends="init" if="autobuild.available"
+    description="Interactive generation of user html documentation for GeoServer">
+    
+    <mkdir dir="${build.directory}"/>
+    <antcall target="autobuild">
+      <param name="id" value="user" />
     </antcall>
   </target>
 
@@ -75,7 +97,7 @@
     />
   </target>
   
-  <target name="docguide" depends="init"
+  <target name="docguide" depends="init" if="sphinx.available"
     description="Generate instructions for editing GeoServer documentation">
     <mkdir dir="${build.directory}"/>
     <antcall target="sphinx">
@@ -84,12 +106,30 @@
     </antcall>
   </target>
   
-  <target name="developer" depends="init"
+  <target name="docguide-site" depends="init" if="autobuild.available"
+    description="Interactive generation of docguide html documentation for GeoServer">
+    
+    <mkdir dir="${build.directory}"/>
+    <antcall target="autobuild">
+      <param name="id" value="docguide" />
+    </antcall>
+  </target>
+  
+  <target name="developer" depends="init" if="sphinx.available"
     description="Generate developers guide for GeoServer">
     <mkdir dir="${build.directory}"/>
     <antcall target="sphinx">
       <param name="id" value="developer"/>
       <param name="build" value="html"/>
+    </antcall>
+  </target>
+  
+  <target name="developer-site" depends="init" if="autobuild.available"
+    description="Interactive generation of developer html documentation for GeoServer">
+    
+    <mkdir dir="${build.directory}"/>
+    <antcall target="autobuild">
+      <param name="id" value="developer" />
     </antcall>
   </target>
 
@@ -101,7 +141,18 @@
     <property name="argLine" value="-D release=${project.version} -q -W --keep-going -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
     <echo message="Running sphinx-build ${argLine}"/> 
     <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}/source">
+      <env key="project.version" value="${project.version}"/>
       <arg line="${argLine}"/>
+    </exec>
+  </target>
+  
+  <target name="autobuild" if="autobuild.available">
+    <local name="argLine"/>
+    <property name="argLine" value="-D release=${project.version} -q -W -b html -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/html&quot;"/>
+    <echo message="Running sphinx-autobuild ${argLine}"/> 
+    <exec executable="sphinx-autobuild" failonerror="true" dir="${basedir}/${id}/source">
+      <env key="project.version" value="${project.version}"/>
+      <arg line="${argLine} --open-browser"/>
     </exec>
   </target>
 

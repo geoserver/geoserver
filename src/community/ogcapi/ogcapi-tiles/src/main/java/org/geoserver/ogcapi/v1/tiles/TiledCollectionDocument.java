@@ -97,6 +97,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                         .segment("tiles")
                         .title("Tiles metadata as ")
                         .rel(REL_TILESETS_VECTOR)
+                        .classification("tilesets-vector")
                         .add(this);
             }
 
@@ -108,6 +109,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                         .segment("map/tiles")
                         .title("Map tiles metadata as ")
                         .rel(REL_TILESETS_MAP)
+                        .classification("tilesets-maps")
                         .add(this);
             }
 

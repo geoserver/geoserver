@@ -1,0 +1,32 @@
+<assembly>
+  <id>ogcapi-maps-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>	
+        <include>gs-ogcapi-maps-*.jar</include>
+        <include>gs-ogcapi-core-*.jar</include>
+        <include>gs-web-ogcapi-*.jar</include>
+        <include>gt-cql2-*.jar</include>
+        <include>swagger-core-*.jar</include>
+        <include>jackson-dataformat-*.jar</include>
+        <include>jackson-module-jaxb*.jar</include>
+        <include>swagger-models-*.jar</include>
+        <include>snakeyaml-*.jar</include>
+        <include>validation-api*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>GPL.html</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

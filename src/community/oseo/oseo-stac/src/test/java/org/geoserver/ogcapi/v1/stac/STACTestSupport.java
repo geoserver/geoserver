@@ -109,7 +109,7 @@ public class STACTestSupport extends OGCApiTestSupport {
      * test class.
      */
     protected void copyTemplate(String template) throws IOException {
-        copyTemplate(template, "templates/ogc/stac/");
+        copyTemplate(template, "templates/ogc/stac/v1/");
     }
     /**
      * Copies the given template from the classpath to the data directory. Lookup is relative to the

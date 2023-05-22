@@ -41,6 +41,7 @@ import org.springframework.util.Assert;
  *
  * @author Niels Charlier
  */
+@SuppressWarnings("BanJNDI")
 public class LDAPUserGroupService extends LDAPBaseSecurityService
         implements GeoServerUserGroupService {
 

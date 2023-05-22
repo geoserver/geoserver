@@ -116,28 +116,18 @@ public class Start {
              * while debugging in eclipse. Can't catch CTRL-C to emulate SIGINT as the eclipse
              * console is not propagating that event
              */
-            Thread stopThread =
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            String line;
-                            try (BufferedReader reader =
-                                    new BufferedReader(new InputStreamReader(System.in))) {
-                                while (true) {
-                                    line = reader.readLine();
-                                    if ("stop".equals(line)) {
-                                        jettyServer.stop();
-                                        System.exit(0);
-                                    }
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace(); // NOPMD
-                                System.exit(1);
-                            }
-                        }
-                    };
-            stopThread.setDaemon(true);
-            stopThread.run();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+                while (true) {
+                    String line = reader.readLine();
+                    if ("stop".equals(line)) {
+                        jettyServer.stop();
+                        System.exit(0);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // NOPMD
+                System.exit(1);
+            }
 
             // use this to test normal stop behaviour, that is, to check stuff that
             // need to be done on container shutdown (and yes, this will make

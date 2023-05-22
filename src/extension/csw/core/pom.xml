@@ -28,7 +28,12 @@
     <dependency>
       <groupId>xalan</groupId>
       <artifactId>serializer</artifactId>
-      <version>2.7.1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- test dependencies -->

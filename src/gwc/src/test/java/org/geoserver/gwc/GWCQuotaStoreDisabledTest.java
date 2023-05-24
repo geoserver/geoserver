@@ -42,7 +42,7 @@ public class GWCQuotaStoreDisabledTest extends GeoServerSystemTestSupport {
         assertNull(provider.getQuotaStore());
 
         // check there is no quota database
-        File h2QuotaStore = new File("diskquota_page_store_h2");
-        assertFalse(h2QuotaStore.exists());
+        File hsqlQuotaStore = new File("diskquota_page_store_hsql");
+        assertFalse(hsqlQuotaStore.exists());
     }
 }

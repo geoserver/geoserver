@@ -54,6 +54,7 @@
   
     <!-- The SQL dialects -->
   <bean id="H2QuotaDialect" class="org.geowebcache.diskquota.jdbc.H2Dialect"/>
+  <bean id="HSQLQuotaDialect" class="org.geowebcache.diskquota.jdbc.HSQLDialect"/>
   <bean id="PostgreSQLQuotaDialect" class="org.geowebcache.diskquota.jdbc.PostgreSQLDialect"/>
   <bean id="OracleQuotaDialect" class="org.geowebcache.diskquota.jdbc.OracleDialect"/>
   

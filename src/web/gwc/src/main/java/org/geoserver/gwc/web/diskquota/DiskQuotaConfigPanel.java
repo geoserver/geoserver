@@ -118,7 +118,7 @@ public class DiskQuotaConfigPanel extends Panel {
         // add the drop down chooser
         PropertyModel<String> storeNameModel = new PropertyModel<>(diskQuotaModel, "quotaStore");
         if (diskQuotaModel.getObject().getQuotaStore() == null) {
-            storeNameModel.setObject(JDBCQuotaStoreFactory.H2_STORE);
+            storeNameModel.setObject(JDBCQuotaStoreFactory.HSQL_STORE);
         }
         final DropDownChoice<String> quotaStoreChooser =
                 new DropDownChoice<>(
@@ -140,6 +140,15 @@ public class DiskQuotaConfigPanel extends Panel {
                 new ArrayList<>(applicationContext.getBeansOfType(SQLDialect.class).keySet());
         List<String> dialectNames = new ArrayList<>();
         for (String beanName : dialectBeanNames) {
+            if (beanName.equals("H2QuotaDialect")) {
+                try {
+                    // check if H2 driver is in the classpath
+                    Class.forName("org.h2.Driver");
+                } catch (Exception e) {
+                    // don't add H2QuotaDialect when h2 driver is not there
+                    continue;
+                }
+            }
             int idx = beanName.indexOf("QuotaDialect");
             if (idx > 0) {
                 dialectNames.add(beanName.substring(0, idx));

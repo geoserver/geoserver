@@ -66,6 +66,10 @@ public class ResolvingProxy extends ProxyBase {
         if (object instanceof Proxy) {
             InvocationHandler h = Proxy.getInvocationHandler(object);
             if (h instanceof ResolvingProxy) {
+                if (catalog instanceof CatalogImpl) {
+                    catalog = ((CatalogImpl) catalog).getRawCatalog();
+                }
+
                 String ref = ((ResolvingProxy) h).getRef();
                 String pre = ((ResolvingProxy) h).getPrefix();
 

@@ -31,7 +31,7 @@ Notes on upgrading specific versions
 ------------------------------------
 
 Disk Quota HSQL DB usage (GeoServer 2.24 and newer)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As of GeoServer 2.24, H2 DB support will be replaced with HSQL DB for Tile Caching / Disk Quota store.
 

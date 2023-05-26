@@ -36,7 +36,8 @@ public class JDBCConnectionPoolPanel extends Panel {
                 new ContainsAutoCompleteBehavior(
                         "org.postgresql.Driver",
                         "oracle.jdbc.driver.OracleDriver",
-                        "org.h2.Driver"));
+                        "org.h2.Driver",
+                        "org.hsqldb.jdbcDriver"));
         add(driver);
 
         TextField<String> url = new TextField<>("jdbcUrl", new PropertyModel<>(model, "url"));
@@ -44,6 +45,7 @@ public class JDBCConnectionPoolPanel extends Panel {
         url.add(
                 new ContainsAutoCompleteBehavior(
                         "jdbc:h2://{server}:{9092}/{db-name}",
+                        "jdbc:hsqldb:hsql//{server}:{9001}/{db-name}",
                         "jdbc:postgresql:[{//host}[:{5432}/]]{database}",
                         "jdbc:oracle:thin:@{server}[:{1521}]:{database_name}"));
 

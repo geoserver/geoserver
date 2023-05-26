@@ -30,6 +30,17 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+Disk Quota HSQL DB usage (GeoServer 2.23 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.23, H2 DB support will be replaced with HSQL DB for Tile Caching / Disk Quota store.
+
+* H2 option under "Disk quota store type" and "Target database type" is replaced with HSQL.
+* The default store type will be in-process HSQL.
+* Existing installations with in-process H2 selection will automatically be migrated to in-process HSQL.
+* Important: Existing installations with external H2 database selection will not be migrated automatically. You will get an error message at startup and disk quota will be disabled, unless you use a plugin/extension with H2 dependency. But other features of GeoServer will keep working. You can go to Disk Quota page and configure an external HSQL database or switch to in-process HSQL. In case you want to keep using H2 as an in-process/external database, you can add H2 store plugin or any other extension or plugin that has H2 dependency.
+* GeoServer installations with extensions/plugins having H2 dependency will still have H2 option under "Disk quota store type" and "Target database type".
+
 Log4J Upgrade (GeoServer 2.21 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

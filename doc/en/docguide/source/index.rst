@@ -9,9 +9,9 @@ This guide covers creating and maintaining the User Manual and Developer Manual.
    background
    quickfix
    contributing
+   workflow
    install
    installlatex
-   workflow
    sphinx
    style
    tutorial

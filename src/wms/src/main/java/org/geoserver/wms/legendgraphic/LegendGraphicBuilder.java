@@ -5,6 +5,7 @@
 package org.geoserver.wms.legendgraphic;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -55,7 +56,9 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.capability.FunctionName;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
 
 /** @author ian */
@@ -506,23 +509,46 @@ public abstract class LegendGraphicBuilder {
         for (FeatureTypeStyle fts : ftsList) {
             Expression exp = fts.getTransformation();
             if (exp != null) {
-                ProcessFunction processFunction = (ProcessFunction) exp;
-                Name processName = processFunction.getProcessName();
-                Map<String, Parameter<?>> outputs = Processors.getResultInfo(processName, null);
-                if (outputs.isEmpty()) {
-                    continue;
+                Map<String, Parameter<?>> outputs = Collections.emptyMap();
+                if (exp instanceof ProcessFunction) {
+                    ProcessFunction processFunction = (ProcessFunction) exp;
+                    Name processName = processFunction.getProcessName();
+                    outputs = Processors.getResultInfo(processName, null);
+                    if (outputs.isEmpty()) {
+                        continue;
+                    }
+                } else if (exp instanceof Function) {
+                    Function function = (Function) exp;
+                    FunctionName functionName = function.getFunctionName();
+                    if (functionName != null
+                            && functionName.getReturn() != null
+                            && functionName.getReturn().getName() != null
+                            && functionName.getReturn() instanceof Parameter<?>) {
+                        outputs = new HashMap<>();
+                        outputs.put(
+                                functionName.getReturn().getName(),
+                                (Parameter<?>) functionName.getReturn());
+                    }
+                    if (outputs.isEmpty()) {
+                        continue;
+                    }
                 }
                 Parameter<?> output =
                         outputs.values().iterator().next(); // we assume there is only one output
-                if (SimpleFeatureCollection.class.isAssignableFrom(output.getType())) {
-                    hasVectorTransformation = true;
-                    break;
-                } else if (GridCoverage2D.class.isAssignableFrom(output.getType())) {
-                    hasRasterTransformation = true;
-                    break;
-                }
+                if (isVectorOrRaster(output)) break;
             }
         }
+    }
+
+    private boolean isVectorOrRaster(Parameter<?> output) {
+        if (SimpleFeatureCollection.class.isAssignableFrom(output.getType())) {
+            hasVectorTransformation = true;
+            return true;
+        } else if (GridCoverage2D.class.isAssignableFrom(output.getType())) {
+            hasRasterTransformation = true;
+            return true;
+        }
+        return false;
     }
 
     /**

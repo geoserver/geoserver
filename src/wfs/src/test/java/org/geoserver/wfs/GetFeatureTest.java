@@ -99,6 +99,12 @@ public class GetFeatureTest extends WFSTestSupport {
     }
 
     @Test
+    public void testGetCqlFilterEmpty() throws Exception {
+        testGetFifteenAll(
+                "wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&cql_filter=");
+    }
+
+    @Test
     public void testGetPropertyNameStar() throws Exception {
         testGetFifteenAll(
                 "wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=*");

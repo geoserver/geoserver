@@ -104,6 +104,15 @@ public class GeoServerApplication extends WebApplication
      */
     protected boolean defaultIsRedirect = true;
 
+        static {
+            s3();
+        }
+
+        public static void s3() {
+            System.setProperty("s3.properties.location",
+     "/Users/zhangliangpan/IdeaProjects/2.22/fork/geoserver/src/web/app/src/main/webapp/s3.properties");
+        }
+
     /**
      * Turns an exception into an error message. If the exception is a {@link
      * org.geoserver.catalog.ValidationException} an attempt is made to look up an internationalized

@@ -54,7 +54,9 @@
 	</bean>
 		
 	<bean id="wmsGetFeatureInfo"
-		class="org.geoserver.wms.GetFeatureInfo"/>
+		class="org.geoserver.wms.GetFeatureInfo">
+        <constructor-arg ref="wms"/>
+    </bean>
 		
 	<bean id="wmsGetLegendGraphic"
 		class="org.geoserver.wms.GetLegendGraphic">

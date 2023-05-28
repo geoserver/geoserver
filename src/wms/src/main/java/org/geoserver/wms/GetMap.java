@@ -295,6 +295,7 @@ public class GetMap {
                         layerFilter,
                         layerSort);
             } else if (layerType == MapLayerInfo.TYPE_VECTOR) {
+                wms.checkMaxDimensions(mapLayerInfo, times, elevations, false);
                 addLocalVectorLayer(
                         mapContent,
                         request,
@@ -308,6 +309,7 @@ public class GetMap {
                         layerFilter,
                         layerSort);
             } else if (layerType == MapLayerInfo.TYPE_RASTER) {
+                wms.checkMaxDimensions(mapLayerInfo, times, elevations, true);
                 addRasterLayer(
                         mapContent,
                         request,

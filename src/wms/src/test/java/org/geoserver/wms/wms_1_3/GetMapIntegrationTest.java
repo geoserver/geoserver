@@ -21,7 +21,9 @@ import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
@@ -51,6 +53,11 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
     private static final String RAIN_RT_STYLE = "filteredRain";
+
+    private static final QName TIMESERIES =
+            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+    private static final QName V_TIME_ELEVATION =
+            new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
 
     public static final String STATES_SLD10 =
             "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.0.0\">"
@@ -195,6 +202,20 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         // add global rain and style
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
         testData.addStyle(RAIN_RT_STYLE, "filteredRain.sld", GetMapIntegrationTest.class, catalog);
+
+        testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, getCatalog());
+        setupRasterDimension(
+                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+
+        testData.addVectorLayer(V_TIME_ELEVATION, getCatalog());
+        setupVectorDimension(
+                V_TIME_ELEVATION.getLocalPart(),
+                ResourceInfo.TIME,
+                "time",
+                DimensionPresentation.LIST,
+                null,
+                null,
+                null);
     }
 
     @Test
@@ -631,6 +652,52 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
             getGeoServer().save(geoserverInfo);
         }
+    }
+
+    private void testMaxDimensions(String timelayer, int maxDimensions, boolean expectException)
+            throws Exception {
+        WMSInfo wms = getWMS().getServiceInfo();
+        wms.setMaxRequestedDimensionValues(maxDimensions);
+        getGeoServer().save(wms);
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bbox="
+                                + bbox
+                                + "&styles=&layers="
+                                + timelayer
+                                + "&TIME=1972-09-01T00:00:00.0Z/2023-10-31T23:59:59.999Z"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326&version=1.3.0");
+
+        if (expectException) {
+            Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+            Element root = dom.getDocumentElement();
+            assertEquals("ServiceExceptionReport", root.getNodeName());
+            assertEquals(
+                    "time",
+                    root.getChildNodes()
+                            .item(1)
+                            .getAttributes()
+                            .getNamedItem("locator")
+                            .getNodeValue());
+        } else {
+            assertEquals("image/png", response.getContentType());
+        }
+    }
+
+    @Test
+    public void testMaxDimensionsVector() throws Exception {
+        testMaxDimensions("sf:TimeElevation", 1, true);
+        testMaxDimensions("sf:TimeElevation", 100, false);
+    }
+
+    @Test
+    public void testMaxDimensionsRaster() throws Exception {
+        testMaxDimensions("sf:timeseries", 1, true);
+        testMaxDimensions("sf:timeseries", 100, false);
     }
 
     @Test

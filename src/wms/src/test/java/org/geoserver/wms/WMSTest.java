@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -29,6 +30,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -210,6 +212,37 @@ public class WMSTest extends WMSTestSupport {
         info.setCacheConfiguration(new CacheConfiguration(true));
         getGeoServer().save(info);
         assertTrue(wms.isRemoteStylesCacheEnabled());
+    }
+
+    @Test(expected = ServiceException.class)
+    public void testCheckMaxDimensionsTime() throws Exception {
+        WMSInfo info = wms.getServiceInfo();
+        info.setMaxRequestedDimensionValues(1);
+        getGeoServer().save(info);
+        setupStartEndTimeDimension(
+                TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
+        String name = TIME_WITH_START_END.getLocalPart();
+        MapLayerInfo mapLayerInfo = new MapLayerInfo(getCatalog().getLayerByName(name));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DateRange dateRange =
+                new DateRange(formatter.parse("2012-02-09"), formatter.parse("2012-02-20"));
+        List<Object> times = Arrays.asList(dateRange);
+        wms.checkMaxDimensions(mapLayerInfo, times, null, false);
+    }
+
+    @Test(expected = ServiceException.class)
+    public void testCheckMaxDimensionsElevation() throws Exception {
+        WMSInfo info = wms.getServiceInfo();
+        info.setMaxRequestedDimensionValues(1);
+        getGeoServer().save(info);
+        setupStartEndTimeDimension(
+                TIME_WITH_START_END.getLocalPart(), "elevation", "startElevation", "endElevation");
+        String name = TIME_WITH_START_END.getLocalPart();
+        MapLayerInfo mapLayerInfo = new MapLayerInfo(getCatalog().getLayerByName(name));
+        NumberRange elevationRange = NumberRange.create(0, 99);
+        List<Object> elevations = Arrays.asList(elevationRange);
+        wms.checkMaxDimensions(mapLayerInfo, null, elevations, false);
     }
 
     @Test

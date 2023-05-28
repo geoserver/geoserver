@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,8 +33,10 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -56,7 +59,9 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * A GetFeatureInfo 1.3.0 integration test suite covering both spec mandates and geoserver specific
@@ -80,6 +85,11 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
             new QName(MockData.DEFAULT_URI, "genericLines", MockData.DEFAULT_PREFIX);
 
     public static QName STATES = new QName(MockData.SF_URI, "states", MockData.SF_PREFIX);
+
+    private static final QName TIMESERIES =
+            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+    private static final QName V_TIME_ELEVATION =
+            new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -157,6 +167,20 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         LayerInfo layer = catalog.getLayerByName(getLayerId(STATES));
         layer.setQueryable(false);
         catalog.save(layer);
+
+        testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, getCatalog());
+        setupRasterDimension(
+                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+
+        testData.addVectorLayer(V_TIME_ELEVATION, getCatalog());
+        setupVectorDimension(
+                V_TIME_ELEVATION.getLocalPart(),
+                ResourceInfo.TIME,
+                "time",
+                DimensionPresentation.LIST,
+                null,
+                null,
+                null);
     }
 
     //    @Override
@@ -1384,5 +1408,55 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         // assert a features was returned
         responseJson = JSONObject.fromObject(json);
         assertFalse(responseJson.getJSONArray("features").isEmpty());
+    }
+
+    private void testMaxDimensions(String timelayer, int maxDimensions, boolean expectException)
+            throws Exception {
+        WMSInfo wms = getWMS().getServiceInfo();
+        wms.setMaxRequestedDimensionValues(maxDimensions);
+        getGeoServer().save(wms);
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bbox=-130,24,-66,50"
+                                + "&x=50"
+                                + "&y=50"
+                                + "&LAYERS="
+                                + timelayer
+                                + "&QUERY_LAYERS="
+                                + timelayer
+                                + "&TIME=1972-09-01T00:00:00.0Z/2023-10-31T23:59:59.999Z"
+                                + "&INFO_FORMAT=text/html"
+                                + "&request=GetFeatureInfo"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326&version=1.3.0");
+
+        if (expectException) {
+            Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+            Element root = dom.getDocumentElement();
+            assertEquals("ServiceExceptionReport", root.getNodeName());
+            assertTrue(
+                    dom.getDocumentElement()
+                            .getElementsByTagName("ServiceException")
+                            .item(0)
+                            .getFirstChild()
+                            .getNodeValue()
+                            .contains(
+                                    "This request would process more time than the maximum allowed"));
+        } else {
+            assertEquals("text/html;charset=UTF-8", response.getContentType());
+        }
+    }
+
+    @Test
+    public void testMaxDimensionsVector() throws Exception {
+        testMaxDimensions("sf:TimeElevation", 1, true);
+        testMaxDimensions("sf:TimeElevation", 100, false);
+    }
+
+    @Test
+    public void testMaxDimensionsRaster() throws Exception {
+        testMaxDimensions("sf:timeseries", 1, true);
+        testMaxDimensions("sf:timeseries", 100, false);
     }
 }

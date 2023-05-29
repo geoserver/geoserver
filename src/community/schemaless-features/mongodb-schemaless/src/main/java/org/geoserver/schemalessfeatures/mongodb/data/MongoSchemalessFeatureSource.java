@@ -11,8 +11,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
+import org.bson.Document;
 import org.geoserver.schemalessfeatures.data.ComplexContentDataAccess;
 import org.geoserver.schemalessfeatures.data.SchemalessFeatureSource;
 import org.geoserver.schemalessfeatures.mongodb.MongoSchemalessUtils;
@@ -24,6 +27,7 @@ import org.geotools.data.FeatureReader;
 import org.geotools.data.FilteringFeatureReader;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
+import org.geotools.data.mongodb.MongoCollectionMeta;
 import org.geotools.data.mongodb.MongoFilterSplitter;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.filter.visitor.PostPreProcessFilterSplittingVisitor;
@@ -180,7 +184,11 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
 
     Filter[] splitFilter(Filter f) {
         PostPreProcessFilterSplittingVisitor splitter =
-                new MongoFilterSplitter(getDataStore().getFilterCapabilities(), null, null) {
+                new MongoFilterSplitter(
+                        getDataStore().getFilterCapabilities(),
+                        null,
+                        null,
+                        new MongoCollectionMeta(getIndexesInfoMap())) {
                     @Override
                     protected void visitBinaryComparisonOperator(BinaryComparisonOperator filter) {
                         Expression expression1 = filter.getExpression1();
@@ -197,6 +205,19 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
                 };
         f.accept(splitter, null);
         return new Filter[] {splitter.getFilterPre(), splitter.getFilterPost()};
+    }
+
+    private Map<String, String> getIndexesInfoMap() {
+        Map<String, String> indexes = new HashMap<>();
+        for (Document doc : collection.listIndexes()) {
+            Document key = (Document) doc.get("key");
+            if (key != null) {
+                for (Map.Entry indexData : key.entrySet()) {
+                    indexes.put(indexData.getKey().toString(), indexData.getValue().toString());
+                }
+            }
+        }
+        return indexes;
     }
 
     @Override

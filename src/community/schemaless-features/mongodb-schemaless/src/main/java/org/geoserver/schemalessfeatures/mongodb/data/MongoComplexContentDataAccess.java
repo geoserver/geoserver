@@ -26,6 +26,7 @@ import org.opengis.filter.PropertyIsBetween;
 import org.opengis.filter.PropertyIsLike;
 import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.spatial.BBOX;
+import org.opengis.filter.spatial.DWithin;
 import org.opengis.filter.spatial.Intersects;
 import org.opengis.filter.spatial.Within;
 
@@ -110,6 +111,7 @@ public class MongoComplexContentDataAccess extends ComplexContentDataAccess {
             capabilities.addType(BBOX.class);
             capabilities.addType(Intersects.class);
             capabilities.addType(Within.class);
+            capabilities.addType(DWithin.class);
 
             capabilities.addType(Id.class);
 

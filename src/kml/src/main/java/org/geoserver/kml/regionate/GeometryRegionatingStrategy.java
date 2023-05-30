@@ -59,7 +59,7 @@ public class GeometryRegionatingStrategy extends ExternalSortRegionatingStrategy
         }
 
         // geometry size is a double
-        h2Type = "DOUBLE";
+        hsqlType = "DOUBLE";
     }
 
     @Override

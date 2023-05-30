@@ -14,9 +14,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -36,7 +39,6 @@ import org.geotools.referencing.operation.projection.ProjectionException;
 import org.geotools.util.CanonicalSet;
 import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
-import org.h2.tools.DeleteDbFiles;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -54,8 +56,8 @@ import org.opengis.referencing.operation.MathTransform;
  *
  * <ul>
  *   <li>tiling based on the TMS tiling recommendation
- *   <li>caching the assignment of a feature in a specific tile in an H2 database stored in the data
- *       directory
+ *   <li>caching the assignment of a feature in a specific tile in an HSQL database stored in the
+ *       data directory
  *   <li>
  *
  * @author Andrea Aime - OpenGeo
@@ -77,8 +79,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
 
     static {
         try {
-            // make sure, once and for all, that H2 is around
-            Class.forName("org.h2.Driver");
+            // make sure, once and for all, that HSQL is around
+            Class.forName("org.hsqldb.jdbcDriver");
         } catch (Exception e) {
             throw new RuntimeException("Could not initialize the class constants", e);
         }
@@ -172,19 +174,49 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
     }
 
+    private static Connection getHsqlConnection(String dbDir, String dbName) throws SQLException {
+        return DriverManager.getConnection(
+                "jdbc:hsqldb:file:" + dbDir + "/hsqlcache_" + dbName, "geoserver", "geopass");
+    }
+
     @Override
     public void clearCache(FeatureTypeInfo cfg) {
         try {
             GeoServerResourceLoader loader = gs.getCatalog().getResourceLoader();
             Resource geosearch = loader.get("geosearch");
             if (geosearch.getType() == Type.DIRECTORY) {
-                File directory = geosearch.dir();
-                DeleteDbFiles.execute(
-                        directory.getCanonicalPath(), "h2cache_" + getDatabaseName(cfg), true);
+                clearHsqlDatabase(geosearch.dir(), getDatabaseName(cfg));
             }
         } catch (Exception ioe) {
             LOGGER.severe("Couldn't clear out config dir due to: " + ioe);
         }
+    }
+
+    public static void clearAllHsqlDatabases(File dbDir) throws SQLException {
+        // find all the databases in the given directory
+        List<String> allDbNames =
+                Stream.of(dbDir.listFiles())
+                        .filter(file -> !file.isDirectory())
+                        .map(File::getName)
+                        .filter(fileName -> fileName.matches("^hsqlcache_.*\\.script$"))
+                        .map(
+                                fileName ->
+                                        fileName.substring(
+                                                10,
+                                                fileName.length()
+                                                        - 7)) // take db name in the middle
+                        .collect(Collectors.toList());
+        for (String dbName : allDbNames) {
+            clearHsqlDatabase(dbDir, dbName);
+        }
+    }
+
+    public static void clearHsqlDatabase(File dbDir, String dbName) throws SQLException {
+        Connection conn = getHsqlConnection(dbDir.getPath(), dbName);
+        conn.createStatement().execute("SHUTDOWN");
+        Stream.of(dbDir.listFiles())
+                .filter(file -> file.getName().startsWith("hsqlcache_" + dbName))
+                .forEach(file -> file.delete());
     }
 
     /**
@@ -227,11 +259,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
             try (
             // get a hold to the database that contains the cache (this will
             // eventually create the db)
-            Connection conn =
-                            DriverManager.getConnection(
-                                    "jdbc:h2:file:" + dataDir + "/geosearch/h2cache_" + tableName,
-                                    "geoserver",
-                                    "geopass");
+            Connection conn = getHsqlConnection(dataDir + "/geosearch", tableName);
                     // try to create the table, if it's already there this will fail
                     Statement st = conn.createStatement()) {
                 st.execute(
@@ -250,7 +278,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
      * Reads/computes the tile feature set
      *
      * @param tile the Tile whose features we must find
-     * @param conn the H2 connection
+     * @param conn the HSQL connection
      */
     protected Set<String> readFeaturesForTile(Tile tile, Connection conn) throws Exception {
         // grab the fids and decide whether we have to compute them

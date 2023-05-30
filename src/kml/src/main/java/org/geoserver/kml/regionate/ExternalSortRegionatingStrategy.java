@@ -47,7 +47,7 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
     /** The feature type for the features that we'll return back from the index */
     static final SimpleFeatureType IDX_FEATURE_TYPE;
 
-    /** Java type to H2 type map (covers only types that do not have a size) */
+    /** Java type to HSQL type map (covers only types that do not have a size) */
     static Map<Class<?>, String> CLASS_MAPPINGS = new LinkedHashMap<>();
 
     static {
@@ -77,7 +77,7 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
 
     FeatureSource fs;
 
-    String h2Type;
+    String hsqlType;
 
     public ExternalSortRegionatingStrategy(GeoServer gs) {
         super(gs);
@@ -117,9 +117,9 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
                             + featureType.getName());
         }
 
-        // Make sure we know how to turn that attribute into a H2 type
-        h2Type = getH2DataType(ad);
-        if (h2Type == null)
+        // Make sure we know how to turn that attribute into a HSQL type
+        hsqlType = getHSQLDataType(ad);
+        if (hsqlType == null)
             throw new ServiceException(
                     "Attribute type "
                             + ad.getType()
@@ -153,7 +153,7 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
         return new IndexFeatureIterator(cacheConn, latLongEnvelope);
     }
 
-    protected String getH2DataType(AttributeDescriptor ad) {
+    protected String getHSQLDataType(AttributeDescriptor ad) {
         if (String.class.equals(ad.getType().getBinding())) {
             int length = FeatureTypes.getFieldLength(ad);
             if (length <= 0) length = 255;
@@ -167,11 +167,11 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
         try (Statement st = conn.createStatement()) {
             st.execute(
                     "CREATE TABLE FEATUREIDX(" //
-                            + "X NUMBER, " //
-                            + "Y NUMBER, " //
+                            + "X DOUBLE, " //
+                            + "Y DOUBLE, " //
                             + "FID VARCHAR(64), " //
                             + "ORDER_FIELD "
-                            + h2Type
+                            + hsqlType
                             + ")");
             st.execute("CREATE INDEX FEATUREIDX_COORDS ON FEATUREIDX(X, Y)");
             st.execute("CREATE INDEX FEATUREIDX_ORDER_FIELD ON FEATUREIDX(ORDER_FIELD)");
@@ -204,7 +204,7 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
             // read all the features and fill the index table
             // make it so the insertion is a single big transaction, should
             // be faster,
-            // provided it does not kill H2...
+            // provided it does not kill HSQL...
             conn.setAutoCommit(false);
             try (FeatureIterator fi = fs.getFeatures(q).features()) {
                 while (fi.hasNext()) {
@@ -242,13 +242,13 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
             // slower, but too big transaction imposes a big overhead on the db
             conn.commit();
 
-            // hum, shall we kick H2 so that it updates the statistics?
+            // hum, shall we kick HSQL so that it updates the statistics?
         } finally {
             conn.setAutoCommit(true);
         }
     }
 
-    /** Returns the value that will be inserted into the H2 index as the sorting field */
+    /** Returns the value that will be inserted into the HSQL index as the sorting field */
     protected Object getSortAttributeValue(SimpleFeature f) {
         return f.getAttribute(attribute);
     }
@@ -272,20 +272,22 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
 
             try {
                 st = cacheConn.createStatement();
+                // we are using Math.nextDown and Math.nextUp methods to prevent double precision
+                // problems
                 String sql =
                         "SELECT X, Y, FID \n"
                                 + "FROM FEATUREIDX\n" //
-                                + "WHERE X >= "
-                                + envelope.getMinX()
+                                + "WHERE X > "
+                                + Math.nextDown(envelope.getMinX())
                                 + "\n"
-                                + "AND X <= "
-                                + envelope.getMaxX()
+                                + "AND X < "
+                                + Math.nextUp(envelope.getMaxX())
                                 + "\n"
-                                + "AND Y >= "
-                                + envelope.getMinY()
+                                + "AND Y > "
+                                + Math.nextDown(envelope.getMinY())
                                 + "\n"
-                                + "AND Y <= "
-                                + envelope.getMaxY()
+                                + "AND Y < "
+                                + Math.nextUp(envelope.getMaxY())
                                 + "\n"
                                 + "ORDER BY ORDER_FIELD DESC";
                 rs = st.executeQuery(sql);

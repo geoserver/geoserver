@@ -192,7 +192,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
     }
 
-    public static void clearAllHsqlDatabases(File dbDir) throws SQLException {
+    public static void clearAllHsqlDatabases(File dbDir) {
         // find all the databases in the given directory
         List<String> allDbNames =
                 Stream.of(dbDir.listFiles())
@@ -211,9 +211,15 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
     }
 
-    public static void clearHsqlDatabase(File dbDir, String dbName) throws SQLException {
-        Connection conn = getHsqlConnection(dbDir.getPath(), dbName);
-        conn.createStatement().execute("SHUTDOWN");
+    public static void clearHsqlDatabase(File dbDir, String dbName) {
+        // shutdown the database
+        try (Connection conn = getHsqlConnection(dbDir.getPath(), dbName)) {
+            conn.createStatement().execute("SHUTDOWN");
+        } catch (SQLException e) {
+            LOGGER.severe(
+                    "Couldn't clear HSQL regionation database: " + dbName + " exception: " + e);
+        }
+        // manually delete database files
         Stream.of(dbDir.listFiles())
                 .filter(file -> file.getName().startsWith("hsqlcache_" + dbName))
                 .forEach(file -> file.delete());

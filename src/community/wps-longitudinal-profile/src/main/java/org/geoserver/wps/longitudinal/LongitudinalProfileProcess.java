@@ -93,7 +93,12 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                             description = "index of elevation in coordinate array",
                             min = 0,
                             defaultValue = "0")
-                    Integer elevationIndex)
+                    Integer elevationIndex,
+            @DescribeParameter(
+                            name = "elevationName",
+                            description = "name of elevation attribute on adjustment layer",
+                            min = 0)
+                    String elevationName)
             throws IOException, FactoryException, TransformException, CQLException {
 
         long startTime = System.currentTimeMillis();
@@ -115,7 +120,10 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                         + distance
                         + SEP
                         + " elevation index: "
-                        + elevationIndex);
+                        + elevationIndex
+                        + SEP
+                        + " elevation name: "
+                        + elevationName);
         if (projection != null) {
             LOGGER.info(" projection: " + projection.getName());
         }
@@ -158,7 +166,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                             previousElevation,
                             position2D,
                             point,
-                            elevationIndex);
+                            elevationIndex,
+                            elevationName);
 
             if (projection != null) {
                 point = reprojectPoint(coverageCrs, projection, point);
@@ -218,7 +227,9 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
     }
 
     /**
-     * Attempts to calculate distance between 2 points in meters. If CRS is not using meters, then attempting to reproject points to EPSG:3857 which supports them
+     * Attempts to calculate distance between 2 points in meters. If CRS is not using meters, then
+     * attempting to reproject points to EPSG:3857 which supports them
+     *
      * @param projection
      * @param previousPoint
      * @param point
@@ -248,7 +259,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
             double previousElevation,
             DirectPosition2D position2D,
             Geometry point,
-            int elevationIndex)
+            int elevationIndex,
+            String elevationName)
             throws IOException, CQLException {
         double elevation =
                 calculateElevation(
@@ -257,7 +269,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         elevation = BigDecimal.valueOf(elevation).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
         if (featureSource != null) {
-            elevation = getAdjustedElevation(featureSource, point, elevation);
+            elevation = getAdjustedElevation(featureSource, point, elevation, elevationName);
         }
         return elevation;
     }
@@ -320,7 +332,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
      * @throws IOException
      */
     private static double getAdjustedElevation(
-            FeatureSource featureSource, Geometry geometry, double elevation)
+            FeatureSource featureSource, Geometry geometry, double elevation, String elevationName)
             throws IOException, CQLException {
         Query query;
         Filter filter;
@@ -336,7 +348,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         FeatureIterator featureIterator = featureSource.getFeatures(query).features();
         if (featureIterator.hasNext()) {
             Feature feature = featureIterator.next();
-            Double adjLayerElevation = (Double) feature.getProperty("elevation").getValue();
+            Double adjLayerElevation = (Double) feature.getProperty(elevationName).getValue();
             elevation = elevation - adjLayerElevation;
         }
         return elevation;

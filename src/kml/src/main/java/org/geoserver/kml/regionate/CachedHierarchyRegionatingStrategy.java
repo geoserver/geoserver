@@ -174,6 +174,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
     }
 
+    @SuppressFBWarnings(
+            "DMI_CONSTANT_DB_PASSWORD") // well spotted, but the db contents are not sensitive
     private static Connection getHsqlConnection(String dbDir, String dbName) throws SQLException {
         return DriverManager.getConnection(
                 "jdbc:hsqldb:file:" + dbDir + "/hsqlcache_" + dbName, "geoserver", "geopass");
@@ -251,8 +253,6 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
     }
 
     /** Open/creates the db and then reads/computes the tile features */
-    @SuppressFBWarnings(
-            "DMI_CONSTANT_DB_PASSWORD") // well spotted, but the db contents are not sensitive
     private Set<String> getFeaturesForTile(String dataDir, Tile tile) throws Exception {
 
         // build the synchonization token

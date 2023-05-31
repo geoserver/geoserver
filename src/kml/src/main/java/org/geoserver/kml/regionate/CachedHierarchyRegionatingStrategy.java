@@ -269,7 +269,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
                     // try to create the table, if it's already there this will fail
                     Statement st = conn.createStatement()) {
                 st.execute(
-                        "CREATE TABLE IF NOT EXISTS TILECACHE( " //
+                        "CREATE CACHED TABLE IF NOT EXISTS TILECACHE( " //
                                 + "x BIGINT, " //
                                 + "y BIGINT, " //
                                 + "z INT, " //

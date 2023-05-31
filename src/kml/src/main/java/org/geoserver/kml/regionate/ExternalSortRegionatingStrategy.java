@@ -166,7 +166,7 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
     void buildIndex(Connection conn) throws Exception {
         try (Statement st = conn.createStatement()) {
             st.execute(
-                    "CREATE TABLE FEATUREIDX(" //
+                    "CREATE CACHED TABLE FEATUREIDX(" //
                             + "X DOUBLE, " //
                             + "Y DOUBLE, " //
                             + "FID VARCHAR(64), " //

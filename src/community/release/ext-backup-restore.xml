@@ -41,6 +41,7 @@
          <include>spring-security-saml2-core*.jar</include>
          <include>spring-test*.jar</include>
          <include>jdom*.jar</include>
+          <include>h2-*.jar</include>
       </includes>      
       <excludes>
       </excludes>

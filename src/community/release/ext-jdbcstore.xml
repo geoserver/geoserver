@@ -12,6 +12,7 @@
         <include>gs-jdbcstore-*.jar</include>
         <include>gs-jdbcconfig-*.jar</include>
         <include>compress-lzf-*.jar</include>
+        <include>h2-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

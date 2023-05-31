@@ -12,6 +12,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
 import java.util.Set;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,7 +92,7 @@ public class DefaultDataAccessManagerTreeTest extends AbstractAuthorizationTest 
         assertEquals(2, root.children.size());
         SecureTreeNode topp = root.getChild("topp");
         assertNotNull(topp);
-        assertEquals(3, topp.children.size());
+        assertEquals(4, topp.children.size());
         SecureTreeNode states = topp.getChild("states");
         SecureTreeNode landmarks = topp.getChild("landmarks");
         SecureTreeNode bases = topp.getChild("bases");
@@ -134,5 +136,23 @@ public class DefaultDataAccessManagerTreeTest extends AbstractAuthorizationTest 
         assertFalse(landmarks.canAccess(milUser, AccessMode.WRITE));
         assertTrue(bases.canAccess(milUser, AccessMode.READ));
         assertTrue(bases.canAccess(milUser, AccessMode.WRITE));
+    }
+
+    @Test
+    public void testBuildInFunctionResourceFilter() throws Exception {
+        DefaultResourceAccessManager defaultResourceAccessManager =
+                (DefaultResourceAccessManager) buildManager("complex.properties");
+        // validate that the filter is built correctly and there are no casting issues when
+        // populating layerExceptionIds
+        assertEquals(
+                "[[ NOT [ in([id], [arc.grid-id]) = true ] ] AND [ NOT [ in([id], [bases-id]) = true ] ]]",
+                defaultResourceAccessManager
+                        .buildInFunctionResourceFilter(rwUser, ResourceInfo.class)
+                        .toString());
+        assertEquals(
+                "[[ NOT [ in([id], [arc.grid-lid]) = true ] ] AND [ NOT [ in([id], [bases-lid]) = true ] ]]",
+                defaultResourceAccessManager
+                        .buildInFunctionResourceFilter(rwUser, WorkspaceInfo.class)
+                        .toString());
     }
 }

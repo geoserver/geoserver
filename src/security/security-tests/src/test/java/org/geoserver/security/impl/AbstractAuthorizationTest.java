@@ -595,6 +595,11 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                 expect(catalog.getLayerGroupByName(lg.getWorkspace().getName(), lg.getName()))
                         .andReturn(lg)
                         .anyTimes();
+                expect(
+                                catalog.getLayerGroupByName(
+                                        lg.getWorkspace().getName() + ":" + lg.getName()))
+                        .andReturn(lg)
+                        .anyTimes();
             }
         }
 

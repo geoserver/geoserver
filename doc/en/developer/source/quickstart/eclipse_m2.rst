@@ -4,6 +4,8 @@ Eclipse M2 Quickstart
 =====================
 
 This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the :ref:`eclipse_guide`.
+
+`M2Eclipse <https://www.eclipse.org/m2e/>`_ provides tight integration for Apache Maven into the Eclipse IDE.
   
 .. include:: checkout.txt
 

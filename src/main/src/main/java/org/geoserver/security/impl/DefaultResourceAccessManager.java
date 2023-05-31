@@ -674,7 +674,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         }
     }
 
-    private Filter buildInFunctionResourceFilter(
+    protected Filter buildInFunctionResourceFilter(
             Authentication user, Class<? extends CatalogInfo> clazz) {
         // base access
         boolean rootAccess = canAccess(user, root);
@@ -705,9 +705,12 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 }
                 boolean layerAccess = canAccess(user, layerNode);
                 if (layerAccess != wsAccess) {
-                    if (clazz.isAssignableFrom(published.getClass()))
+                    if (ResourceInfo.class.isAssignableFrom(clazz)
+                            && published instanceof LayerInfo) {
+                        layerExceptionIds.add(((LayerInfo) published).getResource().getId());
+                    } else {
                         layerExceptionIds.add(published.getId());
-                    else layerExceptionIds.add(((LayerInfo) published).getResource().getId());
+                    }
                 }
             }
 

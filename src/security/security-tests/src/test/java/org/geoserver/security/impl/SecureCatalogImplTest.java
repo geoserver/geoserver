@@ -1155,8 +1155,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         Collection<PublishedInfo> filteredPublished =
                 Collections2.filter(publisheds, new PredicateFilter(securityAnonymous));
         assertEquals("anonymous layers", 4, filteredLayers.size());
-        assertEquals("anonymous layer groups", 2, filteredGroups.size());
-        assertEquals("anonymous published", 6, filteredPublished.size());
+        assertEquals("anonymous layer groups", 1, filteredGroups.size());
+        assertEquals("anonymous published", 5, filteredPublished.size());
         // ANON
         Iterator<LayerInfo> it1 =
                 Iterators.filter(layers.iterator(), new PredicateFilter(securityAnonymous));
@@ -1267,6 +1267,15 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         clazz = ResourceInfo.class;
         // Creating filter for anonymous user
         securityAnonymous = resourceManager.getSecurityFilter(anonymous, clazz);
+        // When the filter gets created, if evaluating a ResourceInfo where there is a mismatch
+        // between layer and workspace access, get the resource and get its id rather than the layer
+        // id
+        // in order to exclude it
+        assertTrue(securityAnonymous.toString().contains("[states-id]"));
+        assertFalse(securityAnonymous.toString().contains("[states-lid]"));
+        // Confirming that the security filter creation process can handle a LayerGroup when there
+        // is a layer-workspace mismatch
+        assertTrue(securityAnonymous.toString().contains("[topp:layerGroupTopp-id]"));
         // Creating filter for read write user
         securityReadWriteUser = resourceManager.getSecurityFilter(rwUser, clazz);
         // Creating filter for military user

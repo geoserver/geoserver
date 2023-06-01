@@ -5,12 +5,18 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.tuple.Pair;
 import org.geoserver.catalog.Info;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.function.IsInstanceOf;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.Capabilities;
 import org.geotools.filter.visitor.CapabilitiesFilterSplitter;
@@ -18,8 +24,11 @@ import org.geotools.filter.visitor.ClientTransactionAccessor;
 import org.geotools.filter.visitor.LiteralDemultiplyingFilterVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.And;
 import org.opengis.filter.Filter;
+import org.opengis.filter.Or;
+import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.Function;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
@@ -85,6 +94,10 @@ class QueryBuilder<T extends Info> {
 
     public Filter getSupportedFilter() {
         return supportedFilter;
+    }
+
+    public boolean isFullySupported() {
+        return Filter.INCLUDE.equals(this.unsupportedFilter);
     }
 
     public Map<String, Object> getNamedParameters() {
@@ -196,22 +209,29 @@ class QueryBuilder<T extends Info> {
         if (Filter.INCLUDE.equals(this.originalFilter)) {
             return null;
         }
-        final SimplifyingFilterVisitor filterSimplifier = new SimplifyingFilterVisitor();
+        Pair<Filter, Filter> split = splitFilter(this.originalFilter);
+        this.supportedFilter = split.getLeft();
+        this.unsupportedFilter = split.getRight();
+        if (PublishedInfo.class.equals(this.queryType)) {
+            splitPublishedInfoFilter();
+        }
+        if (Filter.INCLUDE.equals(this.supportedFilter)) {
+            return null;
+        }
+        StringBuilder whereClause = new StringBuilder();
+        return this.supportedFilter.accept(this.predicateBuilder, whereClause).toString();
+    }
+
+    private Pair<Filter, Filter> splitFilter(Filter filter) {
         Capabilities fcs = new Capabilities(FilterToCatalogSQL.CAPABILITIES);
-        FeatureType parent = null;
         // use this to instruct the filter splitter which filters can be encoded depending on
         // whether a db mapping for a given property name exists
         ClientTransactionAccessor transactionAccessor =
                 new ClientTransactionAccessor() {
 
                     @Override
-                    public Filter getUpdateFilter(final String attributePath) {
-                        Set<PropertyType> propertyTypes;
-                        propertyTypes = dbMappings.getPropertyTypes(queryType, attributePath);
-
-                        final boolean isMappedProp = !propertyTypes.isEmpty();
-
-                        if (isMappedProp) {
+                    public Filter getUpdateFilter(String attributePath) {
+                        if (!dbMappings.getPropertyTypes(queryType, attributePath).isEmpty()) {
                             // continue normally
                             return null;
                         } else if (LOGGER.isLoggable(Level.FINER)) {
@@ -226,29 +246,143 @@ class QueryBuilder<T extends Info> {
                         return null;
                     }
                 };
+        CapabilitiesFilterSplitter filterSplitter =
+                new CapabilitiesFilterSplitter(fcs, null, transactionAccessor);
 
-        CapabilitiesFilterSplitter filterSplitter;
-        filterSplitter = new CapabilitiesFilterSplitter(fcs, parent, transactionAccessor);
-
-        final Filter filter = (Filter) this.originalFilter.accept(filterSimplifier, null);
-        filter.accept(filterSplitter, null);
+        SimplifyingFilterVisitor filterSimplifier = new SimplifyingFilterVisitor();
+        Filter simplified = (Filter) filter.accept(filterSimplifier, null);
+        simplified.accept(filterSplitter, null);
 
         Filter supported = filterSplitter.getFilterPre();
+        supported = (Filter) supported.accept(new LiteralDemultiplyingFilterVisitor(), null);
+        supported = (Filter) supported.accept(filterSimplifier, null);
         Filter unsupported = filterSplitter.getFilterPost();
-        Filter demultipliedFilter =
-                (Filter) supported.accept(new LiteralDemultiplyingFilterVisitor(), null);
-        this.supportedFilter = (Filter) demultipliedFilter.accept(filterSimplifier, null);
-        this.unsupportedFilter = (Filter) unsupported.accept(filterSimplifier, null);
-        if (Filter.INCLUDE.equals(this.supportedFilter)) {
-            return null;
+        unsupported = (Filter) unsupported.accept(filterSimplifier, null);
+        return Pair.of(supported, unsupported);
+    }
+
+    /**
+     * Checks if the unsupported filter contains an OR filter that matches the kind of published
+     * info filter generated by the CSW extension. If it does, try to split that filter into two
+     * separate OR filters, one that is supported by the JDBC Configuration database queries and one
+     * that is not supported. This is a workaround for limitations handling OR queries in
+     * org.geotools.filter.visitor.CapabilitiesFilterSplitter
+     */
+    private void splitPublishedInfoFilter() {
+        // the published info filter may be AND'ed with other filters such as from
+        // org.geoserver.security.SecureCatalogFacade
+        List<Filter> children =
+                this.unsupportedFilter instanceof And
+                        ? ((And) this.unsupportedFilter).getChildren()
+                        : Collections.singletonList(this.unsupportedFilter);
+        Or or =
+                children.stream()
+                        .filter(Or.class::isInstance)
+                        .map(Or.class::cast)
+                        .filter(f -> f.getChildren().size() == 2)
+                        .filter(f -> hasIsInstanceOf(f.getChildren().get(0)))
+                        .filter(f -> hasIsInstanceOf(f.getChildren().get(1)))
+                        .findFirst()
+                        .orElse(null);
+        if (or != null) {
+            List<Filter> supported1 = new ArrayList<>();
+            List<Filter> unsupported1 = new ArrayList<>();
+            splitAndFilter(or.getChildren().get(0), supported1, unsupported1);
+            List<Filter> supported2 = new ArrayList<>();
+            List<Filter> unsupported2 = new ArrayList<>();
+            splitAndFilter(or.getChildren().get(1), supported2, unsupported2);
+            if (supported1.size() > 1 || supported2.size() > 1) {
+                // update the filters if any part of the original filter could be split into
+                // a new supported filter that is logically equivalent
+                children = new ArrayList<>(children);
+                children.remove(or);
+                this.supportedFilter = appendFilter(this.supportedFilter, supported1, supported2);
+                this.unsupportedFilter =
+                        appendFilter(Predicates.and(children), unsupported1, unsupported2);
+            }
         }
-        StringBuilder whereClause = new StringBuilder();
-        return this.supportedFilter.accept(predicateBuilder, whereClause).toString();
+    }
+
+    /**
+     * Checks if the filter is an And filter with exactly one IsInstanceOf predicate
+     *
+     * @param filter the filter to check
+     * @return whether the filter contains an IsInstanceOf filter
+     */
+    private static boolean hasIsInstanceOf(Filter filter) {
+        if (filter instanceof And) {
+            List<Filter> children = ((And) filter).getChildren();
+            return children.stream().filter(QueryBuilder::isIsInstanceOf).count() == 1;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the filter matches the filter created by calling
+     * org.geoserver.catalog.Predicates.isInstanceOf(Class<?>)
+     *
+     * @param filter the filter to check
+     * @return whether the filter is an IsInstanceOf filter
+     */
+    private static boolean isIsInstanceOf(Filter filter) {
+        if (filter instanceof PropertyIsEqualTo) {
+            PropertyIsEqualTo eq = (PropertyIsEqualTo) filter;
+            return eq.getExpression1() instanceof Function
+                    && IsInstanceOf.NAME.equals(((Function) eq.getExpression1()).getFunctionName());
+        }
+        return false;
+    }
+
+    /**
+     * Splits and And filter into its supported components while adding the IsInstanceOf predicate
+     * to both the supported and unsupported filters
+     *
+     * @param filter the filter to split
+     * @param supported the list of supported filter children
+     * @param unsupported the list of unsupported filter children
+     */
+    private void splitAndFilter(Filter filter, List<Filter> supported, List<Filter> unsupported) {
+        for (Filter child : ((And) filter).getChildren()) {
+            if (isIsInstanceOf(child)) {
+                supported.add(child);
+                unsupported.add(child);
+            } else {
+                Pair<Filter, Filter> split = splitFilter(child);
+                if (!Filter.INCLUDE.equals(split.getLeft())) {
+                    supported.add(split.getLeft());
+                }
+                if (!Filter.INCLUDE.equals(split.getRight())) {
+                    unsupported.add(split.getRight());
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if either of the children lists contains more than the IsIstanceOf predicate and if it
+     * does, then creates the filter OR(AND(children1), AND(children2). Returns this new filter if
+     * the existing filter is an INCLUDE filter and otherwise returns the filter by AND'ing the
+     * existing filter and the new filter.
+     *
+     * @param filter the filter to append to
+     * @param children1 the children for the first And component
+     * @param children2 the children for the second And component
+     * @return the new filter
+     */
+    private static Filter appendFilter(
+            Filter filter, List<Filter> children1, List<Filter> children2) {
+        Filter newFilter = Predicates.or(Predicates.and(children1), Predicates.and(children2));
+        return Filter.INCLUDE.equals(filter) ? newFilter : Predicates.and(newFilter, filter);
     }
 
     public String build() {
 
         String whereClause = buildWhereClause();
+        if (LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.finer("Original filter: " + this.originalFilter);
+            LOGGER.finer("Supported filter: " + this.supportedFilter);
+            LOGGER.finer("Unsupported filter: " + this.unsupportedFilter);
+        }
 
         StringBuilder query = new StringBuilder();
         if (isCountQuery) {
@@ -287,7 +421,7 @@ class QueryBuilder<T extends Info> {
     }
 
     protected void applyOffsetLimit(StringBuilder sql) {
-        if (unsupportedFilter.equals(Filter.INCLUDE)) {
+        if (isFullySupported()) {
             dialect.applyOffsetLimit(sql, offset, limit);
             offsetLimitApplied = true;
         } else {

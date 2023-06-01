@@ -20,5 +20,4 @@ Or chose a stable branch for versions less likely to change often::
 
   % git checkout 2.22.x
 
-In this example we will pretend that your source code is in a directory
-called ``geoserver``, but a more descriptive name is recommended.
+In this example we will assume that your source code is in a directory called ``geoserver``, but a more descriptive name is generally recommended.

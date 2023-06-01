@@ -28,7 +28,6 @@
         <include>jna*.jar</include>
         <include>jaxen*.jar</include>
         <include>commons-cli*.jar</include>
-        <include>h2-*.jar</include>
       </includes>
       <excludes>
         <exclude>gs-netcdf-out*.jar</exclude>

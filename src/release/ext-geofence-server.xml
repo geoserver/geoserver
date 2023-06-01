@@ -33,7 +33,6 @@
         <include>spring-orm*</include>
         <include>spring-oxm*</include>
         <include>xercesImpl*</include>
-        <include>h2-*.jar</include>
       </includes>
       <excludes>
         <exclude>*geofence-wps*</exclude>

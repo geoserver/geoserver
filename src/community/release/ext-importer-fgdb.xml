@@ -10,7 +10,6 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-importer-fgdb-*.jar</include>
-        <include>h2-*.jar</include>
       </includes>
       <excludes>
         <exclude>*-sources.jar</exclude>

@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-netcdf-ghrsst*.jar</include>
+        <include>h2-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

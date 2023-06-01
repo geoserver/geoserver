@@ -10,6 +10,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.kml.regionate.CachedHierarchyRegionatingStrategy;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -76,6 +78,13 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
         ft.getMetadata().put("kml.regionateFeatureLimit", 1);
         getCatalog().save(ft);
+    }
+
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        File dir = getDataDirectory().findOrCreateDir("geosearch");
+        CachedHierarchyRegionatingStrategy.clearAllHsqlDatabases(dir);
+        super.onTearDown(testData);
     }
 
     /** Verify that the tiles are produced for a request that encompasses the world. */

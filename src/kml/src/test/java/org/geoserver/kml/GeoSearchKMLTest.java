@@ -11,10 +11,12 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.kml.regionate.CachedHierarchyRegionatingStrategy;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
@@ -33,8 +35,9 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
     }
 
     @After
-    public void cleanupRegionationDatabases() throws IOException {
+    public void cleanupRegionationDatabases() throws IOException, SQLException {
         File dir = getDataDirectory().findOrCreateDir("geosearch");
+        CachedHierarchyRegionatingStrategy.clearAllHsqlDatabases(dir);
         FileUtils.deleteDirectory(dir);
     }
 

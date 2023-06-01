@@ -36,8 +36,8 @@ public class Tile {
             WORLD_BOUNDS = new ReferencedEnvelope(new Envelope(180.0, -180.0, 90.0, -90.0), WGS84);
             MAX_TILE_WIDTH = WORLD_BOUNDS.getWidth() / 2.0;
 
-            // make sure, once and for all, that H2 is around
-            Class.forName("org.h2.Driver");
+            // make sure, once and for all, that HSQL is around
+            Class.forName("org.hsqldb.jdbcDriver");
         } catch (Exception e) {
             throw new RuntimeException("Could not initialize the class constants", e);
         }

@@ -19,6 +19,7 @@
         <include>*fileupload*</include>
         <include>*commons-vfs2*</include>
         <include>*commons-exec*</include>
+        <include>h2-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

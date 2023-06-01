@@ -1,14 +1,14 @@
 .. _wpslongitudinal:
 
 WPS longitudinal profile process
-===================
+================================
 
 WPS longitudinal profile process provides ability to calculate elevation profile for linestring
 * Reproject result to different CRS
 * Adjust elevation profile based on additional layer
 
 Installing the WPS longitudinal profile process
--------------------------------------
+-----------------------------------------------
 
 The WPS longitudinal profile extension is listed among the other extension downloads on the GeoServer download page.
 

@@ -1,21 +1,25 @@
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.longitudinal;
 
 public class OperationInfo {
 
-    public double getElevationPositive() {
-        return elevationPositive;
+    public double getAltitudePositive() {
+        return altitudePositive;
     }
 
-    public void setElevationPositive(double elevationPositive) {
-        this.elevationPositive = elevationPositive;
+    public void setAltitudePositive(double altitudePositive) {
+        this.altitudePositive = altitudePositive;
     }
 
-    public double getElevationNegative() {
-        return elevationNegative;
+    public double getAltitudeNegative() {
+        return altitudeNegative;
     }
 
-    public void setElevationNegative(double elevationNegative) {
-        this.elevationNegative = elevationNegative;
+    public void setAltitudeNegative(double altitudeNegative) {
+        this.altitudeNegative = altitudeNegative;
     }
 
     public double getTotalDistance() {
@@ -82,9 +86,9 @@ public class OperationInfo {
         this.executedTime = executedTime;
     }
 
-    double elevationPositive;
+    double altitudePositive;
 
-    double elevationNegative;
+    double altitudeNegative;
 
     double totalDistance;
 

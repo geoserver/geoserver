@@ -51,10 +51,9 @@ import org.opengis.referencing.operation.TransformException;
 @DescribeProcess(
         title = "Longitudinal Profile Process",
         description =
-                "The process splits provided linestring to segments of provided in paramters length, "
-                        + "or smaller if distance between points is less then parameter length, "
-                        + "then evaluates elevation for each point and builds longitudinal profile. "
-                        + "Elevation will be adjusted if adjustment layer is provided as parameter. "
+                "The process splits provided linestring to segments, that are no bigger then distance parameter, "
+                        + "then evaluates altitude for each point and builds longitudinal profile. "
+                        + "Altitude will be adjusted if adjustment layer is provided as parameter. "
                         + "Also supports reprojection to different crs")
 public class LongitudinalProfileProcess implements GeoServerProcess {
 
@@ -89,16 +88,16 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
             @DescribeParameter(name = "projection", description = "projection for result", min = 0)
                     CoordinateReferenceSystem projection,
             @DescribeParameter(
-                            name = "elevationIndex",
-                            description = "index of elevation in coordinate array",
+                            name = "altitudeIndex",
+                            description = "index of altitude in coordinate array",
                             min = 0,
                             defaultValue = "0")
-                    Integer elevationIndex,
+                    Integer altitudeIndex,
             @DescribeParameter(
-                            name = "elevationName",
-                            description = "name of elevation attribute on adjustment layer",
+                            name = "altitudeName",
+                            description = "name of altitude attribute on adjustment layer",
                             min = 0)
-                    String elevationName)
+                    String altitudeName)
             throws IOException, FactoryException, TransformException, CQLException {
 
         long startTime = System.currentTimeMillis();
@@ -119,11 +118,11 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                         + " distance: "
                         + distance
                         + SEP
-                        + " elevation index: "
-                        + elevationIndex
+                        + " altitude index: "
+                        + altitudeIndex
                         + SEP
-                        + " elevation name: "
-                        + elevationName);
+                        + " altitude name: "
+                        + altitudeName);
         if (projection != null) {
             LOGGER.info(" projection: " + projection.getName());
         }
@@ -138,9 +137,9 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         GridCoverage2D gridCoverage2D = gridCoverageReader.read(null);
 
         List<ProfileInfo> profileInfos = new ArrayList<>();
-        double positiveElevation = 0;
-        double negativeElevation = 0;
-        double previousElevation = 0;
+        double positiveAltitude = 0;
+        double negativeAltitude = 0;
+        double previousAltitude = 0;
         double totalDistance = 0;
         Geometry previousPoint = null;
 
@@ -159,15 +158,15 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                     new CoordinateSequence2D(position2D.getX(), position2D.getY());
             Geometry point = new Point(coordinateSequence, GEOMETRY_FACTORY);
 
-            double elevation =
-                    getElevation(
+            double altitude =
+                    getAltitude(
                             featureSource,
                             gridCoverage2D,
-                            previousElevation,
+                            previousAltitude,
                             position2D,
                             point,
-                            elevationIndex,
-                            elevationName);
+                            altitudeIndex,
+                            altitudeName);
 
             if (projection != null) {
                 point = reprojectPoint(coverageCrs, projection, point);
@@ -179,27 +178,27 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
             ProfileInfo currentInfo;
             if (previousPoint == null) {
                 currentInfo =
-                        new ProfileInfo(0, coordinate.getX(), coordinate.getY(), elevation, slope);
+                        new ProfileInfo(0, coordinate.getX(), coordinate.getY(), altitude, slope);
             } else {
                 double distanceToPrevious = point.distance(previousPoint);
 
                 totalDistance += distanceToPrevious;
-                slope = calculateSlope(projection, previousPoint, point, elevation);
+                slope = calculateSlope(projection, previousPoint, point, altitude);
                 currentInfo =
                         new ProfileInfo(
                                 totalDistance,
                                 coordinate.getX(),
                                 coordinate.getY(),
-                                elevation,
+                                altitude,
                                 slope);
             }
-            if (elevation >= 0) {
-                positiveElevation += elevation;
+            if (altitude >= 0) {
+                positiveAltitude += altitude;
             } else {
-                negativeElevation += elevation;
+                negativeAltitude += altitude;
             }
 
-            previousElevation = elevation;
+            previousAltitude = altitude;
 
             profileInfos.add(currentInfo);
             previousPoint = point;
@@ -210,8 +209,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                         layerName,
                         startTime,
                         profileInfos,
-                        positiveElevation,
-                        negativeElevation,
+                        positiveAltitude,
+                        negativeAltitude,
                         totalDistance);
 
         return new LongitudinalProfileProcessResult(profileInfos, operationInfo);
@@ -221,9 +220,9 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
             CoordinateReferenceSystem projection,
             Geometry previousPoint,
             Geometry point,
-            double elevation)
+            double altitude)
             throws FactoryException, TransformException {
-        return elevation * 100 / distanceInMeters(projection, previousPoint, point);
+        return altitude * 100 / distanceInMeters(projection, previousPoint, point);
     }
 
     /**
@@ -253,33 +252,33 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         return distanceToPrevious;
     }
 
-    private static double getElevation(
+    private static double getAltitude(
             FeatureSource featureSource,
             GridCoverage2D gridCoverage2D,
-            double previousElevation,
+            double previousAltitude,
             DirectPosition2D position2D,
             Geometry point,
-            int elevationIndex,
-            String elevationName)
+            int altitudeIndex,
+            String altitudeName)
             throws IOException, CQLException {
-        double elevation =
-                calculateElevation(
-                        gridCoverage2D.evaluate(position2D), previousElevation, elevationIndex);
-        // Round elevation
-        elevation = BigDecimal.valueOf(elevation).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        double altitude =
+                calculateAltitude(
+                        gridCoverage2D.evaluate(position2D), previousAltitude, altitudeIndex);
+        // Round altitude
+        altitude = BigDecimal.valueOf(altitude).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
         if (featureSource != null) {
-            elevation = getAdjustedElevation(featureSource, point, elevation, elevationName);
+            altitude = getAdjustedAltitude(featureSource, point, altitude, altitudeName);
         }
-        return elevation;
+        return altitude;
     }
 
     private static OperationInfo buildOperationInfo(
             String layerName,
             long startTime,
             List<ProfileInfo> profileInfos,
-            double positiveElevation,
-            double negativeElevation,
+            double positiveAltitude,
+            double negativeAltitude,
             double totalDistance) {
         OperationInfo operationInfo = new OperationInfo();
         operationInfo.setTotalDistance(totalDistance);
@@ -291,8 +290,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         ProfileInfo lastProfile = profileInfos.get(profileInfos.size() - 1);
         operationInfo.setLastPointX(lastProfile.getX());
         operationInfo.setLastPointY(lastProfile.getY());
-        operationInfo.setElevationPositive(positiveElevation);
-        operationInfo.setElevationNegative(negativeElevation);
+        operationInfo.setAltitudePositive(positiveAltitude);
+        operationInfo.setAltitudeNegative(negativeAltitude);
         operationInfo.setLayer(layerName);
 
         operationInfo.setExecutedTime(System.currentTimeMillis() - startTime);
@@ -323,16 +322,16 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
     }
 
     /**
-     * Process elevation using adjustment layer
+     * Process altitude using adjustment layer
      *
      * @param featureSource
      * @param geometry
-     * @param elevation
+     * @param altitude
      * @return
      * @throws IOException
      */
-    private static double getAdjustedElevation(
-            FeatureSource featureSource, Geometry geometry, double elevation, String elevationName)
+    private static double getAdjustedAltitude(
+            FeatureSource featureSource, Geometry geometry, double altitude, String altitudeName)
             throws IOException, CQLException {
         Query query;
         Filter filter;
@@ -348,10 +347,10 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         FeatureIterator featureIterator = featureSource.getFeatures(query).features();
         if (featureIterator.hasNext()) {
             Feature feature = featureIterator.next();
-            Double adjLayerElevation = (Double) feature.getProperty(elevationName).getValue();
-            elevation = elevation - adjLayerElevation;
+            Double adjLayerAltitude = (Double) feature.getProperty(altitudeName).getValue();
+            altitude = altitude - adjLayerAltitude;
         }
-        return elevation;
+        return altitude;
     }
 
     private FeatureSource<? extends FeatureType, ? extends Feature> getAdjustmentLayerFeatureSource(
@@ -365,19 +364,19 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         return featureSource;
     }
 
-    private static double calculateElevation(
-            Object obj, double previousElevation, int elevationIndex) {
+    private static double calculateAltitude(
+            Object obj, double previousAltitude, int altitudeIndex) {
         Class<?> objectClass = obj.getClass();
         if (objectClass.isArray()) {
             switch (objectClass.getComponentType().getName()) {
                 case "byte":
-                    return ((byte[]) obj)[elevationIndex] - previousElevation;
+                    return ((byte[]) obj)[altitudeIndex] - previousAltitude;
                 case "int":
-                    return ((int[]) obj)[elevationIndex] - previousElevation;
+                    return ((int[]) obj)[altitudeIndex] - previousAltitude;
                 case "float":
-                    return ((float[]) obj)[elevationIndex] - previousElevation;
+                    return ((float[]) obj)[altitudeIndex] - previousAltitude;
                 case "double":
-                    return ((double[]) obj)[elevationIndex] - previousElevation;
+                    return ((double[]) obj)[altitudeIndex] - previousAltitude;
                 default:
                     // Do nothing
             }

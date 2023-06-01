@@ -39,7 +39,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
             "<wps:Input>\n"
                     + "  <ows:Identifier>linestringWkt</ows:Identifier>\n"
                     + "      <wps:Data>\n"
-                    + "        <wps:ComplexData mimeType=\"text/xml; subtype=gml/3.1.1\">"
+                    + "        <wps:ComplexData mimeType=\"application/wkt\">"
                     + "          <![CDATA[LINESTRING(843478.269971218 6420348.7621933, 843797.900998497 6420021.75658605, 844490.474212848 6420187.03857354, 844102.691178047 6420613.93854596)]]>"
                     + "        </wps:ComplexData>\n"
                     + "      </wps:Data>\n"
@@ -92,8 +92,8 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
-        Assert.assertEquals(684.95, infos.get("elevationPositive"));
-        Assert.assertEquals(-11.08, infos.get("elevationNegative"));
+        Assert.assertEquals(684.95, infos.get("altitudePositive"));
+        Assert.assertEquals(-11.08, infos.get("altitudeNegative"));
         Assert.assertEquals(1746.0248, infos.get("totalDistance"));
         Assert.assertEquals(843478.25, infos.get("firstPointX"));
         Assert.assertEquals(6420349.0, infos.get("firstPointY"));
@@ -153,8 +153,8 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
-        Assert.assertEquals(684.95, infos.get("elevationPositive"));
-        Assert.assertEquals(-11.08, infos.get("elevationNegative"));
+        Assert.assertEquals(684.95, infos.get("altitudePositive"));
+        Assert.assertEquals(-11.08, infos.get("altitudeNegative"));
         Assert.assertEquals(2463.6123, infos.get("totalDistance"));
         Assert.assertEquals(536188.94, infos.get("firstPointX"));
         Assert.assertEquals(5600680.0, infos.get("firstPointY"));
@@ -200,9 +200,9 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
                         + "      </wps:Data>\n"
                         + "    </wps:Input>"
                         + "   <wps:Input>\n"
-                        + "     <ows:Identifier>elevationName</ows:Identifier>\n"
+                        + "     <ows:Identifier>altitudeName</ows:Identifier>\n"
                         + "         <wps:Data>\n"
-                        + "             <wps:LiteralData>elevation</wps:LiteralData>\n"
+                        + "             <wps:LiteralData>altitude</wps:LiteralData>\n"
                         + "         </wps:Data>\n"
                         + "     </wps:Input>"
                         + "   <wps:Input>\n"
@@ -226,8 +226,8 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
-        Assert.assertEquals(950.55, infos.get("elevationPositive"));
-        Assert.assertEquals(-64.26, infos.get("elevationNegative"));
+        Assert.assertEquals(950.55, infos.get("altitudePositive"));
+        Assert.assertEquals(-64.26, infos.get("altitudeNegative"));
         Assert.assertEquals(0.020068234, infos.get("totalDistance"));
         Assert.assertEquals(4.8166676, infos.get("firstPointX"));
         Assert.assertEquals(44.867462, infos.get("firstPointY"));

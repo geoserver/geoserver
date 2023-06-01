@@ -20,6 +20,7 @@
         <include>persistence-api*.jar</include>
         <include>spring-orm-*jar</include>
         <include>javassist-*jar</include>
+        <include>h2-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -35,6 +35,7 @@
         <include>jcommander*.jar</include>
         <include>opendap*.jar</include>
         <include>http*.jar</include>
+        <include>h2-*.jar</include>
       </includes>
       <excludes>
         <exclude>gs-netcdf-out*.jar</exclude>

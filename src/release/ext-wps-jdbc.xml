@@ -10,7 +10,6 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-wps-jdbc*.jar</include>
-        <include>h2-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

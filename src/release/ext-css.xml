@@ -13,7 +13,7 @@
         <include>gt-css-*.jar</include>
         <include>gt-brewer-*.jar</include>
         <include>parboiled*.jar</include>
-        <include>asm*6.2.1.jar</include>
+        <include>asm*9.2.jar</include>
       </includes>
     </fileSet>
     <fileSet>

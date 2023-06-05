@@ -296,4 +296,40 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
             System.clearProperty(format.CUSTOM_TEMP_DIR_PROPERTY);
         }
     }
+
+    /**
+     * GEOS-11015: Check tmp file not orphaned when write operation interrupted due to closed
+     * outputstream
+     */
+    @Test
+    public void testTempFileCleanup() throws IOException {
+        final FeatureSource<? extends FeatureType, ? extends Feature> basicPolygons =
+                getFeatureSource(SystemTestData.BASIC_POLYGONS);
+
+        FeatureCollectionResponse fct =
+                FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
+        fct.getFeature().add(basicPolygons.getFeatures());
+
+        int initialTempFileCount = tempGeoPackageFileCount();
+        try {
+            // writing to null output stream to simulate stream being closed
+            format.write(fct, null, op);
+        } catch (NullPointerException expected) {
+            // expected failure to similar stream being closed mid operation above
+        } finally {
+            // check if we leaked any geopkg-*.geopkg java
+            int orphaned = tempGeoPackageFileCount() - initialTempFileCount;
+            assertTrue("Orphaned java.io.tmpdir tmp.gpkg files: " + orphaned, orphaned <= 0);
+        }
+    }
+
+    private int tempGeoPackageFileCount() {
+        File tmp = new File(System.getProperty("java.io.tmpdir"));
+        File files[] =
+                tmp.listFiles(
+                        pathname ->
+                                pathname.getName().startsWith("geopkg")
+                                        && pathname.getName().endsWith(".tmp.gpkg"));
+        return files.length;
+    }
 }

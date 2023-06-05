@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
@@ -113,40 +114,61 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         // create the geopackage file and write the features into it.
         // geopackage is written to a temporary file, copied into the outputStream, then the temp
         // file deleted.
-        File file = createTempFile("geopkg", ".tmp.gpkg");
+        File file = null;
+        try {
+            file = createTempFile("geopkg", ".tmp.gpkg");
 
-        try (GeoPackage geopkg = GeoPkg.getGeoPackage(file)) {
-            for (FeatureCollection collection : featureCollection.getFeatures()) {
+            try (GeoPackage geopkg = GeoPkg.getGeoPackage(file)) {
+                for (FeatureCollection collection : featureCollection.getFeatures()) {
 
-                FeatureEntry e = new FeatureEntry();
+                    FeatureEntry e = new FeatureEntry();
 
-                if (!(collection instanceof SimpleFeatureCollection)) {
-                    throw new ServiceException(
-                            "GeoPackage OutputFormat does not support Complex Features.");
-                }
+                    if (!(collection instanceof SimpleFeatureCollection)) {
+                        throw new ServiceException(
+                                "GeoPackage OutputFormat does not support Complex Features.");
+                    }
 
-                SimpleFeatureCollection features = (SimpleFeatureCollection) collection;
-                FeatureTypeInfo meta = lookupFeatureType(features);
-                if (meta != null) {
-                    // initialize entry metadata
-                    e.setIdentifier(meta.getTitle());
-                    e.setDescription(abstractOrDescription(meta));
-                }
+                    SimpleFeatureCollection features = (SimpleFeatureCollection) collection;
+                    FeatureTypeInfo meta = lookupFeatureType(features);
+                    if (meta != null) {
+                        // initialize entry metadata
+                        e.setIdentifier(meta.getTitle());
+                        e.setDescription(abstractOrDescription(meta));
+                    }
+                    geopkg.add(e, features);
 
-                geopkg.add(e, features);
-
-                if (!"false".equals(System.getProperty(PROPERTY_INDEXED))) {
-                    geopkg.createSpatialIndex(e);
+                    if (!"false".equals(System.getProperty(PROPERTY_INDEXED))) {
+                        geopkg.createSpatialIndex(e);
+                    }
                 }
             }
-        }
 
-        // write to output and delete temporary file
-        try (InputStream temp = new FileInputStream(file)) {
-            IOUtils.copy(temp, output);
-            output.flush();
+            // write to output and delete temporary file
+            try (InputStream temp = new FileInputStream(file)) {
+                IOUtils.copy(temp, output);
+                output.flush();
+            }
+        } finally {
+            if (file != null) {
+                delete(file);
+                delete(new File(file.getPath() + "-shm"));
+                delete(new File(file.getPath() + "-wal"));
+            }
         }
-        file.delete();
+    }
+
+    /** Safely delete of temporary file (if it exists). */
+    private void delete(File file) {
+        if (file != null && file.exists()) {
+            try {
+                java.nio.file.Files.delete(file.toPath());
+            } catch (IOException ioException) {
+                LOGGER.log(
+                        Level.FINE,
+                        "Unable to delete temporary GeoPackage file " + file.getName(),
+                        ioException);
+            }
+        }
     }
 
     FeatureTypeInfo lookupFeatureType(SimpleFeatureCollection features) {

@@ -72,6 +72,8 @@ public class ExecuteURLCheckTest extends WPSTestSupport {
         assertNotNull(applicationContext.getBean(GeoServerURLChecker.class));
         // start with empty rules
         URLCheckDAO dao = applicationContext.getBean(URLCheckDAO.class);
+        // enable url checks
+        dao.setEnabled(true);
         dao.saveChecks(Collections.emptyList());
     }
 

@@ -155,6 +155,8 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
         assertNotNull(applicationContext.getBean(StyleURLChecker.class));
         // start with empty rules
         URLCheckDAO dao = applicationContext.getBean(URLCheckDAO.class);
+        // enable url checks
+        dao.setEnabled(true);
         dao.saveChecks(Collections.emptyList());
     }
 
@@ -185,7 +187,6 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
     @Test
     public void testRemoteStyleDenied() throws Exception {
         URLCheckDAO dao = applicationContext.getBean(URLCheckDAO.class);
-        dao.setEnabled(true);
         dao.save(new RegexURLCheck("deny", "Won't match anything useful", "^abcd$"));
 
         // base request, no layers, no library mode

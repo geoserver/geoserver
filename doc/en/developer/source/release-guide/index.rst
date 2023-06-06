@@ -11,9 +11,9 @@ Before you start
 SNAPSHOT release
 ^^^^^^^^^^^^^^^^
 
-For any release (including release candidates) a GeoServer release requires an
-corresponding GeoTools and GeoWebCache release. Therefore before you start you should
-coordinate a release with these projects. Either performing the release yourself or
+For any release (including release candidates) a GeoServer release requires the
+corresponding GeoTools and GeoWebCache releases. Therefore, before you start you should
+coordinate a release with these projects, either performing the release yourself or
 asking a volunteer to perform the release.
 
 * `GeoTools Release Guide <http://docs.geotools.org/latest/developer/procedures/release.html>`_
@@ -38,9 +38,9 @@ The following are necessary to perform a GeoServer release:
 Versions and revisions
 ----------------------
 
-When performing a release we don't require a "code freeze" in which no developers can commit to the repository. Instead we release from a revision that is known to pass all tests, including unit/integration tests as well as CITE tests.
+When performing a release, we don't require a "code freeze" in which no developers can commit to the repository. Instead, we release from a revision that is known to pass all tests, including unit/integration tests as well as CITE tests.
 
-To obtain the GeoServer and Geotools revisions that have passed the `CITE test <https://build.geoserver.org/view/testing-cite/>`_, navigate to the latest Jenkins run of the CITE test  and view it's console output and select to view its full log. For example:
+To obtain the GeoServer and GeoTools revisions that have passed the `CITE test <https://build.geoserver.org/view/testing-cite/>`_, navigate to the latest Jenkins run of the CITE test  and view its console output and select to view its full log. For example:
 
     https://build.geoserver.org/job/2.11-cite-wms-1.1/286/consoleText
 
@@ -180,7 +180,7 @@ Run the `geoserver-release <https://build.geoserver.org/view/geoserver/job/geose
 
 **REV**
 
-  The Git revision number to release from. eg, "24ae10fe662c....". If left blank the latest revision (ie HEAD) on the ``BRANCH`` being released is used.
+  The Git revision number to release from, e.g. "24ae10fe662c....". If left blank, the latest revision (i.e. HEAD) on the ``BRANCH`` being released is used.
 
 **VERSION**
 
@@ -188,11 +188,11 @@ Run the `geoserver-release <https://build.geoserver.org/view/geoserver/job/geose
 
 **GT_VERSION**
 
-  The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "main@36ba65jg53.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.
+  The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively, the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "main@36ba65jg53.....". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.
 
 **GWC_VERSION**
 
-  The GeoWebCache version to include in the release. This may be specified as a version number such as "1.3-RC3". Alternatively the version may be specified as a Git revision of the form ``<branch>@<revision>`` such as "master@1b3243jb...". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again, this version must be a version number corresponding to an official GeoTools release.
+  The GeoWebCache version to include in the release. This may be specified as a version number such as "1.3-RC3". Alternatively, the version may be specified as a Git revision of the form ``<branch>@<revision>`` such as "master@1b3243jb...". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again, this version must be a version number corresponding to an official GeoTools release.
 
 **GIT_USER**
 
@@ -206,7 +206,7 @@ This job will checkout the specified branch/revision and build the GeoServer
 release artifacts against the GeoTools/GeoWebCache versions specified. When
 successfully complete all release artifacts will be listed under artifacts in the job summary.
 
-Additionally when the job completes it fires off a job for a windows worker. When this job
+Additionally, when the job completes it fires off a job for a windows worker. When this job
 completes it will list the ``.exe`` artifacts.
 
 Test the Artifacts
@@ -233,7 +233,7 @@ This job will rsync all the artifacts located at::
 
      http://build.geoserver.org/geoserver/release/<RELEASE>
 
-to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.
+to the SourceForge FRS server. Navigate to `SourceForge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.
 
 Release notes
 -------------
@@ -242,7 +242,7 @@ This job will tag the release located in::
    
    https://github.com/geoserver/geoserver/tags/<RELEASE>
 
-Publish JIRA markdown release notes to github tag:
+Publish JIRA markdown release notes to GitHub tag:
 
 #. Select the correct release from `JIRA Releases <https://osgeo-org.atlassian.net/projects/GEOS?orderField=RANK&selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page&status=released>`__ page.
 
@@ -286,7 +286,7 @@ Publish JIRA markdown release notes to github tag:
 
       [GEOS-10247](https://osgeo-org.atlassian.net/browse/GEOS-10247) Reuse of service documentation references for workspace, metadata and default language
 
-#. Navigate to github tags https://github.com/geoserver/geoserver/tags
+#. Navigate to GitHub tags https://github.com/geoserver/geoserver/tags
    
    Locate the new tag from the list, and use :menuselection:`... --> Create release`
    
@@ -298,7 +298,7 @@ Publish JIRA markdown release notes to github tag:
 Create the download page
 ------------------------
 
-The `GeoServer website <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a download page for the release. This requires the url of the blog post announcing the release, so wait until after you have posted the announcement to do this.
+The `GeoServer website <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a download page for the release. This requires the URL of the blog post announcing the release, so wait until after you have posted the announcement to do this.
 
 Announce the Release
 --------------------
@@ -422,8 +422,8 @@ The following is an example::
    --
    The GeoServer Team
 
-OSGeo Anouncement
-^^^^^^^^^^^^^^^^^
+OSGeo Announcement
+^^^^^^^^^^^^^^^^^^
 
 For major releases OSGeo asks that a news item be submitted:
 

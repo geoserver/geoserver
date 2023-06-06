@@ -39,7 +39,7 @@ public class TopoJSONEncoderTest {
         layers.put("topp:states", layer);
 
         Topology topology = new Topology(identity, arcs, layers);
-        try (Writer writer = new OutputStreamWriter(NullOutputStream.NULL_OUTPUT_STREAM)) {
+        try (Writer writer = new OutputStreamWriter(NullOutputStream.INSTANCE)) {
             encoder.encode(topology, writer);
         }
     }
@@ -69,7 +69,7 @@ public class TopoJSONEncoderTest {
         layers.put("topp:states", layer);
         Topology topology = new Topology(tx, arcs, layers);
 
-        try (Writer writer = new OutputStreamWriter(NullOutputStream.NULL_OUTPUT_STREAM)) {
+        try (Writer writer = new OutputStreamWriter(NullOutputStream.INSTANCE)) {
             encoder.encode(topology, writer);
         }
     }

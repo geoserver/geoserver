@@ -40,7 +40,12 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
     public GeoJsonWMSBuilder(Rectangle mapSize, ReferencedEnvelope mapArea) {
 
         final int memotyBufferThreshold = 8096;
-        out = new DeferredFileOutputStream(memotyBufferThreshold, "geojson", ".geojson", null);
+        out =
+                DeferredFileOutputStream.builder()
+                        .setThreshold(memotyBufferThreshold)
+                        .setPrefix("geojson")
+                        .setSuffix(".geojson")
+                        .get();
         writer = new OutputStreamWriter(out, Charsets.UTF_8);
         jsonWriter = new org.geoserver.wfs.json.GeoJSONBuilder(writer);
         jsonWriter.object(); // start root object

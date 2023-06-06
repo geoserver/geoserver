@@ -762,6 +762,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         }
     }
 
-    /** Singleton */
+    /** Singleton - it will not be possible to extend org.apache.commons.io.IOUtils in 3.0. */
+    @SuppressWarnings("deprecation")
     private IOUtils() {}
 }

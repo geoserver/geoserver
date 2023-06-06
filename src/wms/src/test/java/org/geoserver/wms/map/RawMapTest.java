@@ -12,6 +12,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import java.io.InputStream;
+import org.apache.commons.io.output.NullOutputStream;
 import org.geoserver.wms.WMSMapContent;
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ public class RawMapTest {
         WMSMapContent map = createNiceMock(WMSMapContent.class);
         replay(map);
 
-        new RawMap(map, stream, "text/plain").writeTo(null);
+        new RawMap(map, stream, "text/plain").writeTo(NullOutputStream.INSTANCE);
         verify(stream);
     }
 }

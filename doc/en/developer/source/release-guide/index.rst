@@ -298,7 +298,9 @@ Publish JIRA markdown release notes to GitHub tag:
 Create the download page
 ------------------------
 
-The `GeoServer website <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a download page for the release. This requires the URL of the blog post announcing the release, so wait until after you have posted the announcement to do this.
+The `GeoServer website <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a release announcement.
+
+The announcement page header fields includes the information required to generate generate a download page for the release. 
 
 Announce the Release
 --------------------

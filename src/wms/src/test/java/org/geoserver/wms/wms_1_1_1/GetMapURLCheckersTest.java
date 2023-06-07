@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
@@ -101,7 +102,9 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
                                         .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
                                         .withBody(capabilities)));
         String describe = getWFSResource("describePoi.xml");
-        Map<String, String> namespaces = Map.of("wfs", "http://www.opengis.net/wfs");
+        Map<String, String> namespaces = new HashMap<String, String>() {{
+            put("wfs", "http://www.opengis.net/wfs");
+        }};
         service.stubFor(
                 WireMock.post("/wfs")
                         .withRequestBody(

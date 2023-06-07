@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.url;
 
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.geoserver.security.urlchecks.AbstractURLCheck;
@@ -30,7 +31,14 @@ class URLCheckProvider extends GeoServerDataProvider<AbstractURLCheck> {
 
     @Override
     protected List<Property<AbstractURLCheck>> getProperties() {
-        return List.of(NAME, DESCRIPTION, CONFIGURATION, ENABLED);
+        return new LinkedList<Property<AbstractURLCheck>>() {
+            {
+                add(NAME);
+                add(DESCRIPTION);
+                add(CONFIGURATION);
+                add(ENABLED);
+            }
+        };
     }
 
     @Override

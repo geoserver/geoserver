@@ -165,6 +165,12 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-cache</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

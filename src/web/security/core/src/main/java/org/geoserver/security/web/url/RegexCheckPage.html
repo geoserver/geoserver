@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <form wicket:id="form">
+        <ul>
+            <li>
+                <label for="name"><wicket:message key="nameLabel">Name</wicket:message></label>
+                <input wicket:id="name" id="name" type="text" class="text"/>
+            </li>
+            <li>
+                <label for="description"><wicket:message key="descriptionLabel">description</wicket:message></label>
+                <input wicket:id="description" id="description" type="text" class="text"/>
+            </li>
+            <li>
+                <label for="regex"><wicket:message key="regexLabel">regex</wicket:message></label>
+                <input wicket:id="regex" id="regex" type="text" class="text"/>
+            </li>
+            <li>
+                <label for="enabled"><wicket:message key="enabledLabel">enable</wicket:message></label>
+                <input wicket:id="enabled" id="enabled" type="checkbox"/>
+            </li>
+            <li class="button-group selfclear">
+                <a href="#" wicket:id="submit"><wicket:message key="submitLabel">submit</wicket:message></a>
+                <a href="#" wicket:id="cancel"><wicket:message key="cancelLabel">Cancel</wicket:message></a>
+            </li>
+        </ul>
+    </form>
+</wicket:extend>
+</body>
+</html>
+

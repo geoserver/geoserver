@@ -129,6 +129,10 @@ input[readonly] {
 /*-----------------------
 Utility Classes
 -----------------------*/
+/* heights */
+.h-2-em {
+  height: 2em !important;
+}
 .selfclear:after {
 content: ".";
 display: block;

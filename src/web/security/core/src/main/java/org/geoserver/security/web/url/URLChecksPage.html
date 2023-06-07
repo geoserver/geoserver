@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+
+    <form style="padding-top: 1em;">
+        <fieldset>
+            <legend><span><wicket:message key="checksControl"></wicket:message></span></legend>
+            <ul>
+                <li class="choiceItem">
+                    <input type="checkbox" id="checksEnabled" wicket:id="checksEnabled"
+                           class="input.checkbox"></input>
+                    <label for="checksEnabled" wicket:id="statusLabel"></label>
+                </li>
+            </ul>
+        </fieldset>
+
+        <fieldset>
+            <legend><span><wicket:message key="urlChecks"></wicket:message></span></legend>
+            <ul>
+                <li><a class="add-link" href="#" wicket:id="addNew">
+                    <wicket:message key="addNew"/>
+                </a></li>
+                <li><a class="remove-link" href="#" wicket:id="removeSelected">
+                    <wicket:message key="removeSelected"/>
+                </a></li>
+                <li>
+                    <div wicket:id="table"></div>
+                </li>
+            </ul>
+        </fieldset>
+    </form>
+
+    <form wicket:id="testForm">
+        <fieldset>
+            <legend><span><wicket:message key="testChecks"></wicket:message></span></legend>
+            <ul>
+                <li>
+                    <label for="input">
+                        <wicket:message key="testInput"></wicket:message>
+                    </label>
+                    <textarea wicket:id="testInput" id="input" class="w-75 h-2-em"></textarea>
+                </li>
+                <!--li>
+                    <label for="output"><wicket:message key="output"></wicket:message>
+                    </label>
+                    <label wicket:id="output" id="output" class="w-75 h-5-em"></label>
+                </li-->
+            </ul>
+        </fieldset>
+
+        <div class="button-group selfclear">
+            <a href="#" wicket:id="testURL">
+                <wicket:message key="testURL"></wicket:message>
+            </a>
+        </div>
+    </form>
+
+    <!-- the cascade delete confirmation dialog -->
+    <div wicket:id="dialog"></div>
+
+</wicket:extend>
+</body>
+</html>

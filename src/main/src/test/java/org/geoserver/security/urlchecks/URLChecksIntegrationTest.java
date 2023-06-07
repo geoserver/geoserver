@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -121,7 +122,7 @@ public class URLChecksIntegrationTest extends GeoServerSystemTestSupport {
 
     private void writeSampleRulesXML(boolean dataEnabled) {
         Resource config = getConfigurationFile();
-        try (PrintStream os = new PrintStream(config.out(), true, StandardCharsets.UTF_8)) {
+        try (PrintStream os = new PrintStream(config.out(), true, StandardCharsets.UTF_8.toString())) {
             os.println(
                     "<checks>"
                             + "<regex>"
@@ -144,6 +145,8 @@ public class URLChecksIntegrationTest extends GeoServerSystemTestSupport {
                             + "</enabled>"
                             + "</regex>"
                             + "</checks>");
+        } catch (IOException ex) {
+            throw new RuntimeException("Couldn't generate sample url checks configuration for the test!");
         }
     }
 

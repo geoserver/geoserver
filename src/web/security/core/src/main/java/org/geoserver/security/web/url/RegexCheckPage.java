@@ -106,7 +106,7 @@ public class RegexCheckPage extends GeoServerSecuredPage {
             mangler.mangleURL(base, path, new HashMap<>(), URLMangler.URLType.SERVICE);
             return ResponseUtils.appendPath(base.toString(), path.toString());
         }
-        return "http://localhost:8080/geosever/ows";
+        return "http://localhost:8080/geoserver/ows";
     }
 
     private SubmitLink submitLink() {

@@ -37,7 +37,7 @@ As of GeoServer 2.23, H2 DB support will be replaced with HSQL DB for Tile Cachi
 
 * H2 option under "Disk quota store type" and "Target database type" is replaced with HSQL.
 * The default store type will be in-process HSQL.
-* Existing installations with in-process H2 selection will automatically be migrated to in-process HSQL.
+* Existing installations with in-process H2 selection will automatically be migrated to in-process HSQL. Old H2 database files will remain in ``gwc/diskquota_page_store_h2/`` under the data directory. You may delete those or leave them for a possible downgrade.
 * Important: Existing installations with external H2 database selection will not be migrated automatically. You will get an error message at startup and disk quota will be disabled, unless you use a plugin/extension with H2 dependency. But other features of GeoServer will keep working. You can go to Disk Quota page and configure an external HSQL database or switch to in-process HSQL. In case you want to keep using H2 as an in-process/external database, you can add H2 store plugin or any other extension or plugin that has H2 dependency.
 * GeoServer installations with extensions/plugins having H2 dependency will still have H2 option under "Disk quota store type" and "Target database type".
 

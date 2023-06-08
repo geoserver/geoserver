@@ -76,10 +76,10 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
             store = new DummyQuotaStore(calculator);
         } else {
             String quotaStoreName = config.getQuotaStore();
-            // in case it's null GeoServer defaults to H2 store, we don't have the
+            // in case it's null GeoServer defaults to HSQL store, we don't have the
             // BDB store in the classpath
             if (quotaStoreName == null) {
-                quotaStoreName = JDBCQuotaStoreFactory.H2_STORE;
+                quotaStoreName = JDBCQuotaStoreFactory.HSQL_STORE;
             }
 
             try {

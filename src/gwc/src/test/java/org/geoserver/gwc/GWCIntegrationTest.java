@@ -94,6 +94,7 @@ import org.geowebcache.diskquota.QuotaStore;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfiguration;
 import org.geowebcache.diskquota.jdbc.JDBCQuotaStore;
+import org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
@@ -1321,6 +1322,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testDiskQuotaStorage() throws Exception {
+        JDBCQuotaStoreFactory.ENABLE_HSQL_AUTO_SHUTDOWN = true;
         // normal state, quota is not enabled by default
         GWC gwc = GWC.get();
         ConfigurableQuotaStoreProvider provider =
@@ -1331,32 +1333,33 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertNull("jdbc quota config should be missing", jdbc);
         assertTrue(getActualStore(provider) instanceof DummyQuotaStore);
 
-        // enable disk quota in H2 mode
+        // enable disk quota in HSQL mode
         quota.setEnabled(true);
-        quota.setQuotaStore("H2");
+        quota.setQuotaStore("HSQL");
         gwc.saveDiskQuotaConfig(quota, null);
         GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
         String jdbcConfigPath = "gwc/geowebcache-diskquota-jdbc.xml";
         assertNull(
                 "jdbc config (" + jdbcConfigPath + ") should not be there",
                 dd.findFile(jdbcConfigPath));
-        String h2StorePath = "gwc/diskquota_page_store_h2";
-        assertNotNull("jdbc store (" + h2StorePath + ") should be there", dd.findFile(h2StorePath));
+        String hsqlStorePath = "gwc/diskquota_page_store_hsql";
+        assertNotNull(
+                "jdbc store (" + hsqlStorePath + ") should be there", dd.findFile(hsqlStorePath));
         assertTrue(getActualStore(provider) instanceof JDBCQuotaStore);
 
         // disable again and clean up
         quota.setEnabled(false);
         gwc.saveDiskQuotaConfig(quota, null);
-        FileUtils.deleteDirectory(dd.findFile("gwc/diskquota_page_store_h2"));
+        FileUtils.deleteDirectory(dd.findFile("gwc/diskquota_page_store_hsql"));
 
-        // now enable it in JDBC mode, with H2 local storage
+        // now enable it in JDBC mode, with HSQL local storage
         quota.setEnabled(true);
         quota.setQuotaStore("JDBC");
         jdbc = new JDBCConfiguration();
-        jdbc.setDialect("H2");
+        jdbc.setDialect("HSQL");
         ConnectionPoolConfiguration pool = new ConnectionPoolConfiguration();
-        pool.setDriver("org.h2.Driver");
-        pool.setUrl("jdbc:h2:./target/quota-h2");
+        pool.setDriver("org.hsqldb.jdbcDriver");
+        pool.setUrl("jdbc:hsqldb:file:./target/quota-hsql");
         pool.setUsername("sa");
         pool.setPassword("");
         pool.setMinConnections(1);
@@ -1368,8 +1371,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 "jdbc config (" + jdbcConfigPath + ") should be there",
                 dd.findFile(jdbcConfigPath));
         assertNull(
-                "jdbc store (" + h2StorePath + ") should be there", dd.findDataFile(h2StorePath));
-        File newQuotaStore = new File("./target/quota-h2.data.db");
+                "jdbc store (" + hsqlStorePath + ") should be there",
+                dd.findDataFile(hsqlStorePath));
+        File newQuotaStore = new File("./target/quota-hsql.script");
         assertTrue(newQuotaStore.exists());
 
         File jdbcConfigFile = dd.findFile(jdbcConfigPath);
@@ -1382,6 +1386,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             // check the password has been encoded properly
             assertTrue(storedPassword.startsWith("crypt1:"));
         }
+        JDBCQuotaStoreFactory.ENABLE_HSQL_AUTO_SHUTDOWN = false;
     }
 
     private QuotaStore getActualStore(ConfigurableQuotaStoreProvider provider)

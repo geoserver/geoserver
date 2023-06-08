@@ -55,6 +55,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.kml.regionate.CachedHierarchyRegionatingStrategy;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.GetMapRequest;
@@ -100,6 +101,13 @@ public class KMLReflectorTest extends WMSTestSupport {
         new File(stylesDir, "graphics").mkdir();
         testData.copyTo(
                 getClass().getResourceAsStream("bridge.png"), "styles/graphics/bridgesubdir.png");
+    }
+
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        File dir = getDataDirectory().findOrCreateDir("geosearch");
+        CachedHierarchyRegionatingStrategy.clearAllHsqlDatabases(dir);
+        super.onTearDown(testData);
     }
 
     /**

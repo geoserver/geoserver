@@ -16,6 +16,7 @@
         <include>hibernate-jpa*.jar</include>
         <include>*quartz*.jar</include>
         <include>*postgis*.jar</include>
+        <include>h2-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

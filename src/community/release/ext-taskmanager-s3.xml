@@ -11,6 +11,7 @@
       <includes>
         <include>gs-taskmanager-s3*.jar</include>
         <include>aws-java-sdk-s3*.jar</include>
+        <include>h2-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

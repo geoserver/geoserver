@@ -122,7 +122,8 @@ public class URLChecksIntegrationTest extends GeoServerSystemTestSupport {
 
     private void writeSampleRulesXML(boolean dataEnabled) {
         Resource config = getConfigurationFile();
-        try (PrintStream os = new PrintStream(config.out(), true, StandardCharsets.UTF_8.toString())) {
+        try (PrintStream os =
+                new PrintStream(config.out(), true, StandardCharsets.UTF_8.toString())) {
             os.println(
                     "<checks>"
                             + "<regex>"
@@ -146,7 +147,8 @@ public class URLChecksIntegrationTest extends GeoServerSystemTestSupport {
                             + "</regex>"
                             + "</checks>");
         } catch (IOException ex) {
-            throw new RuntimeException("Couldn't generate sample url checks configuration for the test!");
+            throw new RuntimeException(
+                    "Couldn't generate sample url checks configuration for the test!");
         }
     }
 

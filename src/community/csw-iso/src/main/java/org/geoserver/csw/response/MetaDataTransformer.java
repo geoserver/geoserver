@@ -183,13 +183,9 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
             String name = dn.getLocalPart();
             String prefix = MetaDataDescriptor.NAMESPACES.getPrefix(dn.getNamespaceURI());
             AttributesImpl attributes = new AttributesImpl();
-            if (p.isNillable()) {
+            if (p.isNillable() && Strings.isNullOrEmpty(value)) {
                 attributes.addAttribute(
-                        "http://www.w3.org/2001/XMLSchema-instance",
-                        "nil",
-                        "xsi:nil",
-                        "",
-                        Strings.isNullOrEmpty(value) ? "true" : "false");
+                        "http://www.w3.org/2001/XMLSchema-instance", "nil", "xsi:nil", "", "true");
             }
             element(prefix + ":" + name, value, attributes);
         }

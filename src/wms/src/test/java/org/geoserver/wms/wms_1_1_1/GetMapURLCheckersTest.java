@@ -102,9 +102,12 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
                                         .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
                                         .withBody(capabilities)));
         String describe = getWFSResource("describePoi.xml");
-        Map<String, String> namespaces = new HashMap<String, String>() {{
-            put("wfs", "http://www.opengis.net/wfs");
-        }};
+        Map<String, String> namespaces =
+                new HashMap<String, String>() {
+                    {
+                        put("wfs", "http://www.opengis.net/wfs");
+                    }
+                };
         service.stubFor(
                 WireMock.post("/wfs")
                         .withRequestBody(

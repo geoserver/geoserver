@@ -46,7 +46,7 @@ public abstract class AbstractMetadataTest {
 
     protected static MockData DATA_DIRECTORY;
 
-    private static File metadata;
+    protected static File metadata;
 
     private static File metadataTemplates;
 

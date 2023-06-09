@@ -1444,7 +1444,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                             .contains(
                                     "This request would process more time than the maximum allowed"));
         } else {
-            assertEquals("text/html;charset=UTF-8", response.getContentType());
+            assertEquals("text/html", response.getContentType());
         }
     }
 

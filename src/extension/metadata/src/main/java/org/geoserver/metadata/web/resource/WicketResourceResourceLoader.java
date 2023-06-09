@@ -74,7 +74,7 @@ public class WicketResourceResourceLoader implements IStringResourceLoader {
                         string = findString(key, string, resourceBundle);
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | IllegalStateException e) {
                 if (shouldThrowExceptionForMissingResource()) {
                     throw new WicketRuntimeException(
                             String.format(

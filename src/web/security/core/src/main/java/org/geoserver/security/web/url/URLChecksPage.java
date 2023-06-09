@@ -5,6 +5,8 @@
 package org.geoserver.security.web.url;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +23,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.security.urlchecks.AbstractURLCheck;
+import org.geoserver.security.urlchecks.GeoServerURLChecker;
 import org.geoserver.security.urlchecks.RegexURLCheck;
 import org.geoserver.security.urlchecks.URLCheckDAO;
 import org.geoserver.web.CatalogIconFactory;
@@ -31,6 +34,8 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geotools.data.ows.URLChecker;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.util.logging.Logging;
 
 /** Page for configuring URL checks */
@@ -96,7 +101,7 @@ public class URLChecksPage extends GeoServerSecuredPage {
                     public void onSubmit(AjaxRequestTarget target, Form form) {
                         try {
                             testInput.processInput();
-                            AbstractURLCheck check = getMatchingRule();
+                            URLChecker check = getMatchingRule();
 
                             if (check != null) {
                                 String msg = getMessage("testSuccess", check.getName());
@@ -112,14 +117,43 @@ public class URLChecksPage extends GeoServerSecuredPage {
                         addFeedbackPanels(target);
                     }
 
-                    private AbstractURLCheck getMatchingRule() throws IOException {
+                    private URLChecker getMatchingRule() throws IOException {
                         String test = testInput.getInput();
                         List<AbstractURLCheck> checks = getUrlCheckDAO().getChecks();
+                        // Check 1: Check using test URL provided
                         for (AbstractURLCheck check : checks) {
                             if (check.isEnabled()) {
                                 if (check.confirm(test)) return check;
                             }
                         }
+                        // Check 2: Check using normalized test URL if different
+                        try {
+                            // URL normalization to resolve relative paths prior to checking
+                            String normalized = new URI(test).normalize().toString();
+                            if (!normalized.equals(test)) {
+                                for (AbstractURLCheck check : getUrlCheckDAO().getChecks()) {
+                                    if (check.isEnabled()) {
+                                        if (check.confirm(normalized)) return check;
+                                    }
+                                }
+                            }
+                        } catch (URISyntaxException nonURI) {
+                        }
+                        // Check 3: Check using built-in (non AbstractURLCheck) URL Checks
+                        List<URLChecker> allEnabledURLCheckers =
+                                URLCheckers.getEnabledURLCheckers();
+                        // no enabled checkers, the system is not configured... don't do anything
+                        if (!allEnabledURLCheckers.isEmpty()) {
+                            // evaluate using all available implementations
+                            for (URLChecker urlChecker : allEnabledURLCheckers) {
+                                if (!(urlChecker instanceof GeoServerURLChecker)) {
+                                    if (urlChecker.confirm(test)) {
+                                        return urlChecker;
+                                    }
+                                }
+                            }
+                        }
+
                         return null;
                     }
                 });

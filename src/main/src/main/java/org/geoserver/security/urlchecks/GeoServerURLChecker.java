@@ -4,6 +4,8 @@
  */
 package org.geoserver.security.urlchecks;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -50,12 +52,34 @@ public class GeoServerURLChecker implements URLChecker, DisposableBean {
 
             // if enabled but no checks configured, deny access
             List<AbstractURLCheck> enabledUrlList = getEnabledChecks();
-            if (enabledUrlList.isEmpty()) return false;
-
-            for (AbstractURLCheck u : enabledUrlList) {
-                if (u.confirm(url)) {
-                    LOGGER.log(Level.FINE, () -> "URL " + url + " was matched by " + u);
-                    return true;
+            if (!enabledUrlList.isEmpty()) {
+                // Check 1: Check using test URL provided
+                for (AbstractURLCheck u : enabledUrlList) {
+                    if (u.confirm(url)) {
+                        LOGGER.log(Level.FINE, () -> "URL " + url + " was matched by " + u);
+                        return true;
+                    }
+                }
+                // Check 2: Check using normalized test URL if different
+                try {
+                    String normalized = new URI(url).normalize().toString();
+                    if (!normalized.equals(url)) {
+                        for (AbstractURLCheck u : enabledUrlList) {
+                            if (u.confirm(normalized)) {
+                                LOGGER.log(
+                                        Level.FINE,
+                                        () ->
+                                                "URL "
+                                                        + url
+                                                        + " was normalized to "
+                                                        + normalized
+                                                        + " and matched by "
+                                                        + u);
+                                return true;
+                            }
+                        }
+                    }
+                } catch (URISyntaxException nonURI) {
                 }
             }
             LOGGER.log(Level.FINE, () -> url + " did not match any check");

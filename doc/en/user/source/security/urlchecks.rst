@@ -69,24 +69,9 @@ Regular Expression URL checks can be configured, with the following parameters f
    * - Enabled
      - Check box to enable or disable the check
 
-The most common URL pattern type, allowing matches prefixed by a given host name, follows the following pattern:
-
-``^https?://(www\.)?example\.com/.*$``
-
-Example allowing WMS ``REMOTE_OWS`` data access to an external WFS service:
-
-``^https://safeWFS/geoserver/ows/.*SERVICE=WFS.*$``
-
 .. figure:: images/urlchecks-edit.png
    
    Configure Regular Expression URL check
-    
-.. note::
-
-   Web sites are available to help define a valid Java regular expression pattern. These tools can be used to interpret, explain and test regular expressions. For example:
-
-   * https://regex101.com/ (enable the Java 8 flavor)
-   * https://www.freeformatter.com/java-regex-tester.html 
 
 Testing URL checks
 ------------------
@@ -110,3 +95,80 @@ Press the :guilabel:`Test URL` button to perform the checks. If at least one URL
    
    Test URL Checks with external URL
    
+Example RegEx Patterns
+----------------------
+
+The most common pattern allows matching a given host name to allow external graphics from a remote server. This pattern uses ``^`` to mark the start, the host URL, ``.*`` to match anything, and ``$`` to end - as shown in the in following pattern:
+
+``^https://styles\.server\.net/.*$``
+
+::
+
+  https://styles.server.net/logo.png
+
+To allow external graphics from a specific directory on a remote server ``((?!\.\./).)*`` is used to avoid relative paths:
+
+``^https://styles\.server\.net/icons/((?!\.\./).)*$``
+
+::
+
+   https://styles.server.net/icons/forest.png
+
+When working with external graphics making use of SVG parameters use ``(\?.*)?$`` to optionally allow any query parameters after ``?``:
+
+``^https://styles\.server\.net/icons/((?!\.\./).)*(\?.*)?$``
+
+:: 
+   
+   https://styles.server.net/icons/forest.png
+   https://styles.server.net/icons/forest.svg?color=darkgreen
+
+When obtaining content from an API ``\?.*`` is used (as there is no need to support relative paths). As an example ``/geoserver/ows\?`` is used below to access the GeoServer Open Web Service API:
+
+``^https?://localhost:8080/geoserver/ows\?.*$``
+
+::
+   
+   http://localhost:8080/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities
+
+To allow for GeoServer virtual web services ``(\w+/)?`` is used for optional workspace name:
+
+``^https?://localhost:8080/geoserver/(\w+/)?ows\?.*$``
+
+::
+
+   http://localhost:8080/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities
+   http://localhost:8080/geoserver/ne/ows?service=WMS&version=1.3.0&request=GetCapabilities
+
+To limit to Web Feature Service ``?.*SERVICE=WFS.*`` is used to restrict query parameter:
+
+``^https?://localhost:8080/geoserver/(\w+/)?ows\?.*SERVICE=WFS.*?$``
+
+::
+   
+   http://localhost:8080/geoserver/tiger/ows?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=giant_polygon
+
+To allowing WMS ``REMOTE_OWS`` data access to an external GeoServer WFS service:
+
+``^https://mapping\.server\.net/geoserver/(\w+/)?ows\?.*SERVICE=WFS.*$``
+
+::
+
+  https://mapping.server.net/geoserver/ows?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=roads
+
+
+To allow external graphic access to a remote GeoServer icons:
+
+``^https://mapping\.server\.net/geoserver/styles((?!\.\./).)*(\?.*)?$``
+
+::
+
+   https://mapping.server.net/geoserver/styles/grass_fill.png
+   https://mapping.server.net/geoserver/styles/ne/airport.svg?fill=gray
+
+.. note::
+
+   Web sites are available to help define a valid Java regular expression pattern. These tools can be used to interpret, explain and test regular expressions. For example:
+
+   * https://regex101.com/ (enable the Java 8 flavor)
+   * https://www.freeformatter.com/java-regex-tester.html 

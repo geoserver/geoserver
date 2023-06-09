@@ -18,7 +18,7 @@ Check this page for any additional remote service access checks added in the fut
 Configuration of URL checks
 ---------------------------
 
-Navigate to :menuselection:`Data > URL Checks` page to manage and configure URL checks.
+Navigate to :menuselection:`Data > URL Checks` page to manage and configure URL Checks.
 
 .. figure:: images/urlchecks.png
 
@@ -26,7 +26,7 @@ Navigate to :menuselection:`Data > URL Checks` page to manage and configure URL 
 
 Use the :guilabel:`Enable/Disable URL Checks` enable this safety feature:
 
-* When checkbox enabled, :guilabel:`URL checks are enabled`, URL checks are performed to limit GeoServer access to remote resources as outlined above.
+* When the :guilabel:`URL checks are enabled` checkbox is enabled, URL checks are performed to limit GeoServer access to remote resources as outlined above.
   
   Enabling URL checks is recommended to limit normal Open Web Service protocols interaction being used for Cross Site Scripting attacks.
 
@@ -44,7 +44,7 @@ To add a URL Check, press the :guilabel:`Add new URL check` button. You will be 
 Removing a regular expression based check
 -----------------------------------------
 
-To remove a URL Checks, select the checkbox next to one or more rows in the :guilabel:`URL Check list` table.
+To remove a URL Check, select the checkbox next to one or more rows in the :guilabel:`URL Check list` table.
 Press the :guilabel:`Remove selected URL checks` button to remove. You will be asked to confirm or cancel the removal. Pressing :guilabel:`OK` removes the selected URL Checks.
 
 .. _security_urlchecks_edit:
@@ -83,9 +83,9 @@ Example allowing WMS ``REMOTE_OWS`` data access to an external WFS service:
     
 .. note::
 
-   Web sites are available to can help define a valid Java regular expression pattern. These tools can be used to interpret, explain and test regular expressions. For example:
+   Web sites are available to help define a valid Java regular expression pattern. These tools can be used to interpret, explain and test regular expressions. For example:
 
-   * https://regex101.com/ (enabled the Java 8 flavor)
+   * https://regex101.com/ (enable the Java 8 flavor)
    * https://www.freeformatter.com/java-regex-tester.html 
 
 Testing URL checks
@@ -104,7 +104,7 @@ Test URL Checks form:
    * - URL to check 
      - Supply URL of external resource to check if access is allowed
 
-Press :guilabel:`Test URL` button to perform the checks. If at least one URL Check matches the URL, it will be allowed and the test will indicate the URL Check permitting access. Otherwise it will be rejected and the test will indicate that no URL Check matched.
+Press the :guilabel:`Test URL` button to perform the checks. If at least one URL Check matches the URL, it will be allowed and the test will indicate the URL Check permitting access. Otherwise it will be rejected and the test will indicate that no URL Check matched.
 
 .. figure:: images/urlchecks-test.png
    

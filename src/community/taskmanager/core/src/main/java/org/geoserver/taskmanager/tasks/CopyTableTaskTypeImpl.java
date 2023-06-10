@@ -254,6 +254,7 @@ public class CopyTableTaskTypeImpl implements TaskType {
             public void commit() throws TaskException {
                 try (Connection conn = targetdb.getDataSource().getConnection()) {
                     try (Statement stmt = conn.createStatement()) {
+                        conn.setAutoCommit(false);
                         stmt.executeUpdate(
                                 "DROP TABLE IF EXISTS "
                                         + targetdb.getDialect().quote(targetTable.getTableName()));
@@ -265,6 +266,7 @@ public class CopyTableTaskTypeImpl implements TaskType {
                                                 .quote(
                                                         SqlUtil.notQualified(
                                                                 targetTable.getTableName())));
+                        conn.commit();
                     }
 
                     ctx.getBatchContext().delete(targetTable);

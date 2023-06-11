@@ -112,7 +112,7 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
         CatalogFactory catalogFac = new CatalogFactoryImpl(catalog);
 
         final NamespaceInfo ns = catalog.getNamespaceByURI(layerName.getNamespaceURI());
-        final WorkspaceInfo ws = catalog.getWorkspaceByName(ns.getName());
+        final WorkspaceInfo ws = getWorkspace(ctx, ns);
 
         final boolean createLayer = catalog.getLayerByName(layerName) == null;
         final boolean createStore;
@@ -217,18 +217,29 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
         };
     }
 
+    private WorkspaceInfo getWorkspace(TaskContext ctx, NamespaceInfo ns) throws TaskException {
+        WorkspaceInfo ws = (WorkspaceInfo) ctx.getParameterValues().get(PARAM_WORKSPACE);
+        if (ws == null) {
+            ws = catalog.getWorkspaceByName(ns.getName());
+        }
+        return ws;
+    }
+
     @Override
     public void cleanup(TaskContext ctx) throws TaskException {
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB_NAME);
         final Name layerName = (Name) ctx.getParameterValues().get(PARAM_LAYER);
-        final String workspace = catalog.getNamespaceByURI(layerName.getNamespaceURI()).getPrefix();
+
+        final WorkspaceInfo ws =
+                getWorkspace(ctx, catalog.getNamespaceByURI(layerName.getNamespaceURI()));
 
         final DbTable table = (DbTable) ctx.getParameterValues().get(PARAM_TABLE_NAME);
         String schema = SqlUtil.schema(table.getTableName());
         String dbName = schema == null ? db.getName() : (db.getName() + "_" + schema);
 
         final LayerInfo layer = catalog.getLayerByName(layerName);
-        final DataStoreInfo store = catalog.getStoreByName(workspace, dbName, DataStoreInfo.class);
+        final DataStoreInfo store =
+                catalog.getStoreByName(ws.getName(), dbName, DataStoreInfo.class);
         final FeatureTypeInfo resource =
                 catalog.getResourceByName(layerName, FeatureTypeInfo.class);
 

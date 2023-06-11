@@ -210,9 +210,19 @@ public class ExtTypes {
                         if (ns == null) {
                             return null;
                         }
-                        return geoServer
-                                .getCatalog()
-                                .getLayerByName(new NameImpl(ns.getURI(), value));
+                        ResourceInfo resource =
+                                geoServer
+                                        .getCatalog()
+                                        .getResourceByName(ns, value, ResourceInfo.class);
+                        if (resource == null) {
+                            return null;
+                        }
+                        List<LayerInfo> layers = geoServer.getCatalog().getLayers(resource);
+                        if (layers.size() == 1) {
+                            return layers.get(0);
+                        } else {
+                            return null;
+                        }
                     } else {
                         return geoServer.getCatalog().getLayerByName(value);
                     }

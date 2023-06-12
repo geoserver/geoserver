@@ -3,9 +3,9 @@
 WPS longitudinal profile process
 ================================
 
-WPS longitudinal profile process provides ability to calculate elevation profile for linestring
+WPS longitudinal profile process provides ability to calculate altitude profile for linestring
 * Reproject result to different CRS
-* Adjust elevation profile based on additional layer
+* Adjust altitude profile based on additional layer
 
 Installing the WPS longitudinal profile process
 -----------------------------------------------
@@ -29,20 +29,21 @@ Module description
 This module provides longitudinal profile process.
 Process accepts following parameters:
 Required:
-1. layerName - name of the raster layer (coverage) which will be used, for elevation profile creation
-2. linestringWkt - linestring in wkt format, along which the elevation profile will be created
-3. distance - maximal distance between points of elevation profile
+1. layerName - name of the raster layer (coverage) which will be used, for altitude profile creation
+2. linestringEwkt - linestring in ewkt format, along which the altitude profile will be created
+3. distance - maximal distance between points of altitude profile
 Optional:
-1. adjustmentLayerName - name of the layer with elevation, which will be used to adjust elevation values
-2. projection - target CRS of result
-3. elevationIndex - index of elevation field in the array of coverage coordinates (0 by default)
-4. elevationName - name of the elevation attribute on adjustment layer feature type
+1. adjustmentLayerName - name of the layer with altitude, which will be used to adjust altitude values
+2. targetProjection - target CRS of result
+3. altitudeIndex - index of altitude field in the array of coverage coordinates (0 by default)
+4. altitudeName - name of the altitude attribute on adjustment layer feature type
 
 The process splits provided linestring into into segments of no more then provided distance length.
-Then evaluates elevation for each point and builds longitudinal profile. If adjustment layer name
-is provided, elevation will be adjusted by searching feature that corresponding point contains, and
-getting it's elevation attribute, further subtracting it from elevation received from coverage.
-If projection parameter is provided, points of profile will be reprojected to taget CRS.
+Then evaluates altitude for each point and builds longitudinal profile. If adjustment layer name
+is provided, altitude will be adjusted by searching feature that contains corresponding point, and
+getting it's altitude attribute, further subtracting it from altitude received from coverage.
+If projection parameter is provided, points of profile will be reprojected to target CRS, otherwise to CRS
+of provided Ewkt linestring.
 
 Response contains following objects:
 profile - contains array of points of the profile
@@ -50,15 +51,15 @@ infos - general info on process result
 
 profile object contains array of points
 each point has following values:
-distance - distance to this point from the beginning of the profile (first point)
+distance - distance to this point from the beginning of the profile (first point) in units of CRS
 x - x coordinate of point
 y - y coordinate of point
 altitude - altitude of this point
-slope - slope between previous and current elevation
+slope - slope between previous and current altitude
 
 infos object fields:
-elevationPositive - sum of positive elevations on this profile
-elevationNegative - sum of negative elevations on this profile
+altitudePositive - sum of positive altitudes on this profile
+altitudeNegative - sum of negative altitudes on this profile
 distance - total length of profile
 firstpointX - x coordinate of first point
 firstpointY - y coordinate of first point

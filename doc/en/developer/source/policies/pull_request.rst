@@ -3,7 +3,7 @@
 Pull Requests
 =============
 
-As with most open source project GeoServer is very happy to accept pull requests from the community. Contributions from the community have been a source of some of the best bug fixes and improvements in GeoServer and is a great way to give back to the project.
+As with most open source project GeoServer is very happy to accept pull requests from the community. Contributions from the community have been a source of some of the best bug fixes and improvements in GeoServer and contributing is a great way to give back to the project.
 
 This document is a guide designed to help contributors in successfully submitting a pull request:
 
@@ -53,17 +53,17 @@ Assuming that ``origin`` points to your GitHub repo, the patch workflow is as fo
 
 Core developers will :ref:`review` the patch and may require changes or improvements to it prior to it being accepted. It will be up to the submitter to amend the pull request, actively revising until it gets merged. Please be patient as pull requests are often reviewed during maintainers' spare time so turn-around can be a little slow.
 
-If a pull request becomes stale with no feedback from the submitter for a couple of months, it will linked form a JIRA issue (to avoid losing the partial work) and then be closed.
+If a pull request becomes stale with no feedback from the submitter for a couple of months, it will be linked from a JIRA issue (to avoid losing the partial work) and then be closed.
 
 Tips and Tricks
 ---------------
 
-The following guidelines are meant to ensure that contirbutions submitted via pull request will be as easy as possible to review and merge.
+The following guidelines are meant to ensure that contributions submitted via pull request will be as easy as possible to review and merge.
 
 Clean Build
 ^^^^^^^^^^^
 
-In general developers will only accept pull requests that apply cleanly against the latest versions of the stable and the main development branches. Therefore before you generate a patch it is important that you update your checkout to the latest for the branch you are working on.
+In general developers will only accept pull requests that apply cleanly against the latest versions of the stable and the main development branches. Therefore, before you generate a patch it is important that you update your checkout to the latest for the branch you are working on.
 
 Ensure your IDE/editor is properly configured
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

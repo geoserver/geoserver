@@ -4,10 +4,14 @@
  */
 package org.geoserver.metadata.data.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.util.List;
 import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.dto.AttributeConfiguration;
+import org.geoserver.metadata.data.dto.AttributeTypeConfiguration;
 import org.geoserver.metadata.data.dto.GeonetworkMappingConfiguration;
 import org.geoserver.metadata.data.dto.MetadataConfiguration;
 import org.junit.Assert;
@@ -51,6 +55,16 @@ public class ConfigurationServiceTest extends AbstractMetadataTest {
         List<AttributeConfiguration> complexAttributes =
                 configuration.findType("referencesystem").getAttributes();
         Assert.assertEquals("Code", findAttribute(complexAttributes, "code").getLabel());
+    }
+
+    @Test
+    public void testFeatureCatalog() {
+        AttributeTypeConfiguration featureAtt =
+                yamlService.getMetadataConfiguration().findType("featureAttribute");
+        assertNotNull(featureAtt);
+        AttributeConfiguration attType = featureAtt.findAttribute("type");
+        assertNotNull(attType);
+        assertEquals(7, attType.getValues().size());
     }
 
     @Test

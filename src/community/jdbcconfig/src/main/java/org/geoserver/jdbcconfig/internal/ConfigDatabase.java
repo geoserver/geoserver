@@ -304,15 +304,8 @@ public class ConfigDatabase implements ApplicationContextAware {
         QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(dialect, of, dbMappings).filter(filter);
 
         final String sql = sqlBuilder.build();
-        final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
-        final boolean fullySupported = Filter.INCLUDE.equals(unsupportedFilter);
-        if (LOGGER.isLoggable(Level.FINER)) {
-            LOGGER.finer("Original filter: " + filter);
-            LOGGER.finer("Supported filter: " + sqlBuilder.getSupportedFilter());
-            LOGGER.finer("Unsupported filter: " + sqlBuilder.getUnsupportedFilter());
-        }
         final int count;
-        if (fullySupported) {
+        if (sqlBuilder.isFullySupported()) {
             final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
             logStatement(sql, namedParameters);
 
@@ -395,17 +388,8 @@ public class ConfigDatabase implements ApplicationContextAware {
             }
         }
 
-        final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
-        final boolean fullySupported = Filter.INCLUDE.equals(unsupportedFilter);
-
         if (ids == null) {
             final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
-
-            if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer("Original filter: " + filter);
-                LOGGER.finer("Supported filter: " + sqlBuilder.getSupportedFilter());
-                LOGGER.finer("Unsupported filter: " + sqlBuilder.getUnsupportedFilter());
-            }
             logStatement(sql, namedParameters);
 
             Stopwatch sw = Stopwatch.createStarted();
@@ -449,11 +433,11 @@ public class ConfigDatabase implements ApplicationContextAware {
                 Iterators.filter(
                         lazyTransformed.iterator(), com.google.common.base.Predicates.notNull());
 
-        if (fullySupported) {
+        if (sqlBuilder.isFullySupported()) {
             result = new CloseableIteratorAdapter<T>(iterator);
         } else {
-            // Apply the filter
-            result = CloseableIteratorAdapter.filter(iterator, filter);
+            // Apply the unsupported filter
+            result = CloseableIteratorAdapter.filter(iterator, sqlBuilder.getUnsupportedFilter());
             // The offset and limit should not have been applied as part of the query
             assert (!sqlBuilder.isOffsetLimitApplied());
             // Apply offset and limits after filtering
@@ -477,14 +461,6 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         final String sql = sqlBuilder.build();
         final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
-        final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
-        final boolean fullySupported = Filter.INCLUDE.equals(unsupportedFilter);
-
-        if (LOGGER.isLoggable(Level.FINER)) {
-            LOGGER.finer("Original filter: " + filter);
-            LOGGER.finer("Supported filter: " + sqlBuilder.getSupportedFilter());
-            LOGGER.finer("Unsupported filter: " + sqlBuilder.getUnsupportedFilter());
-        }
         logStatement(sql, namedParameters);
 
         Stopwatch sw = Stopwatch.createStarted();
@@ -509,11 +485,11 @@ public class ConfigDatabase implements ApplicationContextAware {
         Iterator<String> iterator =
                 Iterators.filter(ids.iterator(), com.google.common.base.Predicates.notNull());
 
-        if (fullySupported) {
+        if (sqlBuilder.isFullySupported()) {
             result = new CloseableIteratorAdapter<String>(iterator);
         } else {
-            // Apply the filter
-            result = CloseableIteratorAdapter.filter(iterator, filter);
+            // Apply the unsupported filter
+            result = CloseableIteratorAdapter.filter(iterator, sqlBuilder.getUnsupportedFilter());
             // The offset and limit should not have been applied as part of the query
             assert (!sqlBuilder.isOffsetLimitApplied());
         }

@@ -16,20 +16,26 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.Or;
 import org.opengis.filter.sort.SortBy;
 
 /**
@@ -984,5 +990,73 @@ public class QueryBuilderTest {
         assertEquals(Filter.INCLUDE, builder.getUnsupportedFilter());
         assertEquals(!actual.startsWith("SELECT COUNT"), builder.isOffsetLimitApplied());
         assertFalse(builder.getNamedParameters().isEmpty());
+    }
+
+    @Test
+    public void testPublishedInfoFilterFullyUnsupportedWithoutOr() {
+        Filter filter = Predicates.contains("foo", "abc");
+        QueryBuilder<PublishedInfo> builder =
+                QueryBuilder.forIds(dialect, PublishedInfo.class, dbMappings).filter(filter);
+        builder.build();
+        assertEquals(Filter.INCLUDE, builder.getSupportedFilter());
+        assertEquals(filter, builder.getUnsupportedFilter());
+    }
+
+    @Test
+    public void testPublishedInfoFilterFullyUnsupportedWithOr() {
+        Filter filter =
+                Predicates.or(
+                        Predicates.and(
+                                Predicates.isInstanceOf(LayerGroupInfo.class),
+                                Predicates.equal("bar", "quux"),
+                                Predicates.contains("foo", "abc")),
+                        Predicates.and(
+                                Predicates.isInstanceOf(LayerInfo.class),
+                                Predicates.equal("resource.bar", "quux"),
+                                Predicates.contains("resource.foo", "abc")));
+        QueryBuilder<PublishedInfo> builder =
+                QueryBuilder.forIds(dialect, PublishedInfo.class, dbMappings).filter(filter);
+        builder.build();
+        assertEquals(Filter.INCLUDE, builder.getSupportedFilter());
+        assertThat(builder.getUnsupportedFilter(), instanceOf(Or.class));
+    }
+
+    @Test
+    public void testPublishedInfoFilterPartiallySupportedRootOr() {
+        Filter filter =
+                Predicates.or(
+                        Predicates.and(
+                                Predicates.isInstanceOf(LayerGroupInfo.class),
+                                Predicates.equal("name", "quux"),
+                                Predicates.contains("foo", "abc")),
+                        Predicates.and(
+                                Predicates.isInstanceOf(LayerInfo.class),
+                                Predicates.equal("resource.name", "quux"),
+                                Predicates.contains("resource.foo", "abc")));
+        QueryBuilder<PublishedInfo> builder =
+                QueryBuilder.forIds(dialect, PublishedInfo.class, dbMappings).filter(filter);
+        builder.build();
+        assertThat(builder.getSupportedFilter(), instanceOf(Or.class));
+        assertThat(builder.getUnsupportedFilter(), instanceOf(Or.class));
+    }
+
+    @Test
+    public void testPublishedInfoFilterPartiallySupportedNestedOr() {
+        Filter filter =
+                Predicates.or(
+                        Predicates.and(
+                                Predicates.isInstanceOf(LayerGroupInfo.class),
+                                Predicates.equal("name", "quux"),
+                                Predicates.contains("foo", "abc")),
+                        Predicates.and(
+                                Predicates.isInstanceOf(LayerInfo.class),
+                                Predicates.equal("resource.name", "quux"),
+                                Predicates.contains("resource.foo", "abc")));
+        filter = Predicates.and(filter, Predicates.equal("bar", "xyz"));
+        QueryBuilder<PublishedInfo> builder =
+                QueryBuilder.forIds(dialect, PublishedInfo.class, dbMappings).filter(filter);
+        builder.build();
+        assertThat(builder.getSupportedFilter(), instanceOf(Or.class));
+        assertThat(builder.getUnsupportedFilter(), instanceOf(And.class));
     }
 }

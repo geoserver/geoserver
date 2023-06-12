@@ -17,7 +17,7 @@ coordinate a release with these projects, either performing the release yourself
 asking a volunteer to perform the release.
 
 * `GeoTools Release Guide <http://docs.geotools.org/latest/developer/procedures/release.html>`_
-* `GeoWebCache RELEASE_GUIDE.txt <https://github.com/GeoWebCache/geowebcache/blob/master/geowebcache/release/RELEASE_GUIDE.txt>`_
+* `GeoWebCache Release repo README.md <https://github.com/GeoWebCache/gwc-release>`_
 
 Notify developer list
 ^^^^^^^^^^^^^^^^^^^^^

@@ -41,6 +41,21 @@ As of GeoServer 2.23, H2 DB support will be replaced with HSQL DB for Tile Cachi
 * Important: Existing installations with external H2 database selection will not be migrated automatically. You will get an error message at startup and disk quota will be disabled, unless you use a plugin/extension with H2 dependency. But other features of GeoServer will keep working. You can go to Disk Quota page and configure an external HSQL database or switch to in-process HSQL. In case you want to keep using H2 as an in-process/external database, you can add H2 store plugin or any other extension or plugin that has H2 dependency.
 * GeoServer installations with extensions/plugins having H2 dependency will still have H2 option under "Disk quota store type" and "Target database type".
 
+Remote requests control (GeoServer 2.22 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.22, remote requests control has been added, but disabled by default, in GeoServer. You should consider enabling it and providing safe urls that will be allowed.
+
+When enabled, this feature allows administrators to control which remote requests are allowed to be made to GeoServer. When you first enable it, no authorizations are included, thus GeoServer will deny remote requests originating from user interaction. In particular, the following use cases are affected:
+
+* WMS operations with remotely fetch styles (``sld`` parameter) and style referencing remote icons (in general, icons outside of the data directory).
+  As a reminder, when a remote icon is not found, GeoServer will fall back to a default icon, a gray square with a black border.
+* WMS "feature portrayal" with dynamic remote WFS references provided in the request (``REMOTE_OWS_TYPE`` and ``REMOTE_OWS_URL`` parameters).
+* WPS remote inputs via either GET or POST request (e.g., remote GeoJSON file source).
+
+The list of locations that are safe to contact can be configured using the :ref:`security_urlchecks` page.
+
+
 Log4J Upgrade (GeoServer 2.21 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

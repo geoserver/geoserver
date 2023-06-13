@@ -94,6 +94,17 @@
 		<property name="order" value="300" />
 	</bean>
 
+    <!-- Control HTTP page -->
+    <bean id="urlChecksPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="security.urlcheck" />
+        <property name="titleKey" value="security.urlcheck.title" />
+        <property name="descriptionKey" value="security.urlcheck.description" />
+        <property name="componentClass" value="org.geoserver.security.web.url.URLChecksPage" />
+        <property name="icon" value="../img/icons/silk/shield.png" />
+        <property name="category" ref="securityCategory" />
+        <property name="order" value="210" />
+    </bean>
+
     <!-- password policy panel infos -->
     <bean id="passwordPolicyPanelInfo" class="org.geoserver.security.web.passwd.PasswordPolicyPanelInfo">
         <property name="id" value="security.passwordPolicy" />

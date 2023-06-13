@@ -229,6 +229,9 @@ Utility Classes
   width: 95% !important;
 }
 /* heights */
+.h-2-em {
+  height: 2em !important;
+}
 .h-5-em {
   height: 5em !important;
 }

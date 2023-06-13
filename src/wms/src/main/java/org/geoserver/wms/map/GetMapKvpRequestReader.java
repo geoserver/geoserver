@@ -6,6 +6,7 @@
 package org.geoserver.wms.map;
 
 import static org.geoserver.catalog.LayerGroupHelper.isSingleOrOpaque;
+import static org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -60,6 +61,7 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.CacheConfiguration;
@@ -72,6 +74,8 @@ import org.geoserver.wms.capabilities.CapabilityUtil;
 import org.geoserver.wms.clip.ClipWMSGetMapCallBack;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataStore;
+import org.geotools.data.ows.URLCheckerException;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.CommonFactoryFinder;
@@ -780,6 +784,14 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             LOGGER.fine("Getting layers and styles from reomte SLD");
         }
 
+        // check we can actually connect to server, throw an exception with locator otherwise
+        try {
+            URLCheckers.confirm(getMap.getSld());
+        } catch (URLCheckerException e) {
+            throw new ServiceException(
+                    "Invalid SLD URL: " + getMap.getSld(), e, INVALID_PARAMETER_VALUE, "sld");
+        }
+
         try (InputStream input = getStream(getMap)) {
             if (input != null) {
                 try (InputStreamReader reader = new InputStreamReader(input)) {
@@ -869,12 +881,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     private InputStream getStream(GetMapRequest getMap) throws IOException {
         URL styleUrl = getMap.getStyleUrl().toURL();
-        InputStream input;
+
         if (styleUrl.getProtocol().toLowerCase().indexOf("http") == 0) {
-            input = getHttpInputStream(styleUrl, getMap.getHttpRequestHeader("Authorization"));
+            return getHttpInputStream(styleUrl, getMap.getHttpRequestHeader("Authorization"));
         } else {
             try {
-                input = Requests.getInputStream(styleUrl);
+                return Requests.getInputStream(styleUrl);
             } catch (Exception ex) {
                 LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
                 // KMS: Replace with a generic exception so it can't be used to port scan the
@@ -883,7 +895,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 throw new ServiceException("Error while getting SLD.");
             }
         }
-        return input;
     }
 
     private InputStream getHttpInputStream(URL styleUrl, String authorizationHeader)
@@ -1514,50 +1525,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 layersOrGroups.add(layerGroup);
             }
         }
-        // pre GEOS-2652
-        // Integer layerType = catalog.getLayerType(layerName);
-        // if (layerType != null) {
-        // layers.add(buildMapLayerInfo(layerName));
-        // } else {
-        // if(wms.getBaseMapLayers().containsKey(layerName)) {
-        // layers.add(buildMapLayerInfo(layerName));
-        // } else {
-        // ////
-        // // Search for grouped layers (attention: heavy process)
-        // ////
-        // boolean found = false;
-        // String catalogLayerName = null;
-        //
-        // for (Iterator c_keys = catalog.getLayerNames().iterator(); c_keys.hasNext();) {
-        // catalogLayerName = (String) c_keys.next();
-        //
-        // try {
-        // FeatureTypeInfo ftype = findFeatureLayer(catalogLayerName);
-        // String wmsPath = ftype.getWmsPath();
-        //
-        // if ((wmsPath != null) && wmsPath.matches(".*/" + layerName)) {
-        // layers.add(buildMapLayerInfo(catalogLayerName));
-        // found = true;
-        // }
-        // } catch (Exception e_1) {
-        // try {
-        // CoverageInfo cv = findCoverageLayer(catalogLayerName);
-        // String wmsPath = cv.getWmsPath();
-        //
-        // if ((wmsPath != null) && wmsPath.matches(".*/" + layerName)) {
-        // layers.add(buildMapLayerInfo(catalogLayerName));
-        // found = true;
-        // }
-        // } catch (Exception e_2) {
-        // }
-        // }
-        // }
-        // if(!found)
-        // throw new ServiceException("Could not find layer " + layerName,"LayerNotDefined");
-        // }
-
-        // }
-        // }
 
         if (layersOrGroups.isEmpty()) {
             throw new ServiceException("No LAYERS has been requested", getClass().getName());
@@ -1566,12 +1533,21 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     }
 
     private static DataStore connectRemoteWFS(URL remoteOwsUrl) throws ServiceException {
+        // check we can actually connect to server, throw an exception with locator otherwise
+        try {
+            URLCheckers.confirm(remoteOwsUrl);
+        } catch (URLCheckerException e) {
+            String msg = "Invalid remote URL: " + remoteOwsUrl;
+            throw new ServiceException(msg, e, INVALID_PARAMETER_VALUE, "REMOTE_OWS_URL");
+        }
+
         try {
             WFSDataStoreFactory factory = new WFSDataStoreFactory();
             Map<String, Object> params = new HashMap<>();
             params.put(
                     WFSDataStoreFactory.URL.key,
-                    remoteOwsUrl + "&request=GetCapabilities&service=WFS");
+                    ResponseUtils.appendQueryString(
+                            remoteOwsUrl.toExternalForm(), "REQUEST=GetCapabilities&SERVICE=WFS"));
             params.put(WFSDataStoreFactory.TRY_GZIP.key, Boolean.TRUE);
             return factory.createDataStore(params);
         } catch (Exception e) {

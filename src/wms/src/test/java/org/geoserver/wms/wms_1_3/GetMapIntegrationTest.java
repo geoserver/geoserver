@@ -6,6 +6,7 @@
 package org.geoserver.wms.wms_1_3;
 
 import static org.geoserver.data.test.MockData.WORLD;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -38,6 +39,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.image.test.ImageAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -625,7 +627,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if the file is found, its content will be used to replace the entity
             // if the file is not found the parser will throw a FileNotFoundException
             String response = getAsString(url);
-            assertTrue(response.indexOf("Error while getting SLD.") > -1);
+            assertThat(response, Matchers.containsString("Error while getting SLD."));
 
             // disable entities
             geoserverInfo.setXmlExternalEntitiesEnabled(false);

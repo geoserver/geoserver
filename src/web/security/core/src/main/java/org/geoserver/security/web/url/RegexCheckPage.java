@@ -90,10 +90,30 @@ public class RegexCheckPage extends GeoServerSecuredPage {
         add(form);
     }
 
+    /**
+     * Generate an example reglar expression.
+     *
+     * <p>This example processes {@link #getOWSURL()} to demonstrate:
+     *
+     * <ul>
+     *   <li>Escaping {@code \.} characters
+     *   <li>Allow anything after {@code ?} query
+     * </ul>
+     *
+     * @return example regular expression based on open web services api endpoint
+     */
     private String getDefaultRegex() {
-        return "^" + getOWSURL() + ".*$";
+        String url = getOWSURL();
+        url = url.replace(".", "\\.");
+
+        return "^" + url + "\\?.*$";
     }
 
+    /**
+     * Determine a sensible example open web service URL to use as an example RegEX.
+     *
+     * @return Open web service URL to use as an example RegEx
+     */
     private String getOWSURL() {
         String proxyBase = getGeoServer().getSettings().getProxyBaseUrl();
         if (proxyBase != null) {
@@ -106,7 +126,7 @@ public class RegexCheckPage extends GeoServerSecuredPage {
             mangler.mangleURL(base, path, new HashMap<>(), URLMangler.URLType.SERVICE);
             return ResponseUtils.appendPath(base.toString(), path.toString());
         }
-        return "http://localhost:8080/geosever/ows";
+        return "http://localhost:8080/geoserver/ows";
     }
 
     private SubmitLink submitLink() {

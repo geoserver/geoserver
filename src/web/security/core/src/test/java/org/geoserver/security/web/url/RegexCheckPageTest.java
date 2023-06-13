@@ -67,6 +67,17 @@ public class RegexCheckPageTest extends GeoServerWicketTestSupport {
         assertTrue(check.isEnabled());
     }
 
+    @Test
+    public void testDefaultRegex() throws Exception {
+        startEmptyPage();
+
+        FormTester form = tester.newFormTester("form");
+        String regex = form.getTextComponentValue("regex");
+
+        assertTrue("query", regex.contains("\\?.*"));
+        assertTrue("line", regex.endsWith("$"));
+    }
+
     private static void fillNewRule(String regex) {
         startEmptyPage();
 

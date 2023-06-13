@@ -5,9 +5,11 @@
 package org.geoserver.security.web.url;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -21,6 +23,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.security.urlchecks.AbstractURLCheck;
+import org.geoserver.security.urlchecks.GeoServerURLChecker;
 import org.geoserver.security.urlchecks.RegexURLCheck;
 import org.geoserver.security.urlchecks.URLCheckDAO;
 import org.geoserver.web.CatalogIconFactory;
@@ -31,6 +34,8 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geotools.data.ows.URLChecker;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.util.logging.Logging;
 
 /** Page for configuring URL checks */
@@ -96,7 +101,8 @@ public class URLChecksPage extends GeoServerSecuredPage {
                     public void onSubmit(AjaxRequestTarget target, Form form) {
                         try {
                             testInput.processInput();
-                            AbstractURLCheck check = getMatchingRule();
+
+                            URLChecker check = getMatchingRule();
 
                             if (check != null) {
                                 String msg = getMessage("testSuccess", check.getName());
@@ -112,14 +118,23 @@ public class URLChecksPage extends GeoServerSecuredPage {
                         addFeedbackPanels(target);
                     }
 
-                    private AbstractURLCheck getMatchingRule() throws IOException {
+                    private URLChecker getMatchingRule() throws IOException {
                         String test = testInput.getInput();
-                        List<AbstractURLCheck> checks = getUrlCheckDAO().getChecks();
-                        for (AbstractURLCheck check : checks) {
+                        String normalize = URLCheckers.normalize(test);
+
+                        List<URLChecker> checks = new ArrayList<>();
+                        checks.addAll(getUrlCheckDAO().getChecks());
+                        checks.addAll(
+                                URLCheckers.getEnabledURLCheckers().stream()
+                                        .filter(item -> !(item instanceof GeoServerURLChecker))
+                                        .collect(Collectors.toList()));
+
+                        for (URLChecker check : checks) {
                             if (check.isEnabled()) {
-                                if (check.confirm(test)) return check;
+                                if (check.confirm(normalize)) return check;
                             }
                         }
+
                         return null;
                     }
                 });

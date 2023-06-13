@@ -187,7 +187,9 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                     "NoApplicableCode",
                     getInputId());
         }
-        return ref.getBodyReference().getHref();
+        String bodyReferenceHref = ref.getBodyReference().getHref();
+        URLCheckers.confirm(bodyReferenceHref);
+        return bodyReferenceHref;
     }
 
     private static CloseableHttpResponse bodyHttpRequest(CloseableHttpClient client, String href)

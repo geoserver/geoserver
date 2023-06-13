@@ -50,12 +50,12 @@ public class GeoServerURLChecker implements URLChecker, DisposableBean {
 
             // if enabled but no checks configured, deny access
             List<AbstractURLCheck> enabledUrlList = getEnabledChecks();
-            if (enabledUrlList.isEmpty()) return false;
-
-            for (AbstractURLCheck u : enabledUrlList) {
-                if (u.confirm(url)) {
-                    LOGGER.log(Level.FINE, () -> "URL " + url + " was matched by " + u);
-                    return true;
+            if (!enabledUrlList.isEmpty()) {
+                for (AbstractURLCheck u : enabledUrlList) {
+                    if (u.confirm(url)) {
+                        LOGGER.log(Level.FINE, () -> "URL " + url + " was matched by " + u);
+                        return true;
+                    }
                 }
             }
             LOGGER.log(Level.FINE, () -> url + " did not match any check");

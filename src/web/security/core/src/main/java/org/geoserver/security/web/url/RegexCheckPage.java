@@ -106,8 +106,6 @@ public class RegexCheckPage extends GeoServerSecuredPage {
      */
     private String getDefaultRegex() {
         String url = getOWSURL();
-
-        url = url.replace("http:", "https?:");
         url = url.replace(".", "\\.");
 
         return "^" + url + "((?!\\.\\./).)*(\\?.*)?$";

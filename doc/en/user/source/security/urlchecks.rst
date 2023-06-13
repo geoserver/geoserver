@@ -106,9 +106,9 @@ The most common pattern allows matching a given host name to allow external grap
 
   https://styles.server.net/logo.png
 
-To allow external graphics from a specific directory on a remote server ``((?!\.\./).)*`` is used to avoid relative paths:
+To allow external graphics from a specific directory on a remote server:
 
-``^https://styles\.server\.net/icons/((?!\.\./).)*$``
+``^https://styles\.server\.net/icons/.*$``
 
 ::
 
@@ -116,7 +116,7 @@ To allow external graphics from a specific directory on a remote server ``((?!\.
 
 When working with external graphics making use of SVG parameters use ``(\?.*)?$`` to optionally allow any query parameters after ``?``:
 
-``^https://styles\.server\.net/icons/((?!\.\./).)*(\?.*)?$``
+``^https://styles\.server\.net/icons/.*(\?.*)?$``
 
 :: 
    
@@ -159,12 +159,34 @@ To allowing WMS ``REMOTE_OWS`` data access to an external GeoServer WFS service:
 
 To allow external graphic access to a remote GeoServer icons:
 
-``^https://mapping\.server\.net/geoserver/styles((?!\.\./).)*(\?.*)?$``
+``^https://mapping\.server\.net/geoserver/styles/.*(\?.*)?$``
 
 ::
 
    https://mapping.server.net/geoserver/styles/grass_fill.png
    https://mapping.server.net/geoserver/styles/ne/airport.svg?fill=gray
+
+File paths can also be checked:
+
+``^/var/opt/geoserver/data/.*$``
+
+::
+   
+   /var/opt/geoserver/data/example.tiff
+
+``^D:\\\\data\\.*$``
+
+::
+   
+   D:\\data\example.tiff
+
+.. note::
+
+   The locations being checked are normalizedmaking it easier to write RegEx patterns:
+
+   * URLs paths have been normalized to remove any redundant ``\.`` or ``\..`` paths have been removed
+   * File URLs have been normalized so that ``file:/`` is represented as ``file:///``
+   * File paths have been normalized using ``/`` on linux and ``\\`` on windows
 
 .. note::
 

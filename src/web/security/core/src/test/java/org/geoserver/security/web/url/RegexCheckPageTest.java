@@ -74,9 +74,7 @@ public class RegexCheckPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         String regex = form.getTextComponentValue("regex");
 
-        assertTrue("http or https", regex.startsWith("^https?:"));
-        assertTrue("no relative path", regex.contains("((?!\\.\\./).)*"));
-        assertTrue("query", regex.contains("(\\?.*)?"));
+        assertTrue("query", regex.contains("\\?.*"));
         assertTrue("line", regex.endsWith("$"));
     }
 

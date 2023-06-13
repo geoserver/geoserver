@@ -96,19 +96,17 @@ public class RegexCheckPage extends GeoServerSecuredPage {
      * <p>This example processes {@link #getOWSURL()} to demonstrate:
      *
      * <ul>
-     *   <li>Shows {@code https?:} to allow support both http and https
      *   <li>Escaping {@code \.} characters
-     *   <li>Disallow any {@code ../} relative paths
      *   <li>Allow anything after {@code ?} query
      * </ul>
      *
-     * @return example regular expression
+     * @return example regular expression based on open web services api endpoint
      */
     private String getDefaultRegex() {
         String url = getOWSURL();
         url = url.replace(".", "\\.");
 
-        return "^" + url + "((?!\\.\\./).)*(\\?.*)?$";
+        return "^" + url + "\\?.*$";
     }
 
     /**

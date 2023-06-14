@@ -58,7 +58,7 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
     /** Details for an OAuth2-protected resource. */
     @Override
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
-        AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
+        AuthorizationCodeResourceDetails details = new GeoServerAuthorizatoionCodeResrouceDetails();
         details.setId(getDetailsId());
 
         details.setGrantType("authorization_code");
@@ -115,4 +115,11 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
         return new OAuth2RestTemplate(
                 geoServerOAuth2Resource(), new DefaultOAuth2ClientContext(getAccessTokenRequest()));
     }
+
+    private class GeoServerAuthorizatoionCodeResrouceDetails
+            extends AuthorizationCodeResourceDetails {
+        public boolean isClientOnly() {
+            return true;
+        }
+    };
 }

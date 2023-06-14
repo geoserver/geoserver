@@ -32,7 +32,9 @@ import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.RoleCalculator;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
@@ -113,8 +115,13 @@ public abstract class GeoServerOAuthAuthenticationFilter
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // Search for an access_token on the request (simulating SSO)
         String accessToken = getAccessTokenFromRequest(request);
-        if (authentication == null || accessToken != null) {
+        if (authentication == null
+                || authentication instanceof AnonymousAuthenticationToken
+                || accessToken != null) {
 
+            if (authentication instanceof AnonymousAuthenticationToken) {
+                SecurityContextHolder.getContext().setAuthentication(null);
+            }
             OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
 
             if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
@@ -130,7 +137,10 @@ public abstract class GeoServerOAuthAuthenticationFilter
              */
             final String customSessionCookie = getCustomSessionCookieValue(httpRequest);
 
-            if (accessToken == null && customSessionCookie == null && authentication == null) {
+            if (accessToken == null
+                    && customSessionCookie == null
+                    && (authentication == null
+                            || authentication instanceof AnonymousAuthenticationToken)) {
                 final AccessTokenRequest accessTokenRequest =
                         restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
                 if (accessTokenRequest != null) {
@@ -145,7 +155,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
             if ((authentication != null && accessToken != null)
                     || (accessToken != null && token == null)
-                    || authentication == null) {
+                    || authentication == null
+                    || authentication instanceof AnonymousAuthenticationToken) {
 
                 doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
 
@@ -419,7 +430,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
                     "Oauth2 OIDC - an error occurred during token validation.  Most likely the token has expired or is invalid/modified.  "
                             + unauthorized.getMessage());
         } catch (Exception e) {
-            if (e instanceof UserRedirectRequiredException) {
+            if (e instanceof UserRedirectRequiredException
+                    || e instanceof InsufficientAuthenticationException) {
                 if (filterConfig.getEnableRedirectAuthenticationEntryPoint()
                         || req.getRequestURI().endsWith(filterConfig.getLoginEndpoint())) {
                     // Intercepting a "UserRedirectRequiredException" and redirect to the OAuth2
@@ -442,7 +454,6 @@ public abstract class GeoServerOAuthAuthenticationFilter
                                 restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
                         if (accessTokenRequest.getPreservedState() != null
                                 && accessTokenRequest.getStateKey() != null) {
-                            // restTemplate.getOAuth2ClientContext().removePreservedState(accessTokenRequest.getStateKey());
                             accessTokenRequest.remove("state");
                             accessTokenRequest.remove(accessTokenRequest.getStateKey());
                             accessTokenRequest.setPreservedState(null);

@@ -37,6 +37,7 @@ import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 /**
@@ -49,6 +50,8 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
 
     private DynamicFeatureType type;
     private final CoordinateReferenceSystem crs;
+    private final boolean reproject;
+    private MathTransform transform = null;
 
     public SchemalessMongoToComplexMapper(DynamicFeatureType type, CoordinateReferenceSystem crs) {
         super(
@@ -57,6 +60,14 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
         this.geomBuilder = new MongoGeometryBuilder();
         this.type = type;
         this.crs = crs;
+        this.reproject = crs != null && !CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84);
+        if (reproject) {
+            try {
+                this.transform = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs);
+            } catch (FactoryException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
@@ -86,14 +97,12 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
         if (crs == null) return;
         Geometry geomValue = (Geometry) geom.getValue();
         // if crs is not wgs84, we need to reproject the geometry
-        if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, crs)) {
+        if (reproject) {
             try {
-                geomValue =
-                        JTS.transform(
-                                geomValue, CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs));
+                geomValue = JTS.transform(geomValue, transform);
                 JTS.setCRS(geomValue, crs);
                 geom.setValue(geomValue);
-            } catch (TransformException | FactoryException e) {
+            } catch (TransformException e) {
                 throw new RuntimeException(e);
             }
         }

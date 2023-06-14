@@ -13,6 +13,7 @@ import org.geoserver.schemalessfeatures.data.ComplexFeatureReader;
 import org.geoserver.schemalessfeatures.data.ComplexFeatureSource;
 import org.geoserver.schemalessfeatures.mongodb.mappers.SchemalessMongoToComplexMapper;
 import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
+import org.geotools.data.Query;
 import org.opengis.feature.Feature;
 
 public class MongoComplexReader extends ComplexFeatureReader {
@@ -20,12 +21,17 @@ public class MongoComplexReader extends ComplexFeatureReader {
     private MongoCursor<DBObject> cursor;
 
     private SchemalessFeatureMapper<DBObject> mapper;
+    private final Query query;
 
-    public MongoComplexReader(MongoCursor<DBObject> cursor, ComplexFeatureSource featureSource) {
+    public MongoComplexReader(
+            MongoCursor<DBObject> cursor, ComplexFeatureSource featureSource, Query query) {
         super(featureSource);
         this.cursor = cursor;
+        this.query = query;
         this.mapper =
-                new SchemalessMongoToComplexMapper((DynamicFeatureType) featureSource.getSchema());
+                new SchemalessMongoToComplexMapper(
+                        (DynamicFeatureType) featureSource.getSchema(),
+                        query.getCoordinateSystemReproject());
     }
 
     @Override

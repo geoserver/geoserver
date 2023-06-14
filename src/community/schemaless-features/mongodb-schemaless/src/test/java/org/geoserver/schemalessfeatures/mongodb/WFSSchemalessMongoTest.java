@@ -247,4 +247,39 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
             checkStationFeature(feature);
         }
     }
+
+    @Test
+    public void testGetStationFeaturesWithReprojection() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&srsName=EPSG:3857&outputFormat=application/json&cql_filter=measurements.values.value > 2000");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(1, features.size());
+        assertEquals("58e5889ce4b02461ad5af091", features.getJSONObject(0).getString("id"));
+        JSONArray coordinatesJsonArray =
+                features.getJSONObject(0).getJSONObject("geometry").getJSONArray("coordinates");
+        assertEquals(1113194.9d, coordinatesJsonArray.getDouble(0), 0.0001);
+        assertEquals(-1345708.4d, coordinatesJsonArray.getDouble(1), 0.0001);
+    }
+
+    @Test
+    public void testGetStationFeaturesWithGeometryFilter() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&srsName=EPSG:3857&outputFormat=application/json&cql_filter=measurements.values.value > 2000 "
+                                + "and BBOX(geometry, 1113194, -1345709, 1113195, -1345708, 'EPSG:3857')");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(1, features.size());
+        assertEquals("58e5889ce4b02461ad5af091", features.getJSONObject(0).getString("id"));
+        JSONArray coordinatesJsonArray =
+                features.getJSONObject(0).getJSONObject("geometry").getJSONArray("coordinates");
+        assertEquals(1113194.9d, coordinatesJsonArray.getDouble(0), 0.0001);
+        assertEquals(-1345708.4d, coordinatesJsonArray.getDouble(1), 0.0001);
+    }
 }

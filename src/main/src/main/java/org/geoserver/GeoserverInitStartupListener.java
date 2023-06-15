@@ -298,6 +298,12 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 Class<?> h2Driver = Class.forName("org.h2.Driver");
                 Method m = h2Driver.getMethod("unload");
                 m.invoke(null);
+            } catch (java.lang.ClassNotFoundException notIncluded) {
+                if ("org.h2.Driver".equalsIgnoreCase(notIncluded.getMessage())) {
+                    LOGGER.log(Level.FINE, "H2 driver not included, skipping unload");
+                } else {
+                    LOGGER.log(Level.WARNING, "Failed to unload the H2 driver", notIncluded);
+                }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Failed to unload the H2 driver", e);
             }

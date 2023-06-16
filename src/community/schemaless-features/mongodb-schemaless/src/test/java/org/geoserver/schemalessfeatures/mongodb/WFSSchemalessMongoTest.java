@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -96,8 +98,14 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
         JSONObject jsonObject = (JSONObject) json;
         JSONArray features = jsonObject.getJSONArray("features");
         assertEquals(2, features.size());
-        assertEquals("58e5889ce4b02461ad5af080", features.getJSONObject(0).getString("id"));
-        assertEquals("58e5889ce4b02461ad5af084", features.getJSONObject(1).getString("id"));
+        // extract the returned ids
+        List<String> ids = new ArrayList<>();
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            ids.add(feature.getString("id"));
+        }
+        assertTrue(ids.contains("58e5889ce4b02461ad5af080"));
+        assertTrue(ids.contains("58e5889ce4b02461ad5af084"));
     }
 
     @Test
@@ -238,5 +246,58 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
             }
             checkStationFeature(feature);
         }
+    }
+
+    @Test
+    public void testGetStationFeaturesWithReprojection() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&srsName=EPSG:3857&outputFormat=application/json&cql_filter=measurements.values.value > 2000");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(1, features.size());
+        assertEquals("58e5889ce4b02461ad5af091", features.getJSONObject(0).getString("id"));
+        JSONArray coordinatesJsonArray =
+                features.getJSONObject(0).getJSONObject("geometry").getJSONArray("coordinates");
+        assertEquals(1113194.9d, coordinatesJsonArray.getDouble(0), 0.0001);
+        assertEquals(-1345708.4d, coordinatesJsonArray.getDouble(1), 0.0001);
+    }
+
+    @Test
+    public void testGetStationFeaturesWithGeometryFilter() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&srsName=EPSG:3857&outputFormat=application/json&cql_filter=measurements.values.value > 2000 "
+                                + "and BBOX(geometry, 1113194, -1345709, 1113195, -1345708, 'EPSG:3857')");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(1, features.size());
+        assertEquals("58e5889ce4b02461ad5af091", features.getJSONObject(0).getString("id"));
+        JSONArray coordinatesJsonArray =
+                features.getJSONObject(0).getJSONObject("geometry").getJSONArray("coordinates");
+        assertEquals(1113194.9d, coordinatesJsonArray.getDouble(0), 0.0001);
+        assertEquals(-1345708.4d, coordinatesJsonArray.getDouble(1), 0.0001);
+    }
+
+    @Test
+    public void testGetStationFeaturesWithGeometryFilterAndReprojection() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&srsName=EPSG:3857&outputFormat=application/json&cql_filter=measurements.values.value > 2000 "
+                                + "and BBOX(geometry, 9, -13, 11, -11, 'EPSG:4326')");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(1, features.size());
+        assertEquals("58e5889ce4b02461ad5af091", features.getJSONObject(0).getString("id"));
+        JSONArray coordinatesJsonArray =
+                features.getJSONObject(0).getJSONObject("geometry").getJSONArray("coordinates");
+        assertEquals(1113194.9d, coordinatesJsonArray.getDouble(0), 0.0001);
+        assertEquals(-1345708.4d, coordinatesJsonArray.getDouble(1), 0.0001);
     }
 }

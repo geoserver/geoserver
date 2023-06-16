@@ -373,6 +373,97 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPutBoundsNoCRS() throws Exception {
+        CoverageInfo c = catalog.getCoverageByName("wcs", "BlueMarble");
+
+        assertTrue(c.isEnabled());
+        boolean isAdvertised = c.isAdvertised();
+
+        String xml =
+                "<coverage>"
+                        + " <nativeBoundingBox>\n"
+                        + "  <minx>589980.0</minx>\n"
+                        + "  <maxx>609000.0</maxx>\n"
+                        + "  <miny>4913700.0</miny>\n"
+                        + "  <maxy>4928010.0</maxy>\n"
+                        + " </nativeBoundingBox>"
+                        + "</coverage>";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
+                        xml,
+                        "text/xml");
+        assertStatusCodeForResponse(200, response);
+
+        c = catalog.getCoverageByName("wcs", "BlueMarble");
+        assertTrue(c.isEnabled());
+        assertEquals(isAdvertised, c.isAdvertised());
+        assertNotNull(c.getNativeBoundingBox().getCoordinateReferenceSystem());
+    }
+
+    @Test
+    public void testPutBoundsZeroCRS() throws Exception {
+        CoverageInfo c = catalog.getCoverageByName("wcs", "BlueMarble");
+
+        assertTrue(c.isEnabled());
+        boolean isAdvertised = c.isAdvertised();
+
+        String xml =
+                "<coverage>"
+                        + " <nativeBoundingBox>\n"
+                        + "  <minx>589980.0</minx>\n"
+                        + "  <maxx>609000.0</maxx>\n"
+                        + "  <miny>4913700.0</miny>\n"
+                        + "  <crs>0</crs>\n"
+                        + "  <maxy>4928010.0</maxy>\n"
+                        + " </nativeBoundingBox>"
+                        + "</coverage>";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
+                        xml,
+                        "text/xml");
+        assertStatusCodeForResponse(200, response);
+
+        c = catalog.getCoverageByName("wcs", "BlueMarble");
+        assertTrue(c.isEnabled());
+        assertEquals(isAdvertised, c.isAdvertised());
+        assertNotNull(c.getNativeBoundingBox().getCoordinateReferenceSystem());
+    }
+
+    @Test
+    public void testPutLatLonNoCRS() throws Exception {
+        CoverageInfo c = catalog.getCoverageByName("wcs", "BlueMarble");
+
+        assertTrue(c.isEnabled());
+        boolean isAdvertised = c.isAdvertised();
+
+        String xml =
+                "<coverage>"
+                        + " <latLonBoundingBox>\n"
+                        + "    <minx>5.7511379908659</minx>\n"
+                        + "    <miny>51.9236999711892</miny>\n"
+                        + "    <maxx>6.27331655234198</maxx>\n"
+                        + "    <maxy>52.6005228787716</maxy>\n"
+                        + "  </latLonBoundingBox>"
+                        + "</coverage>";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
+                        xml,
+                        "text/xml");
+        assertStatusCodeForResponse(200, response);
+
+        c = catalog.getCoverageByName("wcs", "BlueMarble");
+        assertTrue(c.isEnabled());
+        assertEquals(isAdvertised, c.isAdvertised());
+        assertNotNull(c.getNativeBoundingBox().getCoordinateReferenceSystem());
+    }
+
+    @Test
     public void testPutNonExistant() throws Exception {
         String xml = "<coverage>" + "<title>new title</title>" + "</coverage>";
         MockHttpServletResponse response =

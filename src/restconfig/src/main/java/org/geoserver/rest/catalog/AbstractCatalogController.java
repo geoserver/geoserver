@@ -18,6 +18,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,38 @@ public abstract class AbstractCatalogController extends RestBaseController {
     }
 
     /**
+     * Uses bounds as a possibly incomplete template to update resource.
+     *
+     * <p>If the bounds are empty and only contain updated native crs information, then the original
+     * extent will be maintained.
+     *
+     * <p>If bounds extent is provided with no crs, then the original crs will be maintained.
+     *
+     * @param bounds Possibly incomplete ReferencedEnvelope used to update resource
+     * @param original Original referenced envelope used to complete update if required
+     * @return Completed update if required
+     */
+    protected ReferencedEnvelope calculateReferencedEnvelope(
+            ReferencedEnvelope bounds, ReferencedEnvelope original) {
+        if (bounds != null
+                && !bounds.isEmpty()
+                && bounds.getCoordinateReferenceSystem() == null
+                && original != null
+                && original.getCoordinateReferenceSystem() != null) {
+            // update using bounds extent while preserving original crs
+            return ReferencedEnvelope.create(bounds, original.getCoordinateReferenceSystem());
+        }
+        if (bounds != null
+                && bounds.isEmpty()
+                && bounds.getCoordinateReferenceSystem() != null
+                && original != null
+                && !original.isEmpty()) {
+            // update using bounds crs while preserving original extent
+            return ReferencedEnvelope.create(original, bounds.getCoordinateReferenceSystem());
+        }
+        return bounds;
+    }
+    /**
      * Uses messages as a template to update resource.
      *
      * @param message Possibly incomplete ResourceInfo used to update resource
@@ -45,6 +78,19 @@ public abstract class AbstractCatalogController extends RestBaseController {
      */
     protected void calculateOptionalFields(
             ResourceInfo message, ResourceInfo resource, String calculate) {
+
+        ReferencedEnvelope nativeBounds =
+                calculateReferencedEnvelope(
+                        message.getNativeBoundingBox(), resource.getNativeBoundingBox());
+        if (nativeBounds != message.getNativeBoundingBox())
+            message.setNativeBoundingBox(nativeBounds);
+
+        ReferencedEnvelope latLonBounds =
+                calculateReferencedEnvelope(
+                        message.getLatLonBoundingBox(), resource.getLatLonBoundingBox());
+        if (latLonBounds != message.getLatLonBoundingBox())
+            message.setLatLonBoundingBox(latLonBounds);
+
         List<String> fieldsToCalculate;
         if (calculate == null || calculate.isEmpty()) {
             boolean changedProjection =
@@ -85,9 +131,10 @@ public abstract class AbstractCatalogController extends RestBaseController {
         if (fieldsToCalculate.contains("latlonbbox")) {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             try {
+                String nativeSRS = message.getSRS() != null ? message.getSRS() : resource.getSRS();
                 message.setLatLonBoundingBox(
                         builder.getLatLonBounds(
-                                message.getNativeBoundingBox(), resolveCRS(message.getSRS())));
+                                message.getNativeBoundingBox(), resolveCRS(nativeSRS)));
             } catch (IOException e) {
                 String errorMessage =
                         "Error while calculating lat/lon bounds for featuretype: " + message;

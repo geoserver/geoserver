@@ -197,7 +197,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Returns the bounds of the resource in lat / lon.
      *
-     * <p>This value represents a "fixed value" and is not calulated on the underlying dataset.
+     * <p>This value represents a "fixed value" and is not calculated on the underlying dataset.
      *
      * @return The bounds of the resource in lat / lon, or <code>null</code> if not set.
      * @uml.property name="latLonBoundingBox"
@@ -215,7 +215,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Returns the bounds of the resource in the native crs.
      *
-     * <p>This value represents a "fixed value" and is not calulated on the underlying dataset.
+     * <p>This value represents a "fixed value" and is not calculated on the underlying dataset.
      *
      * @return The bounds of the resource in native crs., or <code>null</code> if not set.
      * @uml.property name="boundingBox"

@@ -1772,6 +1772,31 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
+     * Assert that an HTTP response has the expected status code.
+     *
+     * <p>Will report the response text/plain content which is often the error message.
+     *
+     * @param statusCode Expected response status code
+     * @param response Http response
+     */
+    protected void assertStatusCodeForResponse(int statusCode, MockHttpServletResponse response) {
+        int actual = response.getStatus();
+        if (statusCode != actual) {
+            if (response.getContentType().equalsIgnoreCase("text/plain")) {
+                try {
+                    assertEquals(
+                            "Status Code " + actual + ": " + response.getContentAsString(),
+                            statusCode,
+                            actual);
+                } catch (UnsupportedEncodingException e) {
+                    assertEquals("Status Code " + actual, statusCode, actual);
+                }
+            } else {
+                assertEquals("Status Code " + actual, statusCode, actual);
+            }
+        }
+    }
+    /**
      * Assert that an HTTP request will have a particular status code for the response.
      *
      * @param code the number of the HTTP status code that is expected

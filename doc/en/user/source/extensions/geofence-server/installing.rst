@@ -14,5 +14,7 @@ Installing the GeoServer GeoFence Server extension
     .. note:: By default GeoFence will store this data in a `H2 database <http://www.h2database.com/html/main.html>`__ and the database schema will be automatically managed by Hibernate.
     
        The `GeoFence documentation <https://github.com/geoserver/geofence/wiki/GeoFence-configuration>`__ explains how to configure a different backed database and configure Hibernate behavior.
+ 
+ #. Add the following system variable among the JVM startup options (location varies depending on installation type): ``-Dgwc.context.suffix=gwc``
 
  #. Restart GeoServer

@@ -18,5 +18,7 @@
     <bean id="openSearchAccessProvider" class="org.geoserver.opensearch.eo.OpenSearchAccessProvider">
         <constructor-arg ref="geoServer" />
     </bean>
+
+    <bean id="oseoFactoryExtension" class="org.geoserver.opensearch.eo.OSEOFactoryExtension"/>
     
 </beans>

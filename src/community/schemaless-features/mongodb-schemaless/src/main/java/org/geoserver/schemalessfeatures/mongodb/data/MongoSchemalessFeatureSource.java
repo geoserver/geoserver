@@ -30,9 +30,13 @@ import org.geotools.data.QueryCapabilities;
 import org.geotools.data.mongodb.MongoCollectionMeta;
 import org.geotools.data.mongodb.MongoFilterSplitter;
 import org.geotools.feature.AttributeTypeBuilder;
+import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.filter.visitor.PostPreProcessFilterSplittingVisitor;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -46,6 +50,10 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
 
@@ -85,7 +93,7 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
     protected FeatureReader<FeatureType, Feature> getReaderInteranl(Query query) {
         List<Filter> postFilterList = new ArrayList<>();
         FeatureReader<FeatureType, Feature> reader =
-                new MongoComplexReader(toCursor(query, postFilterList), this);
+                new MongoComplexReader(toCursor(query, postFilterList), this, query);
         if (!postFilterList.isEmpty())
             return new FilteringFeatureReader<>(reader, postFilterList.get(0));
         return reader;
@@ -176,6 +184,10 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
             return new BasicDBObject();
         }
 
+        // apply filter reprojection to EPSG:4326
+        SimpleReprojectingVisitor reprojectingFilterVisitor = new SimpleReprojectingVisitor();
+        f = (Filter) f.accept(reprojectingFilterVisitor, null);
+
         SchemalessFilterToMongo v =
                 new SchemalessFilterToMongo((DynamicFeatureType) getSchema(), collection);
 
@@ -255,5 +267,47 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
             q.setPropertyNames(MongoSchemalessUtils.toPropertyName(geometryPath));
         }
         return super.getBoundsInternal(q);
+    }
+
+    /** Reprojects all geometry and referenced envelope literals to EPSG:4326. */
+    private class SimpleReprojectingVisitor extends DuplicatingFilterVisitor {
+        @Override
+        public Object visit(Literal expression, Object extraData) {
+            if (expression.getValue() instanceof Geometry) {
+                Geometry geom = (Geometry) expression.getValue();
+                CoordinateReferenceSystem crs = JTS.getCRS(geom);
+                if (crs != null && !CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
+                    try {
+                        geom =
+                                JTS.transform(
+                                        geom,
+                                        CRS.findMathTransform(crs, DefaultGeographicCRS.WGS84));
+                    } catch (MismatchedDimensionException
+                            | TransformException
+                            | FactoryException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                return ff.literal(geom);
+            } else if (expression.getValue() instanceof ReferencedEnvelope) {
+                ReferencedEnvelope env = (ReferencedEnvelope) expression.getValue();
+                CoordinateReferenceSystem crs = env.getCoordinateReferenceSystem();
+                if (crs != null && !CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
+                    try {
+                        Envelope transformedEnv =
+                                JTS.transform(
+                                        env,
+                                        CRS.findMathTransform(crs, DefaultGeographicCRS.WGS84));
+                        env = new ReferencedEnvelope(transformedEnv, DefaultGeographicCRS.WGS84);
+                    } catch (TransformException e) {
+                        throw new RuntimeException(e);
+                    } catch (FactoryException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                return ff.literal(env);
+            }
+            return super.visit(expression, extraData);
+        }
     }
 }

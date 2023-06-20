@@ -848,7 +848,7 @@ public class GetCoverage {
         final Map<String, InterpolationPolicy> axesInterpolations =
                 extractInterpolation(ci, extensions);
         final Interpolation spatialInterpolation =
-                extractSpatialInterpolation(axesInterpolations, ci.getNativeBoundingBox());
+                extractSpatialInterpolation(axesInterpolations, WCSUtils.toNativeBounds(ci));
         final OverviewPolicy overviewPolicy = extractOverviewPolicy(extensions);
         // TODO time interpolation
         assert spatialInterpolation != null;
@@ -1605,7 +1605,7 @@ public class GetCoverage {
             CoverageInfo ci, Map<String, ExtensionItemType> extensions) {
         // preparation
         final Map<String, InterpolationPolicy> returnValue = new HashMap<>();
-        final Envelope envelope = ci.getNativeBoundingBox();
+        final Envelope envelope = WCSUtils.toNativeBounds(ci);
         final List<String> axesNames = envelopeDimensionsMapper.getAxesNames(envelope, true);
         for (String axisName : axesNames) {
             returnValue.put(

@@ -26,6 +26,10 @@ public class EnvelopeAxesLabelsMapper {
     public List<String> getAxesNames(Envelope envelope, boolean swapAxes) {
         Utilities.ensureNonNull("envelope", envelope);
         final CoordinateReferenceSystem crs = envelope.getCoordinateReferenceSystem();
+        if (crs == null) {
+            throw new IllegalStateException(
+                    "Unable to determine axes names as envelope does not include srs");
+        }
 
         // handle axes switch for geographic crs
         final boolean axesSwitch = crs instanceof GeographicCRS && swapAxes;

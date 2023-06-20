@@ -878,4 +878,46 @@ public class WCSUtils {
             throw new RuntimeException("Failed to invert grid to world", e);
         }
     }
+
+    /**
+     * Determine native bounds with spatial reference system information with due consideration of
+     * projection policy.
+     *
+     * <p>This method allows coverage projection policy to override native bounding box crs in cases
+     * where it was undetermined.
+     *
+     * @param meta CoverageInfo configuration
+     * @return Native bounds, using native bounding box srs, or projection policy to override CRS.
+     * @throws IllegalStateException if coverage info does not define a native bounding box with
+     *     spatial reference system information
+     */
+    public static ReferencedEnvelope toNativeBounds(CoverageInfo meta) {
+        ReferencedEnvelope nativeBoundingBox = meta.getNativeBoundingBox();
+        CoordinateReferenceSystem nativeBoundingBoxSRS =
+                nativeBoundingBox != null ? nativeBoundingBox.getCoordinateReferenceSystem() : null;
+        CoordinateReferenceSystem coverageInfoCRS = meta.getCRS();
+        switch (meta.getProjectionPolicy()) {
+            case FORCE_DECLARED:
+                if (coverageInfoCRS != null)
+                    return ReferencedEnvelope.create(nativeBoundingBox, meta.getCRS());
+                else
+                    throw new IllegalStateException(
+                            "Force declared projection policy requires CRS to be defined as override of nativeBoundingBox srs");
+            case REPROJECT_TO_DECLARED:
+                if (nativeBoundingBoxSRS != null)
+                    return ReferencedEnvelope.create(nativeBoundingBox, meta.getCRS());
+                else
+                    throw new IllegalStateException(
+                            "Reproject projection policy requires reader nativeBoundingBox srs which is not defined. "
+                                    + "Consider using force declared projection policy to use layer CRS as override.");
+
+            case NONE:
+            default:
+                if (nativeBoundingBoxSRS != null) return meta.getNativeBoundingBox();
+                else
+                    throw new IllegalStateException(
+                            "Projection policy none requires nativeBoundingBox srs which is not defined. "
+                                    + "Consider using force declared projection policy to use layer CRS as override.");
+        }
+    }
 }

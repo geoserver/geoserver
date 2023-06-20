@@ -31,7 +31,6 @@ import org.geoserver.wcs2_0.util.WCS20DescribeCoverageExtension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
@@ -268,7 +267,8 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 // handle domain
                 builder.setLength(0);
 
-                axesNames = envelopeDimensionsMapper.getAxesNames(toNativeBounds(ci), false);
+                axesNames =
+                        envelopeDimensionsMapper.getAxesNames(WCSUtils.toNativeBounds(ci), false);
                 for (String axisName : axesNames) {
                     builder.append(axisName).append(" ");
                 }
@@ -284,46 +284,6 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 end("wcs:CoverageDescription");
             } catch (Exception e) {
                 throw new WcsException(e);
-            }
-        }
-
-        /**
-         * Determine nativeBounds with consideration for projection policy.
-         *
-         * <p>This method allows coverage projection policy to override native bounding box crs in
-         * cases where it was undetermined.
-         *
-         * @param ci CoverageInfo configuration
-         * @return Native bounds, using native bounding box srs, or projection policy override CRS.
-         */
-        protected ReferencedEnvelope toNativeBounds(CoverageInfo ci) {
-            ReferencedEnvelope nativeBoundingBox = ci.getNativeBoundingBox();
-            switch (ci.getProjectionPolicy()) {
-                case FORCE_DECLARED:
-                    if (ci.getNativeCRS() != null)
-                        return ReferencedEnvelope.create(nativeBoundingBox, ci.getCRS());
-                    else
-                        throw new IllegalStateException(
-                                "Coverage "
-                                        + ci.getName()
-                                        + " force declared projection policy requires native crs to be defined");
-                case REPROJECT_TO_DECLARED:
-                    if (ci.getNativeBoundingBox().getCoordinateReferenceSystem() != null)
-                        return ReferencedEnvelope.create(nativeBoundingBox, ci.getCRS());
-                    else
-                        throw new IllegalStateException(
-                                "Coverage "
-                                        + ci.getName()
-                                        + " reproject to declared projection, cannot determine native bounding box srs.");
-                case NONE:
-                default:
-                    if (ci.getNativeBoundingBox().getCoordinateReferenceSystem() != null)
-                        return ci.getNativeBoundingBox();
-                    else
-                        throw new IllegalStateException(
-                                "Coverage "
-                                        + ci.getName()
-                                        + " policy none unavailable, cannot determine native bounding box srs");
             }
         }
 

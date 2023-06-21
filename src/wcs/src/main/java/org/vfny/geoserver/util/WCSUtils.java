@@ -880,44 +880,41 @@ public class WCSUtils {
     }
 
     /**
-     * Determine native bounds with spatial reference system information with due consideration of
-     * projection policy.
+     * Alternative to {@link CoverageInfo#boundingBox()} used to determine native bounds prior to
+     * projection policy being applied.
      *
-     * <p>This method allows coverage projection policy to override native bounding box crs in cases
-     * where it was undetermined.
+     * <p>This method allows {@link CoverageInfo#getNativeCRS()} to override native bounding box
+     * srs.
+     *
+     * <p>This differs from {@link CoverageInfo#boundingBox()} in that the native bounds returned
+     * are only determined using native bounding box and native crs information. It is not willing
+     * to back-transform from lat lon bounding box. It also unwilling to grow the native bounding
+     * box while re-projecting to declared crs.
      *
      * @param meta CoverageInfo configuration
-     * @return Native bounds, using native bounding box srs, or projection policy to override CRS.
+     * @return Native bounds, using native bounding box crs
      * @throws IllegalStateException if coverage info does not define a native bounding box with
-     *     spatial reference system information
+     *     native crs information
      */
     public static ReferencedEnvelope toNativeBounds(CoverageInfo meta) {
         ReferencedEnvelope nativeBoundingBox = meta.getNativeBoundingBox();
+        if (nativeBoundingBox == null) {
+            throw new IllegalStateException(
+                    "Unable to determine native bounds, as native bounding box is not defined");
+        }
+
         CoordinateReferenceSystem nativeBoundingBoxSRS =
                 nativeBoundingBox != null ? nativeBoundingBox.getCoordinateReferenceSystem() : null;
-        CoordinateReferenceSystem coverageInfoCRS = meta.getCRS();
-        switch (meta.getProjectionPolicy()) {
-            case FORCE_DECLARED:
-                if (coverageInfoCRS != null)
-                    return ReferencedEnvelope.create(nativeBoundingBox, meta.getCRS());
-                else
-                    throw new IllegalStateException(
-                            "Force declared projection policy requires CRS to be defined as override of nativeBoundingBox srs");
-            case REPROJECT_TO_DECLARED:
-                if (nativeBoundingBoxSRS != null)
-                    return ReferencedEnvelope.create(nativeBoundingBox, meta.getCRS());
-                else
-                    throw new IllegalStateException(
-                            "Reproject projection policy requires reader nativeBoundingBox srs which is not defined. "
-                                    + "Consider using force declared projection policy to use layer CRS as override.");
+        CoordinateReferenceSystem nativeCRS = meta.getNativeCRS();
 
-            case NONE:
-            default:
-                if (nativeBoundingBoxSRS != null) return meta.getNativeBoundingBox();
-                else
-                    throw new IllegalStateException(
-                            "Projection policy none requires nativeBoundingBox srs which is not defined. "
-                                    + "Consider using force declared projection policy to use layer CRS as override.");
+        if (nativeBoundingBoxSRS == null && nativeCRS == null) {
+            throw new IllegalStateException(
+                    "Unable to determine native bounds, as both nativeBoundingBox and nativeCRS do not define CoordinateReferenceSystem");
+        } else if (nativeBoundingBoxSRS == null
+                || !CRS.equalsIgnoreMetadata(nativeBoundingBoxSRS, nativeCRS)) {
+            return ReferencedEnvelope.create((Envelope) nativeBoundingBox, nativeCRS);
+        } else {
+            return ReferencedEnvelope.create(nativeBoundingBox);
         }
     }
 }

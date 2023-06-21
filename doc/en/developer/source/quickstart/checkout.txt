@@ -3,7 +3,7 @@ Check out source code
 
 Check out the source code from the git repository.::
 
-   git clone git://github.com/geoserver/geoserver.git geoserver
+   git clone https://github.com/geoserver/geoserver.git geoserver
 
 To list the available branches.::
 

@@ -146,4 +146,139 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
         }
     }
+
+    @Test
+    public void testwms2_0_0Filter() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bbox="
+                                + bbox
+                                + "&styles=&layers="
+                                + layers
+                                + "&Format=image/png8"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326&transparent=true");
+        assertEquals("image/png; mode=8bit", response.getContentType());
+
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+            assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
+            assertEquals(cm.getMapSize(), 256);
+        }
+
+        MockHttpServletResponse response1 =
+                getAsServletResponse(
+                        "wms?bbox="
+                                + bbox
+                                + "&styles=&layers="
+                                + layers
+                                + "&SERVICE=WMS&VERSION=1.1.1"
+                                + "&Format=image/png8"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326&transparent=true"
+                                + "&FILTER=%3Cfes%3AFilter%20xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22%20xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%20xmlns%3Awfs%3D%22http%3A%2F%2Fwww.opengis.net%2Fwfs%22%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%20xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3APropertyIsLike%20wildCard%3D%22*%22%20singleChar%3D%22.%22%20escapeChar%3D%22!%22%3E%3Cfes%3AValueReference%3EID%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E*0*%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsLike%3E%3C%2Ffes%3AFilter%3E");
+        assertEquals("image/png; mode=8bit", response1.getContentType());
+
+        try (InputStream is1 = getBinaryInputStream(response1)) {
+            BufferedImage bi1 = ImageIO.read(is1);
+            IndexColorModel cm1 = (IndexColorModel) bi1.getColorModel();
+            assertEquals(Transparency.BITMASK, cm1.getTransparency());
+            assertTrue(cm1.getMapSize() < 256);
+        }
+    }
+
+    @Test
+    public void testwms1_1_0Filter() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bbox="
+                                + bbox
+                                + "&styles=&layers="
+                                + layers
+                                + "&Format=image/png8"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326&transparent=true");
+        assertEquals("image/png; mode=8bit", response.getContentType());
+
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+            assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
+            assertEquals(cm.getMapSize(), 256);
+        }
+
+        MockHttpServletResponse response1 =
+                getAsServletResponse(
+                        "wms?bbox="
+                                + bbox
+                                + "&styles=&layers="
+                                + layers
+                                + "&SERVICE=WMS&VERSION=1.1.1"
+                                + "&Format=image/png8"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326&transparent=true"
+                                + "&FILTER=%3Cogc%3AFilter%0A%09xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22%0A%09xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%0A%09%3Cogc%3APropertyIsLike%20wildCard%3D%22*%22%20singleChar%3D%22.%22%20escapeChar%3D%22!%22%20matchCase%3D%22false%22%3E%0A%09%09%3Cogc%3APropertyName%3EID%3C%2Fogc%3APropertyName%3E%0A%09%09%3Cogc%3ALiteral%3E*1*%3C%2Fogc%3ALiteral%3E%0A%09%3C%2Fogc%3APropertyIsLike%3E%0A%09%3Cogc%3ASortBy%3E%0A%20%20%20%20%3Cogc%3APropertyName%3EID%3C%2Fogc%3APropertyName%3E%0A%20%20%20%20%3Cogc%3ASortOrderType%3EASCENDING%3C%2Fogc%3ASortOrderType%3E%0A%20%20%3C%2Fogc%3ASortBy%3E%0A%3C%2Fogc%3AFilter%3E");
+        assertEquals("image/png; mode=8bit", response.getContentType());
+
+        try (InputStream is1 = getBinaryInputStream(response1)) {
+            BufferedImage bi1 = ImageIO.read(is1);
+            IndexColorModel cm1 = (IndexColorModel) bi1.getColorModel();
+            assertEquals(Transparency.BITMASK, cm1.getTransparency());
+            assertTrue(cm1.getMapSize() < 256);
+        }
+    }
+
+    @Test
+    public void testwms1_0_0Filter() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bbox="
+                                + bbox
+                                + "&styles=&layers="
+                                + layers
+                                + "&Format=image/png8"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326&transparent=true");
+        assertEquals("image/png; mode=8bit", response.getContentType());
+
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+            assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
+            assertEquals(cm.getMapSize(), 256);
+        }
+
+        MockHttpServletResponse response1 =
+                getAsServletResponse(
+                        "wms?bbox="
+                                + bbox
+                                + "&styles=&layers="
+                                + layers
+                                + "&SERVICE=WMS&VERSION=1.1.1"
+                                + "&Format=image/png8"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326&transparent=true"
+                                + "&FILTER=%3Cogc%3AFilter%0A%09xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22%0A%09xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%0A%09%3Cogc%3APropertyIsLike%20wildCard%3D%22*%22%20singleChar%3D%22.%22%20escapeChar%3D%22!%22%20%3E%0A%09%09%3Cogc%3APropertyName%3EID%3C%2Fogc%3APropertyName%3E%0A%09%09%3Cogc%3ALiteral%3E*1*%3C%2Fogc%3ALiteral%3E%0A%09%3C%2Fogc%3APropertyIsLike%3E%0A%3C%2Fogc%3AFilter%3E");
+        assertEquals("image/png; mode=8bit", response1.getContentType());
+
+        try (InputStream is1 = getBinaryInputStream(response1)) {
+            BufferedImage bi1 = ImageIO.read(is1);
+            IndexColorModel cm1 = (IndexColorModel) bi1.getColorModel();
+            assertEquals(Transparency.BITMASK, cm1.getTransparency());
+            assertTrue(cm1.getMapSize() < 256);
+        }
+    }
 }

@@ -857,4 +857,9 @@
     <bean id="wmsCiteComplianceCallback" class="org.geoserver.wms.CiteComplianceCallback">
         <constructor-arg ref="geoServer"/>
     </bean>
+
+    <bean id="wmsFilterKvpParser" class="org.geoserver.wms.kvp.FilterKvpParser">
+        <constructor-arg ref="entityResolverProvider"/>
+        <property name="service"><value>WMS</value></property>
+    </bean>
 </beans>

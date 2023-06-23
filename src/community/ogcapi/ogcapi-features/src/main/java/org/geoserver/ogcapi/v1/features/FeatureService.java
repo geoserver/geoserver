@@ -16,6 +16,7 @@ import static org.geoserver.ogcapi.ConformanceClass.ECQL;
 import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.IDS;
 import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
 import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
@@ -71,8 +72,10 @@ import org.geotools.util.DateRange;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.Id;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -312,7 +315,8 @@ public class FeatureService {
                         /* CQL2_ARRAY excluded, no support for array operations now */
                         CQL2_TEXT,
                         /* CQL2_JSON very different from the binding we have */
-                        SORTBY);
+                        SORTBY,
+                        IDS);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -342,6 +346,7 @@ public class FeatureService {
                 null, /* filter-crs */
                 null, /* sortby */
                 crs,
+                null, /* ids */
                 itemId);
     }
 
@@ -361,6 +366,7 @@ public class FeatureService {
             @RequestParam(name = "filter-crs", required = false) String filterCRS,
             @RequestParam(name = "sortby", required = false) SortBy[] sortBy,
             @RequestParam(name = "crs", required = false) String crs,
+            @RequestParam(name = "ids", required = false) List<String> ids,
             String itemId)
             throws Exception {
         // build the request in a way core WFS machinery can understand it
@@ -378,6 +384,13 @@ public class FeatureService {
         }
         if (itemId != null) {
             filters.add(FF.id(FF.featureId(itemId)));
+        }
+
+        // The ids parameter is part of the draft proposal "Query by IDs". The syntax and semantic
+        // of the parameter is subject to change in a future release. Its usage should be carefully
+        // considered.
+        if (ids != null && !ids.isEmpty()) {
+            filters.add(buildIdsFilter(ids));
         }
 
         if (filter != null) {
@@ -454,6 +467,16 @@ public class FeatureService {
                 .filter(pd -> Date.class.isAssignableFrom(pd.getType().getBinding()))
                 .map(pd -> pd.getName().getLocalPart())
                 .collect(Collectors.toList());
+    }
+
+    private Id buildIdsFilter(List<String> ids) {
+        FeatureId[] featureIds =
+                ids.stream()
+                        .map((id) -> FF.featureId(id))
+                        .collect(Collectors.toList())
+                        .toArray(new FeatureId[ids.size()]);
+
+        return FF.id(featureIds);
     }
 
     private Filter mergeFiltersAnd(List<Filter> filters) {

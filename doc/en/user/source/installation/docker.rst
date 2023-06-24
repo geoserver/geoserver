@@ -146,12 +146,12 @@ Here is a list of available extensions (taken from the `build server <https://bu
     app-schema   gdal            jp2k          ogr-wps          web-resource
     authkey      geofence        libjpeg-turbo oracle           wmts-multi-dimensional
     cas          geofence-server mapml         params-extractor wps-cluster-hazelcast
-    charts       geopkg-output   mbstyle       printing         wps-cluster-hazelcast
-    control-flow grib            mongodb       pyramid          wps-download
-    css          gwc-s3          monitor       querylayer       wps-jdbc
-    csw          h2              mysql         sldservice       wps
-    db2          imagemap        netcdf-out    sqlserver        xslt
-    dxf          importer        netcdf        vectortiles      ysld
+    charts       geopkg-output   mbstyle       printing         wps-download
+    control-flow grib            mongodb       pyramid          wps-jdbc
+    css          gwc-s3          monitor       querylayer       wps
+    csw          h2              mysql         sldservice       xslt
+    db2          imagemap        netcdf-out    sqlserver        ysld
+    dxf          importer        netcdf        vectortiles      
     excel        inspire         ogr-wfs       wcs2_0-eo
 
 Testing Geoserver Community modules

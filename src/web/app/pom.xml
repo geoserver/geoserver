@@ -1834,15 +1834,5 @@
         </dependency>
       </dependencies>
     </profile>
-    <profile>
-      <id>wps-longitudinal-profile</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-wps-longitudinal-profile</artifactId>
-          <version>${gs.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
   </profiles>
 </project>

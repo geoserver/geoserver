@@ -701,5 +701,11 @@
         <module>gwc-mbtiles</module>
       </modules>
     </profile>
+    <profile>
+      <id>wps-longitudinal-profile</id>
+      <modules>
+        <module>wps-longitudinal-profile</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

@@ -51,7 +51,7 @@ infos - general info on process result
 
 profile object contains array of points
 each point has following values:
-distance - distance to this point from the beginning of the profile (first point) in units of CRS
+totalDistanceToThisPoint - distance to this point from the beginning of the profile (first point) in units of CRS
 x - x coordinate of point
 y - y coordinate of point
 altitude - altitude of this point

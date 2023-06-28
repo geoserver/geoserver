@@ -50,6 +50,8 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.capabilities.CapabilityUtil;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
+import org.geotools.data.ows.URLCheckerException;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.factory.CommonFactoryFinder;
@@ -727,6 +729,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      */
     private Style[] loadRemoteStyle(String sldUrl) throws ServiceException {
         try {
+            URLCheckers.confirm(sldUrl);
             URL url = new URL(sldUrl);
             try (InputStream in = url.openStream()) {
                 return parseSld(new InputStreamReader(in));
@@ -734,6 +737,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         } catch (MalformedURLException e) {
             throw new ServiceException(
                     e, "Not a valid URL to an SLD document " + sldUrl, "loadRemoteStyle");
+        } catch (URLCheckerException e) {
+            throw new ServiceException(e, "Invalid SLD URL: " + sldUrl, "loadRemoteStyle");
         } catch (IOException e) {
             throw new ServiceException(e, "Can't open the SLD URL " + sldUrl, "loadRemoteStyle");
         }

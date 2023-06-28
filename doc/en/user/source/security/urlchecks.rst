@@ -8,9 +8,9 @@ GeoServer will use to access remote resources.
 
 Currently, the checks are performed on the following functionality:
 
-- WMS GetMap requests with remote SLD stylesheets (``sld`` parameter)
+- WMS GetMap, GetFeatureInfo and GetLegendGraphic requests with remote SLD stylesheets (``sld`` parameter)
 - Remote icons referenced by styles (access to icons in the data directory is always allowed)
-- WMS GetMap in feature portrayal mode (``REMOTE_OWS`` and ``REMOTE_OWS_TYPE`` parameters)
+- WMS GetMap and GetFeatureInfo requests in feature portrayal mode (``REMOTE_OWS`` and ``REMOTE_OWS_TYPE`` parameters)
 - WPS remote inputs, either as GET or POST requests
 
 Check this page for any additional remote service access checks added in the future.

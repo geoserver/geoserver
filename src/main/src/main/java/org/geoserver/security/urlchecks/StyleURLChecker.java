@@ -47,6 +47,9 @@ public class StyleURLChecker implements URLChecker, DisposableBean {
             if (location.startsWith("file://")) location = location.substring(7);
             else if (location.startsWith("file:")) location = location.substring(5);
 
+            // remove the URI query and fragment before handling as a file path
+            location = location.split("\\?", 2)[0].split("#", 2)[0];
+
             File file = new File(location);
 
             // is it inside the data directory?

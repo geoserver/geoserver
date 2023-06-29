@@ -156,7 +156,7 @@ public class CopyTableTaskTypeImpl implements TaskType {
 
                     for (String indexName : indexAndColumnMap.keySet()) {
                         Set<String> columnNames = indexAndColumnMap.get(indexName);
-                        if (!columnNames.equals(primaryKey)) {
+                        if (!columnNames.equals(primaryKey) && !columnNames.isEmpty()) {
                             boolean isSpatialIndex =
                                     columnNames.size() == 1
                                             && spatialColumns.contains(
@@ -390,7 +390,9 @@ public class CopyTableTaskTypeImpl implements TaskType {
                 if (!result.containsKey(indexName)) {
                     result.put(indexName, new HashSet<>());
                 }
-                result.get(indexName).add(dbColumnName);
+                if (dbColumnName != null) {
+                    result.get(indexName).add(dbColumnName);
+                }
             }
         }
         return result;

@@ -54,21 +54,22 @@ public class MonitorFilter implements GeoServerFilter {
         this.monitor = monitor;
         this.requestFilter = requestFilter;
 
-        postProcessExecutor = Executors.newFixedThreadPool(
-            monitor.getConfig().getPostProcessorThreads(),
-            new ThreadFactory() {
-                //This wrapper overrides the thread names
-                ThreadFactory parent = Executors.defaultThreadFactory();
-                int count = 1;
+        postProcessExecutor =
+                Executors.newFixedThreadPool(
+                        monitor.getConfig().getPostProcessorThreads(),
+                        new ThreadFactory() {
+                            // This wrapper overrides the thread names
+                            ThreadFactory parent = Executors.defaultThreadFactory();
+                            int count = 1;
 
-                @Override
-                public synchronized Thread newThread(Runnable runnable) {
-                    Thread t = parent.newThread(runnable);
-                    t.setName("monitor-" + count);
-                    count++;
-                    return t;
-                }
-            });
+                            @Override
+                            public synchronized Thread newThread(Runnable runnable) {
+                                Thread t = parent.newThread(runnable);
+                                t.setName("monitor-" + count);
+                                count++;
+                                return t;
+                            }
+                        });
         if (monitor.isEnabled()) {
             LOGGER.info("Monitor extension enabled");
         } else {

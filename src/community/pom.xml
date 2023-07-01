@@ -244,6 +244,7 @@
         <module>teradata</module>
         <module>libdeflate</module>
         <module>vector-mosaic</module>
+        <module>datadir-catalog-loader</module>
       </modules>
     </profile>
     <profile>
@@ -683,6 +684,12 @@
       <id>vector-mosaic</id>
       <modules>
         <module>vector-mosaic</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>datadir-catalog-loader</id>
+      <modules>
+        <module>datadir-catalog-loader</module>
       </modules>
     </profile>
   </profiles>

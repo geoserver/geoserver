@@ -95,6 +95,7 @@
             <descriptor>release/ext-proxy-base-ext.xml</descriptor>
             <descriptor>release/ext-imagemap.xml</descriptor>
             <descriptor>release/ext-xslt.xml</descriptor>
+            <descriptor>release/ext-datadir-catalog-loader.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -239,6 +240,7 @@
         <module>proxy-base-ext</module>
         <module>xslt</module>
         <module>imagemap</module>
+        <module>datadir-catalog-loader</module>
       </modules>
     </profile>
     <profile>
@@ -655,6 +657,12 @@
       <id>imagemap</id>
       <modules>
         <module>imagemap</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>datadir-catalog-loader</id>
+      <modules>
+        <module>datadir-catalog-loader</module>
       </modules>
     </profile>
   </profiles>

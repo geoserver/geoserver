@@ -6,24 +6,32 @@
 package org.geoserver.web;
 
 import java.io.File;
-import java.io.FileInputStream;
-import org.custommonkey.xmlunit.Validator;
-import org.geotools.util.URLs;
-import org.junit.Assert;
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import org.junit.Test;
-import org.xml.sax.InputSource;
 
 public class WebXmlTest {
 
     @Test
-    public void testWebXmlDTDCompliance() throws Exception {
-        // makes sure web.xml is DTD compliant (without requiring internet access in the process)
-        InputSource is = new InputSource(new FileInputStream("src/main/webapp/WEB-INF/web.xml"));
-        Validator v =
-                new Validator(
-                        is,
-                        URLs.fileToUrl(new File("src/test/java/org/geoserver/web/web-app_2_3.dtd"))
-                                .toString());
-        Assert.assertTrue(v.isValid());
+    public void testWebXmlXsdCompliance() throws Exception {
+        // makes sure web.xml is XSD compliant (without requiring internet access in the process)
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema =
+                factory.newSchema(
+                        new Source[] {
+                            new StreamSource(new File("src/test/resources/web-app_3_1.xsd")),
+                            new StreamSource(new File("src/test/resources/web-common_3_1.xsd")),
+                            new StreamSource(new File("src/test/resources/javaee_7.xsd")),
+                            new StreamSource(
+                                    new File(
+                                            "src/test/resources/javaee_web_services_client_1_4.xsd")),
+                            new StreamSource(new File("src/test/resources/jsp_2_3.xsd"))
+                        });
+        Validator validator = schema.newValidator();
+        validator.validate(new StreamSource(new File("src/main/webapp/WEB-INF/web.xml")));
     }
 }

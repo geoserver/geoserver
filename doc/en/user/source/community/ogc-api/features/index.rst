@@ -30,6 +30,9 @@ Features Implementation status
    * - Common Query Language (CQL2)
      - `Draft <https://docs.ogc.org/DRAFTS/21-065.html>`__
      - Implements an earlier draft for for both text and JSON encodings. To be updated.
+   * - Part n: Query by IDs
+     - `Proposal <https://github.com/opengeospatial/ogcapi-features/tree/master/proposals/query-by-ids>`__
+     - Proposal implemented, but syntax and semantic is subject to change in a future release. Thus said, usage should be carefully considered.
 
 Installing the GeoServer OGC API Features module
 ------------------------------------------------

@@ -165,6 +165,7 @@ paths:
         - $ref: '#/components/parameters/filter-lang'
         - $ref: '#/components/parameters/filter-crs'
         - $ref: '#/components/parameters/sortby'
+        - $ref: '#/components/parameters/ids'
         - $ref: '#/components/parameters/crs'
         - $ref: '#/components/parameters/bbox-crs'
         - $ref: '#/components/parameters/otherParameters'
@@ -334,6 +335,23 @@ components:
         items:
           type: string
           pattern: '[+|-]?[A-Za-z_].*'
+      style: form
+      explode: false
+    ids:
+      name: ids
+      in: query
+      description: |-
+        Query multiple items by ID.
+
+        WARNING:
+
+        The parameter is part of the draft proposal "Query by IDs". The syntax and semantic of the
+        parameter is subject to change in a future release. Its usage should be carefully considered.
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
       style: form
       explode: false
     otherParameters:

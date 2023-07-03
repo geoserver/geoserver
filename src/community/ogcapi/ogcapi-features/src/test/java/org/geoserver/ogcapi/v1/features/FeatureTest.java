@@ -519,6 +519,21 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testIdsFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/v1/collections/"
+                                + roadSegments
+                                + "/items?ids=RoadSegments.1107532045088,RoadSegments.1107532045091",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
+        assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+    }
+
+    @Test
     public void testSingleFeatureAsGeoJson() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json =

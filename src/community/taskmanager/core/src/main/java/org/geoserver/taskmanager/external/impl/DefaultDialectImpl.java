@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.external.impl;
 
 import java.sql.Connection;
+import java.sql.JDBCType;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -99,12 +100,19 @@ public class DefaultDialectImpl implements Dialect {
 
                         @Override
                         public String getTypeEtc() throws SQLException {
-                            String typeName = rsmd.getColumnTypeName(col);
-                            StringBuffer sb = new StringBuffer(typeName);
-                            if (("char".equals(typeName) || "varchar".equals(typeName))
-                                    && rsmd.getColumnDisplaySize(col) > 0
-                                    && rsmd.getColumnDisplaySize(col) < Integer.MAX_VALUE) {
-                                typeName += " (" + rsmd.getColumnDisplaySize(col) + " ) ";
+                            StringBuffer sb = new StringBuffer();
+                            JDBCType type = JDBCType.valueOf(rsmd.getColumnType(col));
+                            if (type == JDBCType.OTHER) {
+                                sb.append(rsmd.getColumnTypeName(col));
+                            } else {
+                                sb.append(type.name());
+                                if ((type == JDBCType.CHAR || type == JDBCType.VARCHAR)
+                                        && rsmd.getColumnDisplaySize(col) > 0
+                                        && rsmd.getColumnDisplaySize(col) < Integer.MAX_VALUE) {
+                                    sb.append(" (")
+                                            .append(rsmd.getColumnDisplaySize(col))
+                                            .append(" ) ");
+                                }
                             }
                             switch (isNullable(rsmd.isNullable(col))) {
                                 case ResultSetMetaData.columnNoNulls:

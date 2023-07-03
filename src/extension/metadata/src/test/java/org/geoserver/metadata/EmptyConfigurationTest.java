@@ -6,10 +6,12 @@
 package org.geoserver.metadata;
 
 import org.apache.wicket.util.file.File;
+import org.geoserver.metadata.data.service.impl.ConfigurationServiceImpl;
 import org.geoserver.metadata.web.MetadataTemplatesPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Tests that metadata module works 'out of the box', without any configuration present yet.
@@ -17,6 +19,8 @@ import org.junit.Test;
  * @author niels
  */
 public class EmptyConfigurationTest extends AbstractWicketMetadataTest {
+
+    @Autowired protected ConfigurationServiceImpl configService;
 
     private File metadataRenamed =
             new File(DATA_DIRECTORY.getDataDirectoryRoot(), "metadata.renamed");
@@ -29,6 +33,7 @@ public class EmptyConfigurationTest extends AbstractWicketMetadataTest {
     @After
     public void restoreConfiguration() throws Exception {
         metadataRenamed.renameTo(metadata);
+        configService.reload();
     }
 
     @Test
@@ -41,5 +46,7 @@ public class EmptyConfigurationTest extends AbstractWicketMetadataTest {
         MetadataTemplatesPage page = new MetadataTemplatesPage();
         tester.startPage(page);
         tester.assertRenderedPage(MetadataTemplatesPage.class);
+
+        logout();
     }
 }

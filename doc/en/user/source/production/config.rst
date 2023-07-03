@@ -116,7 +116,7 @@ steps to reproduce:
 
 * Under :guilabel:`Security` -> :guilabel:`Authentication` -> :guilabel:`Filter Chains`, add a new HTML chain
 * Set the new chain's name to ``webLayerPreview`` (or likewise)
-* As ANT pattern, enter the path of the layer preview page, which is :file:`/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage`
+* As Ant pattern, enter the path of the layer preview page, which is :file:`/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage`
   (since it's an ANT pattern, the path could as well be written shorter with wildcards: :file:`/web/**/org.geoserver.web.demo.MapPreviewPage`)
 * Check option :guilabel:`Allow creation of an HTTP session for storing the authentication token`
 * Under :guilabel:`Chain filters`, add filters ``rememberme`` and ``form`` (in that order) to the :guilabel:`Selected` list on the right side

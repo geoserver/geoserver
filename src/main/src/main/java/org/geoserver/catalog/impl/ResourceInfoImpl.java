@@ -265,11 +265,8 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         } else if (nativeCRS != null
                 && !CRS.equalsIgnoreMetadata(nativeBox.getCoordinateReferenceSystem(), nativeCRS)) {
             LOGGER.log(Level.FINE, "The native bounding box srs does not match native crs");
-            nativeBox = ReferencedEnvelope.create(nativeBox, nativeCRS);
         }
 
-        // make sure that in no case the actual field value is returned to the client, this
-        // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own
         if (!CRS.equalsIgnoreMetadata(declaredCRS, nativeCRS)
                 && php == ProjectionPolicy.REPROJECT_TO_DECLARED) {
             if (nativeBox.getCoordinateReferenceSystem() == null) {
@@ -278,8 +275,14 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
                         "Unable to reproject to declared crs (native bounding box srs and native crs are not defined)");
                 return null;
             }
+            // transform below makes a copy, in no case the actual field value is returned to the
+            // client, this
+            // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own
             return nativeBox.transform(declaredCRS, true);
         } else if (php == ProjectionPolicy.FORCE_DECLARED) {
+            // create below makes a copy, in no case the actual field value is returned to the
+            // client, this
+            // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own
             return ReferencedEnvelope.create((Envelope) nativeBox, declaredCRS);
         } else {
             if (nativeBox == null || nativeBox.getCoordinateReferenceSystem() == null) {
@@ -288,6 +291,9 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
                         "Unable to determine native bounding crs (both native bounding box srs and native crs are not defined)");
                 // return null;
             }
+            // create below makes a copy, in no case the actual field value is returned to the
+            // client, this
+            // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own
             return ReferencedEnvelope.create(nativeBox);
         }
     }

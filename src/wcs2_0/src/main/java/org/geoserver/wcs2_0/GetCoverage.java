@@ -847,8 +847,17 @@ public class GetCoverage {
         // notice that for the moment we support only homogeneous interpolation on the 2D axis
         final Map<String, InterpolationPolicy> axesInterpolations =
                 extractInterpolation(ci, extensions);
+        Envelope nativeBoundingBox;
+        try {
+            nativeBoundingBox = ci.boundingBox();
+        } catch (Exception noNativeBounds) {
+            throw new IllegalStateException(
+                    "Unable to determine axes names as native extent not determined: "
+                            + noNativeBounds.getMessage(),
+                    noNativeBounds);
+        }
         final Interpolation spatialInterpolation =
-                extractSpatialInterpolation(axesInterpolations, WCSUtils.toNativeBounds(ci));
+                extractSpatialInterpolation(axesInterpolations, nativeBoundingBox);
         final OverviewPolicy overviewPolicy = extractOverviewPolicy(extensions);
         // TODO time interpolation
         assert spatialInterpolation != null;
@@ -1605,8 +1614,17 @@ public class GetCoverage {
             CoverageInfo ci, Map<String, ExtensionItemType> extensions) {
         // preparation
         final Map<String, InterpolationPolicy> returnValue = new HashMap<>();
-        final Envelope envelope = WCSUtils.toNativeBounds(ci);
-        final List<String> axesNames = envelopeDimensionsMapper.getAxesNames(envelope, true);
+        Envelope nativeBoundingBox;
+        try {
+            nativeBoundingBox = ci.boundingBox();
+        } catch (Exception noNativeBounds) {
+            throw new IllegalStateException(
+                    "Unable to determine axes names as native extent not determined: "
+                            + noNativeBounds.getMessage(),
+                    noNativeBounds);
+        }
+        final List<String> axesNames =
+                envelopeDimensionsMapper.getAxesNames(nativeBoundingBox, true);
         for (String axisName : axesNames) {
             returnValue.put(
                     axisName,

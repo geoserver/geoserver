@@ -155,6 +155,7 @@ public class WCSUtilsTest extends GeoServerSystemTestSupport {
                 new ReferencedEnvelope(
                         16141326, 16252645, -5311971, -5012341, CRS.decode("EPSG:3857"));
         ci.setNativeBoundingBox(forcedEnvelope);
+        ci.setNativeCRS(CRS.decode("EPSG:3857"));
         getCatalog().save(ci);
 
         // no envelope fitting in case of reprojection, the declared one is forced

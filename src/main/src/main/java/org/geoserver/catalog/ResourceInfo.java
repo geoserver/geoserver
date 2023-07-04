@@ -213,11 +213,14 @@ public interface ResourceInfo extends CatalogInfo {
     void setLatLonBoundingBox(ReferencedEnvelope box);
 
     /**
-     * Returns the bounds of the resource in the native crs.
+     * Record of the bounds of the resource in the native crs.
      *
-     * <p>This value represents a "fixed value" and is not calulated on the underlying dataset.
+     * <p>This value represents a "fixed value" and is not calculated on the underlying dataset.
      *
-     * @return The bounds of the resource in native crs., or <code>null</code> if not set.
+     * <p>This value is combined with {@link #getProjectionPolicy()}, {@link #getNativeCRS()} by
+     * {@link #boundingBox()} to determine user supplied bounds in native crs.
+     *
+     * @return Records the bounds of the resource in native crs, or <code>null</code> if not set.
      * @uml.property name="boundingBox"
      */
     ReferencedEnvelope getNativeBoundingBox();
@@ -233,12 +236,14 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Returns the bounds of the resource in its declared CRS.
      *
-     * <p>This value is derived from {@link #getNativeBoundingBox()}, {@link #getCRS()}, and {@link
-     * #getProjectionPolicy()}. In the case where the native bounding box is unset, {@link
-     * #getLatLonBoundingBox()} should be reprojected to {@link #getCRS()}. If the reprojection
-     * fails, null should be returned. So clients calling this method should be prepared to handle
-     * null.
+     * <p>This value is derived from {@link #getNativeBoundingBox()}, {@link #getNativeCRS()},
+     * {@link #getCRS()}, and {@link #getProjectionPolicy()}.
      *
+     * <p>In the case where the native bounding box is unset, {@link #getLatLonBoundingBox()} should
+     * be reprojected to {@link #getCRS()}. If the reprojection fails, null should be returned. So
+     * clients calling this method should be prepared to handle null.
+     *
+     * @return bounds of resource in declared CRS, or {@code null} if unable to reproject
      * @throws Exception If the bounding box can not be calculated.
      */
     ReferencedEnvelope boundingBox() throws Exception;
@@ -249,6 +254,7 @@ public interface ResourceInfo extends CatalogInfo {
      * <p>Srs can be in multiple forms, examples:
      *
      * <ol>
+     *   <li>EPSG:26713
      * </ol>
      *
      * @return A crs identifier, or <code>null</code> if not set.

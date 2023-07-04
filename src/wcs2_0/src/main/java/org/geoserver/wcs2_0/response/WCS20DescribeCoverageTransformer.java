@@ -266,7 +266,8 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
 
                 // handle domain
                 builder.setLength(0);
-                axesNames = envelopeDimensionsMapper.getAxesNames(ci.getNativeBoundingBox(), false);
+
+                axesNames = envelopeDimensionsMapper.getAxesNames(ci.boundingBox(), false);
                 for (String axisName : axesNames) {
                     builder.append(axisName).append(" ");
                 }

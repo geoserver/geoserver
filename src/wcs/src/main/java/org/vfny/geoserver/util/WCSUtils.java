@@ -878,43 +878,4 @@ public class WCSUtils {
             throw new RuntimeException("Failed to invert grid to world", e);
         }
     }
-
-    /**
-     * Alternative to {@link CoverageInfo#boundingBox()} used to determine native bounds prior to
-     * projection policy being applied.
-     *
-     * <p>This method allows {@link CoverageInfo#getNativeCRS()} to override native bounding box
-     * srs.
-     *
-     * <p>This differs from {@link CoverageInfo#boundingBox()} in that the native bounds returned
-     * are only determined using native bounding box and native crs information. It is not willing
-     * to back-transform from lat lon bounding box. It also unwilling to grow the native bounding
-     * box while re-projecting to declared crs.
-     *
-     * @param meta CoverageInfo configuration
-     * @return Native bounds, using native bounding box crs
-     * @throws IllegalStateException if coverage info does not define a native bounding box with
-     *     native crs information
-     */
-    public static ReferencedEnvelope toNativeBounds(CoverageInfo meta) {
-        ReferencedEnvelope nativeBoundingBox = meta.getNativeBoundingBox();
-        if (nativeBoundingBox == null) {
-            throw new IllegalStateException(
-                    "Unable to determine native bounds, as native bounding box is not defined");
-        }
-
-        CoordinateReferenceSystem nativeBoundingBoxSRS =
-                nativeBoundingBox != null ? nativeBoundingBox.getCoordinateReferenceSystem() : null;
-        CoordinateReferenceSystem nativeCRS = meta.getNativeCRS();
-
-        if (nativeBoundingBoxSRS == null && nativeCRS == null) {
-            throw new IllegalStateException(
-                    "Unable to determine native bounds, as both nativeBoundingBox and nativeCRS do not define CoordinateReferenceSystem");
-        } else if (nativeBoundingBoxSRS == null
-                || !CRS.equalsIgnoreMetadata(nativeBoundingBoxSRS, nativeCRS)) {
-            return ReferencedEnvelope.create((Envelope) nativeBoundingBox, nativeCRS);
-        } else {
-            return ReferencedEnvelope.create(nativeBoundingBox);
-        }
-    }
 }

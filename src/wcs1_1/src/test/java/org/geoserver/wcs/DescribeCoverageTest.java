@@ -195,8 +195,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                         BASEPATH
                                 + "?request=DescribeCoverage&service=WCS&version=1.1.1&identifiers="
                                 + getLayerId(NO_ENVELOPE_SRS));
-        print(dom);
-
+        // print(dom);
         checkValidationErrors(dom, WCS11_SCHEMA);
 
         // check the basics, the output is a single coverage description with the expected id

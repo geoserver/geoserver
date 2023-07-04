@@ -60,8 +60,10 @@ public class GetCoverageTest extends WCSTestSupport {
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
     private static final QName TIMESERIES =
             new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+    /** GEOS-11033: Test resource where native bounding box ReferencedEnvelope crs missing. */
     public static QName NO_ENVELOPE_SRS =
             new QName(MockData.WCS_URI, "NoEnvelopeSRS", MockData.WCS_PREFIX);
+
     private GridCoverage2DReader coverageReader;
     private AffineTransform2D originalMathTransform;
 

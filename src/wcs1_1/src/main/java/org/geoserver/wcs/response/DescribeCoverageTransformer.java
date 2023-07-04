@@ -36,7 +36,6 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.Matrix;
 import org.vfny.geoserver.util.ResponseUtils;
-import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.xml.sax.ContentHandler;
@@ -231,7 +230,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
             start("wcs:Domain");
             start("wcs:SpatialDomain");
             handleBoundingBox(ci.getLatLonBoundingBox(), true);
-            handleBoundingBox(WCSUtils.toNativeBounds(ci), false);
+            handleBoundingBox(ci.boundingBox(), false);
             handleGridCRS(ci);
             end("wcs:SpatialDomain");
             end("wcs:Domain");

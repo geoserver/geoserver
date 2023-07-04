@@ -324,6 +324,28 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
     }
 
     @Test
+    public void testBoundingBoxGeneration() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getCoverageStoreByName(MockData.TASMANIA_DEM.getLocalPart()));
+        CoverageInfo ci = cb.buildCoverage();
+
+        ReferencedEnvelope bbox = ci.getNativeBoundingBox();
+        assertNotNull(bbox.getCoordinateReferenceSystem());
+
+        // simulate missing srs
+        ci.setNativeBoundingBox(ReferencedEnvelope.create(bbox, null));
+        assertEquals(ci.getNativeCRS(), ci.boundingBox().getCoordinateReferenceSystem());
+
+        // simulate everything being missing
+        ci.setNativeBoundingBox(null);
+        ci.setSRS(null);
+
+        // this will attempt to back-project form LatLon
+        assertNull(ci.boundingBox());
+    }
+
+    @Test
     public void testSingleBandedCoverage_GEOS7311() throws Exception {
         Locale defaultLocale = Locale.getDefault();
         Locale.setDefault(new Locale("es", "ES"));

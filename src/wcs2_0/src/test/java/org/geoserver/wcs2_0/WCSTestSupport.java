@@ -86,6 +86,9 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final QName UTM11 = new QName(MockData.WCS_URI, "utm11", MockData.WCS_PREFIX);
 
+    protected static final QName NO_NATIVE_SRS =
+            new QName(MockData.WCS_URI, "no_native_srs", MockData.WCS_PREFIX);
+
     /**
      * Small dataset that sits slightly across the dateline, enough to trigger the "across the
      * dateline" machinery

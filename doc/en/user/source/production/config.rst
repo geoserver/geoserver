@@ -107,6 +107,40 @@ To disable the Auto Complete on Web Admin login form:
 * Set the Java system property ``geoserver.login.autocomplete`` to off by adding ``-Dgeoserver.login.autocomplete=off`` to your container's JVM options
 * If the browser has already cached the credentials, please consider clearing the cache or form data after setting the JVM option.
 
+Disable anonymous access to the layer preview page
+--------------------------------------------------
+
+In some circumstances, you might want to provide access to the layer preview page to authenticated users only. The solution is based on
+adding a new :guilabel:`filter chain` with a rule matching the path of the layer preview page to GeoServer's :ref:`security_auth_chain`. Here are the
+steps to reproduce:
+
+* Under :guilabel:`Security` -> :guilabel:`Authentication` -> :guilabel:`Filter Chains`, add a new HTML chain
+* Set the new chain's name to ``webLayerPreview`` (or likewise)
+* As Ant pattern, enter the path of the layer preview page, which is :file:`/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage`
+  (since it's an Ant pattern, the path could as well be written shorter with wildcards: :file:`/web/**/org.geoserver.web.demo.MapPreviewPage`)
+* Check option :guilabel:`Allow creation of an HTTP session for storing the authentication token`
+* Under :guilabel:`Chain filters`, add filters ``rememberme`` and ``form`` (in that order) to the :guilabel:`Selected` list on the right side
+* Close the dialog by clicking the :guilabel:`Close` button; the new HTML chain has been added to the list of chains as the last entry
+* Since all chains are processed in turn from top to bottom, in order to have any effect, the new ``webLayerPreview`` chain must be positioned
+  **before** the ``web`` chain (which matches paths :file:`/web/**,/gwc/rest/web/**,/`)
+* Use the :guilabel:`Position` arrows on the left side of the list to move the newly added chain upwards accordingly
+* Save the changes you've made by clicking the :guilabel:`Save` button at the bottom of the page
+
+With that in place, unauthenticated users now just get forwarded to the login page when they click the layer preview menu item link.
+
+The above procedure could as well be applied to other pages of the web administration interface that one needs to remove anonymous access for. For example:
+
+* :guilabel:`Demos` -> :guilabel:`Demo requests`
+  (path: :file:`/web/wicket/bookmarkable/org.geoserver.web.demo.DemoRequestsPage`)
+* :guilabel:`Demos` -> :guilabel:`WCS request builder`
+  (path: :file:`/web/wicket/bookmarkable/org.geoserver.wcs.web.demo.WCSRequestBuilder`)
+
+.. warning::
+    Although disabling anonymous access to the layer preview page **MAY** prevent some unauthenticated users from accessing data with some simple
+    clicks, this is **NOT** a security feature. In particular, since other more sophisticated users, having the ability to build OGC requests, **MAY**
+    still access critical data through GeoServer's services, this is **NOT** a replacement for a well-designed security concept based on data-level or
+    service-level security.
+
 X-Frame-Options Policy
 ----------------------
 

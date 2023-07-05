@@ -1217,7 +1217,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             // TODO: FeatureListURL
 
-            handleLayerStyles(layerName, layer.getDefaultStyle(), layer.getStyles());
+            handleLayerStyles(layerName, layer.getDefaultStyle(), layer.styles());
 
             handleScaleDenominator(layer);
 

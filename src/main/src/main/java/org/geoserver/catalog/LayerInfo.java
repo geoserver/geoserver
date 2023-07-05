@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -65,6 +66,18 @@ public interface LayerInfo extends PublishedInfo {
      *     inverse="resourceInfo:org.geoserver.catalog.StyleInfo"
      */
     Set<StyleInfo> getStyles();
+
+    /**
+     * The non default styles available for the layer.
+     *
+     * @return non default Style Information
+     */
+    default Set<StyleInfo> styles() {
+        HashSet<StyleInfo> styles = new HashSet<>();
+        if (getStyles() != null) styles.addAll(getStyles());
+        if (getDefaultStyle() != null) styles.remove(getDefaultStyle());
+        return styles;
+    }
 
     /**
      * The resource referenced by this layer.

@@ -65,6 +65,10 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     Exception error;
     private GeoServerResourceLoader loader;
 
+    static final int POSTPROCES_THREADS_DEFAULT = 2;
+
+    static final String DNS_CACHE_DEFAULT = "expireAfterWrite=15m";
+
     public MonitorConfig() {
         props = new PropertyFileWatcher.LinkedProperties();
         props.put("storage", "memory");
@@ -301,5 +305,34 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
                 fw.setKnownLastModified(System.currentTimeMillis());
             }
         }
+    }
+
+    public int getPostProcessorThreads() {
+        Properties props = props();
+        String key = "postprocessorthreads";
+        String svalue = props.getProperty(key);
+        if (svalue != null) {
+            try {
+                int nvalue = Integer.parseInt(svalue.trim());
+                if (nvalue < 1) {
+                    LOGGER.warning(key + " is not 1 or more :" + svalue + "!");
+                } else {
+                    return nvalue;
+                }
+            } catch (NumberFormatException e) {
+                LOGGER.warning(key + " has non-integer value:" + svalue + "!");
+            }
+        }
+        return POSTPROCES_THREADS_DEFAULT;
+    }
+
+    public String getDNSCacheConfiguration() {
+        Properties props = props();
+        String key = "dnscacheconfiguration";
+        String value = props.getProperty(key);
+        if (value == null) {
+            value = DNS_CACHE_DEFAULT;
+        }
+        return value;
     }
 }

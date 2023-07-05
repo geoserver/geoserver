@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,8 +54,22 @@ public class MonitorFilter implements GeoServerFilter {
         this.monitor = monitor;
         this.requestFilter = requestFilter;
 
-        postProcessExecutor = Executors.newFixedThreadPool(2);
+        postProcessExecutor =
+                Executors.newFixedThreadPool(
+                        monitor.getConfig().getPostProcessorThreads(),
+                        new ThreadFactory() {
+                            // This wrapper overrides the thread names
+                            ThreadFactory parent = Executors.defaultThreadFactory();
+                            int count = 1;
 
+                            @Override
+                            public synchronized Thread newThread(Runnable runnable) {
+                                Thread t = parent.newThread(runnable);
+                                t.setName("monitor-" + count);
+                                count++;
+                                return t;
+                            }
+                        });
         if (monitor.isEnabled()) {
             LOGGER.info("Monitor extension enabled");
         } else {
@@ -293,7 +308,8 @@ public class MonitorFilter implements GeoServerFilter {
             try {
                 SecurityContextHolder.getContext().setAuthentication(propagatedAuth);
                 List<RequestPostProcessor> pp = new ArrayList<>();
-                pp.add(new ReverseDNSPostProcessor());
+
+                pp.add(ReverseDNSPostProcessor.get(monitor.getConfig()));
                 pp.addAll(GeoServerExtensions.extensions(RequestPostProcessor.class));
                 Set<String> ignoreList = this.monitor.getConfig().getIgnorePostProcessors();
 

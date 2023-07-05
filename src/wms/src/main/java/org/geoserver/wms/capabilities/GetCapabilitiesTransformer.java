@@ -1141,7 +1141,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // cascaded named styles
             // in the future (when we add support for that)
             if (!(layer.getResource() instanceof WMTSLayerInfo)) {
-                handleStyles(layerName, layer.getDefaultStyle(), layer.getStyles());
+                handleStyles(layerName, layer.getDefaultStyle(), layer.styles());
             }
 
             handleScaleHint(layer);

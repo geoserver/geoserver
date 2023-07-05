@@ -405,6 +405,16 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertTrue(href.contains("GetLegendGraphic"));
         assertTrue(href.contains("layer=cdf%3AFifteen"));
         assertTrue(href.contains("style=point"));
+
+        // Default style set to point
+        layer.setDefaultStyle(pointStyle);
+        getCatalog().save(layer);
+        Document document = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+        assertXpathEvaluatesTo("1", "count(//Layer[Name='cdf:Fifteen'])", document);
+        assertXpathEvaluatesTo("1", "count(//Layer[Name='cdf:Fifteen']/Style)", document);
+        // getStyles() has the default style, styles() doesnt have default style
+        assertTrue(layer.getStyles().contains(pointStyle));
+        assertFalse(layer.styles().contains(pointStyle));
     }
 
     @Test

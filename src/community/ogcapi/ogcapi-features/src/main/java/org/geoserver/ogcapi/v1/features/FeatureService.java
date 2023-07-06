@@ -42,6 +42,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
@@ -140,7 +141,7 @@ public class FeatureService {
         if (featureType.isOverridingServiceSRS()) {
             List<String> result =
                     featureType.getResponseSRS().stream()
-                            .map(c -> CRS_PREFIX + c)
+                            .map(c -> mapResponseSRS(c))
                             .collect(Collectors.toList());
             result.remove(FeatureService.DEFAULT_CRS);
             result.add(0, FeatureService.DEFAULT_CRS);
@@ -149,34 +150,40 @@ public class FeatureService {
         return defaultCRS;
     }
 
-    /**
-     * Returns the CRS-URI for a given CRS.
-     *
-     * @param crs the CRS
-     * @return
-     * @throws FactoryException
-     */
+    private static String mapResponseSRS(String srs) {
+        int idx = srs.indexOf(":");
+        if (idx == -1) return mapCRSCode("EPSG", srs);
+        String authority = srs.substring(0, idx);
+        String code = srs.substring(idx + 1);
+        return mapCRSCode(authority, code);
+    }
+
+    /** Returns the CRS-URI for a given CRS. */
     public static String getCRSURI(CoordinateReferenceSystem crs) throws FactoryException {
         if (CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
             return FeatureService.DEFAULT_CRS;
         }
-        Integer code = CRS.lookupEpsgCode(crs, false);
-        return FeatureService.CRS_PREFIX + code;
+        String identifier = CRS.lookupIdentifier(crs, false);
+        return mapResponseSRS(identifier);
+    }
+
+    /** Maps authority and code to a CRS URI */
+    static String mapCRSCode(String authority, String code) {
+        return "http://www.opengis.net/def/crs/" + authority + "/0/" + code;
     }
 
     protected List<String> getServiceCRSList() {
         List<String> result = getService().getSRS();
 
         if (result == null || result.isEmpty()) {
-            // consult the EPSG databasee
-            result =
-                    CRS.getSupportedCodes("EPSG").stream()
-                            .filter(c -> INTEGER.matcher(c).matches())
-                            .map(c -> CRS_PREFIX + c)
-                            .collect(Collectors.toList());
+            // consult the referencing database
+            CapabilitiesCRSProvider provider = new CapabilitiesCRSProvider();
+            provider.getAuthorityExclusions().add("CRS");
+            provider.setCodeMapper(FeatureService::mapCRSCode);
+            result = new ArrayList<>(provider.getCodes());
         } else {
             // the configured ones are just numbers, prefix
-            result = result.stream().map(c -> CRS_PREFIX + c).collect(Collectors.toList());
+            result = result.stream().map(c -> mapResponseSRS(c)).collect(Collectors.toList());
         }
         // the Features API default CRS (cannot be contained due to the different prefixing)
         result.add(0, DEFAULT_CRS);

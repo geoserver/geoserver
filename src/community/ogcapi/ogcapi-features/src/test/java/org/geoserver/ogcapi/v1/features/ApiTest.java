@@ -206,7 +206,8 @@ public class ApiTest extends FeaturesTestSupport {
                         "#/components/parameters/sortby",
                         "#/components/parameters/crs",
                         "#/components/parameters/bbox-crs",
-                        "#/components/parameters/otherParameters"));
+                        "#/components/parameters/otherParameters",
+                        "#/components/parameters/ids"));
 
         // filter languages
         Parameter langs = api.getComponents().getParameters().get("filter-lang");

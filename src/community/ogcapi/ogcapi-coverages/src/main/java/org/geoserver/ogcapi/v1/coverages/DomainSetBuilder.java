@@ -23,7 +23,6 @@ import org.geoserver.ogcapi.v1.coverages.cis.RegularAxis;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.referencing.FactoryException;
@@ -45,7 +44,7 @@ class DomainSetBuilder {
     public DomainSet build() throws IOException, FactoryException {
         EnvelopeAxesLabelsMapper mapper = new EnvelopeAxesLabelsMapper();
         CoordinateReferenceSystem crs = coverage.getCRS();
-        String srsName = CoveragesService.CRS_PREFIX + CRS.lookupEpsgCode(crs, false);
+        String srsName = CoveragesService.getCRSURI(crs);
 
         // check coordinate system is supported
         CoordinateSystem cs = crs.getCoordinateSystem();

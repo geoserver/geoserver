@@ -126,13 +126,13 @@ public class CollectionTest extends FeaturesTestSupport {
                 hasItems(
                         "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
                         "http://www.opengis.net/def/crs/EPSG/0/4326",
-                        "http://www.opengis.net/def/crs/EPSG/0/3857"));
+                        "http://www.opengis.net/def/crs/EPSG/0/3857",
+                        "http://www.opengis.net/def/crs/IAU/0/1000"));
         crs.remove("http://www.opengis.net/def/crs/OGC/1.3/CRS84");
         for (String c : crs) {
-            assertThat(c, Matchers.startsWith("http://www.opengis.net/def/crs/EPSG/0"));
             assertTrue(
-                    c + " is not using a numeric code",
-                    c.substring("http://www.opengis.net/def/crs/EPSG/0/".length()).matches("\\d+"));
+                    c + " is not using the expect CRS URI format",
+                    c.matches("http://www.opengis.net/def/crs/[\\w]+/\\d+/\\d+"));
         }
 
         // check the storage CRS

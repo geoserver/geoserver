@@ -31,7 +31,7 @@ public class DomainSetTest extends CoveragesTestSupport {
 
         // model domain description
         DocumentContext generalGrid = readContext(domain, "generalGrid");
-        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", generalGrid.read("srsName"));
+        assertEquals(CoveragesService.DEFAULT_CRS, generalGrid.read("srsName"));
         assertEquals(Arrays.asList("Long", "Lat"), generalGrid.read("axisLabels"));
 
         DocumentContext longAxis = readContext(generalGrid, "axis[0]");
@@ -80,7 +80,7 @@ public class DomainSetTest extends CoveragesTestSupport {
 
         // model domain description
         DocumentContext generalGrid = readContext(domain, "generalGrid");
-        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", generalGrid.read("srsName"));
+        assertEquals(CoveragesService.DEFAULT_CRS, generalGrid.read("srsName"));
         assertEquals(Arrays.asList("Long", "Lat", "Time"), generalGrid.read("axisLabels"));
 
         // focus on the time axis
@@ -119,7 +119,7 @@ public class DomainSetTest extends CoveragesTestSupport {
 
         // model domain description
         DocumentContext generalGrid = readContext(domain, "generalGrid");
-        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", generalGrid.read("srsName"));
+        assertEquals(CoveragesService.DEFAULT_CRS, generalGrid.read("srsName"));
         assertEquals(Arrays.asList("Long", "Lat", "Time"), generalGrid.read("axisLabels"));
 
         // focus on the time axis
@@ -155,7 +155,7 @@ public class DomainSetTest extends CoveragesTestSupport {
 
         // model domain description
         DocumentContext generalGrid = readContext(domain, "generalGrid");
-        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", generalGrid.read("srsName"));
+        assertEquals(CoveragesService.DEFAULT_CRS, generalGrid.read("srsName"));
         assertEquals(Arrays.asList("Long", "Lat", "Time"), generalGrid.read("axisLabels"));
 
         // focus on the time axis

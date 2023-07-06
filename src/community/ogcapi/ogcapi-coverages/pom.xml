@@ -61,6 +61,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-iau-wkt</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
       <version>${project.version}</version>

@@ -12,6 +12,7 @@ import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_V
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -27,6 +28,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
@@ -70,7 +72,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CoveragesService {
 
     static final Pattern INTEGER = Pattern.compile("\\d+");
-    public static final String CRS_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
     public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
     public static final String CONF_CLASS_COVERAGE =
             "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geodata-coverage";
@@ -101,8 +102,7 @@ public class CoveragesService {
             List<String> result =
                     coverage.getResponseSRS().stream()
                             // the GUI allows to enter codes as "EPSG:XYZW"
-                            .map(c -> c.startsWith("EPSG:") ? c.substring(5) : c)
-                            .map(c -> CRS_PREFIX + c)
+                            .map(c -> mapResponseSRS(c))
                             .collect(Collectors.toList());
             result.remove(CoveragesService.DEFAULT_CRS);
             result.add(0, CoveragesService.DEFAULT_CRS);
@@ -293,19 +293,40 @@ public class CoveragesService {
         List<String> result = getService().getSRS();
 
         if (result == null || result.isEmpty()) {
-            // consult the EPSG databasee
-            result =
-                    CRS.getSupportedCodes("EPSG").stream()
-                            .filter(c -> INTEGER.matcher(c).matches())
-                            .map(c -> CRS_PREFIX + c)
-                            .collect(Collectors.toList());
+            // consult the referencing database
+            CapabilitiesCRSProvider provider = new CapabilitiesCRSProvider();
+            provider.getAuthorityExclusions().add("CRS");
+            provider.setCodeMapper(CoveragesService::mapCRSCode);
+            result = new ArrayList<>(provider.getCodes());
         } else {
             // the configured ones are just numbers, prefix
-            result = result.stream().map(c -> CRS_PREFIX + c).collect(Collectors.toList());
+            result = result.stream().map(c -> mapResponseSRS(c)).collect(Collectors.toList());
         }
         // the Features API default CRS (cannot be contained due to the different prefixing)
         result.add(0, DEFAULT_CRS);
         return result;
+    }
+
+    /** Maps authority and code to a CRS URI */
+    static String mapCRSCode(String authority, String code) {
+        return "http://www.opengis.net/def/crs/" + authority + "/0/" + code;
+    }
+
+    /** Returns the CRS-URI for a given CRS. */
+    public static String getCRSURI(CoordinateReferenceSystem crs) throws FactoryException {
+        if (CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
+            return DEFAULT_CRS;
+        }
+        String identifier = CRS.lookupIdentifier(crs, false);
+        return mapResponseSRS(identifier);
+    }
+
+    private static String mapResponseSRS(String srs) {
+        int idx = srs.indexOf(":");
+        if (idx == -1) return mapCRSCode("EPSG", srs);
+        String authority = srs.substring(0, idx);
+        String code = srs.substring(idx + 1);
+        return mapCRSCode(authority, code);
     }
 
     @ResponseBody

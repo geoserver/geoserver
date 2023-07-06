@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.v1.styles;
 
+import static java.util.Map.entry;
 import static junit.framework.TestCase.assertEquals;
 import static org.geoserver.data.test.MockData.BUILDINGS;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -13,7 +14,7 @@ import com.jayway.jsonpath.DocumentContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
@@ -72,12 +73,9 @@ public class StyleMetadataTest extends StylesTestSupport {
                 getCatalog());
         testData.addVectorLayer(
                 BUILDINGS_LABEL,
-                new HashMap<SystemTestData.LayerProperty, Object>() {
-                    {
-                        put(SystemTestData.LayerProperty.STYLE, BUILDINGS_LABEL_ASSOCIATED_STYLE);
-                        put(SystemTestData.LayerProperty.NAME, BUILDINGS_LABEL.getLocalPart());
-                    }
-                },
+                Map.ofEntries(
+                        entry(SystemTestData.LayerProperty.STYLE, BUILDINGS_LABEL_ASSOCIATED_STYLE),
+                        entry(SystemTestData.LayerProperty.NAME, BUILDINGS_LABEL.getLocalPart())),
                 StyleMetadataTest.class,
                 getCatalog());
 

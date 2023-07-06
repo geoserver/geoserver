@@ -180,7 +180,7 @@ public class MapsService {
         if ("text/html".equals(format) || "html".equals(format)) {
             DefaultWebMapService.autoSetBoundsAndSize(request);
             if (request.getCrs() != null)
-                request.setSRS("EPSG:" + CRS.lookupEpsgCode(request.getCrs(), true));
+                request.setSRS(CRS.lookupIdentifier(request.getCrs(), false));
             request.getRawKvp().put("width", String.valueOf(request.getWidth()));
             request.getRawKvp().put("height", String.valueOf(request.getHeight()));
             if (height != null) request.setHeight(height);

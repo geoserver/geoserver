@@ -1197,4 +1197,47 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(255, rasterProps.getInt("GREEN_BAND"));
         assertEquals(0, rasterProps.getInt("BLUE_BAND"));
     }
+
+    @Test
+    public void testIAURasterFeatureInfo() throws Exception {
+        String layerId = getLayerId(SystemTestData.MARS_VIKING);
+        String url =
+                "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150"
+                        + "&x=10&y=10"
+                        + "&LAYERS="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(url);
+        // raster output does not carry a geometry, we only check a feature has been generated
+        JSONArray features = json.getJSONArray("features");
+        assertEquals(1, features.size());
+    }
+
+    @Test
+    public void testIAUVectorFeatureInfo() throws Exception {
+        String layerId = getLayerId(SystemTestData.MARS_POI);
+        String url =
+                "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetFeatureInfo&SRS=IAU:49900&BBOX=-180,-90,180,90"
+                        + "&WIDTH=20&HEIGHT=20&x=10&y=10&buffer=20"
+                        + "&LAYERS="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(url);
+        print(json);
+        // raster output does not carry a geometry, we only check a feature has been generated
+        JSONArray features = json.getJSONArray("features");
+        assertEquals(1, features.size());
+
+        assertEquals(
+                "urn:ogc:def:crs:IAU::49900",
+                json.getJSONObject("crs").getJSONObject("properties").getString("name"));
+    }
 }

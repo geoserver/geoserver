@@ -59,6 +59,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ColorUtilities;
 import org.geotools.map.Layer;
@@ -795,11 +796,12 @@ class DirectRasterRenderer {
         if (CRS.getAxisOrder(crs) != CRS.AxisOrder.NORTH_EAST) {
             return envelope;
         }
-        Integer epsg = CRS.lookupEpsgCode(crs, false);
-        if (epsg == null) {
+        String code = CRS.lookupIdentifier(crs, true);
+        if (code == null) {
             return envelope;
         } else {
-            CoordinateReferenceSystem eastNorthCrs = CRS.decode("EPSG:" + epsg, true);
+            CoordinateReferenceSystem eastNorthCrs =
+                    CRS.decode(SrsSyntax.AUTH_CODE.getSRS(code), true);
             return new ReferencedEnvelope(
                     envelope.getMinY(),
                     envelope.getMaxY(),

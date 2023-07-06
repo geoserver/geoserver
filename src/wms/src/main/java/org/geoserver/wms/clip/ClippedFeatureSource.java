@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
@@ -36,14 +37,14 @@ public class ClippedFeatureSource<T extends FeatureType, F extends Feature>
         this.clip = reproject(delegate.getInfo().getCRS(), clipGeometry);
     }
 
-    private Geometry reproject(CoordinateReferenceSystem fsCRS, Geometry clipGeom) {
+    static Geometry reproject(CoordinateReferenceSystem fsCRS, Geometry clipGeom) {
         // re-project if required
         try {
-            CoordinateReferenceSystem geomCRS = CRS.decode("EPSG:" + clipGeom.getSRID());
+            CoordinateReferenceSystem geomCRS = getGeometryCRS(clipGeom);
             if (CRS.isTransformationRequired(geomCRS, fsCRS)) {
                 MathTransform mt = CRS.findMathTransform(geomCRS, fsCRS);
                 clipGeom = JTS.transform(clipGeom, mt);
-                clipGeom.setSRID(CRS.lookupEpsgCode(fsCRS, false));
+                clipGeom.setUserData(fsCRS);
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "failed to reproject " + clipGeom.toText());
@@ -51,6 +52,15 @@ public class ClippedFeatureSource<T extends FeatureType, F extends Feature>
         }
 
         return clipGeom;
+    }
+
+    private static CoordinateReferenceSystem getGeometryCRS(Geometry clipGeom)
+            throws FactoryException {
+        if (clipGeom.getUserData() instanceof CoordinateReferenceSystem) {
+            return (CoordinateReferenceSystem) clipGeom.getUserData();
+        } else {
+            return CRS.decode("EPSG:" + clipGeom.getSRID());
+        }
     }
 
     @Override

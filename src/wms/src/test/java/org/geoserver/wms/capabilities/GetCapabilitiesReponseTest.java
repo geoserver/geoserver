@@ -443,4 +443,17 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
             if (groupInfo != null) catalog.remove(groupInfo);
         }
     }
+
+    @Test
+    public void testMarsLayers11() throws Exception {
+        Document dom = getAsDOM("iau/wms?request=GetCapabilities&version=1.1.1&service=WMS");
+
+        // see that the viking layer is there with the expected CRS
+        assertXpathExists("//Layer[Name='Viking']/SRS[text()='IAU:49900']", dom);
+        assertXpathExists("//Layer[Name='Viking']/BoundingBox[@SRS='IAU:49900']", dom);
+
+        // same goes with the Mars POI layer
+        assertXpathExists("//Layer[Name='MarsPoi']/SRS[text()='IAU:49900']", dom);
+        assertXpathExists("//Layer[Name='MarsPoi']/BoundingBox[@SRS='IAU:49900']", dom);
+    }
 }

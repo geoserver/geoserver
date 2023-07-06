@@ -6,6 +6,7 @@
 package org.geoserver.wms.capabilities;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -355,16 +357,44 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
     }
 
     @Test
-    public void testCRSList() throws Exception {
+    public void testCRSDeclarations() throws Exception {
         GetCapabilitiesTransformer tr =
                 new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
-        final Set<String> supportedCodes = CRS.getSupportedCodes("EPSG");
-        supportedCodes.addAll(CRS.getSupportedCodes("AUTO"));
+
+        // basics from EPSG database
+        assertXpathExists("//SRS[text()='EPSG:4326']", dom);
+        assertXpathExists("//SRS[text()='EPSG:32632']", dom);
+        // custom GeoServer extensions
+        assertXpathExists("//SRS[text()='EPSG:900913']", dom);
+        assertXpathExists("//SRS[text()='EPSG:404000']", dom);
+        // AUTO codes
+        assertXpathExists("//SRS[text()='AUTO:42001']", dom);
+        assertXpathExists("//SRS[text()='AUTO:42002']", dom);
+        assertXpathExists("//SRS[text()='AUTO:42003']", dom);
+        assertXpathExists("//SRS[text()='AUTO:42004']", dom);
+        // IAU codes (added in the classpath for tests only)
+        assertXpathExists("//SRS[text()='IAU:1000']", dom);
+
+        // check all codes are there
+        final Set<String> supportedCodes = getCodes("EPSG");
+        supportedCodes.addAll(getCodes("AUTO"));
+        supportedCodes.addAll(getCodes("IAU"));
         NodeList allCrsCodes =
                 XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/SRS", dom);
-        assertEquals(supportedCodes.size() - 1 /* WGS84(DD) */, allCrsCodes.getLength());
+        assertEquals(supportedCodes.size(), allCrsCodes.getLength());
+    }
+
+    /**
+     * Need to add prefixes here because some ids are duplicated amongst EPSG and IAU and to filter
+     * out WGS84(DD) because it shows up in all authorities
+     */
+    private static Set<String> getCodes(String authority) {
+        return CRS.getSupportedCodes(authority).stream()
+                .filter(c -> !"WGS84(DD)".equals(c))
+                .map(s -> authority + ":" + s)
+                .collect(Collectors.toSet());
     }
 
     @Test

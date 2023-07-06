@@ -78,9 +78,8 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
             features.getFeature().add(fc);
 
             QueryType qt = WfsFactory.eINSTANCE.createQueryType();
-            String crs = GML2EncodingUtils.epsgCode(fc.getSchema().getCoordinateReferenceSystem());
-            if (crs != null) {
-                final String srsName = "EPSG:" + crs;
+            String srsName = GML2EncodingUtils.toURI(fc.getSchema().getCoordinateReferenceSystem());
+            if (srsName != null) {
                 try {
                     qt.setSrsName(new URI(srsName));
                 } catch (URISyntaxException e) {

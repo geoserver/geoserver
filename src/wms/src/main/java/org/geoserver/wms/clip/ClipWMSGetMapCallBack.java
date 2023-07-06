@@ -17,6 +17,7 @@ import org.geoserver.wms.WebMap;
 import org.geotools.data.FeatureSource;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.WKTReader2;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
@@ -118,7 +119,7 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
         // looking for a pattern srid=4326:Polygon(...)
         if (wktContents.length == 2 && SRID_REGEX.matcher(wktContents[0].toUpperCase()).matches()) {
             String sridString = wktContents[0].split("=")[1];
-            // force xy
+            // force xy. Forcing EPSG in this case is legit, as EWKT does not advertise an authority
             CoordinateReferenceSystem geomCRS = CRS.decode("EPSG:" + sridString, true);
             CoordinateReferenceSystem mapCRSXY =
                     CRS.decode("EPSG:" + CRS.lookupEpsgCode(mapCRS, false), true);
@@ -127,8 +128,14 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
                 geom = JTS.transform(geom, transform);
             }
         }
-        // finally assign map crs
-        geom.setSRID(CRS.lookupEpsgCode(mapCRS, false));
+        // finally assign map crs in lon/lat order (EWKT is defined in that order)
+        if (CRS.getAxisOrder(mapCRS) == CRS.AxisOrder.NORTH_EAST) {
+            String id = CRS.lookupIdentifier(mapCRS, false);
+            CoordinateReferenceSystem crs = CRS.decode(SrsSyntax.AUTH_CODE.getSRS(id));
+            geom.setUserData(crs);
+        } else {
+            geom.setUserData(mapCRS);
+        }
         return geom;
     }
 }

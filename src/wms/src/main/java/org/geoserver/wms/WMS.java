@@ -74,6 +74,8 @@ import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.SrsSyntax;
+import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.WMSCapabilities;
 import org.geotools.referencing.CRS;
@@ -101,6 +103,7 @@ import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -1001,9 +1004,18 @@ public class WMS implements ApplicationContextAware {
      * "EPSG:" namespace with the explicit.
      */
     public static String toInternalSRS(String srs, Version version) {
-        if (VERSION_1_3_0.equals(version)) {
-            if (srs != null && srs.toUpperCase().startsWith("EPSG:")) {
-                srs = srs.toUpperCase().replace("EPSG:", "urn:ogc:def:crs:EPSG:");
+        if (srs != null && VERSION_1_3_0.equals(version)) {
+            try {
+                CoordinateReferenceSystem crs = CRS.decode(srs);
+                if (crs != null) {
+                    return GML2EncodingUtils.toURI(crs, SrsSyntax.OGC_URN, false);
+                }
+            } catch (FactoryException e) {
+                throw new ServiceException(
+                        "Could not decode CRS: " + srs,
+                        e,
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        "crs");
             }
         }
 

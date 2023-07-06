@@ -27,7 +27,6 @@ import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.coverage.GridSampleDimension;
@@ -37,6 +36,7 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.measure.UnitFormat;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
@@ -171,17 +171,17 @@ class GMLTransformer extends TransformerBase {
                             gc2d.getEnvelope2D(), true);
 
             // lookup EPSG code
-            Integer EPSGCode = null;
+            String crsId = null;
             try {
-                EPSGCode = CRS.lookupEpsgCode(crs, false);
+                crsId = CRS.lookupIdentifier(crs, true);
             } catch (FactoryException e) {
                 throw new IllegalStateException(
                         "Unable to lookup epsg code for this CRS:" + crs, e);
             }
-            if (EPSGCode == null) {
+            if (crsId == null) {
                 throw new IllegalStateException("Unable to lookup epsg code for this CRS:" + crs);
             }
-            final String srsName = GetCoverage.SRS_STARTER + EPSGCode;
+            final String srsName = SrsSyntax.OGC_HTTP_URI.getSRS(crsId);
             // handle axes swap for geographic crs
             final boolean axisSwap = !CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);
 

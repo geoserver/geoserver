@@ -46,6 +46,8 @@ import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 public class GetCoverageKvpTest extends WCSKVPTestSupport {
 
@@ -613,6 +615,55 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             assertEquals(100, reader.getOriginalGridRange().getSpan(1));
         } finally {
             clean(reader, coverage);
+        }
+    }
+
+    @Test
+    public void testIAUCoverageGeotiff() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=iau__Viking");
+        // got back a tiff
+        assertEquals("image/tiff", response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("viking", "viking.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        // check the tiff structure is the one requested
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D coverage = null;
+        try {
+            CoordinateReferenceSystem crs = CRS.decode("IAU:49900");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+
+            coverage = reader.read(null);
+            assertNotNull(coverage);
+
+            // resolution is the native one
+            final double scale = getScale(coverage);
+            assertEquals(27, scale, 1e-3);
+        } finally {
+            clean(reader, coverage);
+        }
+    }
+
+    @Test
+    public void testIAUCoverageGML() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=iau__Viking&format=application/gml%2Bxml");
+        // got back a GML coverage
+        assertEquals("application/gml+xml", response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        Document dom = dom(new ByteArrayInputStream(getBinary(response)));
+        NodeList nodes = xpath.getMatchingNodes("//@srsName", dom);
+        assertEquals(4, nodes.getLength());
+        for (int i = 0; i < nodes.getLength(); i++) {
+            assertEquals(
+                    "http://www.opengis.net/def/crs/IAU/0/49900", nodes.item(i).getNodeValue());
         }
     }
 }

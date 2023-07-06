@@ -184,6 +184,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                         BASEPATH
                                 + "?request=DescribeCoverage&service=WCS&version=1.1.1&identifiers="
                                 + getLayerId(TASMANIA_DEM));
+        print(dom);
         checkValidationErrors(dom, WCS11_SCHEMA);
         checkDemCoverageDescription(dom);
     }
@@ -450,5 +451,44 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
         assertXpathEvaluatesTo(
                 proxyBaseUrl + "/metadata?key=value", xpathBase + "/@xlink:href", dom);
+    }
+
+    @Test
+    public void testDescribeIAU() throws Exception {
+        Document dom =
+                getAsDOM(
+                        BASEPATH
+                                + "?request=DescribeCoverage&service=WCS&version=1.1.1&identifiers="
+                                + getLayerId(SystemTestData.MARS_VIKING));
+
+        checkValidationErrors(dom, WCS11_SCHEMA);
+        // check the basics, the output is a single coverage description with the expected id
+        assertEquals(1, dom.getElementsByTagName("wcs:CoverageDescriptions").getLength());
+        assertEquals(1, dom.getElementsByTagName("wcs:CoverageDescription").getLength());
+        assertXpathEvaluatesTo(
+                getLayerId(SystemTestData.MARS_VIKING),
+                "/wcs:CoverageDescriptions/wcs:CoverageDescription/wcs:Identifier",
+                dom);
+        // check there is no rotation
+        Node gridOffsets =
+                xpath.getMatchingNodes(
+                                "/wcs:CoverageDescriptions/wcs:CoverageDescription/"
+                                        + "wcs:Domain/wcs:SpatialDomain/wcs:GridCRS/wcs:GridOffsets",
+                                dom)
+                        .item(0);
+        String[] offsetStrs = gridOffsets.getTextContent().split(" ");
+        assertEquals(4, offsetStrs.length);
+        double[] offsets = new double[4];
+        for (int i = 0; i < offsetStrs.length; i++) {
+            offsets[i] = Double.parseDouble(offsetStrs[i]);
+        }
+        assertTrue(offsets[0] > 0);
+        assertEquals(0.0, offsets[1], 0d);
+        assertEquals(0.0, offsets[2], 0d);
+        assertTrue(offsets[3] < 0);
+        // check there is one field, one axis, three key (this one is a RGB image)
+        assertEquals(1, dom.getElementsByTagName("wcs:Field").getLength());
+        assertEquals(1, dom.getElementsByTagName("wcs:Axis").getLength());
+        assertEquals(3, dom.getElementsByTagName("wcs:Key").getLength());
     }
 }

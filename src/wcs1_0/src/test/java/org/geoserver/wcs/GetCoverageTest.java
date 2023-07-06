@@ -60,6 +60,7 @@ import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -926,5 +927,31 @@ public class GetCoverageTest extends WCSTestSupport {
         WCSInfo info = gs.getService(WCSInfo.class);
         info.setMaxOutputMemory(kbytes);
         gs.save(info);
+    }
+
+    @Test
+    public void testGetCoverageIAU() throws Exception {
+        String url =
+                "wcs?request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff"
+                        + "&bbox=-180,-90,180,90&crs=IAU:49900&width=10&height=10"
+                        + "&coverage="
+                        + getLayerId(SystemTestData.MARS_VIKING);
+        MockHttpServletResponse response = getAsServletResponse(url);
+        assertEquals("image/tiff", response.getContentType());
+        // save
+        File tiffFile = File.createTempFile("wcs", "", new File("target"));
+        try {
+            IOUtils.copy(getBinaryInputStream(response), new FileOutputStream(tiffFile));
+
+            // make sure we can read the coverage back
+            GeoTiffReader reader = new GeoTiffReader(tiffFile);
+            GridCoverage2D result = reader.read(null);
+            result.dispose(true);
+
+            CoordinateReferenceSystem crs = CRS.decode("IAU:49900");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+        } finally {
+            tiffFile.delete();
+        }
     }
 }

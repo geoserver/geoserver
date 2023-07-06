@@ -14,13 +14,13 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.eo.WCSEOMetadata;
 import org.geoserver.wcs2_0.response.WCS20CoverageMetadataProvider;
 import org.geoserver.wcs2_0.response.WCSDimensionsHelper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
@@ -223,16 +223,16 @@ public class WCSEOCoverageMetadataProvider implements WCS20CoverageMetadataProvi
     }
 
     private String getSRSName(CoordinateReferenceSystem crs) {
-        Integer EPSGCode = null;
+        String crsId = null;
         try {
-            EPSGCode = CRS.lookupEpsgCode(crs, false);
+            crsId = CRS.lookupIdentifier(crs, true);
         } catch (FactoryException e) {
             throw new IllegalStateException("Unable to lookup epsg code for this CRS:" + crs, e);
         }
-        if (EPSGCode == null) {
+        if (crsId == null) {
             throw new IllegalStateException("Unable to lookup epsg code for this CRS:" + crs);
         }
-        return GetCoverage.SRS_STARTER + EPSGCode;
+        return SrsSyntax.OGC_HTTP_URI.getSRS(crsId);
     }
 
     private void element(Translator tx, String element, String content, AttributesImpl attributes) {

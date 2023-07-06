@@ -1098,11 +1098,9 @@ public class CatalogBuilder {
                                 .toString());
 
         // request and response SRS's
-        if (nativeCRS != null
-                && (nativeCRS.getIdentifiers() != null)
-                && !nativeCRS.getIdentifiers().isEmpty()) {
-            cinfo.getRequestSRS().add(nativeCRS.getIdentifiers().toArray()[0].toString());
-            cinfo.getResponseSRS().add(nativeCRS.getIdentifiers().toArray()[0].toString());
+        if (cinfo.getSRS() != null) {
+            cinfo.getRequestSRS().add(cinfo.getSRS());
+            cinfo.getResponseSRS().add(cinfo.getSRS());
         }
 
         // supported formats

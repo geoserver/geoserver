@@ -8,6 +8,7 @@ package org.geoserver.catalog.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
@@ -267,8 +268,10 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
             LOGGER.log(Level.FINE, "The native bounding box srs does not match native crs");
         }
 
-        if (!CRS.equalsIgnoreMetadata(declaredCRS, nativeCRS)
-                && php == ProjectionPolicy.REPROJECT_TO_DECLARED) {
+        //
+        if (php == ProjectionPolicy.REPROJECT_TO_DECLARED
+                && (!CRS.equalsIgnoreMetadata(declaredCRS, nativeCRS)
+                        || !nativeCRSHasIdentifiers(nativeCRS))) {
             if (nativeBox.getCoordinateReferenceSystem() == null) {
                 LOGGER.log(
                         Level.WARNING,
@@ -276,13 +279,13 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
                 return null;
             }
             // transform below makes a copy, in no case the actual field value is returned to the
-            // client, this
-            // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own
+            // client, this is not a getter, it's a derivative, thus ModificationProxy won't do
+            // a copy on its own
             return nativeBox.transform(declaredCRS, true);
         } else if (php == ProjectionPolicy.FORCE_DECLARED) {
             // create below makes a copy, in no case the actual field value is returned to the
-            // client, this
-            // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own
+            // client, this is not a getter, it's a derivative, thus ModificationProxy won't do
+            // a copy on its own
             return ReferencedEnvelope.create((Envelope) nativeBox, declaredCRS);
         } else {
             if (nativeBox == null || nativeBox.getCoordinateReferenceSystem() == null) {
@@ -292,10 +295,17 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
                 // return null;
             }
             // create below makes a copy, in no case the actual field value is returned to the
-            // client, this
-            // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own
+            // client, this is not a getter, it's a derivative, thus ModificationProxy won't do
+            // a copy on its own
             return ReferencedEnvelope.create(nativeBox);
         }
+    }
+
+    private static boolean nativeCRSHasIdentifiers(CoordinateReferenceSystem nativeCRS) {
+        return Optional.ofNullable(nativeCRS)
+                .map(CoordinateReferenceSystem::getIdentifiers)
+                .filter(c -> !c.isEmpty())
+                .isPresent();
     }
 
     @Override

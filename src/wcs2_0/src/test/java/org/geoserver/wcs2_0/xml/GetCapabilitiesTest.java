@@ -32,7 +32,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         final File xml = new File("./src/test/resources/getcapabilities/getCap.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         Document dom = postAsDOM("wcs", request);
-        //        print(dom);
+        // print(dom);
 
         checkFullCapabilitiesDocument(dom);
     }

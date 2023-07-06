@@ -10,6 +10,7 @@ import static org.geoserver.data.test.MockData.WORLD;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -751,6 +753,49 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
             assertEquals(response.getStatus(), 200);
         } catch (ClassCastException e) {
             assertEquals("application/xml", response.getContentType());
+        }
+    }
+
+    @Test
+    public void testIAUCoverage() throws Exception {
+        String layer = getLayerId(SystemTestData.MARS_VIKING);
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=1.1.0"
+                                + "&BoundingBox=-180,-90,180,90,urn:ogc:def:crs:IAU::49900"
+                                + "&identifier="
+                                + layer
+                                + "&format=image/tiff");
+        // got back a tiff
+        assertThat(response.getContentType(), containsString("multipart/related"));
+        assertEquals(200, response.getStatus());
+
+        // parse the multipart, check there are two parts
+        Multipart multipart = getMultipart(response);
+        assertEquals(2, multipart.getCount());
+        BodyPart coveragePart = multipart.getBodyPart(1);
+        assertEquals("image/tiff", coveragePart.getContentType());
+        assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
+
+        // check the tiff structure is the one requested
+        final GeoTiffReader reader =
+                new GeoTiffReader(ImageIO.createImageInputStream(coveragePart.getInputStream()));
+        GridCoverage2D coverage = null;
+        try {
+            CoordinateReferenceSystem crs = CRS.decode("IAU:49900");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+
+            coverage = reader.read(null);
+            assertNotNull(coverage);
+        } finally {
+            if (reader != null) {
+                try {
+                    if (reader != null) reader.dispose();
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+                }
+                if (coverage != null) coverage.dispose(true);
+            }
         }
     }
 }

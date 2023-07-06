@@ -26,11 +26,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -99,6 +101,7 @@ import org.geotools.http.HTTPClientFinder;
 import org.geotools.http.HTTPConnectionPooling;
 import org.geotools.http.SimpleHttpClient;
 import org.geotools.measure.Measure;
+import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.WMSCapabilities;
 import org.geotools.ows.wms.WebMapServer;
@@ -107,6 +110,7 @@ import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.ows.wmts.model.WMTSCapabilities;
 import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleImpl;
 import org.geotools.styling.StyledLayerDescriptor;
@@ -131,7 +135,9 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.metadata.citation.Citation;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.crs.SingleCRS;
@@ -188,6 +194,9 @@ public class ResourcePool {
     /** Default number of hard references */
     static int FEATURETYPE_CACHE_SIZE_DEFAULT = 100;
 
+    static String CRS_NOT_FOUND = "CRS_NOT_FOUND";
+    static Map<CoordinateReferenceSystem, String> crsIdentifierCache = new SoftValueHashMap<>();
+
     Catalog catalog;
     Map<String, CoordinateReferenceSystem> crsCache;
 
@@ -199,6 +208,7 @@ public class ResourcePool {
     Map<CoverageHintReaderKey, GridCoverageReader> hintCoverageReaderCache;
     Map<String, StyledLayerDescriptor> sldCache;
     Map<String, Style> styleCache;
+
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
@@ -514,12 +524,54 @@ public class ResourcePool {
      */
     public static String lookupIdentifier(CoordinateReferenceSystem crs, boolean fullScan)
             throws FactoryException {
-        Integer code = CRS.lookupEpsgCode(crs, fullScan);
+        // full scan can be pretty expensive, cache results
+        if (fullScan) {
+            String identifier = crsIdentifierCache.get(crs);
+            if (identifier != null) {
+                return CRS_NOT_FOUND.equals(identifier) ? null : identifier;
+            }
+
+            identifier = lookupIdentifierInternal(crs, fullScan);
+            crsIdentifierCache.put(crs, identifier == null ? CRS_NOT_FOUND : identifier);
+            return identifier;
+        } else {
+            return lookupIdentifierInternal(crs, fullScan);
+        }
+    }
+
+    private static String lookupIdentifierInternal(CoordinateReferenceSystem crs, boolean fullScan)
+            throws FactoryException {
+        // privilege EPSG is possible
+        Integer code = CRS.lookupEpsgCode(crs, false);
         if (code != null) {
             return "EPSG:" + code;
-        } else {
-            return CRS.lookupIdentifier(crs, fullScan);
         }
+        // otherwise see if there is any code in the object itself
+        String result =
+                crs.getIdentifiers().stream()
+                        .filter(id -> id.getAuthority() != null)
+                        .filter(id -> id.getCode() != null)
+                        .findFirst()
+                        .map(id -> id.toString())
+                        .orElse(null);
+
+        if (result != null) return result;
+
+        // search in other authorities, skipping the alias ones
+        final Set<Citation> authorities = new LinkedHashSet<>();
+        for (final CRSAuthorityFactory factory :
+                ReferencingFactoryFinder.getCRSAuthorityFactories(null)) {
+            authorities.add(factory.getAuthority());
+        }
+        authorities.remove(Citations.HTTP_OGC);
+        authorities.remove(Citations.HTTP_URI_OGC);
+        authorities.remove(Citations.AUTO);
+        authorities.remove(Citations.URN_OGC);
+        for (Citation authority : authorities) {
+            result = CRS.lookupIdentifier(authority, crs, fullScan);
+            if (result != null) return result;
+        }
+        return null;
     }
 
     /**

@@ -26,6 +26,7 @@ import org.geoserver.wcs.kvp.GridType;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.LinearTransform;
 import org.geotools.util.NumberRange;
@@ -420,11 +421,8 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         protected String urnIdentifier(final CoordinateReferenceSystem crs)
                 throws FactoryException {
-            String authorityAndCode = CRS.lookupIdentifier(crs, false);
-            String code = authorityAndCode.substring(authorityAndCode.lastIndexOf(":") + 1);
-            // we don't specify the version, but we still need to put a space
-            // for it in the urn form, that's why we have :: before the code
-            return "urn:ogc:def:crs:EPSG::" + code;
+            String identifier = CRS.lookupIdentifier(crs, false);
+            return SrsSyntax.OGC_URN.getSRS(identifier);
         }
 
         /** Writes the element if and only if the content is not null and not empty */

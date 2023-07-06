@@ -54,6 +54,7 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
@@ -800,8 +801,10 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                             "GridBaseCrs");
                 gridCRS.setGridBaseCRS(gridBaseCrs);
             } else {
-                String code = GML2EncodingUtils.epsgCode(meta.getCRS());
-                gridCRS.setGridBaseCRS("urn:x-ogc:def:crs:EPSG:" + code);
+                String code =
+                        GML2EncodingUtils.toURI(
+                                meta.getCRS(), SrsSyntax.OGC_URN_EXPERIMENTAL, false);
+                gridCRS.setGridBaseCRS(code);
             }
 
             // check grid type makes sense and apply default otherwise

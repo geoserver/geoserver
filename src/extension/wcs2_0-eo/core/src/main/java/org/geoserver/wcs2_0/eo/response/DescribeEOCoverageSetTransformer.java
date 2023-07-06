@@ -25,7 +25,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.eo.EOCoverageResourceCodec;
 import org.geoserver.wcs2_0.eo.WCSEOMetadata;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -46,6 +45,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -269,17 +269,17 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
             List<String> axesNames = envelopeAxisMapper.getAxesNames(envelope, true);
 
             // lookup EPSG code
-            Integer EPSGCode = null;
+            String crsId = null;
             try {
-                EPSGCode = CRS.lookupEpsgCode(crs, false);
+                crsId = CRS.lookupIdentifier(crs, true);
             } catch (FactoryException e) {
                 throw new IllegalStateException(
                         "Unable to lookup epsg code for this CRS:" + crs, e);
             }
-            if (EPSGCode == null) {
+            if (crsId == null) {
                 throw new IllegalStateException("Unable to lookup epsg code for this CRS:" + crs);
             }
-            final String srsName = GetCoverage.SRS_STARTER + EPSGCode;
+            final String srsName = SrsSyntax.AUTH_CODE.getSRS(crsId);
             // handle axes swap for geographic crs
             final boolean axisSwap = CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);
 

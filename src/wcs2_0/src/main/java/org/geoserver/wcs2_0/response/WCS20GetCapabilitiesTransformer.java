@@ -29,10 +29,12 @@ import org.geoserver.ExtendedCapabilitiesProvider;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.data.InternationalContentHelper;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensions;
@@ -40,12 +42,11 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
-import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.util.logging.Logging;
 import org.geotools.wcs.v2_0.WCS;
 import org.geotools.xml.transform.TransformerBase;
@@ -306,15 +307,21 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             // add the supported CRS
             Collection<String> codes;
             if (wcs.getSRS() == null || wcs.getSRS().isEmpty()) {
-                codes = CRS.getSupportedCodes("EPSG");
+                CapabilitiesCRSProvider crsProvider = new CapabilitiesCRSProvider();
+                crsProvider.getAuthorityExclusions().add("CRS");
+                crsProvider.setCodeMapper(
+                        (authority, code) ->
+                                "http://www.opengis.net/def/crs/" + authority + "/0/" + code);
+                codes = crsProvider.getCodes();
             } else {
-                codes = wcs.getSRS();
+                codes =
+                        wcs.getSRS().stream()
+                                .map(code -> mapCode(code))
+                                .collect(Collectors.toList());
             }
             start("crs:CrsMetadata");
             for (String code : codes) {
-                if (!code.equals("WGS84(DD)")) {
-                    element("crs:crsSupported", "http://www.opengis.net/def/crs/EPSG/0/" + code);
-                }
+                element("crs:crsSupported", code);
             }
             end("crs:CrsMetadata");
             // add the supported interpolation methods
@@ -331,6 +338,16 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             end("wcs:Extension");
 
             end("wcs:ServiceMetadata");
+        }
+
+        private String mapCode(String code) {
+            int idx = code.indexOf(":");
+            if (idx == -1) {
+                return "http://www.opengis.net/def/crs/EPSG/0/" + code;
+            }
+            String authority = code.substring(0, idx);
+            String codeValue = code.substring(idx + 1);
+            return "http://www.opengis.net/def/crs/" + authority + "/0/" + codeValue;
         }
 
         /** Handles the service identification of the capabilities document. */
@@ -759,15 +776,13 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         private void handleBoundingBox(BoundingBox boundingBox) throws Exception {
             // CRS for this bbox
             final AttributesImpl attributes = new AttributesImpl();
-            attributes.addAttribute(
-                    "",
-                    "crs",
-                    "crs",
-                    "",
-                    GetCoverage.SRS_STARTER
-                            + CRS.lookupIdentifier(
-                                    boundingBox.getCoordinateReferenceSystem(), false));
-
+            // full scan needed for property based CRS plugins (e.g. IAU)
+            String identifier =
+                    ResourcePool.lookupIdentifier(boundingBox.getCoordinateReferenceSystem(), true);
+            if (identifier != null) {
+                String srs = SrsSyntax.OGC_HTTP_URI.getSRS(identifier);
+                attributes.addAttribute("", "crs", "crs", "", srs);
+            }
             start("ows:BoundingBox", attributes);
             // LowerCorner
             element(

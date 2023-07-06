@@ -538,15 +538,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     private void writeCrs(final GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs)
             throws FactoryException {
         if (crs != null) {
-            String identifier = null;
-            Integer code = CRS.lookupEpsgCode(crs, true);
-            if (code != null) {
-                if (code != null) {
-                    identifier = SrsSyntax.OGC_URN.getPrefix() + code;
-                }
-            } else {
-                identifier = CRS.lookupIdentifier(crs, true);
-            }
+            String identifier = SrsSyntax.OGC_URN.getSRS(CRS.lookupIdentifier(crs, true));
 
             jsonWriter.key("crs");
             jsonWriter.object();

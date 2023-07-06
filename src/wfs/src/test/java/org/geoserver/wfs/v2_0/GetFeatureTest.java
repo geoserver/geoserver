@@ -6,6 +6,7 @@
 package org.geoserver.wfs.v2_0;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.geoserver.data.test.CiteTestData.PRIMITIVEGEOFEATURE;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -25,6 +26,8 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -1737,5 +1740,21 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertXpathEvaluatesTo("PrimitiveGeoFeature.f001", "//sf:PrimitiveGeoFeature/@gml:id", dom);
         assertXpathNotExists("//sf:PrimitiveGeoFeature/sf:surfaceProperty", dom);
         assertXpathEvaluatesTo("name-f001-abcd", "//sf:PrimitiveGeoFeature/sf:new", dom);
+    }
+
+    @Test
+    public void testGetIAULayer() throws Exception {
+        Document doc =
+                getAsDOM("wfs?request=GetFeature&typename=iau:MarsPoi&version=2.0.0&service=wfs");
+        print(doc);
+        assertXpathExists("//wfs:FeatureCollection", doc);
+
+        // check each feature has the expected CRS
+        XpathEngine xp = XMLUnit.newXpathEngine();
+        Integer count = Integer.valueOf(xp.evaluate("/wfs:FeatureCollection/@numberReturned", doc));
+        String srs = "urn:ogc:def:crs:IAU::49900";
+        for (int i = 0; i < count; i++) {
+            assertXpathEvaluatesTo(srs, "//iau:MarsPoi/iau:geom/gml:Point/@srsName", doc);
+        }
     }
 }

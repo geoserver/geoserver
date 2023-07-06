@@ -967,4 +967,16 @@ public class GeoJSONTest extends WFSTestSupport {
     private Object getProperty(JSONObject feature, String propertyName) {
         return feature.getJSONObject("properties").get(propertyName);
     }
+
+    @Test
+    public void testIAULayer() throws Exception {
+        JSONObject json =
+                (JSONObject)
+                        getAsJSON(
+                                "wfs?request=GetFeature&version=2.0.0&typename=iau:MarsPoi&outputformat="
+                                        + JSONType.json);
+        // print(json);
+        String crs = json.getJSONObject("crs").getJSONObject("properties").getString("name");
+        assertEquals("urn:ogc:def:crs:IAU::49900", crs);
+    }
 }

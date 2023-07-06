@@ -903,4 +903,14 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
             getGeoServer().save(global);
         }
     }
+
+    @Test
+    public void testIauFeatureTypes() throws Exception {
+        Document doc = getAsDOM("iau/wfs?service=WFS&version=2.0.0&request=getCapabilities");
+        print(doc);
+
+        String poiXPath = "//wfs:FeatureTypeList/wfs:FeatureType[wfs:Name = 'iau:MarsPoi']";
+        assertXpathExists(poiXPath, doc);
+        assertXpathEvaluatesTo("urn:ogc:def:crs:IAU::49900", poiXPath + "/wfs:DefaultCRS ", doc);
+    }
 }

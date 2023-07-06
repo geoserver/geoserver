@@ -43,6 +43,11 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-iau-wkt</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

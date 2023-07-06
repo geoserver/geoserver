@@ -379,6 +379,8 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
     private void replaceOGCPrjFileByESRIPrjFile(
             File tempDir, String fileName, SimpleFeatureType remappedSchema)
             throws FactoryException, IOException, FileNotFoundException {
+        // The ESRI replacement property file is keyed by code only, so it's ok to simply
+        // lookup the code for the remapped schema, if not found the WKT1 will be just dumped as is
         final Integer epsgCode =
                 CRS.lookupEpsgCode(
                         remappedSchema.getGeometryDescriptor().getCoordinateReferenceSystem(),

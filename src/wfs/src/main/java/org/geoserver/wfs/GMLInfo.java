@@ -33,7 +33,7 @@ public interface GMLInfo extends Serializable {
         NORMAL {
             @Override
             public SrsSyntax toSrsSyntax() {
-                return SrsSyntax.EPSG_CODE;
+                return SrsSyntax.AUTH_CODE;
             }
         },
         XML {
@@ -61,6 +61,9 @@ public interface GMLInfo extends Serializable {
             }
         };
 
+        /** Deprecated. Use toSrsSyntax() and compute the SRS with it instead */
+        @Deprecated
+        @SuppressWarnings("deprecation") // calling onto anothre deprecated  method
         public String getPrefix() {
             return toSrsSyntax().getPrefix();
         }

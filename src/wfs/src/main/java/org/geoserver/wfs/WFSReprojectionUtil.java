@@ -8,6 +8,7 @@ package org.geoserver.wfs;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.GeoTools;
@@ -35,11 +36,11 @@ class WFSReprojectionUtil {
             if (wfsVersion.equals("1.0.0")) {
                 return nativeCRS;
             } else {
-                String code = GML2EncodingUtils.epsgCode(nativeCRS);
+                String code =
+                        GML2EncodingUtils.toURI(nativeCRS, SrsSyntax.OGC_URN_EXPERIMENTAL, false);
                 // it's possible that we can't do the CRS -> code -> CRS conversion...so we'll just
                 // return what we have
-                if (code == null) return nativeCRS;
-                return CRS.decode("urn:x-ogc:def:crs:EPSG:6.11.2:" + code);
+                return code == null ? nativeCRS : CRS.decode(code);
             }
         } catch (Exception e) {
             throw new WFSException("We have had issues trying to flip axis of " + nativeCRS, e);

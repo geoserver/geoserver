@@ -6,6 +6,7 @@
 package org.geoserver.wfs.v1_1;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -523,5 +524,14 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         assertXpathEvaluatesTo("" + operationsMetadata, "count(//ows:OperationsMetadata)", dom);
         assertXpathEvaluatesTo("" + featureTypeList, "count(//wfs:FeatureTypeList)", dom);
         assertXpathEvaluatesTo("" + filterCapabilities, "count(//ogc:Filter_Capabilities)", dom);
+    }
+
+    @Test
+    public void testIauFeatureTypes() throws Exception {
+        Document doc = getAsDOM("iau/wfs?service=WFS&version=1.1.0&request=getCapabilities");
+
+        String poiXPath = "//wfs:FeatureTypeList/wfs:FeatureType[wfs:Name = 'iau:MarsPoi']";
+        assertXpathExists(poiXPath, doc);
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:IAU:49900", poiXPath + "/wfs:DefaultSRS ", doc);
     }
 }

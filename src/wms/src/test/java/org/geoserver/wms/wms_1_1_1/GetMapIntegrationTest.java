@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
@@ -75,13 +76,17 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataAccess;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
+import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -2651,6 +2656,45 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             ImageAssert.assertEquals(expected, image, 250);
         } finally {
             if (group != null) catalog.remove(group);
+        }
+    }
+
+    @Test
+    public void testIAUGeotiff() throws Exception {
+        String layerId = getLayerId(SystemTestData.MARS_VIKING);
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?bbox=-180,-90,180,90"
+                                + "&styles=&layers="
+                                + layerId
+                                + "&Format=image/geotiff"
+                                + "&request=GetMap"
+                                + "&width=400"
+                                + "&height=200"
+                                + "&srs=IAU:49900");
+        assertEquals("image/geotiff", response.getContentType());
+        assertEquals("inline; filename=iau-Viking.tif", response.getHeader("Content-Disposition"));
+
+        // extract geotiff
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("viking", "viking.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        // check the tiff has the expected CRS
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D coverage = null;
+        try {
+            CoordinateReferenceSystem crs = CRS.decode("IAU:49900");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+        } finally {
+            if (reader != null) {
+                try {
+                    if (reader != null) reader.dispose();
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+                }
+                if (coverage != null) coverage.dispose(true);
+            }
         }
     }
 }

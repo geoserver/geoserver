@@ -64,6 +64,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.data.InternationalContentHelper;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
@@ -944,11 +945,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             if (epsgCodes.isEmpty()) {
                 comment("All supported EPSG projections:");
                 capabilitiesCrsIdentifiers = new LinkedHashSet<>();
-                for (String code : CRS.getSupportedCodes("AUTO")) {
-                    if ("WGS84(DD)".equals(code)) continue;
-                    capabilitiesCrsIdentifiers.add("AUTO:" + code);
-                }
-                capabilitiesCrsIdentifiers.addAll(CRS.getSupportedCodes("EPSG"));
+                CapabilitiesCRSProvider crsProvider = new CapabilitiesCRSProvider();
+                crsProvider.getAuthorityExclusions().remove("AUTO");
+                crsProvider.getAuthorityExclusions().add("CRS");
+                capabilitiesCrsIdentifiers.addAll(crsProvider.getCodes());
             } else {
                 comment("Limited list of EPSG projections:");
                 capabilitiesCrsIdentifiers = new LinkedHashSet<>(epsgCodes);
@@ -960,10 +960,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
                 while (it.hasNext()) {
                     String code = it.next();
-                    if (!"WGS84(DD)".equals(code)) {
-                        currentSRS = qualifySRS(code);
-                        element("SRS", currentSRS);
-                    }
+                    currentSRS = qualifySRS(code);
+                    element("SRS", currentSRS);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);

@@ -859,20 +859,20 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     }
 
     private void parseCRS(GetMapRequest getMap) {
-        String epsgCode = getMap.getSRS();
-        epsgCode = WMS.toInternalSRS(epsgCode, WMS.version(getMap.getVersion()));
-        getMap.setSRS(epsgCode);
+        String srs = getMap.getSRS();
+        srs = WMS.toInternalSRS(srs, WMS.version(getMap.getVersion()));
+        getMap.setSRS(srs);
 
-        if (epsgCode != null) {
+        if (srs != null) {
             try {
                 // set the crs as well
-                CoordinateReferenceSystem mapcrs = CRS.decode(epsgCode);
+                CoordinateReferenceSystem mapcrs = CRS.decode(srs);
                 getMap.setCrs(mapcrs);
             } catch (Exception e) {
                 // couldnt make it - we send off a service exception with the
                 // correct info
                 throw new ServiceException(
-                        "Error occurred decoding the espg code " + epsgCode,
+                        "Error occurred decoding the espg code " + srs,
                         e,
                         WMSErrorCode.INVALID_CRS.get(getMap.getVersion()));
             }

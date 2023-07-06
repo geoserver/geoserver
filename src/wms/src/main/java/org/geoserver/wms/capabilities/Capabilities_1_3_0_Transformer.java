@@ -58,6 +58,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.data.InternationalContentHelper;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
@@ -940,17 +941,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         private void handleRootCrsList(final Set<String> epsgCodes) {
             final Set<String> capabilitiesCrsIdentifiers;
             if (epsgCodes.isEmpty()) {
-                comment("All supported EPSG projections:");
+                comment("All supported Coordinate Reference Systems:");
                 capabilitiesCrsIdentifiers = new LinkedHashSet<>();
-                for (String code : CRS.getSupportedCodes("AUTO")) {
-                    if ("WGS84(DD)".equals(code)) continue;
-                    capabilitiesCrsIdentifiers.add("AUTO:" + code);
-                }
-                capabilitiesCrsIdentifiers.addAll(CRS.getSupportedCodes("EPSG"));
+                CapabilitiesCRSProvider crsProvider = new CapabilitiesCRSProvider();
+                crsProvider.getAuthorityExclusions().remove("AUTO");
+                capabilitiesCrsIdentifiers.addAll(crsProvider.getCodes());
             } else {
                 comment("Limited list of EPSG projections:");
                 capabilitiesCrsIdentifiers = new LinkedHashSet<>(epsgCodes);
             }
+            // default, must be there
+            capabilitiesCrsIdentifiers.add("CRS:84");
 
             try {
                 Iterator<String> it = capabilitiesCrsIdentifiers.iterator();
@@ -958,17 +959,12 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 while (it.hasNext()) {
                     String code = it.next();
-                    if (!"WGS84(DD)".equals(code)) {
-                        currentSRS = qualifySRS(code);
-                        element("CRS", currentSRS);
-                    }
+                    currentSRS = qualifySRS(code);
+                    element("CRS", currentSRS);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
             }
-
-            // the default CRS:84
-            element("CRS", "CRS:84");
         }
 
         /** prefixes an srs code with "EPSG:" if it is not already prefixed. */

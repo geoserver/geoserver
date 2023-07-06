@@ -101,6 +101,10 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final Color COLOR_PLACES_GRAY = new Color(170, 170, 170);
     protected static final Color COLOR_LAKES_BLUE = new Color(64, 64, 192);
+
+    protected static final QName VIKING =
+            new QName(SystemTestData.CITE_URI, "viking", SystemTestData.CITE_PREFIX);
+
     /** @return The global wms singleton from the application context. */
     protected WMS getWMS() {
         WMS wms = (WMS) applicationContext.getBean("wms");
@@ -132,6 +136,9 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
         // Add a raster layer
         testData.setUpRasterLayer(WORLD, "world.tiff", null, null, TestData.class);
+
+        // Add a IAU layer (mars)
+        testData.setupIAULayers(true, true);
     }
 
     @Override

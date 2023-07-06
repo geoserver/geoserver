@@ -28,10 +28,12 @@ import org.geoserver.wfs.TransactionListener;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wms.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.CanonicalSet;
 import org.locationtech.jts.geom.Envelope;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class QuickTileCache implements TransactionListener, GeoServerLifecycleHandler {
     /**
@@ -99,13 +101,15 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         Point2D origin = request.getTilesOrigin();
         if (CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
             try {
+                String crsId = CRS.lookupIdentifier(request.getCrs(), false);
+                CoordinateReferenceSystem enCRS = CRS.decode(SrsSyntax.AUTH_CODE.getSRS(crsId));
                 bbox =
                         new ReferencedEnvelope(
                                 bbox.getMinY(),
                                 bbox.getMaxY(),
                                 bbox.getMinX(),
                                 bbox.getMaxX(),
-                                CRS.decode("EPSG:" + CRS.lookupEpsgCode(request.getCrs(), false)));
+                                enCRS);
                 origin = new Point2D.Double(origin.getY(), origin.getX());
             } catch (Exception e) {
                 throw new ServiceException("Failed to bring the bbox back in a EN order", e);

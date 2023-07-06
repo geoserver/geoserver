@@ -83,12 +83,10 @@ public class GML3FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
             qt.setTypeName(Collections.singletonList(qname));
 
-            String crs = GML2EncodingUtils.epsgCode(fc.getSchema().getCoordinateReferenceSystem());
-            if (crs != null) {
-                final String srsName = "EPSG:" + crs;
+            String srsName = GML2EncodingUtils.toURI(fc.getSchema().getCoordinateReferenceSystem());
+            if (srsName != null) {
                 try {
                     qt.setSrsName(new URI(srsName));
-
                 } catch (URISyntaxException e) {
                     throw new ServiceException(
                             "Unable to determite coordinate system for featureType "

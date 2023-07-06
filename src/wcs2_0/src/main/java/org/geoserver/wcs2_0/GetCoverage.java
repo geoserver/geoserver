@@ -83,6 +83,7 @@ import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
@@ -165,8 +166,6 @@ public class GetCoverage {
     private GridCoverageFactory gridCoverageFactory;
 
     private MIMETypeMapper mimeMapper;
-
-    public static final String SRS_STARTER = "http://www.opengis.net/def/crs/EPSG/0/";
 
     /** Hints to indicate that a scale has been pre-applied, reporting the scaling factors */
     public static Hints.Key PRE_APPLIED_SCALE = new Hints.Key(Double[].class);
@@ -919,10 +918,11 @@ public class GetCoverage {
     private GridCoverage2D enforceLatLongOrder(
             GridCoverage2D coverage, final Hints hints, final CoordinateReferenceSystem outputCRS)
             throws Exception {
-        final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
-        if (epsgCode != null && epsgCode > 0) {
+        String identifier = CRS.lookupIdentifier(outputCRS, false);
+        if (identifier != null) {
             // final CRS
-            CoordinateReferenceSystem finalCRS = CRS.decode(SRS_STARTER + epsgCode);
+            CoordinateReferenceSystem finalCRS =
+                    CRS.decode(SrsSyntax.OGC_HTTP_URI.getSRS(identifier));
             if (CRS.getAxisOrder(outputCRS).equals(CRS.getAxisOrder(finalCRS))) {
                 return coverage;
             }
@@ -966,9 +966,10 @@ public class GetCoverage {
     private boolean requestingLatLonAxesOrder(CoordinateReferenceSystem outputCRS) {
 
         try {
-            final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
-            if (epsgCode != null && epsgCode > 0) {
-                CoordinateReferenceSystem originalCRS = CRS.decode(SRS_STARTER + epsgCode);
+            final String identifier = CRS.lookupIdentifier(outputCRS, false);
+            if (identifier != null) {
+                CoordinateReferenceSystem originalCRS =
+                        CRS.decode(SrsSyntax.OGC_HTTP_URI.getSRS(identifier));
                 return !CRS.getAxisOrder(originalCRS).equals(CRS.getAxisOrder(outputCRS));
             }
         } catch (FactoryException e) {
@@ -1503,9 +1504,9 @@ public class GetCoverage {
             // instantiate and make it go lon/lat order if possible
             try {
                 CoordinateReferenceSystem crs = CRS.decode(crsName);
-                final Integer epsgCode = CRS.lookupEpsgCode(crs, false);
-                if (epsgCode != null && epsgCode > 0) {
-                    return CRS.decode("EPSG:" + epsgCode);
+                final String id = CRS.lookupIdentifier(crs, false);
+                if (id != null) {
+                    return CRS.decode(SrsSyntax.AUTH_CODE.getSRS(id));
                 } else {
                     return crs;
                 }

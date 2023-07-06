@@ -101,7 +101,7 @@ public class SystemTestData extends CiteTestData {
         public static LayerProperty<String> STYLE = new LayerProperty<>();
         public static LayerProperty<ReferencedEnvelope> ENVELOPE = new LayerProperty<>();
         public static LayerProperty<ReferencedEnvelope> LATLON_ENVELOPE = new LayerProperty<>();
-        public static LayerProperty<Integer> SRS = new LayerProperty<>();
+        public static LayerProperty<String> SRS = new LayerProperty<>();
         public static LayerProperty<String> STORE = new LayerProperty<>();
     }
 
@@ -177,6 +177,19 @@ public class SystemTestData extends CiteTestData {
         addDefaultRasterLayer(ROTATED_CAD, catalog);
         addDefaultRasterLayer(WORLD, catalog);
         addDefaultRasterLayer(MULTIBAND, catalog);
+    }
+
+    /**
+     * Sets up test data in IAU authority, for Mars
+     *
+     * @param raster
+     * @param vector
+     */
+    public void setupIAULayers(boolean raster, boolean vector) throws IOException {
+        addWorkspace(IAU_PREFIX, IAU_URI, catalog);
+        Map<LayerProperty, Object> marsGeographicCRS = Map.of(LayerProperty.SRS, "IAU:49900");
+        if (vector) addVectorLayer(MARS_POI, marsGeographicCRS, catalog);
+        if (raster) addRasterLayer(MARS_VIKING, "viking.tiff", null, marsGeographicCRS, catalog);
     }
 
     public void setUpWcs10RasterLayers() throws IOException {
@@ -641,15 +654,12 @@ public class SystemTestData extends CiteTestData {
         featureType.setTitle(name);
         featureType.setAbstract("abstract about " + name);
 
-        Integer srs = LayerProperty.SRS.get(props, SRS.get(qName));
-        if (srs == null) {
-            srs = 4326;
-        }
-        featureType.setSRS("EPSG:" + srs);
+        String srs = getLayerSRS(qName, props);
+        featureType.setSRS(srs);
         try {
-            featureType.setNativeCRS(CRS.decode("EPSG:" + srs));
+            featureType.setNativeCRS(CRS.decode(srs));
         } catch (Exception e) {
-            LOGGER.warning("Failed to decode EPSG:" + srs + ", setting the native SRS to null");
+            LOGGER.warning("Failed to decode " + srs + ", setting the native SRS to null");
         }
         featureType.setNumDecimals(8);
         featureType.getKeywords().add(new Keyword(name));
@@ -715,6 +725,24 @@ public class SystemTestData extends CiteTestData {
         } else {
             catalog.save(layer);
         }
+    }
+
+    /**
+     * Returns the layer SRS based on the properties. Will default to EPSG:4326 if not specified,
+     * and will add the EPSG: prefix if not already present.
+     */
+    private static String getLayerSRS(QName qName, Map<LayerProperty, Object> props) {
+        Object rawSrs = LayerProperty.SRS.get(props, SRS.get(qName));
+        if (rawSrs == null) return "EPSG:4326";
+
+        // could be a string or a number
+        String srs = rawSrs.toString();
+        // do we have an authority?
+        int idx = srs.indexOf(":");
+        if (idx == -1) {
+            return "EPSG:" + srs;
+        }
+        return srs;
     }
 
     /**
@@ -944,6 +972,9 @@ public class SystemTestData extends CiteTestData {
             coverage.setTitle(name);
             coverage.setDescription(name);
             coverage.setEnabled(true);
+            if (LayerProperty.SRS.get(props, SRS.get(qName)) != null) {
+                coverage.setSRS(getLayerSRS(qName, props));
+            }
 
             CoverageInfo cov = catalog.getCoverageByCoverageStore(store, name);
             if (cov == null) {

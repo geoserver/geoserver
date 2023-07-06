@@ -22,7 +22,6 @@ import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
@@ -31,12 +30,12 @@ import org.geoserver.wcs2_0.util.WCS20DescribeCoverageExtension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
 import org.geotools.wcs.v2_0.WCS;
 import org.opengis.geometry.Envelope;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.ResponseUtils;
 import org.vfny.geoserver.util.WCSUtils;
@@ -212,19 +211,10 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 List<String> axesNames =
                         envelopeDimensionsMapper.getAxesNames(ci.boundingBox(), true);
 
-                // lookup EPSG code
-                Integer EPSGCode = null;
-                try {
-                    EPSGCode = CRS.lookupEpsgCode(crs, false);
-                } catch (FactoryException e) {
-                    throw new IllegalStateException(
-                            "Unable to lookup epsg code for this CRS:" + crs, e);
-                }
-                if (EPSGCode == null) {
-                    throw new IllegalStateException(
-                            "Unable to lookup epsg code for this CRS:" + crs);
-                }
-                final String srsName = GetCoverage.SRS_STARTER + EPSGCode;
+                // lookup CRS identifier and encode as HTTP URI
+                String identifier = CRS.lookupIdentifier(crs, false);
+                String srsName = SrsSyntax.OGC_HTTP_URI.getSRS(identifier);
+
                 // handle axes swap for geographic crs
                 final boolean axisSwap =
                         !CRS.getAxisOrder(CRS.decode(srsName)).equals(AxisOrder.EAST_NORTH);

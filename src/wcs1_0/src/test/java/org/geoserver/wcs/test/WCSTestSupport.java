@@ -88,6 +88,8 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         testData.setUpRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class);
         // a raster layer with time, elevation and custom dimensions as ranges
         testData.setUpRasterLayer(TIMERANGES, "timeranges.zip", null, null, TestData.class);
+        // adding layers to test IAU support
+        testData.setupIAULayers(true, false);
     }
 
     @Override

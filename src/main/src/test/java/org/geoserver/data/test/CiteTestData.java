@@ -138,6 +138,12 @@ public abstract class CiteTestData implements TestData {
     public static String DEFAULT_PREFIX = "gs";
     public static String DEFAULT_URI = "http://geoserver.org";
 
+    // MARS
+    public static String IAU_PREFIX = "iau";
+    public static String IAU_URI = "http://geoserver.org/iau";
+    public static QName MARS_VIKING = new QName(IAU_URI, "Viking", IAU_PREFIX);
+    public static QName MARS_POI = new QName(IAU_URI, "MarsPoi", IAU_PREFIX);
+
     // public static QName ENTIT\u00C9G\u00C9N\u00C9RIQUE = new QName( SF_URI,
     // "Entit\u00E9G\u00E9n\u00E9rique", SF_PREFIX );
 
@@ -221,14 +227,14 @@ public abstract class CiteTestData implements TestData {
     public static QName[] CITE_TYPENAMES = WMS_TYPENAMES;
 
     /** map of qname to srs */
-    public static HashMap<QName, Integer> SRS = new HashMap<>();
+    public static HashMap<QName, String> SRS = new HashMap<>();
 
     static {
         for (QName wfs10Typename : WFS10_TYPENAMES) {
-            SRS.put(wfs10Typename, 32615);
+            SRS.put(wfs10Typename, "32615");
         }
         for (QName wfs11Typename : WFS11_TYPENAMES) {
-            SRS.put(wfs11Typename, 4326);
+            SRS.put(wfs11Typename, "4326");
         }
     }
 
@@ -249,11 +255,12 @@ public abstract class CiteTestData implements TestData {
     public static final ReferencedEnvelope DEFAULT_LATLON_ENVELOPE =
             new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
 
-    /** Populates a map with prefix to namespace uri mappings for all the mock data namespaces. */
+    /** Populates a map with prefix to namespace URI mappings for all the mock data namespaces. */
     public static void registerNamespaces(Map<String, String> namespaces) {
         namespaces.put(CITE_PREFIX, CITE_URI);
         namespaces.put(CDF_PREFIX, CDF_URI);
         namespaces.put(CGF_PREFIX, CGF_URI);
         namespaces.put(SF_PREFIX, SF_URI);
+        namespaces.put(IAU_PREFIX, IAU_URI);
     }
 }

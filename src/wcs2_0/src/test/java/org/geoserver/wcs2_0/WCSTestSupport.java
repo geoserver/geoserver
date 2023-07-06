@@ -7,6 +7,8 @@ package org.geoserver.wcs2_0;
 
 import static java.util.Map.entry;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -35,6 +39,7 @@ import javax.xml.validation.SchemaFactory;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
@@ -51,6 +56,7 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xsd.Parser;
@@ -63,6 +69,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -245,6 +252,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         testData.setUpRasterLayer(UTM11, "/utm11-2.tiff", null, null, WCSTestSupport.class);
         testData.setUpRasterLayer(
                 DATELINE_CROSS, "/datelinecross.tif", null, null, WCSTestSupport.class);
+        testData.setupIAULayers(true, false);
     }
 
     @Override
@@ -405,6 +413,51 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         assertXpathCoordinate(
                 new CoordinateXY(-1.3790593336628266E7, 7197101.83024677),
                 usaPath + "/ows:UpperCorner",
+                dom);
+
+        // check the CRSs
+        assertCRSReference(dom, "EPSG", "4326");
+        assertCRSReference(dom, "EPSG", "32632");
+        // custom GeoServer extensions
+        assertCRSReference(dom, "EPSG", "900913");
+        assertCRSReference(dom, "EPSG", "404000");
+        // IAU codes (added in the classpath for tests only)
+        assertCRSReference(dom, "IAU", "1000");
+
+        // check the size of supported codes
+        final Set<String> supportedCodes = getCodes("EPSG");
+        supportedCodes.addAll(getCodes("IAU"));
+        NodeList allCrsCodes = xpath.getMatchingNodes("//crs:crsSupported", dom);
+
+        assertEquals(supportedCodes.size(), allCrsCodes.getLength());
+
+        // check the viking raster is there with its CRS
+        String vikingPath = "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='iau__Viking']";
+        assertXpathEvaluatesTo(
+                "http://www.opengis.net/def/crs/IAU/0/49900",
+                vikingPath + "/ows:BoundingBox/@crs",
+                dom);
+    }
+
+    /**
+     * Need to add prefixes here because some ids are duplicated amongst EPSG and IAU and to filter
+     * out WGS84(DD) because it shows up in all authorities
+     */
+    private static Set<String> getCodes(String authority) {
+        return CRS.getSupportedCodes(authority).stream()
+                .filter(c -> !"WGS84(DD)".equals(c))
+                .map(c -> "http://www.opengis.net/def/crs/" + authority + "/0/" + c)
+                .collect(Collectors.toSet());
+    }
+
+    private static void assertCRSReference(Document dom, String authority, String code)
+            throws XpathException {
+        assertXpathExists(
+                "//crs:crsSupported[text()='http://www.opengis.net/def/crs/"
+                        + authority
+                        + "/0/"
+                        + code
+                        + "']",
                 dom);
     }
 

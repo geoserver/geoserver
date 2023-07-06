@@ -624,4 +624,25 @@ public class DescribeCoverageTest extends WCSTestSupport {
         // the attack failed and the foo element is not there
         XMLAssert.assertXpathNotExists("//foo", dom);
     }
+
+    @Test
+    public void testIAUDescription() throws Exception {
+        Document dom =
+                getAsDOM(
+                        BASEPATH
+                                + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
+                                + getLayerId(SystemTestData.MARS_VIKING));
+        // print(dom);
+        checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
+        // check the basics, the output is a single coverage description with the expected id
+        assertEquals(1, dom.getElementsByTagName("wcs:CoverageDescription").getLength());
+        assertEquals(1, dom.getElementsByTagName("wcs:CoverageOffering").getLength());
+        assertXpathEvaluatesTo(
+                getLayerId(SystemTestData.MARS_VIKING),
+                "/wcs:CoverageDescription/wcs:CoverageOffering/wcs:name",
+                dom);
+        // check the iau metadata
+        assertXpathEvaluatesTo("IAU:49900", "//wcs:requestResponseCRSs", dom);
+        assertXpathEvaluatesTo("IAU:49900", "//gml:RectifiedGrid/@srsName", dom);
+    }
 }

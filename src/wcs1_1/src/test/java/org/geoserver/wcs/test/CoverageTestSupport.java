@@ -27,5 +27,6 @@ public abstract class CoverageTestSupport extends GeoServerSystemTestSupport {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
         testData.setUpWcs10RasterLayers();
+        testData.setupIAULayers(true, false);
     }
 }

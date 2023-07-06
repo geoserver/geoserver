@@ -1009,6 +1009,20 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 "0.0 -11164.572122037076", "//gml:RectifiedGrid/gml:offsetVector[2]", dom);
     }
 
+    @Test
+    public void testIAUCoverage() throws Exception {
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=iau__Viking");
+        assertNotNull(dom);
+        print(dom);
+
+        checkValidationErrors(dom, getWcs20Schema());
+        assertXpathEvaluatesTo("Lat Long", "//gml:boundedBy/gml:Envelope/@axisLabels", dom);
+        String marsSRS = "http://www.opengis.net/def/crs/IAU/0/49900";
+        assertXpathEvaluatesTo(marsSRS, "//gml:Point/@srsName", dom);
+        assertXpathEvaluatesTo(marsSRS, "//gml:offsetVector[1]/@srsName", dom);
+        assertXpathEvaluatesTo(marsSRS, "//gml:offsetVector[2]/@srsName", dom);
+    }
+
     private void checkWaterTempTimeEnvelope(Document dom) throws XpathException {
         // check the envelope with time
         assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);

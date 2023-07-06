@@ -32,6 +32,7 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
@@ -147,8 +148,10 @@ public class PreviewLayer {
             if (groupInfo != null) {
                 ReferencedEnvelope bounds = groupInfo.getBounds();
                 request.setBbox(bounds);
-                String epsgCode = GML2EncodingUtils.epsgCode(bounds.getCoordinateReferenceSystem());
-                if (epsgCode != null) request.setSRS("EPSG:" + epsgCode);
+                String srs =
+                        GML2EncodingUtils.toURI(
+                                bounds.getCoordinateReferenceSystem(), SrsSyntax.AUTH_CODE, false);
+                request.setSRS(srs);
             }
             try {
                 DefaultWebMapService.autoSetBoundsAndSize(request);

@@ -178,6 +178,7 @@ abstract class ElasticConfigurationPage extends Panel {
             builder.setStore(dsInfo);
             typeInfo = builder.buildFeatureType(ds.getFeatureSource(ri.getQualifiedName()));
             typeInfo.setName(ri.getName());
+            typeInfo.setNativeName(ri.getName());
             typeInfo.getMetadata().put(ElasticLayerConfiguration.KEY, layerConfig);
             LayerInfo layerInfo = builder.buildLayer(typeInfo);
             layerInfo.setName(ri.getName());

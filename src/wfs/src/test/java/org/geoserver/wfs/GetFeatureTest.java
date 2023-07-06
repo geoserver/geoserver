@@ -5,6 +5,8 @@
  */
 package org.geoserver.wfs;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -477,5 +479,20 @@ public class GetFeatureTest extends WFSTestSupport {
         doc = getAsDOM(request);
         featureMembers = doc.getElementsByTagName("gml:featureMember");
         assertEquals(0, featureMembers.getLength());
+    }
+
+    @Test
+    public void testGetIAULayer() throws Exception {
+        Document doc =
+                getAsDOM("wfs?request=GetFeature&typename=iau:MarsPoi&version=1.0.0&service=wfs");
+        assertXpathExists("/wfs:FeatureCollection", doc);
+
+        // check each feature has the expected CRS
+        XpathEngine xp = XMLUnit.newXpathEngine();
+        Integer count = Integer.valueOf(xp.evaluate("count(//iau:MarsPoi)", doc));
+        String srs = "http://www.opengis.net/gml/srs/iau.xml#49900";
+        for (int i = 0; i < count; i++) {
+            assertXpathEvaluatesTo(srs, "//iau:MarsPoi/iau:geom/gml:Point/@srsName", doc);
+        }
     }
 }

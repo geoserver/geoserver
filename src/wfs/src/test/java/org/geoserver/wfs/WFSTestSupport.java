@@ -58,6 +58,12 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
     }
 
     @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setupIAULayers(false, true);
+    }
+
+    @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
 
         // init xmlunit

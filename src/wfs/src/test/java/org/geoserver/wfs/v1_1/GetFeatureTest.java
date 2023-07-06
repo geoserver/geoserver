@@ -892,4 +892,39 @@ public class GetFeatureTest extends WFSTestSupport {
                         + "/gml:MultiSurface/gml:surfaceMember/gml:Polygon[@gml:id])",
                 doc);
     }
+
+    @Test
+    public void testGetIAULayer() throws Exception {
+        Document doc =
+                getAsDOM("wfs?request=GetFeature&typename=iau:MarsPoi&version=1.1.0&service=wfs");
+        print(doc);
+        assertXpathExists("/wfs:FeatureCollection", doc);
+
+        // check each feature has the expected CRS
+        XpathEngine xp = XMLUnit.newXpathEngine();
+        Integer count =
+                Integer.valueOf(xp.evaluate("/wfs:FeatureCollection/@numberOfFeatures", doc));
+        String srs = "urn:x-ogc:def:crs:IAU:49900";
+        for (int i = 0; i < count; i++) {
+            assertXpathEvaluatesTo(srs, "//iau:MarsPoi/iau:geom/gml:Point/@srsName", doc);
+        }
+    }
+
+    @Test
+    public void testGetIAULayerReproject() throws Exception {
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&typename=iau:MarsPoi&version=1.1.0&service=wfs&srsName=urn:x-ogc:def:crs:IAU:0:49910");
+        print(doc);
+        assertXpathExists("/wfs:FeatureCollection", doc);
+
+        // check each feature has the expected CRS
+        XpathEngine xp = XMLUnit.newXpathEngine();
+        Integer count =
+                Integer.valueOf(xp.evaluate("/wfs:FeatureCollection/@numberOfFeatures", doc));
+        String srs = "urn:x-ogc:def:crs:IAU:49910";
+        for (int i = 0; i < count; i++) {
+            assertXpathEvaluatesTo(srs, "//iau:MarsPoi/iau:geom/gml:Point/@srsName", doc);
+        }
+    }
 }

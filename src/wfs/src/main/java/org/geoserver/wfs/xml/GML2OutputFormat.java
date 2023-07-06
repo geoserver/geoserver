@@ -108,9 +108,9 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         FeatureTypeNamespaces ftNames = transformer.getFeatureTypeNamespaces();
         Map ftNamespaces = new HashMap();
 
-        // TODO: the srs is a back, it only will work property when there is
+        // TODO: the crs is a back, it only will work property when there is
         // one type, we really need to set it on the feature level
-        int srs = -1;
+        CoordinateReferenceSystem crs = null;
         int numDecimals = -1;
         boolean padWithZeros = false;
         boolean forcedDecimal = false;
@@ -155,9 +155,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
                     srsName = meta.getSRS();
                 }
                 if (srsName != null) {
-                    CoordinateReferenceSystem crs = CRS.decode(srsName);
-                    String epsgCode = GML2EncodingUtils.epsgCode(crs);
-                    srs = Integer.parseInt(epsgCode);
+                    crs = CRS.decode(srsName);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Problem encoding:" + query.getSrsName(), e);
@@ -218,8 +216,9 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
             transformer.setLockId(results.getLockId());
         }
 
-        if (srs != -1) {
-            transformer.setSrsName(gml.getSrsNameStyle().getPrefix() + srs);
+        if (crs != null) {
+            String srsURI = GML2EncodingUtils.toURI(crs, gml.getSrsNameStyle().toSrsSyntax(), true);
+            if (srsURI != null) transformer.setSrsName(srsURI);
         }
     }
 

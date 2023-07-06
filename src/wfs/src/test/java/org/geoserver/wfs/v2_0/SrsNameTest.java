@@ -37,9 +37,8 @@ public class SrsNameTest extends WFS20TestSupport {
         Document d = getAsDOM(q);
         assertEquals("wfs:FeatureCollection", d.getDocumentElement().getNodeName());
 
-        XMLAssert.assertXpathExists(
-                "//gml:Envelope[@srsName = '" + srsNameStyle.getPrefix() + "32615']", d);
-        XMLAssert.assertXpathExists(
-                "//gml:Point[@srsName = '" + srsNameStyle.getPrefix() + "32615']", d);
+        String identifier = srsNameStyle.toSrsSyntax().getSRS("EPSG:32615");
+        XMLAssert.assertXpathExists("//gml:Envelope[@srsName = '" + identifier + "']", d);
+        XMLAssert.assertXpathExists("//gml:Point[@srsName = '" + identifier + "']", d);
     }
 }

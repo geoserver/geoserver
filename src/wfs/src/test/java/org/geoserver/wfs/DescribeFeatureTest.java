@@ -118,7 +118,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
     public void testWithoutTypeName() throws Exception {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0");
         NodeList nl = doc.getElementsByTagName("xsd:import");
-        assertEquals(3, nl.getLength());
+        assertEquals(4, nl.getLength());
 
         Map<String, Map<String, String>> imprts = new HashMap<>();
         for (int i = 0; i < nl.getLength(); i++) {
@@ -138,7 +138,9 @@ public class DescribeFeatureTest extends WFSTestSupport {
             imprts.put(namespace, params);
         }
 
-        String[] expected = {CiteTestData.SF_URI, CiteTestData.CDF_URI, CiteTestData.CGF_URI};
+        String[] expected = {
+            CiteTestData.SF_URI, CiteTestData.CDF_URI, CiteTestData.CGF_URI, CiteTestData.IAU_URI
+        };
         for (String namespace : expected) {
             assertNotNull(imprts.get(namespace));
             Map<String, String> params = imprts.get(namespace);

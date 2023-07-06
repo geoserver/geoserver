@@ -227,7 +227,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     public void testTypeNames() throws Exception {
         // filter on an existing namespace
         Document doc = getAsDOM("wfs?service=WFS&version=1.0.0&request=getCapabilities");
-        print(doc);
+        // print(doc);
         Element e = doc.getDocumentElement();
         assertEquals("WFS_Capabilities", e.getLocalName());
 
@@ -379,5 +379,15 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         }
 
         return request;
+    }
+
+    @Test
+    public void testIauFeatureTypes() throws Exception {
+        Document doc = getAsDOM("iau/wfs?service=WFS&version=1.0.0&request=getCapabilities");
+        // print(doc);
+
+        String poiXPath = "//wfs:FeatureTypeList/wfs:FeatureType[wfs:Name = 'iau:MarsPoi']";
+        assertXpathExists(poiXPath, doc);
+        assertXpathEvaluatesTo("IAU:49900", poiXPath + "/wfs:SRS ", doc);
     }
 }

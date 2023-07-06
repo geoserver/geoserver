@@ -1897,15 +1897,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
 
             private String applySRSNameStyle(GMLInfo gml, String srs) {
-                if (srs != null) {
-                    String prefix = gml.getSrsNameStyle().getPrefix();
-                    if (srs.matches("(?ui)EPSG:[0-9]+")) {
-                        srs = prefix + srs.substring(5);
-                    } else {
-                        srs = prefix + srs;
-                    }
-                }
-                return srs;
+                if (srs != null) return gml.getSrsNameStyle().toSrsSyntax().getSRS(srs);
+                return null;
             }
 
             protected List<String> getOtherSRS(FeatureTypeInfo featureType) {

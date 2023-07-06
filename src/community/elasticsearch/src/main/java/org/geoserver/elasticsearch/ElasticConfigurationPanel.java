@@ -31,7 +31,6 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.elasticsearch.ElasticAttribute;
 import org.geotools.data.elasticsearch.ElasticDataStore;
 import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
-import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
 
 /**
@@ -77,24 +76,6 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
                             ElasticLayerConfiguration layerConfig) {
                         _layerInfo = layerInfo;
                         _layerConfig = layerConfig;
-
-                        try {
-                            saveLayer((FeatureTypeInfo) getResourceInfo());
-                        } catch (IOException e) {
-                            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                            error(new ParamResourceModel("creationFailure", this, e).getString());
-                        }
-
-                        MarkupContainer parent = ElasticConfigurationPanel.this.getParent();
-                        while (!(parent == null || parent instanceof ResourceConfigurationPage)) {
-                            parent = parent.getParent();
-                        }
-
-                        if (parent != null) {
-                            ResourceInfo ri = ElasticConfigurationPanel.this.getResourceInfo();
-                            ((ResourceConfigurationPage) parent).updateResource(ri, target);
-                        }
-
                         modal.close(target);
                     }
                 });
@@ -133,8 +114,9 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         GeoServerApplication app = (GeoServerApplication) getApplication();
         Catalog catalog = app.getCatalog();
 
-        String namespace = ft.getNamespace().getURI();
-        Name qualifiedName = new NameImpl(namespace, _layerInfo.getName());
+        // String namespace = ft.getNamespace().getURI();
+        // Name qualifiedName = new NameImpl(namespace, _layerInfo.getName());
+        Name qualifiedName = ft.getQualifiedName();
         LayerInfo layerInfo = catalog.getLayerByName(qualifiedName);
 
         boolean isNew =
@@ -160,6 +142,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
             FeatureTypeInfo _typeInfo = (FeatureTypeInfo) _layerInfo.getResource();
             typeInfo = builder.buildFeatureType(ds.getFeatureSource(qualifiedName));
             typeInfo.setName(_layerInfo.getName());
+            typeInfo.setNativeName(_layerInfo.getName());
             typeInfo.getMetadata().put(ElasticLayerConfiguration.KEY, layerConfig);
             typeInfo.setEnabled(_typeInfo.isEnabled());
             typeInfo.setAdvertised(_typeInfo.isAdvertised());
@@ -183,7 +166,37 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         } else {
             // Update
             typeInfo = (FeatureTypeInfo) layerInfo.getResource();
-            typeInfo.getMetadata().put(ElasticLayerConfiguration.KEY, _layerConfig);
+            if (_layerConfig != null) {
+                typeInfo.getMetadata().put(ElasticLayerConfiguration.KEY, _layerConfig);
+            }
+        }
+    }
+
+    @Override
+    public void onSave() {
+        FeatureTypeInfo fti = (FeatureTypeInfo) getDefaultModelObject();
+        fti.setNativeName(fti.getName());
+        MarkupContainer parent = this.getParent();
+        while (!(parent == null || parent instanceof ResourceConfigurationPage)) {
+            parent = parent.getParent();
+        }
+        if (parent != null) {
+            try {
+                if (_layerConfig != null && _layerInfo != null) {
+                    _layerConfig.setLayerName(fti.getName());
+                    _layerInfo.setName(fti.getName());
+                } else {
+                    _layerConfig =
+                            (ElasticLayerConfiguration)
+                                    fti.getMetadata().get(ElasticLayerConfiguration.KEY);
+                    _layerConfig.setLayerName(fti.getName());
+                }
+                saveLayer(fti);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                error(new ParamResourceModel("creationFailure", this, e).getString());
+            }
+            ((ResourceConfigurationPage) parent).updateResource(fti);
         }
     }
 }

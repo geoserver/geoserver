@@ -27,8 +27,11 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wfs.WFSInfo;
@@ -37,6 +40,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class MapPreviewPageTest extends GeoServerWicketTestSupport {
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setupIAULayers(true, true);
+    }
 
     @Before
     public void setOutputPaths() {
@@ -308,5 +317,35 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
         assertTrue(layer.hasServiceSupport("WMS"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testMarsPreview() throws Exception {
+        Catalog cat = getCatalog();
+        WorkspaceInfo ws = cat.getWorkspaceByName(SystemTestData.IAU_PREFIX);
+        LocalWorkspace.set(ws);
+        try {
+            tester.startPage(MapPreviewPage.class);
+            print(tester.getLastRenderedPage(), true, true, true);
+
+            DataView<Component> data =
+                    (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+            for (org.apache.wicket.Component datum : data) {
+                MarkupContainer c = (MarkupContainer) datum;
+
+                // check OL preview link
+                ExternalLink link =
+                        (ExternalLink)
+                                c.get("itemProperties:3:component:commonFormat:0")
+                                        .getDefaultModelObject();
+                String location = link.getDefaultModelObjectAsString();
+                assertThat(location, containsString("srs=IAU%3A49900"));
+            }
+
+        } finally {
+            LocalWorkspace.remove();
+        }
     }
 }

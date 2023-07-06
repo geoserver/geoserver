@@ -66,6 +66,11 @@
       <artifactId>gt-sample-data</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-iau-wkt</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

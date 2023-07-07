@@ -34,7 +34,7 @@ import org.w3c.dom.Document;
 /** Integration test for Execute referencing remote inputs, with URL checks enabled/disabled. */
 public class ExecuteURLCheckTest extends WPSTestSupport {
 
-    private static final boolean debugMode = true;
+    private static final boolean debugMode = false;
     private static final String STATES_COLLECTION = "states-FeatureCollection.xml";
 
     private static WireMockServer service;

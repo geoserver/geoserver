@@ -171,21 +171,21 @@ class WPSExecuteTransformer extends TransformerBase {
                     if (pv.isBoundingBox()) {
                         ReferencedEnvelope env = (ReferencedEnvelope) value.value;
                         start("wps:Data");
-                        String crs = null;
-                        if (env.getCoordinateReferenceSystem() != null) {
+                        String crsId = null;
+                        CoordinateReferenceSystem crs = env.getCoordinateReferenceSystem();
+                        if (crs != null) {
                             try {
-                                crs =
-                                        "EPSG:"
-                                                + CRS.lookupEpsgCode(
-                                                        env.getCoordinateReferenceSystem(), false);
+                                crsId = CRS.lookupIdentifier(crs, false);
                             } catch (Exception e) {
-                                LOGGER.log(Level.WARNING, "Could not get EPSG code for " + crs);
+                                LOGGER.log(Level.WARNING, "Could not get EPSG code for " + crsId);
                             }
                         }
-                        if (crs == null) {
+                        if (crsId == null) {
                             start("wps:BoundingBoxData", attributes("dimensions", "2"));
                         } else {
-                            start("wps:BoundingBoxData", attributes("crs", crs, "dimensions", "2"));
+                            start(
+                                    "wps:BoundingBoxData",
+                                    attributes("crs", crsId, "dimensions", "2"));
                         }
                         element("ows:LowerCorner", env.getMinX() + " " + env.getMinY());
                         element("ows:UpperCorner", env.getMaxX() + " " + env.getMaxY());

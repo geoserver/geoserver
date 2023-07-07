@@ -473,7 +473,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
     private static String parseCrs(CoordinateReferenceSystem crs) {
         Utilities.ensureNonNull("coordinateReferenceSystem", crs);
         try {
-            return "EPSG:" + CRS.lookupEpsgCode(crs, true);
+            return CRS.lookupIdentifier(crs, true);
         } catch (FactoryException e) {
             throw new WPSException("Error occurred looking up target SRS");
         }

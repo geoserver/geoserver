@@ -250,8 +250,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
             if (envelope != null) {
                 BoundingBoxType bbox = Ows11Factory.eINSTANCE.createBoundingBoxType();
                 if (envelope.getCoordinateReferenceSystem() != null) {
-                    bbox.setCrs(
-                            GML2EncodingUtils.epsgCode(envelope.getCoordinateReferenceSystem()));
+                    bbox.setCrs(GML2EncodingUtils.toURI(envelope.getCoordinateReferenceSystem()));
                 }
                 List<Double> min = new ArrayList<>(envelope.getDimension());
                 List<Double> max = new ArrayList<>(envelope.getDimension());

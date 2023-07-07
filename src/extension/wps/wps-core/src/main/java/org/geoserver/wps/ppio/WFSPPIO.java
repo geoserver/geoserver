@@ -24,6 +24,7 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml3.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -106,10 +107,11 @@ public class WFSPPIO extends XMLPPIO {
                     fc = new ForceCoordinateSystemFeatureResults(fc, crs, false);
                 }
 
-                // we assume the crs has a valid EPSG code
-                Integer code = CRS.lookupEpsgCode(crs, false);
-                if (code != null) {
-                    CoordinateReferenceSystem lonLatCrs = CRS.decode("EPSG:" + code, true);
+                // we assume the crs has a valid identity
+                String identifier = CRS.lookupIdentifier(crs, false);
+                if (identifier != null) {
+                    String eastNorthId = SrsSyntax.AUTH_CODE.getSRS(identifier);
+                    CoordinateReferenceSystem lonLatCrs = CRS.decode(eastNorthId, true);
                     if (!CRS.equalsIgnoreMetadata(crs, lonLatCrs)) {
                         // we need axis flipping
                         fc = new ReprojectingFeatureCollection(fc, lonLatCrs);

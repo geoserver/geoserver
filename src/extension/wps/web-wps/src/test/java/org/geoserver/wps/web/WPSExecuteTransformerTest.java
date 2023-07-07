@@ -32,6 +32,7 @@ import org.geotools.xsd.Parser;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.type.Name;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
@@ -357,5 +358,68 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         tx.setIndentation(2);
         String xml = tx.transform(execute);
         assertTrue(xml.contains("xmlns:foo=\"http://foo.org\""));
+    }
+
+    @Test
+    public void testEncodeBoundingBOXIAU() throws Exception {
+        ExecuteRequest execute = getRectangularClipMars();
+        WPSExecuteTransformer tx = new WPSExecuteTransformer();
+        tx.setIndentation(2);
+        String xml = tx.transform(execute);
+        // System.out.println(xml);
+        String expected =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                        + "  <ows:Identifier>gs:RectangularClip</ows:Identifier>\n"
+                        + "  <wps:DataInputs>\n"
+                        + "    <wps:Input>\n"
+                        + "      <ows:Identifier>features</ows:Identifier>\n"
+                        + "      <wps:Data>\n"
+                        + "        <wps:ComplexData mimeType=\"application/json\"><![CDATA[{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"id\":1,\"value\":343},\"geometry\":{\"type\":\"Point\",\"coordinates\":[8,47]}}]}]]></wps:ComplexData>\n"
+                        + "      </wps:Data>\n"
+                        + "    </wps:Input>\n"
+                        + "    <wps:Input>\n"
+                        + "      <ows:Identifier>clip</ows:Identifier>\n"
+                        + "      <wps:Data>\n"
+                        + "        <wps:BoundingBoxData crs=\"IAU:49900\" dimensions=\"2\">\n"
+                        + "          <ows:LowerCorner>0.0 0.0</ows:LowerCorner>\n"
+                        + "          <ows:UpperCorner>10.0 10.0</ows:UpperCorner>\n"
+                        + "        </wps:BoundingBoxData>\n"
+                        + "      </wps:Data>\n"
+                        + "    </wps:Input>\n"
+                        + "  </wps:DataInputs>\n"
+                        + "  <wps:ResponseForm>\n"
+                        + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=wfs-collection/1.0\">\n"
+                        + "      <ows:Identifier>result</ows:Identifier>\n"
+                        + "    </wps:RawDataOutput>\n"
+                        + "  </wps:ResponseForm>\n"
+                        + "</wps:Execute>";
+        Document test = XMLUnit.buildTestDocument(xml);
+        checkValidationErrors(test);
+        Document control = XMLUnit.buildControlDocument(expected);
+        assertXMLEqual(control, test);
+    }
+
+    private ExecuteRequest getRectangularClipMars() throws FactoryException {
+        Name processName = new NameImpl("gs", "RectangularClip");
+        InputParameterValues features = new InputParameterValues(processName, "features");
+        ParameterValue geom = features.values.get(0);
+        geom.setMime("application/json");
+        geom.setType(ParameterType.TEXT);
+        geom.setValue(
+                "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"id\":1,\"value\":343},\"geometry\":{\"type\":\"Point\",\"coordinates\":[8,47]}}]}");
+
+        InputParameterValues clip = new InputParameterValues(processName, "clip");
+        ParameterValue bbox = clip.values.get(0);
+        bbox.setType(ParameterType.LITERAL);
+        bbox.setValue(new ReferencedEnvelope(0, 10, 0, 10, CRS.decode("IAU:49900", true)));
+
+        OutputParameter bufferOutput = new OutputParameter(processName, "result");
+
+        ExecuteRequest execute =
+                new ExecuteRequest(
+                        processName.getURI(),
+                        Arrays.asList(features, clip),
+                        Arrays.asList(bufferOutput));
+        return execute;
     }
 }

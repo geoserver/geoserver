@@ -119,10 +119,7 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
         // handle the EPSG code
         if (crs != null) {
             try {
-                Integer code = CRS.lookupEpsgCode(crs, false);
-                if (code != null) {
-                    bbox.setCrs("EPSG:" + code);
-                }
+                bbox.setCrs(CRS.lookupIdentifier(crs, false));
             } catch (Exception e) {
                 throw new WPSException("Could not lookup epsg code for " + crs, e);
             }

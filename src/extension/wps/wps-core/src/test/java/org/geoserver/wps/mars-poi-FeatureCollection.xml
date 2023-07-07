@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><wfs:FeatureCollection xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:usgs="https://www.usgs.gov/iau" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" numberOfFeatures="4" timeStamp="2023-07-07T14:33:50.775Z">
+    <gml:boundedBy>
+        <gml:Envelope srsDimension="2" srsName="urn:x-ogc:def:crs:IAU:49900">
+            <gml:lowerCorner>-86.876 -65</gml:lowerCorner>
+            <gml:upperCorner>-9.885 -2.76</gml:upperCorner>
+        </gml:Envelope>
+    </gml:boundedBy>
+    <gml:featureMembers>
+        <usgs:MARS_nomenclature_center_pts_180 gml:id="MARS_nomenclature_center_pts_180.1">
+            <gml:name>Blunck</gml:name>
+            <gml:boundedBy>
+                <gml:Envelope srsName="urn:x-ogc:def:crs:IAU:49900" srsDimension="2">
+                    <gml:lowerCorner>-27.2282 -36.897</gml:lowerCorner>
+                    <gml:upperCorner>-27.2282 -36.897</gml:upperCorner>
+                </gml:Envelope>
+            </gml:boundedBy>
+            <usgs:the_geom>
+                <gml:Point srsName="urn:x-ogc:def:crs:IAU:49900" srsDimension="2">
+                    <gml:pos>-27.2282 -36.897</gml:pos>
+                </gml:Point>
+            </usgs:the_geom>
+            <usgs:clean_name>Blunck</usgs:clean_name>
+            <usgs:approvaldt>2013-06-30T22:00:00Z</usgs:approvaldt>
+            <usgs:origin>Jurgen; German historian (1935-2008).</usgs:origin>
+            <usgs:diameter>66.485</usgs:diameter>
+            <usgs:center_lon>323.103</usgs:center_lon>
+            <usgs:center_lat>-27.2282</usgs:center_lat>
+            <usgs:type>Crater, craters</usgs:type>
+            <usgs:code>AA</usgs:code>
+            <usgs:approval>Adopted by IAU</usgs:approval>
+            <usgs:min_lon>322.4693000000001</usgs:min_lon>
+            <usgs:max_lon>323.7366</usgs:max_lon>
+            <usgs:min_lat>-27.7586</usgs:min_lat>
+            <usgs:max_lat>-26.6979</usgs:max_lat>
+            <usgs:ethnicity>Germany</usgs:ethnicity>
+            <usgs:continent>Europe</usgs:continent>
+            <usgs:quad_name>Margaritifer Sinus</usgs:quad_name>
+            <usgs:quad_code>mc19</usgs:quad_code>
+            <usgs:link>http://planetarynames.wr.usgs.gov/Feature/15149</usgs:link>
+        </usgs:MARS_nomenclature_center_pts_180>
+        <usgs:MARS_nomenclature_center_pts_180 gml:id="MARS_nomenclature_center_pts_180.2">
+            <gml:name>Martynov</gml:name>
+            <gml:boundedBy>
+                <gml:Envelope srsName="urn:x-ogc:def:crs:IAU:49900" srsDimension="2">
+                    <gml:lowerCorner>-30.3621 -36.4134</gml:lowerCorner>
+                    <gml:upperCorner>-30.3621 -36.4134</gml:upperCorner>
+                </gml:Envelope>
+            </gml:boundedBy>
+            <usgs:the_geom>
+                <gml:Point srsName="urn:x-ogc:def:crs:IAU:49900" srsDimension="2">
+                    <gml:pos>-30.3621 -36.4134</gml:pos>
+                </gml:Point>
+            </usgs:the_geom>
+            <usgs:clean_name>Martynov</usgs:clean_name>
+            <usgs:approvaldt>2013-07-14T22:00:00Z</usgs:approvaldt>
+            <usgs:origin>Dmitry Yakovlevich; Russian astronomer (1906-1989).</usgs:origin>
+            <usgs:diameter>61.13</usgs:diameter>
+            <usgs:center_lon>323.5866000000001</usgs:center_lon>
+            <usgs:center_lat>-30.3621</usgs:center_lat>
+            <usgs:type>Crater, craters</usgs:type>
+            <usgs:code>AA</usgs:code>
+            <usgs:approval>Adopted by IAU</usgs:approval>
+            <usgs:min_lon>322.9864</usgs:min_lon>
+            <usgs:max_lon>324.18690000000004</usgs:max_lon>
+            <usgs:min_lat>-30.861600000000003</usgs:min_lat>
+            <usgs:max_lat>-29.8626</usgs:max_lat>
+            <usgs:ethnicity>Russia</usgs:ethnicity>
+            <usgs:continent>Europe</usgs:continent>
+            <usgs:quad_name>Argyre</usgs:quad_name>
+            <usgs:quad_code>mc26</usgs:quad_code>
+            <usgs:link>http://planetarynames.wr.usgs.gov/Feature/15152</usgs:link>
+        </usgs:MARS_nomenclature_center_pts_180>
+        <usgs:MARS_nomenclature_center_pts_180 gml:id="MARS_nomenclature_center_pts_180.3">
+            <gml:name>Australe Mensa</gml:name>
+            <gml:boundedBy>
+                <gml:Envelope srsName="urn:x-ogc:def:crs:IAU:49900" srsDimension="2">
+                    <gml:lowerCorner>-86.876 -2.76</gml:lowerCorner>
+                    <gml:upperCorner>-86.876 -2.76</gml:upperCorner>
+                </gml:Envelope>
+            </gml:boundedBy>
+            <usgs:the_geom>
+                <gml:Point srsName="urn:x-ogc:def:crs:IAU:49900" srsDimension="2">
+                    <gml:pos>-86.876 -2.76</gml:pos>
+                </gml:Point>
+            </usgs:the_geom>
+            <usgs:clean_name>Australe Mensa</usgs:clean_name>
+            <usgs:approvaldt>2005-12-31T23:00:00Z</usgs:approvaldt>
+            <usgs:origin>Classical albedo feature name.</usgs:origin>
+            <usgs:diameter>172.0</usgs:diameter>
+            <usgs:center_lon>357.24</usgs:center_lon>
+            <usgs:center_lat>-86.876</usgs:center_lat>
+            <usgs:type>Mensa, mensae</usgs:type>
+            <usgs:code>MN</usgs:code>
+            <usgs:approval>Adopted by IAU</usgs:approval>
+            <usgs:min_lon>-21.2891</usgs:min_lon>
+            <usgs:max_lon>19.9619</usgs:max_lon>
+            <usgs:min_lat>-87.96600000000002</usgs:min_lat>
+            <usgs:max_lat>-85.4978</usgs:max_lat>
+            <usgs:ethnicity>Latin</usgs:ethnicity>
+            <usgs:continent>Europe</usgs:continent>
+            <usgs:quad_name>Mare Australe</usgs:quad_name>
+            <usgs:quad_code>mc30</usgs:quad_code>
+            <usgs:link>http://planetarynames.wr.usgs.gov/Feature/485</usgs:link>
+        </usgs:MARS_nomenclature_center_pts_180>
+        <usgs:MARS_nomenclature_center_pts_180 gml:id="MARS_nomenclature_center_pts_180.4">
+            <gml:name>Ophir</gml:name>
+            <gml:boundedBy>
+                <gml:Envelope srsName="urn:x-ogc:def:crs:IAU:49900" srsDimension="2">
+                    <gml:lowerCorner>-9.885 -65</gml:lowerCorner>
+                    <gml:upperCorner>-9.885 -65</gml:upperCorner>
+                </gml:Envelope>
+            </gml:boundedBy>
+            <usgs:the_geom>
+                <gml:Point srsName="urn:x-ogc:def:crs:IAU:49900" srsDimension="2">
+                    <gml:pos>-9.885 -65</gml:pos>
+                </gml:Point>
+            </usgs:the_geom>
+            <usgs:clean_name>Ophir</usgs:clean_name>
+            <usgs:approvaldt>1957-12-31T23:00:00Z</usgs:approvaldt>
+            <usgs:origin>Biblical land to which King Solomon sent naval expedition; probably India.</usgs:origin>
+            <usgs:diameter>0.0</usgs:diameter>
+            <usgs:center_lon>295.0</usgs:center_lon>
+            <usgs:center_lat>-9.885</usgs:center_lat>
+            <usgs:type>Albedo Feature</usgs:type>
+            <usgs:code>AL</usgs:code>
+            <usgs:approval>Adopted by IAU</usgs:approval>
+            <usgs:min_lon>295.0</usgs:min_lon>
+            <usgs:max_lon>295.0</usgs:max_lon>
+            <usgs:min_lat>-9.885</usgs:min_lat>
+            <usgs:max_lat>-9.885</usgs:max_lat>
+            <usgs:ethnicity>Greek</usgs:ethnicity>
+            <usgs:continent>Europe</usgs:continent>
+            <usgs:quad_name>Coprates</usgs:quad_name>
+            <usgs:quad_code>mc18</usgs:quad_code>
+            <usgs:link>http://planetarynames.wr.usgs.gov/Feature/4473</usgs:link>
+        </usgs:MARS_nomenclature_center_pts_180>
+    </gml:featureMembers>
+</wfs:FeatureCollection>

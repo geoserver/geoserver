@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -41,6 +42,7 @@ import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureIterator;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.SimpleInternationalString;
 import org.junit.After;
 import org.junit.Assume;
@@ -48,6 +50,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class ImportProcessTest extends WPSTestSupport {
 
@@ -64,6 +68,8 @@ public class ImportProcessTest extends WPSTestSupport {
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings6");
         removeStore(SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX + "data");
         removeStore(SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX + "raster");
+        removeStore(SystemTestData.IAU_PREFIX, SystemTestData.IAU_PREFIX + "marsCoverageStore");
+        removeStore(SystemTestData.IAU_PREFIX, SystemTestData.IAU_PREFIX + "marsCoverageStore2");
     }
 
     /** Try to re-import buildings as another layer (different name, different projection) */
@@ -258,7 +264,8 @@ public class ImportProcessTest extends WPSTestSupport {
         String storeName = SystemTestData.CITE_PREFIX + "raster";
         // use Coverage2RenderedImageAdapterTest's method, just need any sample raster
         GridCoverage2D sampleCoverage =
-                Coverage2RenderedImageAdapterTest.createTestCoverage(500, 500, 0, 0, 10, 10);
+                Coverage2RenderedImageAdapterTest.createTestCoverage(
+                        500, 500, 0, 0, 10, 10, DefaultGeographicCRS.WGS84);
         CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName(storeName);
         assertNull("Store already exists " + storeInfo, storeInfo);
         ImportProcess importer = new ImportProcess(getCatalog());
@@ -278,12 +285,50 @@ public class ImportProcessTest extends WPSTestSupport {
     }
 
     @Test
+    public void testCreateCoverageStoreIAU() throws Exception {
+        testCreateCoverageStoreIAU("marsCoverage", CRS.decode("IAU:49900")); // force CRS
+        testCreateCoverageStoreIAU("marsCoverage2", null); // let it use the native CRS
+    }
+
+    private void testCreateCoverageStoreIAU(String name, CoordinateReferenceSystem crs)
+            throws FactoryException {
+        String storeName = SystemTestData.IAU_PREFIX + name + "Store";
+        // use Coverage2RenderedImageAdapterTest's method, just need any sample raster
+        CoordinateReferenceSystem marsGeographic = CRS.decode("IAU:49900");
+        GridCoverage2D sampleCoverage =
+                Coverage2RenderedImageAdapterTest.createTestCoverage(
+                        500, 500, 0, 0, 10, 10, marsGeographic);
+        CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName(storeName);
+        assertNull("Store already exists " + storeInfo, storeInfo);
+        ImportProcess importer = new ImportProcess(getCatalog());
+        String result =
+                importer.execute(
+                        null,
+                        sampleCoverage,
+                        SystemTestData.IAU_PREFIX,
+                        storeName,
+                        name,
+                        null, // force the CRS this time
+                        null,
+                        null,
+                        null);
+        // expect workspace:layername
+        assertEquals(result, SystemTestData.IAU_PREFIX + ":" + name);
+
+        CoverageInfo ci = getCatalog().getCoverageByName("iau:" + name);
+        assertNotNull(ci);
+        assertTrue(CRS.equalsIgnoreMetadata(marsGeographic, ci.getCRS()));
+        assertTrue(CRS.equalsIgnoreMetadata(marsGeographic, ci.getNativeCRS()));
+    }
+
+    @Test
     public void testCreateCoverageStoreAccessDenied() throws Exception {
         logout();
         String storeName = SystemTestData.CITE_PREFIX + "raster";
         // use Coverage2RenderedImageAdapterTest's method, just need any sample raster
         GridCoverage2D sampleCoverage =
-                Coverage2RenderedImageAdapterTest.createTestCoverage(500, 500, 0, 0, 10, 10);
+                Coverage2RenderedImageAdapterTest.createTestCoverage(
+                        500, 500, 0, 0, 10, 10, DefaultGeographicCRS.WGS84);
         CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName(storeName);
         assertNull("Store already exists " + storeInfo, storeInfo);
         ImportProcess importer = new ImportProcess(getCatalog());
@@ -360,5 +405,38 @@ public class ImportProcessTest extends WPSTestSupport {
                                         null,
                                         null));
         assertEquals("Operation unallowed with the current privileges", exception.getMessage());
+    }
+
+    @Test
+    public void testImportVectorMarsPOI() throws Exception {
+        FeatureTypeInfo ti = getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.MARS_POI));
+        SimpleFeatureCollection rawSource =
+                (SimpleFeatureCollection) ti.getFeatureSource(null, null).getFeatures();
+
+        ImportProcess importer = new ImportProcess(getCatalog());
+        String result =
+                importer.execute(
+                        rawSource,
+                        null,
+                        SystemTestData.IAU_PREFIX,
+                        SystemTestData.IAU_PREFIX,
+                        "poi2",
+                        CRS.decode("IAU:49900"),
+                        null,
+                        null,
+                        null);
+
+        assertEquals("iau:poi2", result);
+
+        // check the layer
+        LayerInfo layer = getCatalog().getLayerByName(result);
+        assertNotNull(layer);
+        assertEquals("point", layer.getDefaultStyle().getName());
+
+        // check the feature type info
+        FeatureTypeInfo fti = (FeatureTypeInfo) layer.getResource();
+        assertEquals("IAU:49900", fti.getSRS());
+        SimpleFeatureSource fs = (SimpleFeatureSource) fti.getFeatureSource(null, null);
+        assertEquals(4, fs.getCount(Query.ALL));
     }
 }

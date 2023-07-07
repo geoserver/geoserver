@@ -25,6 +25,7 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
@@ -279,8 +280,8 @@ class CRSRequestHandler {
             // since they can expose a crs attribute
             return null;
         }
-        Integer crsCode = CRS.lookupEpsgCode(targetCRS, false);
-        if (crsCode == null) {
+        String crsId = CRS.lookupIdentifier(targetCRS, false);
+        if (crsId == null) {
             return null;
         }
         String coverageName = reader.getGridCoverageNames()[0];
@@ -299,7 +300,7 @@ class CRSRequestHandler {
         filters.add(
                 FF.equals(
                         FF.property(crsDescriptor.getStartAttribute()),
-                        FF.literal("EPSG:" + crsCode)));
+                        FF.literal(SrsSyntax.AUTH_CODE.getSRS(crsId))));
         // Add the filter if specified
         if (filter != null) {
             filters.add(filter);

@@ -59,6 +59,7 @@ import org.geoserver.wps.process.RawData;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.http.HTTPClient;
 import org.geotools.http.HTTPClientFinder;
 import org.geotools.ows.ServiceException;
@@ -397,13 +398,13 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             throw new WPSException("The BBOX parameter must have a coordinate reference system");
         } else {
             // handle possible axis flipping by changing the WMS version accordingly
-            Integer code = CRS.lookupEpsgCode(crs, false);
+            String code = CRS.lookupIdentifier(crs, false);
             if (CRS.getAxisOrder(crs) == CRS.AxisOrder.EAST_NORTH) {
                 template.put("version", "1.1.0");
-                template.put("srs", "EPSG:" + code);
+                template.put("srs", SrsSyntax.AUTH_CODE.getSRS(code));
             } else {
                 template.put("version", "1.3.0");
-                template.put("crs", "EPSG:" + code);
+                template.put("crs", SrsSyntax.AUTH_CODE.getSRS(code));
             }
         }
 
@@ -583,10 +584,11 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
         // check version, if we are using 1.3 we might need to flip the bbox, if version 1.1 and the
         // original bbox was flipped, we'll need to un-flip (what a mess...)
-        Integer code = CRS.lookupEpsgCode(bbox.getCoordinateReferenceSystem(), false);
-        CoordinateReferenceSystem epsgOrderCrs = CRS.decode("urn:ogc:def:crs:EPSG:" + code, false);
+        String crsId = CRS.lookupIdentifier(bbox.getCoordinateReferenceSystem(), true);
+        CoordinateReferenceSystem epsgOrderCrs = CRS.decode(SrsSyntax.OGC_URN.getSRS(crsId));
         CRS.AxisOrder axisOrder = CRS.getAxisOrder(epsgOrderCrs);
-        getMap.setSRS("EPSG:" + code); // takes into account the version already here
+        getMap.setSRS(
+                SrsSyntax.AUTH_CODE.getSRS(crsId)); // takes into account the version already here
         boolean flipNeeded =
                 !template.containsKey("crs")
                         && new Version(server.getCapabilities().getVersion())

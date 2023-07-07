@@ -68,6 +68,12 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         Processors.addProcessFactory(MultiOutputEchoProcess.getFactory());
     }
 
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setupIAULayers(true, true);
+    }
+
     protected void scheduleForDisposal(GridCoverage coverage) {
         this.coverages.add(coverage);
     }
@@ -97,12 +103,17 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("wfs", "http://www.opengis.net/wfs");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaces.put("feature", "http://geoserver.sf.net");
+        namespaces.put("feature", getFeatureNamespace());
 
         testData.registerNamespaces(namespaces);
         registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xp = XMLUnit.newXpathEngine();
+    }
+
+    /** Namespace used by the "feature" prefix in GML outputs */
+    protected String getFeatureNamespace() {
+        return "http://geoserver.sf.net";
     }
 
     /** Subclasses can override to register custom namespace mappings for xml unit */

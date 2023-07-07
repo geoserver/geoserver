@@ -9,6 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
+        <include>gs-charts-*.jar</include>
         <include>gt-charts-*.jar</include>
         <include>jfreechart*.jar</include>
         <include>jcommon*.jar</include>

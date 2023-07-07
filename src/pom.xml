@@ -102,7 +102,7 @@
     <poi.version>4.1.1</poi.version>
     <wicket.version>7.18.0</wicket.version>
     <ant.version>1.10.11</ant.version>
-    <httpclient.version>4.5.13</httpclient.version>
+    <httpclient.version>4.5.14</httpclient.version>
     <imageio-ext.version>1.4.7</imageio-ext.version>
     <jaiext.version>1.1.24</jaiext.version>
     <java.awt.headless>true</java.awt.headless>

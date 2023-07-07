@@ -55,6 +55,14 @@
       <artifactId>jcodec-javase</artifactId>
       <version>0.2.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-iau-wkt</artifactId>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
@@ -96,10 +104,7 @@
       <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-core</artifactId>
-    </dependency>
+
   </dependencies>
 
 </project>

@@ -237,6 +237,16 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
     }
 
     @Test
+    public void downloadMapMars() throws Exception {
+        String request = getTestRequest("mapMars.xml");
+        MockHttpServletResponse response = postAsServletResponse("wps", request);
+        assertEquals("image/png", response.getContentType());
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ImageAssert.assertEquals(new File(SAMPLES + "mapMars.png"), image, 200);
+    }
+
+    @Test
     public void downloadRemoteSimple11() throws Exception {
         String request = getTestRequest("mapRemoteSimple11.xml");
         String caps111 = getTestRequest("caps111.xml");

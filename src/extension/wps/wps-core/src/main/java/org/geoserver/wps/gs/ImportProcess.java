@@ -53,6 +53,7 @@ import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
@@ -320,7 +321,7 @@ public class ImportProcess implements GeoServerProcess {
             CoordinateReferenceSystem cvCrs = coverage.getCoordinateReferenceSystem();
             if (srs != null) {
                 try {
-                    Integer code = CRS.lookupEpsgCode(srs, true);
+                    String code = CRS.lookupIdentifier(srs, true);
                     if (code == null) {
                         throw new WPSException("Could not find a EPSG code for " + srs);
                     }
@@ -340,24 +341,7 @@ public class ImportProcess implements GeoServerProcess {
                                 "The original data has no native CRS, "
                                         + "you need to specify the srs parameter");
                     } else {
-                        try {
-                            Integer code = CRS.lookupEpsgCode(nativeCrs, true);
-                            if (code == null) {
-                                throw new ProcessException(
-                                        "Could not find an EPSG code for data "
-                                                + "native spatial reference system: "
-                                                + nativeCrs);
-                            } else {
-                                String targetSRSCode = "EPSG:" + code;
-                                srs = CRS.decode(targetSRSCode, true);
-                            }
-                        } catch (Exception e) {
-                            throw new ProcessException(
-                                    "Failed to loookup an official EPSG code for "
-                                            + "the source data native "
-                                            + "spatial reference system",
-                                    e);
-                        }
+                        srs = CRS.decode(getSRSFromCRS(nativeCrs), true);
                     }
                 }
             }
@@ -535,16 +519,7 @@ public class ImportProcess implements GeoServerProcess {
         // check the target crs
         String targetSRSCode = null;
         if (srs != null) {
-            try {
-                Integer code = CRS.lookupEpsgCode(srs, true);
-                if (code == null) {
-                    throw new WPSException("Could not find a EPSG code for " + srs);
-                }
-                targetSRSCode = "EPSG:" + code;
-            } catch (Exception e) {
-                throw new ProcessException(
-                        "Could not lookup the EPSG code for the provided srs", e);
-            }
+            targetSRSCode = getSRSFromCRS(srs);
         } else {
             // check we can extract a code from the original data
             GeometryDescriptor gd = features.getSchema().getGeometryDescriptor();
@@ -559,23 +534,7 @@ public class ImportProcess implements GeoServerProcess {
                             "The original data has no native CRS, "
                                     + "you need to specify the srs parameter");
                 } else {
-                    try {
-                        Integer code = CRS.lookupEpsgCode(nativeCrs, true);
-                        if (code == null) {
-                            throw new ProcessException(
-                                    "Could not find an EPSG code for data "
-                                            + "native spatial reference system: "
-                                            + nativeCrs);
-                        } else {
-                            targetSRSCode = "EPSG:" + code;
-                        }
-                    } catch (Exception e) {
-                        throw new ProcessException(
-                                "Failed to loookup an official EPSG code for "
-                                        + "the source data native "
-                                        + "spatial reference system",
-                                e);
-                    }
+                    targetSRSCode = getSRSFromCRS(nativeCrs);
                 }
             }
         }
@@ -624,6 +583,27 @@ public class ImportProcess implements GeoServerProcess {
             throw new ProcessException(
                     "Failed to complete the import inside the GeoServer catalog", e);
         }
+    }
+
+    private static String getSRSFromCRS(CoordinateReferenceSystem nativeCrs) {
+        String targetSRSCode;
+        try {
+            String identifier = CRS.lookupIdentifier(nativeCrs, true);
+            if (identifier == null) {
+                throw new ProcessException(
+                        "Could not find an EPSG identifier for data "
+                                + "native spatial reference system: "
+                                + nativeCrs);
+            } else {
+                targetSRSCode = SrsSyntax.AUTH_CODE.getSRS(identifier);
+            }
+        } catch (Exception e) {
+            throw new ProcessException(
+                    "Failed to loookup an official EPSG code for the source data "
+                            + "native spatial reference system",
+                    e);
+        }
+        return targetSRSCode;
     }
 
     /**

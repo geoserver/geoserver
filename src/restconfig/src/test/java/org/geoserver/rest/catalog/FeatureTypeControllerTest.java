@@ -1040,4 +1040,20 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                 ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
         assertEquals(newVirtualTable, vt2.getName());
     }
+
+    @Test
+    public void testPostWithAttributes() throws Exception {
+        // create a new sibling feature type with all attributes already listed
+        String xml = getAsString(BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature.xml");
+        String typeName2 = "PrimitiveGeoFeature2";
+        String xml2 =
+                xml.replace("<name>PrimitiveGeoFeature</name>", "<name>" + typeName2 + "</name>");
+
+        MockHttpServletResponse sr =
+                postAsServletResponse(BASEPATH + "/workspaces/sf/featuretypes", xml2);
+        assertEquals(201, sr.getStatus());
+
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("sf", typeName2);
+        assertNotNull(ft.getFeatureType());
+    }
 }

@@ -4,16 +4,20 @@
  */
 package org.geoserver.catalog.impl;
 
+import static org.geoserver.catalog.FeatureTypeInfo.JDBC_VIRTUAL_TABLE;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ValidationException;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -36,8 +40,10 @@ class FeatureTypeValidator {
         if (attributes == null || attributes.isEmpty()) return;
 
         // only checking simple features
+        // the metadata map is not available if the feature type has just been created from REST
+        Optional<MetadataMap> metadata = Optional.ofNullable(fti.getMetadata());
         VirtualTable vt =
-                fti.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
+                metadata.map(m -> m.get(JDBC_VIRTUAL_TABLE, VirtualTable.class)).orElse(null);
         String typeName = fti.getNativeName();
         boolean temporaryVirtualTable = false;
         JDBCDataStore jds = null;

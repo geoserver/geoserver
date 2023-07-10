@@ -138,8 +138,7 @@
     </dependency>
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-standalone</artifactId>
-      <version>2.1.12</version>
+      <artifactId>wiremock-jre8-standalone</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -96,6 +96,7 @@
             <descriptor>release/ext-imagemap.xml</descriptor>
             <descriptor>release/ext-xslt.xml</descriptor>
             <descriptor>release/ext-datadir-catalog-loader.xml</descriptor>
+            <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -241,6 +242,7 @@
         <module>xslt</module>
         <module>imagemap</module>
         <module>datadir-catalog-loader</module>
+        <module>wps-longitudinal-profile</module>
       </modules>
     </profile>
     <profile>

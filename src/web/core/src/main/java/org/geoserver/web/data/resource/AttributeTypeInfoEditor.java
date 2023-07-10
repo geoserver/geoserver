@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.resource;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -126,10 +127,18 @@ class AttributeTypeInfoEditor extends Panel {
             return resourcePool.loadAttributes(typeInfo);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Grabbing the attribute list failed", e);
+            String errorMessage = e.getMessage();
+            if (e.getCause() != null && e.getCause() instanceof SQLException) {
+                errorMessage = e.getCause().getMessage();
+            }
             String error =
-                    new ParamResourceModel("attributeListingFailed", component, e.getMessage())
+                    new ParamResourceModel("attributeListingFailed", component, errorMessage)
                             .getString();
-            component.getPage().error(error);
+            try {
+                component.getPage().error(error);
+            } catch (Exception e1) {
+                LOGGER.log(Level.SEVERE, "Grabbing the attribute list failed", e1.getMessage());
+            }
             return Collections.emptyList();
         }
     }

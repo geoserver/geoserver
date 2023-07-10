@@ -797,6 +797,34 @@ public class ImporterDataTest extends ImporterTestSupport {
     }
 
     @Test
+    public void testImportMars() throws Exception {
+        File dir = unpack("csv/locations.zip");
+        ImportContext context =
+                importer.createContext(new SpatialFile(new File(dir, "locations.csv")));
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.NO_CRS, task.getState());
+
+        LayerInfo layer = task.getLayer();
+        ResourceInfo resource = layer.getResource();
+        resource.setSRS("EPSG:4326");
+
+        assertTrue("Item not ready", importer.prep(task));
+        assertEquals(ImportTask.State.READY, task.getState());
+
+        context.updated();
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        importer.run(context);
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+        FeatureTypeInfo fti = (FeatureTypeInfo) resource;
+        SimpleFeatureType featureType = (SimpleFeatureType) fti.getFeatureType();
+        GeometryDescriptor geometryDescriptor = featureType.getGeometryDescriptor();
+        assertNull("Expecting no geometry", geometryDescriptor);
+        assertEquals(4, featureType.getAttributeCount());
+    }
+
+    @Test
     public void testImportGML2Poi() throws Exception {
         File gmlFile = file("gml/poi.gml2.gml");
         String wsName = getCatalog().getDefaultWorkspace().getName();
@@ -1458,6 +1486,29 @@ public class ImporterDataTest extends ImporterTestSupport {
                     e.getMessage(),
                     allOf(containsString("/bin/sh"), containsString("not " + "found")));
         }
+    }
+
+    @Test
+    public void testImportMarsPoi() throws Exception {
+        File dir = unpack("shape/mars_poi.zip");
+
+        ImportContext context =
+                importer.createContext(new SpatialFile(new File(dir, "mars_poi.shp")));
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+        assertEquals("mars_poi", task.getLayer().getResource().getName());
+
+        importer.run(context);
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getLayerByName("mars_poi"));
+        FeatureTypeInfo ft = cat.getFeatureTypeByName("mars_poi");
+        assertEquals("IAU:49900", ft.getSRS());
+
+        runChecks("mars_poi");
     }
 
     public static boolean checkShellAvailable() {

@@ -18,6 +18,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.web.data.store.PasswordTextFieldWriteOnlyModel;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfiguration;
 
 public class JDBCConnectionPoolPanel extends Panel {
@@ -56,7 +57,8 @@ public class JDBCConnectionPoolPanel extends Panel {
         add(user);
 
         PasswordTextField password =
-                new PasswordTextField("jdbcPassword", new PropertyModel<>(model, "password"));
+                new PasswordTextFieldWriteOnlyModel(
+                        "jdbcPassword", new PropertyModel<String>(model, "password"));
         password.setResetPassword(false);
         add(password);
 

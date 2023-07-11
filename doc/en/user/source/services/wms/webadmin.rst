@@ -187,6 +187,21 @@ By default GetFeatureInfo results are reproject to the map coordinate reference 
 
 When the flag is checked, GetFeatureInfo requests results will not be reprojected and will instead used the layer coordinate reference system.
 
+.. _services_webadmin_wms_features_transformation:
+
+Disabling GetFeatureInfo requests results transformation
+--------------------------------------------------------
+
+By default GetFeatureInfo results are determined from the output after evaluating rendering transformation on the layer data. This behavior can be changed only for **raster** sources (i.e., raster-to-raster and raster-to-vector transformations). This behavior can be deactivated on a global or per virtual service basis in the **GetFeatureInfo results reprojection** section. This setting can be overridden for individual FeatureTypeStyle elements using the ``transformFeatures`` SLD vendor option (See section :ref:`rendering_transform`).
+
+.. figure:: img/service_WMS_disableFeaturesTransformation.png
+
+When the flag is checked, GetFeatureInfo requests results will not be transformed and will instead use the raw, underlying raster data.
+
+.. note:: **WMS Specification**
+
+  While this option provides a way to revert to the behavior that was used in older GeoServer versions (<2.21.0), the WMS specification states that ``The GetFeatureInfo operation is designed to provide clients of a WMS with more information about features in the pictures of maps that were returned by previous Map requests`` so using this option might not be the behavior as the specification intended it.
+
 Enabling GetFeatureInfo requests results HTML auto-escaping
 -----------------------------------------------------------
 

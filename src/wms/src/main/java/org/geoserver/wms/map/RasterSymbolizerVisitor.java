@@ -74,9 +74,17 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     List<Expression> otherRenderingTransformations = new ArrayList<>();
 
+    Boolean transformFeatures = null;
+
     public RasterSymbolizerVisitor(double scaleDenominator, FeatureType featureType) {
+        this(scaleDenominator, featureType, null);
+    }
+
+    public RasterSymbolizerVisitor(
+            double scaleDenominator, FeatureType featureType, Boolean transformFeatures) {
         this.scaleDenominator = scaleDenominator;
         this.featureType = featureType;
+        this.transformFeatures = transformFeatures;
     }
 
     public void reset() {
@@ -154,7 +162,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                                 || fts.featureTypeNames().stream()
                                         .anyMatch(tn -> FeatureTypes.matches(featureType, tn)))) {
             if (activeRules(fts)) {
-                Expression tx = fts.getTransformation();
+                Expression tx = isTransformFeatures(fts) ? fts.getTransformation() : null;
                 if (tx != null) {
                     boolean rasterTransformation = false;
                     if (tx instanceof CoverageReadingTransformation)
@@ -169,6 +177,16 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                 }
             }
         }
+    }
+
+    private boolean isTransformFeatures(FeatureTypeStyle fts) {
+        // ignore this setting if not a GetFeatureInfo request
+        if (this.transformFeatures == null) {
+            return true;
+        }
+        // check the vendor option first, then the WMS settings
+        String option = fts.getOptions().get("transformFeatures");
+        return option != null ? Boolean.parseBoolean(option) : this.transformFeatures;
     }
 
     private boolean activeRules(FeatureTypeStyle fts) {

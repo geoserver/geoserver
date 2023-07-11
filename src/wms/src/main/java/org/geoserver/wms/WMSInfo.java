@@ -229,6 +229,12 @@ public interface WMSInfo extends ServiceInfo {
     /** Sets the international title of the root layer */
     void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract);
 
+    /** @return whether to apply rendering transformations for WMS GetFeatureInfo requests */
+    boolean isFeaturesTransformDisabled();
+
+    /** Sets whether to apply rendering transformations for WMS GetFeatureInfo requests */
+    void setFeaturesTransformDisabled(boolean featuresTransformDisabled);
+
     /** @return whether to enable auto-escaping HTML FreeMarker template values */
     boolean isAutoEscapeTemplateValues();
 

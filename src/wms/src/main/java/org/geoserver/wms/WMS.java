@@ -1955,6 +1955,10 @@ public class WMS implements ApplicationContextAware {
         return getServiceInfo().isDefaultGroupStyleEnabled();
     }
 
+    public boolean isTransformFeatureInfo() {
+        return !getServiceInfo().isTransformFeatureInfoDisabled();
+    }
+
     public boolean isAutoEscapeTemplateValues() {
         return getServiceInfo().isAutoEscapeTemplateValues();
     }

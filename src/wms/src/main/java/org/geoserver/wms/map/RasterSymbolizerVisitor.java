@@ -60,6 +60,16 @@ import org.opengis.parameter.Parameter;
  */
 public class RasterSymbolizerVisitor implements StyleVisitor {
 
+    /**
+     * Boolean value allowing to control whether rendering transformations should be evaluated when
+     * performing WMS GetFeatureInfo requests. This option applies only to transformations with a
+     * raster source (i.e., raster-to-raster and raster-to-vector). The default value can be
+     * configured by administrators in the global and workspace-specific WMS service settings
+     * (transformations will be evaluated by default) and this SLD vendor option can be used to
+     * override the service setting for a specific FeatureTypeStyle element within the SLD document.
+     */
+    public static final String TRANSFORM_FEATURE_INFO = "transformFeatureInfo";
+
     double scaleDenominator;
 
     FeatureType featureType;
@@ -74,9 +84,17 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     List<Expression> otherRenderingTransformations = new ArrayList<>();
 
+    Boolean transformFeatureInfo = null;
+
     public RasterSymbolizerVisitor(double scaleDenominator, FeatureType featureType) {
+        this(scaleDenominator, featureType, null);
+    }
+
+    public RasterSymbolizerVisitor(
+            double scaleDenominator, FeatureType featureType, Boolean transformFeatureInfo) {
         this.scaleDenominator = scaleDenominator;
         this.featureType = featureType;
+        this.transformFeatureInfo = transformFeatureInfo;
     }
 
     public void reset() {
@@ -154,7 +172,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                                 || fts.featureTypeNames().stream()
                                         .anyMatch(tn -> FeatureTypes.matches(featureType, tn)))) {
             if (activeRules(fts)) {
-                Expression tx = fts.getTransformation();
+                Expression tx = isTransformFeatureInfo(fts) ? fts.getTransformation() : null;
                 if (tx != null) {
                     boolean rasterTransformation = false;
                     if (tx instanceof CoverageReadingTransformation)
@@ -169,6 +187,16 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                 }
             }
         }
+    }
+
+    private boolean isTransformFeatureInfo(FeatureTypeStyle fts) {
+        // ignore this setting if not a GetFeatureInfo request
+        if (this.transformFeatureInfo == null) {
+            return true;
+        }
+        // check the vendor option first, then the WMS settings
+        String option = fts.getOptions().get(TRANSFORM_FEATURE_INFO);
+        return option != null ? Boolean.parseBoolean(option) : this.transformFeatureInfo;
     }
 
     private boolean activeRules(FeatureTypeStyle fts) {

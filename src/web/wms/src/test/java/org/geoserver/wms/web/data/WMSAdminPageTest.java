@@ -157,6 +157,16 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testTransformFeatureInfoDisabled() throws Exception {
+        assertFalse(wms.isTransformFeatureInfoDisabled());
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("disableTransformFeatureInfo", true);
+        ft.submit("submit");
+        assertTrue(wms.isTransformFeatureInfoDisabled());
+    }
+
+    @Test
     public void testAutoEscapeTemplateValues() throws Exception {
         assertFalse(wms.isAutoEscapeTemplateValues());
         tester.startPage(WMSAdminPage.class);

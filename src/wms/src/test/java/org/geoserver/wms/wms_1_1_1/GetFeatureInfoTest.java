@@ -67,6 +67,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.logging.Logging;
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -99,7 +100,11 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
     private static final String RAIN_RT_STYLE = "filteredRain";
+    private static final String RAIN_RT_2_STYLE = "filteredRainTransformEnabled";
+    private static final String RAIN_RT_3_STYLE = "filteredRainTransformDisabled";
     private static final String RAIN_CONTOUR_STYLE = "contourRain";
+    private static final String RAIN_CONTOUR_2_STYLE = "contourRainTransformEnabled";
+    private static final String RAIN_CONTOUR_3_STYLE = "contourRainTransformDisabled";
     private static final String FOOTPRINTS_STYLE = "footprints";
 
     @Override
@@ -240,10 +245,29 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         // add global rain and style
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
         testData.addStyle(RAIN_RT_STYLE, "filteredRain.sld", GetMapIntegrationTest.class, catalog);
+        testData.addStyle(RAIN_RT_2_STYLE, "filteredRain2.sld", GetFeatureInfoTest.class, catalog);
+        testData.addStyle(RAIN_RT_3_STYLE, "filteredRain3.sld", GetFeatureInfoTest.class, catalog);
         testData.addStyle(RAIN_CONTOUR_STYLE, "rainContour.sld", GetFeatureInfoTest.class, catalog);
+        testData.addStyle(
+                RAIN_CONTOUR_2_STYLE, "rainContour2.sld", GetFeatureInfoTest.class, catalog);
+        testData.addStyle(
+                RAIN_CONTOUR_3_STYLE, "rainContour3.sld", GetFeatureInfoTest.class, catalog);
 
         // footprints extraction tx
         testData.addStyle(FOOTPRINTS_STYLE, "footprints.sld", GetFeatureInfoTest.class, catalog);
+    }
+
+    @After
+    public void resetSettings() {
+        setTransformFeatureInfoDisabled(false);
+    }
+
+    private void setTransformFeatureInfoDisabled(boolean disabled) {
+        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
+        if (wms.isTransformFeatureInfoDisabled() != disabled) {
+            wms.setTransformFeatureInfoDisabled(disabled);
+            getGeoServer().save(wms);
+        }
     }
 
     /** Test GetFeatureInfo with 3D content, and the result returns the expected point. */
@@ -1510,70 +1534,114 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     }
 
     @Test
-    public void testRasterRenderingTransformation() throws Exception {
-        // get and test rain unfiltered
-        JSONObject jsonUnfiltered =
-                (JSONObject)
-                        getAsJSON(
-                                "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
-                                        + "&layers=rain"
-                                        + "&styles=&bbox=-180,-90,180,90&width=600&height=300"
-                                        + "&x=20&y=150"
-                                        + "&info_format=application/json&query_layers=rain"
-                                        + "&srs=EPSG:4326",
-                                200);
-
-        assertEquals(
-                491,
-                jsonUnfiltered
-                        .getJSONArray("features")
-                        .getJSONObject(0)
-                        .getJSONObject("properties")
-                        .getDouble("rain"),
-                0d);
-
-        // get and test rain with Jiffle filter
-        JSONObject jsonFiltered =
-                (JSONObject)
-                        getAsJSON(
-                                "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
-                                        + "&layers=rain"
-                                        + "&styles="
-                                        + RAIN_RT_STYLE
-                                        + "&bbox=-180,-90,180,90&width=600&height=300"
-                                        + "&x=20&y=150"
-                                        + "&info_format=application/json&query_layers=rain"
-                                        + "&srs=EPSG:4326");
-
-        print(jsonFiltered);
-        assertEquals(
-                JSONNull.getInstance(),
-                jsonFiltered
-                        .getJSONArray("features")
-                        .getJSONObject(0)
-                        .getJSONObject("properties")
-                        .get("jiffle"));
+    public void testRasterWithoutRasterTransformation() throws Exception {
+        // the WMS setting doesn't affect styles without a rendering transformation
+        doTestRasterTransformation(false, "", "rain", 491);
+        doTestRasterTransformation(true, "", "rain", 491);
     }
 
     @Test
-    public void testRasterToVectorTransformation() throws Exception {
+    public void testRasterToRasterSettingEnabledOptionMissing() throws Exception {
+        // transformations enabled in WMS settings and no SLD vendor option provided
+        // transformed features will be returned
+        doTestRasterTransformation(false, RAIN_RT_STYLE, "jiffle", JSONNull.getInstance());
+    }
+
+    @Test
+    public void testRasterToRasterSettingEnabledOptionEnabled() throws Exception {
+        // transformations enabled in WMS settings and enabled in SLD vendor option
+        // transformed features will be returned
+        doTestRasterTransformation(false, RAIN_RT_2_STYLE, "jiffle", JSONNull.getInstance());
+    }
+
+    @Test
+    public void testRasterToRasterSettingEnabledOptionDisabled() throws Exception {
+        // transformations enabled in WMS settings and disabled in SLD vendor option
+        // raw features will be returned
+        doTestRasterTransformation(false, RAIN_RT_3_STYLE, "rain", 491);
+    }
+
+    @Test
+    public void testRasterToRasterSettingDisabledOptionMissing() throws Exception {
+        // transformations disabled in WMS settings and no SLD vendor option provided
+        // raw features will be returned
+        doTestRasterTransformation(true, RAIN_RT_STYLE, "rain", 491);
+    }
+
+    @Test
+    public void testRasterToRasterSettingDisabledOptionEnabled() throws Exception {
+        // transformations disabled in WMS settings and enabled in SLD vendor option
+        // transformed features will be returned
+        doTestRasterTransformation(true, RAIN_RT_2_STYLE, "jiffle", JSONNull.getInstance());
+    }
+
+    @Test
+    public void testRasterToRasterSettingDisabledOptionDisabled() throws Exception {
+        // transformations disabled in WMS settings and disabled in SLD vendor option
+        // raw features will be returned
+        doTestRasterTransformation(true, RAIN_RT_3_STYLE, "rain", 491);
+    }
+
+    @Test
+    public void testRasterToVectorSettingEnabledOptionMissing() throws Exception {
+        // transformations enabled in WMS settings and no SLD vendor option provided
+        // transformed features will be returned
+        doTestRasterTransformation(false, RAIN_CONTOUR_STYLE, "value", 1000);
+    }
+
+    @Test
+    public void testRasterToVectorSettingEnabledOptionEnabled() throws Exception {
+        // transformations enabled in WMS settings and enabled in SLD vendor option
+        // transformed features will be returned
+        doTestRasterTransformation(false, RAIN_CONTOUR_2_STYLE, "value", 1000);
+    }
+
+    @Test
+    public void testRasterToVectorSettingEnabledOptionDisabled() throws Exception {
+        // transformations enabled in WMS settings and disabled in SLD vendor option
+        // raw features will be returned
+        doTestRasterTransformation(false, RAIN_CONTOUR_3_STYLE, "rain", 491);
+    }
+
+    @Test
+    public void testRasterToVectorSettingDisabledOptionMissing() throws Exception {
+        // transformations disabled in WMS settings and no SLD vendor option provided
+        // raw features will be returned
+        doTestRasterTransformation(true, RAIN_CONTOUR_STYLE, "rain", 491);
+    }
+
+    @Test
+    public void testRasterToVectorSettingDisabledOptionEnabled() throws Exception {
+        // transformations disabled in WMS settings and enabled in SLD vendor option
+        // transformed features will be returned
+        doTestRasterTransformation(true, RAIN_CONTOUR_2_STYLE, "value", 1000);
+    }
+
+    @Test
+    public void testRasterToVectorSettingDisabledOptionDisabled() throws Exception {
+        // transformations disabled in WMS settings and disabled in SLD vendor option
+        // raw features will be returned
+        doTestRasterTransformation(true, RAIN_CONTOUR_3_STYLE, "rain", 491);
+    }
+
+    private void doTestRasterTransformation(
+            boolean setting, String style, String property, Object expected) throws Exception {
+        setTransformFeatureInfoDisabled(setting);
         JSONObject json =
                 (JSONObject)
                         getAsJSON(
                                 "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
                                         + "&layers=rain"
                                         + "&styles="
-                                        + RAIN_CONTOUR_STYLE
+                                        + style
                                         + "&bbox=-180,-90,180,90&width=600&height=300"
                                         + "&x=20&y=150"
                                         + "&info_format=application/json&query_layers=rain"
                                         + "&srs=EPSG:4326&buffer=2");
-        assertEquals(
-                1000,
-                json.getJSONArray("features")
-                        .getJSONObject(0)
-                        .getJSONObject("properties")
-                        .get("value"));
+        JSONObject properties =
+                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        assertTrue(properties.has(property));
+        assertEquals(expected, properties.get(property));
     }
 
     @Test

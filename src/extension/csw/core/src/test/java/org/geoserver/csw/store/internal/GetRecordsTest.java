@@ -112,6 +112,11 @@ public class GetRecordsTest extends CSWInternalTestSupport {
                 "http://www.digest.org/2.1",
                 "//csw:Record[dc:title='Forests']/dc:subject/@scheme",
                 d);
+        // test url.base
+        assertXpathEvaluatesTo(
+                "http://localhost:8080/geoserver/test",
+                "//csw:Record[dc:title='Forests']/dc:source",
+                d);
     }
 
     @Test

@@ -1,7 +1,7 @@
 GeoServer IAU authority readme
 ------------------------------
 
-This package contains the International Astronominal Unit CRS database,
+This package contains the International Astronomical Union CRS database,
 with over 2000 CRSs covering planetary bodies.
 
 Please report any bugs with jira (https://osgeo-org.atlassian.net/projects/GEOS).
@@ -12,7 +12,7 @@ Contains the following data stores:
 
 INSTALLATION
 
-1. Copy included gt2-iau-wak jar included to your 
+1. Copy included gt-iau-wkt jar included to your 
    GeoServer library directory.  In a binary install this is at 
    [GEOSERVER_HOME]/server/geoserver/WEB-INF/lib/
    In a war install this is [container]/webapps/geoserver/WEB-INF/lib/

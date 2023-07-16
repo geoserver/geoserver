@@ -1850,6 +1850,7 @@
             <descriptor>release/ext-wps-jdbc.xml</descriptor>
             <descriptor>release/ext-mapml.xml</descriptor>
             <descriptor>release/ext-metadata.xml</descriptor>
+            <descriptor>release/ext-iau.xml</descriptor>
           </descriptors>
           <finalName>geoserver-${project.version}</finalName>
           <outputDirectory>${project.build.directory}/release</outputDirectory>

@@ -26,7 +26,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.ResourcePool;
-import org.geoserver.web.data.resource.BasicResourceConfig;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -252,7 +252,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
 
         List<String> supportedSRSList =
                 this.srsProvider.getItems().stream()
-                        .map(srsObject -> srsObject.getCode())
+                        .map(srsObject -> srsObject.getIdentifier())
                         .collect(Collectors.toList());
 
         for (String supportedSRS : supportedSRSList) {
@@ -323,7 +323,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                 return "UNKNOWN";
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Could not succesffully lookup an EPSG code", e);
+            LOGGER.log(Level.WARNING, "Could not successfully lookup an CRS identifier", e);
             return null;
         }
     }
@@ -335,7 +335,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         try {
             return CRS.decode(srs);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Unknown EPSG code " + srs, e);
+            LOGGER.log(Level.WARNING, "Unknown CRS identifier " + srs, e);
             return null;
         }
     }
@@ -348,15 +348,10 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                 new SRSListPanel(popupWindow.getContentId(), srsProvider) {
 
                     @Override
-                    protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
+                    protected void onCodeClicked(AjaxRequestTarget target, String identifier) {
                         popupWindow.close(target);
 
-                        String srs = epsgCode;
-
-                        // do not append EPSG for OGC URN
-                        if (!epsgCode.startsWith(BasicResourceConfig.URN_OGC_PREFIX)) {
-                            srs = "EPSG:" + srs;
-                        }
+                        String srs = SrsSyntax.AUTH_CODE.getSRS(identifier);
 
                         srsTextField.setModelObject(srs);
                         target.add(srsTextField);

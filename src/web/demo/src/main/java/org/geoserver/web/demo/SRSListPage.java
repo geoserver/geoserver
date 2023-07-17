@@ -22,10 +22,9 @@ public class SRSListPage extends GeoServerBasePage {
         return new SRSListPanel("srsListPanel") {
 
             @Override
-            protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
+            protected void onCodeClicked(AjaxRequestTarget target, String identifier) {
                 setResponsePage(
-                        SRSDescriptionPage.class,
-                        new PageParameters().add("code", "EPSG:" + epsgCode));
+                        SRSDescriptionPage.class, new PageParameters().add("code", identifier));
             }
         };
     }

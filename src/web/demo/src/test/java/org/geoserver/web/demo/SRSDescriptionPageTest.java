@@ -25,4 +25,16 @@ public class SRSDescriptionPageTest extends GeoServerWicketTestSupport {
         assertThat(html, not(containsString(code)));
         assertThat(html, containsString("\\',\\'\\',[],0);foo(\\'"));
     }
+
+    @Test
+    public void testIAUCode() {
+        PageParameters parameters = new PageParameters();
+        parameters.add("code", "IAU:1000");
+        tester.startPage(SRSDescriptionPage.class, parameters);
+        tester.assertRenderedPage(SRSDescriptionPage.class);
+
+        // the SRS has no area of validity defined, the components should now show up
+        tester.assertInvisible("areaOfValidityText");
+        tester.assertInvisible("areaOfValidityMap");
+    }
 }

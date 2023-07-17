@@ -71,7 +71,7 @@ public abstract class SRSListPanel extends Panel {
 
                         SRS srs = itemModel.getObject();
 
-                        if (SRSProvider.CODE.equals(property)) {
+                        if (SRSProvider.IDENTIFIER.equals(property)) {
 
                             Component linkForCode = createLinkForCode(id, itemModel);
 
@@ -110,7 +110,7 @@ public abstract class SRSListPanel extends Panel {
     @SuppressWarnings("unchecked")
     protected Component createLinkForCode(String linkId, IModel<SRS> itemModel) {
         return new SimpleAjaxLink<Object>(
-                linkId, (IModel<Object>) SRSProvider.CODE.getModel(itemModel)) {
+                linkId, (IModel<Object>) SRSProvider.IDENTIFIER.getModel(itemModel)) {
 
             private static final long serialVersionUID = -1330723116026268069L;
 

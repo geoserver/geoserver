@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -225,6 +226,42 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertTrue(window.isShown());
 
         tester.assertModelValue("form:crs:popup:content:wkt", crs.toWKT());
+    }
+
+    @Test
+    public void testPlanetaryList() throws Exception {
+        CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
+        tester.startPage(new CRSPanelTestPage(crs));
+
+        ModalWindow window =
+                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        assertFalse(window.isShown());
+
+        // open the CRS list panel
+        tester.clickLink("form:crs:find", true);
+        assertTrue(window.isShown());
+
+        // filter by name
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("crs:popup:content:table:filterForm:filter", "IAU:30115");
+        ft.submit("crs:popup:content:table:filterForm:submit");
+
+        // find and click the link with the 30115 code
+        tester.getLastRenderedPage()
+                .visitChildren(
+                        AjaxLink.class,
+                        (link, visit) -> {
+                            if ("IAU:30115".equals(link.getDefaultModelObjectAsString())) {
+                                visit.stop();
+                                tester.executeAjaxEvent(link, "onclick");
+                            }
+                        });
+
+        // window closed
+        assertFalse(window.isShown());
+        tester.assertModelValue("form:crs:srs", "IAU:30115");
+
+        print(tester.getLastRenderedPage(), true, true, true);
     }
 
     static class Foo implements Serializable {

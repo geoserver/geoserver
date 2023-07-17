@@ -67,7 +67,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
 
     static final int POSTPROCES_THREADS_DEFAULT = 2;
 
-    static final String DNS_CACHE_DEFAULT = "expireAfterWrite=15m";
+    static final String DNS_CACHE_DEFAULT = "expireAfterWrite=15m,maximumSize=1000";
 
     public MonitorConfig() {
         props = new PropertyFileWatcher.LinkedProperties();
@@ -309,7 +309,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
 
     public int getPostProcessorThreads() {
         Properties props = props();
-        String key = "postprocessorthreads";
+        String key = "postProcessorThreads";
         String svalue = props.getProperty(key);
         if (svalue != null) {
             try {
@@ -328,7 +328,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
 
     public String getDNSCacheConfiguration() {
         Properties props = props();
-        String key = "dnscacheconfiguration";
+        String key = "dnsCacheConfiguration";
         String value = props.getProperty(key);
         if (value == null) {
             value = DNS_CACHE_DEFAULT;

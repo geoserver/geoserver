@@ -21,7 +21,7 @@ public class MonitorConfigTest {
     @Test
     public void shouldPostProcessorThreadsReturnConfiguredValue() {
         MonitorConfig config = new MonitorConfig();
-        config.props().put("postprocessorthreads", " 5 ");
+        config.props().put("postProcessorThreads", " 5 ");
         int actual = config.getPostProcessorThreads();
         Assert.assertEquals(5, actual);
     }
@@ -29,7 +29,7 @@ public class MonitorConfigTest {
     @Test
     public void shouldPostProcessorThreadsIgnoreNonNumber() {
         MonitorConfig config = new MonitorConfig();
-        config.props().put("postprocessorthreads", "not a number");
+        config.props().put("postProcessorThreads", "not a number");
         int actual = config.getPostProcessorThreads();
         Assert.assertEquals(MonitorConfig.POSTPROCES_THREADS_DEFAULT, actual);
     }
@@ -37,7 +37,7 @@ public class MonitorConfigTest {
     @Test
     public void shouldPostProcessorThreadsIgnoreTooSmall() {
         MonitorConfig config = new MonitorConfig();
-        config.props().put("postprocessorthreads", "0");
+        config.props().put("postProcessorThreads", "0");
         int actual = config.getPostProcessorThreads();
         Assert.assertEquals(MonitorConfig.POSTPROCES_THREADS_DEFAULT, actual);
     }
@@ -56,7 +56,7 @@ public class MonitorConfigTest {
     @Test
     public void shouldDNSCacheIgnoreInvalidConfig() throws Exception {
         MonitorConfig config = new MonitorConfig();
-        config.props().put("dnscacheconfiguration", "this makes no sense");
+        config.props().put("dnsCacheConfiguration", "this makes no sense");
         ReverseDNSPostProcessor dut = new ReverseDNSPostProcessor(config);
         RequestData req = new RequestData();
         req.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
@@ -68,7 +68,7 @@ public class MonitorConfigTest {
     @Test
     public void shouldDNSCacheUseConfig() throws Exception {
         MonitorConfig config = new MonitorConfig();
-        config.props().put("dnscacheconfiguration", "maximumSize=0");
+        config.props().put("dnsCacheConfiguration", "maximumSize=0");
         ReverseDNSPostProcessor dut = new ReverseDNSPostProcessor(config);
         RequestData req = new RequestData();
         req.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());

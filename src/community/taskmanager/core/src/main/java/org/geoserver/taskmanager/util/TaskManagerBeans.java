@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.util;
 
+import java.util.Collections;
 import java.util.List;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
@@ -36,7 +37,8 @@ public class TaskManagerBeans {
 
     @Autowired private ReportBuilder reportBuilder;
 
-    @Autowired private List<ReportService> reportServices;
+    @Autowired(required = false)
+    private List<ReportService> reportServices = Collections.emptyList();
 
     @Autowired private BatchJobService bjService;
 

@@ -8,10 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,6 +19,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.RoleSource;
@@ -49,6 +48,7 @@ import org.keycloak.adapters.springsecurity.facade.SimpleHttpFacade;
 import org.keycloak.adapters.springsecurity.token.SpringSecurityAdapterTokenStoreFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -230,16 +230,40 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
             enrichWithKeycloakRoles(keycloakAuth, roles);
             result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
         }
+        result.setDetails(keycloakAuth.getDetails());
         return result;
     }
 
     private void enrichWithKeycloakRoles(
             Authentication keycloakAuth, Collection<GeoServerRole> roles) {
-        List<GeoServerRole> roleList =
-                keycloakAuth.getAuthorities().stream()
-                        .map(r -> new GeoServerRole(r.getAuthority()))
-                        .collect(Collectors.toList());
-        roles.addAll(roleList);
+        GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
+
+        for (GrantedAuthority authoritity : keycloakAuth.getAuthorities()) {
+            GeoServerRole role = null;
+            try {
+                role = roleService.getRoleByName(authoritity.getAuthority());
+            } catch (IOException e) {
+                LOG.log(
+                        Level.WARNING,
+                        "Error while trying to get geoserver roles with following Exception cause:",
+                        e.getCause());
+            }
+            if (role != null) {
+                roles.add(role);
+            } else {
+                roles.add(new GeoServerRole(authoritity.getAuthority()));
+            }
+        }
+        RoleCalculator calc = new RoleCalculator(roleService);
+        try {
+            calc.addInheritedRoles(roles);
+        } catch (IOException e) {
+            LOG.log(
+                    Level.WARNING,
+                    "Error while trying to get geoserver roles with following Exception cause:",
+                    e.getCause());
+        }
+        calc.addMappedSystemRoles(roles);
     }
 
     @Override

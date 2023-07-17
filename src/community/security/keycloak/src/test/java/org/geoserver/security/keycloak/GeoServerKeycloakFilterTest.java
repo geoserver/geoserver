@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geoserver.security.impl.AbstractRoleService;
 import org.geoserver.security.impl.GeoServerRole;
 import org.junit.After;
 import org.junit.Before;
@@ -113,6 +114,12 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
         when(request.getHeaders(anyString())).thenReturn(Collections.emptyEnumeration());
         response = mock(HttpServletResponse.class);
         chain = mock(FilterChain.class);
+
+        AbstractRoleService mockRoleService = mock(AbstractRoleService.class);
+        GeoServerRole admin = new GeoServerRole("admin");
+        when(mockRoleService.getRoleByName("admin")).thenReturn(admin);
+        when(mockRoleService.getAdminRole()).thenReturn(admin);
+        getSecurityManager().setActiveRoleService(mockRoleService);
     }
 
     // remove any possible side-effects to avoid interfering with the next test
@@ -251,6 +258,7 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
         assertTrue(roles.contains("create-realm"));
         assertTrue(roles.contains("admin"));
         assertTrue(roles.contains("uma_authorization"));
+        assertTrue(roles.contains(GeoServerRole.ADMIN_ROLE.getAuthority()));
     }
 
     @Test

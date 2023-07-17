@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
+import org.geoserver.taskmanager.external.GeometryTable;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.geotools.util.logging.Logging;
 
@@ -46,7 +47,7 @@ public class PostgisDialectImpl extends DefaultDialectImpl {
         sb.append(" INDEX ");
         // sb.append(indexName);
         sb.append(" ON ");
-        sb.append(SqlUtil.quote(tableName));
+        sb.append(quote(tableName));
 
         if (isSpatialIndex) {
             sb.append(" USING gist ");
@@ -108,7 +109,7 @@ public class PostgisDialectImpl extends DefaultDialectImpl {
                 stmt.executeQuery(
                         "select a.attname, a.attnotnull, format_type(a.atttypid, a.atttypmod) "
                                 + "from pg_attribute a where attrelid = '"
-                                + tableName
+                                + quote(tableName)
                                 + "'::regclass and attnum > 0"
                                 + " and not attisdropped order by attnum");
 
@@ -121,7 +122,7 @@ public class PostgisDialectImpl extends DefaultDialectImpl {
 
                         @Override
                         public String getName() throws SQLException {
-                            return quote(name);
+                            return name;
                         }
 
                         @Override
@@ -137,5 +138,21 @@ public class PostgisDialectImpl extends DefaultDialectImpl {
     @Override
     public boolean autoUpdateView() {
         return true;
+    }
+
+    @Override
+    public String getGeometryType(String type, int srid) {
+        return "GEOMETRY('" + type + "', " + srid + ")";
+    }
+
+    @Override
+    public String getConvertedGeometry(GeometryTable.Type type) {
+        if (type == GeometryTable.Type.WKT) {
+            return "ST_GeomFromText(?, ?)";
+        } else if (type == GeometryTable.Type.WKB) {
+            return "ST_GeomFromWKB(?, ?)";
+        } else if (type == GeometryTable.Type.WKB_HEX) {
+            return "ST_GeomFromWKB(decode(?, 'hex'), ?)";
+        } else return super.getConvertedGeometry(type);
     }
 }

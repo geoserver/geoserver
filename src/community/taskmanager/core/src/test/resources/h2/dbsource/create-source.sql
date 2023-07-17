@@ -18,8 +18,25 @@ CREATE TABLE gw_beleid.grondwaterlichamen_new (
     CONSTRAINT unique_on_gwl UNIQUE (gwl)
 );
 
+CREATE TABLE gw_beleid.waterlichamen_wkt (
+    id INTEGER NOT NULL,
+    wkb_polygon character varying (2058),
+    wkb_line character varying (2058),
+    wkb_mixed character varying (2058)
+);
+
+CREATE TABLE gw_beleid.geomtable (
+    table_name character varying(255),
+    column_name character varying(255),
+    geometry_type character varying (255),
+    epsg character varying(255)
+);
+
 ALTER TABLE  gw_beleid.grondwaterlichamen_new
     ADD CONSTRAINT gw_beleid.grondwaterlichamen_new_pkey PRIMARY KEY (dataengine_id);
+
+ALTER TABLE  gw_beleid.waterlichamen_wkt
+    ADD CONSTRAINT gw_beleid.waterlichamen_wkt_pkey PRIMARY KEY (id);
 
 CREATE INDEX multipleColumns ON gw_beleid.grondwaterlichamen_new (dataengine_id, gwl);
 
@@ -244,3 +261,14 @@ INSERT INTO gw_beleid.grondwaterlichamen_new VALUES (191, '         <BR> BLKS_06
 -- Data for Name: codetable_country;
 --
 INSERT INTO  gw_beleid.codetable_country VALUES ('BE', 'BELGIUM');
+
+
+
+
+
+INSERT INTO gw_beleid.geomtable VALUES('gw_beleid.waterlichamen_wkt', 'WKB_POLYGON', 'MULTIPOLYGON', '4326');
+INSERT INTO gw_beleid.geomtable VALUES('gw_beleid.waterlichamen_wkt', 'WKB_LINE', 'MULTILINESTRING', '4326');
+INSERT INTO gw_beleid.geomtable VALUES('gw_beleid.waterlichamen_wkt', 'WKB_MIXED', 'GEOMETRY', '4326');
+
+
+INSERT INTO gw_beleid.waterlichamen_wkt VALUES(1, 'MULTIPOLYGON(((10.689 -25.092, 34.595 -20.170, 38.814 -35.639, 13.502 -39.155, 10.689 -25.092)))', 'MULTILINESTRING((0 0, 1 2, 3 4),(2 3, 3 4, 6 7))', 'TRIANGLE ((0 0, 0 1, 1 1, 0 0))');

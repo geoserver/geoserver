@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,6 +22,13 @@ public interface Dialect {
         String getName() throws SQLException;
 
         String getTypeEtc() throws SQLException;
+    }
+
+    public interface GeometryColumn {
+
+        String getType();
+
+        int getSrid();
     }
 
     /**
@@ -70,5 +78,29 @@ public interface Dialect {
      * @throws SQLException
      */
     List<Column> getColumns(Connection connection, String tableName, ResultSet rs)
+            throws SQLException;
+
+    /** Return a geometry type */
+    String getGeometryType(String type, int srid);
+
+    /**
+     * Return expression that translates wkt string to geometry type
+     *
+     * @param wkt
+     * @return
+     */
+    String getConvertedGeometry(GeometryTable.Type type);
+
+    /**
+     * Return spatial columns that are encoded as wkt strings and need to be translated
+     *
+     * @param geometryTable
+     * @param connection
+     * @param tableName
+     * @return
+     * @throws SQLException
+     */
+    Map<String, GeometryColumn> getRawSpatialColumns(
+            GeometryTable geometryTable, Connection connection, String tableName)
             throws SQLException;
 }

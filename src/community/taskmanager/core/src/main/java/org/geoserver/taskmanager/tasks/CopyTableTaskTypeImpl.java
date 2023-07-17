@@ -9,9 +9,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -22,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.Dialect;
+import org.geoserver.taskmanager.external.Dialect.Column;
+import org.geoserver.taskmanager.external.Dialect.GeometryColumn;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.impl.DbTableImpl;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
@@ -94,7 +98,6 @@ public class CopyTableTaskTypeImpl implements TaskType {
         final DbSource targetdb = (DbSource) ctx.getParameterValues().get(PARAM_TARGET_DB_NAME);
         final DbTable table =
                 (DbTable) ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_TABLE_NAME));
-        final String sourceTableName = sourcedb.getDialect().quote(table.getTableName());
         final DbTable targetTable =
                 ctx.getParameterValues().containsKey(PARAM_TARGET_TABLE_NAME)
                         ? (DbTable) ctx.getParameterValues().get(PARAM_TARGET_TABLE_NAME)
@@ -109,7 +112,10 @@ public class CopyTableTaskTypeImpl implements TaskType {
             sourceConn.setAutoCommit(false);
             try (Statement stmt = sourceConn.createStatement()) {
                 stmt.setFetchSize(BATCH_SIZE);
-                try (ResultSet rs = stmt.executeQuery("SELECT * FROM " + sourceTableName)) {
+                try (ResultSet rs =
+                        stmt.executeQuery(
+                                "SELECT * FROM "
+                                        + sourcedb.getDialect().quote(table.getTableName()))) {
 
                     String tempSchema = SqlUtil.schema(tempTableName);
 
@@ -119,21 +125,43 @@ public class CopyTableTaskTypeImpl implements TaskType {
                                     .append(targetdb.getDialect().quote(tempTableName))
                                     .append(" ( ");
 
-                    int columnCount = 0;
-                    for (Dialect.Column column :
-                            sourcedb.getDialect().getColumns(sourceConn, sourceTableName, rs)) {
-                        sb.append(targetdb.getDialect().quote(column.getName()))
-                                .append(" ")
-                                .append(column.getTypeEtc())
-                                .append(", ");
-                        columnCount++;
+                    List<Column> columns =
+                            sourcedb.getDialect().getColumns(sourceConn, table.getTableName(), rs);
+                    Map<String, GeometryColumn> rawSpatialColumns = null;
+                    if (sourcedb.getRawGeometryTable() != null) {
+                        rawSpatialColumns =
+                                sourcedb.getDialect()
+                                        .getRawSpatialColumns(
+                                                sourcedb.getRawGeometryTable(),
+                                                sourceConn,
+                                                table.getTableName());
                     }
+                    for (Dialect.Column column : columns) {
+                        if (rawSpatialColumns != null
+                                && rawSpatialColumns.containsKey(column.getName())) {
+                            GeometryColumn rawSpatialColumn =
+                                    rawSpatialColumns.get(column.getName());
+                            sb.append(targetdb.getDialect().quote(column.getName()))
+                                    .append(" ")
+                                    .append(
+                                            targetdb.getDialect()
+                                                    .getGeometryType(
+                                                            rawSpatialColumn.getType(),
+                                                            rawSpatialColumn.getSrid()))
+                                    .append(",");
+                        } else {
+                            sb.append(targetdb.getDialect().quote(column.getName()))
+                                    .append(" ")
+                                    .append(column.getTypeEtc())
+                                    .append(", ");
+                        }
+                    }
+
                     Set<String> primaryKey = getPrimaryKey(sourceConn, table.getTableName());
                     boolean hasPrimaryKeyColumn = !primaryKey.isEmpty();
                     if (!hasPrimaryKeyColumn) {
                         // create a Primary key column if none exist.
                         sb.append(GENERATE_ID_COLUMN_NAME + " int PRIMARY KEY");
-                        columnCount++;
                     } else {
                         sb.append("PRIMARY KEY(");
                         for (String colName : primaryKey) {
@@ -177,6 +205,18 @@ public class CopyTableTaskTypeImpl implements TaskType {
                                 targetdb.getDialect()
                                         .createIndex(tempTableName, spatialColumns, true, false));
                     }
+                    // create spatial index for new spatial columns
+                    if (rawSpatialColumns != null && !rawSpatialColumns.isEmpty()) {
+                        for (String spatialColumn : rawSpatialColumns.keySet()) {
+                            sb.append(
+                                    targetdb.getDialect()
+                                            .createIndex(
+                                                    tempTableName,
+                                                    Collections.singleton(spatialColumn),
+                                                    true,
+                                                    false));
+                        }
+                    }
 
                     String dump = sb.toString();
                     LOGGER.log(Level.FINE, "creating temporary table: " + dump);
@@ -200,11 +240,23 @@ public class CopyTableTaskTypeImpl implements TaskType {
                                 new StringBuilder("INSERT INTO ")
                                         .append(targetdb.getDialect().quote(tempTableName))
                                         .append(" VALUES (");
-                        for (int i = 0; i < columnCount; i++) {
+                        for (int i = 0; i < columns.size(); i++) {
                             if (i > 0) {
                                 sb.append(",");
                             }
-                            sb.append("?");
+
+                            if (rawSpatialColumns != null
+                                    && rawSpatialColumns.containsKey(columns.get(i).getName())) {
+                                sb.append(
+                                        targetdb.getDialect()
+                                                .getConvertedGeometry(
+                                                        sourcedb.getRawGeometryTable().getType()));
+                            } else {
+                                sb.append("?");
+                            }
+                        }
+                        if (!hasPrimaryKeyColumn) {
+                            sb.append(", ?");
                         }
                         sb.append(")");
 
@@ -214,13 +266,24 @@ public class CopyTableTaskTypeImpl implements TaskType {
                             int batchSize = 0;
                             int primaryKeyValue = 0;
                             while (rs.next()) {
-                                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-                                    pstmt.setObject(i, rs.getObject(i));
+                                int i = 1;
+                                for (Column column : columns) {
+                                    if (rawSpatialColumns != null
+                                            && rawSpatialColumns.containsKey(column.getName())) {
+                                        GeometryColumn rawSpatialColumn =
+                                                rawSpatialColumns.get(column.getName());
+                                        pstmt.setObject(i++, rs.getObject(column.getName()));
+                                        pstmt.setObject(i++, rawSpatialColumn.getSrid());
+                                    } else {
+                                        pstmt.setObject(i++, rs.getObject(column.getName()));
+                                    }
                                 }
+
                                 // generate the primary key value
                                 if (!hasPrimaryKeyColumn) {
-                                    pstmt.setObject(columnCount, primaryKeyValue);
+                                    pstmt.setObject(i++, primaryKeyValue);
                                 }
+
                                 pstmt.addBatch();
                                 batchSize++;
                                 if (batchSize >= BATCH_SIZE) {

@@ -633,8 +633,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals("urn:ogc:def:crs:EPSG::3006", epsgComponent1.getDefaultModel().getObject());
 
         // not urn format but checking as well
-        assertEquals("3857", epsgComponent2.getDefaultModel().getObject());
-        assertEquals("3006", epsgComponent3.getDefaultModel().getObject());
+        assertEquals("EPSG:3857", epsgComponent2.getDefaultModel().getObject());
+        assertEquals("EPSG:3006", epsgComponent3.getDefaultModel().getObject());
     }
 
     @Test

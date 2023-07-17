@@ -77,18 +77,18 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
         // The EPSG codes should be set
         tester.assertModelValue(
                 "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:srs",
-                "EPSG:2000");
+                "CRS:27");
         tester.assertModelValue(
                 "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:srs",
-                "EPSG:2001");
+                "CRS:83");
 
         // Check that the WKT links set
         tester.assertModelValue(
                 "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:wkt:wktLabel",
-                "EPSG:Anguilla 1957 / British West Indies Grid");
+                "CRS:NAD27");
         tester.assertModelValue(
                 "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:wkt:wktLabel",
-                "EPSG:Antigua 1943 / British West Indies Grid");
+                "CRS:NAD83");
 
         // Apply the first
         tester.clickLink(
@@ -101,7 +101,7 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
         // The second (4) should still be set
         tester.assertModelValue(
                 "taskTable:listContainer:items:4:itemProperties:2:component:form:crs:srs",
-                "EPSG:2001");
+                "EPSG:4269");
     }
 
     void fill(String formPath, String fieldPath, String value) {

@@ -18,6 +18,10 @@ Verify Installation
 
 To verify that the extension was installed successfully:
 
-#. Try to set up a layer (e.g., shapefile) with a IAU CRS (e.g., ``IAU:49900``, Mars (2015) - Sphere / Ocentric)
-#. The layer CRS should recognize the CRS and may already provide ``IAU:49900`` in the declared CRS field (or not, depending on whether the original CRS had an authority and code indication, or just a basic definition)
-#. Even if not indicated automatically, it should be possible to enter a IAU code and have it accepted as valid.
+#. On the left menu, get into :guilabel:`Demos` and then :guilabel:`SRS List`
+#. Go into the table filter text field, and type `IAU`, then press enter
+#. A number of IAU codes should appear in the table
+
+.. image:: images/srsList.png
+   :align: center
+   :alt: IAU SRS List

@@ -38,10 +38,9 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.crs.DynamicCrsMapResource;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
-import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
-import org.geotools.util.Version;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.metadata.extent.Extent;
 import org.opengis.metadata.extent.GeographicBoundingBox;
@@ -135,7 +134,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         }
 
         try {
-            String epsgOrderCode = WMS.toInternalSRS(code, new Version("1.3.0"));
+            String epsgOrderCode = SrsSyntax.OGC_URN.getSRS(code);
             CoordinateReferenceSystem epsgCrs = CRS.decode(epsgOrderCode);
             epsgWkt = epsgCrs.toString();
         } catch (Exception e) {
@@ -153,6 +152,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         // screwed up by different local encodings
         this.jsUnit = crs instanceof ProjectedCRS ? "m" : "degrees";
         CoordinateReferenceSystem mapCrs = crs;
+        boolean hasAreaOfValidity = false;
         if (crs != null) {
             try {
                 String unit = crs.getCoordinateSystem().getAxis(0).getUnit().toString();
@@ -175,16 +175,6 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                 for (GeographicExtent ex : geographicElements) {
                     aovCoords.append(" ").append(ex);
                 }
-                // Envelope envelope = CRS.getEnvelope(crs);
-                // jsBbox = "[" + envelope.getMinimum(0) + "," + envelope.getMinimum(1) + ","
-                // + envelope.getMaximum(0) + "," + envelope.getMaximum(1) + "]";
-                //
-                // jsMaxResolution = getMaxResolution(envelope);
-
-                // GeographicBoundingBox box = CRS.getGeographicBoundingBox(crs);
-                // jsBbox = "[" + box.getWestBoundLongitude() + "," + box.getSouthBoundLatitude()
-                // + "," + box.getEastBoundLongitude() + "," + box.getNorthBoundLatitude()
-                // + "]";
 
                 GeographicBoundingBox box = CRS.getGeographicBoundingBox(crs);
 
@@ -231,6 +221,8 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                 double height = y2 - y1;
                 double maxres = getMaxResolution(width, height);
                 this.jsMaxResolution = maxres;
+
+                hasAreaOfValidity = true;
             }
         }
 
@@ -269,11 +261,18 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                     }
                 };
         add(wktTabs);
-        add(new Label("aovCoords", aovCoords.toString()));
-        add(new Label("aovDescription", areaOfValidity));
+        WebMarkupContainer avText = new WebMarkupContainer("areaOfValidityText");
+        add(avText);
+        avText.add(new Label("aovCoords", aovCoords.toString()));
+        avText.add(new Label("aovDescription", areaOfValidity));
 
+        WebMarkupContainer avMap = new WebMarkupContainer("areaOfValidityMap");
+        add(avMap);
         Image aovMap = new Image("aovMap", new DynamicCrsMapResource(mapCrs));
-        add(aovMap);
+        avMap.add(aovMap);
+
+        avText.setVisible(hasAreaOfValidity);
+        avMap.setVisible(hasAreaOfValidity);
 
         // link with the reprojection console
         add(

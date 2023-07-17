@@ -54,8 +54,8 @@ Databases
 
 Task Manager allows any number of databases to be used both as sources
 and targets for data transfer operations. These are configured via the
-Spring configuration file. Currently only PostGIS is fully supported,
-either via JNDI or directly via JDBC.
+Spring configuration file. Currently only PostGIS is supported as 
+a target (as well as a source), either via JNDI or directly via JDBC.
 
 .. code:: xml
 
@@ -98,17 +98,61 @@ either via JNDI or directly via JDBC.
 
 Roles can be specified for `security <#security>`__ purposes.
 
-There is also support for Informix, but it only works as a source
-database (not for publishing).
+Other database systems should generally work as a source database (not for publishing)
+using the GenericDbSourceImpl (this has been tested with MS SQL).
+
+.. code:: xml
+
+    <bean class="org.geoserver.taskmanager.external.impl.GenericDbSourceImpl">
+        <property name="name" value="mysqldb" />
+        <property name="driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/> 
+        <property name="connectionUrl" value="jdbc:sqlserver://mysqldbhost:1433;database=mydb" /> 
+        <property name="username" value="username" />
+        <property name="password" value="password" /> 
+        <property name="schema" value="dbo" /> 
+    </bean>
+
+There is also specific support for Informix as a source database (not for publishing).
 
 .. code:: xml
 
     <bean class="org.geoserver.taskmanager.external.impl.InformixDbSourceImpl">
+        <property name="name" value="myinformixdb" />
         <property name="driver" value="com.informix.jdbc.IfxDriver"/> 
         <property name="connectionUrl" value="jdbc:informix-sqli://informix-server:1539" /> 
         <property name="username" value="username" />
         <property name="password" value="password" /> 
     </bean>
+
+It is also possible to use a source that does not support geometries, and translate them
+automatically from some raw type. To do this, one must create a table in the database
+that contains a list of all geometry columns that need to be translated. This can be
+configured as follows:
+
+.. code:: xml
+
+    <bean name="geomtable" class="org.geoserver.taskmanager.external.impl.GeometryTableImpl">
+        <!-- the name of your metadata table -->
+       <property name="nameTable" value="Metadata_Geo" />
+        <!-- the attribute name that contains table name -->
+       <property name="attributeNameTable" value="table_name" />
+        <!-- the attribute name that contains column name -->
+       <property name="attributeNameGeometry" value="column_name" />
+        <!-- the attribute name that contains geometry type -->
+       <property name="attributeNameType" value="geometry_type" />
+        <!-- the attribute name that contains SRID code -->
+       <property name="attributeNameSrid" value="srid" />
+        <!-- the type of conversion: WKT (string to geometry), WKB (binary to geometry), WKB_HEX (hex string to geometry) -->
+       <property name="type" value="WKB_HEX" />
+    </bean>
+
+    <bean class="org.geoserver.taskmanager.external.impl.GenericDbSourceImpl">
+        ....  
+        <property name="rawGeometryTable" ref="geomtable"/>
+    </bean>
+
+
+
 
 External GeoServers
 ~~~~~~~~~~~~~~~~~~~

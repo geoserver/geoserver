@@ -223,7 +223,7 @@ Run the `geoserver-release-publish <https://build.geoserver.org/view/geoserver/j
 
 **VERSION**
 
-  The version being released. The same value s specified for ``VERSION`` when running the ``geoserver-release`` job.
+  The version being released. The same value specified for ``VERSION`` when running the ``geoserver-release`` job.
 
 **BRANCH**
 

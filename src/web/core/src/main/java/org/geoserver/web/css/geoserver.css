@@ -437,10 +437,6 @@ select {
   color: #000;
 }
 
-input[readonly] {
-  border: 1px solid Lightgrey;
-}
-
 form ul,
 ul.form-data {
   margin: 0; /* override blueprint's settings for unordered lists */
@@ -567,6 +563,9 @@ width: 25em;
 input[type=text], input[type=number], input[type=password] {
   border: 1px solid #7c7c7c;
   border-color: #7c7c7c #c3c3c3 #ddd;
+}
+input[readonly] {
+  border: 1px solid Lightgrey;
 }
 
 input.longtext {

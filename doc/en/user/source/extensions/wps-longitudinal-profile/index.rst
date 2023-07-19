@@ -3,7 +3,7 @@
 WPS longitudinal profile process
 ================================
 
-WPS longitudinal profile process provides ability to calculate altitude profile for linestring
+WPS longitudinal profile process provides the ability to calculate an altitude profile for the specified linestring. In addition, the process can:
 * Reproject result to different CRS
 * Adjust altitude profile based on additional layer
 
@@ -49,7 +49,7 @@ Response contains following objects:
 profile - contains array of points of the profile
 infos - general info on process result
 
-profile object contains array of points
+The profile object contains an array of points:
 each point has following values:
 totalDistanceToThisPoint - distance to this point from the beginning of the profile (first point) in units of CRS
 x - x coordinate of point
@@ -57,7 +57,7 @@ y - y coordinate of point
 altitude - altitude of this point
 slope - slope between previous and current altitude
 
-infos object fields:
+Infos object fields:
 altitudePositive - sum of positive altitudes on this profile
 altitudeNegative - sum of negative altitudes on this profile
 distance - total length of profile

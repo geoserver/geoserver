@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.geoserver.wps.ppio.CDataPPIO;
 
-public class LongitudinalProfileProcessPPIO extends CDataPPIO {
+public class LongitudinalProfileProcessResultsPPIO extends CDataPPIO {
 
     static final ObjectMapper MAPPER = new ObjectMapper();
 

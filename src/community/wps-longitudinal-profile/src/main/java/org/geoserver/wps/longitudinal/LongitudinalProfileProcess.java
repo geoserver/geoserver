@@ -108,7 +108,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                             description = "index of altitude in coordinate array",
                             min = 0,
                             defaultValue = "0")
-                    Integer altitudeIndex,
+                    int altitudeIndex,
             @DescribeParameter(
                             name = "altitudeName",
                             description = "name of altitude attribute on adjustment layer",
@@ -151,7 +151,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
 
         CoverageInfo coverageInfo = geoServer.getCatalog().getCoverageByName(layerName);
 
-        FeatureSource featureSource = getAdjustmentLayerFeatureSource(adjustmentLayerName);
+        FeatureSource adjustmentFeatureSource = getAdjustmentLayerFeatureSource(adjustmentLayerName);
 
         GridCoverage2DReader gridCoverageReader =
                 (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);

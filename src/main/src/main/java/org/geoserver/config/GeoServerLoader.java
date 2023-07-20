@@ -356,8 +356,36 @@ public abstract class GeoServerLoader {
         }
     }
 
-    protected void reloadInitializers(GeoServer geoServer) throws Exception {
-        // reload applicable initializer extensions
+    /**
+     * Notify application initializers that reload is about to start.
+     *
+     * <p>Allows initializers to pause listening for configuration changes until the reload is
+     * completed.
+     *
+     * @param geoServer GeoServer being reloaded
+     */
+    protected void beforeReloadInitializers(GeoServer geoServer) {
+        // unload applicable initializer extensions at start up reload process
+        List<GeoServerReinitializer> initializers =
+                GeoServerExtensions.extensions(GeoServerReinitializer.class);
+        for (GeoServerReinitializer initer : initializers) {
+            try {
+                initer.beforeReinitialize(geoServer);
+            } catch (Throwable t) {
+                LOGGER.log(Level.SEVERE, "Failed to run initializer " + initer, t);
+            }
+        }
+    }
+
+    /**
+     * Reload application initializers at the end of the reload process.
+     *
+     * <p>Allows initializers to resume listening for configuration changes.
+     *
+     * @param geoServer GeoServer being reloaded
+     */
+    protected void reloadInitializers(GeoServer geoServer) {
+        // reload applicable initializer extensions at end of reload process
         List<GeoServerReinitializer> initializers =
                 GeoServerExtensions.extensions(GeoServerReinitializer.class);
         for (GeoServerReinitializer initer : initializers) {
@@ -416,6 +444,8 @@ public abstract class GeoServerLoader {
 
     public void reload() throws Exception {
         destroy();
+
+        beforeReloadInitializers(geoserver);
 
         // reload catalog, make sure we reload the underlying catalog, not any wrappers
         Catalog catalog = geoserver.getCatalog();

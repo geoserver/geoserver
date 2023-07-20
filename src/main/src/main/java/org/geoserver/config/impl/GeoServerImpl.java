@@ -275,9 +275,20 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
         T service = ws != null ? facade.getService(ws, clazz) : null;
         service = service != null ? service : facade.getService(clazz);
         if (service == null) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Could not locate service of type " + clazz + ", local workspace is " + ws);
+            if (ws != null) {
+                LOGGER.log(
+                        Level.CONFIG,
+                        "Could not locate service info configuration of type "
+                                + clazz
+                                + ", for local workspace "
+                                + ws.getName());
+            } else {
+                LOGGER.log(
+                        Level.CONFIG,
+                        "Could not locate service info configuration of type "
+                                + clazz
+                                + ", for global service");
+            }
         }
 
         return service;

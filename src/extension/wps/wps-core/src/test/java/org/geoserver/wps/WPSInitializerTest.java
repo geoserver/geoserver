@@ -102,29 +102,75 @@ public class WPSInitializerTest {
         assertEquals(1, listeners.size());
 
         ConfigurationListener l = listeners.get(0);
+
         l.handleGlobalChange(null, null, null, null);
         l.handlePostGlobalChange(null);
 
         verify(gs);
     }
 
+    @Test
+    public void testReloadSave() throws Exception {
+        GeoServer gs = createMock(GeoServer.class);
+
+        List<ConfigurationListener> listeners = new ArrayList<>();
+        gs.addListener(capture(listeners));
+        expectLastCall().atLeastOnce();
+        gs.removeListener(release(listeners));
+        expectLastCall().atLeastOnce();
+
+        // load all process groups so there is no call to save
+        List<ProcessGroupInfo> procGroups = WPSInitializer.lookupProcessGroups();
+
+        WPSInfo wps = createNiceMock(WPSInfo.class);
+        expect(wps.getProcessGroups()).andReturn(procGroups).anyTimes();
+        replay(wps);
+
+        expect(gs.getService(WPSInfo.class)).andReturn(wps).anyTimes();
+        replay(gs);
+
+        initer.initialize(gs);
+
+        assertEquals(1, listeners.size());
+
+        ConfigurationListener l = listeners.get(0);
+
+        initer.beforeReinitialize(gs);
+        assertEquals(0, listeners.size());
+
+        l.handleGlobalChange(null, null, null, null);
+        l.handlePostGlobalChange(null);
+
+        initer.reinitialize(gs);
+        assertEquals(1, listeners.size());
+        verify(gs);
+    }
+
     ConfigurationListener capture(List<ConfigurationListener> listeners) {
-        LastControl.reportMatcher(new ListenerCapture(listeners));
+        LastControl.reportMatcher(new ListenerCapture(listeners, true));
+        return null;
+    }
+
+    ConfigurationListener release(List<ConfigurationListener> listeners) {
+        LastControl.reportMatcher(new ListenerCapture(listeners, false));
         return null;
     }
 
     static class ListenerCapture implements IArgumentMatcher {
 
         List<ConfigurationListener> listeners;
+        boolean add;
 
-        public ListenerCapture(List<ConfigurationListener> listeners) {
+        public ListenerCapture(List<ConfigurationListener> listeners, boolean add) {
             this.listeners = listeners;
+            this.add = add;
         }
 
         @Override
         public boolean matches(Object argument) {
             if (argument instanceof ConfigurationListener) {
-                listeners.add((ConfigurationListener) argument);
+                if (add) listeners.add((ConfigurationListener) argument);
+                else listeners.remove((ConfigurationListener) argument);
                 return true;
             }
             return false;

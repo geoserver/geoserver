@@ -167,11 +167,6 @@
       index="0" />
     <constructor-arg ref="catalog" index="1" />
   </bean>
-
-  <bean id="arcGridWcsMimeMapper" class="org.geoserver.wcs2_0.response.FormatNameMimeMapper">
-    <constructor-arg index="0" value="ArcGrid"/>
-    <constructor-arg index="1" value="text/plain" />
-  </bean>
   
   <bean id="imgWcsMimeMapper" class="org.geoserver.wcs2_0.response.ImgMimeTypeMapper"/>
 

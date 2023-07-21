@@ -30,6 +30,34 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+WCS ArcGRID output format removal
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ArcGRID output format for WCS has been removed in GeoServer 2.24.0.
+If you have been using this format, you will need to switch to another text based format, 
+such as GML coverage, or can get back the ArcGRID format by installing the 
+:ref:`WCS GDAL <gdal_wcs_output_format>` community module and use
+a configuration like the following (please adapt to your system):
+
+.. code-block:: xml
+
+    <ToolConfiguration>
+      <executable>gdal_translate</executable>
+      <environment>
+        <variable name="GDAL_DATA" value="/usr/local/share/gdal" />
+      </environment>
+      <formats>
+        <Format>
+          <toolFormat>AAIGrid</toolFormat>
+          <geoserverFormat>ArcGrid</geoserverFormat>
+          <fileExtension>.asc</fileExtension>
+          <singleFile>true</singleFile>
+          <mimeType>application/arcgrid</mimeType>
+        </Format>
+      </formats>
+    </ToolConfiguration>
+
+
 Disk Quota HSQL DB usage (GeoServer 2.24 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -39,9 +39,6 @@
     
     <!-- The coverage response delegates and their factory -->
     <bean id="coverageResponseDelegateFactory" class="org.geoserver.wcs.responses.CoverageResponseDelegateFinder"/>
-    <bean id="ascCoverageResponseDelegate" class="org.geoserver.wcs.responses.AscCoverageResponseDelegate">
-		<constructor-arg ref="geoServer"/>
-	</bean>
     <bean id="geotiffCoverageResponseDelegate" class="org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate">
 		<constructor-arg ref="geoServer"/>
 	</bean>

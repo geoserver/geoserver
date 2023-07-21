@@ -37,17 +37,25 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
                     + "  </wps:ResponseForm>\n";
     private static final String LINESTRING_FOR_2154 =
             "<wps:Input>\n"
-                    + "  <ows:Identifier>linestringEWKT</ows:Identifier>\n"
+                    + "  <ows:Identifier>geometry</ows:Identifier>\n"
                     + "      <wps:Data>\n"
-                    + "        <wps:LiteralData>SRID=2154;LINESTRING(843478.269971218 6420348.7621933, 843797.900998497 6420021.75658605, 844490.474212848 6420187.03857354, 844102.691178047 6420613.93854596)</wps:LiteralData>\n"
+                    + "        <wps:ComplexData mimeType=\"application/ewkt\"><![CDATA[SRID=2154;LINESTRING(843478.269971218 6420348.7621933, 843797.900998497 6420021.75658605, 844490.474212848 6420187.03857354, 844102.691178047 6420613.93854596)]]></wps:ComplexData>\n"
+                    + "      </wps:Data>\n"
+                    + "    </wps:Input>\n";
+
+    private static final String WKT_LINESTRING_FOR_2154 =
+            "<wps:Input>\n"
+                    + "  <ows:Identifier>geometry</ows:Identifier>\n"
+                    + "      <wps:Data>\n"
+                    + "        <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[LINESTRING(843478.269971218 6420348.7621933, 843797.900998497 6420021.75658605, 844490.474212848 6420187.03857354, 844102.691178047 6420613.93854596)]]></wps:ComplexData>\n"
                     + "      </wps:Data>\n"
                     + "    </wps:Input>\n";
 
     private static final String LINESTRING_FOR_4326 =
             "<wps:Input>\n"
-                    + "  <ows:Identifier>linestringEWKT</ows:Identifier>\n"
+                    + "  <ows:Identifier>geometry</ows:Identifier>\n"
                     + "      <wps:Data>\n"
-                    + "        <wps:LiteralData>SRID=4326;LINESTRING(4.816667349546753 44.86746046117114, 4.820617515841021 44.86445081066109, 4.829431492334357 44.86579440463876, 4.82464829777395 44.869717699053616)</wps:LiteralData>\n"
+                    + "        <wps:ComplexData mimeType=\"application/ewkt\"><![CDATA[SRID=4326;LINESTRING(4.816667349546753 44.86746046117114, 4.820617515841021 44.86445081066109, 4.829431492334357 44.86579440463876, 4.82464829777395 44.869717699053616)]]></wps:ComplexData>\n"
                     + "      </wps:Data>\n"
                     + "    </wps:Input>\n";
     private static final String HEADER =
@@ -89,6 +97,61 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
                         + "      </wps:Data>\n"
                         + "    </wps:Input>"
                         + LINESTRING_FOR_2154
+                        + "  </wps:DataInputs>\n"
+                        + "  "
+                        + RESPONSE_FORM
+                        + "</wps:Execute>\n"
+                        + "\n"
+                        + "";
+
+        JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
+        JSONObject infos = response.getJSONObject("infos");
+        Assert.assertEquals(214.94, infos.get("altitudePositive"));
+        Assert.assertEquals(-64.28, infos.get("altitudeNegative"));
+        Assert.assertEquals(1746.0248, infos.get("totalDistance"));
+        Assert.assertEquals(843478.25, infos.get("firstPointX"));
+        Assert.assertEquals(6420349.0, infos.get("firstPointY"));
+        Assert.assertEquals(844102.7, infos.get("lastPointX"));
+        Assert.assertEquals(6420614.0, infos.get("lastPointY"));
+        Assert.assertEquals("dataProfile", infos.get("layer"));
+        Assert.assertEquals(8, infos.get("processedPoints"));
+        Assert.assertNotNull(infos.get("executedTime"));
+        JSONArray profile = response.getJSONArray("profile");
+        Assert.assertEquals(8, profile.size());
+        JSONObject profile3 = (JSONObject) profile.get(3);
+        Assert.assertEquals(694.61163, profile3.get("totalDistanceToThisPoint"));
+        Assert.assertEquals(164.11, profile3.get("altitude"));
+        Assert.assertEquals(69.1453, profile3.get("slope"));
+        Assert.assertEquals(844028.75, profile3.get("x"));
+        Assert.assertEquals(6420077.0, profile3.get("y"));
+
+        JSONObject profile5 = (JSONObject) profile.get(5);
+        Assert.assertEquals(1169.2932, profile5.get("totalDistanceToThisPoint"));
+        Assert.assertEquals(178.82, profile5.get("altitude"));
+        Assert.assertEquals(75.34314, profile5.get("slope"));
+        Assert.assertEquals(844490.5, profile5.get("x"));
+        Assert.assertEquals(6420187.0, profile5.get("y"));
+
+        JSONObject profile7 = (JSONObject) profile.get(7);
+        Assert.assertEquals(1746.0248, profile7.get("totalDistanceToThisPoint"));
+        Assert.assertEquals(150.66, profile7.get("altitude"));
+        Assert.assertEquals(52.246147, profile7.get("slope"));
+        Assert.assertEquals(844102.7, profile7.get("x"));
+        Assert.assertEquals(6420614.0, profile7.get("y"));
+    }
+
+    @Test
+    public void testWktWithCrsOfTheLayer() throws Exception {
+        String requestXml =
+                HEADER
+                        + LAYER_NAME
+                        + "   <wps:Input>\n"
+                        + "      <ows:Identifier>distance</ows:Identifier>\n"
+                        + "      <wps:Data>\n"
+                        + "        <wps:LiteralData>300</wps:LiteralData>\n"
+                        + "      </wps:Data>\n"
+                        + "    </wps:Input>"
+                        + WKT_LINESTRING_FOR_2154
                         + "  </wps:DataInputs>\n"
                         + "  "
                         + RESPONSE_FORM
@@ -303,21 +366,21 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         JSONObject profile3 = (JSONObject) profile.get(3);
         Assert.assertEquals(0.0049660658, profile3.get("totalDistanceToThisPoint"));
         Assert.assertEquals(155.56, profile3.get("altitude"));
-        Assert.assertEquals(72.28649, profile3.get("slope"));
+        Assert.assertEquals(102.00278, profile3.get("slope"));
         Assert.assertEquals(4.8206177, profile3.get("x"));
         Assert.assertEquals(44.864452, profile3.get("y"));
 
         JSONObject profile6 = (JSONObject) profile.get(6);
         Assert.assertEquals(0.011652884, profile6.get("totalDistanceToThisPoint"));
         Assert.assertEquals(144.7, profile6.get("altitude"));
-        Assert.assertEquals(57.671978, profile6.get("slope"));
+        Assert.assertEquals(81.24586, profile6.get("slope"));
         Assert.assertEquals(4.827228, profile6.get("x"));
         Assert.assertEquals(44.86546, profile6.get("y"));
 
         JSONObject profile9 = (JSONObject) profile.get(9);
         Assert.assertEquals(0.018006066, profile9.get("totalDistanceToThisPoint"));
         Assert.assertEquals(127.35, profile9.get("altitude"));
-        Assert.assertEquals(46.91189, profile9.get("slope"));
+        Assert.assertEquals(66.208275, profile9.get("slope"));
         Assert.assertEquals(4.826243, profile9.get("x"));
         Assert.assertEquals(44.86841, profile9.get("y"));
     }

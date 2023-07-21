@@ -10,6 +10,6 @@
     <bean id="longitudinalProfileProcess" class="org.geoserver.wps.longitudinal.LongitudinalProfileProcess">
     </bean>
 
-    <bean id="longitudinalProfilePPIO" class="org.geoserver.wps.longitudinal.LongitudinalProfileProcessPPIO"/>
+    <bean id="longitudinalProfilePPIO" class="org.geoserver.wps.longitudinal.LongitudinalProfileProcessResultsPPIO"/>
 
 </beans>

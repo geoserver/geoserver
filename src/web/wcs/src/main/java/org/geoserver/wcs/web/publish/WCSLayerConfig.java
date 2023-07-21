@@ -5,8 +5,6 @@
  */
 package org.geoserver.wcs.web.publish;
 
-import static org.geoserver.wcs.responses.AscCoverageResponseDelegate.ARCGRID_COVERAGE_FORMAT;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,14 +33,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     private static final long serialVersionUID = 6120092654147588736L;
 
     private static final List<String> WCS_FORMATS =
-            Arrays.asList(
-                    "GIF",
-                    "PNG",
-                    "JPEG",
-                    "TIFF",
-                    "GEOTIFF",
-                    "IMAGEMOSAIC",
-                    ARCGRID_COVERAGE_FORMAT);
+            Arrays.asList("GIF", "PNG", "JPEG", "TIFF", "GEOTIFF", "IMAGEMOSAIC");
     private static final List<String> INTERPOLATIONS =
             Arrays.asList("nearest neighbor", "bilinear", "bicubic");
 

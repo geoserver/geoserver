@@ -69,6 +69,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                         "image/geotiff",
                         "image/tiff;application=geotiff"), // output formats
                 Map.ofEntries( // file extensions
+                        entry("tif", "tif"),
                         entry("tiff", "tif"),
                         entry("geotiff", "tif"),
                         entry("TIFF", "tif"),

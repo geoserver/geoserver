@@ -159,10 +159,12 @@ The mapping of roles to permissions is as follows:
      - r/w
      - r
    * - (All other users)
+     - (none)
      - r
      - r
      - r
-     - r
+
+.. note:: Specific workspace rule ``private.*.r=TRUSTED_ROLE`` will take precedence over the more generic rule ``*.*.r=*``. When a request is made to read a layer ``private:vulnerable_infrastructure`` the most specific rule available is used to control access. In this case the workspace rule ``private.*.r=TRUSTED_ROLE`` is the most specific and only users that have TRUSTED_ROLE will be granted ``r`` access and be able to read the ``private:vulnerable_infrastructure`` layer.  Other users that do not have the TRUSTED_ROLE will not be granted ``r`` access and will be unable to access the ``private:vulnerable_infrastructure`` layer.
 
 Locking down GeoServer
 ~~~~~~~~~~~~~~~~~~~~~~

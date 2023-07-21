@@ -89,17 +89,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     }
 
     @Test
-    public void testGetCoverageNativeFormat() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=sf__rain");
-
-        // we got back an ArcGrid response
-        assertEquals("text/plain", response.getContentType());
-    }
-
-    @Test
     public void testNotExistent() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse(

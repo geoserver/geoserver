@@ -9,10 +9,12 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
@@ -26,6 +28,9 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -141,5 +146,25 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         }
         info.getMetadata().put(metadata, di);
         getCatalog().save(info);
+    }
+
+    public interface ThrowingConsumer<T> {
+
+        public void accept(T t) throws Exception;
+    }
+
+    /**
+     * Utility method that reads a GeoTIFF from a HTTP servlet response, and passes the resulting
+     * coverage to the provided consumer for testing
+     */
+    protected void checkGeotiffResponse(
+            MockHttpServletResponse response, ThrowingConsumer<GridCoverage2D> consumer)
+            throws Exception {
+        try (MemoryCacheImageInputStream stream =
+                new MemoryCacheImageInputStream(
+                        new ByteArrayInputStream(response.getContentAsByteArray()))) {
+            GridCoverage2D coverage = new GeoTiffReader(stream).read(null);
+            consumer.accept(coverage);
+        }
     }
 }

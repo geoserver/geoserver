@@ -128,7 +128,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 "//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field/swe:Quantity/swe:uom/@code",
                 dom);
         assertXpathEvaluatesTo(
-                "text/plain",
+                "image/tiff",
                 "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat",
                 dom);
     }
@@ -386,24 +386,6 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo(
                 "-43.0020833333312 146.5020833333281",
                 "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//gml:domainSet//gml:RectifiedGrid//gml:origin//gml:Point//gml:pos",
-                dom);
-    }
-
-    @Test
-    public void testNativeFormatArcGrid() throws Exception {
-        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__rain");
-        // print(dom);
-
-        assertXpathEvaluatesTo("1", "count(//wcs:CoverageDescription)", dom);
-        assertXpathEvaluatesTo(
-                "sf__rain", "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]/@gml:id", dom);
-        assertXpathEvaluatesTo(
-                "1",
-                "count(//wcs:CoverageDescription[1]//gmlcov:rangeType//swe:DataRecord//swe:field)",
-                dom);
-        assertXpathEvaluatesTo(
-                "text/plain",
-                "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat",
                 dom);
     }
 

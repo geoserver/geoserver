@@ -48,6 +48,7 @@ import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.APIRequestInfo;
+import org.geoserver.ogcapi.APISearchQuery;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
@@ -84,6 +85,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -433,6 +436,29 @@ public class FeatureService {
         // build a response tracking both results and request to allow reusing the existing WFS
         // output formats
         return new FeaturesResponse(request.getAdaptee(), response);
+    }
+
+    @PostMapping(path = "collections/{collectionId}/search", name = "getFeatures")
+    @ResponseBody
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
+    public FeaturesResponse search(
+            @PathVariable(name = "collectionId") String collectionId,
+            @RequestBody APISearchQuery query)
+            throws Exception {
+        return items(
+                collectionId,
+                query.getStartIndex(),
+                query.getLimit(),
+                query.getBbox(),
+                query.getBboxCRS(),
+                query.getDatetime(),
+                query.getFilter(),
+                query.getFilterLang(),
+                query.getFilterCRS(),
+                query.getSortBy(),
+                query.getCrs(),
+                query.getIds(),
+                null);
     }
 
     /** TODO: use DimensionInfo instead? It's used to return the time range in the collection */

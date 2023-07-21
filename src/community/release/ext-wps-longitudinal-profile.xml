@@ -10,9 +10,6 @@
       <outputDirectory/>
       <includes>
         <include>gs-wps-longitudinal-profile*.jar</include>
-        <include>gs-wps-core*.jar</include>
-        <include>gt-xsd-wps*.jar</include>
-        <include>net.opengis.wps*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

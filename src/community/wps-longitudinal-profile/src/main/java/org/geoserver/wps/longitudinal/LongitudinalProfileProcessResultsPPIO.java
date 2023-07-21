@@ -13,7 +13,7 @@ public class LongitudinalProfileProcessResultsPPIO extends CDataPPIO {
 
     static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public LongitudinalProfileProcessPPIO() {
+    public LongitudinalProfileProcessResultsPPIO() {
         super(
                 LongitudinalProfileProcess.LongitudinalProfileProcessResult.class,
                 LongitudinalProfileProcess.LongitudinalProfileProcessResult.class,
@@ -41,5 +41,10 @@ public class LongitudinalProfileProcessResultsPPIO extends CDataPPIO {
     @Override
     public String getFileExtension() {
         return "json";
+    }
+
+    @Override
+    public PPIODirection getDirection() {
+        return PPIODirection.ENCODING;
     }
 }

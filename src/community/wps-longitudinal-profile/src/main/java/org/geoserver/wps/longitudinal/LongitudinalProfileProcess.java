@@ -30,13 +30,13 @@ import org.geotools.data.Query;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.GeodeticCalculator;
 import org.geotools.util.logging.Logging;
 import org.jaitools.jts.CoordinateSequence2D;
 import org.locationtech.jts.geom.Coordinate;
@@ -70,18 +70,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
 
     private final GeoServer geoServer;
 
-    private static final CoordinateReferenceSystem meterCrs;
-
     public LongitudinalProfileProcess(GeoServer geoServer) {
         this.geoServer = geoServer;
-    }
-
-    static {
-        try {
-            meterCrs = CRS.decode("EPSG:3857");
-        } catch (FactoryException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @DescribeResult(
@@ -97,11 +87,14 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                             description = "adjustment layer name",
                             min = 0)
                     String adjustmentLayerName,
-            @DescribeParameter(name = "linestringEWKT", description = "linestring ewkt", min = 1)
-                    String linestringEWkt,
+            @DescribeParameter(name = "geometry", description = "geometry for profile", min = 1)
+                    Geometry geometry,
             @DescribeParameter(name = "distance", description = "distance between points", min = 1)
-                    Double distance,
-            @DescribeParameter(name = "targetProjection", description = "projection for result", min = 0)
+                    double distance,
+            @DescribeParameter(
+                            name = "targetProjection",
+                            description = "projection for result",
+                            min = 0)
                     CoordinateReferenceSystem projection,
             @DescribeParameter(
                             name = "altitudeIndex",
@@ -117,7 +110,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
             throws IOException, FactoryException, TransformException, CQLException {
 
         long startTime = System.currentTimeMillis();
-        LOGGER.info(
+        LOGGER.fine(
                 "Starting processing at:"
                         + startTime
                         + " with params: "
@@ -128,8 +121,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                         + " adjustment layer name: "
                         + adjustmentLayerName
                         + SEP
-                        + " linestring ewkt: "
-                        + linestringEWkt
+                        + " geometry: "
+                        + geometry
                         + SEP
                         + " distance: "
                         + distance
@@ -140,31 +133,37 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                         + " altitude name: "
                         + altitudeName);
         if (projection != null) {
-            LOGGER.info(" targetProjection: " + projection.getName());
+            LOGGER.fine(" targetProjection: " + projection.getName());
         }
 
-        LineString lineString = ECQL.toExpression(linestringEWkt).evaluate(null, LineString.class);
-
-        if (projection == null) {
-            projection = (CoordinateReferenceSystem) lineString.getUserData();
+        // Project to CRS of provided geometry, if projection parameter is not provided
+        if (projection == null && geometry.getUserData() instanceof CoordinateReferenceSystem) {
+            projection = (CoordinateReferenceSystem) geometry.getUserData();
         }
 
         CoverageInfo coverageInfo = geoServer.getCatalog().getCoverageByName(layerName);
 
-        FeatureSource adjustmentFeatureSource = getAdjustmentLayerFeatureSource(adjustmentLayerName);
+        FeatureSource adjustmentFeatureSource =
+                getAdjustmentLayerFeatureSource(adjustmentLayerName);
 
         GridCoverage2DReader gridCoverageReader =
                 (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
         GridCoverage2D gridCoverage2D = gridCoverageReader.read(null);
 
-        Geometry denseLine = densifyLine(distance, lineString);
+        Geometry denseLine;
+        // If geometry does not contain any info on CRS we will use CRS of layer
+        CoordinateReferenceSystem defaultCrs = coverageInfo.getCRS();
+        if (geometry instanceof LineString) {
+            if (geometry.getUserData() != null) {
+                defaultCrs = (CoordinateReferenceSystem) geometry.getUserData();
+            }
+            denseLine = densifyLine(distance, (LineString) geometry, defaultCrs);
+        } else {
+            denseLine = geometry;
+        }
 
-        if (!coverageInfo.getCRS().equals(lineString.getUserData())) {
-            denseLine =
-                    reprojectGeometry(
-                            ((CoordinateReferenceSystem) lineString.getUserData()),
-                            coverageInfo.getCRS(),
-                            denseLine);
+        if (!coverageInfo.getCRS().equals(defaultCrs)) {
+            denseLine = reprojectGeometry(defaultCrs, coverageInfo.getCRS(), denseLine);
         }
 
         List<ProfileInfo> profileInfos = new ArrayList<>();
@@ -184,14 +183,14 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                         .collect(Collectors.toList());
 
         for (DirectPosition2D position2D : positions2D) {
-            LOGGER.info("processing position:" + position2D);
+            LOGGER.fine("processing position:" + position2D);
             CoordinateSequence2D coordinateSequence =
                     new CoordinateSequence2D(position2D.getX(), position2D.getY());
             Geometry point = new Point(coordinateSequence, GEOMETRY_FACTORY);
 
             double pointAltitude =
                     getAltitude(
-                            featureSource,
+                            adjustmentFeatureSource,
                             gridCoverage2D,
                             position2D,
                             point,
@@ -248,12 +247,10 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         return new LongitudinalProfileProcessResult(profileInfos, operationInfo);
     }
 
-    private Geometry densifyLine(Double distance, LineString lineString) {
+    private Geometry densifyLine(
+            Double distance, LineString lineString, CoordinateReferenceSystem crs) {
         double distanceInTargetCrsUnits =
-                metersToCrsUnits(
-                        (CoordinateReferenceSystem) lineString.getUserData(),
-                        lineString.getCentroid().getCoordinate(),
-                        distance);
+                metersToCrsUnits(crs, lineString.getCentroid().getCoordinate(), distance);
         Geometry denseLine = densify(lineString, distanceInTargetCrsUnits);
         return denseLine;
     }
@@ -263,7 +260,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
             Geometry previousPoint,
             Geometry point,
             double altitude)
-            throws FactoryException, TransformException {
+            throws TransformException {
         return altitude * 100 / distanceInMeters(projection, previousPoint, point);
     }
 
@@ -280,13 +277,14 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
      */
     private static double distanceInMeters(
             CoordinateReferenceSystem projection, Geometry previousPoint, Geometry point)
-            throws FactoryException, TransformException {
+            throws TransformException {
         double distanceToPrevious;
-        if (projection != null && "WGS 84".equals(projection.getName().getCode())) {
-            // In order to get distance in meters we will reproject points to EPSG:3857
-            Geometry previousCoordinate = reprojectGeometry(projection, meterCrs, previousPoint);
-            Geometry currentCoordinate = reprojectGeometry(projection, meterCrs, point);
-            distanceToPrevious = currentCoordinate.distance(previousCoordinate);
+        if (projection instanceof GeographicCRS) {
+            GeodeticCalculator gc = new GeodeticCalculator(projection);
+            gc.setStartingPosition(JTS.toDirectPosition(previousPoint.getCoordinate(), projection));
+            gc.setDestinationPosition(JTS.toDirectPosition(point.getCoordinate(), projection));
+
+            distanceToPrevious = gc.getOrthodromicDistance();
         } else {
             distanceToPrevious = point.distance(previousPoint);
         }

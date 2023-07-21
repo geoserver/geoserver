@@ -6,6 +6,26 @@ package org.geoserver.wps.longitudinal;
 
 public class OperationInfo {
 
+    double altitudePositive;
+
+    double altitudeNegative;
+
+    double totalDistance;
+
+    double firstPointX;
+
+    double firstPointY;
+
+    double lastPointX;
+
+    double lastPointY;
+
+    String layer;
+
+    int processedPoints;
+
+    long executedTime;
+
     public double getAltitudePositive() {
         return altitudePositive;
     }
@@ -85,24 +105,4 @@ public class OperationInfo {
     public void setExecutedTime(long executedTime) {
         this.executedTime = executedTime;
     }
-
-    double altitudePositive;
-
-    double altitudeNegative;
-
-    double totalDistance;
-
-    double firstPointX;
-
-    double firstPointY;
-
-    double lastPointX;
-
-    double lastPointY;
-
-    String layer;
-
-    int processedPoints;
-
-    long executedTime;
 }

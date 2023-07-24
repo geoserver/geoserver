@@ -134,11 +134,14 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
     @Test
     public void testExtGeoserver() {
         List<String> domain = extTypes.extGeoserver.getDomain(null);
-        assertEquals(1, domain.size());
-        assertEquals("mygs", domain.get(0));
+        assertEquals(2, domain.size());
+        assertTrue(domain.contains("mygs"));
+        assertTrue(domain.contains("keycloakgs"));
         assertTrue(extTypes.extGeoserver.validate("mygs", null));
         assertFalse(extTypes.extGeoserver.validate("doesntexist", null));
+        assertTrue(extTypes.extGeoserver.validate("keycloakgs", null));
         assertTrue(extTypes.extGeoserver.parse("mygs", null) instanceof ExternalGS);
+        assertTrue(extTypes.extGeoserver.parse("keycloakgs", null) instanceof ExternalGS);
         assertNull(extTypes.extGeoserver.parse("doesntexist", null));
     }
 

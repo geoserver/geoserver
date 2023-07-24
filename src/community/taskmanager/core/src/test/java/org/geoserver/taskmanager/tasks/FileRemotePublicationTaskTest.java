@@ -78,8 +78,6 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
 
     @Autowired private LookupService<FileService> fileServices;
 
-    @Autowired private ExternalGS externalGS;
-
     private Configuration config;
 
     private Batch batch;
@@ -98,7 +96,8 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         }
         try (InputStream in =
                 getClass().getResource("appschema/MappedFeature.properties").openStream()) {
-            externalGS
+            extGeoservers
+                    .get("mygs")
                     .getRESTManager()
                     .getResourceManager()
                     .upload("uploaded-stores/MappedFeature.properties", in);

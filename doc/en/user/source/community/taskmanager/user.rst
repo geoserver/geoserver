@@ -170,6 +170,22 @@ configuration file.
         <property name="password" value="geoserver" />
     </bean>
 
+The configuration above will log-in to geoserver using basic authentication.
+Task Manager also supports geoservers protected with keycloak:
+
+.. code:: xml
+
+    <bean class="org.geoserver.taskmanager.external.impl.ExternalKeycloakGSImpl">
+        <property name="name" value="keycloakgs"/>
+        <property name="url" value="http://my.geoserver/geoserver"/>
+        <property name="username" value="keycloak_admin"/>
+        <property name="password" value="keycloak_password"/>
+        <property name="clientId" value="my clientid"/>
+        <property name="clientSecret" value="my clientsecret"/>
+        <property name="real" value="my realm"/>
+        <property name="authUrl" value="http://my.keycloak.server/auth"/>
+    </bean>
+
 File Services
 ~~~~~~~~~~~~~
 

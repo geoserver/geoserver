@@ -100,6 +100,18 @@
         <property name="password" value="geoserver"/>
     </bean>
 
+    <!-- external geoserver for testing -->
+    <bean class="org.geoserver.taskmanager.external.impl.ExternalKeycloakGSImpl">
+        <property name="name" value="keycloakgs"/>
+        <property name="url" value="http://localhost:9090/geoserver"/>
+        <property name="username" value="admin"/>
+        <property name="password" value="geoserver"/>
+        <property name="clientId" value="clientid"/>
+        <property name="clientSecret" value="clientsecret"/>
+        <property name="realm" value="realm"/>
+        <property name="authUrl" value="http://localhost:9090/auth"/>
+    </bean>
+    
     <!-- File Services -->
     <!--  don't actually use this service for file access because tests will break in windows -->
     <bean class="org.geoserver.taskmanager.external.impl.FileServiceImpl">

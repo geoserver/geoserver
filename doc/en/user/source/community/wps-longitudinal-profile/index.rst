@@ -30,7 +30,7 @@ The process splits provided geometry (for example linestring) into segments of n
 Then evaluates altitude for each point and builds longitudinal profile.
 If adjustment layer name is provided, altitude will be adjusted by searching feature that contains corresponding point,
 and getting it's altitude attribute, further subtracting it from altitude received from coverage.
-If projection parameter is provided, points of profile will be reprojected to target CRS, otherwise to CRS
+If targetProjection parameter is provided, points of profile will be reprojected to target CRS, otherwise to CRS
 of provided ewkt geometry.
 
 Process accepts following parameters:

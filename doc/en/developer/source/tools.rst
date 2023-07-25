@@ -3,7 +3,7 @@
 Tools
 =====
 
-The following tools need to installed on the system before a GeoServer developer
+The following tools need to be installed on the system before a GeoServer developer
 environment can be set up.
 
 Java
@@ -13,7 +13,7 @@ Developing with GeoServer requires a Java Development Kit (JDK), available from 
 
 The GeoServer project works with Java Long Term Support releases: Java 11 and Java 17.
 
-Due to subtle changes in Java class libraries we require development on Java 11 at this time (although the result is tested on Java 17). When calling a method of java core library a type case may (or not be) implied and represented in the bytecode.  We when the core libraries change the return type of a method weh can have a very subtle incompatibility.
+Due to subtle changes in Java class libraries, we require development on Java 11 at this time (although the result is tested on Java 17). When calling a method of java core library, a type case may (or not be) implied and represented in the bytecode.  When the core libraries change, the return type of a method can have a very subtle incompatibility.
 
 Maven
 -----

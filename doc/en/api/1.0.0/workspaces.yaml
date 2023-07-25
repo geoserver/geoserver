@@ -233,10 +233,17 @@ definitions:
     xml:
       name: workspace
     type: object
+    required:
+    - workspace
     properties:
-      name:
-        type: string
-        description: name of the workspace
+      workspace:
+        type: object
+        required:
+        - name
+        properties:
+          name:
+            type: string
+            description: name of the workspace
       
   WorkspacesResponse:
     title: Workspaces

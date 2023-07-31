@@ -5,6 +5,9 @@
  */
 package org.geoserver.config.util;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.thoughtworks.xstream.XStream;
@@ -54,6 +57,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -1429,7 +1434,7 @@ public class XStreamPersister {
         }
 
         @Override
-        public Object fromString(String str) {
+        public CoordinateReferenceSystem fromString(String str) {
             if (str.toUpperCase().startsWith("EPSG:")) {
                 try {
                     return CRS.decode(str);
@@ -1450,6 +1455,19 @@ public class XStreamPersister {
     /** Converter for coordinate reference system objects that converts by WKT. */
     public static class CRSConverter extends AbstractSingleValueConverter {
 
+        /**
+         * Short-lived small cache of parsed coordinate systems. Speeds up loading a large number of
+         * layers at server startup by limiting the number of parsing and handling concurrency
+         *
+         * @see #parse(String)
+         */
+        private LoadingCache<String, CoordinateReferenceSystem> cache =
+                CacheBuilder.newBuilder()
+                        .maximumSize(10)
+                        .expireAfterAccess(10, TimeUnit.SECONDS)
+                        .softValues()
+                        .build(CacheLoader.from(CRSConverter::parse));
+
         @Override
         public boolean canConvert(Class type) {
             return CoordinateReferenceSystem.class.isAssignableFrom(type);
@@ -1461,16 +1479,27 @@ public class XStreamPersister {
         }
 
         @Override
-        public Object fromString(String str) {
+        public CoordinateReferenceSystem fromString(String str) {
+            try {
+                return cache.get(str);
+            } catch (ExecutionException e) {
+                Throwable cause = e.getCause() == null ? e : e.getCause();
+                throw new RuntimeException(cause);
+            }
+        }
+
+        /** Loading function for {@link #cache} */
+        static CoordinateReferenceSystem parse(String str) {
             try {
                 return CRS.parseWKT(str);
             } catch (Exception e) {
                 try {
                     return new SRSConverter().fromString(str);
-                } catch (Exception e1) {
+                } catch (Exception ignore) {
+                    RuntimeException rte = new RuntimeException(e);
+                    rte.addSuppressed(ignore);
+                    throw rte;
                 }
-
-                throw new RuntimeException(e);
             }
         }
     }

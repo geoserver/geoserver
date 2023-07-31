@@ -49,6 +49,9 @@ import org.opengis.filter.sort.SortOrder;
  *
  * @author Justin Deoliveira, OpenGeo
  *     <p>TODO: look for any exceptions, move them back to catalog as they indicate logic
+ * @see CatalogInfoLookup
+ * @see LayerInfoLookup
+ * @see NamespaceInfoLookup
  */
 public class DefaultCatalogFacade extends AbstractCatalogFacade implements CatalogFacade {
 
@@ -135,8 +138,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     protected volatile NamespaceInfo defaultNamespace;
 
     /** namespaces */
-    protected CatalogInfoLookup<NamespaceInfo> namespaces =
-            new CatalogInfoLookup<>(NAMESPACE_NAME_MAPPER);
+    protected NamespaceInfoLookup namespaces = new NamespaceInfoLookup();
 
     /** The default workspace */
     protected volatile WorkspaceInfo defaultWorkspace;
@@ -747,9 +749,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
     @Override
     public List<NamespaceInfo> getNamespacesByURI(String uri) {
-        List<NamespaceInfo> found =
-                namespaces.list(
-                        NamespaceInfo.class, namespaceInfo -> namespaceInfo.getURI().equals(uri));
+        List<NamespaceInfo> found = namespaces.findAllByUri(uri);
         return ModificationProxy.createList(found, NamespaceInfo.class);
     }
 
@@ -974,7 +974,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
         // namespaces
         if (namespaces == null) {
-            namespaces = new CatalogInfoLookup<>(NAMESPACE_NAME_MAPPER);
+            namespaces = new NamespaceInfoLookup();
         }
         for (NamespaceInfo ns : namespaces.values()) {
             resolve(ns);

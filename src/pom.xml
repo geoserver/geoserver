@@ -158,7 +158,7 @@
     <errorProne.version>2.18.0</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
     <pmd.version>6.42.0</pmd.version>
-    <hsql.version>2.7.1</hsql.version>
+    <hsql.version>2.7.2</hsql.version>
     <checkstyle.skip>false</checkstyle.skip>
     <qa>false</qa>
     <lint>deprecation,unchecked</lint>

@@ -1,0 +1,10 @@
+// $ANTLR 2.7.4: schema-extension.g -> AntlrSchemaExtensionTokenTypes.txt$
+AntlrSchemaExtension    // output token vocab name
+WHSP=4
+QUOTE=5
+XKEY=6
+XVALUES=7
+XSTRING=8
+VALUES=9
+VALUE=10
+QUOTED_STRING=11

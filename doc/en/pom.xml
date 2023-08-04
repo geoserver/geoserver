@@ -21,9 +21,17 @@
     <target>full</target>
     <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
     <copyright.year>${maven.build.timestamp}</copyright.year>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
   </properties>
   
   <dependencies>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.8.1</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -96,6 +104,7 @@
         <configuration>
           <language>html</language>
           <ignoreFileOverride>${project.basedir}/api/.swagger-codegen-ignore</ignoreFileOverride>
+          <inputSpec/>
         </configuration>
         <executions>
           <!-- one execution per page -->
@@ -106,6 +115,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/coverages.yaml</inputSpec>
               <output>${project.build.directory}/api/coverages</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -115,6 +125,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/coveragestores.yaml</inputSpec>
               <output>${project.build.directory}/api/coveragestores</output>
+            <language/>
             </configuration>
           </execution>
           <execution>
@@ -124,6 +135,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/datastores.yaml</inputSpec>
               <output>${project.build.directory}/api/datastores</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -133,6 +145,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/featuretypes.yaml</inputSpec>
               <output>${project.build.directory}/api/featuretypes</output>
+              <language/>
             </configuration>
           </execution>          
           <execution>
@@ -142,6 +155,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/fonts.yaml</inputSpec>
               <output>${project.build.directory}/api/fonts</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -151,6 +165,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcblobstores.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcblobstores</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -160,6 +175,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcbounds.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcbounds</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -169,6 +185,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcdiskquota.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcdiskquota</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -178,6 +195,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcfilterupdate.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcfilterupdate</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -187,6 +205,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcglobal.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcglobal</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -196,6 +215,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcgridsets.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcgridsets</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -205,6 +225,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcindex.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcindex</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -214,6 +235,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwclayers.yaml</inputSpec>
               <output>${project.build.directory}/api/gwclayers</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -223,6 +245,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcmasstruncate.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcmasstruncate</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -232,6 +255,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcmemorycachestatistics.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcmemorycachestatistics</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -241,6 +265,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcreload.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcreload</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -250,6 +275,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/gwcseed.yaml</inputSpec>
               <output>${project.build.directory}/api/gwcseed</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -287,6 +313,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/importerTasks.yaml</inputSpec>
               <output>${project.build.directory}/api/importerTasks</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -298,6 +325,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/importerTransforms.yaml</inputSpec>
               <output>${project.build.directory}/api/importerTransforms</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -307,6 +335,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/layergroups.yaml</inputSpec>
               <output>${project.build.directory}/api/layergroups</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -316,6 +345,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/layers.yaml</inputSpec>
               <output>${project.build.directory}/api/layers</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -325,6 +355,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/manifests.yaml</inputSpec>
               <output>${project.build.directory}/api/manifests</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -336,6 +367,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/metadata.yaml</inputSpec>
               <output>${project.build.directory}/api/metadata</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -347,6 +379,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/monitoring.yaml</inputSpec>
               <output>${project.build.directory}/api/monitoring</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -356,6 +389,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/namespaces.yaml</inputSpec>
               <output>${project.build.directory}/api/namespaces</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -367,6 +401,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/opensearch-eo.yaml</inputSpec>
               <output>${project.build.directory}/api/opensearch-eo</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -376,6 +411,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/owsservices.yaml</inputSpec>
               <output>${project.build.directory}/api/owsservices</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -385,6 +421,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/params-extractor.yaml</inputSpec>
               <output>${project.build.directory}/api/params-extractor</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -394,6 +431,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/reload.yaml</inputSpec>
               <output>${project.build.directory}/api/reload</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -403,6 +441,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/resource.yaml</inputSpec>
               <output>${project.build.directory}/api/resource</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -412,6 +451,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/roles.yaml</inputSpec>
               <output>${project.build.directory}/api/roles</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -421,6 +461,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/security.yaml</inputSpec>
               <output>${project.build.directory}/api/security</output>
+              <language/>
             </configuration>
           </execution>          
           <execution>
@@ -430,6 +471,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/settings.yaml</inputSpec>
               <output>${project.build.directory}/api/settings</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -439,6 +481,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/structuredcoverages.yaml</inputSpec>
               <output>${project.build.directory}/api/structuredcoverages</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -448,6 +491,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/styles.yaml</inputSpec>
               <output>${project.build.directory}/api/styles</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -457,6 +501,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/system-status.yaml</inputSpec>
               <output>${project.build.directory}/api/system-status</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -466,6 +511,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/templates.yaml</inputSpec>
               <output>${project.build.directory}/api/templates</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -475,6 +521,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/transforms.yaml</inputSpec>
               <output>${project.build.directory}/api/transforms</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -484,6 +531,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/usergroup.yaml</inputSpec>
               <output>${project.build.directory}/api/usergroup</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -493,6 +541,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/wmslayers.yaml</inputSpec>
               <output>${project.build.directory}/api/wmslayers</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -502,6 +551,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/wmsstores.yaml</inputSpec>
               <output>${project.build.directory}/api/wmsstores</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -511,6 +561,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/wmtslayers.yaml</inputSpec>
               <output>${project.build.directory}/api/wmtslayers</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -522,6 +573,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/wmtsstores.yaml</inputSpec>
               <output>${project.build.directory}/api/wmtsstores</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -533,6 +585,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/workspaces.yaml</inputSpec>
               <output>${project.build.directory}/api/workspaces</output>
+              <language/>
             </configuration>
           </execution>
           <execution>
@@ -542,6 +595,7 @@
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/wpsdownload.yaml</inputSpec>
               <output>${project.build.directory}/api/wpsdownload</output>
+              <language/>
             </configuration>
           </execution>
         </executions>
@@ -572,9 +626,13 @@
                  <copy file="release/VERSION.txt" todir="target" filtering="true">
                   <filterset begintoken="$${" endtoken="}">
                     <filter token="project.version" value="${project.version}"/>
+                    <!--suppress UnresolvedMavenProperty -->
                     <filter token="build.revision" value="${build.commit.id}"/>
+                    <!--suppress UnresolvedMavenProperty -->
                     <filter token="build.branch" value="${build.branch}"/>
+                    <!--suppress UnresolvedMavenProperty -->
                     <filter token="build.timestamp" value="${build.timestamp}"/>
+                    <!--suppress UnresolvedMavenProperty -->
                     <filter token="build.hudsonId" value="${build.hudsonId}"/>
                   </filterset>
                  </copy>

@@ -1,0 +1,40 @@
+
+package org.apache.directory.shared.ldap.name;
+
+import java.util.WeakHashMap;
+
+import javax.naming.InvalidNameException;
+
+import org.apache.directory.shared.ldap.constants.SchemaConstants;
+
+public class DnCache
+{
+    private WeakHashMap<String, DN> cache;
+    private static DN ouDn;
+    
+    static 
+    {
+        try
+        {
+            ouDn = new DN( SchemaConstants.OU_SCHEMA );
+        }
+        catch ( InvalidNameException ine )
+        {
+            // Do nothing
+        }
+    }
+    
+    public DnCache( int size )
+    {
+        cache = new WeakHashMap<String, DN>( size );
+        
+        try
+        {
+            cache.put( SchemaConstants.OU_SCHEMA, ouDn );
+        }
+        catch ( InvalidNameException ine )
+        {
+            // Do nothing
+        }
+    }
+}

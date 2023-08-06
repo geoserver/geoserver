@@ -11,27 +11,56 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <slf4jVersion>1.5.8</slf4jVersion>
   </properties>
 
   <dependencies>
+
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-all</artifactId>
       <version>1.5.7</version>
       <exclusions>
         <!-- shared-ldap-schema module needs to be excluded to avoid multiple schema resources on the classpath-->
-        <!--exclusion>
+        <exclusion>
           <groupId>org.apache.directory.shared</groupId>
           <artifactId>shared-ldap-schema</artifactId>
-        </exclusion-->
+        </exclusion>
+          <exclusion>
+              <groupId>org.apache.directory.shared</groupId>
+              <artifactId>shared-ldap</artifactId>
+          </exclusion>
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-reload4j</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+          <!-- any library that uses commons-logging will be directed to slf4j -->
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+          <!-- any library that uses slf4j will be directed to java.util.logging -->
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-jdk14</artifactId>
+          <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+          <version>${slf4jVersion}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+          <version>${slf4jVersion}</version>
+      </dependency>
   </dependencies>
 
   <build>
@@ -75,7 +104,8 @@
                                 <excludes>
                                     <exclude>META-INF/*.SF</exclude>
                                     <exclude>META-INF/*.DSA</exclude>
-                                    <exclude>META-INF/*.RSA</exclude>                                       
+                                    <exclude>META-INF/*.RSA</exclude>
+                                    <exclude>apacheds-all-1.5.7.jar!/org/apache/directory/shared/ldap/util/SystemUtils.class</exclude>
                                 </excludes>
                             </filter>
                         </filters>

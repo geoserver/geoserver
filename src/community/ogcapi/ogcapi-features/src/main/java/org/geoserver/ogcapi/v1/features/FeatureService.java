@@ -438,13 +438,18 @@ public class FeatureService {
         return new FeaturesResponse(request.getAdaptee(), response);
     }
 
-    @PostMapping(path = "collections/{collectionId}/search", name = "getFeatures")
+    @PostMapping(path = "collections/{collectionId}/search", name = "searchFeatures")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse search(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestBody APISearchQuery query)
             throws Exception {
+
+        // WARNING:
+        // This endpoint is part of the draft proposal "OGC API - Features - Part 5". The syntax and
+        // semantic of the endpoint is subject to change in a future release. Its usage should be
+        // carefully considered.
         return items(
                 collectionId,
                 query.getStartIndex(),

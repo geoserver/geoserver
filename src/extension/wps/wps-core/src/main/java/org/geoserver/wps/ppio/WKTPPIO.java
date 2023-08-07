@@ -28,10 +28,6 @@ public class WKTPPIO extends CDataPPIO {
         super(Geometry.class, Geometry.class, "application/wkt");
     }
 
-    protected WKTPPIO(String mimeType) {
-        super(Geometry.class, Geometry.class, mimeType);
-    }
-
     @Override
     public Object decode(InputStream input) throws Exception {
         return new WKTReader().read(new InputStreamReader(input));

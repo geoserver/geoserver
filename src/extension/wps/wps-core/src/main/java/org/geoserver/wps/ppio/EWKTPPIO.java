@@ -22,14 +22,14 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * Used to represent geometries in EWKT format Reads geometry and crs from string and sets this crs
  * to created geometry
  */
-public class EWKTPPIO extends WKTPPIO {
+public class EWKTPPIO extends CDataPPIO {
 
     private static final WKTReader2 reader = new WKTReader2();
 
     private static final Pattern SRID_REGEX = Pattern.compile("SRID=[0-9].*");
 
     public EWKTPPIO() {
-        super("application/ewkt");
+        super(Geometry.class, Geometry.class, "application/ewkt");
     }
 
     @Override

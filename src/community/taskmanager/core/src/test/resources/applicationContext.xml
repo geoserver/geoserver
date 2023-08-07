@@ -10,12 +10,23 @@
     <context:component-scan base-package="org.geoserver.taskmanager.fileservice"/>
 
     <!--H2 setup -->
+    <bean name="geomtable" class="org.geoserver.taskmanager.external.impl.GeometryTableImpl">
+        <property name="nameTable" value="gw_beleid.geomtable" />
+        <property name="attributeNameTable" value="table_name" />
+        <property name="attributeNameGeometry" value="column_name" />
+        <property name="attributeNameType" value="geometry_type" />
+        <property name="attributeNameSrid" value="epsg" />
+        <property name="type" value="WKT" />
+    </bean>
+    
     <bean class="org.geoserver.taskmanager.external.impl.H2DbSourceImpl">
         <property name="name" value="testsourcedb"/>
         <property name="path" value="mem"/>
         <property name="db" value="testsourcedb"/>
-        <property name="createDBSqlResource" value="classpath:h2/dbsource/create-source.sql"/>
+        <property name="createDBSqlResource" value="classpath:h2/dbsource/create-source.sql"/>     
+        <property name="rawGeometryTable" ref="geomtable"/>
     </bean>
+    
     <bean class="org.geoserver.taskmanager.external.impl.H2DbSourceImpl">
         <property name="name" value="testtargetdb"/>
         <property name="path" value="mem"/>

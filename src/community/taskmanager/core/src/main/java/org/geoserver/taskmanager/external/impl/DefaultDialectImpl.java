@@ -5,14 +5,19 @@
 package org.geoserver.taskmanager.external.impl;
 
 import java.sql.Connection;
+import java.sql.JDBCType;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.geoserver.taskmanager.external.Dialect;
+import org.geoserver.taskmanager.external.GeometryTable;
 import org.geoserver.taskmanager.util.SqlUtil;
 
 /**
@@ -99,12 +104,19 @@ public class DefaultDialectImpl implements Dialect {
 
                         @Override
                         public String getTypeEtc() throws SQLException {
-                            String typeName = rsmd.getColumnTypeName(col);
-                            StringBuffer sb = new StringBuffer(typeName);
-                            if (("char".equals(typeName) || "varchar".equals(typeName))
-                                    && rsmd.getColumnDisplaySize(col) > 0
-                                    && rsmd.getColumnDisplaySize(col) < Integer.MAX_VALUE) {
-                                typeName += " (" + rsmd.getColumnDisplaySize(col) + " ) ";
+                            StringBuffer sb = new StringBuffer();
+                            JDBCType type = JDBCType.valueOf(rsmd.getColumnType(col));
+                            if (type == JDBCType.OTHER) {
+                                sb.append(rsmd.getColumnTypeName(col));
+                            } else {
+                                sb.append(type.name());
+                                if ((type == JDBCType.CHAR || type == JDBCType.VARCHAR)
+                                        && rsmd.getColumnDisplaySize(col) > 0
+                                        && rsmd.getColumnDisplaySize(col) < Integer.MAX_VALUE) {
+                                    sb.append(" (")
+                                            .append(rsmd.getColumnDisplaySize(col))
+                                            .append(" ) ");
+                                }
                             }
                             switch (isNullable(rsmd.isNullable(col))) {
                                 case ResultSetMetaData.columnNoNulls:
@@ -120,5 +132,58 @@ public class DefaultDialectImpl implements Dialect {
         }
 
         return result;
+    }
+
+    @Override
+    public Map<String, GeometryColumn> getRawSpatialColumns(
+            GeometryTable geometryTable, Connection connection, String tableName)
+            throws SQLException {
+        Map<String, GeometryColumn> result = new HashMap<>();
+        String sql =
+                "SELECT "
+                        + quote(geometryTable.getAttributeNameGeometry())
+                        + ", "
+                        + quote(geometryTable.getAttributeNameSrid())
+                        + ", "
+                        + quote(geometryTable.getAttributeNameType())
+                        + " FROM "
+                        + quote(geometryTable.getNameTable())
+                        + " WHERE "
+                        + quote(geometryTable.getAttributeNameTable())
+                        + " = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, tableName);
+            try (ResultSet set = stmt.executeQuery()) {
+                while (set.next()) {
+                    String name = set.getString(1);
+                    int srid = set.getInt(2);
+                    String type = set.getString(3);
+                    result.put(
+                            name,
+                            new GeometryColumn() {
+                                @Override
+                                public int getSrid() {
+                                    return srid;
+                                }
+
+                                @Override
+                                public String getType() {
+                                    return type;
+                                }
+                            });
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public String getGeometryType(String type, int srid) {
+        throw new UnsupportedOperationException("geometry translation not supported by target db");
+    }
+
+    @Override
+    public String getConvertedGeometry(GeometryTable.Type type) {
+        throw new UnsupportedOperationException("geometry translation not supported by target db");
     }
 }

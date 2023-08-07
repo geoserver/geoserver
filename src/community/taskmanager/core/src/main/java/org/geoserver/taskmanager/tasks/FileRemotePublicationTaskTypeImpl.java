@@ -35,7 +35,6 @@ import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.ParameterType;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
-import org.geoserver.taskmanager.tasks.AbstractRemotePublicationTaskTypeImpl.Finalizer;
 import org.springframework.stereotype.Component;
 
 @Component

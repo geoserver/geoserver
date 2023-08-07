@@ -8,11 +8,9 @@ import it.geosolutions.geoserver.rest.encoder.GSAbstractStoreEncoder;
 import java.io.Serializable;
 import java.util.Map;
 import javax.sql.DataSource;
-import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.Dialect;
 import org.geoserver.taskmanager.external.ExternalGS;
-import org.geoserver.taskmanager.util.SecuredImpl;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
@@ -21,7 +19,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
  *
  * @author Timothy De Bock
  */
-public class InformixDbSourceImpl extends SecuredImpl implements DbSource {
+public class InformixDbSourceImpl extends AbstractDbSourceImpl {
 
     private String connectionUrl;
 

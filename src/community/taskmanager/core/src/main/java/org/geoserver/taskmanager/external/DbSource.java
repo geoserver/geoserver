@@ -60,6 +60,10 @@ public interface DbSource extends Secured {
     /** The dialect specific actions for taskmanager. */
     Dialect getDialect();
 
+    default GeometryTable getRawGeometryTable() {
+        return null;
+    }
+
     /*
      * these methods could serve an alternative table copy implementation
      * that doesn't use jdbc but uses direct database commands and sends SQL commands

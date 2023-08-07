@@ -49,6 +49,7 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
     private static final String SOURCEDB_PG_NAME = "myjndidb";
     private static final String TARGETDB_PG_NAME = "mypostgresdb";
     private static final String TABLE_NAME = "gw_beleid.grondwaterlichamen_new";
+    private static final String TABLE_NAME_WKT = "gw_beleid.waterlichamen_wkt";
     private static final String TARGET_TABLE_NAME = "temp.grondwaterlichamen_copy";
 
     private static final String VIEW_NAME = "gw_beleid.vw_grondwaterlichamen";
@@ -544,6 +545,63 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
                 rs = md.getTables(null, schema, pattern, new String[] {"TABLE"});
             }
             return (rs.next());
+        }
+    }
+
+    @Test
+    public void testCopyPostgisTableWithRawGeometries() throws SchedulerException, SQLException {
+
+        DbSource target = dbSources.get(TARGETDB_PG_NAME);
+        try (Connection conn = target.getDataSource().getConnection()) {
+        } catch (SQLException e) {
+            Assume.assumeTrue(false);
+        }
+
+        dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TARGET_DB, TARGETDB_PG_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME_WKT);
+        dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_NAME);
+        config = dao.save(config);
+
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        scheduler.scheduleJob(trigger);
+
+        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
+            // waiting to be done.
+        }
+
+        String[] split = TARGET_TABLE_NAME.split("\\.", 2);
+        if (split.length == 2) {
+            assertFalse(tableExists(TARGETDB_PG_NAME, split[0], "_temp%"));
+            assertTrue(tableExists(TARGETDB_PG_NAME, split[0], split[1]));
+        } else {
+            assertFalse(tableExists(TARGETDB_PG_NAME, null, "_temp%"));
+            assertTrue(tableExists(TARGETDB_PG_NAME, null, TARGET_TABLE_NAME));
+        }
+        int numberOfRecordsSource = getNumberOfRecords(SOURCEDB_NAME, TABLE_NAME_WKT);
+        int numberOfRecordsTarget = getNumberOfRecords(TARGETDB_PG_NAME, TARGET_TABLE_NAME);
+        assertEquals(numberOfRecordsSource, numberOfRecordsTarget);
+        assertEquals(
+                getNumberOfColumns(SOURCEDB_NAME, TABLE_NAME_WKT),
+                getNumberOfColumns(TARGETDB_PG_NAME, TARGET_TABLE_NAME));
+        DbSource ds = dbSources.get(TARGETDB_PG_NAME);
+        try (Connection conn = ds.getDataSource().getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet rs = stmt.executeQuery("SELECT * FROM " + TARGET_TABLE_NAME)) {
+                    assertEquals("geometry", rs.getMetaData().getColumnTypeName(2));
+                    assertEquals("geometry", rs.getMetaData().getColumnTypeName(3));
+                    assertEquals("geometry", rs.getMetaData().getColumnTypeName(4));
+                }
+            }
+        }
+
+        assertTrue(taskUtil.cleanup(config));
+
+        if (split.length == 2) {
+            assertFalse(tableExists(TARGETDB_PG_NAME, split[0], split[1]));
+        } else {
+            assertFalse(tableExists(TARGETDB_PG_NAME, null, TARGET_TABLE_NAME));
         }
     }
 }

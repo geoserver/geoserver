@@ -107,6 +107,8 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
             interpolationProperties.put(
                     "url.wmts",
                     ResponseUtils.buildURL(baseUrl, "gwc/service/wmts", null, URLType.SERVICE));
+            interpolationProperties.put(
+                    "url.base", ResponseUtils.buildURL(baseUrl, null, null, URLType.SERVICE));
         }
 
         CatalogStoreMapping mapping = getMapping(q.getTypeName());

@@ -94,8 +94,17 @@ public class APISearchQuery {
         return ids;
     }
 
-    public void setIds(String ids) {
-        this.ids = ImmutableList.copyOf(ids.split(","));
+    public void setIds(JsonNode node) {
+        if (node instanceof ArrayNode) {
+            this.ids = arrayNodeToStringList((ArrayNode) node);
+            return;
+        }
+
+        String value = node.textValue();
+        if (value == null) {
+            return;
+        }
+        this.ids = ImmutableList.copyOf(value.split(","));
     }
 
     public void setIds(List<String> ids) {
@@ -106,8 +115,13 @@ public class APISearchQuery {
         return sortBy;
     }
 
-    public void setSortBy(SortBy[] sortBy) {
-        this.sortBy = sortBy;
+    public void setSortBy(JsonNode node) {
+        if (node instanceof ArrayNode) {
+            List<String> sortBy = arrayNodeToStringList((ArrayNode) node);
+            this.sortBy = SortByConverter.convertList(sortBy);
+            return;
+        }
+        this.sortBy = SortByConverter.convertString(node.textValue());
     }
 
     public String getFilter() {
@@ -118,9 +132,9 @@ public class APISearchQuery {
     public void setFilter(JsonNode node) {
         if (node instanceof ObjectNode) {
             this.filter = node.toString();
-        } else {
-            this.filter = node.textValue();
+            return;
         }
+        this.filter = node.textValue();
     }
 
     public String getFilterLang() {
@@ -139,9 +153,13 @@ public class APISearchQuery {
         this.filterCRS = filterCRS;
     }
 
-    private String arrayNodeToString(ArrayNode node) {
+    private List<String> arrayNodeToStringList(ArrayNode node) {
         final List<String> values = new ArrayList<>(node.size());
         node.forEach(childNode -> values.add(childNode.toString()));
-        return values.stream().collect(Collectors.joining(","));
+        return values;
+    }
+
+    private String arrayNodeToString(ArrayNode node) {
+        return arrayNodeToStringList(node).stream().collect(Collectors.joining(","));
     }
 }

@@ -28,7 +28,7 @@ Once the Elasticsearch GeoServer extension is installed, ``Elasticsearch index``
 The Elasticsearch data store configuration panel includes connection parameters and search settings.
 
 .. |store_config| image:: images/elasticsearch_configuration.png
-   :scale: 55%
+   :scale: 90%
 
 +----------------+
 | |store_config| |
@@ -82,6 +82,8 @@ Available data store configuration parameters are summarized in the following ta
      - Hint for Geohash grid size (numRows*numCols)
    * - grid_threshold
      - Geohash grid aggregation precision will be the minimum necessary so that actual_grid_size/grid_size > grid_threshold
+   * - response_buffer_limit
+     - Maximum number of bytes to buffer in memory when reading responses from Elasticsearch
 
 Configuring authentication
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -452,11 +452,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 image = getImageFromWebMapServer(layer, template, bbox, serverCache);
             }
 
-            if (result == null) {
-                result = image;
-            } else {
-                result = mergeImage(result, image);
-            }
+            result = mergeImage(result, image, layer);
+
             // past the first layer switch transparency on to allow overlaying
             template.put("transparent", "true");
             // track progress and bail out if necessary
@@ -494,7 +491,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 RenderedImageMapOutputFormat renderer = new RenderedImageMapOutputFormat(wms);
                 RenderedImageMap map = renderer.produceMap(content);
 
-                result = mergeImage(result, map.getImage());
+                result = mergeImage(result, map.getImage(), null);
             } finally {
                 content.dispose();
             }
@@ -516,7 +513,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                     image = map.getImage();
                     map.getMapContext().dispose();
                     if (result != null) {
-                        result = mergeImage(result, image);
+                        result = mergeImage(result, image, null);
                     }
                 }
             }
@@ -689,7 +686,19 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         return result;
     }
 
-    private RenderedImage mergeImage(RenderedImage result, RenderedImage image) {
+    private RenderedImage mergeImage(RenderedImage result, RenderedImage image, Layer layer) {
+        if (result == null && layer != null) {
+            // assume this is the first layer
+            // nothing to do if no opacity is requested
+            if (layer.getOpacity() == null) {
+                return image;
+            } else {
+                // if opacity is requested, create an empty image to merge with
+                result =
+                        new BufferedImage(
+                                image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            }
+        }
         // make sure we can paint on it
         if (!(result instanceof BufferedImage)) {
             result = PlanarImage.wrapRenderedImage(result).getAsBufferedImage();
@@ -698,9 +707,25 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         // this way at most two at any time are around, so uses less memory overall
         BufferedImage bi = (BufferedImage) result;
         Graphics2D graphics = (Graphics2D) bi.getGraphics();
+        if (layer != null && layer.getOpacity() != null) {
+            applyOpacity(image, layer, graphics);
+        }
         graphics.drawRenderedImage(image, AffineTransform.getScaleInstance(1, 1));
         graphics.dispose();
         return result;
+    }
+
+    private static void applyOpacity(RenderedImage image, Layer layer, Graphics2D graphics) {
+        if (layer.getOpacity() < 0 || layer.getOpacity() > 100) {
+            throw new WPSException(
+                    "Layer: "
+                            + layer.getName()
+                            + " has opacity set to an invalid value (only 0-100 allowed): "
+                            + layer.getOpacity());
+        }
+        graphics.setComposite(
+                java.awt.AlphaComposite.getInstance(
+                        java.awt.AlphaComposite.SRC_OVER, layer.getOpacity().floatValue() / 100));
     }
 
     private GetMapRequest produceGetMapRequest(Layer layer, Map<String, Object> kvpTemplate)

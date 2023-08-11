@@ -15,6 +15,7 @@ public class Layer extends AbstractParametricEntity {
 
     String capabilities;
     String decorationName;
+    Integer opacity;
 
     @XmlElement(name = "Capabilities")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -34,5 +35,14 @@ public class Layer extends AbstractParametricEntity {
 
     public void setDecorationName(String decorationName) {
         this.decorationName = decorationName;
+    }
+
+    @XmlElement(name = "Opacity")
+    public Integer getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(Integer opacity) {
+        this.opacity = opacity;
     }
 }

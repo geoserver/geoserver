@@ -26,6 +26,7 @@ A layer specification is a XML structure made of three parts:
  * Name: a comma separated list of layer names (eventually just one)
  * Capabilities: link to a capabilities document (optional, used when targetting remote WMS layers)
  * Parameter (key, value): an extra parameter to be added in the WMS request represented by this layer (e.g., ``elevation``, ``CQL_FILTER``, ``env``)
+ * Opacity: an optional parameter, ranging from 0 to 100, that controls the layer image level of translucency during the merge process.  When not set the layer image is fully opaque.  Note that this is seperate from the overall map ``transparent`` boolean parameter.
 
 For example:
 
@@ -36,6 +37,7 @@ For example:
         <dwn:Capabilities>http://demo.geo-solutions.it/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</dwn:Name>
         <dwn:Name>topp:states</dwn:Name>
         <dwn:Parameter key="CQL_FILTER"><![CDATA[PERSONS > 1000000]]></dwn:Parameter>
+        <dwn:Opacity>37</dwn:Opacity>
       </dwn:Layer>
     </wps:ComplexData>
 

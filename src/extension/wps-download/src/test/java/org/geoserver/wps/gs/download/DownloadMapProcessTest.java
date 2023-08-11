@@ -9,6 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -248,9 +249,51 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void downloadRemoteSimple11() throws Exception {
-        String request = getTestRequest("mapRemoteSimple11.xml");
-        String caps111 = getTestRequest("caps111.xml");
-        byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
+        byte[] bytes =
+                testRemoteSimple(
+                        "mapSimple.png", "mapRemoteSimple11.xml", "caps111.xml", "image/png");
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
+        ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 100);
+    }
+
+    @Test
+    public void downloadRemoteSimple11Opacity() throws Exception {
+        byte[] bytes =
+                testRemoteSimple(
+                        "mapSimpleWithAlpha.png",
+                        "mapRemoteSimple11Opacity.xml",
+                        "caps111.xml",
+                        "image/png");
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
+        // images match despite differences in alpha channel due to ImageAssert tolerances
+        ImageAssert.assertEquals(new File(SAMPLES + "mapSimpleWithAlpha.png"), image, 100);
+        Color c = new Color(image.getRGB(128, 128), true);
+        // alpha is 50% of 128 in mapSimpleWithAlpha alpha channel
+        assertEquals(64, c.getAlpha());
+    }
+
+    @Test
+    public void downloadRemoteSimpleOpacityOutOfRange() throws Exception {
+        byte[] bytes =
+                testRemoteSimple(
+                        "mapSimpleWithAlpha.png",
+                        "mapRemoteSimple11OpacityOutOfRange.xml",
+                        "caps111.xml",
+                        "text/xml");
+        String response = new String(bytes, UTF_8);
+        assertTrue(response.contains("has opacity set to an invalid value (only 0-100 allowed)"));
+    }
+
+    private byte[] testRemoteSimple(
+            String imageName,
+            String requestFileName,
+            String capabilitiesFileName,
+            String expectedType)
+            throws Exception {
+        byte[] bytes = null;
+        String request = getTestRequest(requestFileName);
+        String caps111 = getTestRequest(capabilitiesFileName);
+        byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + imageName));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
         MockHttpClient client = new MockHttpClient();
         client.expectGet(
@@ -271,13 +314,12 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
             process.setHttpClientSupplier(() -> client);
 
             MockHttpServletResponse response = postAsServletResponse("wps", request);
-            assertEquals("image/png", response.getContentType());
-            BufferedImage image =
-                    ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
-            ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 100);
+            assertEquals(expectedType, response.getContentType());
+            bytes = response.getContentAsByteArray();
         } finally {
             process.setHttpClientSupplier(oldSupplier);
         }
+        return bytes;
     }
 
     @Test

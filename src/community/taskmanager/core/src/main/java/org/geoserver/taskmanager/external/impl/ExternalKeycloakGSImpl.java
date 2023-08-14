@@ -15,6 +15,10 @@ public class ExternalKeycloakGSImpl extends ExternalGSImpl {
 
     private String realm;
 
+    private String proxyHost;
+
+    private int proxyPort;
+
     private KeycloakAuthenticator auth = null;
 
     public String getClientId() {
@@ -49,12 +53,35 @@ public class ExternalKeycloakGSImpl extends ExternalGSImpl {
         this.realm = realm;
     }
 
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+
+    public int getProxyPort() {
+        return proxyPort;
+    }
+
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
     @Override
     public GeoServerRESTManager getRESTManager() throws MalformedURLException {
         if (auth == null) {
             auth =
                     new KeycloakAuthenticator(
-                            getUsername(), getPassword(), clientId, clientSecret, authUrl, realm);
+                            getUsername(),
+                            getPassword(),
+                            clientId,
+                            clientSecret,
+                            authUrl,
+                            realm,
+                            proxyHost,
+                            proxyPort);
         }
         return new GeoServerRESTManager(new URL(getUrl()), auth);
     }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.csw.store.internal;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -37,8 +38,11 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         File md = new File(csw, "MD_Metadata.properties");
         assertTrue(md.exists());
 
-        assertNotNull(store.getMapping("Record"));
-        assertNotNull(store.getMapping("MD_Metadata"));
-        assertNotNull(store.getMapping("MD_Metadata").getElement("fileIdentifier.CharacterString"));
+        assertEquals(1, store.getMappings("Record").size());
+        assertEquals(1, store.getMappings("MD_Metadata").size());
+        assertNotNull(
+                store.getMappings("MD_Metadata")
+                        .get(0)
+                        .getElement("fileIdentifier.CharacterString"));
     }
 }

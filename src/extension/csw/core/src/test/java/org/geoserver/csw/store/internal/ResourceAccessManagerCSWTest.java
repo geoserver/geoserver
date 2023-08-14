@@ -143,7 +143,7 @@ public class ResourceAccessManagerCSWTest extends CSWTestSupport {
         String request =
                 "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&maxRecords=100";
         Document d = getAsDOM(request);
-        // print(d);
+        print(d);
         // expected number
         assertEquals(
                 citeResources.size(), xpath.getMatchingNodes("//csw:SummaryRecord", d).getLength());

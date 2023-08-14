@@ -14,6 +14,7 @@ import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.util.IOUtils;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -26,11 +27,17 @@ public class TabsTest extends AbstractWicketMetadataTest {
                 new File(metadata, "metadata-tabs.yaml"));
     }
 
+    @AfterClass
+    public static void unconfigureTabs() throws Exception {
+        new File(metadata, "metadata-tabs.yaml").delete();
+    }
+
     private LayerInfo layer;
 
     @Test
     @SuppressWarnings("unchecked")
     public void testTabs() throws IOException {
+
         login();
         layer = geoServer.getCatalog().getLayerByName("mylayer");
         assertNotNull(layer);

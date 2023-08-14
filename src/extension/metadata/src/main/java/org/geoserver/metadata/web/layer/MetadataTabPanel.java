@@ -105,9 +105,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                     }
                 });
 
-        add(
-                new MetadataPanel("metadataPanel", metadataModel, derivedAtts, resource)
-                        .setOutputMarkupId(true));
+        add(MetadataPanel.buildPanel("metadataPanel", metadataModel, derivedAtts, resource));
 
         // Geonetwork import panel
         ImportGeonetworkPanel geonetworkPanel =
@@ -143,7 +141,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                         target.add(
                                 metadataPanel()
                                         .replaceWith(
-                                                new MetadataPanel(
+                                                MetadataPanel.buildPanel(
                                                         "metadataPanel",
                                                         metadataModel,
                                                         derivedAtts,
@@ -199,7 +197,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
         target.add(
                 metadataPanel()
                         .replaceWith(
-                                new MetadataPanel(
+                                MetadataPanel.buildPanel(
                                         "metadataPanel", metadataModel, derivedAtts, resource)));
     }
 

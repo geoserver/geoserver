@@ -37,6 +37,8 @@ public class AttributeConfigurationImpl implements AttributeConfiguration {
 
     String condition;
 
+    String tab;
+
     public AttributeConfigurationImpl() {}
 
     public AttributeConfigurationImpl(String key, FieldTypeEnum fieldType) {
@@ -101,5 +103,10 @@ public class AttributeConfigurationImpl implements AttributeConfiguration {
     @Override
     public String getCondition() {
         return condition;
+    }
+
+    @Override
+    public String getTab() {
+        return tab;
     }
 }

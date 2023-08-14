@@ -1,10 +1,13 @@
 attributes:
   - key: uuid-single
     fieldType: UUID
+    tab: tab1
   - key: identifier-single
     fieldType: TEXT
+    tab: tab1
   - key: number-field
     fieldType: NUMBER
+    tab: tab1
   - key: dropdown-field
     fieldType: DROPDOWN
     values:
@@ -12,49 +15,61 @@ attributes:
         - Or select this row
         - Don't select this one
         - the-final-choice
+    tab: tab1
   - label: refsystem as list
     key: refsystem-as-list
     fieldType: TEXT
     occurrence: REPEAT
+    tab: tab1
   - label: Referencesystem object
     key: referencesystem-object
     fieldType: COMPLEX
     typename: referencesystem
+    tab: tab1
   - label: Referencesystem object list
     key: referencesystem-object-list
     fieldType: COMPLEX
     typename: referencesystem
     occurrence: REPEAT
+    tab: tab2
     #duplicates should be ignored
   - label: Referencesystem object list
     key: referencesystem-object-list
     fieldType: COMPLEX
     typename: referencesystem
     occurrence: REPEAT
+    tab: tab2
   - key: date-field
     fieldType: DATE
   - key: date-time-field
     fieldType: DATETIME
+    tab: tab2
   - key: boolean-field
     fieldType: BOOLEAN
+    tab: tab2
   - key: contact
     fieldType: COMPLEX
     typename: contact
     occurrence: REPEAT
+    tab: tab3
   - key: identifier-other
     fieldType: TEXT
+    tab: tab3
   - label: Feature catalog
     key: feature-catalog
     fieldType: COMPLEX
     typename: featureCatalog    
     condition: equalTo(typeOf("."), 'FeatureTypeInfo')
+    tab: tab3
   - key: source
     fieldType: DROPDOWN
     occurrence: REPEAT
+    tab: tab3
   - key: target
     fieldType: DERIVED
     derivedFrom: source
     occurrence: REPEAT
+    tab: tab3
 csvImports:
   - sourcetarget.csv
 

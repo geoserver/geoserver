@@ -81,7 +81,7 @@ public class MetadataPanel extends Panel {
                         .getMetadataConfiguration()
                         .getTabs();
 
-        if (tabs.size() > 0) {
+        if (!tabs.isEmpty()) {
             List<AbstractTab> tabPanels = new ArrayList<>();
 
             for (String tab : tabs) {

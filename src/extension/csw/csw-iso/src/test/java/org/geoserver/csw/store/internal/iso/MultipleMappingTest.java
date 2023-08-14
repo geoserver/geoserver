@@ -65,10 +65,12 @@ public class MultipleMappingTest extends MDTestSupport {
 
     @Test
     public void testTitleFilter() throws Exception {
+        String forestId = getCatalog().getLayerByName("Forests").getResource().getId();
+
         String request =
                 "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd&constraint=Title = 'Forests'";
         Document d = getAsDOM(request);
-        // print(d);
+        print(d);
         // validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
 
         assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsMatched", d);
@@ -76,19 +78,27 @@ public class MultipleMappingTest extends MDTestSupport {
         assertXpathEvaluatesTo("2", "count(//csw:SearchResults/*)", d);
         assertXpathEvaluatesTo(
                 "Forests",
-                "//gmd:MD_Metadata[1]/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString",
+                "//gmd:MD_Metadata[gmd:fileIdentifier/gco:CharacterString='"
+                        + forestId
+                        + "']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString",
                 d);
         assertXpathEvaluatesTo(
                 "Forests",
-                "//gmd:MD_Metadata[2]/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString",
+                "//gmd:MD_Metadata[gmd:fileIdentifier/gco:CharacterString='"
+                        + forestId
+                        + ".second']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString",
                 d);
         assertXpathEvaluatesTo(
                 "John Smith",
-                "//gmd:MD_Metadata[1]/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString",
+                "//gmd:MD_Metadata[gmd:fileIdentifier/gco:CharacterString='"
+                        + forestId
+                        + "']/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString",
                 d);
         assertXpathEvaluatesTo(
                 "Jeffery Smith",
-                "//gmd:MD_Metadata[2]/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString",
+                "//gmd:MD_Metadata[gmd:fileIdentifier/gco:CharacterString='"
+                        + forestId
+                        + ".second']/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString",
                 d);
     }
 

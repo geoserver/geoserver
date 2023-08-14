@@ -1,0 +1,4 @@
+@fileIdentifier.CharacterString=strConcat(id, '.second')
+identificationInfo.MD_DataIdentification.citation.CI_Citation.title.CharacterString=title
+$dateStamp.Date=if_then_else(isNull("metadata.date"), "Expression/NIL", "metadata.date")
+$contact.CI_ResponsibleParty.individualName.CharacterString='Jeffery Smith'

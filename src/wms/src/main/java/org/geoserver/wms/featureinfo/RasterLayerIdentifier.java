@@ -136,10 +136,11 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         List<FeatureCollection> result = new ArrayList<>();
         boolean plainRenderingIdentified = false;
         for (FeatureTypeStyle fts : requestParams.getStyle().featureTypeStyles()) {
-            if (fts.getTransformation() == null && plainRenderingIdentified) {
+            Expression tx = isTransformFeatureInfo(fts) ? fts.getTransformation() : null;
+            if (tx == null && plainRenderingIdentified) {
                 continue;
             }
-            plainRenderingIdentified |= fts.getTransformation() == null;
+            plainRenderingIdentified |= tx == null;
             Object info = read(requestParams, reader, parameters, fts);
             if (info instanceof GridCoverage2D) {
                 GridCoverage2D coverage = (GridCoverage2D) info;
@@ -156,6 +157,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         }
 
         return result;
+    }
+
+    private boolean isTransformFeatureInfo(FeatureTypeStyle fts) {
+        // check the vendor option first, then the WMS settings
+        String option = fts.getOptions().get(RasterSymbolizerVisitor.TRANSFORM_FEATURE_INFO);
+        return option != null ? Boolean.parseBoolean(option) : this.wms.isTransformFeatureInfo();
     }
 
     @SuppressWarnings("unchecked")
@@ -320,7 +327,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     private boolean hasVectorTransformations(FeatureInfoRequestParameters params) {
         Style style = params.getStyle();
         RasterSymbolizerVisitor visitor =
-                new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
+                new RasterSymbolizerVisitor(
+                        params.getScaleDenominator(), null, this.wms.isTransformFeatureInfo());
         style.accept(visitor);
 
         // we could skip the reading altogether
@@ -423,7 +431,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             FeatureTypeStyle fts)
             throws IOException, SchemaException, TransformException, FactoryException {
         RasterSymbolizerVisitor visitor =
-                new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
+                new RasterSymbolizerVisitor(
+                        params.getScaleDenominator(), null, this.wms.isTransformFeatureInfo());
         fts.accept(visitor);
 
         // we could skip the reading altogether
@@ -455,7 +464,11 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                     null,
                     coverage.getCoordinateReferenceSystem2D(),
                     null);
-        } else if (!visitor.getRasterSymbolizers().isEmpty()) return coverage;
+        } else if (!visitor.getRasterSymbolizers().isEmpty() || !isTransformFeatureInfo(fts)) {
+            // return the coverage if there are active raster symbolizers or if transforming
+            // the feature info data is disabled
+            return coverage;
+        }
 
         // no transformation and no active raster symbolizers either
         return null;

@@ -84,6 +84,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     private Boolean defaultGroupStyleEnabled;
 
+    private boolean transformFeatureInfoDisabled;
+
     private boolean autoEscapeTemplateValues;
 
     public WMSInfoImpl() {
@@ -369,6 +371,16 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     public void setAllowedURLsForAuthForwarding(List<String> allowedURLsForAuthForwarding) {
         this.allowedURLsForAuthForwarding = allowedURLsForAuthForwarding;
+    }
+
+    @Override
+    public boolean isTransformFeatureInfoDisabled() {
+        return transformFeatureInfoDisabled;
+    }
+
+    @Override
+    public void setTransformFeatureInfoDisabled(boolean transformFeatureInfoDisabled) {
+        this.transformFeatureInfoDisabled = transformFeatureInfoDisabled;
     }
 
     @Override

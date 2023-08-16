@@ -330,4 +330,18 @@ public interface WFSInfo extends ServiceInfo {
      * @param getFeatureOutputTypes set of Output Types to be enforced
      */
     void setGetFeatureOutputTypes(Set<String> getFeatureOutputTypes);
+
+    /**
+     * Get the Date Format for csv
+     *
+     * @return Csv Date Format pattern
+     */
+    public String getCsvDateFormat();
+
+    /**
+     * Set the Date Format for csv
+     *
+     * @param csvDateFormat Date Format pattern
+     */
+    public void setCsvDateFormat(String csvDateFormat);
 }

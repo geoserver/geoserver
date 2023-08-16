@@ -26,10 +26,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.util.TemporalUtils;
 import org.geoserver.feature.FlatteningFeatureCollection;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -88,7 +90,6 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         // write out content here
-
         Object o = getFeature.getParameters()[0];
 
         String csvSeparator = getCsvSeparator(o);
@@ -101,7 +102,6 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
 
         // get the feature collection
         FeatureCollection<?, ?> fc = featureCollection.getFeature().get(0);
-
         if (fc.getSchema() instanceof SimpleFeatureType) {
             // Flatten the collection if necessary (the request was a WFS 2.0 joining GetFeature
             // one, the features contain other SimpleFeature as attributes)
@@ -154,7 +154,6 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
 
         // prepare the list of formatters
         AttrFormatter[] formatters = getFormatters(fc.getSchema());
-
         // write out the features
         try (FeatureIterator<?> i = fc.features()) {
             while (i.hasNext()) {
@@ -256,7 +255,6 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
             coordFormatter.setMaximumFractionDigits(
                     getInfo().getGeoServer().getSettings().getNumDecimals());
             coordFormatter.setGroupingUsed(false);
-
             SimpleFeatureType sft = (SimpleFeatureType) schema;
             AttrFormatter[] formatters = new AttrFormatter[sft.getAttributeCount()];
             int i = 0;
@@ -269,7 +267,14 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 } else if (java.sql.Time.class.isAssignableFrom(binding)) {
                     formatters[i] = sqlTimeFormatter;
                 } else if (java.util.Date.class.isAssignableFrom(binding)) {
-                    formatters[i] = juDateFormatter;
+                    if (gs.getService(WFSInfo.class) != null
+                            && gs.getService(WFSInfo.class).getCsvDateFormat() != null) {
+                        formatters[i] =
+                                new CustomDateFormatter(
+                                        gs.getService(WFSInfo.class).getCsvDateFormat());
+                    } else {
+                        formatters[i] = juDateFormatter;
+                    }
                 } else {
                     formatters[i] = defaultFormatter;
                 }
@@ -300,6 +305,19 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 return prepCSVField(coordFormatter.format(att));
             }
             return coordFormatter.format(att);
+        }
+    }
+
+    private static class CustomDateFormatter implements AttrFormatter {
+        private String workspaceDateFormat;
+
+        public CustomDateFormatter(String workspaceDateFormat) {
+            this.workspaceDateFormat = workspaceDateFormat;
+        }
+
+        @Override
+        public String format(Object att) {
+            return prepCSVField(TemporalUtils.serializeDateTime((Date) att, workspaceDateFormat));
         }
     }
 

@@ -208,14 +208,14 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                             LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
 
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
-                    final String formattedFilter =
+                    String formattedFilter =
                             MessageFormat.format(groupSearchFilter, userDn, username);
-                    // Replace the escape token "\" with "\\" to search.
-                    String formattedFilterNew = LDAPUtils.escapeSearchString(formattedFilter);
+                    // search requires an escaped string
+                    formattedFilter = LDAPUtils.escapeSearchString(formattedFilter);
                     userRolesNameDn.addAll(
                             authTemplate.search(
                                     getGroupSearchBase(),
-                                    formattedFilterNew,
+                                    formattedFilter,
                                     new AbstractContextMapper<Pair<String, String>>() {
                                         @Override
                                         protected Pair<String, String> doMapFromContext(
@@ -279,14 +279,14 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                     SpringSecurityLdapTemplate authTemplate =
                             LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
-                    final String formattedFilter =
+                    String formattedFilter =
                             MessageFormat.format(nestedGroupSearchFilter, groupDn, groupName);
-                    // Replace the escape token "\" with "\\" to search.
-                    String formattedFilterNew = LDAPUtils.escapeSearchString(formattedFilter);
+                    // search requires an escaped string
+                    formattedFilter = LDAPUtils.escapeSearchString(formattedFilter);
                     groupRolesNameDn.addAll(
                             authTemplate.search(
                                     getGroupSearchBase(),
-                                    formattedFilterNew,
+                                    formattedFilter,
                                     new AbstractContextMapper<Pair<String, String>>() {
                                         @Override
                                         protected Pair<String, String> doMapFromContext(

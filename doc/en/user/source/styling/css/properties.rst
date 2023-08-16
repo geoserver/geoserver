@@ -532,6 +532,10 @@ Raster symbology
       * string
       * Controls how the color map entries are interpreted, the possible values are "ramp", "intervals" and "values", with ramp being the default if no "raster-color-map-type" is provided. The default "ramp" behavior is to linearly interpolate color between the provided values, and assign the lowest color to all values below the lowest value, and the highest color to all values above the highest value. The "intervals" behavior instead assigns solid colors between values, whilst "values" only assigns colors to the specified values, every other value in the raster is not painted at all
       * no
+    - * ``raster-color-map-extended``
+      * string
+      * Enables "extended color map" mode, which makes the color map use 65536 entries instead of 256, and thus allows for a more precise color mapping. The default is "false", which means the color map is limited to 256 entries (if more than 256 colors are used, the extended color map mode is enabled automatically). This property is ignored if the "raster-color-map" property is not provided.
+      * no
     - * ``raster-label-fi``
       * string
       * Controls if and how color map entry labels are included, as attributes, in the GetFeatureInfo output. Valid values are ``add``, adding the labels as extra attributes, ``replace``, using the labels in place of the actual value, or ``none`` (the default) which does not include the labels in the output.

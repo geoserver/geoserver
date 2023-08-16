@@ -20,16 +20,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.util.TemporalUtils;
 import org.geoserver.feature.FlatteningFeatureCollection;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -269,7 +272,11 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 } else if (java.sql.Time.class.isAssignableFrom(binding)) {
                     formatters[i] = sqlTimeFormatter;
                 } else if (java.util.Date.class.isAssignableFrom(binding)) {
-                    formatters[i] = juDateFormatter;
+                    formatters[i] =
+                            Optional.ofNullable(gs.getService(WFSInfo.class))
+                                    .map(service -> service.getCsvDateFormat())
+                                    .map(format -> (AttrFormatter) new CustomDateFormatter(format))
+                                    .orElse(juDateFormatter);
                 } else {
                     formatters[i] = defaultFormatter;
                 }
@@ -300,6 +307,19 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 return prepCSVField(coordFormatter.format(att));
             }
             return coordFormatter.format(att);
+        }
+    }
+
+    private static class CustomDateFormatter implements AttrFormatter {
+        private String workspaceDateFormat;
+
+        public CustomDateFormatter(String workspaceDateFormat) {
+            this.workspaceDateFormat = workspaceDateFormat;
+        }
+
+        @Override
+        public String format(Object att) {
+            return prepCSVField(TemporalUtils.serializeDateTime((Date) att, workspaceDateFormat));
         }
     }
 

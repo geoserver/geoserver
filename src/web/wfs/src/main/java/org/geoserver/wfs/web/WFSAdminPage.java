@@ -81,6 +81,9 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         // max features
         form.add(new TextField<Integer>("maxFeatures").add(RangeValidator.minimum(0)));
         form.add(new TextField<Integer>("maxNumberOfFeaturesForPreview"));
+        TextField<String> dateFormatField = new TextField<>("csvDateFormat");
+        dateFormatField.setModel(new PropertyModel<>(info, "csvDateFormat"));
+        form.add(dateFormatField);
         form.add(new CheckBox("featureBounding"));
         form.add(new CheckBox("hitsIgnoreMaxFeatures"));
         form.add(new CheckBox("simpleConversionEnabled"));

@@ -1,0 +1,16 @@
+<assembly>
+  <id>wps-longitudinal-profile-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory/>
+      <includes>
+        <include>gs-wps-longitudinal-profile*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

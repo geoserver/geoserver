@@ -90,6 +90,7 @@
             <descriptor>release/ext-libdeflate.xml</descriptor>
             <descriptor>release/ext-stac-datastore.xml</descriptor>
             <descriptor>release/ext-vector-mosaic-datastore.xml</descriptor>
+            <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -242,6 +243,7 @@
         <module>teradata</module>
         <module>libdeflate</module>
         <module>vector-mosaic</module>
+        <module>wps-longitudinal-profile</module>
       </modules>
     </profile>
     <profile>
@@ -675,6 +677,12 @@
       <id>vector-mosaic</id>
       <modules>
         <module>vector-mosaic</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wps-longitudinal-profile</id>
+      <modules>
+        <module>wps-longitudinal-profile</module>
       </modules>
     </profile>
   </profiles>

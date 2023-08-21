@@ -18,7 +18,7 @@ import static com.hazelcast.query.Predicates.not;
 import static com.hazelcast.query.Predicates.or;
 
 import com.hazelcast.query.Predicate;
-import com.hazelcast.query.TruePredicate;
+import com.hazelcast.query.impl.predicates.TruePredicate;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.collections4.functors.FalsePredicate;

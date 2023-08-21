@@ -88,14 +88,15 @@ public class HazelcastLoader implements DisposableBean {
         // make some sanity checks on the map
         MapConfig mapConfig = config.getMapConfig(EXECUTION_STATUS_MAP);
         // Check size policy
-        if (mapConfig.getMaxSizeConfig().getSize() > 0) {
+        if (mapConfig.getEvictionConfig().getSize() > 0) {
             LOGGER.warning(
                     "The WPS status map "
                             + EXECUTION_STATUS_MAP
                             + " has a max size set, it should be unbounded so that no status is lost"
                             + " before the configured timeout");
         }
-        if (mapConfig.getEvictionPolicy() != MapConfig.DEFAULT_EVICTION_POLICY) {
+        if (mapConfig.getEvictionConfig().getEvictionPolicy()
+                != MapConfig.DEFAULT_EVICTION_POLICY) {
             LOGGER.warning(
                     "The WPS status map "
                             + EXECUTION_STATUS_MAP

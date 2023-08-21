@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
@@ -89,6 +89,7 @@
             <descriptor>release/ext-mongodb-schemaless.xml</descriptor>
             <descriptor>release/ext-web-service-auth.xml</descriptor>
             <descriptor>release/ext-gwc-mbtiles.xml</descriptor>
+            <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -253,6 +254,7 @@
         <module>schemaless-features</module>
         <module>web-service-auth</module>
         <module>gwc-mbtiles</module>
+        <module>wps-longitudinal-profile</module>
       </modules>
     </profile>
     <profile>
@@ -699,6 +701,12 @@
       <id>gwc-mbtiles</id>
       <modules>
         <module>gwc-mbtiles</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wps-longitudinal-profile</id>
+      <modules>
+        <module>wps-longitudinal-profile</module>
       </modules>
     </profile>
   </profiles>

@@ -421,6 +421,11 @@
       <artifactId>gs-web-service-auth</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-wps-longitudinal-profile</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

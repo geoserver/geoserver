@@ -84,6 +84,7 @@ public abstract class ProcessParameterIO {
         defaults.add(new GMLPPIO.GML3.Geometry());
         defaults.add(new GMLPPIO.GML2.Geometry());
         defaults.add(new WKTPPIO());
+        defaults.add(new EWKTPPIO());
         defaults.add(new GMLPPIO.GML3.GeometryAlternate());
         defaults.add(new GMLPPIO.GML2.GeometryAlternate());
 

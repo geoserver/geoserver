@@ -170,10 +170,14 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public SortedSet<GeoServerUser> getUsers() {
         final SortedSet<GeoServerUser> users = new TreeSet<>();
 
+        // search requires an escaped string
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(userSearchBase, allUsersSearchFilter, addToUsers(users)));
+                                .search(
+                                        userSearchBase,
+                                        LDAPUtils.escapeSearchString(allUsersSearchFilter),
+                                        addToUsers(users)));
 
         return Collections.unmodifiableSortedSet(users);
     }
@@ -430,10 +434,15 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     @Override
     public int getUserCount() {
         AtomicInteger size = new AtomicInteger(0);
+
+        // search requires an escaped string
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(userSearchBase, allUsersSearchFilter, counter(size)));
+                                .search(
+                                        userSearchBase,
+                                        LDAPUtils.escapeSearchString(allUsersSearchFilter),
+                                        counter(size)));
 
         return size.get();
     }
@@ -441,10 +450,15 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     @Override
     public int getGroupCount() {
         AtomicInteger size = new AtomicInteger(0);
+
+        // search requires an escaped string
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(groupSearchBase, allGroupsSearchFilter, counter(size)));
+                                .search(
+                                        groupSearchBase,
+                                        LDAPUtils.escapeSearchString(allGroupsSearchFilter),
+                                        counter(size)));
         return size.get();
     }
 
@@ -474,12 +488,17 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) {
         final SortedSet<GeoServerUser> users = new TreeSet<>();
 
+        // search requires an escaped string
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
                                 .search(
                                         userSearchBase,
-                                        "(&(!(" + propname + "=*))(" + allUsersSearchFilter + "))",
+                                        "(&(!("
+                                                + propname
+                                                + "=*))("
+                                                + LDAPUtils.escapeSearchString(allUsersSearchFilter)
+                                                + "))",
                                         addToUsers(users)));
 
         return users;
@@ -488,12 +507,18 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     @Override
     public int getUserCountNotHavingProperty(String propname) {
         AtomicInteger size = new AtomicInteger(0);
+
+        // search requires an escaped string
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
                                 .search(
                                         userSearchBase,
-                                        "(&(!(" + propname + "=*))(" + allUsersSearchFilter + "))",
+                                        "(&(!("
+                                                + propname
+                                                + "=*))("
+                                                + LDAPUtils.escapeSearchString(allUsersSearchFilter)
+                                                + "))",
                                         counter(size)));
         return size.get();
     }
@@ -503,12 +528,13 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
             throws IOException {
         final SortedSet<GeoServerUser> users = new TreeSet<>();
 
+        // search requires an escaped string
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
                                 .search(
                                         userSearchBase,
-                                        propname + "=" + propvalue,
+                                        propname + "=" + LDAPUtils.escapeSearchString(propvalue),
                                         addToUsers(users)));
 
         return users;
@@ -518,10 +544,15 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public int getUserCountHavingPropertyValue(String propname, String propvalue)
             throws IOException {
         AtomicInteger size = new AtomicInteger(0);
+
+        // search requires an escaped string
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(userSearchBase, propname + "=" + propvalue, counter(size)));
+                                .search(
+                                        userSearchBase,
+                                        propname + "=" + LDAPUtils.escapeSearchString(propvalue),
+                                        counter(size)));
         return size.get();
     }
 }

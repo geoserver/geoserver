@@ -354,10 +354,15 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     @Override
     public int getRoleCount() throws IOException {
         AtomicInteger count = new AtomicInteger(0);
+
+        // search requires an escaped string
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) ->
                         LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(groupSearchBase, allGroupsSearchFilter, counter(count)));
+                                .search(
+                                        groupSearchBase,
+                                        LDAPUtils.escapeSearchString(allGroupsSearchFilter),
+                                        counter(count)));
         return count.get();
     }
 

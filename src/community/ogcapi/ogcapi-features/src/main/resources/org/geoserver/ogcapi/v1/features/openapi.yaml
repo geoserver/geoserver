@@ -911,18 +911,15 @@ components:
         Nested objects contained within the explicitly requested items shall not be counted.
 
         Minimum = 1. Maximum = 10000. Default = 10.
-      required: false
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 10000
-        default: 10
-      style: form
-      explode: false
+      type: integer
+      minimum: 1
+      maximum: 10000
+      default: 10
     limitFilter:
       properties:
         limit:
           $ref: '#/components/schemas/limit'
+      type: object
     bbox:
       name: bbox
       in: query
@@ -953,41 +950,33 @@ components:
         If a feature has multiple spatial geometry properties, it is the decision of the
         server whether only a single spatial geometry property is used to determine
         the extent or all relevant geometries.
-      required: false
-      schema:
-        type: array
-        minItems: 4
-        maxItems: 6
-        items:
-          type: number
-      style: form
-      explode: false
+      type: array
+      minItems: 4
+      maxItems: 6
+      items:
+        type: number
     bboxFilter:
       properties:
         bbox:
           $ref: '#/components/schemas/bbox'
+      type: object
     bboxCrs:
       name: bbox-crs
-      in: query
-      required: false
-      schema:
-        type: string
-        format: uri
+      type: string
     bboxCrsFilter:
       properties:
         bboxCrs:
           $ref: '#/components/schemas/bboxCrs'
+      type: object
     crs:
       name: crs
-      in: query
-      required: false
-      schema:
-        type: string
-        format: uri
+      type: string
+      format: uri
     crsFilter:
       properties:
         crs:
           $ref: '#/components/schemas/crs'
+      type: object
     datetime:
       name: datetime
       description: |-
@@ -1006,65 +995,59 @@ components:
         If a feature has multiple temporal properties, it is the decision of the
         server whether only a single temporal property is used to determine
         the extent or all relevant temporal properties.
-      required: false
-      schema:
-        type: string
+      type: string
     datetimeFilter:
       properties:
         datetime:
           $ref: '#/components/schemas/datetime'
+      type: object
     filter:
       name: filter
       description: Defines a filter that will be applied on items, only items matching the filter will be returned
-      schema:
-        type: string
+      type: string
     filterFilter:
       properties:
         filter:
           $ref: '#/components/schemas/filter'
+      type: object
     filterLang:
       name: filter-lang
       description: Filter encoding used in the filter parameter
-      schema:
-        type: string
-        enum:
-          - cql-text
-          - cql2-text
-        default: cql-text
+      type: string
+      enum:
+        - cql-text
+        - cql2-text
+      default: cql-text
     filterLangFilter:
       properties:
         filterLang:
           $ref: '#/components/schemas/filterLang'
+      type: object
     filterCrs:
       name: filter-crs
-      in: query
       description: Filter CRS which is being used to encode geometries in the filter parameter
-      required: false
-      schema:
-        type: string
-        format: uri-reference
+      type: string
+      format: uri-reference
     filterCrsFilter:
       properties:
         filterCrs:
           $ref: '#/components/schemas/filterCrs'
+      type: object
     sortBy:
       name: sortby
-      in: query
       description: Defines how features in a response should be ordered for presentation.
-      required: false
-      schema:
-        type: array
-        minItems: 1
-        items:
-          type: string
-          pattern: '[+|-]?[A-Za-z_].*'
+      type: array
+      minItems: 1
+      items:
+        type: string
+        pattern: '[+|-]?[A-Za-z_].*'
     sortByFilter:
       properties:
         sortBy:
           $ref: '#/components/schemas/sortBy'
+      type: object
     ids:
       name: ids
-      in: query
       description: |-
         Query multiple items by ID.
 
@@ -1072,15 +1055,14 @@ components:
 
         The parameter is part of the draft proposal "Query by IDs". The syntax and semantic of the
         parameter is subject to change in a future release. Its usage should be carefully considered.
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
+      type: array
+      items:
+        type: string
     idsFilter:
       properties:
         ids:
           $ref: '#/components/schemas/ids'
+      type: object
     functions:
       type: object
       required:

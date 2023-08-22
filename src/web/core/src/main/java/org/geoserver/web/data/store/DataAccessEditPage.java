@@ -47,7 +47,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             getSession()
                     .error(
                             new ParamResourceModel(
-                                            "DataAccessEditPage.notFound", this, wsName, storeName)
+                                            "DataAccessEditPage.notFound", this, storeName, wsName)
                                     .getString());
             doReturn(StorePage.class);
             return;

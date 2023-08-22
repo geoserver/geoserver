@@ -5,9 +5,9 @@
  */
 package org.geoserver.cluster.hazelcast.web;
 
-import com.hazelcast.core.Cluster;
+import com.hazelcast.cluster.Cluster;
+import com.hazelcast.cluster.Member;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.Member;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class NodeInfoDialog extends Panel {
         Member m = hz.getCluster().getLocalMember();
         InetSocketAddress address = m.getSocketAddress();
 
-        add(new Label("groupName", hz.getConfig().getGroupConfig().getName()));
+        add(new Label("groupName", hz.getConfig().getClusterName()));
         add(new Label("ip", address.getAddress().getHostAddress()));
         add(new Label("host", address.getHostName()));
         add(new Label("port", String.valueOf(address.getPort())));

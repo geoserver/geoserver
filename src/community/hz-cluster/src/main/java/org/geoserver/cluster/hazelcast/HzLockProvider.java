@@ -9,7 +9,7 @@ import static org.geoserver.cluster.hazelcast.HazelcastUtil.nodeId;
 
 import com.google.common.base.Preconditions;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.lock.FencedLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.config.LockProviderInitializer;
@@ -65,7 +65,7 @@ public class HzLockProvider implements LockProvider, InitializingBean {
                         "%s - Acquiring distributed lock '%s' (Thread %s)",
                         nodeId(cluster), path, Thread.currentThread().getName()));
         // }
-        ILock lock = clusterInstance.getLock(path);
+        FencedLock lock = clusterInstance.getCPSubsystem().getLock(path);
         lock.lock();
 
         // if (LOGGER.isLoggable(Level.FINE)) {
@@ -80,13 +80,13 @@ public class HzLockProvider implements LockProvider, InitializingBean {
 
     private static class LockAdapter implements Lock {
 
-        private ILock lock;
+        private FencedLock lock;
 
         private String path;
 
         private HzCluster cluster;
 
-        public LockAdapter(ILock lock, String path, HzCluster cluster) {
+        public LockAdapter(FencedLock lock, String path, HzCluster cluster) {
             this.lock = lock;
             this.path = path;
             this.cluster = cluster;

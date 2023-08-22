@@ -348,12 +348,7 @@ public class FeatureTest extends FeaturesTestSupport {
 
     private String filterCrsQueryParameters(ReferencedEnvelope re) throws FactoryException {
         String boxValue = "BBOX(pointProperty," + bboxQueryParameter(re) + ")";
-        String crsValue =
-                CRS.equalsIgnoreMetadata(
-                                re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)
-                        ? FeatureService.DEFAULT_CRS
-                        : FeatureService.CRS_PREFIX
-                                + CRS.lookupEpsgCode(re.getCoordinateReferenceSystem(), true);
+        String crsValue = crsQueryParameter(re);
         return "filter=" + boxValue + "&filter-crs=" + crsValue + "&filter-lang=cql-text";
     }
 
@@ -571,13 +566,17 @@ public class FeatureTest extends FeaturesTestSupport {
         String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         ReferencedEnvelope bbox = new ReferencedEnvelope(38, 40, 1, 3, DefaultGeographicCRS.WGS84);
         ReferencedEnvelope wmBox = bbox.transform(CRS.decode("EPSG:3857", true), true);
+        String crsValue = crsQueryParameter(wmBox);
+
         String request =
                 "{\n"
                         + "  \"filter\": \"BBOX(pointProperty,"
                         + bboxQueryParameter(wmBox)
                         + ")\",\n"
-                        + "  \"filter-lang\": \"cql-text\"\n"
-                        + "}";
+                        + " \"filter-lang\": \"cql-text\"\n,"
+                        + " \"filter-crs\": \""
+                        + crsValue
+                        + "\"\n}";
         DocumentContext json =
                 postAsJSONPath(
                         "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);

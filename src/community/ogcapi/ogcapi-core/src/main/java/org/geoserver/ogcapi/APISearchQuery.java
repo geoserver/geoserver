@@ -107,10 +107,6 @@ public class APISearchQuery {
         this.ids = ImmutableList.copyOf(value.split(","));
     }
 
-    public void setIds(List<String> ids) {
-        this.ids = ids;
-    }
-
     public SortBy[] getSortBy() {
         return sortBy;
     }
@@ -155,7 +151,14 @@ public class APISearchQuery {
 
     private List<String> arrayNodeToStringList(ArrayNode node) {
         final List<String> values = new ArrayList<>(node.size());
-        node.forEach(childNode -> values.add(childNode.toString()));
+        node.forEach(
+                childNode -> {
+                    if (childNode.isTextual()) {
+                        values.add(childNode.textValue());
+                    } else {
+                        values.add(childNode.toString());
+                    }
+                });
         return values;
     }
 

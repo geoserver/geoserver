@@ -71,6 +71,7 @@ import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.EntityResolverProvider;
+import org.geotools.brewer.styling.builder.StyleBuilder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -112,7 +113,6 @@ import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.styling.Style;
-import org.geotools.styling.StyleImpl;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.CanonicalSet;
 import org.geotools.util.SoftValueHashMap;
@@ -2213,12 +2213,7 @@ public class ResourcePool {
                     "Could not extract a UserStyle definition from " + info.getName());
         }
         // Make sure we don't change the name of an object in sldCache
-        if (style instanceof StyleImpl) {
-            style = (Style) ((StyleImpl) style).clone();
-        }
-        // remove this when wms works off style info
-        style.setName(info.getName());
-        return style;
+        return new StyleBuilder().reset(style).name(info.getName()).buildStyle();
     }
 
     /**

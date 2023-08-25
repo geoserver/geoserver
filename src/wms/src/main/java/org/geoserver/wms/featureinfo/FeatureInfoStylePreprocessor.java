@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.geoserver.wms.SymbolizerFilteringVisitor;
+import org.geotools.brewer.styling.builder.RuleBuilder;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Graphic;
@@ -18,7 +19,6 @@ import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Rule;
-import org.geotools.styling.RuleImpl;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
@@ -226,7 +226,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
             } else if (geometryType.equals(Geometry.class)) {
                 // dynamic, we need to add an extra rule then to paint as polygon
                 // only if the actual geometry is a polygon type
-                RuleImpl extra =
+                Rule extra =
                         buildDynamicGeometryRule(
                                 copy,
                                 geom,
@@ -256,7 +256,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
             } else {
                 // ouch, it's a generic geometry... now this is going to be painful, we have to
                 // build a dynamic symbolizer for each possible geometry type
-                RuleImpl extra =
+                Rule extra =
                         buildDynamicGeometryRule(
                                 copy,
                                 geom,
@@ -281,7 +281,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         }
     }
 
-    private RuleImpl buildDynamicGeometryRule(
+    private Rule buildDynamicGeometryRule(
             Rule base, Expression geom, Symbolizer symbolizer, String... geometryTypes) {
         List<Filter> typeChecks = new ArrayList<>();
         for (String geometryType : geometryTypes) {
@@ -294,8 +294,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
                 ruleFilter == null || ruleFilter == Filter.INCLUDE
                         ? geomCheck
                         : ff.and(geomCheck, ruleFilter);
-        RuleImpl extra = new RuleImpl(base);
-        extra.setFilter(filter);
+        Rule extra = new RuleBuilder().reset(base).filter(filter).build();
         extra.symbolizers().clear();
         extra.symbolizers().add(symbolizer);
         return extra;

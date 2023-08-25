@@ -30,10 +30,10 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.RequestUtils;
+import org.geotools.brewer.styling.builder.StyledLayerDescriptorBuilder;
 import org.geotools.sld.v1_1.SLD;
 import org.geotools.sld.v1_1.SLDConfiguration;
 import org.geotools.styling.DefaultResourceLocator;
-import org.geotools.styling.NamedLayer;
 import org.geotools.styling.ResourceLocator;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
@@ -186,9 +186,10 @@ public class SLDHandler extends StyleHandler {
                 // style and then wrap it in an sld
                 Style[] style = p.readDOM();
                 if (style.length > 0) {
-                    NamedLayer l = styleFactory.createNamedLayer();
-                    l.addStyle(style[0]);
-                    sld.addStyledLayer(l);
+                    StyledLayerDescriptorBuilder sldBuilder =
+                            new StyledLayerDescriptorBuilder().reset(sld);
+                    sldBuilder.namedLayer().style().reset(style[0]);
+                    sld = sldBuilder.build();
                 }
             }
             return sld;

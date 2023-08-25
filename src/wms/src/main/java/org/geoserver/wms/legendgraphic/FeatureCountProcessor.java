@@ -33,7 +33,6 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.RenderListener;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.DescriptionImpl;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.Rule;
@@ -76,7 +75,7 @@ class FeatureCountProcessor {
             super.visit(rule);
             Rule copy = (Rule) pages.peek();
             Description description =
-                    new DescriptionImpl(
+                    sf.description(
                             new SimpleInternationalString(targetLabel),
                             copy.getDescription() != null
                                     ? copy.getDescription().getAbstract()

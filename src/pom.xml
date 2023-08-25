@@ -570,6 +570,11 @@
         <artifactId>gt-vector-mosaic</artifactId>
         <version>${gt.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-brewer</artifactId>
+        <version>${gt.version}</version>
+      </dependency>
 
       <!-- GeoWebCache: embeded -->
       <dependency>

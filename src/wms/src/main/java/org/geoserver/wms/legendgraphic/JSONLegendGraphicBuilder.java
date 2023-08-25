@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,15 +48,11 @@ import org.geotools.styling.Halo;
 import org.geotools.styling.LabelPlacement;
 import org.geotools.styling.LinePlacement;
 import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.LineSymbolizerImpl;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PointPlacement;
 import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.PointSymbolizerImpl;
 import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.PolygonSymbolizerImpl;
 import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.RasterSymbolizerImpl;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Stroke;
@@ -65,7 +60,6 @@ import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.TextSymbolizer2;
-import org.geotools.styling.TextSymbolizerImpl;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -233,19 +227,13 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
     public static final String GRAPHIC = "graphic";
 
-    static Map<Class<?>, String> symbolizerNames = new HashMap<>();
-
-    static {
-        symbolizerNames.put(PolygonSymbolizer.class, POLYGON);
-        symbolizerNames.put(LineSymbolizer.class, LINE);
-        symbolizerNames.put(PointSymbolizer.class, POINT);
-        symbolizerNames.put(RasterSymbolizer.class, RASTER);
-        symbolizerNames.put(TextSymbolizer.class, TEXT);
-        symbolizerNames.put(PolygonSymbolizerImpl.class, POLYGON);
-        symbolizerNames.put(LineSymbolizerImpl.class, LINE);
-        symbolizerNames.put(PointSymbolizerImpl.class, POINT);
-        symbolizerNames.put(RasterSymbolizerImpl.class, RASTER);
-        symbolizerNames.put(TextSymbolizerImpl.class, TEXT);
+    static String getSymbolizerName(Symbolizer symbolizer) {
+        if (symbolizer instanceof PolygonSymbolizer) return POLYGON;
+        if (symbolizer instanceof LineSymbolizer) return LINE;
+        if (symbolizer instanceof PointSymbolizer) return POINT;
+        if (symbolizer instanceof RasterSymbolizer) return RASTER;
+        if (symbolizer instanceof TextSymbolizer) return TEXT;
+        throw new IllegalArgumentException("Unrecognized symbolizer type: " + symbolizer);
     }
 
     private Feature feature;
@@ -357,7 +345,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 for (Symbolizer symbolizer : symbolizers) {
                     JSONObject jSymb = new JSONObject();
                     JSONObject symb = processSymbolizer(symbolizer);
-                    jSymb.element(symbolizerNames.get(symbolizer.getClass()), symb);
+                    jSymb.element(getSymbolizerName(symbolizer), symb);
                     jSymbolizers.add(jSymb);
                 }
                 org.opengis.style.GraphicLegend l = rule.getLegend();

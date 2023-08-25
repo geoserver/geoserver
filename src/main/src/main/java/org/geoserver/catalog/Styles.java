@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.brewer.styling.builder.StyledLayerDescriptorBuilder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.NamedStyle;
@@ -98,15 +99,9 @@ public class Styles {
      * @return The StyledLayerDescriptor.
      */
     public static StyledLayerDescriptor sld(Style style) {
-        StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
-
-        NamedLayer layer = styleFactory.createNamedLayer();
-        layer.setName(style.getName());
-        sld.addStyledLayer(layer);
-
-        layer.addStyle(style);
-
-        return sld;
+        StyledLayerDescriptorBuilder sldBuilder = new StyledLayerDescriptorBuilder();
+        sldBuilder.namedLayer().name(style.getName()).style().reset(style);
+        return sldBuilder.build();
     }
 
     /**

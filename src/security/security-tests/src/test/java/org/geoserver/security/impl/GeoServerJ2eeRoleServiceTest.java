@@ -79,6 +79,9 @@ public class GeoServerJ2eeRoleServiceTest extends AbstractSecurityServiceTest {
                         new Source[] {
                             new StreamSource(
                                     new File(
+                                            "src/test/resources/org/geoserver/security/xsd/xml.xsd")),
+                            new StreamSource(
+                                    new File(
                                             "src/test/resources/org/geoserver/security/xsd/web-app_3_1.xsd")),
                             new StreamSource(
                                     new File(

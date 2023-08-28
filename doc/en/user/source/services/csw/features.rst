@@ -44,10 +44,12 @@ The Internal Catalog Store currently supports two metadata schemes:
 Mapping Files
 -------------
 
-Mapping files are located in the ``csw`` directory inside the :ref:`datadir`. Each mapping file must have the exact name of the record type name combined with the ``.properties`` extension. For example:
+Mapping files are located in the ``csw`` directory inside the :ref:`datadir`. Assuming that each layer is mapped to a single record, each mapping file has the exact name of the record type name, combined with the ``.properties`` extension. For example:
 
 * Dublin Core mapping can be found in the file ``csw/Record.properties`` inside the data directory.
 * ISO Metadata mapping can be found in the file ``csw/MD_Metadata.properties`` inside the data directory (see :ref:`csw_iso` Community Module).
+
+There is also the possibility of having mapping each layer to multiple records. In this case, one would have multiple mapping files per type. For each type, each mapping file except maximum one must be given a name. The name must be encoded in the file name after the type name, followed by a dash, and before the extension. For instance: ``csw/Record-otherRecord.properties``, ``csw/MD_Metadata-thirdRecord.properties``. Geoserver will assume that mappings of different type but with the same name refer to the same record (in another format). (This is only relevant for GetRecords requests where outputSchema and typeNames do not match¸ which is unusual). The user is responsible for ensuring that identifiers are unique accross all mappings of the same record type.
 
 The mapping files take the syntax from Java properties files. The left side of the equals sign specifies the target field name or path in the metadata record, paths being separated with dots. The right side of the equals sign specifies any CQL expression that denotes the value of the target property. The CQL expression is applied to each ResourceInfo_ object in the catalog and can retrieve all properties from this object. These expressions can make use of literals, properties present in the ResourceInfo_ object, and all normal CQL operators and functions. 
 There is also support for complex data structures such as Maps using the dot notation and Lists using the bracket notation (Example mapping files are given below).
@@ -143,5 +145,4 @@ All fields have the form of ``<fieldname>.value`` for the actual value in the fi
 Examples of attributes extracted from the ResourceInfo are ``id``, ``title``, and ``keywords``, etc. The attribute ``metadata.date`` uses the metadata (``java.util.``)Map from the Resource object. In this map, it searches for the keyword "date".
 
 Note that double quotes are necessary in order to preserve this meaning of the dots.
-
 

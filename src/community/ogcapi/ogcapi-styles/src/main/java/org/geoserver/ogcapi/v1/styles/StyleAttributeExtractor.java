@@ -64,13 +64,13 @@ import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.TextSymbolizer2;
 import org.geotools.styling.UserLayer;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
-import org.opengis.geometry.Geometry;
 import org.opengis.style.GraphicalSymbol;
 
 /**

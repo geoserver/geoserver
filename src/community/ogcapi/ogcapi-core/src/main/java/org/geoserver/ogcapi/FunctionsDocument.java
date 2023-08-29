@@ -104,7 +104,6 @@ public class FunctionsDocument {
                     && !Number.class.isAssignableFrom(type)
                     && !Date.class.isAssignableFrom(type)
                     && !Geometry.class.isAssignableFrom(type)
-                    && !org.opengis.geometry.Geometry.class.isAssignableFrom(type)
                     && !Boolean.class.isAssignableFrom(type)) {
                 return false;
             }

@@ -45,7 +45,7 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.MultiValuedFilter;
 import org.opengis.filter.expression.PropertyName;
-import org.opengis.geometry.coordinate.Polygon;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.style.Symbolizer;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

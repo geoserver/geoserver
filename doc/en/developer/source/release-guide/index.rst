@@ -300,7 +300,7 @@ Create the download page
 
 The `GeoServer website <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a release announcement.
 
-The announcement page header fields includes the information required to generate generate a download page for the release. 
+The announcement page header fields include the information required to generate a download page for the release. 
 
 Announce the Release
 --------------------
@@ -399,7 +399,7 @@ The following is an example::
 
    http://geoserver.org/release/2.5.1/
 
-   GeoServer 2.5.1 is the next the stable release of GeoServer and is recommended for production deployment.
+   GeoServer 2.5.1 is the next stable release of GeoServer and is recommended for production deployment.
 
    This release comes with some exciting new features. The new and
    noteworthy include:

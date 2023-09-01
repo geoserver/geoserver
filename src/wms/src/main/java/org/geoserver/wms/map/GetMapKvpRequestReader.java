@@ -463,7 +463,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // check the view params
         List<Map<String, String>> viewParams = getMap.getViewParams();
         if (viewParams != null && !viewParams.isEmpty()) {
-            applyViewParams(getMap, viewParams);
+            applyViewParams(getMap, viewParams, requestedLayerInfos);
         }
 
         // check if layers have time/elevation support
@@ -554,17 +554,38 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
     }
 
-    private void applyViewParams(GetMapRequest getMap, List<Map<String, String>> viewParams) {
+    private void applyViewParams(
+            GetMapRequest getMap,
+            List<Map<String, String>> viewParams,
+            List<Object> requestedLayerInfos) {
         int layerCount = getMap.getLayers().size();
+        if (viewParams.size() == layerCount) return;
 
-        // if we have just one replicate over all layers
+        List<Map<String, String>> replacement = new ArrayList<>();
         if (viewParams.size() == 1 && layerCount > 1) {
-            List<Map<String, String>> replacement = new ArrayList<>();
+            // if we have just one replicate over all layers
             for (int i = 0; i < layerCount; i++) {
                 replacement.add(viewParams.get(0));
             }
-            getMap.setViewParams(replacement);
-        } else if (viewParams.size() != layerCount) {
+        } else {
+            // expand based on group/layer/other
+            for (int i = 0; i < requestedLayerInfos.size(); i++) {
+                Object o = requestedLayerInfos.get(i);
+                Map<String, String> layerParams = viewParams.get(i);
+                if (o instanceof LayerGroupInfo) {
+                    LayerGroupInfo groupInfo = (LayerGroupInfo) o;
+                    List<LayerInfo> layers = groupInfo.layers();
+                    if (layers != null) layers.stream().forEach(l -> replacement.add(layerParams));
+                } else {
+                    replacement.add(layerParams);
+                }
+            }
+        }
+        getMap.setViewParams(replacement);
+
+        // final check, did we re-align? otherwiser report based on original list,
+        // that is, what the user actually provided
+        if (replacement.size() != layerCount) {
             String msg =
                     layerCount
                             + " layers requested, but found "
@@ -572,6 +593,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                             + " view params specified. ";
             throw new ServiceException(msg, getClass().getName());
         }
+
+        // update view params
+
     }
 
     @SuppressWarnings("PMD.ForLoopCanBeForeach")

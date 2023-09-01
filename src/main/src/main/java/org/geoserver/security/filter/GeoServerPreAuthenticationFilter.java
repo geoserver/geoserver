@@ -21,6 +21,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
@@ -101,7 +102,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
         PreAuthenticatedAuthenticationToken result = null;
         if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
             result =
-                    new PreAuthenticatedAuthenticationToken(
+                    createPreAuthenticatedAuthenticationToken(
                             principal, null, Collections.singleton(GeoServerRole.ADMIN_ROLE));
         } else {
             Collection<GeoServerRole> roles = null;
@@ -112,11 +113,22 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
             }
             if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
                 roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-            result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
+            result = createPreAuthenticatedAuthenticationToken(principal, null, roles);
         }
 
         result.setDetails(authenticationDetailsSource.buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(result);
+    }
+
+    /**
+     * @param principal
+     * @param credentials
+     * @param roles
+     * @return a new token, setup with the given parameters.
+     */
+    protected PreAuthenticatedAuthenticationToken createPreAuthenticatedAuthenticationToken(
+            String principal, Object credentials, Collection<? extends GrantedAuthority> roles) {
+        return new PreAuthenticatedAuthenticationToken(principal, credentials, roles);
     }
 
     public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>

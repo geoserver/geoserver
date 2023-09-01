@@ -39,13 +39,13 @@ import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.MultiValuedFilter;
 import org.opengis.filter.expression.PropertyName;
-import org.locationtech.jts.geom.Polygon;
 import org.opengis.style.Symbolizer;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

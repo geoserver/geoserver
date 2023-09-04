@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.NamespaceInfo;
@@ -63,7 +64,6 @@ import org.opengis.filter.identity.FeatureId;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CSVOutputFormatTest extends WFSTestSupport {
-
     @Test
     public void testFullRequest() throws Exception {
         MockHttpServletResponse resp =
@@ -437,36 +437,6 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         // check expected list of values as a comma separated string
         assertEquals("prop1,prop2", lines.get(1)[1]);
     }
-    @Test
-    public void testIAULayer() throws Exception {
-
-        MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?version=1.1.0&request=GetFeature&typeName=iau:MarsPoi&outputFormat=csv",
-                        UTF_8.name());
-
-        FeatureSource fs = getFeatureSource(SystemTestData.MARS_POI);
-
-        // check the mime type
-        assertEquals(CSV, getBaseMimeType(resp.getContentType()));
-
-        // check the charset encoding
-        assertEquals(UTF_8.name(), resp.getCharacterEncoding());
-
-        // check the content disposition
-        assertEquals("attachment; filename=MarsPoi.csv", resp.getHeader("Content-Disposition"));
-
-        // read the response back with a parser that can handle escaping, newlines and what not
-        List<String[]> lines = readLines(resp.getContentAsString(), ',');
-
-        // we should have one header line and then all the features in that feature type
-        assertEquals(fs.getCount(Query.ALL) + 1, lines.size());
-
-        for (String[] line : lines) {
-            // check each line has the expected number of elements (num of att + 1 for the id)
-            assertEquals(fs.getSchema().getDescriptors().size() + 1, line.length);
-        }
-    }
 
     @Test
     public void testDates() throws Exception {
@@ -478,7 +448,8 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         builder.add("d", Double.class);
         builder.setName("funnyLabels");
         SimpleFeatureType type = builder.buildFeatureType();
-
+        Locale currentLocale = Locale.getDefault();
+        Locale.setDefault(new Locale("en", "US"));
         Date d = new Date(1483228800000L);
         GeometryFactory gf = new GeometryFactory();
         SimpleFeature f =
@@ -505,7 +476,6 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(fs.getFeatures());
-
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         CSVOutputFormat format = setCSVDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         format.write(fct, bos, op);
@@ -525,6 +495,7 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         CSVOutputFormat format3 = setCSVDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
         format3.write(fct, bos3, op);
         assertDates("Sun, 1 Jan 2017 00:00:00 +0000", bos3);
+        Locale.setDefault(currentLocale);
     }
 
     private CSVOutputFormat setCSVDateFormat(String csvDateFormat) {

@@ -18,7 +18,7 @@ import java.util.Map;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.LegendUtils.LegendLayout;
 import org.geoserver.wms.map.ImageUtils;
-import org.geotools.styling.Rule;
+import org.geotools.api.style.Rule;
 
 /**
  * Utility class containing static methods for merging single legend elements into a final output,

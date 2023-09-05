@@ -4,9 +4,9 @@
  */
 package org.geoserver.opensearch.eo.store;
 
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
 
 /**
  * Uses JDBCOpenSearchAccess.SOURCE_ATTRIBUTE to locate the source attribute name of a given mapped

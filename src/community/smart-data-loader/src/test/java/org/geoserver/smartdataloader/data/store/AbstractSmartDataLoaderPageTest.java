@@ -30,7 +30,7 @@ import org.geoserver.smartdataloader.metadata.jdbc.utils.JdbcUrlSplitter;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.DataAccessNewPage;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
-import org.geotools.data.DataAccessFactory;
+import org.geotools.api.data.DataAccessFactory;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 import org.geotools.jdbc.JDBCTestSetup;
 import org.geotools.test.FixtureUtilities;

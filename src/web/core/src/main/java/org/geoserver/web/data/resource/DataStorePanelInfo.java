@@ -7,8 +7,8 @@ package org.geoserver.web.data.resource;
 
 import org.geoserver.web.ComponentInfo;
 import org.geoserver.web.data.store.StoreEditPanel;
-import org.geotools.data.DataAccessFactory;
-import org.opengis.coverage.grid.Format;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.data.DataAccessFactory;
 
 /**
  * Used to declare a data store panel information and its icon. Both are optional, you can specify

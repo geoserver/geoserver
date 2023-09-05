@@ -20,7 +20,7 @@ import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.wfs.WFSTestSupport;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;

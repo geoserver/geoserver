@@ -4,11 +4,11 @@
  */
 package org.geoserver.security.decorators;
 
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.collection.ClippedFeatureCollection;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * A SimpleFeatureCollection that can filter features' geometries by a clip (crop) spatialFilter and

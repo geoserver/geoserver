@@ -19,19 +19,19 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.style.Style;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.styling.Style;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.coverage.grid.GridEnvelope;
 
 /**
  * Unit test for very slow WMS GetMap response times when the requested bounding box is much smaller

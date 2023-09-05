@@ -5,9 +5,9 @@
  */
 package org.geoserver.csw.util;
 
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.spatial.BBOX;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.spatial.BBOX;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

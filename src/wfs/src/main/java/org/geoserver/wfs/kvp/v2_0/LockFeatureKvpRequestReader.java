@@ -22,8 +22,8 @@ import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.kvp.BaseFeatureKvpRequestReader;
 import org.geoserver.wfs.request.LockFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.xsd.EMFUtils;
-import org.opengis.filter.FilterFactory;
 
 public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 

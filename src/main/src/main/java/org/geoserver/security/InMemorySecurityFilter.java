@@ -10,9 +10,9 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.SecureCatalogImpl.MixedModeBehavior;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.filter.expression.InternalVolatileFunction;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -29,7 +29,7 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
     /** Returns a filter that will check if the object passed to it can be accessed by the user */
     public static Filter buildUserAccessFilter(
             ResourceAccessManager resourceAccesssManager, Authentication user) {
-        org.opengis.filter.expression.Function visible =
+        org.geotools.api.filter.expression.Function visible =
                 new InMemorySecurityFilter(resourceAccesssManager, user);
 
         FilterFactory factory = Predicates.factory;

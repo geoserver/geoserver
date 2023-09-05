@@ -14,17 +14,17 @@ import java.util.Set;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
 
 class TemplatePropertyMapper {
 
     static final Logger LOGGER = Logging.getLogger(TemplatePropertyMapper.class);
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     private final STACTemplates templates;
     private final SampleFeatures sampleFeatures;
     private final CollectionsCache collectionsCache;
@@ -89,7 +89,7 @@ class TemplatePropertyMapper {
         for (Map.Entry<Filter, List<String>> entry : collectionFilters.entrySet()) {
             Filter filter = entry.getKey();
             List<String> collections = entry.getValue();
-            if (collections.contains(null)) {
+            if (collections.contains((String) null)) {
                 // these use the default filter, will have to be encoded at the end
                 defaultFilter = filter;
             } else {

@@ -30,8 +30,8 @@ import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.platform.FileWatcher;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.LiteralExpressionImpl;
-import org.opengis.filter.expression.Expression;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
 public class JSONTemplateReader implements TemplateReader {

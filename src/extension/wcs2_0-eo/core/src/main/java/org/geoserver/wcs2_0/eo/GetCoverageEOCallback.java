@@ -14,12 +14,12 @@ import org.geoserver.platform.Operation;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 
 /**
  * Plugs into the GetCoverage request cycle and transforms a request for a single EO granule to one
@@ -29,7 +29,7 @@ import org.opengis.filter.FilterFactory;
  */
 public class GetCoverageEOCallback extends AbstractDispatcherCallback {
 
-    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory2();
+    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private EOCoverageResourceCodec codec;
 

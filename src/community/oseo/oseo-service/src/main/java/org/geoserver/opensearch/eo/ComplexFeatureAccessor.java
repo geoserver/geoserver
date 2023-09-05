@@ -4,9 +4,9 @@
  */
 package org.geoserver.opensearch.eo;
 
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
 
 /**
  * Utility class to get complex feature attribute values (actual values, not property wrappers). Can

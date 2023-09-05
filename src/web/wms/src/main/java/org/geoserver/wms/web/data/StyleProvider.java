@@ -21,8 +21,8 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 
 /** A {@link GeoServerDataProvider} provider for styles */
 @SuppressWarnings("serial")

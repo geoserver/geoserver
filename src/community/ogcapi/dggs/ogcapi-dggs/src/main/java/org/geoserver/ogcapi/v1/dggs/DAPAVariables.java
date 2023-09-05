@@ -14,9 +14,9 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.LinksBuilder;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.dggs.gstore.DGGSStore;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
 
 /** List of DAPA variables for a collection */
 public class DAPAVariables extends AbstractDocument {

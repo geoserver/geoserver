@@ -29,13 +29,23 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
+import org.geotools.api.coverage.SampleDimension;
+import org.geotools.api.coverage.SampleDimensionType;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.metadata.spatial.PixelOrientation;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.cs.CoordinateSystem;
+import org.geotools.api.referencing.operation.MathTransform2D;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.CoverageUtilities;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.measure.UnitFormat;
 import org.geotools.referencing.CRS;
@@ -47,16 +57,6 @@ import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.opengis.coverage.SampleDimension;
-import org.opengis.coverage.SampleDimensionType;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.geometry.Envelope;
-import org.opengis.metadata.spatial.PixelOrientation;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeographicCRS;
-import org.opengis.referencing.cs.CoordinateSystem;
-import org.opengis.referencing.operation.MathTransform2D;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
@@ -200,7 +200,7 @@ class GMLTransformer extends TransformerBase {
             }
             String axesLabel = builder.substring(0, builder.length() - 1);
             try {
-                GeneralEnvelope envelope = new GeneralEnvelope(gc2d.getEnvelope());
+                GeneralBounds envelope = new GeneralBounds(gc2d.getEnvelope());
                 handleBoundedBy(envelope, axisSwap, srsName, axesLabel, null);
             } catch (IOException ex) {
                 throw new WCS20Exception(ex);
@@ -600,7 +600,7 @@ class GMLTransformer extends TransformerBase {
          * }</pre>
          */
         public void handleBoundedBy(
-                final Envelope envelope,
+                final Bounds envelope,
                 boolean axisSwap,
                 String srsName,
                 String axisLabels,

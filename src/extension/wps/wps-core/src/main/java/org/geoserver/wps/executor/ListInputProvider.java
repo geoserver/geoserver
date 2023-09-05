@@ -8,9 +8,9 @@ package org.geoserver.wps.executor;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.wps.WPSException;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.data.util.SubProgressListener;
-import org.opengis.util.ProgressListener;
 
 /**
  * A InputProvider that handles a list of simple providers (used for multi-valued inputs)

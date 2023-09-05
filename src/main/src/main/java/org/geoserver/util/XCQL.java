@@ -6,10 +6,10 @@
 package org.geoserver.util;
 
 import java.util.List;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
-import org.opengis.filter.Filter;
 
 /**
  * Utility class for dealing with ECQL/CQL.

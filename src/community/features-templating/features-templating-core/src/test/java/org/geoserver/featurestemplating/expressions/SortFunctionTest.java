@@ -7,9 +7,9 @@ package org.geoserver.featurestemplating.expressions;
 import static net.sf.ezmorph.test.ArrayAssertions.assertEquals;
 
 import java.util.List;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.filter.expression.Expression;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.expression.Expression;
 
 public class SortFunctionTest extends ListFunctionsTestSupport {
 

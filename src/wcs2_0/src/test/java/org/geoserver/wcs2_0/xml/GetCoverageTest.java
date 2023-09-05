@@ -35,21 +35,21 @@ import org.geoserver.wcs2_0.DefaultWebCoverageService20;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.Envelope2D;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -213,15 +213,15 @@ public class GetCoverageTest extends WCSTestSupport {
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
-            final GeneralEnvelope expectedEnvelope =
-                    new GeneralEnvelope(
+            final GeneralBounds expectedEnvelope =
+                    new GeneralBounds(
                             new double[] {targetCoverage.getEnvelope().getMinimum(0), -43.5},
                             new double[] {targetCoverage.getEnvelope().getMaximum(0), -43.0});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralEnvelope) targetCoverage.getEnvelope(), scale);
+                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(
                     CRS.equalsIgnoreMetadata(
                             targetCoverage.getCoordinateReferenceSystem(),
@@ -264,13 +264,13 @@ public class GetCoverageTest extends WCSTestSupport {
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
-            final GeneralEnvelope expectedEnvelope =
-                    new GeneralEnvelope(new double[] {146.5, -43.5}, new double[] {147.0, -43.0});
+            final GeneralBounds expectedEnvelope =
+                    new GeneralBounds(new double[] {146.5, -43.5}, new double[] {147.0, -43.0});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralEnvelope) targetCoverage.getEnvelope(), scale);
+                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(
                     CRS.equalsIgnoreMetadata(
                             targetCoverage.getCoordinateReferenceSystem(),
@@ -418,15 +418,15 @@ public class GetCoverageTest extends WCSTestSupport {
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
-            final GeneralEnvelope expectedEnvelope =
-                    new GeneralEnvelope(
+            final GeneralBounds expectedEnvelope =
+                    new GeneralBounds(
                             new double[] {146.5, targetCoverage.getEnvelope().getMinimum(1)},
                             new double[] {147.0, targetCoverage.getEnvelope().getMaximum(1)});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralEnvelope) targetCoverage.getEnvelope(), scale);
+                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(
                     CRS.equalsIgnoreMetadata(
                             targetCoverage.getCoordinateReferenceSystem(),
@@ -470,15 +470,15 @@ public class GetCoverageTest extends WCSTestSupport {
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
             // 1 dimensional slice along latitude
-            final GeneralEnvelope expectedEnvelope =
-                    new GeneralEnvelope(
+            final GeneralBounds expectedEnvelope =
+                    new GeneralBounds(
                             new double[] {146.49999999999477, -43.504166666664524},
                             new double[] {146.99999999999477, -43.49999999999786});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralEnvelope) targetCoverage.getEnvelope(), scale);
+                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(
                     CRS.equalsIgnoreMetadata(
                             targetCoverage.getCoordinateReferenceSystem(),
@@ -522,8 +522,8 @@ public class GetCoverageTest extends WCSTestSupport {
         testCoverageResult(
                 xml,
                 targetCoverage -> {
-                    final GeneralEnvelope expectedEnvelope =
-                            new GeneralEnvelope(new double[] {7, 40}, new double[] {11, 43});
+                    final GeneralBounds expectedEnvelope =
+                            new GeneralBounds(new double[] {7, 40}, new double[] {11, 43});
                     expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
                     double pixelSize = 0.057934032977228;
                     // check the whole extent has been returned
@@ -542,8 +542,8 @@ public class GetCoverageTest extends WCSTestSupport {
         testCoverageResult(
                 xml,
                 targetCoverage -> {
-                    final GeneralEnvelope expectedEnvelope =
-                            new GeneralEnvelope(new double[] {13, 37}, new double[] {14, 39});
+                    final GeneralBounds expectedEnvelope =
+                            new GeneralBounds(new double[] {13, 37}, new double[] {14, 39});
                     expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
                     double pixelSize = 0.057934032977228;
                     // check the whole extent has been returned
@@ -564,8 +564,8 @@ public class GetCoverageTest extends WCSTestSupport {
                 targetCoverage -> {
                     // the expected envelope is the intersection between the requested and native
                     // one
-                    final GeneralEnvelope expectedEnvelope =
-                            new GeneralEnvelope(new double[] {6.344, 40}, new double[] {11, 46.59});
+                    final GeneralBounds expectedEnvelope =
+                            new GeneralBounds(new double[] {6.344, 40}, new double[] {11, 46.59});
                     expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
                     double pixelSize = 0.057934032977228;
                     // check the whole extent has been returned
@@ -632,15 +632,15 @@ public class GetCoverageTest extends WCSTestSupport {
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
             // 1 dimensional slice along longitude
-            final GeneralEnvelope expectedEnvelope =
-                    new GeneralEnvelope(
+            final GeneralBounds expectedEnvelope =
+                    new GeneralBounds(
                             new double[] {146.5, -44.49999999999784},
                             new double[] {146.50416666666143, -42.99999999999787});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralEnvelope) targetCoverage.getEnvelope(), scale);
+                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(
                     CRS.equalsIgnoreMetadata(
                             targetCoverage.getCoordinateReferenceSystem(),
@@ -684,15 +684,15 @@ public class GetCoverageTest extends WCSTestSupport {
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
             // 1 dimensional slice along latitude
-            final GeneralEnvelope expectedEnvelope =
-                    new GeneralEnvelope(
+            final GeneralBounds expectedEnvelope =
+                    new GeneralBounds(
                             new double[] {146.49999999999477, -43.504166666664524},
                             new double[] {147.99999999999474, -43.49999999999786});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralEnvelope) targetCoverage.getEnvelope(), scale);
+                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(
                     CRS.equalsIgnoreMetadata(
                             targetCoverage.getCoordinateReferenceSystem(),
@@ -997,9 +997,9 @@ public class GetCoverageTest extends WCSTestSupport {
                             getCatalog()
                                     .getCoverageByName(getLayerId(WATTEMP))
                                     .getGridCoverageReader(null, null);
-            GeneralEnvelope expectedEnvelope = sourceReader.getOriginalEnvelope();
+            GeneralBounds expectedEnvelope = sourceReader.getOriginalEnvelope();
             assertEnvelopeEquals(
-                    expectedEnvelope, 1.0, (GeneralEnvelope) targetCoverage.getEnvelope(), 1.0);
+                    expectedEnvelope, 1.0, (GeneralBounds) targetCoverage.getEnvelope(), 1.0);
             assertTrue(
                     CRS.equalsIgnoreMetadata(
                             targetCoverage.getCoordinateReferenceSystem(),
@@ -1049,7 +1049,7 @@ public class GetCoverageTest extends WCSTestSupport {
             targetCoverage = readerTarget.read(null);
 
             // check we got the right envelope
-            Envelope2D envelope = targetCoverage.getEnvelope2D();
+            ReferencedEnvelope envelope = targetCoverage.getEnvelope2D();
             assertEquals(160, envelope.getMinX(), 0d);
             assertEquals(0, envelope.getMinY(), 0d);
             assertEquals(200, envelope.getMaxX(), 0d);
@@ -1093,7 +1093,7 @@ public class GetCoverageTest extends WCSTestSupport {
             targetCoverage = readerTarget.read(null);
 
             // check we got the right envelope
-            Envelope2D envelope = targetCoverage.getEnvelope2D();
+            ReferencedEnvelope envelope = targetCoverage.getEnvelope2D();
             // System.out.println(envelope);
             assertEquals(-1139998, envelope.getMinX(), 1d);
             assertEquals(-3333134, envelope.getMinY(), 1d);
@@ -1132,7 +1132,7 @@ public class GetCoverageTest extends WCSTestSupport {
             targetCoverage = readerTarget.read(null);
 
             // check we got the right envelope
-            Envelope2D envelope = targetCoverage.getEnvelope2D();
+            ReferencedEnvelope envelope = targetCoverage.getEnvelope2D();
             assertEquals(160, envelope.getMinX(), 0d);
             assertEquals(0, envelope.getMinY(), 0d);
             assertEquals(200, envelope.getMaxX(), 0d);

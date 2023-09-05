@@ -13,12 +13,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.ows.util.OwsUtils;
+import org.geotools.api.geometry.BoundingBox;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.EMFUtils;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.operation.TransformException;
 
 public class GetCoverageHandler extends RequestObjectHandler {
 
@@ -45,10 +45,10 @@ public class GetCoverageHandler extends RequestObjectHandler {
         }
 
         @SuppressWarnings("unchecked")
-        List<Envelope> envelopes = (List<Envelope>) OwsUtils.get(spatialSubset, "envelope");
+        List<Bounds> envelopes = (List<Bounds>) OwsUtils.get(spatialSubset, "envelope");
 
         // According to the WCS spec there should be exactly one
-        Envelope env = envelopes.get(0);
+        Bounds env = envelopes.get(0);
 
         BoundingBox result = null;
         // Turn into a class that implements BoundingBox

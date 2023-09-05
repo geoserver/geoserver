@@ -17,8 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.ogr.core.AbstractToolWrapper;
 import org.geoserver.ogr.core.Format;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Helper used to invoke ogr2ogr

@@ -24,9 +24,9 @@ import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.ProcessInfo;
 import org.geoserver.wps.WPSInfo;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 
 /** Allows to manage the rules used by the WPS security subsystem */
 public class WpsAccessRuleDAO extends ConfigurationListenerAdapter {

@@ -36,12 +36,12 @@ import org.geoserver.wps.validator.MaxSizeValidator;
 import org.geoserver.wps.validator.MultiplicityValidator;
 import org.geoserver.wps.validator.NumberRangeValidator;
 import org.geoserver.wps.validator.WPSInputValidator;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 
 /**
  * Service loader for the Web Processing Service

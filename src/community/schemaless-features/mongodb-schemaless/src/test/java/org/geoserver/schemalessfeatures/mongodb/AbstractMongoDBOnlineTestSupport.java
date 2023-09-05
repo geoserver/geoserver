@@ -15,14 +15,14 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.schemalessfeatures.mongodb.data.MongoSchemalessDataStoreFactory;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.data.DataAccess;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.test.FixtureUtilities;
 import org.junit.Before;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 
 public abstract class AbstractMongoDBOnlineTestSupport extends GeoServerSystemTestSupport {
 

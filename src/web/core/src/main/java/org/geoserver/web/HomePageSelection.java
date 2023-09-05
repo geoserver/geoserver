@@ -37,8 +37,8 @@ import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
+import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
 
 /**
  * Strategy to manage selection of {@link WorkspaceInfo} and {@link PublishedInfo}, as well as

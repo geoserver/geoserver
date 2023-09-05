@@ -11,19 +11,19 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Collections;
 import javax.imageio.ImageIO;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.GraphicalSymbol;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.image.test.ImageAssert;
-import org.geotools.styling.StyleFactory;
 import org.junit.Test;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Expression;
-import org.opengis.style.FeatureTypeStyle;
-import org.opengis.style.Graphic;
-import org.opengis.style.GraphicalSymbol;
-import org.opengis.style.Mark;
-import org.opengis.style.Rule;
-import org.opengis.style.Style;
-import org.opengis.style.Symbolizer;
 
 public class IconRendererTest {
     /** Upscaled images need a higher threshold for pdiff */
@@ -55,7 +55,7 @@ public class IconRendererTest {
                         Expression.NIL,
                         null,
                         null);
-        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
+        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
         Rule r =
                 sfact.rule(
                         null,
@@ -75,7 +75,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style) s);
+        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (16 + 1 + 1 + 1) * 4;
@@ -113,7 +113,7 @@ public class IconRendererTest {
                         Expression.NIL,
                         null,
                         null);
-        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
+        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
         Rule r =
                 sfact.rule(
                         null,
@@ -133,7 +133,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style) s);
+        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (16 + 1 + 1 + 1) * 4;
@@ -171,7 +171,7 @@ public class IconRendererTest {
                         ffact.literal(45.0),
                         null,
                         null);
-        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
+        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
         Rule r =
                 sfact.rule(
                         null,
@@ -191,7 +191,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style) s);
+        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int baseSize = 16;
@@ -223,7 +223,7 @@ public class IconRendererTest {
                         Expression.NIL,
                         null,
                         null);
-        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
+        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
         Rule r =
                 sfact.rule(
                         null,
@@ -243,7 +243,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style) s);
+        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (16 + 0 + 1 + 1) * 4;
@@ -272,7 +272,7 @@ public class IconRendererTest {
                         ffact.literal(45.0),
                         null,
                         null);
-        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
+        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
         Rule r =
                 sfact.rule(
                         null,
@@ -292,7 +292,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style) s);
+        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int baseSize = 16;
@@ -323,7 +323,7 @@ public class IconRendererTest {
                         Expression.NIL,
                         null,
                         null);
-        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
+        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
         Rule r =
                 sfact.rule(
                         null,
@@ -343,7 +343,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style) s);
+        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (42 + 0 + 1 + 1) * 4;
@@ -372,7 +372,7 @@ public class IconRendererTest {
                         Expression.NIL,
                         null,
                         null);
-        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
+        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
         Rule r =
                 sfact.rule(
                         null,
@@ -392,7 +392,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style) s);
+        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (42 + 0 + 1 + 1) * 4;
@@ -421,7 +421,7 @@ public class IconRendererTest {
                         Expression.NIL,
                         null,
                         null);
-        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
+        Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
         Rule r =
                 sfact.rule(
                         null,
@@ -441,7 +441,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style) s);
+        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (42 + 0 + 1 + 1) * 4;

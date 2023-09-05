@@ -6,8 +6,8 @@ package org.geoserver.wps;
 
 import java.util.List;
 import org.geoserver.wps.executor.ExecutionStatus;
-import org.geotools.data.Query;
-import org.opengis.filter.Filter;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
 
 /**
  * Stores and allows retrieval of execution status information for the various running and recently

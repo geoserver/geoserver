@@ -26,24 +26,24 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.icons.IconProperties;
 import org.geoserver.wms.icons.IconPropertyExtractor;
 import org.geoserver.wms.icons.IconPropertyInjector;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.style.Fill;
+import org.geotools.api.style.Font;
+import org.geotools.api.style.LineSymbolizer;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.PolygonSymbolizer;
+import org.geotools.api.style.Stroke;
+import org.geotools.api.style.Symbolizer;
+import org.geotools.api.style.TextSymbolizer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
-import org.geotools.styling.Fill;
-import org.geotools.styling.Font;
-import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.Stroke;
-import org.geotools.styling.Symbolizer;
-import org.geotools.styling.TextSymbolizer;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
 
 /**
  * Encodes the SLD styles into KML corresponding styles and adds them to the Placemark
@@ -71,7 +71,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
         static final Logger LOGGER = Logging.getLogger(PlacemarkStyleDecorator.class);
 
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
         @Override
         public Feature decorate(Feature feature, KmlEncodingContext context) {
@@ -92,7 +92,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                         setDefaultIconStyle(style, sf, context);
                     }
                 } else {
-                    org.geotools.styling.Style wholeStyle = context.getCurrentLayer().getStyle();
+                    org.geotools.api.style.Style wholeStyle = context.getCurrentLayer().getStyle();
                     IconProperties properties =
                             IconPropertyExtractor.extractProperties(wholeStyle, sf);
                     setIconStyle(style, wholeStyle, properties, context);
@@ -203,7 +203,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
         /** Encodes a KML IconStyle from a point style and symbolizer. */
         protected void setIconStyle(
                 Style style,
-                org.geotools.styling.Style sld,
+                org.geotools.api.style.Style sld,
                 IconProperties properties,
                 KmlEncodingContext context) {
             if (context.isLiveIcons() || properties.isExternal()) {
@@ -215,14 +215,14 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
         protected void setInlineIconStyle(
                 Style style,
-                org.geotools.styling.Style sld,
+                org.geotools.api.style.Style sld,
                 IconProperties properties,
                 KmlEncodingContext context) {
             final String name = properties.getIconName(sld);
 
-            Map<String, org.geotools.styling.Style> iconStyles = context.getIconStyles();
+            Map<String, org.geotools.api.style.Style> iconStyles = context.getIconStyles();
             if (!iconStyles.containsKey(name)) {
-                final org.geotools.styling.Style injectedStyle =
+                final org.geotools.api.style.Style injectedStyle =
                         IconPropertyInjector.injectProperties(sld, properties.getProperties());
 
                 iconStyles.put(name, injectedStyle);
@@ -244,7 +244,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
         protected void setLiveIconStyle(
                 Style style,
-                org.geotools.styling.Style sld,
+                org.geotools.api.style.Style sld,
                 IconProperties properties,
                 KmlEncodingContext context) {
             final Double opacity = properties.getOpacity();

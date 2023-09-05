@@ -6,14 +6,14 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
-import org.geotools.data.DataSourceException;
-import org.geotools.data.FeatureLock;
-import org.geotools.data.FeatureLocking;
-import org.geotools.data.Query;
-import org.geotools.data.simple.SimpleFeatureLocking;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.data.FeatureLock;
+import org.geotools.api.data.FeatureLocking;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureLocking;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.Filter;
 
 /**
  * GeoServer wrapper for backend Geotools2 DataStore.
@@ -49,7 +49,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
      * Description ...
      *
      * @see
-     *     org.vfny.geoserver.global.GeoServerFeatureStore#setFeatureLock(org.geotools.data.FeatureLock)
+     *     org.vfny.geoserver.global.GeoServerFeatureStore#setFeatureLock(org.geotools.api.data.FeatureLock)
      */
     @Override
     @SuppressWarnings("unchecked")

@@ -18,12 +18,12 @@ import net.opengis.wcs10.RangeSubsetType;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.CRS;
 import org.geotools.wcs.WCSConfiguration;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridEnvelope;
 import org.vfny.geoserver.wcs.WcsException;
 
 public class GetCoverageXmlParserTest extends WCSTestSupport {
@@ -145,8 +145,8 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
         assertEquals("1.0.0", gc.getVersion());
         assertEquals("nurc:Pk50095", gc.getSourceCoverage());
 
-        GeneralEnvelope envelope =
-                ((GeneralEnvelope) gc.getDomainSubset().getSpatialSubset().getEnvelope().get(0));
+        GeneralBounds envelope =
+                ((GeneralBounds) gc.getDomainSubset().getSpatialSubset().getEnvelope().get(0));
         assertEquals(
                 "EPSG:32633", CRS.lookupIdentifier(envelope.getCoordinateReferenceSystem(), true));
         assertEquals(347649.93086859107, envelope.getLowerCorner().getOrdinate(0), 0);

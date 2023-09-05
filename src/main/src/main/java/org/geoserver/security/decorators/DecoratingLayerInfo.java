@@ -18,8 +18,8 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.decorate.AbstractDecorator;
-import org.opengis.util.InternationalString;
 
 /**
  * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will override selected

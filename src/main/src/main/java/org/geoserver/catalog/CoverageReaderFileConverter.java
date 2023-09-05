@@ -14,8 +14,8 @@ import javax.annotation.Nullable;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.grid.GridCoverageReader;
 
 /**
  * Attempts to convert the source input object for a {@link GridCoverageReader} to {@link File}.

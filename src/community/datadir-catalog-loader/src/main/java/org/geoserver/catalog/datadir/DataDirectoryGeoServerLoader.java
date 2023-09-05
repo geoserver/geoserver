@@ -48,12 +48,12 @@ import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
-import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.api.data.DataStoreFactorySpi;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.IncludeFilter;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.filter.IncludeFilter;
 
 /**
  * {@literal datadir.loader.enabled}

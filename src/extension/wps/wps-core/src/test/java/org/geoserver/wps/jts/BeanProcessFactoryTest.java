@@ -17,7 +17,9 @@ import java.util.Map;
 import java.util.Set;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.process.GeoServerProcessors;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.InternationalString;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
@@ -34,8 +36,6 @@ import org.geotools.util.factory.FactoryIteratorProvider;
 import org.geotools.util.factory.GeoTools;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
-import org.opengis.util.InternationalString;
 
 /**
  * Tests some processes that do not require integration with the application context

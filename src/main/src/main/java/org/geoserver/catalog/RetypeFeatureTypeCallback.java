@@ -4,9 +4,9 @@
  */
 package org.geoserver.catalog;
 
-import org.geotools.data.FeatureSource;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 
 /**
  * Extension point for {@link ResourcePool} allowing us to retype an existing {@link FeatureType},

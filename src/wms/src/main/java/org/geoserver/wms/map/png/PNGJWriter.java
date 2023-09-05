@@ -11,11 +11,11 @@ import java.awt.image.RenderedImage;
 import java.io.OutputStream;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.Style;
 import org.geotools.image.ImageWorker;
 import org.geotools.map.Layer;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.Style;
 
 /**
  * Encodes the image in PNG using the PNGJ library
@@ -88,7 +88,7 @@ public class PNGJWriter {
         boolean highChangeRasterSymbolizer;
 
         @Override
-        public void visit(org.geotools.styling.RasterSymbolizer raster) {
+        public void visit(org.geotools.api.style.RasterSymbolizer raster) {
             if (raster.getColorMap() == null) {
                 highChangeRasterSymbolizer = true;
                 return;

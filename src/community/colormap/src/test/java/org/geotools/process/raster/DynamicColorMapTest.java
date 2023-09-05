@@ -26,16 +26,16 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
 import org.geotools.util.NumberRange;
 import org.geotools.xml.styling.SLDTransformer;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Function;
 
 public class DynamicColorMapTest extends GeoServerSystemTestSupport {
 

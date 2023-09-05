@@ -47,7 +47,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;

@@ -7,16 +7,16 @@ package org.geoserver.wms.staticRasterStore;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.media.jai.ImageLayout;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.coverage.grid.Format;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.referencing.datum.PixelInCell;
 
 /**
  * This reader will always return the same static image, in the future it may be configured to
@@ -32,7 +32,7 @@ final class StaticRasterReader extends AbstractGridCoverage2DReader {
         coverageFactory = new GridCoverageFactory();
         crs = DefaultGeographicCRS.WGS84;
         // instantiate the bounds based on the default CRS
-        originalEnvelope = new GeneralEnvelope(CRS.getEnvelope(crs));
+        originalEnvelope = new GeneralBounds(CRS.getEnvelope(crs));
         originalEnvelope.setCoordinateReferenceSystem(crs);
         originalGridRange = new GeneralGridEnvelope(originalEnvelope, PixelInCell.CELL_CENTER);
         // create a default layout based on the static image

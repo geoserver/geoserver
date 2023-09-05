@@ -23,10 +23,10 @@ import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.util.ISO8601Formatter;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.feature.ComplexAttribute;
 import org.geotools.util.Converters;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.ComplexAttribute;
 
 /** Decorator for a JsonGenerator that add some functionality mainly to write JsonNode */
 public abstract class CommonJSONWriter extends TemplateOutputWriter {

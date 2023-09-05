@@ -5,10 +5,10 @@
  */
 package org.geoserver.wms;
 
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.style.Style;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.map.GridReaderLayer;
-import org.geotools.styling.Style;
-import org.opengis.parameter.GeneralParameterValue;
 
 /**
  * A grid reader layer that works with a cached reader, that is, a reader that the layer does not

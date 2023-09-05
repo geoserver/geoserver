@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.opengis.filter.Filter;
-import org.opengis.filter.MultiValuedFilter.MatchAction;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.MultiValuedFilter.MatchAction;
 
 /**
  * Visits the specified objects cascading down to contained/related objects, and collects

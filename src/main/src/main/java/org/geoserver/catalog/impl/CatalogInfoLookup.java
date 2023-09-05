@@ -19,8 +19,8 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.ows.util.OwsUtils;
+import org.geotools.api.feature.type.Name;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 
 /**
  * A support index for {@link DefaultCatalogFacade}, can perform fast lookups of {@link CatalogInfo}

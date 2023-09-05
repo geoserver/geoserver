@@ -9,9 +9,9 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import org.geoserver.catalog.Styles;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.api.style.PolygonSymbolizer;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.styling.SLD;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.junit.Test;
 
 public class CssHandlerTest extends GeoServerSystemTestSupport {

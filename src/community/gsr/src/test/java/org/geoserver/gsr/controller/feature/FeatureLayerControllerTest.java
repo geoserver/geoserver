@@ -126,7 +126,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         // verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
         FeatureIterator iterator = fti.getFeatureSource(null, null).getFeatures().features();
-        org.opengis.feature.Feature nativeFeature = iterator.next();
+        org.geotools.api.feature.Feature nativeFeature = iterator.next();
         // geom should be valid, and not yet equal to the new value
         LineString nativeGeom = (LineString) nativeFeature.getDefaultGeometryProperty().getValue();
         assertTrue(Math.abs(nativeGeom.getGeometryN(0).getCoordinates()[0].x - 500050.0) >= 0.1);
@@ -257,7 +257,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         // verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
         FeatureIterator iterator = fti.getFeatureSource(null, null).getFeatures().features();
-        org.opengis.feature.Feature nativeFeature = iterator.next();
+        org.geotools.api.feature.Feature nativeFeature = iterator.next();
         // geom should be valid, and not yet equal to the new value
         MultiPoint nativeGeom = (MultiPoint) nativeFeature.getDefaultGeometryProperty().getValue();
         assertEquals(2, nativeGeom.getNumGeometries());
@@ -314,7 +314,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         // verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
         FeatureIterator iterator = fti.getFeatureSource(null, null).getFeatures().features();
-        org.opengis.feature.Feature nativeFeature = iterator.next();
+        org.geotools.api.feature.Feature nativeFeature = iterator.next();
         // geom should be valid, and not yet equal to the new value
         MultiLineString nativeGeom =
                 (MultiLineString) nativeFeature.getDefaultGeometryProperty().getValue();
@@ -373,7 +373,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         // verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
         FeatureIterator iterator = fti.getFeatureSource(null, null).getFeatures().features();
-        org.opengis.feature.Feature nativeFeature = iterator.next();
+        org.geotools.api.feature.Feature nativeFeature = iterator.next();
         // geom should be valid, and not yet equal to the new value
         MultiPolygon nativeGeom =
                 (MultiPolygon) nativeFeature.getDefaultGeometryProperty().getValue();
@@ -427,7 +427,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         // verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
         FeatureIterator iterator = fti.getFeatureSource(null, null).getFeatures().features();
-        org.opengis.feature.Feature nativeFeature = iterator.next();
+        org.geotools.api.feature.Feature nativeFeature = iterator.next();
         // geom should be valid
         LineString nativeGeom = (LineString) nativeFeature.getDefaultGeometryProperty().getValue();
         assertTrue(Math.abs(nativeGeom.getGeometryN(0).getCoordinates()[0].x - 500050.0) >= 0.1);
@@ -463,7 +463,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         iterator = fti.getFeatureSource(null, null).getFeatures().features();
         nativeFeature = iterator.next();
-        org.opengis.feature.Feature nativeFeature2 = iterator.next();
+        org.geotools.api.feature.Feature nativeFeature2 = iterator.next();
         // geom should be valid
         nativeGeom = (LineString) nativeFeature2.getDefaultGeometryProperty().getValue();
         assertEquals(nativeGeom.getGeometryN(0).getCoordinates()[0].x, 500050.0, 0.1);

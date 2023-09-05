@@ -15,23 +15,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.commons.io.FileUtils;
+import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridEnvelope;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 /** @author Simone Giannecchini, GeoSolutions SAS */
 public class CRSExtentionKVPTest extends WCSKVPTestSupport {
 
-    private static final GeneralEnvelope EXPECTED_ENVELOPE;
+    private static final GeneralBounds EXPECTED_ENVELOPE;
 
     static {
         EXPECTED_ENVELOPE =
-                new GeneralEnvelope(
+                new GeneralBounds(
                         new double[] {1.6308305401213994E7, -5543147.203861462},
                         new double[] {1.6475284637403902E7, -5311971.846945147});
         EXPECTED_ENVELOPE.setCoordinateReferenceSystem(EPSG_3857);
@@ -89,10 +89,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    EXPECTED_ENVELOPE,
-                    scale,
-                    (GeneralEnvelope) targetCoverage.getEnvelope(),
-                    scale);
+                    EXPECTED_ENVELOPE, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertEquals(gridRange.getSpan(0), 360);
             assertEquals(gridRange.getSpan(1), 360);
 
@@ -125,10 +122,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    EXPECTED_ENVELOPE,
-                    scale,
-                    (GeneralEnvelope) targetCoverage.getEnvelope(),
-                    scale);
+                    EXPECTED_ENVELOPE, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertEquals(gridRange.getSpan(0), 180);
             assertEquals(gridRange.getSpan(1), 180);
         } finally {
@@ -163,10 +157,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    EXPECTED_ENVELOPE,
-                    scale,
-                    (GeneralEnvelope) targetCoverage.getEnvelope(),
-                    scale);
+                    EXPECTED_ENVELOPE, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertEquals(gridRange.getSpan(0), 360);
             assertEquals(gridRange.getSpan(1), 180);
         } finally {
@@ -201,15 +192,15 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
-            final GeneralEnvelope expectedEnvelope =
-                    new GeneralEnvelope(
+            final GeneralBounds expectedEnvelope =
+                    new GeneralBounds(
                             new double[] {1.6308305401213994E7, -5388389.272818998},
                             new double[] {1.636396514661063E7, -5311971.846945147});
             expectedEnvelope.setCoordinateReferenceSystem(EPSG_3857);
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralEnvelope) targetCoverage.getEnvelope(), scale);
+                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertEquals(gridRange.getSpan(0), 120);
             assertEquals(gridRange.getSpan(1), 120);
 
@@ -270,10 +261,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    EXPECTED_ENVELOPE,
-                    scale,
-                    (GeneralEnvelope) targetCoverage.getEnvelope(),
-                    scale);
+                    EXPECTED_ENVELOPE, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertEquals(gridRange.getSpan(0), 360);
             assertEquals(gridRange.getSpan(1), 360);
 
@@ -310,10 +298,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(
-                    EXPECTED_ENVELOPE,
-                    scale,
-                    (GeneralEnvelope) targetCoverage.getEnvelope(),
-                    scale);
+                    EXPECTED_ENVELOPE, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertEquals(gridRange.getSpan(0), 360);
             assertEquals(gridRange.getSpan(1), 360);
 

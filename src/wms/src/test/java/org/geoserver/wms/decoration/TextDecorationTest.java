@@ -14,9 +14,9 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.filter.expression.Expression;
 import org.junit.After;
 import org.junit.Test;
-import org.opengis.filter.expression.Expression;
 
 public class TextDecorationTest {
 

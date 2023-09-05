@@ -6,7 +6,7 @@
 package org.geoserver.config;
 
 import org.geoserver.catalog.Info;
-import org.opengis.util.InternationalString;
+import org.geotools.api.util.InternationalString;
 
 /**
  * GeoServer contact information.

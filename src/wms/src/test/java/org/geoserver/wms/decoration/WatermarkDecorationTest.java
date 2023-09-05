@@ -18,9 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.util.URLs;
 import org.junit.Test;
-import org.opengis.filter.expression.Expression;
 
 public class WatermarkDecorationTest extends GeoServerSystemTestSupport {
 

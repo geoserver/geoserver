@@ -17,17 +17,17 @@ import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.platform.GeoServerExtensionsHelper;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.Style;
-import org.geotools.styling.Symbolizer;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.GraphicalSymbol;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.util.Version;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.style.GraphicalSymbol;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class GeoServerDataDirectoryTest {

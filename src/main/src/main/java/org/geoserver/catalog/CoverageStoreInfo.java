@@ -6,10 +6,10 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.util.ProgressListener;
 
 /**
  * A raster or coverage based store.

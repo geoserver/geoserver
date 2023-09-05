@@ -8,7 +8,7 @@ package org.geoserver.csw.store;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.geoserver.csw.records.RecordDescriptor;
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.type.Name;
 
 /**
  * A map from record name to {@link RecordDescriptor} that includes some name matching leniency, if

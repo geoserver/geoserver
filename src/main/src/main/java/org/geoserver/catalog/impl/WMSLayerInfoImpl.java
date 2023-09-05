@@ -20,13 +20,13 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.brewer.styling.builder.StyleBuilder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.StyleImpl;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
-import org.opengis.util.ProgressListener;
 
 @SuppressWarnings("serial")
 public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {

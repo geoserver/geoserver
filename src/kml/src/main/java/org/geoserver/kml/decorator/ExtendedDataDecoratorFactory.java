@@ -17,15 +17,15 @@ import java.util.Date;
 import java.util.logging.Logger;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.util.Converter;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.XmlConverterFactory;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.GeometryDescriptor;
 
 /**
  * Adds schema and attributes to the KML output

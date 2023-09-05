@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
@@ -19,8 +21,6 @@ import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
 
 /**
  * Stores a coverage and the file system and returns a link to retrieve it back

@@ -5,8 +5,8 @@
 package org.geoserver.opensearch.eo.store;
 
 import java.util.NoSuchElementException;
+import org.geotools.api.feature.Feature;
 import org.geotools.feature.FeatureIterator;
-import org.opengis.feature.Feature;
 
 /**
  * A feature iterator allowing to push back one feature (will be used to map the results of a join)

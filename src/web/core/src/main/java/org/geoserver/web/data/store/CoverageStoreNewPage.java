@@ -12,7 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.data.layer.NewLayerPage;
-import org.opengis.coverage.grid.Format;
+import org.geotools.api.coverage.grid.Format;
 
 /**
  * Supports coverage store configuration

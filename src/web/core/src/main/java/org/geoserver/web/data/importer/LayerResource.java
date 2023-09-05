@@ -6,8 +6,8 @@
 package org.geoserver.web.data.importer;
 
 import java.io.Serializable;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
 
 /**
  * The bean to be rendered in the wms mass publisher page

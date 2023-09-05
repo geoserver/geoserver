@@ -34,8 +34,8 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSDescribeFeatureTypeOutputFormat;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.gml.producer.FeatureTypeTransformer;
-import org.opengis.feature.type.FeatureType;
 
 public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     /** Standard logging instance for class */

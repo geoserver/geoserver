@@ -4,8 +4,8 @@
  */
 package org.geoserver.schemalessfeatures.type;
 
-import org.opengis.feature.type.ComplexType;
-import org.opengis.feature.type.PropertyDescriptor;
+import org.geotools.api.feature.type.ComplexType;
+import org.geotools.api.feature.type.PropertyDescriptor;
 
 /**
  * Interface that represents a DynamicComplexType, a type with no fixed descriptor definition,

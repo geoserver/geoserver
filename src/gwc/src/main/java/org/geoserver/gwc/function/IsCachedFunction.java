@@ -9,9 +9,9 @@ import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.gwc.GWC;
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
-import org.opengis.filter.capability.FunctionName;
 
 /**
  * Detect if layer is cached.

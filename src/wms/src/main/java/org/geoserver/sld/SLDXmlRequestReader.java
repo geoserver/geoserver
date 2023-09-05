@@ -12,7 +12,7 @@ import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.ProcessStandaloneSLDVisitor;
-import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.api.style.StyledLayerDescriptor;
 
 /**
  * Reads

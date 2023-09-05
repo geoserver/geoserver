@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.MultiValuedFilter.MatchAction;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.filter.MultiValuedFilter.MatchAction;
 
 /**
  * Cascade deletes the visited objects, and modifies related object so that they are still

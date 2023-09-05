@@ -17,6 +17,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.ows.Response;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.http.HTTPResponse;
@@ -26,7 +27,6 @@ import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.StyleImpl;
 import org.geotools.ows.wms.request.GetMapRequest;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
 
 /**
  * Wraps a GetMap request enforcing map limits for each of the layers
@@ -183,7 +183,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
     }
 
     @Override
-    public void setBBox(org.opengis.geometry.Envelope box) {
+    public void setBBox(org.geotools.api.geometry.Bounds box) {
         delegate.setBBox(box);
     }
 

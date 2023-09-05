@@ -9,15 +9,15 @@ import java.util.List;
 import org.geoserver.wps.ppio.gpx.GpxType;
 import org.geoserver.wps.ppio.gpx.RteType;
 import org.geoserver.wps.ppio.gpx.WptType;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.Name;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.Name;
 
 /** Small helper class to convert from JTS Geometry to GPX types */
 public class GPXHelper {

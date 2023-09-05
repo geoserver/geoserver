@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.wms.WMS;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.opengis.filter.sort.SortOrder;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 

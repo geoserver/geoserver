@@ -23,6 +23,9 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
+import org.geotools.api.referencing.ReferenceIdentifier;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;
@@ -34,9 +37,6 @@ import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.referencing.ReferenceIdentifier;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.util.ProgressListener;
 
 /**
  * WMS GetMap Output Format for GeoPackage
@@ -198,7 +198,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
                 if (CRS.getAxisOrder(flippedCRS) == CRS.AxisOrder.EAST_NORTH) {
                     Envelope reqJTSEnvelope = req.getBbox();
                     ReferencedEnvelope reqEnvelope =
-                            ReferencedEnvelope.create(reqJTSEnvelope, req.getCrs());
+                            ReferencedEnvelope.envelope(reqJTSEnvelope, req.getCrs());
                     ReferencedEnvelope flippedEnvelope = reqEnvelope.transform(flippedCRS, false);
 
                     req.setBbox(flippedEnvelope);

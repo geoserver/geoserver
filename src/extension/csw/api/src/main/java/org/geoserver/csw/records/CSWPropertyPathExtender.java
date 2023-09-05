@@ -7,11 +7,11 @@ package org.geoserver.csw.records;
 
 import javax.xml.namespace.QName;
 import org.geoserver.csw.util.QNameResolver;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -25,7 +25,7 @@ public class CSWPropertyPathExtender {
     QNameResolver resolver = new QNameResolver();
 
     PropertyName extendProperty(
-            PropertyName expression, FilterFactory2 filterFactory, NamespaceSupport nss) {
+            PropertyName expression, FilterFactory filterFactory, NamespaceSupport nss) {
         String path = expression.getPropertyName();
         if (nss != null) {
             QName name = resolver.parseQName(path, nss);

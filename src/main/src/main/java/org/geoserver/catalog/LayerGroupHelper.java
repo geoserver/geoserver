@@ -19,16 +19,16 @@ import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.api.style.NamedStyle;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayer;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.styling.NamedStyle;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 
 /** Utility class to work with nested layer groups and extract selected sub-parts of it */
 public class LayerGroupHelper {
@@ -405,7 +405,7 @@ public class LayerGroupHelper {
      * <p>If the CRS has no bounds then the layer group bounds are set to null instead
      */
     public void calculateBoundsFromCRS(CoordinateReferenceSystem crs) {
-        Envelope crsEnvelope = CRS.getEnvelope(crs);
+        Bounds crsEnvelope = CRS.getEnvelope(crs);
         if (crsEnvelope != null) {
             ReferencedEnvelope refEnvelope = new ReferencedEnvelope(crsEnvelope);
             this.group.setBounds(refEnvelope);

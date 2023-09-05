@@ -10,14 +10,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.GeometryDescriptor;
 
 @SuppressWarnings("serial")
 public class SQLViewAttributeProvider extends GeoServerDataProvider<SQLViewAttribute> {

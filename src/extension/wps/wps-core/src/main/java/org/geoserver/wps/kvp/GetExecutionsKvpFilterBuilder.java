@@ -4,11 +4,11 @@
  */
 package org.geoserver.wps.kvp;
 
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * Helper class that builds WPS Process Executions Status related filters

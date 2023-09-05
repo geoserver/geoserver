@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.wms.map.RasterSymbolizerVisitor;
-import org.geotools.styling.ChannelSelection;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.RasterSymbolizer;
+import org.geotools.api.style.ChannelSelection;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.RasterSymbolizer;
 
 /**
  * A visitor able to produce ColorMapLabelMatcher objects from a Style having vendor options

@@ -8,8 +8,8 @@ package org.geoserver.schemalessfeatures.mongodb.response;
 import java.util.List;
 import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
 import org.geoserver.wfs.json.ComplexGeoJsonWriterOptions;
+import org.geotools.api.feature.type.ComplexType;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.type.ComplexType;
 
 public class MongoComplexGeoJsonWriterOptions implements ComplexGeoJsonWriterOptions {
 

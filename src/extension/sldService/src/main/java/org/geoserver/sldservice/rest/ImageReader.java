@@ -14,6 +14,19 @@ import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.rest.RestException;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.coverage.grid.GridGeometry;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -22,12 +35,10 @@ import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.processing.CoverageProcessor;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.Envelope2D;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
@@ -35,18 +46,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.filter.Filter;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -100,7 +99,7 @@ class ImageReader {
         // grab the original grid geometry
         Filter readFilter = getReadFilter(readParameters);
         GridGeometry originalGeometry = getOriginalGridGeometry(reader, readFilter);
-        Envelope2D originalEnvelope = ((GridGeometry2D) originalGeometry).getEnvelope2D();
+        ReferencedEnvelope originalEnvelope = ((GridGeometry2D) originalGeometry).getEnvelope2D();
         CoordinateReferenceSystem crs = originalEnvelope.getCoordinateReferenceSystem();
         MathTransform g2w = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
         GridGeometry2D readGeometry = new GridGeometry2D(originalGeometry);
@@ -119,7 +118,7 @@ class ImageReader {
                         HttpStatus.BAD_REQUEST);
             }
 
-            GeneralEnvelope ers = CRS.transform(g2w.inverse(), readEnvelope);
+            GeneralBounds ers = CRS.transform(g2w.inverse(), readEnvelope);
             GridEnvelope gridToRead =
                     new GridEnvelope2D(
                             (int) Math.floor(ers.getMinimum(0)),
@@ -271,8 +270,8 @@ class ImageReader {
     }
 
     private boolean isUncut(GridCoverage2D coverage, GridGeometry2D targetGridGeometry) {
-        Envelope2D actual = coverage.getEnvelope2D();
-        Envelope2D expected = targetGridGeometry.getEnvelope2D();
+        ReferencedEnvelope actual = coverage.getEnvelope2D();
+        ReferencedEnvelope expected = targetGridGeometry.getEnvelope2D();
         AffineTransform2D at = (AffineTransform2D) targetGridGeometry.getGridToCRS2D();
         double resX = at.getScaleX();
         double resY = at.getScaleY();

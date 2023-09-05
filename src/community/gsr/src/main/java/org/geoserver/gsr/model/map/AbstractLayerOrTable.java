@@ -34,12 +34,12 @@ import org.geoserver.gsr.model.renderer.DrawingInfo;
 import org.geoserver.gsr.model.renderer.Renderer;
 import org.geoserver.gsr.translate.feature.FeatureEncoder;
 import org.geoserver.gsr.translate.renderer.StyleEncoder;
-import org.geotools.data.FeatureStore;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Abstract layer model used by both {@link org.geoserver.gsr.model.feature.FeatureLayer} and {@link

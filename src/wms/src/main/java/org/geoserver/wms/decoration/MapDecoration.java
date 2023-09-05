@@ -10,7 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.Map;
 import org.geoserver.wms.WMSMapContent;
-import org.opengis.filter.expression.Expression;
+import org.geotools.api.filter.expression.Expression;
 
 /**
  * The MapDecoration class encapsulates the rendering code for an overlay to be used to enhance a

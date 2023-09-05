@@ -19,11 +19,11 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xsd.Encoder;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.Name;
 
 public class GetPropertyValueResponse extends WFSResponse {
 

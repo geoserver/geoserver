@@ -16,14 +16,14 @@ import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs2_0.response.GranuleStack;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.parameter.ParameterValue;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.parameter.ParameterValue;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
@@ -74,7 +74,7 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
                     ImageMosaicFormat.USE_JAI_IMAGEREAD.createValue();
             useJAI.setValue(false);
             sourceCoverage = (GridCoverage2D) coverageReader.read(useJAI);
-            final Envelope2D sourceEnvelope = sourceCoverage.getEnvelope2D();
+            final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample using the original extension
             MockHttpServletResponse response =
@@ -82,14 +82,14 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
                             "wcs?request=GetCoverage&service=WCS&version=2.0.1"
                                     + "&coverageId=wcs__lambert&&Format=application/custom"
                                     + "&subset=E,http://www.opengis.net/def/crs/EPSG/0/31300("
-                                    + sourceEnvelope.x
+                                    + sourceEnvelope.getMinX()
                                     + ","
-                                    + (sourceEnvelope.x + 25)
+                                    + (sourceEnvelope.getMinX() + 25)
                                     + ")"
                                     + "&subset=N,http://www.opengis.net/def/crs/EPSG/0/31300("
-                                    + sourceEnvelope.y
+                                    + sourceEnvelope.getMinY()
                                     + ","
-                                    + (sourceEnvelope.y + 25)
+                                    + (sourceEnvelope.getMinY() + 25)
                                     + ")");
 
             assertNotNull(response);

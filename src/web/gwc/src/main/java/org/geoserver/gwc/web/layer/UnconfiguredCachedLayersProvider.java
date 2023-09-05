@@ -30,10 +30,10 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.web.GWCIconFactory;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
-import org.opengis.filter.Filter;
 
 /** @author groldan */
 class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> {

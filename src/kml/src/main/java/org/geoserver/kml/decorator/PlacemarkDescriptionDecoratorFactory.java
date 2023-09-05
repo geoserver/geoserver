@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Adds template based description to Placemark objects

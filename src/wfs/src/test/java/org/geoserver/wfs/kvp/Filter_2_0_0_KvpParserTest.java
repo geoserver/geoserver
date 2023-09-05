@@ -7,11 +7,11 @@ package org.geoserver.wfs.kvp;
 
 import java.net.URLDecoder;
 import java.util.List;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.PropertyIsLike;
+import org.geotools.api.filter.expression.PropertyName;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.PropertyIsLike;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * Tests for {@link Filter_2_0_0_KvpParser}, the parser for Filter 2.0 in KVP requests.

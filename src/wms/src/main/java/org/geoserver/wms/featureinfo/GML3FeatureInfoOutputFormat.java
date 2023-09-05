@@ -20,9 +20,9 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.xml.GML3OutputFormat;
 import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
-import org.opengis.feature.type.Name;
 
 /**
  * A GetFeatureInfo response handler specialized in producing GML 3 data for a GetFeatureInfo

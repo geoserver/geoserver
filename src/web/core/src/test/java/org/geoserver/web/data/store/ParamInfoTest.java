@@ -6,7 +6,7 @@ package org.geoserver.web.data.store;
 
 import static org.junit.Assert.assertEquals;
 
-import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.api.data.DataAccessFactory.Param;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.geotools.util.SimpleInternationalString;
 import org.junit.Test;

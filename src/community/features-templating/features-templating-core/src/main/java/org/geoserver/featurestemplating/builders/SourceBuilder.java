@@ -11,9 +11,9 @@ import java.util.Objects;
 import java.util.Optional;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
 import org.geotools.filter.AttributeExpressionImpl;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Abstract class for builders that can set the context for their children through source xpath */

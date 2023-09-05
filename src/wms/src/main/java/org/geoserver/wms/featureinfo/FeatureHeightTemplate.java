@@ -6,7 +6,7 @@
 package org.geoserver.wms.featureinfo;
 
 import java.io.IOException;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeature;
 
 /**
  * Template supporting height values for features.

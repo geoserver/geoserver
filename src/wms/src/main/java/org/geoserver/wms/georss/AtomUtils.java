@@ -20,8 +20,8 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.map.Layer;
-import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * The AtomUtils class provides some static methods useful in producing atom metadata related to

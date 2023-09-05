@@ -27,12 +27,12 @@ import org.geoserver.featurestemplating.readers.RecursiveJSONParser;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class SelectionTemplateVisitorTest {

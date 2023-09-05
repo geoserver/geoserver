@@ -9,7 +9,7 @@ import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
-import org.opengis.feature.Feature;
+import org.geotools.api.feature.Feature;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

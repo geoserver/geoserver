@@ -15,10 +15,10 @@ import javax.media.jai.PlanarImage;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverage;
 
 public class CoverageCleanerCallback extends AbstractDispatcherCallback {
 

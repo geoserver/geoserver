@@ -11,10 +11,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URLDecoder;
 import java.util.List;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.Id;
+import org.geotools.api.filter.PropertyIsEqualTo;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.Id;
-import org.opengis.filter.PropertyIsEqualTo;
 
 public class Filter_1_0_0_KvpParserTest {
 

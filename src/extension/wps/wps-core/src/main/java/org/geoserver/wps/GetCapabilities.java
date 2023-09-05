@@ -32,9 +32,9 @@ import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 
 /** @author Lucas Reed, Refractions Research Inc */

@@ -69,16 +69,16 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 import org.springframework.dao.DuplicateKeyException;
 
 /**
@@ -319,7 +319,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected List<String> getLayerNames(String workspaceName) {
         List<String> resultSet = new ArrayList<>();
         if (workspaceName != null) {
-            FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+            FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
             try (CloseableIterator<ResourceInfo> it =
                     getCatalog()
@@ -344,7 +344,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
      */
     protected List<String> getLayerGroupNames(String workspaceName) {
         List<String> resultSet = new ArrayList<>();
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         CatalogFacade facade = getCatalog().getFacade();
         SortBy sort = ff.sort("name", SortOrder.ASCENDING);
         Filter wsFilter;

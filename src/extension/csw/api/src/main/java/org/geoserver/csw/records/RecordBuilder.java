@@ -5,8 +5,8 @@
  */
 package org.geoserver.csw.records;
 
+import org.geotools.api.feature.Feature;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.Feature;
 
 /**
  * A helper that builds records as GeoTools features

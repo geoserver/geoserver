@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.util.SimpleInternationalString;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class TransformFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
     private static final String BOOLEAN_PROPERTY = "booleanProperty";

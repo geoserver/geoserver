@@ -37,14 +37,14 @@ import net.opengis.wfs.WfsFactory;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.Version;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

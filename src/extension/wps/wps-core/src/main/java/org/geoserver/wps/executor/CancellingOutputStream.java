@@ -8,7 +8,7 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.geoserver.wps.ProcessDismissedException;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 
 /**
  * Wrapper class for output streams that will throw an exception when a process got cancelled during

@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataAccessFactory;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.DataAccessFactory;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.junit.Test;
 

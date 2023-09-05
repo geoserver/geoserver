@@ -463,8 +463,8 @@ public class CatalogConfigurationTest {
 
     @Test
     public void testNoGeometry() throws Exception {
-        org.opengis.feature.type.FeatureType featureTypeWithNoGeometry =
-                mock(org.opengis.feature.type.FeatureType.class);
+        org.geotools.api.feature.type.FeatureType featureTypeWithNoGeometry =
+                mock(org.geotools.api.feature.type.FeatureType.class);
         when(featureTypeWithNoGeometry.getGeometryDescriptor()).thenReturn(null);
         org.geoserver.catalog.FeatureTypeInfo resourceWithNoGeometry =
                 mock(org.geoserver.catalog.FeatureTypeInfo.class);

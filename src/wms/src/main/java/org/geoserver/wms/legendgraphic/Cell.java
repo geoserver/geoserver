@@ -22,8 +22,8 @@ import java.util.StringTokenizer;
 import org.apache.commons.text.WordUtils;
 import org.geoserver.wms.legendgraphic.LegendUtils.HAlign;
 import org.geoserver.wms.legendgraphic.LegendUtils.VAlign;
-import org.geotools.styling.ColorMapEntry;
-import org.opengis.style.ColorMap;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
 
 /**
  * This class mimics a simple cell for the final {@link ColorMap} legend reprensentation.

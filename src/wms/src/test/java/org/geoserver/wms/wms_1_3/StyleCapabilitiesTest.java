@@ -19,8 +19,8 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
+import org.geotools.api.style.Style;
 import org.geotools.brewer.styling.builder.StyleBuilder;
-import org.geotools.styling.Style;
 import org.junit.Test;
 import org.w3c.dom.Document;
 

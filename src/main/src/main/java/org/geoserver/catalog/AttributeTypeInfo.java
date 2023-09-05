@@ -8,8 +8,8 @@ package org.geoserver.catalog;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.util.InternationalString;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.util.InternationalString;
 
 /**
  * An attribute exposed by a {@link FeatureTypeInfo}.

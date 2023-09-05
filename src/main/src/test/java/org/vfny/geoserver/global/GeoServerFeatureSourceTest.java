@@ -12,7 +12,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.security.decorators.DecoratingSimpleFeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ContentFeatureSource;
@@ -22,7 +23,6 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class GeoServerFeatureSourceTest {
 

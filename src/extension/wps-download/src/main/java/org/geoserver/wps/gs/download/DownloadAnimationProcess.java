@@ -35,6 +35,7 @@ import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.wms.WebMapServer;
@@ -49,7 +50,6 @@ import org.jcodec.api.awt.AWTSequenceEncoder;
 import org.jcodec.common.io.FileChannelWrapper;
 import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.Rational;
-import org.opengis.util.ProgressListener;
 
 @DescribeProcess(
         title = "Animation Download Process",

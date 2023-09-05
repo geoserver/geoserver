@@ -32,20 +32,20 @@ import javax.media.jai.iterator.RandomIterFactory;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.web.netcdf.DataPacking;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.cs.CoordinateSystemAxis;
+import org.geotools.api.referencing.operation.MathTransform2D;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.util.CoverageUtilities;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystemAxis;
-import org.opengis.referencing.operation.MathTransform2D;
-import org.opengis.referencing.operation.TransformException;
 import si.uom.NonSI;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -650,7 +650,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
             writer.addGroupAttribute(null, new Attribute("time_coverage_end", endIsoTime));
         }
         try {
-            GeneralEnvelope wgs84Envelope =
+            GeneralBounds wgs84Envelope =
                     CRS.transform(sampleGranule.getEnvelope(), DefaultGeographicCRS.WGS84);
             writer.addGroupAttribute(
                     null, new Attribute("northernmost_latitude", wgs84Envelope.getMaximum(1)));

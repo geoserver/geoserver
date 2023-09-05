@@ -23,9 +23,9 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.logging.Logging;
-import org.opengis.util.InternationalString;
 
 public class LayerInfoImpl implements LayerInfo {
 

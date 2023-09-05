@@ -18,21 +18,21 @@ import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.visitor.UniqueVisitor;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 
 /** Builds the OGC Features OpenAPI document */
 public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo> {
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private final OpenSearchAccessProvider accessProvider;
 
@@ -96,7 +96,7 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
         FeatureSource<FeatureType, Feature> fs =
                 accessProvider.getOpenSearchAccess().getCollectionSource();
         PropertyName name =
-                CommonFactoryFinder.getFilterFactory2()
+                CommonFactoryFinder.getFilterFactory()
                         .property(new NameImpl(fs.getSchema().getName().getNamespaceURI(), "name"));
         // remove disabled collections
         Query q = new Query();

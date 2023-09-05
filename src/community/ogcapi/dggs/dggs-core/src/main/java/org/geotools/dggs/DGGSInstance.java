@@ -19,14 +19,14 @@ package org.geotools.dggs;
 import com.google.common.collect.Iterators;
 import java.util.Iterator;
 import java.util.List;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 /**
  * A particular DGGS instance, provides access to zones and conversion operations between zones and
@@ -197,5 +197,5 @@ public interface DGGSInstance extends AutoCloseable {
      *     the given solution. If false, return a filter matching only the children at the target
      *     resolution instead.
      */
-    Filter getChildFilter(FilterFactory2 ff, String zoneId, int resolution, boolean upTo);
+    Filter getChildFilter(FilterFactory ff, String zoneId, int resolution, boolean upTo);
 }

@@ -25,13 +25,13 @@ import org.geoserver.ogcapi.AttributeType;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.QueryablesBuilder;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.ExpressionTypeVisitor;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
 
 public class STACQueryablesBuilder {
 
@@ -47,7 +47,7 @@ public class STACQueryablesBuilder {
     static final String DEFINED_QUERYABLES_PROPERTY = "queryables";
     private static Set<String> SKIP_PROPERTIES = new HashSet<>();
 
-    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     public static final String ID = "ID";
     public static final String COLLECTION = "Collection";
     public static final String GEOMETRY = "Geometry";

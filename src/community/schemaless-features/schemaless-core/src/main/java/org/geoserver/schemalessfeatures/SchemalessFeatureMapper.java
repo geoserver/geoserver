@@ -7,15 +7,15 @@ package org.geoserver.schemalessfeatures;
 import org.geoserver.schemalessfeatures.builders.DynamicComplexTypeBuilder;
 import org.geoserver.schemalessfeatures.filter.SchemalessPropertyAccessorFactory;
 import org.geoserver.schemalessfeatures.type.DynamicComplexType;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.NameImpl;
 import org.geotools.gml3.v3_2.GMLSchema;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 
 /**
  * Abstract class for a mapper able to produce Features from a source without relying on the

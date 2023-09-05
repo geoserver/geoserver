@@ -12,7 +12,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Dispatcher;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /**
  * A pluggable extension point that can filter out catalog items you don't want the user to see, so

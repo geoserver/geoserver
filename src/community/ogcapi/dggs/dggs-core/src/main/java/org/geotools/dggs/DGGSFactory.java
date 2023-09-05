@@ -18,7 +18,7 @@ package org.geotools.dggs;
 
 import java.io.IOException;
 import java.util.Map;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 
 /** Factory creating DGGS intances */
 public interface DGGSFactory {

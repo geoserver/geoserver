@@ -38,6 +38,9 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geoserver.wms.worldwind.util.BilWCSUtils;
 import org.geoserver.wms.worldwind.util.RecodeRaster;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -46,13 +49,10 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.CoverageUtilities;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.image.ImageWorker;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
@@ -136,7 +136,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 
         GridCoverage2DReader coverageReader =
                 (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
-        GeneralEnvelope destinationEnvelope = new GeneralEnvelope(mapContent.getRenderingArea());
+        GeneralBounds destinationEnvelope = new GeneralBounds(mapContent.getRenderingArea());
 
         /*
          * Try to use a gridcoverage style render
@@ -253,7 +253,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
             MapLayerInfo meta,
             WMSMapContent mapContent,
             GridCoverage2DReader coverageReader,
-            GeneralEnvelope destinationEnvelope)
+            GeneralBounds destinationEnvelope)
             throws WcsException, IOException, IndexOutOfBoundsException, FactoryException,
                     TransformException {
         // This is the final Response CRS
@@ -270,11 +270,11 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 
         // This is the CRS of the Coverage Envelope
         final CoordinateReferenceSystem cvCRS =
-                ((GeneralEnvelope) coverageReader.getOriginalEnvelope())
+                ((GeneralBounds) coverageReader.getOriginalEnvelope())
                         .getCoordinateReferenceSystem();
 
         // this is the destination envelope in the coverage crs
-        final GeneralEnvelope destinationEnvelopeInSourceCRS =
+        final GeneralBounds destinationEnvelopeInSourceCRS =
                 CRS.transform(destinationEnvelope, cvCRS);
 
         /** Reading Coverage on Requested Envelope */
@@ -315,7 +315,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
         final GridCoverage2D croppedGridCoverage =
                 BilWCSUtils.crop(
                         coverage,
-                        (GeneralEnvelope) coverage.getEnvelope(),
+                        (GeneralBounds) coverage.getEnvelope(),
                         cvCRS,
                         destinationEnvelopeInSourceCRS,
                         Boolean.TRUE);

@@ -6,14 +6,14 @@ package org.geoserver.ogcapi.v1.stac;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 /** Simple support class that can accumulate a list of filters and then merge them in and or or */
 class FilterMerger {
 
-    public static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    public static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     List<Filter> filters = new ArrayList<>();
 

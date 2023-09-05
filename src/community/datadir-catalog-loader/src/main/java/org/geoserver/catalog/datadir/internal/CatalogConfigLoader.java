@@ -32,10 +32,10 @@ import org.geoserver.catalog.datadir.internal.DataDirectoryWalker.StoreDirectory
 import org.geoserver.catalog.datadir.internal.DataDirectoryWalker.WorkspaceDirectory;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.ows.util.OwsUtils;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.FactoryException;
 
 class CatalogConfigLoader {
 

@@ -10,10 +10,10 @@
 package org.geoserver.gsr.model.geometry;
 
 import java.util.NoSuchElementException;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.JTS;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 public enum SpatialRelationship {
     INTERSECTS("esriSpatialRelIntersects") {
@@ -197,7 +197,7 @@ public enum SpatialRelationship {
         }
     };
 
-    private static final FilterFactory2 filters = CommonFactoryFinder.getFilterFactory2();
+    private static final FilterFactory filters = CommonFactoryFinder.getFilterFactory();
 
     private final String name;
 

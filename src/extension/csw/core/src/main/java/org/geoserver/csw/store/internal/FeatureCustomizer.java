@@ -10,15 +10,15 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.filter.FilterFactory2;
 
 /** Subclasses implementations allow to customize Feature values. */
 abstract class FeatureCustomizer {
 
-    protected static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    protected static final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     protected Logger LOGGER = Logging.getLogger(FeatureCustomizer.class);
 

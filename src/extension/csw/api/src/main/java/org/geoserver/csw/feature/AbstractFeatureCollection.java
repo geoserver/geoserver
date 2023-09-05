@@ -9,13 +9,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.collection.DelegateFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 
 /**
  * A derivation of GeoTools {@link org.geotools.feature.collection.AbstractFeatureCollection} that
@@ -290,8 +290,8 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     @Override
     public void accepts(
-            org.opengis.feature.FeatureVisitor visitor,
-            org.opengis.util.ProgressListener progress) {
+            org.geotools.api.feature.FeatureVisitor visitor,
+            org.geotools.api.util.ProgressListener progress) {
         Iterator<F> iterator = null;
         if (progress == null) progress = new NullProgressListener();
         try {

@@ -7,13 +7,13 @@ package org.geoserver.csw.kvp;
 
 import java.util.List;
 import org.geoserver.ows.FlatKvpParser;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 
 /**
  * Parses kvp of the form 'sortBy=Field1:{A|D},Field2:{A|D}...' into a list of {@link
- * org.opengis.filter.sort.SortBy}.
+ * org.geotools.api.filter.sort.SortBy}.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

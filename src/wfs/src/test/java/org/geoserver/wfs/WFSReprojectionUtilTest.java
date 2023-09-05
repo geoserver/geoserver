@@ -9,6 +9,12 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.spatial.BBOX;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.JTS;
@@ -19,17 +25,11 @@ import org.geotools.util.factory.Hints;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class WFSReprojectionUtilTest {
 
     private final FeatureType featureType = createFeatureType();
-    private final FilterFactory2 filterFactory = createFilterFactory();
+    private final FilterFactory filterFactory = createFilterFactory();
 
     @BeforeClass
     public static void before() {
@@ -52,9 +52,9 @@ public class WFSReprojectionUtilTest {
         }
     }
 
-    private static FilterFactory2 createFilterFactory() {
+    private static FilterFactory createFilterFactory() {
         try {
-            return CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+            return CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }

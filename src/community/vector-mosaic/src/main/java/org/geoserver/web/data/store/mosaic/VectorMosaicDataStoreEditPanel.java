@@ -21,8 +21,8 @@ import org.geoserver.web.data.store.DefaultDataStoreEditPanel;
 import org.geoserver.web.data.store.ParamInfo;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geoserver.web.util.MapModel;
-import org.geotools.data.DataStoreFactorySpi;
-import org.geotools.data.DataStoreFinder;
+import org.geotools.api.data.DataStoreFactorySpi;
+import org.geotools.api.data.DataStoreFinder;
 
 public class VectorMosaicDataStoreEditPanel extends DefaultDataStoreEditPanel {
     private static final String SPI_PARAM_NAME = "preferredDataStoreSPI";

@@ -5,7 +5,7 @@
 package org.geoserver.ogcapi.v1.images;
 
 import org.geoserver.catalog.CoverageInfo;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeature;
 
 /**
  * Allows implementer to listen to the addition/removal of granules in a {@link

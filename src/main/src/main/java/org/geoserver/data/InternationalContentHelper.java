@@ -28,10 +28,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.GeoServerDefaultLocale;
-import org.geotools.styling.Description;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Description;
+import org.geotools.api.style.Style;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
-import org.opengis.util.InternationalString;
 
 /**
  * Helper class that allows to retrieve a String value out of a GrowableInternationalString

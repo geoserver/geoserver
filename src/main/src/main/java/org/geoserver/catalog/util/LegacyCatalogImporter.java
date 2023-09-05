@@ -33,10 +33,14 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.data.DataAccess;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -45,10 +49,6 @@ import org.geotools.referencing.operation.matrix.GeneralMatrix;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 /**
  * Imports data from a legacy "catalog.xml" file into the catalog.
@@ -585,11 +585,11 @@ public class LegacyCatalogImporter {
                         crs);
         coverage.setNativeBoundingBox(bounds);
 
-        GeneralEnvelope boundsLatLon =
-                CoverageStoreUtils.getWGS84LonLatEnvelope(new GeneralEnvelope(bounds));
+        GeneralBounds boundsLatLon =
+                CoverageStoreUtils.getWGS84LonLatEnvelope(new GeneralBounds(bounds));
         coverage.setLatLonBoundingBox(new ReferencedEnvelope(boundsLatLon));
 
-        GeneralEnvelope gridEnvelope = new GeneralEnvelope(bounds);
+        GeneralBounds gridEnvelope = new GeneralBounds(bounds);
         Map grid = cInfoReader.grid();
         if (grid != null) {
             int[] low = (int[]) grid.get("low");

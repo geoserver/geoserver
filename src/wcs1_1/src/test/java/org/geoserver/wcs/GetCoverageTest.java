@@ -36,18 +36,17 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.wcs.WcsException;
 import org.w3c.dom.Document;
@@ -221,7 +220,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         raw.put("BoundingBox", "-45,146,-42,149,urn:ogc:def:crs:EPSG:6.6:4326");
 
         GridCoverage[] coverages = executeGetCoverageKvp(raw);
-        Envelope envelope = coverages[0].getEnvelope();
+        Bounds envelope = coverages[0].getEnvelope();
         assertEquals(-45d, envelope.getMinimum(0), 1e-6);
         assertEquals(-42d, envelope.getMaximum(0), 1e-6);
         assertEquals(146d, envelope.getMinimum(1), 1e-6);
@@ -265,7 +264,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         // System.out.println(coverages[0]);
 
         // check the envelope
-        Envelope envelope = coverages[0].getEnvelope();
+        Bounds envelope = coverages[0].getEnvelope();
         // System.out.println(envelope);
         CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857");
         assertEquals(targetCRS, envelope.getCoordinateReferenceSystem());
@@ -300,7 +299,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         // System.out.println(coverages[0]);
 
         // check the envelope
-        Envelope envelope = coverages[0].getEnvelope();
+        Bounds envelope = coverages[0].getEnvelope();
         // System.out.println(envelope);
         CoordinateReferenceSystem targetCRS = CRS.decode("urn:x-ogc:def:crs:EPSG:3003");
         assertEquals(targetCRS, envelope.getCoordinateReferenceSystem());
@@ -384,8 +383,8 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals(originalRange.getSpan(1), actualRange.getSpan(1));
 
         // check also the geographic bounds
-        Envelope2D originalEnv = original.getEnvelope2D();
-        Envelope2D actualEnv = result.getEnvelope2D();
+        ReferencedEnvelope originalEnv = original.getEnvelope2D();
+        ReferencedEnvelope actualEnv = result.getEnvelope2D();
         assertEquals(originalEnv.getMinX(), actualEnv.getMinX(), 1e-6);
         assertEquals(originalEnv.getMinY(), actualEnv.getMinY(), 1e-6);
         assertEquals(originalEnv.getMaxX(), actualEnv.getMaxX(), 1e-6);

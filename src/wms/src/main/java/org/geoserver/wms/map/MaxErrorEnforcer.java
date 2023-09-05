@@ -5,9 +5,9 @@
  */
 package org.geoserver.wms.map;
 
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.RenderListener;
-import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Attaches itself to the renderer and ensures no more than a certain amount of errors occur, if

@@ -9,11 +9,11 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.LocalWorkspace;
-import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.FilterFactory2;
 
 /**
  * Maps joined simple features up to a complex Collection feature
@@ -23,7 +23,7 @@ import org.opengis.filter.FilterFactory2;
 public class JDBCCollectionFeatureStore extends AbstractMappingStore {
 
     static final Logger LOGGER = Logging.getLogger(JDBCCollectionFeatureStore.class);
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     public JDBCCollectionFeatureStore(
             JDBCOpenSearchAccess openSearchAccess, FeatureType collectionFeatureType)

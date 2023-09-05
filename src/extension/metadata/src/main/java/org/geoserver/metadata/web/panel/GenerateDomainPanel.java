@@ -25,12 +25,12 @@ import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.metadata.data.service.impl.DomainGenerator;
 import org.geoserver.metadata.web.layer.MetadataTabPanel;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 
 public class GenerateDomainPanel extends Panel {
 

@@ -25,19 +25,19 @@ import org.geoserver.gsr.translate.geometry.GeometryEncoder;
 import org.geoserver.gsr.translate.geometry.QuantizedGeometryEncoder;
 import org.geoserver.gsr.translate.geometry.SpatialReferenceEncoder;
 import org.geoserver.gsr.translate.geometry.SpatialReferences;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.GeometryType;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.GeometryType;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * List of {@link Feature}, that can be serialized as JSON
@@ -61,18 +61,18 @@ public class FeatureList implements GSRModel {
 
     public final ArrayList<Feature> features = new ArrayList<>();
 
-    public <T extends FeatureType, F extends org.opengis.feature.Feature> FeatureList(
+    public <T extends FeatureType, F extends org.geotools.api.feature.Feature> FeatureList(
             FeatureCollection<T, F> collection, boolean returnGeometry) throws IOException {
         this(collection, returnGeometry, null);
     }
 
-    public <T extends FeatureType, F extends org.opengis.feature.Feature> FeatureList(
+    public <T extends FeatureType, F extends org.geotools.api.feature.Feature> FeatureList(
             FeatureCollection<T, F> collection, boolean returnGeometry, String outputSR)
             throws IOException {
         this(collection, returnGeometry, outputSR, null);
     }
 
-    public <T extends FeatureType, F extends org.opengis.feature.Feature> FeatureList(
+    public <T extends FeatureType, F extends org.geotools.api.feature.Feature> FeatureList(
             FeatureCollection<T, F> collection,
             boolean returnGeometry,
             String outputSR,
@@ -184,7 +184,7 @@ public class FeatureList implements GSRModel {
 
         try (FeatureIterator<F> iterator = collection.features()) {
             while (iterator.hasNext()) {
-                org.opengis.feature.Feature feature = iterator.next();
+                org.geotools.api.feature.Feature feature = iterator.next();
                 features.add(
                         FeatureEncoder.feature(
                                 feature,

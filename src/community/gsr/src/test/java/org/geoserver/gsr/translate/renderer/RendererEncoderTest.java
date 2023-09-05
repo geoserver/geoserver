@@ -39,12 +39,12 @@ import org.geoserver.gsr.model.symbol.SimpleLineSymbol;
 import org.geoserver.gsr.model.symbol.SimpleLineSymbolEnum;
 import org.geoserver.gsr.model.symbol.TextSymbol;
 import org.geoserver.gsr.model.symbol.VerticalAlignmentEnum;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-import org.opengis.style.Style;
 
 public class RendererEncoderTest extends ControllerTest {
 
@@ -55,7 +55,7 @@ public class RendererEncoderTest extends ControllerTest {
         Style polygon = polygonInfo.getStyle();
         assertNotNull(polygon);
         Renderer polygonRenderer =
-                StyleEncoder.styleToRenderer((org.geotools.styling.Style) polygon);
+                StyleEncoder.styleToRenderer((org.geotools.api.style.Style) polygon);
         assertNotNull(polygonRenderer);
         JSONBuilder json = new JSONStringer();
         StyleEncoder.encodeRenderer(json, polygonRenderer);
@@ -67,7 +67,7 @@ public class RendererEncoderTest extends ControllerTest {
         assertNotNull(lineInfo);
         Style line = lineInfo.getStyle();
         assertNotNull(line);
-        Renderer lineRenderer = StyleEncoder.styleToRenderer((org.geotools.styling.Style) line);
+        Renderer lineRenderer = StyleEncoder.styleToRenderer((org.geotools.api.style.Style) line);
         assertNotNull(lineRenderer);
         JSONBuilder json = new JSONStringer();
         StyleEncoder.encodeRenderer(json, lineRenderer);
@@ -79,7 +79,7 @@ public class RendererEncoderTest extends ControllerTest {
         assertNotNull(pointInfo);
         Style point = pointInfo.getStyle();
         assertNotNull(point);
-        Renderer pointRenderer = StyleEncoder.styleToRenderer((org.geotools.styling.Style) point);
+        Renderer pointRenderer = StyleEncoder.styleToRenderer((org.geotools.api.style.Style) point);
         assertNotNull(point);
         JSONBuilder json = new JSONStringer();
         StyleEncoder.encodeRenderer(json, pointRenderer);
@@ -88,14 +88,14 @@ public class RendererEncoderTest extends ControllerTest {
     private Renderer parseAndConvertToRenderer(String sldPath) throws Exception {
         StyleFactory factory = CommonFactoryFinder.getStyleFactory();
         SLDParser parser = new SLDParser(factory, getClass().getResource(sldPath));
-        org.geotools.styling.Style sld = parser.readXML()[0];
+        org.geotools.api.style.Style sld = parser.readXML()[0];
         return StyleEncoder.styleToRenderer(sld);
     }
 
     private List<Label> parseAndConvertToLabelInfo(String sldPath) throws Exception {
         StyleFactory factory = CommonFactoryFinder.getStyleFactory();
         SLDParser parser = new SLDParser(factory, getClass().getResource(sldPath));
-        org.geotools.styling.Style sld = parser.readXML()[0];
+        org.geotools.api.style.Style sld = parser.readXML()[0];
         return StyleEncoder.styleToLabel(sld);
     }
 
@@ -103,7 +103,7 @@ public class RendererEncoderTest extends ControllerTest {
     public void testIconRenderer() throws Exception {
         StyleFactory factory = CommonFactoryFinder.getStyleFactory();
         SLDParser parser = new SLDParser(factory, getClass().getResource("mark.sld"));
-        org.geotools.styling.Style sld = parser.readXML()[0];
+        org.geotools.api.style.Style sld = parser.readXML()[0];
         JSONBuilder json = new JSONStringer();
         Renderer renderer = StyleEncoder.styleToRenderer(sld);
         assertNotNull(renderer);

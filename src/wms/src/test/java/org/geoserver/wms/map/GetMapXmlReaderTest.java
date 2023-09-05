@@ -25,9 +25,9 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
-import org.geotools.styling.Style;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.style.Style;
 import org.junit.Test;
-import org.opengis.filter.PropertyIsEqualTo;
 
 public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     GetMapXmlReader reader;

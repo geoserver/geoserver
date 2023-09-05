@@ -17,9 +17,9 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.util.InternationalStringUtils;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.Version;
-import org.opengis.util.InternationalString;
 
 public class ServiceInfoImpl implements ServiceInfo {
 

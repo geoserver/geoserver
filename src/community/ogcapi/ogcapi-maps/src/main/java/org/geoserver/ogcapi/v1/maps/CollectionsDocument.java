@@ -16,7 +16,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /**
  * A class representing the Maps service "collections" in a way that Jackson can easily translate to

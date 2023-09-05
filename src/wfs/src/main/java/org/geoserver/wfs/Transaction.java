@@ -29,13 +29,13 @@ import org.geoserver.wfs.request.Insert;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
+import org.geotools.api.data.FeatureLockException;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.DefaultTransaction;
-import org.geotools.data.FeatureLockException;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.FilterFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -60,7 +60,7 @@ public class Transaction {
     protected FilterFactory filterFactory;
 
     /** Geotools2 transaction used for this opperations */
-    protected org.geotools.data.Transaction transaction;
+    protected org.geotools.api.data.Transaction transaction;
 
     protected List<TransactionElementHandler> transactionElementHandlers = new ArrayList<>();
     protected List<TransactionListener> transactionListeners = new ArrayList<>();
@@ -515,8 +515,8 @@ public class Transaction {
      * Creates a gt2 transaction used to execute the transaction call
      *
      * <p>request's {@link TransactionRequest#getExtendedProperties() extended properties} are set
-     * as {@link org.geotools.data.Transaction#putProperty(Object, Object) transaction properties}
-     * so that they're available to the lower level API.
+     * as {@link org.geotools.api.data.Transaction#putProperty(Object, Object) transaction
+     * properties} so that they're available to the lower level API.
      *
      * <p>These properties can be provided for example by {@link
      * TransactionPlugin#beforeTransaction(TransactionType)} implementations. A typical example is a

@@ -13,14 +13,14 @@ import java.util.Collections;
 import java.util.List;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.style.Style;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
-import org.geotools.styling.Style;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 
 public class GetMapCallbackTest extends WMSDimensionsTestSupport {

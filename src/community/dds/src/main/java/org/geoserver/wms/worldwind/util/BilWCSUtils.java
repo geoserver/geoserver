@@ -7,19 +7,19 @@ package org.geoserver.wms.worldwind.util;
 
 import java.util.HashMap;
 import javax.media.jai.Interpolation;
+import org.geotools.api.coverage.Coverage;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Crop;
 import org.geotools.coverage.processing.operation.Resample;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.Coverage;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -107,7 +107,7 @@ public class BilWCSUtils extends WCSUtils {
             final GridEnvelope newGridRange,
             final GridCoverage sourceCoverage,
             final CoordinateReferenceSystem sourceCRS,
-            final GeneralEnvelope destinationEnvelopeInSourceCRS) {
+            final GeneralBounds destinationEnvelopeInSourceCRS) {
         // ///////////////////////////////////////////////////////////////////
         //
         // SCALE to the needed resolution
@@ -154,9 +154,9 @@ public class BilWCSUtils extends WCSUtils {
      */
     public static GridCoverage2D crop(
             final Coverage coverage,
-            final GeneralEnvelope sourceEnvelope,
+            final GeneralBounds sourceEnvelope,
             final CoordinateReferenceSystem sourceCRS,
-            final GeneralEnvelope destinationEnvelopeInSourceCRS,
+            final GeneralBounds destinationEnvelopeInSourceCRS,
             final Boolean conserveEnvelope)
             throws WcsException {
         // ///////////////////////////////////////////////////////////////////
@@ -168,17 +168,17 @@ public class BilWCSUtils extends WCSUtils {
         final GridCoverage2D croppedGridCoverage;
 
         // intersect the envelopes
-        final GeneralEnvelope intersectionEnvelope =
-                new GeneralEnvelope(destinationEnvelopeInSourceCRS);
+        final GeneralBounds intersectionEnvelope =
+                new GeneralBounds(destinationEnvelopeInSourceCRS);
         intersectionEnvelope.setCoordinateReferenceSystem(sourceCRS);
-        intersectionEnvelope.intersect((GeneralEnvelope) sourceEnvelope);
+        intersectionEnvelope.intersect((GeneralBounds) sourceEnvelope);
 
         // dow we have something to show?
         if (intersectionEnvelope.isEmpty()) {
             throw new WcsException("The Intersection is null. Check the requested BBOX!");
         }
 
-        if (!intersectionEnvelope.equals((GeneralEnvelope) sourceEnvelope)) {
+        if (!intersectionEnvelope.equals((GeneralBounds) sourceEnvelope)) {
             // get the cropped grid geometry
             // final GridGeometry2D cropGridGeometry = getCroppedGridGeometry(
             // intersectionEnvelope, gridCoverage);

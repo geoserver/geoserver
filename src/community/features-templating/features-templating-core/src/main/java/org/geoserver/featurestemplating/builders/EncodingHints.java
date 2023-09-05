@@ -6,8 +6,8 @@ package org.geoserver.featurestemplating.builders;
 
 import java.util.HashMap;
 import java.util.Optional;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.util.Converters;
-import org.opengis.filter.expression.Expression;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 

@@ -23,17 +23,17 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.image.util.ImageUtilities;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverage;
 
 public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicBuilder> {
     @Before

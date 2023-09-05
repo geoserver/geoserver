@@ -6,10 +6,10 @@ package org.geoserver.wms.map;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.filter.expression.InternalVolatileFunction;
-import org.opengis.filter.capability.FunctionName;
 
 /**
  * Simple rendering transformation placeholder, just returns its input (specific to GridCoverage2D

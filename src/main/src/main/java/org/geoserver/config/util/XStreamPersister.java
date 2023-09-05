@@ -149,10 +149,15 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.SecureCatalogImpl;
+import org.geotools.api.coverage.grid.GridGeometry;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.util.InternationalString;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.data.util.MeasureConverterFactory;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.Geometries;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.RegexpValidator;
@@ -170,11 +175,6 @@ import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.util.InternationalString;
 
 /**
  * Utility class which loads and saves catalog and configuration objects to and from an xstream.
@@ -522,7 +522,7 @@ public class XStreamPersister {
 
         // ReferencedEnvelope
         xs.registerLocalConverter(ReferencedEnvelope.class, "crs", new SRSConverter());
-        xs.registerLocalConverter(GeneralEnvelope.class, "crs", new SRSConverter());
+        xs.registerLocalConverter(GeneralBounds.class, "crs", new SRSConverter());
 
         xs.registerLocalConverter(
                 impl(ResourceInfo.class), "internationalTitle", new InternationalStringConverter());

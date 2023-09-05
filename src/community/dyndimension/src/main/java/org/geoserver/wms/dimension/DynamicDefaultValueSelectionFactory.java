@@ -40,13 +40,20 @@ import org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImp
 import org.geoserver.wms.dimension.impl.CoverageNearestValueSelectionStrategyImpl;
 import org.geoserver.wms.dimension.impl.DimensionDefaultValueSelectionStrategyFactoryImpl;
 import org.geoserver.wms.dimension.impl.FixedValueStrategyImpl;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.view.DefaultView;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;
@@ -62,13 +69,6 @@ import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Expression;
-import org.opengis.util.ProgressListener;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -392,7 +392,7 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
             List<? extends Object> values,
             Map<String, Object> completeSpecs,
             Map<String, List<? extends Object>> incompleteSpecs) {
-        if (values.contains(null)) {
+        if (values.contains((String) null)) {
             incompleteSpecs.put(dimensionName, values);
         } else {
             completeSpecs.put(dimensionName, values);

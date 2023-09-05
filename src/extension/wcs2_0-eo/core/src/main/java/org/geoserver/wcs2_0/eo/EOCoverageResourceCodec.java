@@ -15,13 +15,13 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 
 /**
  * Utility class that maps the coverage data sets and child coverage names
@@ -31,7 +31,7 @@ import org.opengis.filter.FilterFactory;
 public class EOCoverageResourceCodec {
     private static Logger LOGGER = Logging.getLogger(EOCoverageResourceCodec.class);
 
-    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory2();
+    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private static final String DATASET_SUFFIX = "_dss";
 

@@ -6,10 +6,10 @@ package org.geoserver.opensearch.eo.store;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import org.geotools.api.feature.type.FeatureTypeFactory;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.TypeBuilder;
-import org.opengis.feature.type.FeatureTypeFactory;
-import org.opengis.feature.type.PropertyDescriptor;
 
 class OrderedTypeBuilder extends TypeBuilder {
 

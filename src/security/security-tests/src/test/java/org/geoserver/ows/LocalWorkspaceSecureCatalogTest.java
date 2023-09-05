@@ -25,11 +25,11 @@ import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.impl.AbstractAuthorizationTest;
 import org.geoserver.util.PropertyRule;
+import org.geotools.api.filter.Filter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
 
 public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {

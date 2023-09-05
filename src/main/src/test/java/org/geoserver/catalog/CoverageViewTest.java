@@ -28,6 +28,13 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.data.Query;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -37,10 +44,9 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.grid.io.footprint.FootprintBehavior;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.visitor.MinVisitor;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.parameter.DefaultParameterDescriptor;
@@ -48,12 +54,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class CoverageViewTest extends GeoServerSystemTestSupport {
 
@@ -485,7 +485,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             assertEquals(1007, reader.getResolutionLevels()[0][1], 1);
 
             // default envelope policy is "union"
-            GeneralEnvelope envelope = reader.getOriginalEnvelope();
+            GeneralBounds envelope = reader.getOriginalEnvelope();
             assertEquals(399960, envelope.getMinimum(0), 1);
             assertEquals(5190240, envelope.getMinimum(1), 1);
             assertEquals(509760, envelope.getMaximum(0), 1);
@@ -536,7 +536,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             assertEquals(1007, reader.getResolutionLevels()[0][1], 1);
 
             // one of the granules has been cut to get a tigheter envelope
-            GeneralEnvelope envelope = reader.getOriginalEnvelope();
+            GeneralBounds envelope = reader.getOriginalEnvelope();
             assertEquals(399960, envelope.getMinimum(0), 1);
             assertEquals(5192273, envelope.getMinimum(1), 1);
             assertEquals(507726, envelope.getMaximum(0), 1);
@@ -546,7 +546,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // the bounds are just metadata
             coverage = reader.read(null);
             assertCoverageResolution(coverage, 1007, 1007);
-            Envelope coverageEnvelope = coverage.getEnvelope();
+            Bounds coverageEnvelope = coverage.getEnvelope();
             assertEquals(399960, coverageEnvelope.getMinimum(0), 1);
             assertEquals(5190240, coverageEnvelope.getMinimum(1), 1);
             assertEquals(509760, coverageEnvelope.getMaximum(0), 1);

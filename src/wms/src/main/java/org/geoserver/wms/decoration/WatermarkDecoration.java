@@ -29,9 +29,9 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.URLs;
-import org.opengis.filter.expression.Expression;
 
 public class WatermarkDecoration implements MapDecoration {
     /** A logger for this class. */

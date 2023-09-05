@@ -19,8 +19,8 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.api.coverage.SampleDimensionType;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.SampleDimensionType;
 
 /** Panel for listing band data of a CoverageInfo resource. */
 @SuppressWarnings("serial")

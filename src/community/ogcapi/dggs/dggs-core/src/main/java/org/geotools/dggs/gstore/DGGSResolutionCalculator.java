@@ -21,7 +21,8 @@ import static org.geotools.dggs.gstore.DGGSStore.VP_RESOLUTION_DELTA;
 
 import java.util.Map;
 import java.util.Optional;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
 import org.geotools.filter.function.EnvFunction;
@@ -33,7 +34,6 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Helper class extracting the target resolution at which to render a DGGS */
 public class DGGSResolutionCalculator {

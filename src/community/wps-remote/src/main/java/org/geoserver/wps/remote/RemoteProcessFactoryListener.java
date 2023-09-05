@@ -4,7 +4,7 @@
  */
 package org.geoserver.wps.remote;
 
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.type.Name;
 
 /**
  * Interface allowing a {@link RemoteProcessFactory} instance to listen to the {@link

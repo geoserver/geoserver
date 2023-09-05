@@ -8,13 +8,13 @@ package org.geoserver.feature;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 
 /**
- * Set of utility methods for {@link org.geotools.data.FeatureSource}.
+ * Set of utility methods for {@link org.geotools.api.data.FeatureSource}.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */

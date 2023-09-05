@@ -10,8 +10,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.geotools.data.DataAccessFactory.Param;
-import org.geotools.data.Repository;
+import org.geotools.api.data.DataAccessFactory.Param;
+import org.geotools.api.data.Repository;
 import org.xml.sax.EntityResolver;
 
 /**

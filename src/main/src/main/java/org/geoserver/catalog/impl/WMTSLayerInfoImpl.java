@@ -9,8 +9,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wmts.model.WMTSLayer;
-import org.opengis.util.ProgressListener;
 
 @SuppressWarnings("serial")
 public class WMTSLayerInfoImpl extends ResourceInfoImpl implements WMTSLayerInfo {

@@ -12,7 +12,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
-import org.geotools.data.FeatureStore;
+import org.geotools.api.data.FeatureStore;
 
 /**
  * Transaction elements are an open ended set, both thanks to the Native element type, and to the

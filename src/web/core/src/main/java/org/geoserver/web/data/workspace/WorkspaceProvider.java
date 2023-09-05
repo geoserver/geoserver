@@ -26,8 +26,8 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 
 /**
  * {@link GeoServerDataProvider} for the list of workspaces available in the {@link Catalog}

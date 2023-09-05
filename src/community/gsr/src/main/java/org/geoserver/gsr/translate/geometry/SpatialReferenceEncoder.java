@@ -16,9 +16,9 @@ import net.sf.json.util.JSONBuilder;
 import org.geoserver.gsr.model.geometry.SpatialReference;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKID;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKT;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class SpatialReferenceEncoder {
     /**

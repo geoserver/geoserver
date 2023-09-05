@@ -48,8 +48,8 @@ import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WMTSAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.security.impl.LayerGroupContainmentCache.LayerGroupSummary;
+import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
 
 /**

@@ -6,9 +6,9 @@ package org.geoserver.ogcapi.v1.stac;
 
 import java.util.Map;
 import java.util.Set;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * STAC specific mapper that:

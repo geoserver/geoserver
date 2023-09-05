@@ -19,6 +19,14 @@ import net.sf.json.JSONSerializer;
 import org.geoserver.gsr.model.geometry.SpatialRelationship;
 import org.geoserver.gsr.translate.geometry.GeometryEncoder;
 import org.geoserver.gsr.translate.geometry.SpatialReferenceEncoder;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.api.temporal.Instant;
+import org.geotools.api.temporal.Period;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
@@ -28,19 +36,11 @@ import org.geotools.temporal.object.DefaultPosition;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
-import org.opengis.temporal.Instant;
-import org.opengis.temporal.Period;
 
 /** Utility methods needed throughout GSR */
 public class Utils {
 
-    protected static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
+    protected static final FilterFactory FILTERS = CommonFactoryFinder.getFilterFactory();
 
     private static final Logger LOG =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.global");

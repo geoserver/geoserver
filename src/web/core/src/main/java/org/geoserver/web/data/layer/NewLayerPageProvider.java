@@ -22,13 +22,13 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.ows.wmts.model.WMTSCapabilities;
 import org.geotools.ows.wmts.model.WMTSLayer;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.feature.type.Name;
 
 /**
  * Provides a list of resources for a specific data store

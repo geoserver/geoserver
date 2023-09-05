@@ -37,12 +37,12 @@ import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 import org.geoserver.wfs.request.Update;
-import org.geotools.data.FeatureStore;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.Or;
 import org.geotools.util.MapEntry;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.Filter;
-import org.opengis.filter.Or;
 
 /**
  * Tests for {@link BatchManager}.

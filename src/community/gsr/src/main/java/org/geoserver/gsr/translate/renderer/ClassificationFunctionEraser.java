@@ -9,24 +9,24 @@
  */
 package org.geoserver.gsr.translate.renderer;
 
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.function.CategorizeFunction;
 import org.geotools.filter.function.RecodeFunction;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.Symbolizer;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Function;
 
 class ClassificationFunctionEraser extends DuplicatingFilterVisitor {
 
     public static final StyleFactory STYLE_FACTORY = CommonFactoryFinder.getStyleFactory();
-    public static final FilterFactory2 FILTER_FACTORY_2 = CommonFactoryFinder.getFilterFactory2();
+    public static final FilterFactory FILTER_FACTORY_2 = CommonFactoryFinder.getFilterFactory();
     private final SimpleFeature sampleFeature;
 
     public static Symbolizer erase(Symbolizer source, String propertyName, Object value) {

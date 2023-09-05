@@ -14,14 +14,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.PlanarImage;
+import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
+import org.geotools.geometry.Position2D;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridEnvelope;
 
 /** A Vertical Grid Shift implementation based on an underlying GeoTIFF file */
 public class GeoTIFFVerticalGridShift implements VerticalGridShift {
@@ -31,7 +31,7 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
     private static final double DELTA = 1E-6;
 
     /** The valid area being covered by this grid */
-    private final GeneralEnvelope validArea;
+    private final GeneralBounds validArea;
 
     /** The Grid's 2D CoordinateReferenceSystem (EPSG code number) */
     private final int crsCode;
@@ -71,7 +71,7 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
         super();
         this.crsCode = crsCode;
         reader = new GeoTiffReader(file);
-        GeneralEnvelope envelope = reader.getOriginalEnvelope();
+        GeneralBounds envelope = reader.getOriginalEnvelope();
         this.validArea = envelope;
 
         // Initialize Grid's layout
@@ -109,11 +109,11 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
 
     @Override
     public boolean isInValidArea(double x, double y) {
-        return validArea.contains(new DirectPosition2D(x, y));
+        return validArea.contains(new Position2D(x, y));
     }
 
     @Override
-    public GeneralEnvelope getValidArea() {
+    public GeneralBounds getValidArea() {
         return validArea;
     }
 

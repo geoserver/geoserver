@@ -6,9 +6,9 @@
 package org.geoserver.security;
 
 import java.util.Arrays;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.parameter.GeneralParameterValue;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.opengis.filter.Filter;
-import org.opengis.parameter.GeneralParameterValue;
 
 /**
  * Describes security limits on a raster layers

@@ -21,9 +21,9 @@ import org.geoserver.catalog.Styles;
 import org.geoserver.community.mbstyle.MBStyleHandler;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.styling.LineSymbolizer;
+import org.geotools.api.style.LineSymbolizer;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.styling.SLD;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.junit.Test;
 
 public class MBStyleHandlerTest extends GeoServerSystemTestSupport {

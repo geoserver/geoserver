@@ -6,8 +6,8 @@
 package org.vfny.geoserver.util.requests;
 
 import java.util.logging.Logger;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.FilterHandler;
-import org.opengis.filter.Filter;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.XMLFilterImpl;
 

@@ -9,10 +9,10 @@ import java.io.IOException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.util.ProgressListener;
 
 /** Default implementation of {@link CoverageStoreInfo}. */
 public class CoverageStoreInfoImpl extends StoreInfoImpl implements CoverageStoreInfo {

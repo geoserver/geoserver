@@ -35,12 +35,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFinder;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.DataStoreFinder;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.dggs.gstore.DGGSGeometryStore;
 import org.geotools.dggs.gstore.DGGSGeometryStoreFactory;
 import org.geotools.dggs.gstore.DGGSStore;
@@ -53,16 +58,11 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 
 public class DGGSGeometryStoreTest {
 
     private static final String NAMESPACE = "http://this.is/my/test/namespace";
-    private final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     @Before
     public void ensureAvailable() {

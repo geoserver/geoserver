@@ -6,7 +6,7 @@ package org.geoserver.schemalessfeatures.mongodb.data;
 
 import java.io.IOException;
 import java.util.Map;
-import org.geotools.data.DataAccessFactory;
+import org.geotools.api.data.DataAccessFactory;
 
 public class MongoSchemalessDataStoreFactory implements DataAccessFactory {
 

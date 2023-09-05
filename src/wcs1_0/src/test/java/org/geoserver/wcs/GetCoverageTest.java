@@ -44,14 +44,20 @@ import org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader;
 import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.processing.operation.MultiplyConst;
-import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.PixelTranslation;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
@@ -59,12 +65,6 @@ import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.wcs.WCSConfiguration;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -142,8 +142,8 @@ public class GetCoverageTest extends WCSTestSupport {
                 catalog.getCoverageByName(TASMANIA_BM.getLocalPart()).getGridCoverage(null, null);
         final AffineTransform2D expectedTx =
                 (AffineTransform2D) baseCoverage.getGridGeometry().getGridToCRS();
-        final GeneralEnvelope originalEnvelope = (GeneralEnvelope) baseCoverage.getEnvelope();
-        final GeneralEnvelope newEnvelope = new GeneralEnvelope(originalEnvelope);
+        final GeneralBounds originalEnvelope = (GeneralBounds) baseCoverage.getEnvelope();
+        final GeneralBounds newEnvelope = new GeneralBounds(originalEnvelope);
         newEnvelope.setEnvelope(
                 originalEnvelope.getMinimum(0),
                 originalEnvelope.getMaximum(1) - originalEnvelope.getSpan(1) / 2,

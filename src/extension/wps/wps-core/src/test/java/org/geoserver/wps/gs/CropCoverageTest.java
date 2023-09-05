@@ -14,7 +14,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridFormat;
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -84,9 +84,9 @@ public class CropCoverageTest extends WPSTestSupport {
                     new Envelope(-145.4, 145.6, -41.8, -42.1)
                             .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-            double[] valueInside = (double[]) gc.evaluate(new DirectPosition2D(145.55, -42));
+            double[] valueInside = (double[]) gc.evaluate(new Position2D(145.55, -42));
             assertEquals(615.0, valueInside[0], 0d);
-            double[] valueOutside = (double[]) gc.evaluate(new DirectPosition2D(145.57, -41.9));
+            double[] valueOutside = (double[]) gc.evaluate(new Position2D(145.57, -41.9));
             // this should really be NoData... (-9999 & 0xFFFF)
             assertEquals(55537.0, valueOutside[0], 0d);
 

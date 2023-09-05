@@ -27,9 +27,9 @@ import org.geoserver.featurestemplating.writers.XMLTemplateWriter;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.api.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.Feature;
 
 /** A template response able to write a GML output format according to gml version. */
 public class GMLTemplateResponse extends BaseTemplateGetFeatureResponse {

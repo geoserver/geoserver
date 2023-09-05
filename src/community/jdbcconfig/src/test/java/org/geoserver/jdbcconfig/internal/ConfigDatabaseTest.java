@@ -75,6 +75,7 @@ import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.ows.wmts.model.WMTSCapabilities;
 import org.geotools.ows.wmts.model.WMTSLayer;
@@ -83,7 +84,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.opengis.util.ProgressListener;
 
 /** @author groldan */
 @RunWith(Parameterized.class)

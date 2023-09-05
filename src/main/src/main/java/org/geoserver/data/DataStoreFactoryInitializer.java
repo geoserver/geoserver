@@ -5,8 +5,8 @@
  */
 package org.geoserver.data;
 
-import org.geotools.data.DataAccessFactory;
-import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.api.data.DataAccessFactory;
+import org.geotools.api.data.DataStoreFactorySpi;
 
 /**
  * Performs post processing directly after a {@link DataStoreFactorySpi} is instantiated.

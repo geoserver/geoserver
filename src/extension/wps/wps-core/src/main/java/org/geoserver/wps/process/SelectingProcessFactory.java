@@ -9,11 +9,11 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.InternationalString;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
-import org.opengis.util.InternationalString;
 
 /**
  * A process factory wrapper that applies the choices of a given {@link ProcessSelector}

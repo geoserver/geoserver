@@ -8,7 +8,7 @@ package org.geoserver.wfs.request;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.eclipse.emf.ecore.EObject;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /**
  * Lock in a LockFeature request.

@@ -28,22 +28,22 @@ import javax.media.jai.Histogram;
 import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RenderedOp;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
+import org.geotools.api.style.StyleFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.RangedClassifier;
 import org.geotools.image.ImageWorker;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.StyleFactory;
 import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.GeoTools;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
 
 public class RasterSymbolizerBuilder {
 
-    private static FilterFactory2 FF =
-            CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+    private static FilterFactory FF =
+            CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
 
     private static StyleFactory SF =
             CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());

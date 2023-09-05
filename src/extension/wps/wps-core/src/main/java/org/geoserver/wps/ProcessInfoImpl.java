@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.wps.validator.WPSInputValidator;
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.type.Name;
 
 public class ProcessInfoImpl implements ProcessInfo {
 

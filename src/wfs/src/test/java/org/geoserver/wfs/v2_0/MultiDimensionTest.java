@@ -17,10 +17,10 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
 
 public class MultiDimensionTest extends WFS20TestSupport {

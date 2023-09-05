@@ -25,11 +25,11 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.util.EntityResolverProvider;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.junit.Test;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.feature.simple.SimpleFeature;
 import org.w3c.dom.Document;
 
 /** Test Cases for KML 2.2 Encoder. */

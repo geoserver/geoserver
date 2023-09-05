@@ -19,12 +19,12 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.AllowListEntityResolver;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.kvp.Filter_1_1_0_KvpParser;
+import org.geotools.api.filter.Id;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.spatial.Intersects;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opengis.filter.Id;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.spatial.Intersects;
 import org.w3c.dom.Document;
 
 public class ExternalEntitiesTest extends WFSTestSupport {

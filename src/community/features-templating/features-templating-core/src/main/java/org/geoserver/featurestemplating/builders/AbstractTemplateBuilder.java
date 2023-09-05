@@ -11,10 +11,10 @@ import java.util.Objects;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
-import org.opengis.filter.Filter;
-import org.opengis.filter.expression.Expression;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

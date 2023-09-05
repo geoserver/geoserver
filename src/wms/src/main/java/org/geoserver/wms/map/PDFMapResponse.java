@@ -38,6 +38,8 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.decoration.MapDecorationLayout;
 import org.geoserver.wms.map.PDFMapOutputFormat.PDFMap;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.Decimator;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
@@ -51,8 +53,6 @@ import org.geotools.renderer.style.Style2D;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.Assert;
 
 /**

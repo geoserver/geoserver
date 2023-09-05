@@ -19,14 +19,14 @@ package org.geotools.dggs.gstore;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
 
 /**
- * A store returning DGGS zones as GeoTools {@link org.opengis.feature.simple.SimpleFeature},
+ * A store returning DGGS zones as GeoTools {@link org.geotools.api.feature.simple.SimpleFeature},
  * without any actal data associated to them. It's pure DGGS structure description.
  */
 public class DGGSGeometryStore extends ContentDataStore implements DGGSStore {

@@ -3,7 +3,7 @@ package org.geotools.dggs;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
-import org.opengis.filter.capability.FunctionName;
+import org.geotools.api.filter.capability.FunctionName;
 
 /**
  * Checks if the given zoneId is a children of the given referenceZoneId, within a certain distance.

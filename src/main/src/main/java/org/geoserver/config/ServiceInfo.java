@@ -14,8 +14,8 @@ import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.Version;
-import org.opengis.util.InternationalString;
 
 /**
  * Generic / abstract service configuration.

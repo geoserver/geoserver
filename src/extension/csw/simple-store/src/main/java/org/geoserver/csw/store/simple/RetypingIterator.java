@@ -11,13 +11,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * Basic attribute shaver, works properly only against {@link CSWRecordDescriptor#RECORD}

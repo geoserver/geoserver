@@ -5,7 +5,7 @@
 package org.geoserver.ogcapi.v1.stac;
 
 import java.math.BigInteger;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
 import org.geotools.feature.FeatureCollection;
 
 public class QueryResult extends AbstractQueryResult {

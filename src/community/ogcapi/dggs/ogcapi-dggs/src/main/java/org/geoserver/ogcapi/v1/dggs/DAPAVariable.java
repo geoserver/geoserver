@@ -6,7 +6,7 @@ package org.geoserver.ogcapi.v1.dggs;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.geoserver.ogcapi.AbstractDocument;
-import org.opengis.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeDescriptor;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DAPAVariable extends AbstractDocument {

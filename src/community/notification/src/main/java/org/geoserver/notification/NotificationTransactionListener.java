@@ -18,8 +18,8 @@ import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.type.FeatureType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

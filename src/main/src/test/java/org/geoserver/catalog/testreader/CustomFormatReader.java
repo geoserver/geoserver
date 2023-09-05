@@ -22,6 +22,9 @@ import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -36,9 +39,6 @@ import org.geotools.metadata.i18n.VocabularyKeys;
 import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.grid.Format;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
 
 /**
  * Coverage reader for custom dimensions tests.

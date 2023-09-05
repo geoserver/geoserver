@@ -25,14 +25,14 @@ import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gml2.GML;
 import org.geotools.xsd.Schemas;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 
 public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {

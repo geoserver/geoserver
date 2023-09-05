@@ -9,6 +9,7 @@ import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParame
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.MissingParameterValue;
 
 import java.math.BigInteger;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,18 +44,17 @@ import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.KvpUtils.Tokenizer;
 import org.geoserver.ows.util.RequestUtils;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.cs.AxisDirection;
+import org.geotools.api.referencing.cs.CoordinateSystem;
 import org.geotools.coverage.grid.GridEnvelope2D;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.metadata.i18n.ErrorKeys;
-import org.geotools.metadata.i18n.Errors;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.AxisDirection;
-import org.opengis.referencing.cs.CoordinateSystem;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
@@ -151,7 +151,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         //
         // at least one between BBOX and TIME must be there
         //
-        final GeneralEnvelope bbox = (GeneralEnvelope) kvp.get("BBOX");
+        final GeneralBounds bbox = (GeneralBounds) kvp.get("BBOX");
         if (bbox == null)
             throw new WcsException("bbox parameter is mandatory", MissingParameterValue, "bbox");
 
@@ -162,8 +162,8 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                     InvalidParameterValue,
                     "bbox");
 
-        final GeneralEnvelope envelope =
-                new GeneralEnvelope(
+        final GeneralBounds envelope =
+                new GeneralBounds(
                         /* TODO: ignore 3D CRS for now crs */ bbox.getDimension() == 3
                                 ? DefaultGeographicCRS.WGS84_3D
                                 : crs);
@@ -286,7 +286,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                 if (Math.abs(envelope.getSpan(0) / Math.abs(resX)) < 2
                         || Math.abs(envelope.getSpan(1) / Math.abs(resY)) < 2)
                     throw new IllegalArgumentException(
-                            Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$1, "resolutions"));
+                            MessageFormat.format(ErrorKeys.ILLEGAL_ARGUMENT_$1, "resolutions"));
 
                 // now compute offset vector for the transform from the envelope
                 // Following ISO 19123 we use the CELL_CENTER convention but with the raster

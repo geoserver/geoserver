@@ -12,19 +12,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 
 public class TestAccessLimitsSerialization {
 
-    FilterFactory2 ff;
+    FilterFactory ff;
 
     Filter filter;
 
@@ -32,7 +32,7 @@ public class TestAccessLimitsSerialization {
 
     @Before
     public void setUp() throws Exception {
-        ff = CommonFactoryFinder.getFilterFactory2(null);
+        ff = CommonFactoryFinder.getFilterFactory(null);
         filter = ff.equal(ff.property("attribute"), ff.literal(3), true);
         g = (MultiPolygon) new WKTReader().read("MULTIPOLYGON(((0 0, 0 10, 10 10, 10 0, 0 0)))");
     }

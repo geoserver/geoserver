@@ -13,8 +13,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gsr.GSRServiceInfo;
 import org.geoserver.ogcapi.APIService;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.filter.FilterFactory2;
 
 /** Parent to all gsr controllers. Provides access to {@link GeoServer} and {@link Catalog} */
 @APIService(
@@ -27,7 +27,7 @@ public class AbstractGSRController {
 
     protected GeoServer geoServer;
     protected Catalog catalog;
-    protected static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
+    protected static final FilterFactory FILTERS = CommonFactoryFinder.getFilterFactory();
 
     public AbstractGSRController(GeoServer geoServer) {
         this.geoServer = geoServer;

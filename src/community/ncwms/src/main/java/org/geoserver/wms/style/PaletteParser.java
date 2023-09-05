@@ -11,12 +11,12 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.brewer.styling.builder.FeatureTypeStyleBuilder;
 import org.geotools.brewer.styling.builder.StyledLayerDescriptorBuilder;
 import org.geotools.brewer.styling.filter.expression.FunctionBuilder;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.opengis.filter.FilterFactory;
 
 /**
  * Support class to parse a palette file and turn it into a dynamic style. The palette file syntax

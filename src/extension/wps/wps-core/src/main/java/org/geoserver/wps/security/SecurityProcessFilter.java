@@ -9,9 +9,9 @@ import java.util.logging.Logger;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.process.ProcessFilter;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

@@ -12,7 +12,7 @@ import javax.media.jai.OperationDescriptorImpl;
 import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.registry.RenderedRegistryMode;
-import org.opengis.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.MathTransform;
 
 public class VerticalTransformDescriptor extends OperationDescriptorImpl {
 

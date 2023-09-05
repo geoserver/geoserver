@@ -8,7 +8,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.ROAD_SEGMENTS;
 
 import java.util.List;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.junit.Before;

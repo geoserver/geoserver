@@ -14,8 +14,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.logging.Logger;
 import net.opengis.wps10.ExecuteType;
+import org.geotools.api.feature.type.Name;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

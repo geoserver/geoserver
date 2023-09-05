@@ -19,9 +19,12 @@ import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.coordinatesequence.CoordinateSequences;
 import org.junit.Before;
@@ -29,16 +32,13 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.io.WKTWriter;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.w3c.dom.Document;
 
 public class Transaction3DTest extends WFSTestSupport {
 
     static final QName FULL3D =
             new QName(SystemTestData.CITE_URI, "full3d", SystemTestData.CITE_PREFIX);
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     private XpathEngine xpath;
     private WKTReader wkt = new WKTReader();
 

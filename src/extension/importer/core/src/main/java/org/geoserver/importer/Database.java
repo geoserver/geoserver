@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.importer.job.ProgressMonitor;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.vfny.geoserver.util.DataStoreUtils;
 

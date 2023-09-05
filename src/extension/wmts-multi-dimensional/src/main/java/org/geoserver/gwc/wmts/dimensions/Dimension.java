@@ -26,7 +26,15 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.Aggregate;
@@ -36,14 +44,6 @@ import org.geotools.feature.visitor.GroupByVisitorBuilder;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 
 /**
  * This class represents a dimension providing an abstraction over all types of dimensions and
@@ -54,7 +54,7 @@ import org.opengis.filter.sort.SortOrder;
  */
 public abstract class Dimension {
 
-    static final FilterFactory2 FILTER_FACTORY = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FILTER_FACTORY = CommonFactoryFinder.getFilterFactory();
 
     /** Empty histogram representation */
     public static final Tuple<String, List<Integer>> EMPTY_HISTOGRAM =
@@ -193,7 +193,7 @@ public abstract class Dimension {
                     getDomainValues(filter, false), resolutionSpec, isRange);
         }
 
-        FilterFactory2 ff = DimensionsUtils.FF;
+        FilterFactory ff = DimensionsUtils.FF;
         String dimensionAttributeName = getDimensionAttributeName();
         PropertyName dimensionProperty = ff.property(dimensionAttributeName);
         Query query = new Query(null, filter);
@@ -316,7 +316,7 @@ public abstract class Dimension {
         List<Integer> counts = new ArrayList<>(buckets.size());
         CountVisitor visitor = new CountVisitor();
         Filter original = query.getFilter();
-        FilterFactory2 ff = DimensionsUtils.FF;
+        FilterFactory ff = DimensionsUtils.FF;
         PropertyName startPn = ff.property(attributeName);
         PropertyName endPn = ff.property(endAttributeName);
         for (Range r : buckets) {
@@ -341,7 +341,7 @@ public abstract class Dimension {
             Filter original, Range bucket, PropertyName startPn, PropertyName endPn) {
         Comparable min = bucket.getMinValue();
         Comparable max = bucket.getMaxValue();
-        FilterFactory2 ff = DimensionsUtils.FF;
+        FilterFactory ff = DimensionsUtils.FF;
         Literal maxLiteral = ff.literal(max);
         Literal minLiteral = ff.literal(min);
         Filter low =

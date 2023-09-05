@@ -10,9 +10,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.map.Layer;
 import org.geotools.renderer.RenderListener;
-import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 

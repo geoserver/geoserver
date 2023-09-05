@@ -23,8 +23,8 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
+import org.geotools.api.style.Style;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 

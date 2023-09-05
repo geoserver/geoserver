@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.geootols.filter.text.cql_2.CQL2;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
@@ -16,15 +20,11 @@ import org.geotools.filter.text.cqljson.CQLJsonCompiler;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Centralizes filter/filter-lang handling. */
 public class APIFilterParser {
 
-    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     public static String CQL_TEXT =
             "cql-text"; // for compatibility, but should not really be advertised
     public static String ECQL_TEXT = "ecql-text"; // GeoServer own CQL

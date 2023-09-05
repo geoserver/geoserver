@@ -65,6 +65,24 @@ import org.geoserver.wcs2_0.response.WCSDimensionsSubsetHelper;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.RequestUtils;
+import org.geotools.api.coverage.SampleDimension;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.coverage.processing.Operation;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.geometry.BoundingBox;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.NoninvertibleTransformException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -80,8 +98,7 @@ import org.geotools.coverage.processing.operation.Mosaic;
 import org.geotools.coverage.processing.operation.Mosaic.GridGeometryPolicy;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.data.util.DefaultProgressListener;
-import org.geotools.geometry.Envelope2D;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
@@ -102,24 +119,6 @@ import org.geotools.util.Utilities;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.SampleDimension;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.coverage.processing.Operation;
-import org.opengis.filter.Filter;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeographicCRS;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.NoninvertibleTransformException;
-import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -781,7 +780,7 @@ public class GetCoverage {
         // let's compute the new grid geometry
         GridGeometry2D originalGG = coverage.getGridGeometry();
         GridEnvelope gridRange = originalGG.getGridRange();
-        Envelope2D envelope = originalGG.getEnvelope2D();
+        ReferencedEnvelope envelope = originalGG.getEnvelope2D();
 
         double minx = envelope.getMinX() + offset;
         double miny = envelope.getMinY();
@@ -846,7 +845,7 @@ public class GetCoverage {
         // notice that for the moment we support only homogeneous interpolation on the 2D axis
         final Map<String, InterpolationPolicy> axesInterpolations =
                 extractInterpolation(ci, extensions);
-        Envelope nativeBoundingBox;
+        Bounds nativeBoundingBox;
         try {
             nativeBoundingBox = ci.boundingBox();
         } catch (Exception noNativeBounds) {
@@ -991,7 +990,7 @@ public class GetCoverage {
      * @return the requested {@link Interpolation}
      */
     private Interpolation extractSpatialInterpolation(
-            Map<String, InterpolationPolicy> axesInterpolations, Envelope envelope) {
+            Map<String, InterpolationPolicy> axesInterpolations, Bounds envelope) {
         // extract interpolation
         //
         // we assume that we are going to support the same interpolation ONLY on the i and j axes
@@ -1041,9 +1040,9 @@ public class GetCoverage {
         final CoordinateReferenceSystem readerCRS = reader.getCoordinateReferenceSystem();
         WCSEnvelope subset = request.getSpatialSubset();
         List<GridCoverage2D> result = new ArrayList<>();
-        List<GeneralEnvelope> readEnvelopes = new ArrayList<>();
+        List<GeneralBounds> readEnvelopes = new ArrayList<>();
         if (subset.isCrossingDateline()) {
-            GeneralEnvelope[] envelopes = subset.getNormalizedEnvelopes();
+            GeneralBounds[] envelopes = subset.getNormalizedEnvelopes();
             addEnvelopes(envelopes[0], readEnvelopes, readerCRS);
             addEnvelopes(envelopes[1], readEnvelopes, readerCRS);
         } else {
@@ -1051,17 +1050,17 @@ public class GetCoverage {
         }
 
         List<GridCoverage2D> readCoverages = new ArrayList<>();
-        for (GeneralEnvelope readEnvelope : readEnvelopes) {
+        for (GeneralBounds readEnvelope : readEnvelopes) {
             // according to spec we need to return pixel in the intersection between
             // the requested area and the declared bounds, readers might return less
-            GeneralEnvelope padEnvelope = computePadEnvelope(readEnvelope, reader, cinfo);
+            GeneralBounds padEnvelope = computePadEnvelope(readEnvelope, reader, cinfo);
 
             // check if a previous read already covered this envelope, readers
             // can return more than we asked
             GridCoverage2D cov = null;
-            BoundingBox readBoundingBox = new Envelope2D(readEnvelope);
+            BoundingBox readBoundingBox = new ReferencedEnvelope(readEnvelope);
             for (GridCoverage2D gc : readCoverages) {
-                Envelope2D gce = gc.getEnvelope2D();
+                ReferencedEnvelope gce = gc.getEnvelope2D();
                 if (gce.contains(readBoundingBox)) {
                     cov = gc;
                     break;
@@ -1087,7 +1086,7 @@ public class GetCoverage {
                 readCoverages.add(cov);
             }
             // do we have more than requested?
-            Envelope2D covEnvelope = cov.getEnvelope2D();
+            ReferencedEnvelope covEnvelope = cov.getEnvelope2D();
             GridCoverage2D cropped = cov;
             if (covEnvelope.contains(readBoundingBox)
                     && (covEnvelope.getWidth() > readBoundingBox.getWidth()
@@ -1098,8 +1097,8 @@ public class GetCoverage {
 
             // do we have less than expected?
             GridCoverage2D padded = cropped;
-            Envelope croppedEnvelope = cropped.getEnvelope();
-            if (!new GeneralEnvelope(croppedEnvelope).contains(padEnvelope, true)) {
+            Bounds croppedEnvelope = cropped.getEnvelope();
+            if (!new GeneralBounds(croppedEnvelope).contains(padEnvelope, true)) {
                 padded = padOnEnvelope(cropped, padEnvelope);
             }
 
@@ -1113,8 +1112,8 @@ public class GetCoverage {
      * Computes the envelope that GetCoveage should be returning given a reading envelope and the
      * reader own native envelope (which is also the envelope we are declaring in output)
      */
-    private GeneralEnvelope computePadEnvelope(
-            GeneralEnvelope readEnvelope, GridCoverage2DReader reader, CoverageInfo cinfo) {
+    private GeneralBounds computePadEnvelope(
+            GeneralBounds readEnvelope, GridCoverage2DReader reader, CoverageInfo cinfo) {
         CoordinateReferenceSystem sourceCRS = reader.getCoordinateReferenceSystem();
         CoordinateReferenceSystem subsettingCRS = readEnvelope.getCoordinateReferenceSystem();
         try {
@@ -1131,15 +1130,13 @@ public class GetCoverage {
         // used to intersect with the reader's native envelope, but readers such as mosaic
         // might jus have a guess at the actual envelope (due to usage of bbox estimation in
         // the index data store).
-        GeneralEnvelope padEnvelope = new GeneralEnvelope(readEnvelope);
+        GeneralBounds padEnvelope = new GeneralBounds(readEnvelope);
 
         return padEnvelope;
     }
 
     private void addEnvelopes(
-            Envelope envelope,
-            List<GeneralEnvelope> readEnvelopes,
-            CoordinateReferenceSystem readerCRS)
+            Bounds envelope, List<GeneralBounds> readEnvelopes, CoordinateReferenceSystem readerCRS)
             throws TransformException, FactoryException {
         // leverage GeoTools projection handlers to figure out exactly which areas we should be
         // reading
@@ -1147,11 +1144,11 @@ public class GetCoverage {
                 ProjectionHandlerFinder.getHandler(
                         new ReferencedEnvelope(envelope), readerCRS, true);
         if (handler == null) {
-            readEnvelopes.add(new GeneralEnvelope(envelope));
+            readEnvelopes.add(new GeneralBounds(envelope));
         } else {
             List<ReferencedEnvelope> queryEnvelopes = handler.getQueryEnvelopes();
             for (ReferencedEnvelope qe : queryEnvelopes) {
-                readEnvelopes.add(new GeneralEnvelope(qe));
+                readEnvelopes.add(new GeneralBounds(qe));
             }
         }
     }
@@ -1164,7 +1161,7 @@ public class GetCoverage {
             ImageSizeRecorder incrementalInputSize,
             Interpolation spatialInterpolation,
             final CoordinateReferenceSystem coverageCRS,
-            Envelope subset,
+            Bounds subset,
             WCSEnvelope requestedEnvelope,
             ScalingType scaling,
             double[] preAppliedScale)
@@ -1388,7 +1385,7 @@ public class GetCoverage {
     MathTransform getMathTransform(
             CoverageInfo ci,
             GridCoverage2DReader reader,
-            Envelope subset,
+            Bounds subset,
             GridCoverageRequest request,
             PixelInCell pixelInCell,
             ScalingType scaling)
@@ -1428,7 +1425,7 @@ public class GetCoverage {
      * scaling.
      */
     private double[] computeRequestedResolution(
-            ScalingType scaling, Envelope subset, double nativeResX, double nativeResY) {
+            ScalingType scaling, Bounds subset, double nativeResX, double nativeResY) {
         ScalingPolicy policy = ScalingPolicy.getPolicy(scaling);
         double[] requestedResolution = new double[2];
         if (policy == ScalingPolicy.ScaleToSize || policy == ScalingPolicy.ScaleToExtent) {
@@ -1615,7 +1612,7 @@ public class GetCoverage {
             CoverageInfo ci, Map<String, ExtensionItemType> extensions) {
         // preparation
         final Map<String, InterpolationPolicy> returnValue = new HashMap<>();
-        Envelope nativeBoundingBox;
+        Bounds nativeBoundingBox;
         try {
             nativeBoundingBox = ci.boundingBox();
         } catch (Exception noNativeBounds) {
@@ -1866,7 +1863,7 @@ public class GetCoverage {
      * <p>The subset envelope at this stage should be in the native crs.
      *
      * @param coverage the source {@link GridCoverage}
-     * @param subset an instance of {@link GeneralEnvelope} that drives the crop operation.
+     * @param subset an instance of {@link GeneralBounds} that drives the crop operation.
      * @return a cropped version of the source {@link GridCoverage}
      */
     private List<GridCoverage2D> handleSubsettingExtension(
@@ -1875,8 +1872,8 @@ public class GetCoverage {
         List<GridCoverage2D> result = new ArrayList<>();
         if (subset != null) {
             if (subset.isCrossingDateline()) {
-                GeneralEnvelope[] normalizedEnvelopes = subset.getNormalizedEnvelopes();
-                for (GeneralEnvelope ge : normalizedEnvelopes) {
+                GeneralBounds[] normalizedEnvelopes = subset.getNormalizedEnvelopes();
+                for (GeneralBounds ge : normalizedEnvelopes) {
                     if (!emptyIntersection(coverage, ge)) {
                         GridCoverage2D cropped = cropOnEnvelope(coverage, ge);
                         if (cropped != null) result.add(cropped);
@@ -1894,8 +1891,8 @@ public class GetCoverage {
      * Checks if the intersection between the coverage envelope and cropEnvelope is not empty, and
      * would read at least a pixel along both axis
      */
-    private boolean emptyIntersection(GridCoverage2D coverage, GeneralEnvelope cropEnvelope) {
-        Envelope2D coverageEnvelope = coverage.getEnvelope2D();
+    private boolean emptyIntersection(GridCoverage2D coverage, GeneralBounds cropEnvelope) {
+        ReferencedEnvelope coverageEnvelope = coverage.getEnvelope2D();
         if (!cropEnvelope.intersects(coverageEnvelope, false)) return true;
         // check at least one pixel along both axis
         ReferencedEnvelope intersection =
@@ -1908,7 +1905,7 @@ public class GetCoverage {
         return intersection.getSpan(0) <= resx / 2 || intersection.getSpan(1) <= resy / 2;
     }
 
-    private GridCoverage2D cropOnEnvelope(GridCoverage2D coverage, Envelope cropEnvelope) {
+    private GridCoverage2D cropOnEnvelope(GridCoverage2D coverage, Bounds cropEnvelope) {
         CoordinateReferenceSystem sourceCRS = coverage.getCoordinateReferenceSystem();
         CoordinateReferenceSystem subsettingCRS = cropEnvelope.getCoordinateReferenceSystem();
         try {
@@ -1929,7 +1926,7 @@ public class GetCoverage {
         return cropped;
     }
 
-    private GridCoverage2D padOnEnvelope(GridCoverage2D coverage, GeneralEnvelope padEnvelope)
+    private GridCoverage2D padOnEnvelope(GridCoverage2D coverage, GeneralBounds padEnvelope)
             throws TransformException {
         GridCoverage2D padded = WCSUtils.padToEnvelope(coverage, padEnvelope);
         // in case of no padding just return the original coverage without wrapping

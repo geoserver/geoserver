@@ -37,11 +37,11 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 import org.springframework.batch.core.BatchStatus;
 
 /** @author Alessio Fabiani, GeoSolutions */

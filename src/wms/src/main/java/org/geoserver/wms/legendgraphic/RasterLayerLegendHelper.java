@@ -25,14 +25,14 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.ColorMapLegendCreator.Builder;
 import org.geoserver.wms.map.ImageUtils;
-import org.geotools.styling.ChannelSelection;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
-import org.geotools.styling.Symbolizer;
+import org.geotools.api.style.ChannelSelection;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.Symbolizer;
 
 /**
  * Helper class to create legends for raster styles by parsing the rastersymbolizer element.

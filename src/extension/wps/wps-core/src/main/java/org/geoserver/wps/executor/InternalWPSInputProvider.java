@@ -12,8 +12,8 @@ import net.opengis.wps10.MethodType;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.kvp.ExecuteKvpRequestReader;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
 
 /**

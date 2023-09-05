@@ -10,17 +10,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import org.geoserver.catalog.CoverageInfo;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.geometry.Bounds;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.processing.Operations;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.util.NullProgressListener;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.process.raster.ContourProcess;
 import org.geotools.util.factory.GeoTools;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.geometry.Envelope;
 
 /**
  * Test class for the contour process.
@@ -64,8 +64,8 @@ public class ContourProcessTest extends BaseRasterToVectorTest {
         GridCoverage2D gc = (GridCoverage2D) dem.getGridCoverage(null, GeoTools.getDefaultHints());
 
         // extract only a small part of it
-        Envelope fullEnvelope = gc.getEnvelope();
-        GeneralEnvelope subset = new GeneralEnvelope(fullEnvelope.getCoordinateReferenceSystem());
+        Bounds fullEnvelope = gc.getEnvelope();
+        GeneralBounds subset = new GeneralBounds(fullEnvelope.getCoordinateReferenceSystem());
         double minX = fullEnvelope.getMinimum(0);
         double minY = fullEnvelope.getMinimum(1);
         double offsetX = fullEnvelope.getSpan(0) / 5;

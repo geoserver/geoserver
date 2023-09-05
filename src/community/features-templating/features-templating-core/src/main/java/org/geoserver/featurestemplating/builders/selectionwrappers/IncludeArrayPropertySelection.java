@@ -13,8 +13,8 @@ import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionContext;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionHandler;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
-import org.opengis.feature.Property;
-import org.opengis.feature.type.PropertyType;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.type.PropertyType;
 
 /** A PropertySelectionWrapper meant to wrap an {@link ArrayIncludeFlatBuilder}. */
 public class IncludeArrayPropertySelection extends PropertySelectionWrapper {

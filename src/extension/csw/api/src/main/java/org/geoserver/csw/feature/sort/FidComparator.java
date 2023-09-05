@@ -6,7 +6,7 @@
 package org.geoserver.csw.feature.sort;
 
 import java.util.Comparator;
-import org.opengis.feature.Feature;
+import org.geotools.api.feature.Feature;
 
 /**
  * Compares two feature based on their feature id

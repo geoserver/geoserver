@@ -22,10 +22,10 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.ows.Request;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.complex.feature.type.Types;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

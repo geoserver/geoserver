@@ -6,11 +6,11 @@ package org.geoserver.featurestemplating.expressions.aggregate;
 
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.filter.capability.FunctionName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** An abstraction for a Function accepting as a parameter a cql as string. */

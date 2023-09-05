@@ -17,9 +17,15 @@ import java.util.List;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.onlineTest.support.AbstractDataReferenceWfsTest;
 import org.geoserver.wfs.WFSInfo;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.appschema.filter.FilterFactoryImplNamespaceAware;
-import org.geotools.data.DataAccess;
-import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.MappingFeatureCollection;
 import org.geotools.data.complex.MappingFeatureSource;
@@ -29,12 +35,6 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.type.Types;
 import org.geotools.filter.LikeFilterImpl;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
 import org.w3c.dom.Document;
 
 /** @author Victor Tey(CSIRO Earth Science and Resource Engineering) */
@@ -1958,7 +1958,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         }
         assertNotNull(featureSource);
         List<Filter> filterList = new ArrayList<>();
-        FilterFactory2 ff =
+        FilterFactory ff =
                 new FilterFactoryImplNamespaceAware(
                         ((MappingFeatureSource) featureSource).getMapping().getNamespaces());
         Expression property =

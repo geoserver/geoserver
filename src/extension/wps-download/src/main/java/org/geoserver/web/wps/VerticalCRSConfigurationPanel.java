@@ -17,7 +17,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.SRSToCRSModel;
-import org.opengis.coverage.SampleDimensionType;
+import org.geotools.api.coverage.SampleDimensionType;
 
 /**
  * A CRS Configuration panel being plugged on Layer's Data config panel when WPS-Download plugin is

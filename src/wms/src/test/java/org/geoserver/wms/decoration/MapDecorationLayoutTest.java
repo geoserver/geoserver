@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.function.EnvFunction;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-import org.opengis.filter.expression.Expression;
 
 public class MapDecorationLayoutTest {
     private static final String DYNAMIC_TEXT_DECORATION =

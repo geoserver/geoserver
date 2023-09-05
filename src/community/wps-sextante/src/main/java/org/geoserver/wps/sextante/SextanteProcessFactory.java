@@ -59,7 +59,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.process.Process;
@@ -68,8 +68,8 @@ import org.geotools.text.Text;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.type.Name;
-import org.opengis.util.InternationalString;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.InternationalString;
 
 /**
  * A process factory that wraps a SEXTANTE algorithm and can be used to get information about it and

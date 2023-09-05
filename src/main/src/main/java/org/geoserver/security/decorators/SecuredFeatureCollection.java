@@ -7,13 +7,13 @@ package org.geoserver.security.decorators;
 
 import java.util.logging.Logger;
 import org.geoserver.security.WrapperPolicy;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 
 /**
  * Secures a feature collection according to the given policy. The implementation assumes all of the

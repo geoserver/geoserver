@@ -25,8 +25,8 @@ import org.geoserver.wcs.response.CoveragesHandler.CoveragesData;
 import org.geoserver.wcs.responses.CoverageEncoder;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.opengis.coverage.grid.GridCoverage;
 import org.vfny.geoserver.wcs.WcsException;
 
 public class WCSMultipartResponse extends Response {

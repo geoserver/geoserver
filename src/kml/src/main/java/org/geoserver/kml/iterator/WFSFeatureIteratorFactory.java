@@ -11,9 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Creates an iterator of Placemark objects mapping the vector contents of a layer. This one is

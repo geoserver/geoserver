@@ -25,6 +25,11 @@ import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GranuleStore;
@@ -35,11 +40,6 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.Parameter;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.parameter.GeneralParameterValue;
 
 /**
  * Base support class for CoverageViews based on multiple coverages from the same store.
@@ -48,7 +48,7 @@ import org.opengis.parameter.GeneralParameterValue;
  */
 public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
 
-    public static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    public static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     protected static QName CURRENT =
             new QName(MockData.SF_URI, "regional_currents", MockData.SF_PREFIX);

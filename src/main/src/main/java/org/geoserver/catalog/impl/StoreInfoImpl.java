@@ -15,7 +15,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 
 /** Default implementation of {@link StoreInfo}. */
 @SuppressWarnings("serial")

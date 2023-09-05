@@ -13,6 +13,7 @@ import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,29 +26,28 @@ import java.util.logging.Logger;
 import org.apache.commons.text.WordUtils;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.feature.type.PropertyType;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.style.ChannelSelection;
+import org.geotools.api.style.ColorMapEntry;
+import org.geotools.api.style.Description;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.Symbolizer;
+import org.geotools.api.util.InternationalString;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.renderer.i18n.ErrorKeys;
-import org.geotools.renderer.i18n.Errors;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.renderer.style.ExpressionExtractor;
-import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.Description;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
-import org.geotools.styling.Symbolizer;
 import org.geotools.util.SuppressFBWarnings;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.feature.type.PropertyType;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
-import org.opengis.style.ChannelSelection;
-import org.opengis.util.InternationalString;
 
 /**
  * Utility class for building legends, it exposes many methods that could be reused anywhere.
@@ -491,7 +491,7 @@ public class LegendUtils {
                 || (opacityValue.doubleValue() - 1) > 0
                 || opacityValue.doubleValue() < 0) {
             throw new IllegalArgumentException(
-                    Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$2, "Opacity", opacityValue));
+                    MessageFormat.format(ErrorKeys.ILLEGAL_ARGUMENT_$2, "Opacity", opacityValue));
         }
         return opacityValue.doubleValue();
     }

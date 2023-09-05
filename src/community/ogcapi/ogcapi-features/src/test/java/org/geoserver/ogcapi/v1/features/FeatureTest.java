@@ -33,13 +33,13 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
-import org.opengis.referencing.FactoryException;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FeatureTest extends FeaturesTestSupport {

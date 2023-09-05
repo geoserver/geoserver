@@ -32,9 +32,9 @@ import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.impl.AbstractUserGroupService;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.geotools.api.filter.Filter;
 import org.junit.After;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

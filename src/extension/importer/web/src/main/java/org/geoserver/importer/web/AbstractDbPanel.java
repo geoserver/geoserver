@@ -31,7 +31,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.importer.Database;
 import org.geoserver.importer.ImportData;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 
 /**

@@ -10,9 +10,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.spatial.Intersects;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.spatial.Intersects;
 
 public class Filter_1_1_0_KvpParserTest {
 

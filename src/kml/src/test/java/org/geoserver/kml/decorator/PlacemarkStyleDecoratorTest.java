@@ -12,11 +12,11 @@ import java.util.Collections;
 import java.util.List;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.PlacemarkStyleDecoratorFactory.PlacemarkStyleDecorator;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.style.TextSymbolizer;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.styling.TextSymbolizer;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class PlacemarkStyleDecoratorTest extends org.geoserver.wms.icons.IconTestSupport {
 

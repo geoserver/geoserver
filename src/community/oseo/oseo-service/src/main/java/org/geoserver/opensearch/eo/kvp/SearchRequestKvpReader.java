@@ -44,8 +44,16 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
-import org.geotools.data.Parameter;
-import org.geotools.data.Query;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.MultiValuedFilter.MatchAction;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.spatial.BBOX;
+import org.geotools.api.filter.spatial.DWithin;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -57,14 +65,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.MultiValuedFilter.MatchAction;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.filter.spatial.DWithin;
 import org.springframework.util.StringUtils;
 
 /**
@@ -88,7 +88,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
     private static final GeometryFactory GF = new GeometryFactory();
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private static final PropertyName DEFAULT_GEOMETRY = FF.property("");
 

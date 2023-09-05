@@ -5,6 +5,11 @@
  */
 package org.geoserver.wfs;
 
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
@@ -12,11 +17,6 @@ import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.GeoTools;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Utility class used to handle common WFS reprojection issues
@@ -25,7 +25,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 class WFSReprojectionUtil {
 
-    static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+    static FilterFactory ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
 
     /** Returns the declared CRS given the native CRS and the request WFS version */
     public static CoordinateReferenceSystem getDeclaredCrs(

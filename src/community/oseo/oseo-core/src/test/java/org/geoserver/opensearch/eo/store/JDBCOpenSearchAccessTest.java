@@ -54,13 +54,23 @@ import org.geoserver.opensearch.eo.OSEOInfoImpl;
 import org.geoserver.opensearch.eo.ProductClass;
 import org.geoserver.opensearch.eo.store.Indexable.FieldType;
 import org.geoserver.platform.GeoServerExtensionsHelper;
-import org.geotools.data.DataAccessFinder;
-import org.geotools.data.DataStoreFinder;
+import org.geotools.api.data.DataAccessFinder;
+import org.geotools.api.data.DataStoreFinder;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
-import org.geotools.data.Query;
-import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeImpl;
@@ -78,16 +88,6 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.PropertyIsEqualTo;
 
 public class JDBCOpenSearchAccessTest {
 
@@ -98,7 +98,7 @@ public class JDBCOpenSearchAccessTest {
 
     private static OpenSearchAccess osAccess;
 
-    private static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     public static final ProductClass GS_PRODUCT =
             new ProductClass("geoServer", "gs", "http://www.geoserver.org/eo/test");

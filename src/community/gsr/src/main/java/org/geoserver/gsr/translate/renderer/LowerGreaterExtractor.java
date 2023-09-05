@@ -5,17 +5,17 @@
 package org.geoserver.gsr.translate.renderer;
 
 import java.util.List;
+import org.geotools.api.filter.And;
+import org.geotools.api.filter.BinaryComparisonOperator;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.PropertyIsGreaterThan;
+import org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo;
+import org.geotools.api.filter.PropertyIsLessThan;
+import org.geotools.api.filter.PropertyIsLessThanOrEqualTo;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.util.NumberRange;
-import org.opengis.filter.And;
-import org.opengis.filter.BinaryComparisonOperator;
-import org.opengis.filter.Filter;
-import org.opengis.filter.PropertyIsGreaterThan;
-import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
-import org.opengis.filter.PropertyIsLessThan;
-import org.opengis.filter.PropertyIsLessThanOrEqualTo;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 
 class LowerGreaterExtractor implements PropertyRangeExtractor {
 
@@ -24,16 +24,16 @@ class LowerGreaterExtractor implements PropertyRangeExtractor {
         if (!(filter instanceof And)) return null;
 
         And classBreakFilter = (And) filter;
-        List<org.opengis.filter.Filter> children = classBreakFilter.getChildren();
+        List<org.geotools.api.filter.Filter> children = classBreakFilter.getChildren();
 
         if (children == null || children.size() != 2) return null;
 
-        org.opengis.filter.Filter child1 = children.get(0);
+        org.geotools.api.filter.Filter child1 = children.get(0);
         if (!(child1 instanceof PropertyIsGreaterThanOrEqualTo
                 || child1 instanceof PropertyIsGreaterThan)) return null;
         BinaryComparisonOperator lowerBound = (BinaryComparisonOperator) child1;
 
-        org.opengis.filter.Filter child2 = children.get(1);
+        org.geotools.api.filter.Filter child2 = children.get(1);
         if (!(child2 instanceof PropertyIsLessThanOrEqualTo
                 || child2 instanceof PropertyIsLessThan)) return null;
         BinaryComparisonOperator upperBound = (BinaryComparisonOperator) child2;

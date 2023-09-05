@@ -13,7 +13,7 @@ import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.ProcessListenerAdapter;
 import org.geoserver.wps.WPSException;
-import org.opengis.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverage;
 
 /**
  * Listens to progress events and makes sure the input/output coverages are marked as resources to

@@ -16,12 +16,12 @@ import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.CoordinateReferenceSystemPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.data.Parameter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.process.ProcessFactory;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.feature.type.Name;
 
 /**
  * Contains the set of values for a single parameter. For most input parameters it will be just one

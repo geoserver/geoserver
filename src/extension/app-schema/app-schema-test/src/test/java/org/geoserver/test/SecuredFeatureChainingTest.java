@@ -24,18 +24,18 @@ import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.decorators.ReadOnlyDataAccess;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.complex.expression.FeaturePropertyAccessorFactory;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.factory.Hints;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.PropertyName;
 import org.w3c.dom.Document;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -146,7 +146,7 @@ public class SecuredFeatureChainingTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
-     * Tests that {@link SecuredDataStoreInfo#getDataStore(org.opengis.util.ProgressListener)}
+     * Tests that {@link SecuredDataStoreInfo#getDataStore(org.geotools.api.util.ProgressListener)}
      * correctly returns a {@link DataAccess} instance.
      */
     @Test

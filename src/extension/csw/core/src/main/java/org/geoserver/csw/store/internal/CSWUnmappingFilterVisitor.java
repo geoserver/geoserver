@@ -8,13 +8,13 @@ package org.geoserver.csw.store.internal;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.internal.CatalogStoreMapping.CatalogStoreMappingElement;
 import org.geoserver.csw.util.QNameResolver;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.Id;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.Id;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * A Filter visitor that transforms a filter on a CSW Record of the Internal Catalog Store with a
@@ -24,7 +24,7 @@ import org.opengis.filter.expression.PropertyName;
  */
 public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
 
-    protected static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    protected static final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     protected CatalogStoreMapping mapping;
 

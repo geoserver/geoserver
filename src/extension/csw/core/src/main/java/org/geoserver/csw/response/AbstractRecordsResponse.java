@@ -19,8 +19,8 @@ import org.geoserver.csw.CSWInfo;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.csw.CSW;
-import org.opengis.feature.type.FeatureType;
 
 /**
  * Base class for XML based CSW record responses

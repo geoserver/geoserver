@@ -12,9 +12,9 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.filter.sort.SortOrder;
 
 /** Represents a time dimension of a raster. */
 public class RasterTimeDimension extends RasterDimension {

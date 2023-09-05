@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.Set;
 import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.WPSException;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.data.util.SubProgressListener;
 import org.geotools.util.SimpleInternationalString;
-import org.opengis.util.ProgressListener;
 
 /**
  * A map using input providers internally, allows for deferred execution of the input parsing (it

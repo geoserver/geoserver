@@ -7,7 +7,7 @@ package org.geoserver.wfs;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.opengis.util.CodeList;
+import org.geotools.api.util.CodeList;
 
 public class TransactionEventType extends CodeList<TransactionEventType> {
     private static final long serialVersionUID = -4218786755116808448L;

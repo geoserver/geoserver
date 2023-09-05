@@ -8,9 +8,9 @@ import static net.sf.ezmorph.test.ArrayAssertions.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.filter.expression.Expression;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.expression.Expression;
 
 public class FilteringFunctionTest extends ListFunctionsTestSupport {
 

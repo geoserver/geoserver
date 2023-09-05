@@ -9,8 +9,8 @@ import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wmts.WebMapTileServer;
-import org.opengis.util.ProgressListener;
 
 public class SecuredWMTSStoreInfo extends DecoratingWMTSStoreInfo {
 

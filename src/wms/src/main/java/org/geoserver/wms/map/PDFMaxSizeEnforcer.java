@@ -7,9 +7,9 @@ package org.geoserver.wms.map;
 
 import com.lowagie.text.pdf.ByteBuffer;
 import com.lowagie.text.pdf.PdfGraphics2D;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.RenderListener;
-import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Attaches itself to the renderer and ensures no more than maxSize bytes are used to store the PDF

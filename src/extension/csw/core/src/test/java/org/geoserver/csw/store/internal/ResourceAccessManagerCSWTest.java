@@ -27,10 +27,10 @@ import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.impl.AbstractUserGroupService;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 
 /**

@@ -25,14 +25,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.geotools.data.CloseableIterator;
+import org.geotools.api.data.CloseableIterator;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.feature.visitor.AbstractCalcResult;
 import org.geotools.feature.visitor.Aggregate;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.FeatureAttributeVisitor;
 import org.geotools.feature.visitor.FeatureCalc;
-import org.opengis.feature.Feature;
-import org.opengis.filter.expression.Expression;
 
 public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisitor {
 

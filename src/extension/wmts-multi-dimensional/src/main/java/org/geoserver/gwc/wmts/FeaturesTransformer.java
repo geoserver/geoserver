@@ -9,6 +9,8 @@ import javax.xml.namespace.QName;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.wms.WMS;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xml.transform.TransformerBase;
@@ -21,8 +23,6 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.GeometryDescriptor;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 

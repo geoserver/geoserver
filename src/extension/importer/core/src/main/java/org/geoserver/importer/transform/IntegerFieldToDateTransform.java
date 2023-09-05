@@ -13,8 +13,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import org.geoserver.importer.ImportTask;
-import org.geotools.data.DataStore;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.feature.simple.SimpleFeature;
 
 /**
  * Allow a string or number field to be used as a year Date. The number is interpreted as an

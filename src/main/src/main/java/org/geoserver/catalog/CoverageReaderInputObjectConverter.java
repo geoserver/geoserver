@@ -6,8 +6,8 @@ package org.geoserver.catalog;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.grid.GridCoverageReader;
 
 /**
  * Extension point for {@link ResourcePool} that enables custom input object types when creating

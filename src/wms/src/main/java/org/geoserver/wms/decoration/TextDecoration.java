@@ -36,10 +36,10 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
 import org.geotools.renderer.style.FontCache;
 import org.geotools.util.Converters;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 

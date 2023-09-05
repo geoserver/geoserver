@@ -53,27 +53,27 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.util.RESTUtils;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geotools.api.data.FileGroupProvider;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GranuleStore;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FileGroupProvider;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.transform.Definition;
 import org.geotools.data.transform.TransformFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -240,7 +240,7 @@ public class ImagesService implements ApplicationContextAware {
 
         // run it
         GranuleSource granuleSource = reader.getGranules(nativeName, true);
-        org.geotools.data.Query gtQuery = new org.geotools.data.Query(nativeName, filter);
+        org.geotools.api.data.Query gtQuery = new org.geotools.api.data.Query(nativeName, filter);
         gtQuery.setStartIndex(startIndex);
         if (limit == null) {
             limit = getService().getMaxImages();

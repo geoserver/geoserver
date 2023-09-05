@@ -27,13 +27,13 @@ import org.geoserver.importer.transform.DateFormatTransform;
 import org.geoserver.importer.transform.IntegerFieldToDateTransform;
 import org.geoserver.importer.transform.NumberFormatTransform;
 import org.geoserver.importer.transform.ReprojectTransform;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.referencing.CRS;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class ImportTransformTest extends ImporterTestSupport {
 

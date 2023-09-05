@@ -40,8 +40,8 @@ import org.geoserver.wfs.request.LockFeatureRequest;
 import org.geoserver.wfs.request.LockFeatureResponse;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs.request.TransactionRequest;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.xml.transform.TransformerBase;
-import org.opengis.filter.FilterFactory2;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -52,7 +52,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
     protected GeoServer geoServer;
 
     /** filter factory */
-    protected FilterFactory2 filterFactory;
+    protected FilterFactory filterFactory;
 
     /**
      * The spring application context, used to look up transaction listeners, plugins and element
@@ -64,7 +64,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
         this.geoServer = geoServer;
     }
 
-    public void setFilterFactory(FilterFactory2 filterFactory) {
+    public void setFilterFactory(FilterFactory filterFactory) {
         this.filterFactory = filterFactory;
     }
 

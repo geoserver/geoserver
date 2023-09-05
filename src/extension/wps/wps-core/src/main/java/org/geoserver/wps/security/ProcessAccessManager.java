@@ -5,7 +5,7 @@
 
 package org.geoserver.wps.security;
 
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.type.Name;
 import org.springframework.security.core.Authentication;
 
 public interface ProcessAccessManager {

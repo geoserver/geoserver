@@ -33,10 +33,10 @@ import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat
         implements ComplexFeatureAwareFormat {

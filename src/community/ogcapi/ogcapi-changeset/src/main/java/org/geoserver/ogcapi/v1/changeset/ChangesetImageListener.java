@@ -13,10 +13,10 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.v1.images.ImageListener;
 import org.geoserver.ogcapi.v1.images.ImagesService;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
-import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.stereotype.Component;
 
 /**

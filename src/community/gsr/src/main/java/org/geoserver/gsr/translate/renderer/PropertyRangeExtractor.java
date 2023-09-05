@@ -4,7 +4,7 @@
  */
 package org.geoserver.gsr.translate.renderer;
 
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 public interface PropertyRangeExtractor {
 

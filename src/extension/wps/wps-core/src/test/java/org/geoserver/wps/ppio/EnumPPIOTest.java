@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 import org.junit.Test;
 
 public class EnumPPIOTest {

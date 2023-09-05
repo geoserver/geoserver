@@ -109,16 +109,16 @@ import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.CacheProvider;
 import org.geoserver.util.DefaultCacheProvider;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -1660,7 +1660,7 @@ public class ConfigDatabase implements ApplicationContextAware {
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
         CloseableIterator<T> it =
-                query(type, filter, null, 2, (org.opengis.filter.sort.SortBy) null);
+                query(type, filter, null, 2, (org.geotools.api.filter.sort.SortBy) null);
         T result = null;
         try {
             if (it.hasNext()) {

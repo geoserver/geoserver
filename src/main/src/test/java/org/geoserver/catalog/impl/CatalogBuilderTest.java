@@ -50,14 +50,18 @@ import org.geoserver.test.GeoServerMockTestSupport;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.geotools.data.ResourceInfo;
 import org.geotools.feature.NameImpl;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
@@ -68,10 +72,6 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.factory.Hints;
 import org.junit.Test;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
 
 public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
@@ -796,7 +796,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         AbstractGridCoverage2DReader reader = createMock(AbstractGridCoverage2DReader.class);
         AbstractGridFormat format = createMock(AbstractGridFormat.class);
 
-        expect(reader.getOriginalEnvelope()).andReturn(new GeneralEnvelope(envelope)).anyTimes();
+        expect(reader.getOriginalEnvelope()).andReturn(new GeneralBounds(envelope)).anyTimes();
         expect(reader.getCoordinateReferenceSystem())
                 .andReturn(envelope.getCoordinateReferenceSystem())
                 .anyTimes();

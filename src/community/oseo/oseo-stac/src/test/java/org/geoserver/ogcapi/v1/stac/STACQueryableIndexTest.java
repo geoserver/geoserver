@@ -27,17 +27,17 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 public class STACQueryableIndexTest extends STACTestSupport {
     private static final String FAKE_ID = "foobar";
@@ -102,7 +102,7 @@ public class STACQueryableIndexTest extends STACTestSupport {
         Resource templateDefinition = resourceStore.get("items-SAS1.json");
         FeatureSource<FeatureType, Feature> products = data.getProductSource();
         FeatureSource<FeatureType, Feature> collections = data.getCollectionSource();
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         Filter sampleFilter =
                 ff.equals(ff.property("identifier"), ff.literal("SAS1_20180226102021.01"));
         Feature sampleFeature = DataUtilities.first(products.getFeatures(sampleFilter));

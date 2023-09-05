@@ -13,7 +13,7 @@ import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.SearchResults;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 
 /**
  * Can build all the pagination links, given the search results and a target mime type. HREFs

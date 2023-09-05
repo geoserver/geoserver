@@ -7,8 +7,8 @@ package org.geoserver.wms.featureinfo;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
 
 /**
  * This class provides the necessary functionality to match a pixel value on a ColorMapEntry label.

@@ -20,6 +20,8 @@ import org.geoserver.kml.utils.KmlCentroidOptions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Coordinate;
@@ -32,8 +34,6 @@ import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * Encodes the geometry element for Placemark elements

@@ -20,7 +20,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.Map;
 import org.geoserver.wms.WMSMapContent;
-import org.opengis.filter.expression.Expression;
+import org.geotools.api.filter.expression.Expression;
 
 public class ScaleRatioDecoration implements MapDecoration {
 

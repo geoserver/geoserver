@@ -26,7 +26,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.AccessMode;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.ysld.YsldHandler;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;

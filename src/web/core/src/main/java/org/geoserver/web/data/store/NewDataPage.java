@@ -28,9 +28,9 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.data.DataAccessFactory;
 import org.geotools.coverage.grid.io.GridFormatFinder;
-import org.geotools.data.DataAccessFactory;
-import org.opengis.coverage.grid.Format;
 import org.vfny.geoserver.util.DataStoreUtils;
 
 /**

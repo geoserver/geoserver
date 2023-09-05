@@ -33,7 +33,7 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
 
 /**
  * Proxy for {@link CatalogInfo} concrete interfaces used to notify the local cluster member of

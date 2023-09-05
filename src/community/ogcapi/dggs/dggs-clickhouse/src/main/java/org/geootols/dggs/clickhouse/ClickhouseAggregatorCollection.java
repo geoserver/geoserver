@@ -11,9 +11,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geotools.data.CloseableIterator;
-import org.geotools.data.Query;
-import org.geotools.data.Transaction;
+import org.geotools.api.data.CloseableIterator;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.FeatureVisitor;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.dggs.GroupedMatrixAggregate;
@@ -27,11 +32,6 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.PrimaryKey;
 import org.geotools.jdbc.SQLDialect;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.FeatureVisitor;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.expression.Expression;
-import org.opengis.util.ProgressListener;
 
 public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureCollection {
 

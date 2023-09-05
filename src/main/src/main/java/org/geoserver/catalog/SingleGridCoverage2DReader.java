@@ -10,20 +10,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import javax.media.jai.ImageLayout;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.data.ServiceInfo;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.ResourceInfo;
-import org.geotools.data.ServiceInfo;
-import org.geotools.geometry.GeneralEnvelope;
-import org.opengis.coverage.grid.Format;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
+import org.geotools.geometry.GeneralBounds;
 
 /** A wrapper restricting the provided reader to return a single grid coverage */
 public class SingleGridCoverage2DReader implements GridCoverage2DReader {
@@ -102,12 +102,12 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
     }
 
     @Override
-    public GeneralEnvelope getOriginalEnvelope() {
+    public GeneralBounds getOriginalEnvelope() {
         return delegate.getOriginalEnvelope(coverageName);
     }
 
     @Override
-    public GeneralEnvelope getOriginalEnvelope(String coverageName) {
+    public GeneralBounds getOriginalEnvelope(String coverageName) {
         checkCoverageName(coverageName);
         return delegate.getOriginalEnvelope(coverageName);
     }

@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.StyleInfo;
-import org.geotools.styling.Description;
+import org.geotools.api.style.Description;
 import org.geotools.util.logging.Logging;
 
 /**

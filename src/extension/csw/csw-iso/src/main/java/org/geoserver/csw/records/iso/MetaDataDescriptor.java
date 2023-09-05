@@ -14,6 +14,12 @@ import org.geoserver.csw.records.RecordFeatureTypeRegistryConfiguration;
 import org.geoserver.csw.records.SpatialFilterChecker;
 import org.geoserver.csw.store.internal.CatalogStoreMapping;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.FeatureTypeFactory;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
 import org.geotools.csw.CSW;
 import org.geotools.data.complex.feature.type.FeatureTypeRegistry;
 import org.geotools.data.complex.util.EmfComplexFeatureReader;
@@ -23,12 +29,6 @@ import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
 import org.geotools.xsd.SchemaIndex;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.FeatureTypeFactory;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

@@ -21,11 +21,11 @@ import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.type.DateUtil;
 import org.geotools.util.logging.Logging;
 import org.geotools.xs.bindings.XSDateTimeBinding;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * Template driven decorator setting the name in Placemark objects

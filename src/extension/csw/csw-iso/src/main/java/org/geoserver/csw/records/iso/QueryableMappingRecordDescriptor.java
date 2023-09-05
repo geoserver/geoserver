@@ -18,15 +18,15 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.filter.SortByImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
 import org.springframework.beans.FatalBeanException;
 
 /**

@@ -28,14 +28,14 @@ import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.kvp.GetCoverageRequestReader;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.WebCoverageService20;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.referencing.CRS;
 import org.geotools.wcs.v1_1.WCSConfiguration;
 import org.junit.Before;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** @author Simone Giannecchini, GeoSolutions SAS */
 public abstract class WCSKVPTestSupport extends WCSTestSupport {

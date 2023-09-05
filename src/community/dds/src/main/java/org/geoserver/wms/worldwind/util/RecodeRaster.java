@@ -16,11 +16,11 @@ import javax.media.jai.*;
 import javax.media.jai.iterator.RectIterFactory;
 import javax.media.jai.iterator.WritableRectIter;
 import javax.media.jai.registry.RenderedRegistryMode;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.image.TransfertRectIter;
 import org.geotools.metadata.i18n.LoggingKeys;
 import org.geotools.metadata.i18n.Loggings;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * An image operation that translates pixels in a raster to a different value. The intended use case

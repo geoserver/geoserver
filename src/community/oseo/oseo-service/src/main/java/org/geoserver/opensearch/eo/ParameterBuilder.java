@@ -7,7 +7,7 @@ package org.geoserver.opensearch.eo;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 
 /**
  * Simple helper to build {@link Parameter} objects

@@ -18,8 +18,8 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.gsr.model.map.AbstractLayerOrTable;
 import org.geoserver.gsr.translate.feature.FeatureEncoder;
-import org.geotools.data.FeatureStore;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.feature.type.FeatureType;
 
 /** Layer model for features */
 public class FeatureLayer extends AbstractLayerOrTable {

@@ -81,10 +81,11 @@ import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geoserver.web.data.store.panel.ParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataStore;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureStore;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -99,7 +100,6 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.referencing.FactoryException;
 import org.springframework.security.core.Authentication;
 
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {

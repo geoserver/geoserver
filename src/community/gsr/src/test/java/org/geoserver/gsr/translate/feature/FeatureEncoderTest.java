@@ -15,6 +15,8 @@ import org.geoserver.gsr.api.ServiceException;
 import org.geoserver.gsr.model.feature.Feature;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKID;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -23,8 +25,6 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class FeatureEncoderTest extends GeoServerSystemTestSupport {
 

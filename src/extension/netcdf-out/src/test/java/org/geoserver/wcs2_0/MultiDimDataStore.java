@@ -15,10 +15,25 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.api.data.FeatureReader;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.QueryCapabilities;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.PropertyIsBetween;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo;
+import org.geotools.api.filter.PropertyIsLessThanOrEqualTo;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.spatial.BBOX;
+import org.geotools.api.filter.spatial.Intersects;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.CollectionFeatureReader;
-import org.geotools.data.FeatureReader;
-import org.geotools.data.Query;
-import org.geotools.data.QueryCapabilities;
 import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentFeatureSource;
@@ -26,7 +41,6 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
-import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -34,21 +48,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.PropertyIsBetween;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
-import org.opengis.filter.PropertyIsLessThanOrEqualTo;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.filter.spatial.Intersects;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A simple datastore containing 2 granules
@@ -245,7 +244,7 @@ public class MultiDimDataStore extends ContentDataStore {
 
                                 @Override
                                 public Object visit(BBOX filter, Object data) {
-                                    Envelope2D envelope = (Envelope2D) data;
+                                    ReferencedEnvelope envelope = (ReferencedEnvelope) data;
                                     filter.getBounds();
                                     envelope.setBounds(filter.getBounds());
                                     return super.visit(filter, data);
@@ -253,7 +252,7 @@ public class MultiDimDataStore extends ContentDataStore {
 
                                 @Override
                                 public Object visit(Intersects filter, Object data) {
-                                    Envelope2D envelope = (Envelope2D) data;
+                                    ReferencedEnvelope envelope = (ReferencedEnvelope) data;
 
                                     Geometry polygon =
                                             ((Geometry)
@@ -372,8 +371,9 @@ public class MultiDimDataStore extends ContentDataStore {
                                     return super.visit(filter, data);
                                 }
                             };
-                    Envelope2D bbox =
-                            new Envelope2D(DefaultGeographicCRS.WGS84, -180, -90, 360, 180);
+                    ReferencedEnvelope bbox =
+                            ReferencedEnvelope.rect(
+                                    -180, -90, 360, 180, DefaultGeographicCRS.WGS84);
 
                     query.getFilter().accept(filterVisitor, bbox);
                     LOGGER.fine("Mosaic query on bbox: " + bbox);

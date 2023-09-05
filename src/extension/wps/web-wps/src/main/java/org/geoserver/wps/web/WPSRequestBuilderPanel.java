@@ -43,11 +43,11 @@ import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wps.process.GeoServerProcessors;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 
 /**
  * Small embedded WPS client enabling users to visually build a WPS Execute request (and as a side

@@ -7,7 +7,7 @@ package org.geoserver.ogcapi.v1.dggs;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.decorators.SecuredObjectFactory;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.springframework.stereotype.Component;
 

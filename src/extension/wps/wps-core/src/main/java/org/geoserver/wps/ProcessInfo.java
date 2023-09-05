@@ -10,7 +10,7 @@ import org.geoserver.catalog.Info;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.wps.security.SecurityProcessFactory;
 import org.geoserver.wps.validator.WPSInputValidator;
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.type.Name;
 
 /**
  * Configuration for a specific process to configure enable/disable and roles informations (backed

@@ -19,14 +19,14 @@ import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geoserver.featurestemplating.expressions.aggregate.StreamFunction;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a

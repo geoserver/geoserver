@@ -14,7 +14,7 @@ import org.geoserver.wcs.WebCoverageService111;
 import org.geoserver.wcs2_0.WebCoverageService20;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
 
 /**

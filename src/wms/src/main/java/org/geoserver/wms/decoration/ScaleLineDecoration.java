@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.wms.WMSMapContent;
-import org.opengis.filter.expression.Expression;
+import org.geotools.api.filter.expression.Expression;
 
 public class ScaleLineDecoration implements MapDecoration {
     /** A logger for this class. */

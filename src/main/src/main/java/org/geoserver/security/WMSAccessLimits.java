@@ -5,8 +5,8 @@
  */
 package org.geoserver.security;
 
+import org.geotools.api.filter.Filter;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.opengis.filter.Filter;
 
 /**
  * Describes access limits on a cascaded WMS layer

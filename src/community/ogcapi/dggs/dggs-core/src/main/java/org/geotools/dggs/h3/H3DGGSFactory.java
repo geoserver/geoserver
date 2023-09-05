@@ -19,7 +19,7 @@ package org.geotools.dggs.h3;
 import com.uber.h3core.H3Core;
 import java.io.IOException;
 import java.util.Map;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 import org.geotools.dggs.DGGSFactory;
 import org.geotools.dggs.DGGSInstance;
 

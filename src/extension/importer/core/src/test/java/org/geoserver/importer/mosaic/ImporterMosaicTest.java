@@ -35,14 +35,14 @@ import org.geoserver.importer.ImporterTest;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.util.IOUtils;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.Query;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.URLs;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 
 public class ImporterMosaicTest extends ImporterTestSupport {

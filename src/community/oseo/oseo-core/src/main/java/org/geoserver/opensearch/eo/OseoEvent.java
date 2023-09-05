@@ -4,7 +4,7 @@
  */
 package org.geoserver.opensearch.eo;
 
-import org.opengis.feature.Feature;
+import org.geotools.api.feature.Feature;
 
 /** Event associated with OSEO data store changes */
 public class OseoEvent {

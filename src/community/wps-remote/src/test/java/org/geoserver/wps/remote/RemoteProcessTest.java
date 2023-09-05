@@ -41,6 +41,7 @@ import org.geoserver.wps.remote.plugin.XMPPLoadAverageMessage;
 import org.geoserver.wps.remote.plugin.XMPPMessage;
 import org.geoserver.wps.remote.plugin.XMPPRegisterMessage;
 import org.geoserver.wps.remote.plugin.server.XMPPServerEmbedded;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.factory.FactoryIteratorProvider;
@@ -49,7 +50,6 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
 
 /**
  * This class tests checks if the RemoteProcess class behaves correctly.

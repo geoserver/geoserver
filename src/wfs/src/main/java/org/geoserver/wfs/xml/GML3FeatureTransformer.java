@@ -6,10 +6,10 @@
 package org.geoserver.wfs.xml;
 
 import java.util.Set;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.gml.producer.FeatureTransformer;
 import org.geotools.gml.producer.GeometryTransformer.GeometryTranslator;
 import org.geotools.gml3.GML;
-import org.opengis.feature.simple.SimpleFeature;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;

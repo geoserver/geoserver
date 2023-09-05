@@ -34,8 +34,8 @@ import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.ProcessInfo;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.web.FilteredProcessesProvider.FilteredProcess;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
 
 /**
  * A page listing all WPS process for specific group, allowing enable/disable single process and

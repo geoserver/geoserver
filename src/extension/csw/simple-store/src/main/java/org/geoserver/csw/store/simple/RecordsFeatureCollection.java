@@ -12,12 +12,12 @@ import org.geoserver.csw.feature.AbstractFeatureCollection;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 
 /**
  * A feature collection reading record files from the specified directory

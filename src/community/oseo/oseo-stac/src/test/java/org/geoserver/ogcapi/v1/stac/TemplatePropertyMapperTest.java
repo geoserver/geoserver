@@ -11,10 +11,10 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.ecql.ECQL;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class TemplatePropertyMapperTest extends STACTestSupport {
 

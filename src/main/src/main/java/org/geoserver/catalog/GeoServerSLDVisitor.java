@@ -20,49 +20,49 @@ import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.platform.ServiceException;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.api.style.FeatureTypeConstraint;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.NamedStyle;
+import org.geotools.api.style.RemoteOWS;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayer;
+import org.geotools.api.style.StyledLayerDescriptor;
+import org.geotools.api.style.UserLayer;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.geotools.data.Transaction;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureReader;
 import org.geotools.data.memory.MemoryDataStore;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.feature.SchemaException;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.FeatureTypeConstraint;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.NamedStyle;
-import org.geotools.styling.RemoteOWS;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.UserLayer;
 import org.geotools.util.factory.Hints;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
-import org.opengis.util.ProgressListener;
 
 /**
- * Visitor for standalone {@link org.geotools.styling.StyledLayerDescriptor}s
+ * Visitor for standalone {@link org.geotools.api.style.StyledLayerDescriptor}s
  *
  * <p>Visits each {@link StyledLayer}s of an SLD. Resolves LayerGroups, Remote OWS references, and
  * inline features into individual layers Visits each {@link Style} in each{@link StyledLayer},
  * alongside each of these resolved layers
  *
  * <p>Intended to provide a definitive, extensible approach to parsing standalone {@link
- * org.geotools.styling.StyledLayerDescriptor}s, including style groups and external SLDs.
+ * org.geotools.api.style.StyledLayerDescriptor}s, including style groups and external SLDs.
  */
 public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
 
@@ -196,7 +196,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
             // We've already handled the styles, don't need to do anything more
             return;
 
-        } else if (layer.getInlineFeatureDatastore() != null) {
+        } else if ((DataStore) layer.getInlineFeatureDatastore() != null) {
             try {
                 setLayerState(getInlineFeatureLayer(layer, fallbackCrs), layer);
             } catch (SchemaException e) {
@@ -384,7 +384,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
             SimpleFeatureType currFt = ul.getInlineFeatureType();
             Query q = new Query(currFt.getTypeName(), Filter.INCLUDE);
 
-            DataStore inlineFeatureDatastore = ul.getInlineFeatureDatastore();
+            DataStore inlineFeatureDatastore = (DataStore) ul.getInlineFeatureDatastore();
             CoordinateReferenceSystem crs =
                     (fallbackCrs == null) ? DefaultGeographicCRS.WGS84 : fallbackCrs;
             String typeName = inlineFeatureDatastore.getTypeNames()[0];
@@ -397,7 +397,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
 
             featureSource = reTypedDS.getFeatureSource(typeName);
         } else {
-            DataStore inlineFeatureDatastore = ul.getInlineFeatureDatastore();
+            DataStore inlineFeatureDatastore = (DataStore) ul.getInlineFeatureDatastore();
             String typeName = inlineFeatureDatastore.getTypeNames()[0];
             featureSource = inlineFeatureDatastore.getFeatureSource(typeName);
         }

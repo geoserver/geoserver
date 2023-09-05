@@ -9,8 +9,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wms.featureinfo.FeatureCollectionDecorator;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.type.Name;
 
 /** Class providing methods to retrieve a FeatureTypeInfo. */
 public class FeatureTypeInfoUtils {

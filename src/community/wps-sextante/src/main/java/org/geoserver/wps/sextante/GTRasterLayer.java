@@ -19,10 +19,10 @@ import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 
 public class GTRasterLayer extends AbstractRasterLayer {
 
@@ -54,8 +54,8 @@ public class GTRasterLayer extends AbstractRasterLayer {
 
         double width = ge.getXMax() - ge.getXMin();
         double height = ge.getYMax() - ge.getYMin();
-        final Envelope envelope =
-                new Envelope2D(
+        final Bounds envelope =
+                new ReferencedEnvelope(
                         (CoordinateReferenceSystem) crs, ge.getXMin(), ge.getYMin(), width, height);
 
         final GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
@@ -98,7 +98,7 @@ public class GTRasterLayer extends AbstractRasterLayer {
             m_BaseDataObject = obj;
             final GridCoverage2D gc = ((GridCoverage2D) obj);
             m_CRS = gc.getCoordinateReferenceSystem();
-            final Envelope2D env = gc.getEnvelope2D();
+            final ReferencedEnvelope env = gc.getEnvelope2D();
             m_LayerExtent = new AnalysisExtent();
             m_LayerExtent.setCellSize(
                     (env.getMaxX() - env.getMinX()) / gc.getRenderedImage().getWidth());
@@ -187,7 +187,7 @@ public class GTRasterLayer extends AbstractRasterLayer {
 
         if (m_BaseDataObject != null) {
             final GridCoverage2D gc = (GridCoverage2D) m_BaseDataObject;
-            return new Envelope2D(gc.getEnvelope());
+            return new ReferencedEnvelope(gc.getEnvelope());
         } else {
             return null;
         }

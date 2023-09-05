@@ -47,9 +47,56 @@ import org.geoserver.wfs.request.LockFeatureRequest;
 import org.geoserver.wfs.request.LockFeatureResponse;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs.request.RequestObject;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Join;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.filter.And;
+import org.geotools.api.filter.BinaryComparisonOperator;
+import org.geotools.api.filter.ExcludeFilter;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.Id;
+import org.geotools.api.filter.IncludeFilter;
+import org.geotools.api.filter.Not;
+import org.geotools.api.filter.Or;
+import org.geotools.api.filter.PropertyIsBetween;
+import org.geotools.api.filter.PropertyIsLike;
+import org.geotools.api.filter.PropertyIsNull;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.ExpressionVisitor;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.identity.FeatureId;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.spatial.BBOX;
+import org.geotools.api.filter.spatial.Beyond;
+import org.geotools.api.filter.spatial.BinarySpatialOperator;
+import org.geotools.api.filter.spatial.Contains;
+import org.geotools.api.filter.spatial.Crosses;
+import org.geotools.api.filter.spatial.DWithin;
+import org.geotools.api.filter.spatial.Disjoint;
+import org.geotools.api.filter.spatial.Equals;
+import org.geotools.api.filter.spatial.Intersects;
+import org.geotools.api.filter.spatial.Overlaps;
+import org.geotools.api.filter.spatial.Touches;
+import org.geotools.api.filter.spatial.Within;
+import org.geotools.api.filter.temporal.After;
+import org.geotools.api.filter.temporal.Before;
+import org.geotools.api.filter.temporal.Begins;
+import org.geotools.api.filter.temporal.BegunBy;
+import org.geotools.api.filter.temporal.During;
+import org.geotools.api.filter.temporal.EndedBy;
+import org.geotools.api.filter.temporal.Ends;
+import org.geotools.api.filter.temporal.TContains;
+import org.geotools.api.filter.temporal.TEquals;
+import org.geotools.api.metadata.extent.GeographicBoundingBox;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Join;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.feature.FeatureCollection;
@@ -63,7 +110,7 @@ import org.geotools.filter.visitor.AbstractFilterVisitor;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.filter.visitor.PostPreProcessFilterSplittingVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteCoordinateSequenceFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -73,53 +120,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.xsd.Encoder;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.filter.And;
-import org.opengis.filter.BinaryComparisonOperator;
-import org.opengis.filter.ExcludeFilter;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.Id;
-import org.opengis.filter.IncludeFilter;
-import org.opengis.filter.Not;
-import org.opengis.filter.Or;
-import org.opengis.filter.PropertyIsBetween;
-import org.opengis.filter.PropertyIsLike;
-import org.opengis.filter.PropertyIsNull;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.ExpressionVisitor;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.identity.FeatureId;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.filter.spatial.Beyond;
-import org.opengis.filter.spatial.BinarySpatialOperator;
-import org.opengis.filter.spatial.Contains;
-import org.opengis.filter.spatial.Crosses;
-import org.opengis.filter.spatial.DWithin;
-import org.opengis.filter.spatial.Disjoint;
-import org.opengis.filter.spatial.Equals;
-import org.opengis.filter.spatial.Intersects;
-import org.opengis.filter.spatial.Overlaps;
-import org.opengis.filter.spatial.Touches;
-import org.opengis.filter.spatial.Within;
-import org.opengis.filter.temporal.After;
-import org.opengis.filter.temporal.Before;
-import org.opengis.filter.temporal.Begins;
-import org.opengis.filter.temporal.BegunBy;
-import org.opengis.filter.temporal.During;
-import org.opengis.filter.temporal.EndedBy;
-import org.opengis.filter.temporal.Ends;
-import org.opengis.filter.temporal.TContains;
-import org.opengis.filter.temporal.TEquals;
-import org.opengis.metadata.extent.GeographicBoundingBox;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.LazyLoader;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -197,7 +197,7 @@ public class GetFeature {
     protected WFSInfo wfs;
 
     /** filter factory */
-    protected FilterFactory2 filterFactory;
+    protected FilterFactory filterFactory;
 
     /** stored query provider */
     StoredQueryProvider storedQueryProvider;
@@ -224,7 +224,7 @@ public class GetFeature {
     }
 
     /** Sets the filter factory to use to create filters. */
-    public void setFilterFactory(FilterFactory2 filterFactory) {
+    public void setFilterFactory(FilterFactory filterFactory) {
         this.filterFactory = filterFactory;
     }
 
@@ -294,7 +294,7 @@ public class GetFeature {
         // to return more then this value even if there are matching values
         // without either changing geotools to use a long or paging the results.
         if (wfs.isHitsIgnoreMaxFeatures() && request.isResultTypeHits()) {
-            maxFeatures = org.geotools.data.Query.DEFAULT_MAX;
+            maxFeatures = org.geotools.api.data.Query.DEFAULT_MAX;
         }
 
         // grab the view params is any
@@ -477,7 +477,7 @@ public class GetFeature {
                         queryMaxFeatures = metaMaxFeatures;
                     }
                     Map<String, String> viewParam = viewParams != null ? viewParams.get(i) : null;
-                    org.geotools.data.Query gtQuery =
+                    org.geotools.api.data.Query gtQuery =
                             toDataQuery(
                                     query,
                                     filter,
@@ -556,7 +556,7 @@ public class GetFeature {
                                 && offset <= 0) {
                             totalCountExecutors.add(new CountExecutor(size));
                         } else {
-                            org.geotools.data.Query qTotal =
+                            org.geotools.api.data.Query qTotal =
                                     toDataQuery(
                                             query,
                                             filter,
@@ -582,7 +582,7 @@ public class GetFeature {
                         } else {
                             // no features might have been because of the offset that was specified,
                             // check the size of the same query but with no offset
-                            org.geotools.data.Query q2 =
+                            org.geotools.api.data.Query q2 =
                                     toDataQuery(
                                             query,
                                             filter,
@@ -1260,7 +1260,7 @@ public class GetFeature {
     protected FeatureCollection<? extends FeatureType, ? extends Feature> getFeatures(
             Object request,
             FeatureSource<? extends FeatureType, ? extends Feature> source,
-            org.geotools.data.Query gtQuery)
+            org.geotools.api.data.Query gtQuery)
             throws IOException {
         FeatureCollection<? extends FeatureType, ? extends Feature> features =
                 source.getFeatures(gtQuery);
@@ -1279,7 +1279,7 @@ public class GetFeature {
      * @param maxFeatures number of features, or 0 for Query.DEFAULT_MAX
      * @return A Query for use with the FeatureSource interface
      */
-    public org.geotools.data.Query toDataQuery(
+    public org.geotools.api.data.Query toDataQuery(
             Query query,
             Filter filter,
             int offset,
@@ -1296,7 +1296,7 @@ public class GetFeature {
         String wfsVersion = request.getVersion();
 
         if (maxFeatures <= 0) {
-            maxFeatures = org.geotools.data.Query.DEFAULT_MAX;
+            maxFeatures = org.geotools.api.data.Query.DEFAULT_MAX;
         }
 
         if (filter == null) {
@@ -1336,8 +1336,8 @@ public class GetFeature {
 
         // only handle non-joins for now
         QName typeName = primaryTypeName;
-        org.geotools.data.Query dataQuery =
-                new org.geotools.data.Query(
+        org.geotools.api.data.Query dataQuery =
+                new org.geotools.api.data.Query(
                         typeName.getLocalPart(),
                         transformedFilter,
                         maxFeatures,
@@ -1431,7 +1431,7 @@ public class GetFeature {
         }
 
         // currently only used by app-schema, produce mandatory properties
-        hints.put(org.geotools.data.Query.INCLUDE_MANDATORY_PROPS, true);
+        hints.put(org.geotools.api.data.Query.INCLUDE_MANDATORY_PROPS, true);
 
         // add the joins, if specified
         if (joins != null) {
@@ -1791,7 +1791,7 @@ public class GetFeature {
                     // back project bounding box into geographic coordinates
                     CoordinateReferenceSystem geo = DefaultGeographicCRS.WGS84;
 
-                    GeneralEnvelope e = new GeneralEnvelope(filter.getBounds());
+                    GeneralBounds e = new GeneralBounds(filter.getBounds());
                     e = CRS.transform(e, geo);
 
                     // ensure within bounds defined by srs specified on

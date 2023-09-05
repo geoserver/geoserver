@@ -33,11 +33,11 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.api.coverage.SampleDimensionType;
 import org.geotools.measure.UnitFormat;
 import org.geotools.measure.UnitFormatter;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.SampleDimensionType;
 import si.uom.NonSI;
 import si.uom.SI;
 

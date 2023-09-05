@@ -18,8 +18,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 

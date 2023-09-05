@@ -32,9 +32,9 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.api.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.Feature;
 
 /** A template response able to write an HTML output format. */
 public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {

@@ -4,10 +4,10 @@
  */
 package org.geoserver.wms.legendgraphic;
 
+import org.geotools.api.filter.Filter;
+import org.geotools.api.style.Rule;
 import org.geotools.filter.FilterAttributeExtractor;
-import org.geotools.styling.Rule;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
-import org.opengis.filter.Filter;
 
 /**
  * Removes static rules that are statically off, possibly due to an env variable, function call

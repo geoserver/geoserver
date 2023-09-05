@@ -14,7 +14,7 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -70,7 +70,7 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                                     .getCoverageByName("BlueMarble")
                                     .getGridCoverageReader(null, null)
                                     .read(null);
-            final Envelope2D sourceEnvelope = sourceCoverage.getEnvelope2D();
+            final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample using the original extension
             MockHttpServletResponse response =
@@ -78,14 +78,14 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                             "wcs?request=GetCoverage&service=WCS&version=2.0.1"
                                     + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + sourceEnvelope.x
+                                    + sourceEnvelope.getMinX()
                                     + ","
-                                    + (sourceEnvelope.x + sourceEnvelope.width / 2)
+                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
                                     + ")"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + sourceEnvelope.y
+                                    + sourceEnvelope.getMinY()
                                     + ","
-                                    + (sourceEnvelope.y + sourceEnvelope.height / 2)
+                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
                                     + ")");
 
             assertEquals("image/tiff", response.getContentType());
@@ -110,14 +110,14 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                             "wcs?request=GetCoverage&service=WCS&version=2.0.1"
                                     + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + (sourceEnvelope.x + 1.1 * sourceEnvelope.width)
+                                    + (sourceEnvelope.getMinX() + 1.1 * sourceEnvelope.getWidth())
                                     + ","
-                                    + (sourceEnvelope.x + 1.2 * sourceEnvelope.width)
+                                    + (sourceEnvelope.getMinX() + 1.2 * sourceEnvelope.getWidth())
                                     + ")"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + (sourceEnvelope.y + 1.1 * sourceEnvelope.height)
+                                    + (sourceEnvelope.getMinY() + 1.1 * sourceEnvelope.getHeight())
                                     + ","
-                                    + (sourceEnvelope.y + 1.2 * sourceEnvelope.height)
+                                    + (sourceEnvelope.getMinY() + 1.2 * sourceEnvelope.getHeight())
                                     + ")");
             assertEquals("application/xml", response.getContentType());
             checkOws20Exception(
@@ -129,21 +129,21 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                             "wcs?request=GetCoverage&service=WCS&version=2.0.1"
                                     + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + (sourceEnvelope.x)
+                                    + (sourceEnvelope.getMinX())
                                     + ","
-                                    + (sourceEnvelope.x + sourceEnvelope.width)
+                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth())
                                     + ")"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + (sourceEnvelope.y + sourceEnvelope.height)
+                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight())
                                     + ","
-                                    + (sourceEnvelope.y)
+                                    + (sourceEnvelope.getMinY())
                                     + ")");
             assertEquals("application/xml", response.getContentType());
             checkOws20Exception(
                     response,
                     404,
                     WCS20ExceptionCode.InvalidSubsetting.getExceptionCode(),
-                    Double.toString((sourceEnvelope.y + sourceEnvelope.height)));
+                    Double.toString((sourceEnvelope.getMinY() + sourceEnvelope.getHeight())));
         } finally {
             try {
                 if (readerTarget != null) {
@@ -181,7 +181,7 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                                     .getCoverageByName("BlueMarble")
                                     .getGridCoverageReader(null, null)
                                     .read(null);
-            final Envelope2D sourceEnvelope = sourceCoverage.getEnvelope2D();
+            final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // === error slice point outside coverage
             MockHttpServletResponse response =
@@ -189,19 +189,19 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                             "wcs?request=GetCoverage&service=WCS&version=2.0.1"
                                     + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + sourceEnvelope.x
+                                    + sourceEnvelope.getMinX()
                                     + ","
-                                    + (sourceEnvelope.x + sourceEnvelope.width)
+                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth())
                                     + ")"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + sourceEnvelope.y * 0.9
+                                    + sourceEnvelope.getMinY() * 0.9
                                     + ")");
             assertEquals("application/xml", response.getContentType());
             checkOws20Exception(
                     response,
                     404,
                     WCS20ExceptionCode.InvalidSubsetting.getExceptionCode(),
-                    Double.toString(sourceEnvelope.y * 0.9));
+                    Double.toString(sourceEnvelope.getMinY() * 0.9));
 
             // === error slice point outside coverage
             response =
@@ -209,19 +209,19 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                             "wcs?request=GetCoverage&service=WCS&version=2.0.1"
                                     + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + sourceEnvelope.x * 0.9
+                                    + sourceEnvelope.getMinX() * 0.9
                                     + ")"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + sourceEnvelope.y
+                                    + sourceEnvelope.getMinY()
                                     + ","
-                                    + (sourceEnvelope.y + sourceEnvelope.height / 2)
+                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
                                     + ")");
             assertEquals("application/xml", response.getContentType());
             checkOws20Exception(
                     response,
                     404,
                     WCS20ExceptionCode.InvalidSubsetting.getExceptionCode(),
-                    Double.toString(sourceEnvelope.x * 0.9));
+                    Double.toString(sourceEnvelope.getMinX() * 0.9));
         } finally {
             try {
                 if (readerTarget != null) {
@@ -259,7 +259,7 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                                     .getCoverageByName("BlueMarble")
                                     .getGridCoverageReader(null, null)
                                     .read(null);
-            final Envelope2D sourceEnvelope = sourceCoverage.getEnvelope2D();
+            final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample using the original extension
             MockHttpServletResponse response =
@@ -267,12 +267,12 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                             "wcs?request=GetCoverage&service=WCS&version=2.0.1"
                                     + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + sourceEnvelope.x
+                                    + sourceEnvelope.getMinX()
                                     + ")"
                                     + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + sourceEnvelope.y
+                                    + sourceEnvelope.getMinY()
                                     + ","
-                                    + (sourceEnvelope.y + sourceEnvelope.height / 2)
+                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
                                     + ")");
 
             assertEquals("image/tiff", response.getContentType());

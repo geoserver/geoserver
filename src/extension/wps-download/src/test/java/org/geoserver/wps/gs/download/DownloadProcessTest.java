@@ -73,26 +73,36 @@ import org.geoserver.wps.ppio.ZipArchivePPIO;
 import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.data.SimpleFeatureReader;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.MathTransform2D;
+import org.geotools.api.util.InternationalString;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.coverage.util.FeatureUtilities;
-import org.geotools.data.DataSourceException;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Transaction;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureReader;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.WKTReader2;
@@ -119,17 +129,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.MathTransform2D;
-import org.opengis.util.InternationalString;
-import org.opengis.util.ProgressListener;
 import org.springframework.util.MimeType;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -146,7 +145,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         SimpleFeatureCollection parse(FileInputStream t) throws Exception;
     }
 
-    private static final FilterFactory2 FF = FeatureUtilities.DEFAULT_FILTER_FACTORY;
+    private static final FilterFactory FF = FeatureUtilities.DEFAULT_FILTER_FACTORY;
     private static final double EPS = 1e-6;
 
     private static QName MIXED_RES = new QName(WCS_URI, "mixedres", WCS_PREFIX);
@@ -784,7 +783,7 @@ public class DownloadProcessTest extends WPSTestSupport {
             byte[] result =
                     (byte[])
                             gc.evaluate(
-                                    new DirectPosition2D(
+                                    new Position2D(
                                             new Point2D.Double(firstXRoi, firstYRoi - 1E-4)));
             assertNotEquals(0, result[0]);
             assertNotEquals(0, result[1]);
@@ -794,7 +793,7 @@ public class DownloadProcessTest extends WPSTestSupport {
             result =
                     (byte[])
                             gc.evaluate(
-                                    new DirectPosition2D(
+                                    new Position2D(
                                             new Point2D.Double(firstXRoi - 2, firstYRoi - 0.5)));
             Assert.assertEquals(0, result[0]);
             Assert.assertEquals(0, result[1]);
@@ -842,7 +841,7 @@ public class DownloadProcessTest extends WPSTestSupport {
             byte[] result =
                     (byte[])
                             gc.evaluate(
-                                    new DirectPosition2D(
+                                    new Position2D(
                                             new Point2D.Double(firstXRoi, firstYRoi - 1E-4)));
             assertNotEquals(0, result[0]);
             assertNotEquals(0, result[1]);
@@ -853,7 +852,7 @@ public class DownloadProcessTest extends WPSTestSupport {
             result =
                     (byte[])
                             gc.evaluate(
-                                    new DirectPosition2D(
+                                    new Position2D(
                                             new Point2D.Double(firstXRoi - 2, firstYRoi - 0.5)));
             assertNotEquals(0, result[0]);
             assertNotEquals(0, result[1]);
@@ -949,14 +948,15 @@ public class DownloadProcessTest extends WPSTestSupport {
             CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(MockData.USA_WORLDIMG));
 
             // raster is not rescaled, should be the same
-            org.opengis.geometry.Envelope envelope = ci.getGridCoverage(null, null).getEnvelope();
+            org.geotools.api.geometry.Bounds envelope =
+                    ci.getGridCoverage(null, null).getEnvelope();
             assertEquals(envelope.getMinimum(0), bounds.getMinimum(0), 0d);
             assertEquals(envelope.getMaximum(0), bounds.getMaximum(0), 0d);
             assertEquals(envelope.getMinimum(1), bounds.getMinimum(1), 0d);
             assertEquals(envelope.getMaximum(1), bounds.getMaximum(1), 0d);
 
             // the tile bounds are larger than the bounds (tile is bigger)
-            assertTrue(entry.getTileMatrixSetBounds().contains(new Envelope2D(bounds)));
+            assertTrue(entry.getTileMatrixSetBounds().contains(new ReferencedEnvelope(bounds)));
 
             List<TileMatrix> matrices = entry.getTileMatricies();
             assertEquals(1, matrices.size());
@@ -1358,7 +1358,7 @@ public class DownloadProcessTest extends WPSTestSupport {
             ReferencedEnvelope bounds = entry.getBounds();
 
             // the tile bounds are larger than the bounds (tile is bigger)
-            assertTrue(entry.getTileMatrixSetBounds().contains(new Envelope2D(bounds)));
+            assertTrue(entry.getTileMatrixSetBounds().contains(new ReferencedEnvelope(bounds)));
 
             List<TileMatrix> matrices = entry.getTileMatricies();
             assertEquals(1, matrices.size());
@@ -1866,7 +1866,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                 // the red one defines left-most location, but the green one lower corner
                 // reprojected is just a smidge below 600000, bringing the alignment of
                 // output down to 599000
-                Envelope2D gcEnvelope = gc.getEnvelope2D();
+                ReferencedEnvelope gcEnvelope = gc.getEnvelope2D();
                 assertEquals(160000, gcEnvelope.getMinimum(0), 0);
                 assertEquals(599000, gcEnvelope.getMinimum(1), 0);
             }

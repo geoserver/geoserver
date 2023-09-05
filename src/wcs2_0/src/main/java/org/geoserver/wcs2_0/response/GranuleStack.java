@@ -6,8 +6,8 @@
 package org.geoserver.wcs2_0.response;
 
 import java.util.List;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.opengis.coverage.grid.GridCoverage;
 
 /**
  * A stack of GridCoverage2D instances (granules). This class may be used to deal with

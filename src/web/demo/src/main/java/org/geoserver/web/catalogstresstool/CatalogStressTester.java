@@ -61,8 +61,8 @@ import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.ToolPage;
+import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
 
 @SuppressWarnings("unchecked")
 public class CatalogStressTester extends GeoServerSecuredPage {

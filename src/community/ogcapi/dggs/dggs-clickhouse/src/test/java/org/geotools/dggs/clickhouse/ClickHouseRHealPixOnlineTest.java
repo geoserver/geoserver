@@ -24,9 +24,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.geootols.dggs.clickhouse.ClickHouseDGGSDataStore;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.PropertyIsLike;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
+import org.geotools.api.filter.spatial.BBOX;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
-import org.geotools.data.Transaction;
 import org.geotools.dggs.gstore.DGGSFeatureSource;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.dggs.rhealpix.RHealPixDGGSFactory;
@@ -36,20 +45,11 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.PropertyIsLike;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
-import org.opengis.filter.spatial.BBOX;
 
 @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") // JUnit 3 tests here
 public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
 
-    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     @Override
     protected String getDGGSId() {

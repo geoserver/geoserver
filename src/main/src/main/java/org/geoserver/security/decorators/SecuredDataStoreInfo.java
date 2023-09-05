@@ -10,10 +10,10 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.data.DataAccess;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.util.ProgressListener;
 
 /**
  * Given a {@link DataStoreInfo} makes sure no write operations can be performed through it

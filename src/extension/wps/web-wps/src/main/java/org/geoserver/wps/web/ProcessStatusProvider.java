@@ -21,12 +21,12 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.wps.ProcessStatusStore;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortBy;
 
 /**
  * Provides a filtered, sorted view over the running/recently completed processes
@@ -36,7 +36,7 @@ import org.opengis.filter.sort.SortBy;
 @SuppressWarnings("serial")
 public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus> {
     private static Logger LOGGER = Logging.getLogger(ProcessStatusProvider.class);
-    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     static final Property<ExecutionStatus> TYPE =
             new AbstractProperty<ExecutionStatus>("type") {
                 @Override

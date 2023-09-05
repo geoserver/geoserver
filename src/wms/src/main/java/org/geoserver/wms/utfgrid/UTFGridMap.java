@@ -17,13 +17,13 @@ import net.sf.json.util.JSONBuilder;
 import net.sf.json.util.JSONStringer;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.utfgrid.UTFGridEntries.UTFGridEntry;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.util.Converters;
 import org.geotools.xml.gml.GMLComplexTypes.GeometryPropertyType;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.GeometryDescriptor;
 
 public class UTFGridMap extends RawMap {
 

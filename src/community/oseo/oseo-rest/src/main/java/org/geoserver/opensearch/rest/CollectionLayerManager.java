@@ -51,6 +51,16 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.rest.RestException;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.api.style.Style;
 import org.geotools.brewer.styling.builder.ChannelSelectionBuilder;
 import org.geotools.brewer.styling.builder.RasterSymbolizerBuilder;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
@@ -58,27 +68,17 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.gce.imagemosaic.catalog.CogConfiguration;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.styling.Style;
 import org.geotools.util.Version;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -376,7 +376,7 @@ class CollectionLayerManager {
 
         double[][] resolutionLevels = reader.getResolutionLevels();
         CoordinateReferenceSystem readerCRS = reader.getCoordinateReferenceSystem();
-        GeneralEnvelope sourceEnvelope = reader.getOriginalEnvelope();
+        GeneralBounds sourceEnvelope = reader.getOriginalEnvelope();
 
         // prepare a set of points at middle of the envelope and their
         // corresponding offsets based on resolutions

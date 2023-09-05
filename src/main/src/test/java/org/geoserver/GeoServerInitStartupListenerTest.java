@@ -19,15 +19,15 @@ import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageReaderWriterSpi;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.servlet.ServletContextEvent;
+import org.geotools.api.feature.FeatureFactory;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.style.StyleFactory;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.FeatureFactory;
-import org.opengis.filter.FilterFactory;
-import org.opengis.style.StyleFactory;
 import org.springframework.mock.web.MockServletContext;
 
 public class GeoServerInitStartupListenerTest {

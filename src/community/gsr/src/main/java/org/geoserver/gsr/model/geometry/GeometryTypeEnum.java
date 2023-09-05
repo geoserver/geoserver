@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.opengis.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.GeometryDescriptor;
 
 /** @author Juan Marin - OpenGeo */
 public enum GeometryTypeEnum {

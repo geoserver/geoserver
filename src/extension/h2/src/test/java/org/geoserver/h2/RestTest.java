@@ -23,16 +23,16 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
-import org.geotools.data.DataAccess;
-import org.geotools.data.Query;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /** Contains tests that invoke REST resources that will use H2 data store. */

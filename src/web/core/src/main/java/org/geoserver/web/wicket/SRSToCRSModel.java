@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.ResourcePool;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A model allowing to edit an SRS property with the CRSPanel (by dynamically converting it into a

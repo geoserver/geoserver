@@ -16,10 +16,10 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.util.InternationalString;
 
 public class ContactPageTest extends GeoServerWicketTestSupport {
 

@@ -17,19 +17,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.filter.text.ecql.ECQL;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
-import org.opengis.filter.Filter;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
 
 /**
  * @author $Author: Alessio Fabiani (alessio.fabiani@geo-solutions.it)
@@ -230,7 +230,7 @@ public class CoverageUtils {
                             }
 
                             value =
-                                    new GeneralEnvelope(
+                                    new GeneralBounds(
                                             new double[] {coords[0], coords[1]},
                                             new double[] {coords[2], coords[3]});
                         }
@@ -291,7 +291,7 @@ public class CoverageUtils {
                             }
 
                             value =
-                                    new GeneralEnvelope(
+                                    new GeneralBounds(
                                             new double[] {coords[0], coords[1]},
                                             new double[] {coords[2], coords[3]});
                         }
@@ -317,7 +317,7 @@ public class CoverageUtils {
                             }
 
                             value =
-                                    new GeneralEnvelope(
+                                    new GeneralBounds(
                                             new double[] {coords[0], coords[1]},
                                             new double[] {coords[2], coords[3]});
                         }

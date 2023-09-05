@@ -27,6 +27,8 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gml3.v3_2.GML;
@@ -34,8 +36,6 @@ import org.geotools.gml3.v3_2.GMLConfiguration;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 
 public class GML32OutputFormat extends GML3OutputFormat {

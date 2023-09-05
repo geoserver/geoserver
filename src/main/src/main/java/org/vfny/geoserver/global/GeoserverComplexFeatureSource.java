@@ -8,17 +8,17 @@ import java.io.IOException;
 import java.util.Objects;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
-import org.geotools.data.DataSourceException;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 /**
  * Geoserver wrapper for a complex features feature source.
@@ -31,7 +31,7 @@ import org.opengis.filter.FilterFactory2;
 public class GeoserverComplexFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
     private static final long serialVersionUID = 1L;
 
-    protected static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2(null);
+    protected static final FilterFactory FF = CommonFactoryFinder.getFilterFactory(null);
     /** provided FeatureTypeInfo for getting the declared query and more */
     private final FeatureTypeInfo ftypeInfo;
 

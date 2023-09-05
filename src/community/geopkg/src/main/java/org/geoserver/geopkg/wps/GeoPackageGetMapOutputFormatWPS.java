@@ -22,6 +22,8 @@ import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.GeoPackage;
@@ -30,8 +32,6 @@ import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.util.ProgressListener;
 
 public class GeoPackageGetMapOutputFormatWPS extends GeoPackageGetMapOutputFormat {
 

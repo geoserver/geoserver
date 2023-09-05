@@ -14,7 +14,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridFormat;
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -98,7 +98,7 @@ public class BinaryProcessingsTest extends WPSTestSupport {
                             .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
             double[] addToSameCoverageValue =
-                    (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
+                    (double[]) gc.evaluate(new Position2D(145.9584, -41.6587));
             assertEquals(1978.0, addToSameCoverageValue[0], DELTA);
 
             gc.dispose(true);
@@ -171,7 +171,7 @@ public class BinaryProcessingsTest extends WPSTestSupport {
                             .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
             double[] multiplyForSameCoverageValue =
-                    (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
+                    (double[]) gc.evaluate(new Position2D(145.9584, -41.6587));
             assertEquals(978121.0, multiplyForSameCoverageValue[0], DELTA);
 
             gc.dispose(true);

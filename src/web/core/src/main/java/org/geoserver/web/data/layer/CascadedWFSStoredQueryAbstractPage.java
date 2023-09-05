@@ -35,7 +35,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMapping;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingBlockValue;

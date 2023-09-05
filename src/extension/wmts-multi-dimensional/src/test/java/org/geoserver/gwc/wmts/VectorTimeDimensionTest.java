@@ -19,9 +19,9 @@ import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.gwc.wmts.dimensions.VectorTimeDimension;
+import org.geotools.api.filter.Filter;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 /**
  * This class contains tests that check that time dimensions values are correctly extracted from

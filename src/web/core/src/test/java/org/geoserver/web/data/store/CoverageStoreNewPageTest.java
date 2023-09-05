@@ -23,11 +23,11 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.layer.NewLayerPage;
 import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
+import org.geotools.api.coverage.grid.Format;
 import org.geotools.gce.geotiff.GeoTiffFormatFactorySpi;
 import org.geotools.geopkg.mosaic.GeoPackageFormat;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.coverage.grid.Format;
 
 public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 

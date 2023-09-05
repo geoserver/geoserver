@@ -30,9 +30,9 @@ import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
-import org.opengis.feature.Feature;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
 
 /**
  * Class visiting a feature template and performing some action on the properties mapped via dynamic

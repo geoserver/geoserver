@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import org.geoserver.catalog.*;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.data.*;
 import org.geotools.data.*;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;

@@ -11,15 +11,15 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.wps.WPSException;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.filter.Filter;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
 
 /**
  * A process that returns a coverage fully (something which is un-necessarily hard in WCS)

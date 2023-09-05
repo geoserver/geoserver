@@ -21,12 +21,12 @@ import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
+import org.geotools.api.data.DataStoreFactorySpi;
+import org.geotools.api.data.FileDataStoreFactorySpi;
+import org.geotools.api.data.FileDataStoreFinder;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.UnknownFormat;
-import org.geotools.data.DataStoreFactorySpi;
-import org.geotools.data.FileDataStoreFactorySpi;
-import org.geotools.data.FileDataStoreFinder;
 import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.util.DataStoreUtils;
 

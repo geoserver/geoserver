@@ -6,8 +6,8 @@
 package org.geoserver.csw.feature.sort;
 
 import java.util.Comparator;
-import org.opengis.feature.Attribute;
-import org.opengis.filter.expression.PropertyName;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.filter.expression.PropertyName;
 
 /**
  * Compares two feature based on an attribute value

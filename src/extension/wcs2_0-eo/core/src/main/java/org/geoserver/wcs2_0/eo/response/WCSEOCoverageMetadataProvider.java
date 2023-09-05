@@ -18,14 +18,14 @@ import org.geoserver.wcs2_0.eo.WCSEOMetadata;
 import org.geoserver.wcs2_0.response.WCS20CoverageMetadataProvider;
 import org.geoserver.wcs2_0.response.WCSDimensionsHelper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -167,7 +167,7 @@ public class WCSEOCoverageMetadataProvider implements WCS20CoverageMetadataProvi
         element(tx, "om:observedProperty", null, null);
 
         // the footprint
-        GeneralEnvelope ge = reader.getOriginalEnvelope();
+        GeneralBounds ge = reader.getOriginalEnvelope();
         CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
         String srsName = getSRSName(crs);
         final boolean axisSwap = CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);

@@ -7,8 +7,8 @@ package org.geoserver.wfs;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.geotools.api.feature.Feature;
 import org.geotools.data.DataUtilities;
-import org.opengis.feature.Feature;
 
 public class TransactionListenerTester implements TransactionListener {
     List<TransactionEvent> events = new ArrayList<>();

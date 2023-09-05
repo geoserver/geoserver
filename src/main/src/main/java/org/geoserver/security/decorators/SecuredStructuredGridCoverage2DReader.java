@@ -6,12 +6,12 @@ package org.geoserver.security.decorators;
 
 import java.io.IOException;
 import org.geoserver.security.WrapperPolicy;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.data.ServiceInfo;
+import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.ResourceInfo;
-import org.geotools.data.ServiceInfo;
-import org.opengis.coverage.grid.Format;
-import org.opengis.parameter.GeneralParameterValue;
 
 /**
  * Applies access limits policies around the wrapped reader

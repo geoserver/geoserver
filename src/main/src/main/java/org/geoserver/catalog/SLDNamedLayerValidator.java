@@ -6,10 +6,10 @@ package org.geoserver.catalog;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.geotools.styling.NamedStyle;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.NamedStyle;
+import org.geotools.api.style.StyledLayer;
+import org.geotools.api.style.StyledLayerDescriptor;
 
 /** GeoServerSLDVisitor for collecting assorted validation errors and reporting them */
 public class SLDNamedLayerValidator extends GeoServerSLDVisitorAdapter {

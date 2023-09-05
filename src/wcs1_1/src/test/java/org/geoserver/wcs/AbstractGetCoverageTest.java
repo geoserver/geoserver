@@ -19,10 +19,10 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wcs.kvp.GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.wcs.v1_1.WCSConfiguration;
 import org.junit.After;
 import org.junit.Before;
-import org.opengis.coverage.grid.GridCoverage;
 
 public abstract class AbstractGetCoverageTest extends WCSTestSupport {
 

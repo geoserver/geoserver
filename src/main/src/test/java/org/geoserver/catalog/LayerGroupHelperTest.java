@@ -18,14 +18,14 @@ import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.test.GeoServerMockTestSupport;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.NoSuchAuthorityCodeException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class LayerGroupHelperTest extends GeoServerMockTestSupport {
 

@@ -20,7 +20,7 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.opengis.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeDescriptor;
 
 /**
  * Encodes the DescribeRecord response

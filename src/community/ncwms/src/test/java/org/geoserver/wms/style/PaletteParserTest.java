@@ -13,18 +13,18 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 import javax.xml.transform.TransformerException;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.filter.function.EnvFunction;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.xml.styling.SLDTransformer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
 
 public class PaletteParserTest {
     @Rule public ExpectedException exception = ExpectedException.none();

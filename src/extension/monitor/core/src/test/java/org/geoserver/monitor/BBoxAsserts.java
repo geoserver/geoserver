@@ -7,7 +7,7 @@ package org.geoserver.monitor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.opengis.geometry.BoundingBox;
+import org.geotools.api.geometry.BoundingBox;
 
 public class BBoxAsserts {
 

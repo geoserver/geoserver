@@ -13,7 +13,7 @@ import java.util.Map;
 import net.opengis.ows10.DomainType;
 import net.opengis.ows10.Ows10Factory;
 import org.geoserver.csw.records.RecordDescriptor;
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.type.Name;
 
 /**
  * Represents the capabilities of a {@link CatalogStore}

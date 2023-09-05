@@ -7,8 +7,8 @@ package org.geoserver.kml.regionate;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.filter.Filter;
 import org.geotools.map.Layer;
-import org.opengis.filter.Filter;
 
 /**
  * Common interface for classes defining a mechanism for regionating KML placemarks.

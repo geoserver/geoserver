@@ -17,12 +17,21 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.GridCoverageRequest;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
+import org.geotools.api.geometry.Bounds;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.CommonFactoryFinder;
@@ -35,15 +44,6 @@ import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
-import org.opengis.geometry.Envelope;
 
 /**
  * A class which takes care of handling default values for unspecified dimensions (if needed).
@@ -52,7 +52,7 @@ import org.opengis.geometry.Envelope;
  */
 public class WCSDefaultValuesHelper {
 
-    FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private String coverageName;
 
@@ -118,7 +118,7 @@ public class WCSDefaultValuesHelper {
         DateRange temporalSubset = subsettingRequest.getTemporalSubset();
         NumberRange<?> elevationSubset = subsettingRequest.getElevationSubset();
         Map<String, List<Object>> dimensionsSubset = subsettingRequest.getDimensionsSubset();
-        Envelope envelopeSubset = subsettingRequest.getSpatialSubset();
+        Bounds envelopeSubset = subsettingRequest.getSpatialSubset();
         Filter originalFilter = subsettingRequest.getFilter();
 
         final int specifiedDimensionsSubset =
@@ -300,7 +300,7 @@ public class WCSDefaultValuesHelper {
             Filter originalFilter,
             DateRange temporalSubset,
             NumberRange<?> elevationSubset,
-            Envelope envelopeSubset,
+            Bounds envelopeSubset,
             Map<String, List<Object>> dimensionSubset,
             StructuredGridCoverage2DReader reader,
             DimensionDescriptor timeDimension,
@@ -357,7 +357,7 @@ public class WCSDefaultValuesHelper {
     }
 
     /** Set envelope filter to restrict the results to the specified envelope */
-    private Filter setEnvelopeFilter(Envelope envelopeSubset, StructuredGridCoverage2DReader reader)
+    private Filter setEnvelopeFilter(Bounds envelopeSubset, StructuredGridCoverage2DReader reader)
             throws IOException {
         Filter envelopeFilter = null;
         if (envelopeSubset != null) {

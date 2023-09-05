@@ -32,12 +32,12 @@ import org.geoserver.wps.XMLEncoderDelegate;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.GeoServerProcessors;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
 import org.geotools.ows.v1_1.OWS;
 import org.geotools.ows.v1_1.OWSConfiguration;
 import org.geotools.process.ProcessFactory;
 import org.geotools.xsd.Encoder;
-import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 
 /**

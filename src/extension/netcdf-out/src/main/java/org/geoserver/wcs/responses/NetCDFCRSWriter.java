@@ -19,6 +19,14 @@ import java.util.logging.Logger;
 import org.geoserver.wcs.responses.NetCDFDimensionsManager.NetCDFDimensionMapping;
 import org.geoserver.wcs.responses.NetCDFDimensionsManager.NetCDFDimensionMapping.DimensionValuesArray;
 import org.geoserver.wcs2_0.response.DimensionBean;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeneralDerivedCRS;
+import org.geotools.api.referencing.operation.Conversion;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCoordinateReferenceSystemType;
@@ -30,14 +38,6 @@ import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.util.logging.Logging;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeneralDerivedCRS;
-import org.opengis.referencing.operation.Conversion;
-import org.opengis.referencing.operation.MathTransform;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -112,7 +112,7 @@ class NetCDFCRSWriter {
      */
     public Map<String, NetCDFDimensionMapping> initialize2DCoordinatesDimensions() {
         final RenderedImage image = sampleGranule.getRenderedImage();
-        final Envelope envelope = sampleGranule.getEnvelope2D();
+        final Bounds envelope = sampleGranule.getEnvelope2D();
 
         AxisOrder axisOrder = CRS.getAxisOrder(crs);
 

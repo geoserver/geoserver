@@ -26,11 +26,11 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.geotools.data.Parameter;
-import org.geotools.data.Query;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.function.EnvFunction;
-import org.opengis.feature.Feature;
 
 public class GeoJSONSearchResponse extends Response {
 

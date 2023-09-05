@@ -30,10 +30,10 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.VectorAccessLimits;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 
 /**
  * Performs integration tests using a mock {@link ResourceAccessManager}

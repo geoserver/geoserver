@@ -39,19 +39,19 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.EntityResolverProvider;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.style.ChannelSelection;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.ResourceLocator;
+import org.geotools.api.style.SelectedChannelType;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.DefaultResourceLocator;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.Mark;
-import org.geotools.styling.ResourceLocator;
-import org.geotools.styling.SelectedChannelType;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.URLs;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
 import org.xml.sax.EntityResolver;
 
 /**

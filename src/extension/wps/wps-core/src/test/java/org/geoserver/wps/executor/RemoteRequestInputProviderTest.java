@@ -56,13 +56,13 @@ import org.geoserver.ows.Ows11Util;
 import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
+import org.geotools.api.util.ProgressListener;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.opengis.util.ProgressListener;
 
 public class RemoteRequestInputProviderTest {
 

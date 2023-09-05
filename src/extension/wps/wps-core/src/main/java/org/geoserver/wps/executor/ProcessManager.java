@@ -8,9 +8,9 @@ package org.geoserver.wps.executor;
 import java.util.Map;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.process.ProcessException;
-import org.opengis.feature.type.Name;
-import org.opengis.util.ProgressListener;
 
 /**
  * Handles the execution of a certain class of processes. Implementations using thread pools should

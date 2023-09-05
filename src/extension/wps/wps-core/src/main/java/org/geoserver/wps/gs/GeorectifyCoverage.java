@@ -38,10 +38,13 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.coverage.grid.GridGeometry;
+import org.geotools.api.data.Query;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.Query;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.image.ImageWorker;
 import org.geotools.process.factory.DescribeParameter;
@@ -52,9 +55,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Georectifies a GridCoverage based on GCPs using gdal_warp under covers

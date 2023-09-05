@@ -7,12 +7,12 @@ package org.geoserver.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.util.Range;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * Helper class that builds dimension related filters against reference objects that can be point

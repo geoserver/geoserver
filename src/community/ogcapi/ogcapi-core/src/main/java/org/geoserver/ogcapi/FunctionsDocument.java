@@ -9,10 +9,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.geotools.api.filter.capability.FunctionName;
+import org.geotools.api.parameter.Parameter;
 import org.geotools.filter.FunctionFinder;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.filter.capability.FunctionName;
-import org.opengis.parameter.Parameter;
 
 /** A document enumerating the available functions */
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -8,9 +8,9 @@ import com.mongodb.DBObject;
 import com.mongodb.client.MongoCollection;
 import org.geoserver.schemalessfeatures.mongodb.MongoSchemalessUtils;
 import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.mongodb.AbstractFilterToMongo;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.PropertyName;
 
 /** Schemaless implementation of a visitor to Map a Query object to a MongoDB query */
 public class SchemalessFilterToMongo extends AbstractFilterToMongo {

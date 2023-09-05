@@ -5,11 +5,11 @@
  */
 package org.geoserver.feature.retype;
 
-import org.geotools.data.Join;
-import org.geotools.data.Query;
+import org.geotools.api.data.Join;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * A support class containing the old feature type name, the new one, the old feature type, and the

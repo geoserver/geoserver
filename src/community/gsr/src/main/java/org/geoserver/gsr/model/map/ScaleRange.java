@@ -9,9 +9,9 @@
  */
 package org.geoserver.gsr.model.map;
 
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
 
 public class ScaleRange {
     public final Double minScale;

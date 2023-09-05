@@ -11,8 +11,8 @@ import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.Arrays;
 import org.geoserver.security.password.RandomPasswordProvider;
-import org.geotools.data.Query;
-import org.opengis.filter.Filter;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**

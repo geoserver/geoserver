@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.wcs2_0.response.DimensionBean;
 import org.geoserver.wcs2_0.response.GranuleStack;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.cs.CoordinateSystem;
+import org.geotools.api.referencing.cs.CoordinateSystemAxis;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.geometry.Envelope2D;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
-import org.opengis.referencing.cs.CoordinateSystemAxis;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /** A PointSeries domain, having a single value for x and y axis. */
 public class PointSeries extends Domain {
@@ -31,7 +31,7 @@ public class PointSeries extends Domain {
     @Override
     protected void buildGeoAxis(
             CoordinateReferenceSystem crs, GridGeometry2D gridGeometry, Map<String, Axis> axes) {
-        Envelope2D envelope = gridGeometry.getEnvelope2D();
+        ReferencedEnvelope envelope = gridGeometry.getEnvelope2D();
         CoordinateSystem coordinateSystem = crs.getCoordinateSystem();
         for (int i = 0; i < coordinateSystem.getDimension(); i++) {
             CoordinateSystemAxis coordinateSystemAxis = coordinateSystem.getAxis(i);

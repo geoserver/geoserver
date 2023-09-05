@@ -7,12 +7,12 @@ package org.geoserver.wfs.xml.filter.v1_1;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.Id;
+import org.geotools.api.filter.identity.Identifier;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.Id;
-import org.opengis.filter.identity.Identifier;
 
 public class FilterTypeBinding extends org.geotools.filter.v1_1.FilterTypeBinding {
     public FilterTypeBinding(FilterFactory filterFactory) {

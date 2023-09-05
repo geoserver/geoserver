@@ -22,16 +22,16 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 public class STACSortablesMapperTest {
     private static final String FAKE_ID = "foobar";
@@ -138,7 +138,7 @@ public class STACSortablesMapperTest {
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
         OSEOInfoImpl service = new OSEOInfoImpl();
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         Filter collectionSampleFilter = ff.equals(ff.property("name"), ff.literal("LANDSAT8"));
         Feature sampleCollectionFeature =
                 DataUtilities.first(data.getCollectionSource().getFeatures(collectionSampleFilter));

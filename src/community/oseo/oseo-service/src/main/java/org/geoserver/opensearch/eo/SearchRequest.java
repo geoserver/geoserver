@@ -5,8 +5,8 @@
 package org.geoserver.opensearch.eo;
 
 import java.util.Map;
-import org.geotools.data.Parameter;
-import org.geotools.data.Query;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.data.Query;
 
 /**
  * A OpenSearch EO query, for either collections (no parent id) or products (with parent id)

@@ -7,12 +7,12 @@ package org.geoserver.featurestemplating.expressions.aggregate;
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 import java.util.logging.Logger;
+import org.geotools.api.filter.capability.FunctionName;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.VolatileFunction;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.capability.FunctionName;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.VolatileFunction;
 
 /**
  * Function capable of performing aggregate operations over a List of values. Supported aggregate

@@ -10,13 +10,13 @@ import java.util.List;
 import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.clip.ClippedFeatureSource;
-import org.geotools.data.FeatureSource;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 
 abstract class AbstractVectorLayerIdentifier
         implements LayerIdentifier<FeatureSource<? extends FeatureType, ? extends Feature>> {

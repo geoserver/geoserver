@@ -14,6 +14,7 @@ import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -32,7 +33,6 @@ import org.geoserver.wms.map.QuickTileCache.MetaTileKey;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.metadata.i18n.ErrorKeys;
-import org.geotools.metadata.i18n.Errors;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.util.logging.Logging;
 
@@ -307,7 +307,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                             break;
                         default:
                             throw new IllegalStateException(
-                                    Errors.format(
+                                    MessageFormat.format(
                                             ErrorKeys.ILLEGAL_ARGUMENT_$2,
                                             "metaTile class",
                                             metaTile.getClass().toString()));

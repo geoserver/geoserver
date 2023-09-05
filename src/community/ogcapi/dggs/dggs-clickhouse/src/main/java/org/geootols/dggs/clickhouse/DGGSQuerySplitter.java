@@ -23,7 +23,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.dggs.DGGSFilterTransformer;
 import org.geotools.dggs.DGGSFilterVisitor;
 import org.geotools.dggs.DGGSInstance;
@@ -33,13 +40,6 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.PostPreProcessFilterSplittingVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.jdbc.BasicSQLDialect;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 
 /**
  * Splits a Query into a Query that cna be run against the delegate alphanumeric datastore, and a
@@ -48,7 +48,7 @@ import org.opengis.filter.sort.SortOrder;
  */
 public class DGGSQuerySplitter {
 
-    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private final SimpleFeatureType schema;
     private DGGSInstance dggs;

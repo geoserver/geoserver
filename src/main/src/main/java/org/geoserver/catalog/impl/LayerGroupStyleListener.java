@@ -23,7 +23,7 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.GeoServerExtensions;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /**
  * A CatalogListener handling the renaming of LayerGroupStyle. When a LayerGroupStyle gets renamed

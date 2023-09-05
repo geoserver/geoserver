@@ -12,10 +12,10 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortOrder;
 
 /** Base class for raster based dimensions */
 public abstract class RasterDimension extends Dimension {

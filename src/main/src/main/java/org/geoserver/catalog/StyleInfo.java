@@ -6,8 +6,8 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.util.Version;
 
 /**

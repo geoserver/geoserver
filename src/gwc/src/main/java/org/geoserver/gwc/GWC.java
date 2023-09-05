@@ -85,9 +85,18 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.MultiValuedFilter.MatchAction;
+import org.geotools.api.filter.Or;
+import org.geotools.api.metadata.extent.GeographicBoundingBox;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.NoSuchAuthorityCodeException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.ServiceException;
@@ -144,15 +153,6 @@ import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.MultiValuedFilter.MatchAction;
-import org.opengis.filter.Or;
-import org.opengis.metadata.extent.GeographicBoundingBox;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -209,7 +209,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private JDBCConfigurationStorage jdbcConfigurationStorage;
 
-    private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    private FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     private GeoWebCacheEnvironment gwcEnvironment;
 
@@ -1982,7 +1982,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                             prescribedBounds.getMaxY()));
         }
 
-        final org.opengis.geometry.Envelope envelope = CRS.getEnvelope(targetCrs);
+        final org.geotools.api.geometry.Bounds envelope = CRS.getEnvelope(targetCrs);
         if (envelope == null) {
             return null;
         }
@@ -1993,7 +1993,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (envelope.getSpan(0) < tolerance || envelope.getSpan(1) < tolerance) {
             //
             GeographicBoundingBox latLonBBox = CRS.getGeographicBoundingBox(targetCrs);
-            ReferencedEnvelope bbox = new ReferencedEnvelope(new GeneralEnvelope(latLonBBox));
+            ReferencedEnvelope bbox = new ReferencedEnvelope(new GeneralBounds(latLonBBox));
             Polygon geometry = JTS.toGeometry(bbox);
             double distanceTolerance = Math.max(bbox.getSpan(0), bbox.getSpan(1)) / 2E5;
             Geometry densifiedGeom = Densifier.densify(geometry, distanceTolerance);

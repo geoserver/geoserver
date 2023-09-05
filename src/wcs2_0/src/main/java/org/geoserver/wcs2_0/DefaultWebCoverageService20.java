@@ -31,9 +31,9 @@ import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.StringUtils;
 import org.geoserver.wcs2_0.util.WCS20DescribeCoverageExtension;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
-import org.opengis.coverage.grid.GridCoverage;
 
 /**
  * Default implementation of the Web Coverage Service 2.0

@@ -25,7 +25,7 @@ import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.util.PlaceHolderUtil;
 import org.geoserver.taskmanager.util.SqlUtil;
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.type.Name;
 import org.springframework.stereotype.Component;
 
 @Component

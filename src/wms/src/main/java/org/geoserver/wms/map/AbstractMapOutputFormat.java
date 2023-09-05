@@ -30,8 +30,8 @@ import org.geoserver.wms.decoration.MapDecoration;
 import org.geoserver.wms.decoration.MapDecorationLayout;
 import org.geoserver.wms.decoration.MetatiledMapDecorationLayout;
 import org.geoserver.wms.decoration.WatermarkDecoration;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.expression.Expression;
 import org.springframework.util.Assert;
 
 /**

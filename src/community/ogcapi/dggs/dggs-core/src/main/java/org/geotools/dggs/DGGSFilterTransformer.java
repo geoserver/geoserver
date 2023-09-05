@@ -19,6 +19,16 @@ package org.geotools.dggs;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.Or;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.spatial.BBOX;
+import org.geotools.api.filter.spatial.Intersects;
 import org.geotools.dggs.gstore.DGGSResolutionCalculator;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.factory.CommonFactoryFinder;
@@ -26,16 +36,6 @@ import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.Or;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.filter.spatial.Intersects;
 
 /**
  * Duplicates the filter, turning simple spatial filters and {@link org.geotools.dggs.DGGSFunction}
@@ -46,7 +46,7 @@ public class DGGSFilterTransformer extends DuplicatingFilterVisitor {
 
     public static final int RESOLUTION_NOT_SPECIFIED = -1;
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     public static Filter adapt(
             Filter filter,

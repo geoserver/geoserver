@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.util.List;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geotools.data.FeatureReader;
+import org.geotools.api.data.FeatureReader;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * Base class for vector based formats.

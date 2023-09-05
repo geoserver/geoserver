@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.geoserver.config.GeoServerInfo;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 
 /**
  * Summary of a OpenSearch EO description, with indication of URL template parameters and the like

@@ -12,15 +12,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.catalog.StyleGenerator.ColorRamp.Entry;
-import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
 
 /**
  * Generates pseudo random styles using a specified color ramp

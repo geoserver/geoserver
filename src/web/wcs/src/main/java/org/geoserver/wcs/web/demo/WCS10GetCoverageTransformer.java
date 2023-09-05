@@ -8,6 +8,7 @@ package org.geoserver.wcs.web.demo;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -17,7 +18,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 

@@ -9,7 +9,7 @@ import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.ows.Response;
 import org.geoserver.sld.GetStylesRequest;
 import org.geoserver.wms.describelayer.DescribeLayerModel;
-import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.api.style.StyledLayerDescriptor;
 
 /**
  * Web Map Service implementation.

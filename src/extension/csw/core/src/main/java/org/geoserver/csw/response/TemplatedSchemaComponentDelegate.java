@@ -15,9 +15,9 @@ import java.nio.charset.StandardCharsets;
 import net.opengis.cat.csw20.DescribeRecordType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.Name;
 
 /**
  * An implementation of {@link SchemaComponentDelegate} using a fixed file in the classpath to build

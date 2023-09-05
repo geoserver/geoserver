@@ -17,9 +17,9 @@ import javax.annotation.Nullable;
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.spi.ImageReaderSpi;
 import org.geoserver.catalog.*;
+import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverageReader;
 
 /**
  * Attempts to convert the source input object for a {@link GridCoverageReader} to a {@link

@@ -4,7 +4,7 @@
  */
 package org.geoserver.wps.gs.download.vertical;
 
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 
 /**
  * A Vertical Grid Shift is based on a Grid file containing a Grid of values where each position in
@@ -22,7 +22,7 @@ public interface VerticalGridShift {
     boolean isInValidArea(double x, double y);
 
     /** Return the valid area (the bbox) of the Grid */
-    GeneralEnvelope getValidArea();
+    GeneralBounds getValidArea();
 
     /** Return the resolution of the Grid */
     double[] getResolution();

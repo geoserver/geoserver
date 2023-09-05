@@ -51,6 +51,32 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.rest.RestBaseController;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.And;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.PropertyIsGreaterThan;
+import org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo;
+import org.geotools.api.filter.PropertyIsLessThan;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.style.ChannelSelection;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.LineSymbolizer;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.SelectedChannelType;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayerDescriptor;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -66,35 +92,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.styling.ChannelSelection;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.Mark;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Rule;
-import org.geotools.styling.SelectedChannelType;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.Symbolizer;
 import org.geotools.xml.styling.SLDParser;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.And;
-import org.opengis.filter.Filter;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.PropertyIsGreaterThan;
-import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
-import org.opengis.filter.PropertyIsLessThan;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -303,8 +303,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix),
                         DEFAULT_INTERVALS);
-        checkRule(rules[0], "#8E0000", org.opengis.filter.And.class);
-        checkRule(rules[1], "#FF0000", org.opengis.filter.And.class);
+        checkRule(rules[0], "#8E0000", org.geotools.api.filter.And.class);
+        checkRule(rules[1], "#FF0000", org.geotools.api.filter.And.class);
 
         assertEquals(resultXml.indexOf("StyledLayerDescriptor"), -1);
     }
@@ -344,8 +344,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix),
                         DEFAULT_INTERVALS);
-        checkRule(rules[0], "#8E0000", org.opengis.filter.And.class);
-        checkRule(rules[1], "#FF0000", org.opengis.filter.And.class);
+        checkRule(rules[0], "#8E0000", org.geotools.api.filter.And.class);
+        checkRule(rules[1], "#FF0000", org.geotools.api.filter.And.class);
         checkStroke(rules[0], "#FF0000", "5.0");
         checkStroke(rules[1], "#FF0000", "5.0");
     }
@@ -367,9 +367,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
-        checkRule(rules[0], "#FF0000", org.opengis.filter.And.class);
-        checkRule(rules[1], "#00FF00", org.opengis.filter.And.class);
-        checkRule(rules[2], "#0000FF", org.opengis.filter.And.class);
+        checkRule(rules[0], "#FF0000", org.geotools.api.filter.And.class);
+        checkRule(rules[1], "#00FF00", org.geotools.api.filter.And.class);
+        checkRule(rules[2], "#0000FF", org.geotools.api.filter.And.class);
     }
 
     @Test
@@ -389,9 +389,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
-        checkRule(rules[0], "#FF0000", org.opengis.filter.And.class);
-        checkRule(rules[1], "#00FF00", org.opengis.filter.And.class);
-        checkRule(rules[2], "#0000FF", org.opengis.filter.And.class);
+        checkRule(rules[0], "#FF0000", org.geotools.api.filter.And.class);
+        checkRule(rules[1], "#00FF00", org.geotools.api.filter.And.class);
+        checkRule(rules[2], "#0000FF", org.geotools.api.filter.And.class);
     }
 
     @Test
@@ -411,8 +411,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 2);
-        checkRule(rules[0], "#FF0000", org.opengis.filter.And.class);
-        checkRule(rules[1], "#00FF00", org.opengis.filter.And.class);
+        checkRule(rules[0], "#FF0000", org.geotools.api.filter.And.class);
+        checkRule(rules[1], "#00FF00", org.geotools.api.filter.And.class);
     }
 
     @Test
@@ -433,21 +433,21 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix),
                         15);
-        checkRule(rules[0], "#FF0000", org.opengis.filter.And.class);
-        checkRule(rules[1], "#D42A00", org.opengis.filter.And.class);
-        checkRule(rules[2], "#AA5500", org.opengis.filter.And.class);
-        checkRule(rules[3], "#7F7F00", org.opengis.filter.And.class);
-        checkRule(rules[4], "#55AA00", org.opengis.filter.And.class);
-        checkRule(rules[5], "#2AD400", org.opengis.filter.And.class);
-        checkRule(rules[6], "#00FF00", org.opengis.filter.And.class);
-        checkRule(rules[7], "#00E21C", org.opengis.filter.And.class);
-        checkRule(rules[8], "#00C538", org.opengis.filter.And.class);
-        checkRule(rules[9], "#00A954", org.opengis.filter.And.class);
-        checkRule(rules[10], "#008D71", org.opengis.filter.And.class);
-        checkRule(rules[11], "#00718D", org.opengis.filter.And.class);
-        checkRule(rules[12], "#0054A9", org.opengis.filter.And.class);
-        checkRule(rules[13], "#0038C6", org.opengis.filter.And.class);
-        checkRule(rules[14], "#001CE2", org.opengis.filter.And.class);
+        checkRule(rules[0], "#FF0000", org.geotools.api.filter.And.class);
+        checkRule(rules[1], "#D42A00", org.geotools.api.filter.And.class);
+        checkRule(rules[2], "#AA5500", org.geotools.api.filter.And.class);
+        checkRule(rules[3], "#7F7F00", org.geotools.api.filter.And.class);
+        checkRule(rules[4], "#55AA00", org.geotools.api.filter.And.class);
+        checkRule(rules[5], "#2AD400", org.geotools.api.filter.And.class);
+        checkRule(rules[6], "#00FF00", org.geotools.api.filter.And.class);
+        checkRule(rules[7], "#00E21C", org.geotools.api.filter.And.class);
+        checkRule(rules[8], "#00C538", org.geotools.api.filter.And.class);
+        checkRule(rules[9], "#00A954", org.geotools.api.filter.And.class);
+        checkRule(rules[10], "#008D71", org.geotools.api.filter.And.class);
+        checkRule(rules[11], "#00718D", org.geotools.api.filter.And.class);
+        checkRule(rules[12], "#0054A9", org.geotools.api.filter.And.class);
+        checkRule(rules[13], "#0038C6", org.geotools.api.filter.And.class);
+        checkRule(rules[14], "#001CE2", org.geotools.api.filter.And.class);
     }
 
     @Test
@@ -484,9 +484,10 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
-        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsLessThan.class);
-        checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
-        checkRule(rules[2], "#FF0000", org.opengis.filter.PropertyIsGreaterThanOrEqualTo.class);
+        checkRule(rules[0], "#690000", org.geotools.api.filter.PropertyIsLessThan.class);
+        checkRule(rules[1], "#B40000", org.geotools.api.filter.And.class);
+        checkRule(
+                rules[2], "#FF0000", org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo.class);
     }
 
     @Test
@@ -519,11 +520,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // System.out.println(response.getContentAsString());
 
         Rule[] rules = checkRules(response.getContentAsString(), 3);
-        Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
+        Filter f1 = checkRule(rules[0], "#690000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 8.0 and foo < 25.667", f1);
-        Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
+        Filter f2 = checkRule(rules[1], "#B40000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 25.667 and foo < 43.333", f2);
-        Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
+        Filter f3 = checkRule(rules[2], "#FF0000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 43.333 and foo <= 61.0", f3);
     }
 
@@ -542,11 +543,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // System.out.println(response.getContentAsString());
 
         Rule[] rules = checkRules(response.getContentAsString(), 3);
-        Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
+        Filter f1 = checkRule(rules[0], "#690000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 12.0 and foo < 17.6667", f1);
-        Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
+        Filter f2 = checkRule(rules[1], "#B40000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 17.6667 and foo < 23.3333", f2);
-        Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
+        Filter f3 = checkRule(rules[2], "#FF0000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 23.3333 and foo <= 29.0", f3);
     }
 
@@ -566,11 +567,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // System.out.println(response.getContentAsString());
 
         Rule[] rules = checkRules(response.getContentAsString(), 3);
-        Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
+        Filter f1 = checkRule(rules[0], "#690000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 4.0 and foo < 32.667", f1);
-        Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
+        Filter f2 = checkRule(rules[1], "#B40000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 32.667 and foo < 61.333", f2);
-        Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
+        Filter f3 = checkRule(rules[2], "#FF0000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 61.333 and foo <= 90.0", f3);
     }
 
@@ -617,11 +618,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // System.out.println(response.getContentAsString());
 
         Rule[] rules = checkRules(response.getContentAsString(), 3);
-        Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
+        Filter f1 = checkRule(rules[0], "#690000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 8.0 and foo < 20.0", f1);
-        Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
+        Filter f2 = checkRule(rules[1], "#B40000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 20.0 and foo < 43.0", f2);
-        Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
+        Filter f3 = checkRule(rules[2], "#FF0000", org.geotools.api.filter.And.class);
         assertFilter("foo >= 43.0 and foo <= 61.0", f3);
     }
 
@@ -902,7 +903,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsLessThan.class);
+        checkRule(rules[0], "#690000", org.geotools.api.filter.PropertyIsLessThan.class);
         PropertyIsLessThan filter = (PropertyIsLessThan) rules[0].getFilter();
         assertTrue(filter.getExpression1() instanceof FilterFunction_parseDouble);
     }
@@ -1768,7 +1769,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                                 pv -> pv.getDescriptor(), pv -> ((ParameterValue) pv).getValue()));
     }
 
-    private void assertBoundsEquals2D(Envelope env1, Envelope env2, double eps) {
+    private void assertBoundsEquals2D(Bounds env1, Bounds env2, double eps) {
         double[] delta = new double[4];
         delta[0] = env1.getMinimum(0) - env2.getMinimum(0);
         delta[1] = env1.getMaximum(0) - env2.getMaximum(0);
@@ -1777,7 +1778,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         for (double v : delta) {
             /*
-             * As per Envelope2D#boundsEquals we use ! here to
+             * As per ReferencedEnvelope#boundsEquals we use ! here to
              * catch any NaN values
              */
             if (!(Math.abs(v) <= eps)) {

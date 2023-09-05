@@ -13,17 +13,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Function;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Function;
 
 public class GeometryCollectorFunctionTest extends GeoServerSystemTestSupport {
 
-    static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     @Test
     public void testCollectNull() {

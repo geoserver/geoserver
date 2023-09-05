@@ -30,16 +30,16 @@ import org.geoserver.wfs.xml.GML32OutputFormat;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.util.ProgressListener;
 
 /**
  * A model class for the UI, hides the difference between simple layers and groups, centralizes the

@@ -5,8 +5,8 @@
  */
 package org.geoserver.wps.ppio;
 
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Converts between CRS string representations and {@link CoordinateReferenceSystem}

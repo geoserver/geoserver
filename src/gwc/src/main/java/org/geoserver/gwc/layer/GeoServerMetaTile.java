@@ -15,6 +15,7 @@ import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.MessageFormat;
 import javax.media.jai.PlanarImage;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.Response;
@@ -27,7 +28,6 @@ import org.geoserver.wms.map.RenderedImageTimeDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.metadata.i18n.ErrorKeys;
-import org.geotools.metadata.i18n.Errors;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.io.Resource;
@@ -218,7 +218,7 @@ public class GeoServerMetaTile extends MetaTile {
                 break;
             default:
                 throw new IllegalStateException(
-                        Errors.format(
+                        MessageFormat.format(
                                 ErrorKeys.ILLEGAL_ARGUMENT_$2,
                                 "metaTile class",
                                 metaTileImage.getClass().toString()));

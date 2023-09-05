@@ -14,8 +14,8 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.XlinkPropertyNameType;
 import org.eclipse.emf.ecore.EObject;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 
 /**
  * Query of a GetFeature/LockFeature request.

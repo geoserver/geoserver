@@ -12,20 +12,20 @@ import java.util.Collection;
 import java.util.List;
 import org.geoserver.csw.records.iso.MetaDataDescriptor;
 import org.geoserver.csw.store.internal.iso.MDTestSupport;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.geometry.MismatchedDimensionException;
 
 public class MetaDataTest extends MDTestSupport {
 
-    FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     @Test
     public void testConfirmTypeBuilt() {

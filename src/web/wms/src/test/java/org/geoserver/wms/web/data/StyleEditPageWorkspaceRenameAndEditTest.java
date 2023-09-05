@@ -28,7 +28,7 @@ import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -23,15 +23,15 @@ import org.geoserver.opensearch.eo.AbstractTemplates;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.FilterFactory2;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 public class STACTemplates extends AbstractTemplates {
 
     static final Logger LOGGER = Logging.getLogger(STACTemplates.class);
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     private static final String COLLECTIONS = "collections";
 
     private Template defaultCollectionTemplate;

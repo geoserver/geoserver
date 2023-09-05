@@ -36,11 +36,11 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 
 public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstractPage {
 

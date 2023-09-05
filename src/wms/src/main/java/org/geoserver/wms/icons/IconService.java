@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.ows.util.KvpUtils;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.geotools.util.logging.Logging;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;

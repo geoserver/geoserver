@@ -12,18 +12,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.io.GridFormatFactorySpi;
 import org.geotools.coverage.grid.io.GridFormatFinder;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.coverage.grid.Format;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * A collection of utilties for dealing with GeotTools Format.
@@ -216,7 +216,7 @@ public final class CoverageStoreUtils {
     }
 
     /** Retrieve a WGS84 lon,lat envelope from the provided one. */
-    public static GeneralEnvelope getWGS84LonLatEnvelope(final GeneralEnvelope envelope)
+    public static GeneralBounds getWGS84LonLatEnvelope(final GeneralBounds envelope)
             throws IndexOutOfBoundsException, FactoryException, TransformException {
         final CoordinateReferenceSystem sourceCRS = envelope.getCoordinateReferenceSystem();
 
@@ -226,7 +226,7 @@ public final class CoverageStoreUtils {
         //
         ////
         if (CRS.equalsIgnoreMetadata(sourceCRS, DefaultGeographicCRS.WGS84)) {
-            return new GeneralEnvelope(envelope);
+            return new GeneralBounds(envelope);
         }
 
         ////
@@ -235,11 +235,11 @@ public final class CoverageStoreUtils {
         //
         ////
         final CoordinateReferenceSystem targetCRS = DefaultGeographicCRS.WGS84;
-        final GeneralEnvelope targetEnvelope;
+        final GeneralBounds targetEnvelope;
         if (!CRS.equalsIgnoreMetadata(sourceCRS, targetCRS)) {
             targetEnvelope = CRS.transform(envelope, targetCRS);
         } else {
-            targetEnvelope = new GeneralEnvelope(envelope);
+            targetEnvelope = new GeneralBounds(envelope);
         }
 
         targetEnvelope.setCoordinateReferenceSystem(targetCRS);

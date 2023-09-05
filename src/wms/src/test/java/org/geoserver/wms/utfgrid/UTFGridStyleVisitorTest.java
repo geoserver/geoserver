@@ -14,25 +14,25 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.util.Map;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Fill;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.LineSymbolizer;
+import org.geotools.api.style.PolygonSymbolizer;
+import org.geotools.api.style.Stroke;
+import org.geotools.api.style.Style;
 import org.geotools.renderer.composite.BlendComposite.BlendingMode;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Fill;
-import org.geotools.styling.Graphic;
-import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.Stroke;
-import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Function;
 
 public class UTFGridStyleVisitorTest {
 
     UTFGridStyleVisitor visitor;
     StyleBuilder sb = new StyleBuilder();
-    FilterFactory2 ff = sb.getFilterFactory();
+    FilterFactory ff = sb.getFilterFactory();
     private UTFGridColorFunction colorFunction;
 
     @Before

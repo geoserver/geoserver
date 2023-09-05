@@ -25,9 +25,9 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.WPSInfo;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
 
 /** @author Martin Davis OpenGeo */
 public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {

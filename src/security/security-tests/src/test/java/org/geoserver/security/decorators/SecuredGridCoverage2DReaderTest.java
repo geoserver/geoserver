@@ -27,18 +27,18 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
-import org.opengis.coverage.grid.Format;
-import org.opengis.filter.Filter;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
 
 public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
 
@@ -96,7 +96,7 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
 
         GridCoverage2DReader reader = createNiceMock(GridCoverage2DReader.class);
         expect(reader.getOriginalEnvelope())
-                .andReturn(new GeneralEnvelope(new double[] {-90, -90}, new double[] {90, 90}))
+                .andReturn(new GeneralBounds(new double[] {-90, -90}, new double[] {90, 90}))
                 .anyTimes();
         expect(reader.getOriginalGridRange())
                 .andReturn(new GeneralGridEnvelope(new Rectangle(0, 0, 100, 100)))

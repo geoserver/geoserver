@@ -30,9 +30,9 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.junit.After;
 import org.junit.Before;
-import org.opengis.coverage.grid.GridCoverage;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**

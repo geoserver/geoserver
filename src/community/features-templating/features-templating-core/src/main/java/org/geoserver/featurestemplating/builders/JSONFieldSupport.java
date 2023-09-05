@@ -16,13 +16,13 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.feature.ComplexAttribute;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.function.JsonPointerFunction;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.ComplexAttribute;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.expression.Expression;
 
 /**
  * Supports handling Feature properties backed by JSON columns. Currently supports native JSON and

@@ -6,8 +6,8 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wms.WebMapServer;
-import org.opengis.util.ProgressListener;
 
 /**
  * A store backed by a {@link WebMapServer}, allows for WMS cascading

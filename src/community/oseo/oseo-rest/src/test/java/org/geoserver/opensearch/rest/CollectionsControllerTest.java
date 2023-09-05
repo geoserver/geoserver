@@ -24,11 +24,11 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 

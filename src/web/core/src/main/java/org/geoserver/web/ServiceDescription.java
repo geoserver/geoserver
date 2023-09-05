@@ -11,8 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import org.geotools.api.util.InternationalString;
 import org.geotools.text.Text;
-import org.opengis.util.InternationalString;
 
 /** Description of a service acting as a model object to this panel's ListView. */
 public class ServiceDescription implements Serializable, Comparable<ServiceDescription> {

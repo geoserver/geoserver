@@ -17,14 +17,14 @@ import net.opengis.ows10.BoundingBoxType;
 import org.geoserver.csw.records.CSWRecordBuilder;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Parser;
-import org.opengis.feature.Feature;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Builds features scanning xml files in the specified folder, and parsing them as CSW Record

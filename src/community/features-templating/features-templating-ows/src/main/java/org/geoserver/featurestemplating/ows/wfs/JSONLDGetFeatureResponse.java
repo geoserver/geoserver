@@ -25,8 +25,8 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.api.feature.Feature;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.Feature;
 
 /**
  * Encodes features in json-ld output format by means of a ${@link TemplateBuilder} tree obtained by

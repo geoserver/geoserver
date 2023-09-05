@@ -43,11 +43,11 @@ import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
 import org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader;
 import org.geoserver.wms.legendgraphic.LegendUtils;
 import org.geoserver.wms.map.ImageUtils;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Rule;
 import org.geotools.map.Layer;
 import org.geotools.renderer.lite.RendererUtilities;
-import org.geotools.styling.FeatureTypeStyle;
-import org.opengis.filter.expression.Expression;
-import org.opengis.style.Rule;
 
 public class LegendDecoration extends AbstractDispatcherCallback implements MapDecoration {
     private static int TITLE_INDENT = 5;

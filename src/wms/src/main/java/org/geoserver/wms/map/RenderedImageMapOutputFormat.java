@@ -43,12 +43,12 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSPartialMapException;
 import org.geoserver.wms.WMSServiceExceptionHandler;
 import org.geoserver.wms.decoration.MapDecorationLayout;
+import org.geotools.api.style.Style;
 import org.geotools.image.ImageWorker;
 import org.geotools.map.Layer;
 import org.geotools.map.StyleLayer;
 import org.geotools.renderer.lite.LabelCache;
 import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.styling.Style;
 
 /**
  * A {@link GetMapOutputFormat} that produces {@link RenderedImageMap} instances to be encoded in

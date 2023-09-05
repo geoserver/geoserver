@@ -21,9 +21,9 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
+import org.geotools.api.filter.MultiValuedFilter.MatchAction;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.MultiValuedFilter.MatchAction;
 
 public class PredicatesTest {
 

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import org.geotools.api.feature.Property;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.Property;
 
 /**
  * Abstraction for an Aggregate Operation. An aggregate operation might have params and that are
@@ -42,9 +42,9 @@ abstract class AggregationOp {
     /** Unpacks value from attribute container */
     static Object unpack(Object value) {
 
-        if (value instanceof org.opengis.feature.ComplexAttribute) {
+        if (value instanceof org.geotools.api.feature.ComplexAttribute) {
             Property simpleContent =
-                    ((org.opengis.feature.ComplexAttribute) value)
+                    ((org.geotools.api.feature.ComplexAttribute) value)
                             .getProperty(new NameImpl("simpleContent"));
             if (simpleContent == null) {
                 return null;
@@ -53,8 +53,8 @@ abstract class AggregationOp {
             }
         }
 
-        if (value instanceof org.opengis.feature.Attribute) {
-            return ((org.opengis.feature.Attribute) value).getValue();
+        if (value instanceof org.geotools.api.feature.Attribute) {
+            return ((org.geotools.api.feature.Attribute) value).getValue();
         }
 
         return value;

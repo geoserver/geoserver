@@ -23,21 +23,21 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.InternationalContentHelper;
 import org.geoserver.util.GeoServerDefaultLocale;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.FeatureTypeConstraint;
+import org.geotools.api.style.Style;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.styling.FeatureTypeConstraint;
-import org.geotools.styling.Style;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A convenience class that hides some of the differences between the various types of layers

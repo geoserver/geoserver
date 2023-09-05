@@ -9,6 +9,10 @@ import java.util.NoSuchElementException;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.utils.KmlCentroidBuilder;
 import org.geoserver.kml.utils.KmlCentroidOptions;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
@@ -17,10 +21,6 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.GeometryDescriptor;
 
 /**
  * Wraps a generic feature collection and returns a collection whose feature geometries are the

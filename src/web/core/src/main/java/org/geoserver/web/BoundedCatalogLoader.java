@@ -10,7 +10,7 @@ import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /**
  * Loads {@link org.geoserver.catalog.CatalogInfo} objects from the catalog, with a timeout and a

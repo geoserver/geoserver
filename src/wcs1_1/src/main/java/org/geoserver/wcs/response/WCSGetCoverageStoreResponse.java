@@ -28,9 +28,9 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverage;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**

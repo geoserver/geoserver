@@ -7,21 +7,21 @@ package org.geoserver.feature;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
-import org.geotools.data.FeatureReader;
-import org.geotools.data.FeatureWriter;
+import org.geotools.api.data.FeatureReader;
+import org.geotools.api.data.FeatureWriter;
+import org.geotools.api.feature.FeatureVisitor;
+import org.geotools.api.feature.IllegalAttributeException;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.identity.FeatureId;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ReTypingFeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.identity.FeatureIdImpl;
-import org.opengis.feature.FeatureVisitor;
-import org.opengis.feature.IllegalAttributeException;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.identity.FeatureId;
 
 /**
  * FeatureCollection with "casts" features from on feature type to another.

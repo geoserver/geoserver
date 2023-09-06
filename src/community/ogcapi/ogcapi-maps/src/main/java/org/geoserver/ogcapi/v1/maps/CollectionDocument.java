@@ -16,11 +16,11 @@ import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.LinkInfoConverter;
 import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpStatus;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */

@@ -4,14 +4,14 @@
  */
 package org.geoserver.gsr.translate.renderer;
 
+import org.geotools.api.filter.BinaryComparisonOperator;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.PropertyIsGreaterThan;
+import org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.util.NumberRange;
-import org.opengis.filter.BinaryComparisonOperator;
-import org.opengis.filter.Filter;
-import org.opengis.filter.PropertyIsGreaterThan;
-import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 
 public class GreaterExtractor implements PropertyRangeExtractor {
 

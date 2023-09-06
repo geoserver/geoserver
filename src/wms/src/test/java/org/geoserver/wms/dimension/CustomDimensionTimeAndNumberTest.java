@@ -21,13 +21,13 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
 
 /**
  * Tests the WMS default value support for a custom dimension that uses the java.util.Date class

@@ -8,9 +8,9 @@ package org.geoserver.csw.feature.sort;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import org.opengis.feature.Feature;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 
 /**
  * Builds comparators against complex features based on {@link SortBy} definitions

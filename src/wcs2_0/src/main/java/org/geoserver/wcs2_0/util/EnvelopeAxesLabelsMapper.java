@@ -7,13 +7,13 @@ package org.geoserver.wcs2_0.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.cs.CoordinateSystem;
+import org.geotools.api.referencing.cs.CoordinateSystemAxis;
 import org.geotools.referencing.cs.DefaultCoordinateSystemAxis;
 import org.geotools.util.Utilities;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeographicCRS;
-import org.opengis.referencing.cs.CoordinateSystem;
-import org.opengis.referencing.cs.CoordinateSystemAxis;
 
 /**
  * Retain a unique mapping between {@link Envelope} axes and their names.
@@ -23,7 +23,7 @@ import org.opengis.referencing.cs.CoordinateSystemAxis;
  */
 public class EnvelopeAxesLabelsMapper {
 
-    public List<String> getAxesNames(Envelope envelope, boolean swapAxes) {
+    public List<String> getAxesNames(Bounds envelope, boolean swapAxes) {
         Utilities.ensureNonNull("envelope", envelope);
         final CoordinateReferenceSystem crs = envelope.getCoordinateReferenceSystem();
         if (crs == null) {
@@ -89,12 +89,12 @@ public class EnvelopeAxesLabelsMapper {
         }
     }
 
-    public int getAxisIndex(final Envelope envelope, final String axisAbbreviation) {
+    public int getAxisIndex(final Bounds envelope, final String axisAbbreviation) {
         final int[] val = getAxesIndexes(envelope, Arrays.asList(axisAbbreviation));
         return (val == null ? -1 : val[0]);
     }
 
-    public int[] getAxesIndexes(final Envelope envelope, final List<String> axesAbbreviations) {
+    public int[] getAxesIndexes(final Bounds envelope, final List<String> axesAbbreviations) {
         Utilities.ensureNonNull("envelope", envelope);
         Utilities.ensureNonNull("dimensionNames", axesAbbreviations);
 

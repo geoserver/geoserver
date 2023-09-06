@@ -11,16 +11,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.GraphicalSymbol;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.Stroke;
 import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.renderer.style.ExternalGraphicFactory;
-import org.geotools.styling.ExternalGraphic;
-import org.opengis.feature.Feature;
-import org.opengis.filter.expression.Expression;
-import org.opengis.style.Graphic;
-import org.opengis.style.GraphicalSymbol;
-import org.opengis.style.Mark;
-import org.opengis.style.Stroke;
 
 /**
  * Utility methods for working with icons.

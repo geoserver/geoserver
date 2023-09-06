@@ -45,16 +45,16 @@ import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.Style;
-import org.geotools.styling.Symbolizer;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.GraphicalSymbol;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.util.Version;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.opengis.style.GraphicalSymbol;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**

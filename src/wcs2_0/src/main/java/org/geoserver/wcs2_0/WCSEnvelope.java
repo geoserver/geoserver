@@ -5,14 +5,14 @@
  */
 package org.geoserver.wcs2_0;
 
-import org.geotools.geometry.AbstractEnvelope;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.cs.CoordinateSystem;
+import org.geotools.api.referencing.cs.CoordinateSystemAxis;
+import org.geotools.geometry.AbstractBounds;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.cs.DefaultCoordinateSystemAxis;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
-import org.opengis.referencing.cs.CoordinateSystemAxis;
 
 /**
  * A custom {@link Envelope} that allows to set a min value of longitude higher than the max one in
@@ -20,7 +20,7 @@ import org.opengis.referencing.cs.CoordinateSystemAxis;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class WCSEnvelope extends AbstractEnvelope {
+public class WCSEnvelope extends AbstractBounds {
 
     private static final int LONGIDUTE_NOT_FOUND = -1;
 
@@ -54,7 +54,7 @@ public class WCSEnvelope extends AbstractEnvelope {
     }
 
     /** Copies an existing envelope */
-    public WCSEnvelope(Envelope other) {
+    public WCSEnvelope(Bounds other) {
         this(other.getCoordinateReferenceSystem());
         for (int d = 0; d < dimensions; d++) {
             setRange(d, other.getMinimum(d), other.getMaximum(d));
@@ -162,12 +162,12 @@ public class WCSEnvelope extends AbstractEnvelope {
      * in that case two envelopes will be returned covering the portion before and after the
      * dateline
      */
-    public GeneralEnvelope[] getNormalizedEnvelopes() {
+    public GeneralBounds[] getNormalizedEnvelopes() {
         if (!isCrossingDateline()) {
-            return new GeneralEnvelope[] {new GeneralEnvelope(this)};
+            return new GeneralBounds[] {new GeneralBounds(this)};
         } else {
-            GeneralEnvelope e1 = new GeneralEnvelope(crs);
-            GeneralEnvelope e2 = new GeneralEnvelope(crs);
+            GeneralBounds e1 = new GeneralBounds(crs);
+            GeneralBounds e2 = new GeneralBounds(crs);
             for (int i = 0; i < dimensions; i++) {
                 if (i == longitudeDimension) {
                     e1.setRange(i, getMinimum(i), 180);
@@ -182,7 +182,7 @@ public class WCSEnvelope extends AbstractEnvelope {
                 }
             }
 
-            return new GeneralEnvelope[] {e1, e2};
+            return new GeneralBounds[] {e1, e2};
         }
     }
 
@@ -190,13 +190,13 @@ public class WCSEnvelope extends AbstractEnvelope {
      * Checks if this envelope intersects the provided one, taking into account the case of dateline
      * crossing.
      */
-    public void intersect(GeneralEnvelope other) {
+    public void intersect(GeneralBounds other) {
         assert other.getDimension() == dimensions : other;
         assert CRS.equalsIgnoreMetadata(crs, other.getCoordinateReferenceSystem()) : other;
 
         if (isCrossingDateline()) {
-            GeneralEnvelope[] normalizedEnvelopes = getNormalizedEnvelopes();
-            for (GeneralEnvelope ge : normalizedEnvelopes) {
+            GeneralBounds[] normalizedEnvelopes = getNormalizedEnvelopes();
+            for (GeneralBounds ge : normalizedEnvelopes) {
                 ge.intersect(other);
             }
             for (int i = 0; i < dimensions; i++) {

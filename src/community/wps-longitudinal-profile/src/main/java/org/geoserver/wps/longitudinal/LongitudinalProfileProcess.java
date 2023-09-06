@@ -23,14 +23,22 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wps.gs.GeoServerProcess;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
@@ -44,14 +52,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeographicCRS;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import si.uom.SI;
 
 @DescribeProcess(
@@ -174,15 +174,12 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         Geometry previousPoint = null;
 
         CoordinateReferenceSystem coverageCrs = coverageInfo.getCRS();
-        List<DirectPosition2D> positions2D =
+        List<Position2D> positions2D =
                 Arrays.stream(denseLine.getCoordinates())
-                        .map(
-                                coordinate ->
-                                        new DirectPosition2D(
-                                                coverageCrs, coordinate.x, coordinate.y))
+                        .map(coordinate -> new Position2D(coverageCrs, coordinate.x, coordinate.y))
                         .collect(Collectors.toList());
 
-        for (DirectPosition2D position2D : positions2D) {
+        for (Position2D position2D : positions2D) {
             LOGGER.fine("processing position:" + position2D);
             CoordinateSequence2D coordinateSequence =
                     new CoordinateSequence2D(position2D.getX(), position2D.getY());
@@ -294,7 +291,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
     private static double getAltitude(
             FeatureSource featureSource,
             GridCoverage2D gridCoverage2D,
-            DirectPosition2D position2D,
+            Position2D position2D,
             Geometry point,
             int altitudeIndex,
             String altitudeName)

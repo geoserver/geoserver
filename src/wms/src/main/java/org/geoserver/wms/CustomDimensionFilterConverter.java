@@ -25,13 +25,13 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 
 /**
  * Centralizes filter convert operations for custom dimensions.

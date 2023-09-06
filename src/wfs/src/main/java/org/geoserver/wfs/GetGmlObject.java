@@ -11,14 +11,14 @@ import java.util.logging.Logger;
 import net.opengis.wfs.GetGmlObjectType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.identity.GmlObjectId;
 import org.geotools.data.GmlObjectStore;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.identity.GmlObjectId;
 
 /**
  * Web Feature Service GetGmlObject operation.

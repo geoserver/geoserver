@@ -9,11 +9,11 @@ import static org.geotools.gce.imagemosaic.Utils.FF;
 import java.io.IOException;
 import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
 
 /** Propagates image listener events to all listeners */
 class ImageListenerSupport {

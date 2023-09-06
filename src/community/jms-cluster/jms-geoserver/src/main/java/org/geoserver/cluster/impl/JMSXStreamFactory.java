@@ -20,10 +20,10 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.coverage.grid.GridGeometry;
+import org.geotools.api.util.InternationalString;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.util.InternationalString;
 
 public class JMSXStreamFactory {
 

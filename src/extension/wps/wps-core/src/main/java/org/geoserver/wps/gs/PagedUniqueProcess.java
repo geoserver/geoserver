@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.visitor.UniqueVisitor;
@@ -18,8 +20,6 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.FilterFactory;
 
 /**
  * A WPS process to retrieve unique field values from a layer on Geoserver catalog. Requires a valid
@@ -39,7 +39,7 @@ public class PagedUniqueProcess implements GeoServerProcess {
     /** The LOGGER. */
     private static final Logger LOGGER = Logging.getLogger(PagedUniqueProcess.class);
 
-    private final FilterFactory FF = CommonFactoryFinder.getFilterFactory2();
+    private final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     public static final class Results {
         private String featureTypeName;

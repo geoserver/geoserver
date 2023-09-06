@@ -8,17 +8,17 @@ import static org.junit.Assert.assertEquals;
 
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Function;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Function;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 public class ServiceLinkFunctionTest {
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     @BeforeClass
     public static void setDispatcherRequest() {

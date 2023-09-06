@@ -3,14 +3,14 @@ package org.geoserver.opensearch.eo.store;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Test;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
 
 public class ArrayHasNullFunctionTest {
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     @Test
     public void testEvaluate() throws Exception {

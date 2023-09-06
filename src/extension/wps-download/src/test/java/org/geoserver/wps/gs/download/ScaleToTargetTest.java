@@ -16,6 +16,10 @@ import javax.media.jai.Interpolation;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.wcs.CoverageCleanerCallback;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -31,10 +35,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
 
 public class ScaleToTargetTest {
 
@@ -72,7 +72,7 @@ public class ScaleToTargetTest {
             reader = new GeoTiffReader(inputTempFile);
             assertNotNull(reader);
 
-            Envelope fullSizeEnvelope = reader.getOriginalEnvelope();
+            Bounds fullSizeEnvelope = reader.getOriginalEnvelope();
             ScaleToTarget scalingFullSize = new ScaleToTarget(reader, fullSizeEnvelope);
             scalingFullSize.setTargetSize(160, null);
             Integer[] targetSize = scalingFullSize.getTargetSize();
@@ -109,7 +109,7 @@ public class ScaleToTargetTest {
             reader = new GeoTiffReader(inputTempFile);
             assertNotNull(reader);
 
-            Envelope fullSizeEnvelope = reader.getOriginalEnvelope();
+            Bounds fullSizeEnvelope = reader.getOriginalEnvelope();
 
             ScaleToTarget noScaling = new ScaleToTarget(reader, fullSizeEnvelope);
             // I deliberately omit setting the target size: only interpolation will be performed
@@ -191,7 +191,7 @@ public class ScaleToTargetTest {
             assertNotNull(inputReader);
 
             // read the entire coverage
-            Envelope fullSizeEnvelope = inputReader.getOriginalEnvelope();
+            Bounds fullSizeEnvelope = inputReader.getOriginalEnvelope();
             ScaleToTarget oneFourth = new ScaleToTarget(inputReader, fullSizeEnvelope);
             oneFourth.setTargetSize(targetSizeX, targetSizeY);
 

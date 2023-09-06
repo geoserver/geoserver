@@ -7,13 +7,13 @@ package org.geoserver.wfs.xml.filter.v1_1;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.wfs.WFSException;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.v1_0.OGCPropertyNameTypeBinding;
 import org.geotools.gml3.GML;
 import org.geotools.gml3.bindings.GML3EncodingUtils;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -27,7 +27,7 @@ public class PropertyNameTypeBinding extends OGCPropertyNameTypeBinding {
     Catalog catalog;
 
     public PropertyNameTypeBinding(
-            FilterFactory2 filterFactory, NamespaceSupport namespaceSupport, Catalog catalog) {
+            FilterFactory filterFactory, NamespaceSupport namespaceSupport, Catalog catalog) {
         super(filterFactory, namespaceSupport);
         this.catalog = catalog;
     }
@@ -51,7 +51,7 @@ public class PropertyNameTypeBinding extends OGCPropertyNameTypeBinding {
             }
         }
 
-        if (factory instanceof FilterFactory2) {
+        if (factory instanceof FilterFactory) {
             return factory.property(
                     propertyName.getPropertyName(),
                     GML3EncodingUtils.copyNamespaceSupport(namespaceSupport));

@@ -33,12 +33,12 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -53,7 +53,7 @@ import org.xml.sax.InputSource;
 public class MapDecorationLayout {
 
     /** A filter factory, using the default hints */
-    public static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    public static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private static final Pattern EXPRESSION = Pattern.compile("^\\s*\\$\\{(.*)\\}\\s*$");
 

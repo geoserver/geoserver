@@ -18,7 +18,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /**
  * A class representing the OGC API for Features server "collections" in a way that Jackson can

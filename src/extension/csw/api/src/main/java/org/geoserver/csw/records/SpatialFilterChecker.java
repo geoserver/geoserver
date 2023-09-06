@@ -6,23 +6,23 @@
 package org.geoserver.csw.records;
 
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.spatial.BBOX;
+import org.geotools.api.filter.spatial.Beyond;
+import org.geotools.api.filter.spatial.BinarySpatialOperator;
+import org.geotools.api.filter.spatial.Contains;
+import org.geotools.api.filter.spatial.Crosses;
+import org.geotools.api.filter.spatial.DWithin;
+import org.geotools.api.filter.spatial.Disjoint;
+import org.geotools.api.filter.spatial.Equals;
+import org.geotools.api.filter.spatial.Intersects;
+import org.geotools.api.filter.spatial.Overlaps;
+import org.geotools.api.filter.spatial.Touches;
+import org.geotools.api.filter.spatial.Within;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.filter.spatial.Beyond;
-import org.opengis.filter.spatial.BinarySpatialOperator;
-import org.opengis.filter.spatial.Contains;
-import org.opengis.filter.spatial.Crosses;
-import org.opengis.filter.spatial.DWithin;
-import org.opengis.filter.spatial.Disjoint;
-import org.opengis.filter.spatial.Equals;
-import org.opengis.filter.spatial.Intersects;
-import org.opengis.filter.spatial.Overlaps;
-import org.opengis.filter.spatial.Touches;
-import org.opengis.filter.spatial.Within;
 
 /**
  * Checks if spatial filters are used against non spatial properties, if so, throws a

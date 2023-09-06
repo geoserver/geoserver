@@ -11,14 +11,14 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.List;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
-import org.opengis.filter.expression.Function;
 
 public class RasterSymbolizerVisitorTest {
 

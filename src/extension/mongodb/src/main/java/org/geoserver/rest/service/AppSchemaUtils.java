@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import org.geoserver.rest.RestException;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.FeatureTypeMapping;
 import org.geotools.data.mongodb.MongoDataStore;
-import org.opengis.feature.type.Name;
 import org.springframework.http.HttpStatus;
 
 /** Util methods for AppSchema centric logic. */

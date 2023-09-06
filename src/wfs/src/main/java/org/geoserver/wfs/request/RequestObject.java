@@ -10,8 +10,8 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
+import org.geotools.api.filter.Filter;
 import org.geotools.xsd.EMFUtils;
-import org.opengis.filter.Filter;
 
 /**
  * Base class for WFS request object adpaters.

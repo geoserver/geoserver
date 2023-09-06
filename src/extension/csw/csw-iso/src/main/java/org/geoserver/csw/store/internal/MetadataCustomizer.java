@@ -12,16 +12,16 @@ import java.util.logging.Level;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.csw.DownloadLinkHandler;
 import org.geoserver.csw.records.iso.MetaDataDescriptor;
-import org.geotools.data.CloseableIterator;
+import org.geotools.api.data.CloseableIterator;
+import org.geotools.api.feature.ComplexAttribute;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.ComplexType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.feature.AttributeImpl;
 import org.geotools.feature.ComplexAttributeImpl;
-import org.opengis.feature.ComplexAttribute;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.ComplexType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.expression.PropertyName;
 
 /** {@link FeatureCustomizer} subclass to deal with ISO Metadata type */
 public class MetadataCustomizer extends FeatureCustomizer {

@@ -8,7 +8,7 @@ package org.geoserver.wps.security;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.impl.SecureTreeNode;
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.type.Name;
 import org.springframework.security.core.Authentication;
 
 /**

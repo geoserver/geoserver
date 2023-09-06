@@ -16,12 +16,12 @@ import org.geoserver.community.mbstyle.MBStyleHandler;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wms.web.data.OpenLayersPreviewPanel;
 import org.geoserver.wms.web.data.StyleEditPage;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.Style;
-import org.geotools.styling.TextSymbolizer2;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.Symbolizer;
+import org.geotools.api.style.TextSymbolizer;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.style.Symbolizer;
 
 public class MBStyleEditPageTest extends GeoServerWicketTestSupport {
 
@@ -87,7 +87,7 @@ public class MBStyleEditPageTest extends GeoServerWicketTestSupport {
         assertNotNull(getCatalog().getStyleByName("mbstyle").getSLD());
         Style style = getCatalog().getStyleByName("mbstyle").getStyle();
         Symbolizer sym = style.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
-        TextSymbolizer2 label = (TextSymbolizer2) sym;
+        TextSymbolizer label = (TextSymbolizer) sym;
         ExternalGraphic eg = (ExternalGraphic) label.getGraphic().graphicalSymbols().get(0);
         assertEquals(
                 eg.getURI(),

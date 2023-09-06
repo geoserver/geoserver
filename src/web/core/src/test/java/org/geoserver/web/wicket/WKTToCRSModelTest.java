@@ -10,9 +10,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.model.Model;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class WKTToCRSModelTest {
 

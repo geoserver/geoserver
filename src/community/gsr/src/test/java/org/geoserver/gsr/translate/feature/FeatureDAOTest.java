@@ -125,7 +125,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
         // Lines.0
         iterator.next();
         // reported id should be compatible with actual id
-        org.opengis.feature.Feature nativeFeature = iterator.next();
+        org.geotools.api.feature.Feature nativeFeature = iterator.next();
         assertEquals(
                 FeatureEncoder.toGSRObjectId(nativeFeature.getIdentifier().getID()),
                 result.getObjectId());
@@ -174,7 +174,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
         // MLines.0
         iterator.next();
         // reported id should be compatible with actual id
-        org.opengis.feature.Feature nativeFeature = iterator.next();
+        org.geotools.api.feature.Feature nativeFeature = iterator.next();
         assertEquals(
                 FeatureEncoder.toGSRObjectId(nativeFeature.getIdentifier().getID()),
                 result.getObjectId());

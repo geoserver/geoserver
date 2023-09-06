@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.gml3.v3_2.GMLSchema;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 
 /**
  * A FeatureSource relying on a DynamicFeatureType. The getSchema() method will provide by default

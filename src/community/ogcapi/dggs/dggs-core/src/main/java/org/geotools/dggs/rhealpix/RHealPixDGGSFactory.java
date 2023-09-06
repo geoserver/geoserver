@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jep.JepException;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 import org.geotools.dggs.DGGSFactory;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.util.logging.Logging;

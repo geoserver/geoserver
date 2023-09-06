@@ -10,7 +10,7 @@ import net.opengis.wcs10.GetCapabilitiesType;
 import net.opengis.wcs10.GetCoverageType;
 import org.geoserver.wcs.response.Wcs10CapsTransformer;
 import org.geoserver.wcs.response.Wcs10DescribeCoverageTransformer;
-import org.opengis.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverage;
 
 /**
  * Web Coverage Services interface.

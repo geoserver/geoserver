@@ -10,10 +10,10 @@ import java.util.Spliterators;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.StreamSupport;
-import org.geotools.data.DataStoreFinder;
+import org.geotools.api.data.DataStoreFinder;
+import org.geotools.api.feature.type.ComplexType;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.ComplexType;
 
 /**
  * This class provides the options to encode ComplexFeatures when serving them trough an AppSchema

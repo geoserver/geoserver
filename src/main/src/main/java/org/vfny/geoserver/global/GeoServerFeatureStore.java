@@ -8,17 +8,17 @@ package org.vfny.geoserver.global;
 import java.io.IOException;
 import java.util.List;
 import org.geoserver.feature.RetypingFeatureCollection;
+import org.geotools.api.data.FeatureReader;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.data.SimpleFeatureStore;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.identity.FeatureId;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureReader;
-import org.geotools.data.FeatureStore;
-import org.geotools.data.Transaction;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.identity.FeatureId;
 
 /**
  * GeoServer wrapper for backend Geotools2 DataStore.

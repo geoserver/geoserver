@@ -6,12 +6,12 @@
 package org.geoserver.wfs.xml.gml2;
 
 import java.net.URI;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Subclass of {@link GMLBoxTypeBinding} that parses srsName and can inherit the CRS from the

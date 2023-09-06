@@ -13,16 +13,16 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.factory.CommonFactoryFinder;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryComponentFilter;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.parameter.GeneralParameterValue;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -32,7 +32,7 @@ import org.springframework.security.core.Authentication;
  */
 public abstract class ResourceAccessManagerWrapper implements ResourceAccessManager {
     protected ResourceAccessManager delegate;
-    private static FilterFactory2 factory = CommonFactoryFinder.getFilterFactory2(null);
+    private static FilterFactory factory = CommonFactoryFinder.getFilterFactory(null);
     private static GeometryFactory geomFactory = new GeometryFactory();
 
     protected CatalogMode intersection(CatalogMode a, CatalogMode b) {

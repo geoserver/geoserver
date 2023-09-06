@@ -26,6 +26,9 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.ProjectedCRS;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -40,9 +43,6 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.locationtech.jts.geom.Coordinate;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.ProjectedCRS;
 import org.springframework.util.Assert;
 
 /** Formats the output of a GetTimeSeries response as a JPG or PNG chart or as a CSV file. */

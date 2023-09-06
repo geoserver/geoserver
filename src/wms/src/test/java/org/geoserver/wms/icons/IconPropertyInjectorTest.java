@@ -19,19 +19,19 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Graphic;
-import org.geotools.styling.Mark;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
-import org.geotools.styling.Style;
-import org.geotools.styling.Symbolizer;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 
 public class IconPropertyInjectorTest extends IconTestSupport {
 

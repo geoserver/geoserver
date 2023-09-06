@@ -38,6 +38,24 @@ import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageViewHandler.CoveragesConsistencyChecker;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverageWriter;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.data.ServiceInfo;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.geometry.BoundingBox;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -50,10 +68,8 @@ import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.coverage.processing.CoverageProcessor;
-import org.geotools.data.ResourceInfo;
-import org.geotools.data.ServiceInfo;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.parameter.DefaultParameterDescriptor;
@@ -63,22 +79,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.Format;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageWriter;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * A {@link CoverageView} reader which takes care of doing underlying coverage read operations and
@@ -90,7 +90,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     private static final int HETEROGENEOUS_RASTER_GUTTER = 10;
 
-    public static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    public static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
 
@@ -809,7 +809,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
     }
 
     @Override
-    public GeneralEnvelope getOriginalEnvelope(String coverageName) {
+    public GeneralBounds getOriginalEnvelope(String coverageName) {
         checkCoverageName(coverageName);
         return this.getOriginalEnvelope();
     }
@@ -917,7 +917,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
     }
 
     @Override
-    public GeneralEnvelope getOriginalEnvelope() {
+    public GeneralBounds getOriginalEnvelope() {
         return handler.getOriginalEnvelope();
     }
 

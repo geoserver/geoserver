@@ -18,8 +18,8 @@ import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

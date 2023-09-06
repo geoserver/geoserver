@@ -20,8 +20,8 @@ import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.gwc.wmts.dimensions.RasterElevationDimension;
+import org.geotools.api.filter.Filter;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 /**
  * This class contains tests that check that elevation dimensions values are correctly extracted

@@ -33,14 +33,14 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.LockingManager;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.InProcessLockingManager;
-import org.geotools.data.LockingManager;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
 
 public class StatusPanel extends Panel {
 

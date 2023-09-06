@@ -26,12 +26,12 @@ import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */

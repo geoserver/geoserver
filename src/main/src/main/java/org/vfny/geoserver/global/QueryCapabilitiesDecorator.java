@@ -5,8 +5,8 @@
  */
 package org.vfny.geoserver.global;
 
-import org.geotools.data.QueryCapabilities;
-import org.opengis.filter.sort.SortBy;
+import org.geotools.api.data.QueryCapabilities;
+import org.geotools.api.filter.sort.SortBy;
 
 /**
  * Decorates a given query capabilities, subclasses should override methods they inded to change

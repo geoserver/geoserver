@@ -36,6 +36,8 @@ import org.geoserver.wms.map.PNGMapResponse;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
@@ -51,8 +53,6 @@ import org.geowebcache.grid.GridSubsetFactory;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.layer.TileLayer;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.util.ProgressListener;
 
 /**
  * Abstract class for tiles style GetMapOutputFormat (mbtiles && geopackage)

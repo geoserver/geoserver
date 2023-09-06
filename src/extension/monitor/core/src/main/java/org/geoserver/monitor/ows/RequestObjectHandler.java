@@ -10,8 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.RequestData;
+import org.geotools.api.geometry.BoundingBox;
 import org.geotools.util.logging.Logging;
-import org.opengis.geometry.BoundingBox;
 
 /**
  * Class that extracts information from an ows request.

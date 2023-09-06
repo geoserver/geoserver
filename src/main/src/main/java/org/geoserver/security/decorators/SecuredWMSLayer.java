@@ -11,13 +11,13 @@ import java.util.Map;
 import java.util.Set;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.ows.wms.CRSEnvelope;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.StyleImpl;
 import org.geotools.ows.wms.xml.Dimension;
 import org.geotools.ows.wms.xml.Extent;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A {@link Layer} wrapper carrying around the wrapper policy so that {@link SecuredWebMapServer}
@@ -124,7 +124,7 @@ public class SecuredWMSLayer extends Layer {
     }
 
     @Override
-    public GeneralEnvelope getEnvelope(CoordinateReferenceSystem crs) {
+    public GeneralBounds getEnvelope(CoordinateReferenceSystem crs) {
         return delegate.getEnvelope(crs);
     }
 

@@ -45,9 +45,11 @@ import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.data.DataAccessFinder;
+import org.geotools.api.data.DataStoreFinder;
+import org.geotools.api.referencing.AuthorityFactory;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.coverage.CoverageFactoryFinder;
-import org.geotools.data.DataAccessFinder;
-import org.geotools.data.DataStoreFinder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.referencing.CRS;
@@ -58,8 +60,6 @@ import org.geotools.util.WeakCollectionCleaner;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.AuthorityFactory;
-import org.opengis.referencing.FactoryException;
 
 /**
  * Listens for GeoServer startup and tries to configure axis order, logging redirection, and a few
@@ -219,7 +219,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
         // initialize GeoTools factories so that we don't make a SPI lookup every time a factory is
         // needed
-        Hints.putSystemDefault(Hints.FILTER_FACTORY, CommonFactoryFinder.getFilterFactory2(null));
+        Hints.putSystemDefault(Hints.FILTER_FACTORY, CommonFactoryFinder.getFilterFactory(null));
         Hints.putSystemDefault(Hints.STYLE_FACTORY, CommonFactoryFinder.getStyleFactory(null));
         Hints.putSystemDefault(Hints.FEATURE_FACTORY, CommonFactoryFinder.getFeatureFactory(null));
 

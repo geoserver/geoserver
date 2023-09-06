@@ -5,11 +5,11 @@
 package org.geoserver.wms.map;
 
 import java.util.NoSuchElementException;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureIterator;
-import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Simple testing aid adding a given delay to each FeatureIterator.next() call

@@ -4,11 +4,11 @@
  */
 package org.geoserver.catalog;
 
-import org.geotools.styling.NamedStyle;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.UserLayer;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.NamedStyle;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayer;
+import org.geotools.api.style.UserLayer;
 
 /** Adapter implementation of {@link GeoServerSLDVisitor} */
 public abstract class GeoServerSLDVisitorAdapter extends GeoServerSLDVisitor {

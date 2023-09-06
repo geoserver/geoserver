@@ -8,6 +8,16 @@ import java.net.URI;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.parameter.ParameterDescriptorGroup;
+import org.geotools.api.parameter.ParameterNotFoundException;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.NoSuchIdentifierException;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.api.referencing.operation.Transformation;
 import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.parameter.Parameter;
@@ -19,16 +29,6 @@ import org.geotools.referencing.operation.MathTransformProvider;
 import org.geotools.referencing.operation.transform.AbstractMathTransform;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.parameter.ParameterDescriptorGroup;
-import org.opengis.parameter.ParameterNotFoundException;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchIdentifierException;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
-import org.opengis.referencing.operation.Transformation;
 
 /**
  * Base class for transformations between 2 different height's related verticalCRS. The

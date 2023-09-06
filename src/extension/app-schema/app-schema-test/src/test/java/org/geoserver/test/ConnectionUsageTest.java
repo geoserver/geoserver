@@ -17,10 +17,14 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.appschema.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.data.DefaultTransaction;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Transaction;
 import org.geotools.data.complex.AttributeMapping;
 import org.geotools.data.complex.DataAccessMappingFeatureIterator;
 import org.geotools.data.complex.FeatureTypeMapping;
@@ -34,10 +38,6 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.PropertyIsEqualTo;
 
 public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
 

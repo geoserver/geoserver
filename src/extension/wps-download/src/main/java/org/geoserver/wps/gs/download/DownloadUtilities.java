@@ -23,7 +23,9 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.JTS;
@@ -35,8 +37,6 @@ import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 import org.springframework.context.ApplicationContext;
 
 /**

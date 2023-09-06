@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadataConfig;
 import org.geoserver.smartdataloader.metadata.jdbc.utils.JdbcUrlSplitter;
-import org.geotools.data.Transaction;
+import org.geotools.api.data.Transaction;
 import org.geotools.jdbc.JDBCDataStore;
 
 /**

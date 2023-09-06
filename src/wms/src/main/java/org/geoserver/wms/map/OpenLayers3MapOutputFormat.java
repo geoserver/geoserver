@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.ProjectedCRS;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.ProjectedCRS;
 
 /**
  * Subclass of {@link OpenLayersMapOutputFormat} allowing to explictly request a OpenLayers 3 client

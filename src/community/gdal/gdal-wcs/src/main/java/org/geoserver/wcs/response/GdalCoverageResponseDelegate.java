@@ -26,15 +26,15 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.util.Utilities;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**

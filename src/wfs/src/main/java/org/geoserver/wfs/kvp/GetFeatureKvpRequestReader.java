@@ -27,8 +27,8 @@ import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.xsd.EMFUtils;
-import org.opengis.filter.FilterFactory;
 
 /** @author Niels Charlier : added 3D BBOX support */
 public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {

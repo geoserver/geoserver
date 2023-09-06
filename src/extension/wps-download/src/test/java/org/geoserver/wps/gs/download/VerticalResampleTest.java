@@ -27,6 +27,8 @@ import org.geoserver.wps.gs.download.vertical.VerticalGridTransform;
 import org.geoserver.wps.gs.download.vertical.VerticalResampler;
 import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -39,8 +41,6 @@ import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class VerticalResampleTest extends WPSTestSupport {
 

@@ -16,16 +16,16 @@ import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.utils.ScaleStyleVisitor;
 import org.geoserver.kml.utils.SymbolizerCollector;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.Style;
-import org.geotools.styling.Symbolizer;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * Creates a iterator of Placemark objects mapping the vector contents of a layer
@@ -67,7 +67,7 @@ public class FeatureIteratorFactory implements IteratorFactory<Feature> {
             simplified.accept(
                     new AbstractStyleVisitor() {
                         @Override
-                        public void visit(org.geotools.styling.Rule rule) {
+                        public void visit(org.geotools.api.style.Rule rule) {
                             rulesFound.set(true);
                             // no need to scan inside rules
                         }

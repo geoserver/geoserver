@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.impl.DefaultCatalogFacade;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 
 /**
  * Data access facade for the catalog.

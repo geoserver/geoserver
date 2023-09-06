@@ -25,15 +25,15 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wps.web.InputParameterValues.ParameterType;
 import org.geoserver.wps.web.InputParameterValues.ParameterValue;
 import org.geoserver.wps.xml.WPSConfiguration;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.xsd.Parser;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 

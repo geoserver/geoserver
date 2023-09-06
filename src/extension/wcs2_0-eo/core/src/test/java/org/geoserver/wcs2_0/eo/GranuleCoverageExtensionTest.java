@@ -14,8 +14,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs2_0.eo.response.GranuleCoverageExtension;
 import org.geoserver.wcs2_0.eo.response.GranuleCoverageInfo;
 import org.geoserver.wcs2_0.eo.response.SingleGranuleGridCoverageReader;
+import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverageReader;
 
 /**
  * This class is used for testing the {@link GranuleCoverageExtensionTest} class.

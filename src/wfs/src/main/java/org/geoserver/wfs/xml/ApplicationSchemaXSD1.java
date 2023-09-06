@@ -19,9 +19,9 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.gml3.GML;
 import org.geotools.xsd.XSD;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class ApplicationSchemaXSD1 extends XSD {
 

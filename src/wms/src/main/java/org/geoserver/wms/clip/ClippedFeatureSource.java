@@ -8,8 +8,14 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.JTS;
@@ -18,12 +24,6 @@ import org.geotools.process.vector.ClipProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 /** @author ImranR */
 public class ClippedFeatureSource<T extends FeatureType, F extends Feature>

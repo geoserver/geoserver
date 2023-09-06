@@ -33,12 +33,12 @@ import org.geoserver.featurestemplating.builders.selectionwrappers.IteratingProp
 import org.geoserver.featurestemplating.builders.selectionwrappers.MergePropertySelection;
 import org.geoserver.featurestemplating.builders.selectionwrappers.PropertySelectionWrapper;
 import org.geoserver.featurestemplating.builders.selectionwrappers.StaticPropertySelection;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.feature.type.PropertyType;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.feature.type.PropertyType;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * A DuplicatingVisitor performing a selection of TemplateBuilders based on selected

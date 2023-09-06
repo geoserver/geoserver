@@ -12,20 +12,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.geoserver.feature.RetypingFeatureCollection;
-import org.geotools.data.DataStore;
-import org.geotools.data.FeatureListener;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.geotools.data.QueryCapabilities;
-import org.geotools.data.ResourceInfo;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.FeatureListener;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.QueryCapabilities;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.data.SimpleFeatureLocking;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureStore;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureLocking;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
 
 /**
  * Renaming wrapper for a {@link FeatureSource} instance, to be used along with {@link

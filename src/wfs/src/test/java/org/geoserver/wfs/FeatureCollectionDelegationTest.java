@@ -12,11 +12,15 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.decorators.SecuredObjects;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.FeatureVisitor;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.collection.FilteringSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -29,10 +33,6 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.FeatureVisitor;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.util.ProgressListener;
 
 public class FeatureCollectionDelegationTest extends GeoServerSystemTestSupport {
     private final WrapperPolicy policy =
@@ -98,7 +98,7 @@ public class FeatureCollectionDelegationTest extends GeoServerSystemTestSupport 
     @Test
     public void testMaxVisitorDelegation() {
         MaxVisitor visitor =
-                new MaxVisitor(CommonFactoryFinder.getFilterFactory2().property("value"));
+                new MaxVisitor(CommonFactoryFinder.getFilterFactory().property("value"));
         assertOptimalVisit(visitor, maxVisitorCollections);
     }
 

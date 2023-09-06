@@ -6,6 +6,8 @@
 package org.geoserver.wfs.xml.gml3;
 
 import org.geoserver.wfs.WFSException;
+import org.geotools.api.referencing.NoSuchAuthorityCodeException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml2.bindings.GML2ParsingUtils;
 import org.geotools.referencing.CRS;
@@ -13,8 +15,6 @@ import org.geotools.referencing.operation.projection.PointOutsideEnvelopeExcepti
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.picocontainer.MutablePicoContainer;
 
 /**

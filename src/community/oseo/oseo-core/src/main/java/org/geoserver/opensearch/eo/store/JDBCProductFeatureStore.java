@@ -16,24 +16,24 @@ import java.util.stream.Collectors;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.ows.LocalWorkspace;
-import org.geotools.data.Join;
-import org.geotools.data.Query;
+import org.geotools.api.data.Join;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureStore;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
 
 /**
  * Maps joined simple features up to a complex Collection feature

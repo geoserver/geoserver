@@ -6,9 +6,9 @@
 package org.geoserver.importer.transform;
 
 import org.geoserver.importer.ImportTask;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.util.Converters;
-import org.opengis.feature.simple.SimpleFeature;
 
 public class NumberFormatTransform extends AttributeRemapTransform {
 

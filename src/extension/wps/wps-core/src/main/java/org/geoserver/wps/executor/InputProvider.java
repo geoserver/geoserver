@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps.executor;
 
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 
 /**
  * A provider that can parse an input in a lazy way, to allow the input parsing time (sometimes

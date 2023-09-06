@@ -16,8 +16,8 @@ import org.geoserver.importer.DatePattern;
 import org.geoserver.importer.Dates;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.ValidationException;
-import org.geotools.data.DataStore;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.feature.simple.SimpleFeature;
 
 /**
  * Transform that converts a non date attribute in a date attribute. This class is not thread-safe.

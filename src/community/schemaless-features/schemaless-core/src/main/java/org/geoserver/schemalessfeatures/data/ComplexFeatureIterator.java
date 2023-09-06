@@ -6,10 +6,10 @@ package org.geoserver.schemalessfeatures.data;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
-import org.geotools.data.FeatureReader;
+import org.geotools.api.data.FeatureReader;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureIterator;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 
 public class ComplexFeatureIterator implements FeatureIterator<Feature> {
 

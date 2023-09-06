@@ -9,9 +9,9 @@ import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.ows.Request;
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.util.Converters;
-import org.opengis.filter.capability.FunctionName;
 
 /** Returns the value of the request parameter with the name specified in the function parameter. */
 public class RequestParameterFunction extends RequestFunction {

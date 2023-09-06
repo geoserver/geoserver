@@ -22,16 +22,16 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.impl.CatalogFactoryImpl;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.vfny.geoserver.util.SLDValidator;
 
 public class StyleGeneratorTest {

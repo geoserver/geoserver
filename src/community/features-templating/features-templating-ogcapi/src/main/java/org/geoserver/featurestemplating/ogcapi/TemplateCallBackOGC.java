@@ -38,13 +38,13 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.XCQL;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.springframework.http.HttpHeaders;
 
 /**
@@ -66,7 +66,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private final String FEATURES_SERVICE;
 
-    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     public TemplateCallBackOGC(GeoServer gs, TemplateLoader configuration) {
         this.catalog = gs.getCatalog();

@@ -26,15 +26,20 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.FeatureListener;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.QueryCapabilities;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureListener;
-import org.geotools.data.Query;
-import org.geotools.data.QueryCapabilities;
-import org.geotools.data.ResourceInfo;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.gstore.DGGSFeatureSource;
@@ -44,11 +49,6 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
 

@@ -12,6 +12,12 @@ import javax.media.jai.OpImage;
 import javax.media.jai.RenderedOp;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.EngineeringCRS;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridCoverageWriter;
@@ -20,15 +26,9 @@ import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.EngineeringCRS;
 
 /**
  * Support class setting up reasonable defaults on the write parameters and centralizing the write
@@ -74,8 +74,8 @@ public class GeoTiffWriterHelper {
                 GeoTiffReader reader = null;
                 try {
                     reader = new GeoTiffReader(file);
-                    GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
-                    Envelope envelope = coverage.getEnvelope();
+                    GeneralBounds originalEnvelope = reader.getOriginalEnvelope();
+                    Bounds envelope = coverage.getEnvelope();
                     if (originalEnvelope.equals(envelope, 1e-9, false)) {
                         GridCoverage2D test = reader.read(null);
                         ImageUtilities.disposeImage(test.getRenderedImage());

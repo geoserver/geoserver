@@ -34,6 +34,18 @@ import org.geoserver.gsr.model.map.LayersAndTables;
 import org.geoserver.gsr.translate.geometry.GeometryEncoder;
 import org.geoserver.gsr.translate.geometry.SpatialReferenceEncoder;
 import org.geoserver.gsr.translate.geometry.SpatialReferences;
+import org.geotools.api.data.*;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.*;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.identity.FeatureId;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.data.*;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
@@ -45,20 +57,9 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.*;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.identity.FeatureId;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 public class FeatureDAO {
-    protected static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
+    protected static final FilterFactory FILTERS = CommonFactoryFinder.getFilterFactory();
 
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(FeatureDAO.class);

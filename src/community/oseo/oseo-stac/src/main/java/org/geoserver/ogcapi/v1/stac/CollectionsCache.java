@@ -14,12 +14,12 @@ import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.OseoEvent;
 import org.geoserver.opensearch.eo.OseoEventListener;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
 import org.springframework.stereotype.Component;
 
 /** Keeps a set of collections, caches them, reacts to reload/reset events to clear the cache */

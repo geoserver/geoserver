@@ -38,7 +38,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.role.RuleRolesFormComponent;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /** Abstract page binding a {@link DataAccessRule} */
 @SuppressWarnings("serial")

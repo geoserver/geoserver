@@ -11,10 +11,10 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geotools.api.referencing.crs.CRSAuthorityFactory;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCRSAuthorityFactory;
 import org.geotools.util.URLs;
 import org.geotools.util.factory.Hints;
-import org.opengis.referencing.crs.CRSAuthorityFactory;
 
 /**
  * Same as the {@link NetCDFCRSAuthorityFactory}, but this one reads a different file and can be

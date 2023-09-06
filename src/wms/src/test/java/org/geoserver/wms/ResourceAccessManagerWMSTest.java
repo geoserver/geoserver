@@ -40,14 +40,14 @@ import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.impl.AbstractUserGroupService;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

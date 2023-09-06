@@ -16,18 +16,18 @@ import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureStore;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
-import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
 
 public class ReadOnlyDataStoreTest extends SecureObjectsTest {
 

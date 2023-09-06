@@ -8,7 +8,7 @@ package org.geoserver.csw.response;
 import java.io.IOException;
 import java.io.Writer;
 import net.opengis.cat.csw20.DescribeRecordType;
-import org.opengis.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeDescriptor;
 
 /**
  * Builds a portion of the DescribeRecord output, writing on the output a csw:SchemaComponent

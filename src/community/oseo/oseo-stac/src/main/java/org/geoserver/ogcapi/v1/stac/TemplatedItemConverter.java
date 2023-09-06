@@ -13,7 +13,7 @@ import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
-import org.opengis.feature.Feature;
+import org.geotools.api.feature.Feature;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.AbstractHttpMessageConverter;

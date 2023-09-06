@@ -13,9 +13,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 
 /**
  * The GeoServer catalog which provides access to meta information about the data served by

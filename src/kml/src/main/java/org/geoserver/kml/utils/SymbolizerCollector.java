@@ -7,10 +7,10 @@ package org.geoserver.kml.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Symbolizer;
-import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Collects the symbolizers active on the specified simple feature

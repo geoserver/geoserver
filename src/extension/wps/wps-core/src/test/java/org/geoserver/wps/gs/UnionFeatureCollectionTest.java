@@ -9,6 +9,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.CommonFactoryFinder;
@@ -23,8 +25,6 @@ import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.FilterFactory;
 
 public class UnionFeatureCollectionTest extends WPSTestSupport {
 

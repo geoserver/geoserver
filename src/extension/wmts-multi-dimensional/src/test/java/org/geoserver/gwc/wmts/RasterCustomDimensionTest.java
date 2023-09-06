@@ -21,8 +21,8 @@ import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.gwc.wmts.dimensions.RasterCustomDimension;
+import org.geotools.api.filter.Filter;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 /**
  * This class contains tests that check that custom dimensions values are correctly extracted from

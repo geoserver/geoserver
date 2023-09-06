@@ -22,7 +22,7 @@ import java.util.zip.ZipInputStream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;

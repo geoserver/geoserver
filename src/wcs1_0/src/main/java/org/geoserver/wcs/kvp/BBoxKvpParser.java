@@ -9,7 +9,7 @@ import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParame
 
 import java.util.List;
 import org.geoserver.ows.util.KvpUtils;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
@@ -22,11 +22,11 @@ import org.vfny.geoserver.wcs.WcsException;
  */
 public class BBoxKvpParser extends Wcs10KvpParser {
     public BBoxKvpParser() {
-        super("bbox", GeneralEnvelope.class);
+        super("bbox", GeneralBounds.class);
     }
 
     @Override
-    public GeneralEnvelope parse(String value) throws Exception {
+    public GeneralBounds parse(String value) throws Exception {
         List unparsed = KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER);
         final int size = unparsed.size();
         // check to make sure that the bounding box has 4 coordinates
@@ -83,7 +83,7 @@ public class BBoxKvpParser extends Wcs10KvpParser {
         //        }
 
         // build the final envelope with no CRS
-        final GeneralEnvelope envelope = new GeneralEnvelope(size / 2);
+        final GeneralBounds envelope = new GeneralBounds(size / 2);
         //        if(size==4)
         envelope.setEnvelope(minx, miny, maxx, maxy);
         //        else

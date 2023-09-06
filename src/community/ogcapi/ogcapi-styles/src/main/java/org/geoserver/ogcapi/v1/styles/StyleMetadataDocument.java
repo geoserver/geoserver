@@ -27,11 +27,11 @@ import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geotools.styling.Description;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.UserLayer;
+import org.geotools.api.style.Description;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.StyledLayer;
+import org.geotools.api.style.StyledLayerDescriptor;
+import org.geotools.api.style.UserLayer;
 import org.geotools.util.Version;
 
 /** Style metadadata information */

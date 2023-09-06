@@ -6,7 +6,7 @@
 package org.geoserver.wms.map;
 
 import org.geoserver.wms.SymbolizerFilteringVisitor;
-import org.geotools.styling.PointSymbolizer;
+import org.geotools.api.style.PointSymbolizer;
 
 /**
  * A style visitor that copies styles but removes all point and text symbolizers
@@ -21,7 +21,7 @@ public class KMLStyleFilteringVisitor extends SymbolizerFilteringVisitor {
     }
 
     @Override
-    public void visit(org.geotools.styling.TextSymbolizer ts) {
+    public void visit(org.geotools.api.style.TextSymbolizer ts) {
         pages.push(null);
     }
 }

@@ -9,8 +9,8 @@ import org.geoserver.wps.remote.RemoteProcessClient;
 import org.geoserver.wps.remote.RemoteProcessFactoryConfigurationWatcher;
 import org.geoserver.wps.remote.RemoteProcessFactoryListener;
 import org.geoserver.wps.remote.RemoteServiceDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.ProgressListener;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class MockRemoteClient extends RemoteProcessClient {

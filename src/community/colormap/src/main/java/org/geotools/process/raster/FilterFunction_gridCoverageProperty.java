@@ -6,10 +6,10 @@ package org.geotools.process.raster;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
-import org.opengis.filter.capability.FunctionName;
 
 /**
  * Filter function to retrieve a grid coverage property value from the underlying GridCoverage2D

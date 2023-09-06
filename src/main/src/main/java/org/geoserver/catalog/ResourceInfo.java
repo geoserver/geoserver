@@ -8,10 +8,10 @@ package org.geoserver.catalog;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.util.InternationalString;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.type.Name;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.util.InternationalString;
 
 /**
  * A geospatial resource.

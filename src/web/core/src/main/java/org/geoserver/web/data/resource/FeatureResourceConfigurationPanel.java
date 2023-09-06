@@ -43,15 +43,15 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.layer.CascadedWFSStoredQueryEditPage;
 import org.geoserver.web.data.layer.SQLViewEditPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.measure.Measure;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
 
 @SuppressWarnings("serial")
 public class FeatureResourceConfigurationPanel extends ResourceConfigurationPanel {
@@ -233,7 +233,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                             final ResourcePool resourcePool =
                                     GeoServerApplication.get().getCatalog().getResourcePool();
                             final FeatureType featureType = resourcePool.getFeatureType(typeInfo);
-                            org.opengis.feature.type.PropertyDescriptor pd =
+                            org.geotools.api.feature.type.PropertyDescriptor pd =
                                     featureType.getDescriptor(attribute.getName());
                             String typeName = "?";
                             String nillable = "?";

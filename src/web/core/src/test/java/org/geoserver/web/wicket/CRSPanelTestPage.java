@@ -12,7 +12,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 
 public class CRSPanelTestPage extends WebPage {
 

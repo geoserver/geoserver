@@ -26,15 +26,15 @@ import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * Listens to transactions (so far only issued by WFS) and truncates the cache for the affected area

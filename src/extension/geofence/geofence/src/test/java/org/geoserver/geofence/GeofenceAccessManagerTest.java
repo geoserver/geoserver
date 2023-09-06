@@ -24,15 +24,15 @@ import org.geoserver.ows.Request;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.spatial.Intersects;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.junit.Assume;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.spatial.Intersects;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
 
@@ -221,7 +221,7 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         LayerInfo generic = catalog.getLayerByName(getLayerId(MockData.GENERICENTITY));
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
 
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
         Geometry limit =
                 new WKTReader().read("MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))");
         Filter filter = ff.intersects(ff.property(""), ff.literal(limit));

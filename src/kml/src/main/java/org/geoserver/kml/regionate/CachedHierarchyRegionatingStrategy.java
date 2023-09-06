@@ -29,7 +29,15 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.identity.FeatureId;
+import org.geotools.api.geometry.BoundingBox;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -42,14 +50,6 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.identity.FeatureId;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 /**
  * Base class for regionating strategies. Common functionality provided:

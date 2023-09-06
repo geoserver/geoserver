@@ -7,13 +7,13 @@ package org.geoserver.wps.ppio;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.sld.SLDConfiguration;
 import org.geotools.sld.bindings.SLD;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
 import org.geotools.xsd.Parser;

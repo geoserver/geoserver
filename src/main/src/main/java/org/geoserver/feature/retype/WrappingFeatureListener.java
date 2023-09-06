@@ -5,8 +5,8 @@
  */
 package org.geoserver.feature.retype;
 
-import org.geotools.data.FeatureEvent;
-import org.geotools.data.FeatureListener;
+import org.geotools.api.data.FeatureEvent;
+import org.geotools.api.data.FeatureListener;
 
 /**
  * A FeatureListener wrapper that changes the feature source, to be used in wrapping feature sources

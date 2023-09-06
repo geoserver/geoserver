@@ -14,8 +14,8 @@ import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.process.ProcessSelector;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
 
 /** Filters processes and process factories based on the configuration in WPSInfo */
 public class DisabledProcessesSelector extends ProcessSelector implements GeoServerInitializer {

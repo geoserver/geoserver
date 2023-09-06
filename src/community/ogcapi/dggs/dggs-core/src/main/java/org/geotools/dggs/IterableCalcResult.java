@@ -16,7 +16,7 @@
  */
 package org.geotools.dggs;
 
-import org.geotools.data.CloseableIterator;
+import org.geotools.api.data.CloseableIterator;
 import org.geotools.feature.visitor.CalcResult;
 
 /**

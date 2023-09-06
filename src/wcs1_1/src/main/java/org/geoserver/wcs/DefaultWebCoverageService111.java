@@ -48,12 +48,28 @@ import org.geoserver.wcs.response.DescribeCoverageTransformer;
 import org.geoserver.wcs.response.WCSCapsTransformer;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.cs.AxisDirection;
+import org.geotools.api.referencing.cs.CoordinateSystemAxis;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.CoordinateOperation;
+import org.geotools.api.referencing.operation.CoordinateOperationFactory;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.parameter.DefaultParameterDescriptor;
@@ -62,22 +78,6 @@ import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.operation.transform.IdentityTransform;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.filter.Filter;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeographicCRS;
-import org.opengis.referencing.cs.AxisDirection;
-import org.opengis.referencing.cs.CoordinateSystemAxis;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.CoordinateOperation;
-import org.opengis.referencing.operation.CoordinateOperationFactory;
-import org.opengis.referencing.operation.MathTransform;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
@@ -180,12 +180,12 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                             meta.getGridCoverageReader(null, WCSUtils.getReaderHints(wcs));
 
             // handle spatial domain subset, if needed
-            final GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
+            final GeneralBounds originalEnvelope = reader.getOriginalEnvelope();
             final BoundingBoxType bbox = request.getDomainSubset().getBoundingBox();
             final CoordinateReferenceSystem nativeCRS =
                     originalEnvelope.getCoordinateReferenceSystem();
-            final GeneralEnvelope requestedEnvelopeInNativeCRS;
-            final GeneralEnvelope requestedEnvelope;
+            final GeneralBounds requestedEnvelopeInNativeCRS;
+            final GeneralBounds requestedEnvelope;
             if (bbox != null) {
                 // first off, parse the envelope corners
                 double[] lowerCorner = new double[bbox.getLowerCorner().size()];
@@ -194,7 +194,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     lowerCorner[i] = (Double) bbox.getLowerCorner().get(i);
                     upperCorner[i] = (Double) bbox.getUpperCorner().get(i);
                 }
-                requestedEnvelope = new GeneralEnvelope(lowerCorner, upperCorner);
+                requestedEnvelope = new GeneralBounds(lowerCorner, upperCorner);
                 // grab the native crs
                 // if no crs has beens specified, the native one is assumed
                 if (bbox.getCrs() == null) {
@@ -209,7 +209,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                         CoordinateOperation co = of.createOperation(bboxCRS, nativeCRS);
                         requestedEnvelopeInNativeCRS = CRS.transform(co, requestedEnvelope);
                     } else {
-                        requestedEnvelopeInNativeCRS = new GeneralEnvelope(requestedEnvelope);
+                        requestedEnvelopeInNativeCRS = new GeneralBounds(requestedEnvelope);
                     }
                 }
             } else {
@@ -259,8 +259,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
             // now we have enough info to read the coverage, grab the parameters
             // and add the grid geometry info
-            final GeneralEnvelope intersectionEnvelopeInSourceCRS =
-                    new GeneralEnvelope(requestedEnvelopeInNativeCRS);
+            final GeneralBounds intersectionEnvelopeInSourceCRS =
+                    new GeneralBounds(requestedEnvelopeInNativeCRS);
             intersectionEnvelopeInSourceCRS.intersect(originalEnvelope);
 
             final GridGeometry2D requestedGridGeometry =
@@ -438,7 +438,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             }
 
             // adjust the grid geometry to use the final bbox and crs
-            final GeneralEnvelope intersectionEnvelope;
+            final GeneralBounds intersectionEnvelope;
             boolean reprojectionNeeded = !CRS.equalsIgnoreMetadata(nativeCRS, targetCRS);
             if (reprojectionNeeded) {
                 CoordinateOperationFactory of = CRS.getCoordinateOperationFactory(true);
@@ -604,7 +604,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             final GridCoverage2DReader reader,
             final GridCrsType gridCRS,
             MathTransform gridToCRS,
-            final GeneralEnvelope intersectionEnvelope,
+            final GeneralBounds intersectionEnvelope,
             boolean reprojectionNeeded) {
         Double[] offsets;
         if (!(gridToCRS instanceof AffineTransform2D) && !(gridToCRS instanceof IdentityTransform))
@@ -685,8 +685,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         GridCoverage2DReader reader =
                 (GridCoverage2DReader)
                         meta.getGridCoverageReader(null, WCSUtils.getReaderHints(wcs));
-        Envelope gridEnvelope = reader.getOriginalEnvelope();
-        GeneralEnvelope gridEnvelopeBboxCRS = null;
+        Bounds gridEnvelope = reader.getOriginalEnvelope();
+        GeneralBounds gridEnvelopeBboxCRS = null;
         if (bboxCRs instanceof GeographicCRS) {
             try {
                 CoordinateOperationFactory cof = CRS.getCoordinateOperationFactory(true);

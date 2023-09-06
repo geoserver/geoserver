@@ -23,6 +23,7 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
+import org.geotools.api.style.Style;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.GridReaderLayer;
@@ -32,7 +33,6 @@ import org.geotools.map.StyleLayer;
 import org.geotools.ows.wms.map.WMSLayer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 
 /**

@@ -4,13 +4,13 @@
  */
 package org.geoserver.wms.capabilities;
 
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * Extends ProjectionHandler in order to allow transforming a bbox into a target CRS when generating

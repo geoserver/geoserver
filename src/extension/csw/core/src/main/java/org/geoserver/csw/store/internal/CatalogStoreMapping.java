@@ -17,14 +17,14 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.csw.records.RecordDescriptor;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * Catalog Store Mapping An instance from this class provides a mapping from the data in the

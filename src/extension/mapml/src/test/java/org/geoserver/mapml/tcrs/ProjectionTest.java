@@ -7,9 +7,9 @@ package org.geoserver.mapml.tcrs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.junit.Test;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 

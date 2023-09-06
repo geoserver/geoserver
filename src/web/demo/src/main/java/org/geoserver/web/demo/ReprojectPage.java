@@ -20,11 +20,11 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeometryTextArea;
 import org.geoserver.web.wicket.SRSToCRSModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 /**
  * A simple reprojection console panel, shows details about a SRS1 -> SRS2 transformation and allows

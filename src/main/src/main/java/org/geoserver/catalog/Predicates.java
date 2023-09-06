@@ -9,20 +9,20 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
+import org.geotools.api.filter.And;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.MultiValuedFilter.MatchAction;
+import org.geotools.api.filter.Not;
+import org.geotools.api.filter.Or;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.Converters;
-import org.opengis.filter.And;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.MultiValuedFilter.MatchAction;
-import org.opengis.filter.Not;
-import org.opengis.filter.Or;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 
 /**
  * Static factory method utility to build well known types of {@link Filter} instances.

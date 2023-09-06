@@ -20,7 +20,7 @@ import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
-import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.data.oracle.OracleNGDataStoreFactory;
 import org.geotools.data.oracle.OracleNGJNDIDataStoreFactory;
 import org.geotools.data.oracle.OracleNGOCIDataStoreFactory;

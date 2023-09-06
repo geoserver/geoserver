@@ -10,12 +10,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
-import org.opengis.util.ProgressListener;
 
 /**
  * Stub for the remote processes generated at run-time by the {@link RemoteProcessFactory} upon a

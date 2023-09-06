@@ -14,8 +14,8 @@ import org.geoserver.featurestemplating.builders.visitors.PropertySelectionConte
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionHandler;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
-import org.opengis.feature.Property;
-import org.opengis.feature.type.PropertyType;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.type.PropertyType;
 
 /** A PropertySelectionWrapper meant to wrap a DynamicMergeBuilder. */
 public class MergePropertySelection extends PropertySelectionWrapper {

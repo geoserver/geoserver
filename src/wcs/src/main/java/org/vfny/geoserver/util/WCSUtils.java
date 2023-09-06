@@ -23,6 +23,21 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.api.coverage.Coverage;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.coverage.processing.Operation;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.metadata.spatial.PixelOrientation;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -35,7 +50,7 @@ import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Interpolate;
 import org.geotools.coverage.processing.operation.Resample;
 import org.geotools.coverage.processing.operation.SelectSampleDimension;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -46,21 +61,6 @@ import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.math.DD;
-import org.opengis.coverage.Coverage;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.coverage.processing.Operation;
-import org.opengis.filter.Filter;
-import org.opengis.geometry.Envelope;
-import org.opengis.metadata.spatial.PixelOrientation;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
@@ -112,7 +112,7 @@ public class WCSUtils {
     }
 
     /** Crops the coverage to the specified bounds. May return null in case of empty intersection */
-    public static GridCoverage2D crop(final GridCoverage2D coverage, final Envelope bounds) {
+    public static GridCoverage2D crop(final GridCoverage2D coverage, final Bounds bounds) {
 
         // checks
         final ReferencedEnvelope cropBounds = new ReferencedEnvelope(bounds);
@@ -145,7 +145,7 @@ public class WCSUtils {
      * @return The padded covearge, or the original one, if the padding would not add a single pixel
      *     to it. May return null if the padding area is so small it won't contain a single pixel.
      */
-    public static GridCoverage2D padToEnvelope(final GridCoverage2D coverage, final Envelope bounds)
+    public static GridCoverage2D padToEnvelope(final GridCoverage2D coverage, final Bounds bounds)
             throws TransformException {
         GridGeometry2D gg = coverage.getGridGeometry();
         GridEnvelope2D targetRange = getEnvelopeInRasterSpace(bounds, gg);
@@ -174,10 +174,10 @@ public class WCSUtils {
         return (GridCoverage2D) PROCESSOR.doOperation(param);
     }
 
-    private static GridEnvelope2D getEnvelopeInRasterSpace(Envelope bounds, GridGeometry2D gg) {
+    private static GridEnvelope2D getEnvelopeInRasterSpace(Bounds bounds, GridGeometry2D gg) {
         try {
             // transform to raster space, and snap to the integer grid
-            GeneralEnvelope rasterEnvelopeFloat =
+            GeneralBounds rasterEnvelopeFloat =
                     CRS.transform(gg.getCRSToGrid2D(PixelOrientation.UPPER_LEFT), bounds);
             return new GridEnvelope2D(
                     (int) Math.round(rasterEnvelopeFloat.getMinimum(0)),
@@ -356,7 +356,7 @@ public class WCSUtils {
      * Checks the coverage read is below the input limits. Mind, at this point the reader might have
      * have subsampled the original image in some way so it is expected the coverage is actually
      * smaller than what computed but {@link #checkInputLimits(CoverageInfo, GridCoverage2DReader,
-     * GeneralEnvelope)}, however that method might have failed the computation due to lack of
+     * GeneralBounds)}, however that method might have failed the computation due to lack of
      * metadata (or wrong metadata) so it's safe to double check the actual coverage wit this one.
      * Mind, this method might cause the coverage to be fully read in memory (if that is the case,
      * the actual WCS processing chain would result in the same behavior so this is not causing any
@@ -425,7 +425,7 @@ public class WCSUtils {
         long actual = 0;
         try {
             // if necessary reproject back to the original CRS
-            GeneralEnvelope requestedEnvelope = new GeneralEnvelope(gridGeometry.getEnvelope());
+            GeneralBounds requestedEnvelope = new GeneralBounds(gridGeometry.getEnvelope());
             final CoordinateReferenceSystem requestCRS =
                     requestedEnvelope.getCoordinateReferenceSystem();
             final CoordinateReferenceSystem nativeCRS = reader.getCoordinateReferenceSystem();
@@ -438,7 +438,7 @@ public class WCSUtils {
             // check if we are still reading anything
             if (!requestedEnvelope.isEmpty()) {
                 MathTransform crsToGrid = meta.getGrid().getGridToCRS().inverse();
-                GeneralEnvelope requestedGrid = CRS.transform(crsToGrid, requestedEnvelope);
+                GeneralBounds requestedGrid = CRS.transform(crsToGrid, requestedEnvelope);
                 double[] spans = new double[requestedGrid.getDimension()];
                 double[] resolutions = new double[requestedGrid.getDimension()];
                 for (int i = 0; i < spans.length; i++) {
@@ -692,7 +692,7 @@ public class WCSUtils {
 
     private static ReferencedEnvelope simpleEnvelopeFit(
             ReferencedEnvelope bounds, GridCoverage2DReader reader) {
-        GeneralEnvelope original = reader.getOriginalEnvelope();
+        GeneralBounds original = reader.getOriginalEnvelope();
         AffineTransform2D at =
                 (AffineTransform2D) reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
         double scaleX = Math.abs(at.getScaleX());
@@ -813,7 +813,7 @@ public class WCSUtils {
         AffineTransform2D originalG2W =
                 (AffineTransform2D) reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
         double scale = XAffineTransform.getScale(originalG2W);
-        GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
+        GeneralBounds originalEnvelope = reader.getOriginalEnvelope();
         AffineTransform2D g2w =
                 new AffineTransform2D(
                         scale,
@@ -865,7 +865,7 @@ public class WCSUtils {
                         envelope.getMaximum(1));
 
         try {
-            GeneralEnvelope gridEnvelope = CRS.transform(fittedG2W.inverse(), envelope);
+            GeneralBounds gridEnvelope = CRS.transform(fittedG2W.inverse(), envelope);
             GridEnvelope2D fittedGridRange =
                     new GridEnvelope2D(
                             0,

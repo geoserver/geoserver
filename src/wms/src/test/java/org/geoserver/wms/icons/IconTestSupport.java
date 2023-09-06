@@ -11,44 +11,44 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Fill;
+import org.geotools.api.style.Font;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.style.Symbolizer;
+import org.geotools.api.style.TextSymbolizer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Graphic;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory2;
-import org.geotools.styling.Symbolizer;
-import org.geotools.styling.TextSymbolizer;
 import org.junit.BeforeClass;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
-import org.opengis.style.Fill;
-import org.opengis.style.Font;
 
 public class IconTestSupport {
 
     protected static SimpleFeature fieldIs1;
     protected static SimpleFeature fieldIs2;
-    protected static StyleFactory2 styleFactory;
-    protected static FilterFactory2 filterFactory;
+    protected static StyleFactory styleFactory;
+    protected static FilterFactory filterFactory;
     protected static SimpleFeatureType featureType;
 
     @BeforeClass
     public static void classSetup() {
-        styleFactory = (StyleFactory2) CommonFactoryFinder.getStyleFactory();
-        filterFactory = CommonFactoryFinder.getFilterFactory2();
+        styleFactory = (StyleFactory) CommonFactoryFinder.getStyleFactory();
+        filterFactory = CommonFactoryFinder.getFilterFactory();
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setName("example");

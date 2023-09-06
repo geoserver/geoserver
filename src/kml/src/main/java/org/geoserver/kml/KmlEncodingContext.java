@@ -28,6 +28,11 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -37,14 +42,9 @@ import org.geotools.map.Layer;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.styling.Style;
-import org.geotools.styling.Symbolizer;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A class used by {@link KmlDecorator} to get the current encoding context (request, map content,

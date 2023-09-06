@@ -20,9 +20,9 @@ import org.geoserver.security.LayerGroupAccessLimits;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
+import org.geotools.api.filter.Filter;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
 
 public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationTest {

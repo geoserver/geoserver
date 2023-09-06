@@ -6,8 +6,8 @@ package org.geoserver.util;
 
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
-import org.opengis.util.InternationalString;
 
 /** Utility class that provides some methods to deal with InternationalString. */
 public class InternationalStringUtils {

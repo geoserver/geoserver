@@ -11,7 +11,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.OWS20Exception;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
 
 /**
  * Helper object returning the configured {@link OpenSearchAccess}

@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.Style;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.ProjectionException;
-import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Can be used to fill in defaults for incomplete GetMap requests */
 public class GetMapDefaults {

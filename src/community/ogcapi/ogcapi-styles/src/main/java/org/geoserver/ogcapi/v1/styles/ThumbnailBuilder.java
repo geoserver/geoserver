@@ -24,10 +24,10 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.geotools.api.filter.MultiValuedFilter;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.MultiValuedFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

@@ -18,11 +18,18 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.StructuredCoverageViewReader;
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geoserver.gwc.wmts.Tuple;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.Query;
 import org.geotools.data.memory.MemoryFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
@@ -33,13 +40,6 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 
 /**
  * This class allow us to abstract from the type of different raster readers (structured and non
@@ -47,7 +47,7 @@ import org.opengis.filter.sort.SortOrder;
  */
 abstract class CoverageDimensionsReader {
 
-    private static final FilterFactory2 FILTER_FACTORY = CommonFactoryFinder.getFilterFactory2();
+    private static final FilterFactory FILTER_FACTORY = CommonFactoryFinder.getFilterFactory();
 
     public enum DataType {
         TEMPORAL,

@@ -42,6 +42,10 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.Schema;
 import org.geotools.gml2.GML;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.WFS;
@@ -49,10 +53,6 @@ import org.geotools.xsd.SchemaIndex;
 import org.geotools.xsd.Schemas;
 import org.geotools.xsd.XSD;
 import org.geotools.xsd.impl.SchemaIndexImpl;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.Schema;
 
 /**
  * XSD for an application schema of a geoserver feature type.

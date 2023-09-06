@@ -30,8 +30,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.web.GeoServerApplication;
+import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
 
 /**
  * GeoServer specific data provider. In addition to the services provided by a SortableDataProvider

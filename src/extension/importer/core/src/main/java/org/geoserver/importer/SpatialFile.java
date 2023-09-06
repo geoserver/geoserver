@@ -26,10 +26,10 @@ import org.geoserver.catalog.Styles;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.IOUtils;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class SpatialFile extends FileData {
 

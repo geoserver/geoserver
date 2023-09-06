@@ -20,14 +20,14 @@ import net.opengis.wps10.Wps10Factory;
 import org.geoserver.wps.AbstractProcessStoreTest;
 import org.geoserver.wps.ProcessStatusStore;
 import org.geoserver.wps.executor.ExecutionStatus;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFinder;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.DataStoreFinder;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.NameImpl;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 /**
  * Tests the JDBC based process status store with a single instance

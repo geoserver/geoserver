@@ -16,8 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bson.conversions.Bson;
 import org.geoserver.schemalessfeatures.mongodb.MongoSchemalessUtils;
+import org.geotools.api.feature.type.Name;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 
 /**
  * Class helping to overcome those issues caused by the schemaless approach, eg. the retrieval of

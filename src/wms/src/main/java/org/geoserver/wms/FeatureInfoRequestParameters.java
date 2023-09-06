@@ -9,18 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.platform.ServiceException;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.Style;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.styling.Style;
 import org.geotools.util.factory.GeoTools;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Wraps the large number of information normally extracted from a feature info request into a
@@ -31,7 +31,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class FeatureInfoRequestParameters {
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     int x;
 
@@ -65,7 +65,7 @@ public class FeatureInfoRequestParameters {
 
     List<Object> times;
 
-    FilterFactory2 ff;
+    FilterFactory ff;
 
     private List<List<String>> propertyNames;
 
@@ -98,7 +98,7 @@ public class FeatureInfoRequestParameters {
         this.scaleDenominator = getScaleDenominator(request.getGetMapRequest());
         this.elevations = request.getGetMapRequest().getElevation();
         this.times = request.getGetMapRequest().getTime();
-        this.ff = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+        this.ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
 
         this.propertyNames = request.getPropertyNames();
     }
@@ -281,7 +281,7 @@ public class FeatureInfoRequestParameters {
     }
 
     /** A filter factory suitable to build filters */
-    public FilterFactory2 getFilterFactory() {
+    public FilterFactory getFilterFactory() {
         return ff;
     }
 

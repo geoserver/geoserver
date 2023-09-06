@@ -10,9 +10,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.simple.SimpleFeature;
 
 public class CollectionLayer {
 

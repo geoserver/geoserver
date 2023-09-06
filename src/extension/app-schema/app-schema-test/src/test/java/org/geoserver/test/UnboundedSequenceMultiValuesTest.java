@@ -12,14 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geotools.data.DataAccess;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.feature.NameImpl;
 import org.geotools.jdbc.JDBCFeatureStore;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
 
 public class UnboundedSequenceMultiValuesTest extends AbstractAppSchemaTestSupport {

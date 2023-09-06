@@ -16,11 +16,11 @@ import javax.xml.namespace.QName;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

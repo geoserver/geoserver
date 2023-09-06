@@ -27,9 +27,9 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geotools.api.filter.Filter;
 import org.junit.After;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
 

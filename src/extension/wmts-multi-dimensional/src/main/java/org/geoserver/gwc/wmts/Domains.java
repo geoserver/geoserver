@@ -12,14 +12,14 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortOrder;
 
 /**
  * Utility class for aggregating several dimensions. All the dimensions will share the same spatial

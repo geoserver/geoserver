@@ -14,10 +14,20 @@ import java.util.List;
 import net.opengis.cat.csw20.ElementSetType;
 import org.geoserver.csw.util.NamespaceQualifier;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.ComplexType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.FeatureTypeFactory;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
-import org.geotools.data.Query;
 import org.geotools.data.complex.feature.type.FeatureTypeRegistry;
 import org.geotools.data.complex.util.EmfComplexFeatureReader;
 import org.geotools.factory.CommonFactoryFinder;
@@ -32,16 +42,6 @@ import org.geotools.filter.v1_0.OGC;
 import org.geotools.xsd.SchemaIndex;
 import org.geotools.xsd.ows.OWS;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.ComplexType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.FeatureTypeFactory;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -66,7 +66,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class CSWRecordDescriptor extends AbstractRecordDescriptor {
 
-    private static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     /** Contains the declarations of common namespaces and prefixes used in the CSW world */
     public static final Name SIMPLE_LITERAL_SCHEME = new NameImpl(DC.NAMESPACE, "scheme");

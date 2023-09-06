@@ -24,17 +24,17 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.impl.GeoServerRole;
-import org.geotools.data.FeatureStore;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.junit.Before;
-import org.opengis.filter.FilterFactory2;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class OSEORestTestSupport extends OSEOTestSupport {
 
-    protected static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    protected static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     @Before
     public void loginAdmin() {

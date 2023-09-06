@@ -17,6 +17,8 @@ import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.QueryablesBuilder;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
@@ -24,8 +26,6 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
 import org.springframework.http.HttpStatus;
 
 /** Simple JSON schema builder based on classpath resources and a feature type */

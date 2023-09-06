@@ -5,8 +5,8 @@
 package org.geoserver.wfs.json;
 
 import java.util.List;
+import org.geotools.api.feature.type.ComplexType;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.type.ComplexType;
 
 /**
  * Extension point to define the behaviour regarding non standard mandatory encoding behaviours of

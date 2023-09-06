@@ -15,9 +15,9 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.wms.WMS;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
 import org.geotools.util.NumberRange;
 import org.xml.sax.helpers.AttributesImpl;
 

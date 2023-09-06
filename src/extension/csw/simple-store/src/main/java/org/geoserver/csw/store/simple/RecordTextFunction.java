@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geotools.api.feature.ComplexAttribute;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.filter.capability.FunctionName;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.InternalFunction;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
-import org.opengis.feature.ComplexAttribute;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.filter.capability.FunctionName;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.InternalFunction;
 
 /**
  * Collects the contents of all SimpleLiteral attributes into a collection

@@ -30,13 +30,13 @@ import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GWCTransactionListenerTest {
 

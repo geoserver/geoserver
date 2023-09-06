@@ -8,11 +8,11 @@ package org.geoserver.kml.regionate;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.Filter;
 import org.geotools.map.Layer;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
 
 /**
  * Make a best guess as to the appropriate strategy to use for a featuretype and do it

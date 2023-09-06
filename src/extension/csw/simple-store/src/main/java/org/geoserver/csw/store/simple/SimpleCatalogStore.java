@@ -19,15 +19,15 @@ import org.geoserver.csw.store.CatalogStoreCapabilities;
 import org.geoserver.csw.store.RepositoryItem;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geotools.data.Query;
-import org.geotools.data.Transaction;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
 
 /**
  * A simple implementation of {@link CatalogStore} geared towards test support. The store reads CSW

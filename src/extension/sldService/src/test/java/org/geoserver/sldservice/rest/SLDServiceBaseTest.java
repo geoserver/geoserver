@@ -13,13 +13,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.StringReader;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayer;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.xml.styling.SLDParser;
 
 public abstract class SLDServiceBaseTest extends CatalogRESTTestSupport {

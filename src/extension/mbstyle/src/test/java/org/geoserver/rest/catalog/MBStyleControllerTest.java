@@ -27,7 +27,7 @@ import org.geoserver.data.test.SystemTestData.StyleProperty;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;

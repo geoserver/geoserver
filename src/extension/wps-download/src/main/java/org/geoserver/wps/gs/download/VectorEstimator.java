@@ -8,18 +8,18 @@ package org.geoserver.wps.gs.download;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.spatial.Intersects;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.coverage.util.FeatureUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.filter.Filter;
-import org.opengis.filter.spatial.Intersects;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.util.ProgressListener;
 
 /**
  * Checks whether or not the provided request exceeds the provided download limits for a vectorial

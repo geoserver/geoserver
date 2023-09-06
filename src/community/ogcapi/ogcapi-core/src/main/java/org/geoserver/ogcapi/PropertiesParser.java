@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.api.feature.type.FeatureType;
 
 /** Parses and validates a comma separate list of properties */
 public class PropertiesParser {

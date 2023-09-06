@@ -5,13 +5,13 @@
  */
 package org.geoserver.security.decorators;
 
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.coverage.grid.GridCoverageWriter;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.grid.Format;
-import org.opengis.coverage.grid.GridCoverageWriter;
-import org.opengis.parameter.ParameterValueGroup;
 
 /**
  * Delegates every method to the delegate grid format. Subclasses will override selected methods to

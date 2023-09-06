@@ -7,9 +7,9 @@ package org.geoserver.wms.style;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.junit.Test;
-import org.opengis.filter.expression.Function;
 
 public class PaletteStyleHandlerTest {
 

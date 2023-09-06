@@ -48,6 +48,8 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -56,8 +58,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 

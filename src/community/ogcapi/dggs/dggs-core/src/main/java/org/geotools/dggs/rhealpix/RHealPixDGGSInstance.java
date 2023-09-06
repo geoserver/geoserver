@@ -35,6 +35,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import jep.JepException;
 import jep.SharedInterpreter;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.store.EmptyIterator;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
@@ -52,9 +55,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.prep.PreparedPolygon;
 import org.locationtech.jts.operation.predicate.RectangleContains;
 import org.locationtech.jts.operation.predicate.RectangleIntersects;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 public class RHealPixDGGSInstance implements DGGSInstance {
 
@@ -500,7 +500,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
     }
 
     @Override
-    public Filter getChildFilter(FilterFactory2 ff, String zoneId, int resolution, boolean upTo) {
+    public Filter getChildFilter(FilterFactory ff, String zoneId, int resolution, boolean upTo) {
         return ff.like(ff.property(DGGSStore.ZONE_ID), zoneId + "%", "%", "?", "\\", true);
     }
 }

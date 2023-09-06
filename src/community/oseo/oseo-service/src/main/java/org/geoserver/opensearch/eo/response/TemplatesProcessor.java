@@ -44,8 +44,18 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.OWS20Exception;
-import org.geotools.data.Parameter;
-import org.geotools.data.Query;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.GeometryAttribute;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
@@ -57,16 +67,6 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Encoder;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
-import org.opengis.feature.GeometryAttribute;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * Loads, caches and processes Freemarker templates against a stream of features. It's meant to be

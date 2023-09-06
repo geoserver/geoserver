@@ -21,10 +21,10 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.TransformChain;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.SchemaException;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
 
 /**
  * A unit of work during an import.

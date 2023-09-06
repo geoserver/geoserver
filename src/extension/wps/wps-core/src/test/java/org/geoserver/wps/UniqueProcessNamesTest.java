@@ -13,9 +13,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
 
 /**
  * Tests that the set of registered processes has unique names.

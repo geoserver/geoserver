@@ -7,7 +7,7 @@ package org.geoserver.wps.sextante;
 
 import es.unex.sextante.core.ITaskMonitor;
 import org.geotools.text.Text;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 
 /**
  * This class represents a task monitor for a SEXTANTE algorithm that updates a progress monitor

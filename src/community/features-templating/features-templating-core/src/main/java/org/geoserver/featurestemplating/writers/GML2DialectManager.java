@@ -7,12 +7,12 @@ package org.geoserver.featurestemplating.writers;
 import java.io.IOException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 class GML2DialectManager extends GMLDialectManager {
 

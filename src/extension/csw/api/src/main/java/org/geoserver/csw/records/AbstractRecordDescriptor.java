@@ -7,14 +7,14 @@ package org.geoserver.csw.records;
 
 import java.util.LinkedList;
 import java.util.List;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -25,7 +25,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public abstract class AbstractRecordDescriptor implements RecordDescriptor {
 
-    public static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    public static final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     public static final String DEFAULT_CRS_NAME = "urn:x-ogc:def:crs:EPSG:6.11:4326";
 

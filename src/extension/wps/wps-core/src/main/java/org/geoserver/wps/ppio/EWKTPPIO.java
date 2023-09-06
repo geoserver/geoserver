@@ -12,11 +12,11 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Used to represent geometries in EWKT format Reads geometry and crs from string and sets this crs

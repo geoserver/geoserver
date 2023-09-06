@@ -6,13 +6,13 @@ package org.geoserver.importer.transform;
 
 import java.security.InvalidParameterException;
 import org.geoserver.importer.ImportTask;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.expression.Expression;
 
 /** Transform creating a new attribute based on the existing ones */
 public class AttributeComputeTransform extends AbstractTransform implements InlineVectorTransform {

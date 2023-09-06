@@ -26,6 +26,9 @@ import net.opengis.wcs20.TargetAxisSizeType;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.coverage.processing.Operation;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -34,9 +37,6 @@ import org.geotools.coverage.processing.operation.Scale;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.util.Utilities;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.coverage.processing.Operation;
-import org.opengis.parameter.ParameterValueGroup;
 import org.vfny.geoserver.util.WCSUtils;
 
 /**

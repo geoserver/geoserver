@@ -19,9 +19,9 @@ import org.geotools.util.logging.Logging;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.geometry.BoundingBox;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Hibernate user type for {@link BoundingBox}.

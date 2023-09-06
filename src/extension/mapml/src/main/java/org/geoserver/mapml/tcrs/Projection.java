@@ -6,14 +6,14 @@ package org.geoserver.mapml.tcrs;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.NoninvertibleTransformException;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.geometry.Position2D;
 import org.geotools.referencing.CRS;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.NoninvertibleTransformException;
-import org.opengis.referencing.operation.TransformException;
 
 /*
  * The Projection class supplies projection/unprojection transformations for known projections
@@ -52,9 +52,8 @@ public class Projection {
         if (toProjected.isIdentity()) {
             return new Point(latlng.lng, latlng.lat);
         }
-        DirectPosition2D projected = new DirectPosition2D(crs);
-        toProjected.transform(
-                new DirectPosition2D(this.baseCRS, latlng.lat, latlng.lng), projected);
+        Position2D projected = new Position2D(crs);
+        toProjected.transform(new Position2D(this.baseCRS, latlng.lat, latlng.lng), projected);
         return new Point(projected.x, projected.y);
     }
 
@@ -68,8 +67,8 @@ public class Projection {
         if (toLatLng.isIdentity()) {
             return new LatLng(p.y, p.x);
         }
-        DirectPosition2D unprojected = new DirectPosition2D(this.baseCRS);
-        toLatLng.transform(new DirectPosition2D(this.crs, p.x, p.y), unprojected);
+        Position2D unprojected = new Position2D(this.baseCRS);
+        toLatLng.transform(new Position2D(this.crs, p.x, p.y), unprojected);
         return new LatLng(unprojected.getOrdinate(0), unprojected.getOrdinate(1));
     }
 

@@ -16,13 +16,13 @@ import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.util.decorate.Wrapper;
 import org.junit.Assume;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 
 /**
  * Test wfg-ng backwards compatibility with wfs datastores.

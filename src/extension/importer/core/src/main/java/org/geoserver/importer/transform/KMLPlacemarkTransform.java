@@ -13,14 +13,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.geoserver.importer.FeatureDataConverter;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.format.KMLFileFormat;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.kml.Folder;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
 
 public class KMLPlacemarkTransform extends AbstractTransform implements InlineVectorTransform {
 

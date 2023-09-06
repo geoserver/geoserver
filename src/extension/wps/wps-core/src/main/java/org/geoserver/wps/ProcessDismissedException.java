@@ -5,8 +5,8 @@
 package org.geoserver.wps;
 
 import org.geoserver.wps.executor.MaxExecutionTimeListener;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.DelegateProgressListener;
-import org.opengis.util.ProgressListener;
 
 /**
  * Exception used to "poison" inputs and listener methods to force processes to exit when a dismiss

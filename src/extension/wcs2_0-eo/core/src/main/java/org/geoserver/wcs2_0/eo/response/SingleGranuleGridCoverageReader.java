@@ -14,27 +14,27 @@ import java.util.Map;
 import java.util.Set;
 import javax.media.jai.ImageLayout;
 import org.geoserver.util.ISO8601Formatter;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.data.ServiceInfo;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.ResourceInfo;
-import org.geotools.data.ServiceInfo;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.coverage.grid.Format;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
 
 /**
  * Provides a view of a single granule to the DescribeCoverage encoder (to be used in
@@ -48,7 +48,7 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
 
     private SimpleFeature feature;
 
-    GeneralEnvelope granuleEnvelope;
+    GeneralBounds granuleEnvelope;
 
     ISO8601Formatter formatter = new ISO8601Formatter();
 
@@ -69,7 +69,7 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
                 new ReferencedEnvelope(
                         featureGeometry.getEnvelopeInternal(),
                         reader.getCoordinateReferenceSystem());
-        this.granuleEnvelope = new GeneralEnvelope(re);
+        this.granuleEnvelope = new GeneralBounds(re);
     }
 
     private Geometry lookupFeatureGeometry() {
@@ -174,12 +174,12 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
     }
 
     @Override
-    public GeneralEnvelope getOriginalEnvelope() {
+    public GeneralBounds getOriginalEnvelope() {
         return granuleEnvelope;
     }
 
     @Override
-    public GeneralEnvelope getOriginalEnvelope(String coverageName) {
+    public GeneralBounds getOriginalEnvelope(String coverageName) {
         throw new UnsupportedOperationException();
     }
 

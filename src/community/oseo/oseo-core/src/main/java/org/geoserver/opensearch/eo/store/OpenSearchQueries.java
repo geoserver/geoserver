@@ -8,16 +8,16 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 
 /** Helper class factoring out some common code */
 public class OpenSearchQueries {
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     /**
      * Returns all the simple properties of products, plus the collection, so that it can be used in

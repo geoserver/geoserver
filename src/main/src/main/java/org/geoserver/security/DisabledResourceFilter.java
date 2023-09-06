@@ -11,7 +11,7 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /**
  * Makes sure disabled layers/resources cannot be accessed from outside regardless of the service

@@ -74,14 +74,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A XStream subclass allowing conversion of no class other than those explicitly registered using

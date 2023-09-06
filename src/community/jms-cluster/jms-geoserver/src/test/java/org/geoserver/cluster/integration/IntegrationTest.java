@@ -64,9 +64,10 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -74,8 +75,6 @@ import org.geotools.util.GrowableInternationalString;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Integration tests for JMS that tests that GeoServer configurations events and GeoServer catalog
@@ -424,7 +423,7 @@ public final class IntegrationTest {
         coverage.setGrid(
                 new GridGeometry2D(
                         new GeneralGridEnvelope(new int[] {0, 0}, new int[] {100, 100}),
-                        new Envelope2D(envelope)));
+                        new ReferencedEnvelope(envelope)));
         catalog.add(coverage);
         // add style info and style file
         copyStyle(instance, "/test_style.sld", "test_style.sld");

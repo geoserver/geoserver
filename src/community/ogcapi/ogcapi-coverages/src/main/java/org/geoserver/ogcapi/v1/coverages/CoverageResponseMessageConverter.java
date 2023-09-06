@@ -14,17 +14,17 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs2_0.response.WCS20GetCoverageResponse;
-import org.opengis.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 /**
- * Adapts all output formats able to encode a WCS {@link org.opengis.coverage.grid.GridCoverage} to
- * a {@link org.springframework.http.converter.HttpMessageConverter} encoding a {@link
- * CoveragesResponse}. Allows to reuse all existing WCS output formats in the OGC Coverages API
- * implementation.
+ * Adapts all output formats able to encode a WCS {@link
+ * org.geotools.api.coverage.grid.GridCoverage} to a {@link
+ * org.springframework.http.converter.HttpMessageConverter} encoding a {@link CoveragesResponse}.
+ * Allows to reuse all existing WCS output formats in the OGC Coverages API implementation.
  */
 @Component
 public class CoverageResponseMessageConverter

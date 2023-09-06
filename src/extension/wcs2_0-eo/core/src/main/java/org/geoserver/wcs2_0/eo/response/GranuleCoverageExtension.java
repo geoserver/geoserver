@@ -22,15 +22,15 @@ import org.geoserver.wcs2_0.eo.EOCoverageResourceCodec;
 import org.geoserver.wcs2_0.eo.WCSEOMetadata;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.WCS20DescribeCoverageExtension;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Extension point implementing {@link WCS20DescribeCoverageExtension} that handles the granules for

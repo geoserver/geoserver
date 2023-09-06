@@ -19,9 +19,9 @@ import net.opengis.wfs.UpdateElementType;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.xsd.Parser;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
 
 public class XMLParsingTest extends WFSTestSupport {
 

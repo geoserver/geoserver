@@ -20,10 +20,10 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.wfs.PropertyValueCollection;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class GetPropertyValue {
@@ -34,9 +34,9 @@ public class GetPropertyValue {
 
     Catalog catalog;
 
-    FilterFactory2 filterFactory;
+    FilterFactory filterFactory;
 
-    public GetPropertyValue(WFSInfo info, Catalog catalog, FilterFactory2 filterFactory) {
+    public GetPropertyValue(WFSInfo info, Catalog catalog, FilterFactory filterFactory) {
         delegate = new GetFeature(info, catalog);
         delegate.setFilterFactory(filterFactory);
 
@@ -119,7 +119,7 @@ public class GetPropertyValue {
         }
     }
 
-    public void setFilterFactory(FilterFactory2 filterFactory) {
+    public void setFilterFactory(FilterFactory filterFactory) {
         this.filterFactory = filterFactory;
     }
 }

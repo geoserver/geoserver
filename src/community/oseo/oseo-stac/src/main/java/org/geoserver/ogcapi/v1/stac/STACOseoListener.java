@@ -19,17 +19,17 @@ import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.OseoEvent;
 import org.geoserver.opensearch.eo.OseoEventListener;
 import org.geoserver.opensearch.eo.store.Indexable;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.NilExpression;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.filter.function.JsonPointerFunction;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.NilExpression;
-import org.opengis.filter.expression.PropertyName;
 import org.springframework.stereotype.Component;
 
 /**

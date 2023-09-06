@@ -34,18 +34,18 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.feature.ComplexAttribute;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.ComplexType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.MapEntry;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.ComplexAttribute;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.ComplexType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 /**

@@ -27,10 +27,10 @@ import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.sort.SortBy;
 
 /** Base class for a layer listing table with clickable layer names */
 public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
@@ -80,7 +80,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
 
                     @Override
                     protected Filter getFilter() {
-                        FilterFactory ff = CommonFactoryFinder.getFilterFactory2();
+                        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
                         final Filter filter;
                         if (workspace == null) {
                             filter = super.getFilter();

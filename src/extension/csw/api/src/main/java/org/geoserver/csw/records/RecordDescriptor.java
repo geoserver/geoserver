@@ -8,12 +8,12 @@ package org.geoserver.csw.records;
 import java.util.LinkedHashSet;
 import java.util.List;
 import net.opengis.cat.csw20.ElementSetType;
-import org.geotools.data.Query;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.expression.PropertyName;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

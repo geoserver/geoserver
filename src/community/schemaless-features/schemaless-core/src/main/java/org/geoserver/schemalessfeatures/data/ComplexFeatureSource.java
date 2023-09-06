@@ -12,22 +12,22 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
-import org.geotools.data.FeatureListener;
-import org.geotools.data.FeatureReader;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.geotools.data.QueryCapabilities;
-import org.geotools.data.ResourceInfo;
+import org.geotools.api.data.FeatureListener;
+import org.geotools.api.data.FeatureReader;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.QueryCapabilities;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public abstract class ComplexFeatureSource implements FeatureSource<FeatureType, Feature> {
 

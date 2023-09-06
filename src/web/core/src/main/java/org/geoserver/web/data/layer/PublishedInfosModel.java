@@ -14,7 +14,7 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.web.GeoServerApplication;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /**
  * Layers and LayerGroups, filtered by workspaceInfo prefix if available.

@@ -33,6 +33,17 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.RasterCleaner;
+import org.geotools.api.coverage.grid.GridGeometry;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Style;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -44,19 +55,8 @@ import org.geotools.process.function.ProcessFunction;
 import org.geotools.process.raster.DynamicColorMapProcess;
 import org.geotools.process.raster.FilterFunction_svgColorMap;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.util.factory.GeoTools;
-import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.filter.expression.Expression;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.operation.MathTransform;
 
 /**
  * A {@link DispatcherCallback} which intercepts a getLegendGraphicRequest and check whether that

@@ -17,6 +17,13 @@ import org.geoserver.catalog.Info;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.function.IsInstanceOf;
+import org.geotools.api.filter.And;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.Or;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.Capabilities;
 import org.geotools.filter.visitor.CapabilitiesFilterSplitter;
@@ -24,13 +31,6 @@ import org.geotools.filter.visitor.ClientTransactionAccessor;
 import org.geotools.filter.visitor.LiteralDemultiplyingFilterVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.And;
-import org.opengis.filter.Filter;
-import org.opengis.filter.Or;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 
 class QueryBuilder<T extends Info> {
 

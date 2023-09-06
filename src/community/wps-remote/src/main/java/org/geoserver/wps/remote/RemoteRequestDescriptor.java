@@ -5,7 +5,7 @@
 package org.geoserver.wps.remote;
 
 import java.util.Map;
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.type.Name;
 
 /**
  * Base class describing the remote requests.

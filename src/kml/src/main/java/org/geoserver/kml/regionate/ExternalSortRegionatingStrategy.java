@@ -20,8 +20,15 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.data.jdbc.JDBCUtils;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.FeatureTypes;
@@ -34,13 +41,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingStrategy {
 

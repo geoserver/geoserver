@@ -15,14 +15,14 @@ import java.io.IOException;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.referencing.FactoryException;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CoverageTest extends CoveragesTestSupport {

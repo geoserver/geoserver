@@ -23,9 +23,9 @@ import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.gwc.wmts.dimensions.RasterTimeDimension;
 import org.geoserver.util.ISO8601Formatter;
+import org.geotools.api.filter.Filter;
 import org.geotools.feature.type.DateUtil;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 /**
  * This class contains tests that check that time dimension values are correctly extracted from

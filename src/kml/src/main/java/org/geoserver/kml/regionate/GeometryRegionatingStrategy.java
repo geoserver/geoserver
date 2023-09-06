@@ -12,14 +12,14 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.FeatureType;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.FeatureType;
 
 /**
  * Strategy using geometry size to determine feature allocation in tiles. Bigger geometries get into

@@ -5,12 +5,12 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 
 /**
  * Handles feature types derived from cascaded WFS Stored Queries. Stored Query configuration is

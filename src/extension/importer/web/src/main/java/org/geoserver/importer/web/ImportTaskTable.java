@@ -56,10 +56,10 @@ import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SRSToCRSModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 

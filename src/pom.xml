@@ -123,7 +123,8 @@
     <image.tests>true</image.tests>
     <interactive.image>false</interactive.image>
     <windows.leniency>true</windows.leniency>
-    <gf.version>3.6.0</gf.version>
+    <gf.version>3.6-SNAPSHOT</gf.version>
+    <mf.version>2.3-SNAPSHOT</mf.version>
     <jasypt.version>1.9.2</jasypt.version>
     <hibernate-version>3.6.9.Final</hibernate-version>
     <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
@@ -1120,7 +1121,7 @@
       <dependency>
         <groupId>org.mapfish.print</groupId>
         <artifactId>print-lib</artifactId>
-        <version>2.2.0</version>
+        <version>${mf.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.librepdf</groupId>

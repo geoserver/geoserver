@@ -16,8 +16,11 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
-import org.geotools.data.FeatureWriter;
-import org.geotools.data.Transaction;
+import org.geotools.api.data.FeatureWriter;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.geometry.BoundingBox;
 import org.geotools.data.directory.DirectoryDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.shapefile.files.ShpFileType;
@@ -25,13 +28,10 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicReader;
 import org.geotools.gce.imagemosaic.Utils;
-import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.geometry.BoundingBox;
 
 /**
  * Helper to write out mosaic index shapefile and properties files.
@@ -111,7 +111,7 @@ public class MosaicIndex {
             throw new IOException("Unable to determine CRS for mosaic");
         }
 
-        Envelope2D envelope = new Envelope2D(first.getEnvelope());
+        ReferencedEnvelope envelope = new ReferencedEnvelope(first.getEnvelope());
 
         // create index schema
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();

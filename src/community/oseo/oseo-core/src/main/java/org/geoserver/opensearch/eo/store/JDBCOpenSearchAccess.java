@@ -33,20 +33,38 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.ProductClass;
-import org.geotools.data.DataSourceException;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.Repository;
+import org.geotools.api.data.ServiceInfo;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureStore;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.GeometryType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.And;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
-import org.geotools.data.Query;
-import org.geotools.data.Repository;
-import org.geotools.data.ServiceInfo;
-import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.postgis.PostGISDialect;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.store.ContentFeatureCollection;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
@@ -66,24 +84,6 @@ import org.geotools.jdbc.VirtualTable;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.GeometryType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.And;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * A data store building OpenSearch for EO records based on a wrapped data store providing all
@@ -98,7 +98,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     static final Logger LOGGER = Logging.getLogger(JDBCOpenSearchAccess.class);
 
-    protected static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    protected static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     public static final String COLLECTION = "collection";
 
@@ -1199,7 +1199,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         try {
             return new WritableDataView(granulesStore, granulesQuery) {
                 @Override
-                public java.util.List<org.opengis.filter.identity.FeatureId> addFeatures(
+                public java.util.List<org.geotools.api.filter.identity.FeatureId> addFeatures(
                         org.geotools.feature.FeatureCollection<SimpleFeatureType, SimpleFeature>
                                 featureCollection)
                         throws IOException {

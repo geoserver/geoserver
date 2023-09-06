@@ -17,12 +17,12 @@ import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.coverage.grid.GridGeometry;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.util.ProgressListener;
 
 /**
  * Default Implementation of the {@link CoverageInfo} bean to capture information about a coverage.

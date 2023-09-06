@@ -16,15 +16,15 @@ import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public abstract class AbstractNetworkLinkBuilder {
 

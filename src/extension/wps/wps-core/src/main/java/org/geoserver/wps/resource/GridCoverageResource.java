@@ -6,7 +6,7 @@
 package org.geoserver.wps.resource;
 
 import org.geoserver.wcs.CoverageCleanerCallback;
-import org.opengis.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverage;
 
 /**
  * A resource managing the lifecycle of a {@link GridCoverage} and disposing of it when the process

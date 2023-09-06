@@ -100,6 +100,7 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geoserver.wms.map.RawMap;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -147,7 +148,6 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
-import org.opengis.filter.Filter;
 import org.springframework.context.ApplicationContext;
 
 /** Unit test suite for the {@link GWC} mediator. */

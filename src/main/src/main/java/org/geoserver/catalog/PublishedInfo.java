@@ -6,7 +6,7 @@
 package org.geoserver.catalog;
 
 import java.util.List;
-import org.opengis.util.InternationalString;
+import org.geotools.api.util.InternationalString;
 
 /**
  * Interface for publishable entities contained in a Layer Group.

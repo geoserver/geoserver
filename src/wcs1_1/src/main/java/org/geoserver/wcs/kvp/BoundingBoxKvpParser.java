@@ -13,8 +13,8 @@ import net.opengis.ows11.BoundingBoxType;
 import net.opengis.ows11.Ows11Factory;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 

@@ -17,10 +17,10 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 

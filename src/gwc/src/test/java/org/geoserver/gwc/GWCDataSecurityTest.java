@@ -41,6 +41,8 @@ import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.impl.AbstractUserGroupService;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -52,8 +54,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
@@ -178,7 +178,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
                 new CoverageAccessLimits(CatalogMode.HIDE, Filter.INCLUDE, cropper, null));
 
         // filter setup
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
         Filter filter = ff.contains(ff.property("geometry"), ff.literal(cropper));
         tam.putLimits(
                 "cite_filtermosaic",

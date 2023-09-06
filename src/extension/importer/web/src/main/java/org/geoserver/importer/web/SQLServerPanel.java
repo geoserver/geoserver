@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.wicket.Component;
-import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.data.sqlserver.SQLServerDataStoreFactory;
 import org.geotools.data.sqlserver.SQLServerJNDIDataStoreFactory;
 import org.geotools.jdbc.JDBCDataStoreFactory;

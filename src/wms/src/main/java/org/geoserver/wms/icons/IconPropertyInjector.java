@@ -10,22 +10,22 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.Fill;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.GraphicalSymbol;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.Stroke;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.style.Symbol;
+import org.geotools.api.style.Symbolizer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.IsStaticExpressionVisitor;
 import org.geotools.renderer.style.ExpressionExtractor;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.Fill;
-import org.geotools.styling.Graphic;
-import org.geotools.styling.Mark;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.Stroke;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.Symbol;
-import org.geotools.styling.Symbolizer;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Expression;
-import org.opengis.style.GraphicalSymbol;
 
 /**
  * Utility to inject static property values into a style

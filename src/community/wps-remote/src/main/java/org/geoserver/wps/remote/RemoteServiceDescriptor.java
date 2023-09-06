@@ -5,8 +5,8 @@
 package org.geoserver.wps.remote;
 
 import java.util.Map;
-import org.geotools.data.Parameter;
-import org.opengis.feature.type.Name;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
 
 /**
  * Just a utility class to store some info associated to the new WPS Processes created dynamically

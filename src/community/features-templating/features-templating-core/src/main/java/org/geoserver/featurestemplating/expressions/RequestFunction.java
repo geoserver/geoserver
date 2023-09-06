@@ -7,9 +7,9 @@ package org.geoserver.featurestemplating.expressions;
 import java.util.logging.Logger;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.capability.FunctionName;
 
 /**
  * Abstract function that evaluate against a {@link Request} object. Subclasses must implement

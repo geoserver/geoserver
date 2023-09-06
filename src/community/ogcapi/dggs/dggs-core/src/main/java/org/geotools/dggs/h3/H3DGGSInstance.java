@@ -26,6 +26,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.store.EmptyIterator;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
@@ -40,9 +43,6 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.predicate.RectangleContains;
 import org.locationtech.jts.operation.predicate.RectangleIntersects;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 public class H3DGGSInstance implements DGGSInstance {
 
@@ -347,7 +347,7 @@ public class H3DGGSInstance implements DGGSInstance {
     }
 
     @Override
-    public Filter getChildFilter(FilterFactory2 ff, String zoneId, int resolution, boolean upTo) {
+    public Filter getChildFilter(FilterFactory ff, String zoneId, int resolution, boolean upTo) {
         long id = h3.stringToH3(zoneId);
         H3Index idx = new H3Index(id);
         long lowest = idx.lowestIdChild(resolution);

@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.geoserver.platform.ServiceException;
-import org.opengis.geometry.BoundingBox;
+import org.geotools.api.geometry.BoundingBox;
 
 /**
  * The request object, a simple java bean that gathers all the information and data that is

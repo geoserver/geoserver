@@ -5,16 +5,16 @@
  */
 package org.geoserver.wps.gs;
 
+import java.text.MessageFormat;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.i18n.ErrorKeys;
-import org.geotools.renderer.i18n.Errors;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 /** @author Daniele Romagnoli, GeoSolutions */
 public class BaseCoverageAlgebraProcess {
@@ -37,7 +37,8 @@ public class BaseCoverageAlgebraProcess {
                     coverageA == null
                             ? (coverageB == null ? "coverageA and coverageB" : "coverageA")
                             : "coverageB";
-            throw new ProcessException(Errors.format(ErrorKeys.NULL_ARGUMENT_$1, coveragesNull));
+            throw new ProcessException(
+                    MessageFormat.format(ErrorKeys.NULL_ARGUMENT_$1, coveragesNull));
         }
 
         //
@@ -60,10 +61,10 @@ public class BaseCoverageAlgebraProcess {
         }
 
         //
-        // checking same Envelope and grid range
+        // checking same Bounds and grid range
         //
-        Envelope envA = coverageA.getEnvelope();
-        Envelope envB = coverageB.getEnvelope();
+        Bounds envA = coverageA.getEnvelope();
+        Bounds envB = coverageB.getEnvelope();
         if (!envA.equals(envB)) {
             throw new ProcessException(MISMATCHING_ENVELOPE_MESSAGE);
         }

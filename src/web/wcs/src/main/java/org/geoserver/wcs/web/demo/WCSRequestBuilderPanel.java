@@ -38,14 +38,14 @@ import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
 
 /**
  * Small embedded WCS client enabling users to visually build a WCS GetCoverage request

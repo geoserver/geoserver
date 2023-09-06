@@ -17,14 +17,14 @@ import net.sf.json.JSONSerializer;
 import org.geoserver.wps.remote.RemoteProcessClientListener;
 import org.geoserver.wps.remote.RemoteProcessFactoryListener;
 import org.geoserver.wps.remote.RemoteServiceDescriptor;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.InternationalString;
 import org.geotools.feature.NameImpl;
 import org.geotools.text.Text;
 import org.geotools.util.logging.Logging;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
-import org.opengis.feature.type.Name;
-import org.opengis.util.InternationalString;
 
 /**
  * Listens for "REGISTER" messages from XMPP service channels and takes action accordingly.

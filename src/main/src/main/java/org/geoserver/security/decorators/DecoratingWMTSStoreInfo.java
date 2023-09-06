@@ -13,9 +13,9 @@ import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.util.decorate.AbstractDecorator;
-import org.opengis.util.ProgressListener;
 
 /**
  * Delegates every method to the delegate wmts store info.

@@ -12,8 +12,8 @@ import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
-import org.opengis.util.InternationalString;
 
 /**
  * Configuration object for Web Map Service.

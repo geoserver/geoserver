@@ -38,13 +38,13 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 

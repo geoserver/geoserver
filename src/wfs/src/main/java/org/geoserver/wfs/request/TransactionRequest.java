@@ -27,7 +27,7 @@ import net.opengis.wfs20.Wfs20Factory;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap.ValueListIterator;
-import org.geotools.data.Transaction;
+import org.geotools.api.data.Transaction;
 
 /**
  * WFS Transaction request.

@@ -15,11 +15,11 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.style.Style;
 import org.geotools.feature.NameImpl;
-import org.geotools.styling.Style;
 import org.geotools.util.Converters;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 
 /**
  * Holds the parsed parameters for a GetLegendGraphic WMS request.

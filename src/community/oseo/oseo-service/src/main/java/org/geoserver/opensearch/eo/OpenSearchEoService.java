@@ -6,7 +6,7 @@ package org.geoserver.opensearch.eo;
 
 import java.io.IOException;
 import java.util.Collection;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 
 public interface OpenSearchEoService {
 

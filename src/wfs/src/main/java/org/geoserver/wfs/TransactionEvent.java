@@ -11,7 +11,7 @@ import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 import org.geoserver.wfs.request.TransactionRequest;
-import org.geotools.data.Transaction;
+import org.geotools.api.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
 
 /**

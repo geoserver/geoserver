@@ -24,13 +24,25 @@ import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 import org.geoserver.wfs.request.Update;
+import org.geotools.api.data.FeatureLocking;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.data.SimpleFeatureLocking;
+import org.geotools.api.data.SimpleFeatureStore;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.Id;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.identity.FeatureId;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureLocking;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.data.simple.SimpleFeatureLocking;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
@@ -48,19 +60,6 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.Id;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.identity.FeatureId;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 /**
  * Processes standard update elements
@@ -402,8 +401,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                 Set<FeatureId> featureIds = new HashSet<>();
 
-                FilterFactory2 ff =
-                        CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+                FilterFactory ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
                 for (FeatureId fid : fids) {
                     // create new FeatureIds without any possible version information in order to
                     // query for the latest version

@@ -27,10 +27,10 @@ import org.geoserver.mapml.tcrs.TiledCRSConstants;
 import org.geoserver.mapml.tcrs.TiledCRSParams;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeodeticCRS;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeodeticCRS;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.w3c.dom.Document;
 

@@ -6,7 +6,7 @@ package org.geoserver.wps.executor;
 
 import java.util.Collection;
 import org.geoserver.wps.validator.ValidationException;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

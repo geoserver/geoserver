@@ -10,7 +10,7 @@ import java.util.List;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.ows.util.OwsUtils;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.api.feature.type.FeatureType;
 
 public class GetLegendGraphicHandler extends RequestObjectHandler {
 

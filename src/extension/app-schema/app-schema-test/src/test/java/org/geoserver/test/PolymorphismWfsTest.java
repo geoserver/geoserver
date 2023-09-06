@@ -12,9 +12,11 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.appschema.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.appschema.jdbc.NestedFilterToSQL;
-import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.FeatureTypeMapping;
 import org.geotools.data.complex.filter.ComplexFilterSplitter;
@@ -22,8 +24,6 @@ import org.geotools.data.jdbc.FilterToSQLException;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.PropertyIsEqualTo;
 import org.w3c.dom.Document;
 
 /**

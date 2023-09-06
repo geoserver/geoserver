@@ -5,7 +5,7 @@
 package org.geoserver.featurestemplating.builders.flat;
 
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
-import org.opengis.filter.expression.Expression;
+import org.geotools.api.filter.expression.Expression;
 
 /** An helper class to help creating attribute names when producing a flat geoJson output */
 class AttributeNameHelper {

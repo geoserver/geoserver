@@ -23,9 +23,9 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.util.InternationalStringUtils;
+import org.geotools.api.util.InternationalString;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.GrowableInternationalString;
-import org.opengis.util.InternationalString;
 
 public class LayerGroupInfoImpl implements LayerGroupInfo {
 

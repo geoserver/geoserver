@@ -11,21 +11,21 @@ import java.util.List;
 import java.util.Set;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.decorators.DecoratingSimpleFeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.identity.FeatureId;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.identity.FeatureId;
 
 /** Adds a workspace filter to the queries/filters, if a workspace is set */
 public class WorkspaceFeatureSource extends DecoratingSimpleFeatureSource {
     private WorkspaceInfo workspaceInfo;
     private final JDBCOpenSearchAccess openSearchAccess;
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     public static String WORKSPACES_FIELD = "workspaces";
 
     /**

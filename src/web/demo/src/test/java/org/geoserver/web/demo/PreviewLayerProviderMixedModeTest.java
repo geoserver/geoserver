@@ -17,8 +17,8 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geotools.api.filter.Filter;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class PreviewLayerProviderMixedModeTest extends GeoServerWicketTestSupport {
 

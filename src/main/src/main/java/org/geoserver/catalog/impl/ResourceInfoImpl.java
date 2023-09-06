@@ -21,15 +21,14 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.util.InternationalStringUtils;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.util.InternationalString;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.logging.Logging;
-import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.type.Name;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.util.InternationalString;
 
 /** Default implementation of {@link ResourceInfo}. */
 @SuppressWarnings("serial")
@@ -286,7 +285,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
             // create below makes a copy, in no case the actual field value is returned to the
             // client, this is not a getter, it's a derivative, thus ModificationProxy won't do
             // a copy on its own
-            return ReferencedEnvelope.create((Envelope) nativeBox, declaredCRS);
+            return ReferencedEnvelope.envelope(nativeBox, declaredCRS);
         } else {
             if (nativeBox == null || nativeBox.getCoordinateReferenceSystem() == null) {
                 LOGGER.log(

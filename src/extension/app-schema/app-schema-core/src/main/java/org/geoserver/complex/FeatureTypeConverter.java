@@ -13,16 +13,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Logger;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

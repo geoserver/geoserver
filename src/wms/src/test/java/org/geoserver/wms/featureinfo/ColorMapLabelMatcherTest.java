@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 

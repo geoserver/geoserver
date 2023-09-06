@@ -7,6 +7,7 @@ package org.geoserver.feature;
 
 import static org.junit.Assert.assertEquals;
 
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -15,7 +16,6 @@ import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.feature.simple.SimpleFeature;
 
 public class ReprojectingFeatureCollectionTest {
 

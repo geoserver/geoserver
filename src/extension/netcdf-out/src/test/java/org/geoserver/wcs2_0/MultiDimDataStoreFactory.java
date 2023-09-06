@@ -10,8 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.DataStoreFactorySpi;
 
 public class MultiDimDataStoreFactory implements DataStoreFactorySpi {
 

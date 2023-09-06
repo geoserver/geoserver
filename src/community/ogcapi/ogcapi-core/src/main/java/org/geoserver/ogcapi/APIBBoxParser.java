@@ -12,6 +12,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.NoSuchAuthorityCodeException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -20,17 +25,12 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpStatus;
 
 /** A BBOX parser specialized for API bounding boxes (up to 6 coordinates, default CRS is CRS84) */
 public class APIBBoxParser {
 
-    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     /**
      * Turns a bbox specification into a OGC filter, assuming it's expressed in {@link

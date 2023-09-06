@@ -15,7 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
-import org.geotools.data.DataSourceException;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -27,8 +29,6 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * @author Gabriel Roldan

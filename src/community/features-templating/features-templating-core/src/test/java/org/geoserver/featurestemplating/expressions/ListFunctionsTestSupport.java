@@ -6,6 +6,9 @@ package org.geoserver.featurestemplating.expressions;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -13,13 +16,10 @@ import org.junit.Before;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.FilterFactory2;
 
 public abstract class ListFunctionsTestSupport {
 
-    protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    protected static FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     protected List<SimpleFeature> featureList = new ArrayList<>();
 

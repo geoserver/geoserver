@@ -6,7 +6,7 @@ package org.geoserver.opensearch.eo;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.opengis.util.CodeList;
+import org.geotools.api.util.CodeList;
 
 /** Event Types for OSEO Data Store */
 public class OseoEventType extends CodeList<OseoEventType> {

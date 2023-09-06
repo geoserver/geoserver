@@ -38,17 +38,17 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.crs.DynamicCrsMapResource;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geotools.api.metadata.extent.Extent;
+import org.geotools.api.metadata.extent.GeographicBoundingBox;
+import org.geotools.api.metadata.extent.GeographicExtent;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.ProjectedCRS;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.util.InternationalString;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.metadata.extent.Extent;
-import org.opengis.metadata.extent.GeographicBoundingBox;
-import org.opengis.metadata.extent.GeographicExtent;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.ProjectedCRS;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.util.InternationalString;
 
 public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderContributor {
 

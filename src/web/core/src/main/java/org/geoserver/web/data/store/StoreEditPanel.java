@@ -15,8 +15,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.GeoServerApplication;
-import org.geotools.data.DataAccessFactory;
-import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.api.data.DataAccessFactory;
+import org.geotools.api.data.DataAccessFactory.Param;
 
 /**
  * Base class for panels containing the form edit components for {@link StoreInfo} objects

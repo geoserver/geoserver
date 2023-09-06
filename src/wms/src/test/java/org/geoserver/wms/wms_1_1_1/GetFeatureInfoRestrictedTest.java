@@ -23,8 +23,8 @@ import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.filter.Filter;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 /**
  * Similar to the GetFeatureInfoTest this class runs tests the GetFeatureInfo request for WMS

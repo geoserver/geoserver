@@ -16,8 +16,9 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.CircularArc;
@@ -32,7 +33,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeature;
 import org.w3c.dom.Document;
 
 /**

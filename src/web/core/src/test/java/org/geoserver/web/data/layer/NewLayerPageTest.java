@@ -23,7 +23,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.junit.Test;
 

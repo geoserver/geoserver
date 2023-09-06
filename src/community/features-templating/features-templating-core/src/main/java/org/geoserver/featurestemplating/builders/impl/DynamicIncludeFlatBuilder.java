@@ -17,9 +17,9 @@ import org.geoserver.featurestemplating.readers.JSONMerger;
 import org.geoserver.featurestemplating.readers.JSONTemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.feature.Feature;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.Feature;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

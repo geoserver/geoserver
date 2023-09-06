@@ -6,7 +6,7 @@ package org.geoserver.featurestemplating.validation;
 
 import java.io.IOException;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.api.feature.type.FeatureType;
 
 /**
  * This class perform a validation of a template by evaluating dynamic and source fields using

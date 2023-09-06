@@ -8,12 +8,12 @@ package org.geoserver.wps.ppio;
 import java.io.InputStream;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.IOUtils;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.filter.v1_0.OGCConfiguration;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
 import org.geotools.xsd.Parser;
-import org.opengis.filter.Filter;
 import org.xml.sax.ContentHandler;
 
 /**

@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.geotools.api.style.Style;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wms.Layer;
-import org.geotools.styling.Style;
-import org.opengis.util.ProgressListener;
 
 public interface WMSLayerInfo extends ResourceInfo {
 

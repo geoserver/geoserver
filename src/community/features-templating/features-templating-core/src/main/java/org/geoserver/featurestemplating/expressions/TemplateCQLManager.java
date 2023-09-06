@@ -11,17 +11,17 @@ import java.util.regex.Pattern;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.expressions.aggregate.StringCQLFunction;
 import org.geoserver.util.XCQL;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

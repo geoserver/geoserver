@@ -19,23 +19,23 @@ import org.geoserver.wfs.request.Delete;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.FeatureLockException;
+import org.geotools.api.data.FeatureLocking;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.data.FeatureWriter;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureLocking;
+import org.geotools.api.data.SimpleFeatureStore;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.identity.FeatureId;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureLockException;
-import org.geotools.data.FeatureLocking;
-import org.geotools.data.FeatureStore;
-import org.geotools.data.FeatureWriter;
-import org.geotools.data.Query;
-import org.geotools.data.simple.SimpleFeatureLocking;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.identity.FeatureId;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Processes standard Delete elements

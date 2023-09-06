@@ -23,9 +23,9 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geotools.api.filter.Filter;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class StylePageTest extends GeoServerWicketTestSupport {
 

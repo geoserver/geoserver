@@ -6,13 +6,13 @@ package org.geoserver.ogcapi.v1.styles;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.geotools.api.style.LineSymbolizer;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.PolygonSymbolizer;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Symbolizer;
+import org.geotools.api.style.TextSymbolizer;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.TextSymbolizer;
-import org.opengis.style.Symbolizer;
 
 /** Collects the types of symbolizers found in the style */
 public class SymbolizerTypeVisitor extends AbstractStyleVisitor {

@@ -5,6 +5,8 @@
 package org.geoserver.wms.clip;
 
 import java.util.logging.Logger;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -14,8 +16,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.vector.ClipProcess;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 
 /** @author ImranR */
 public class ClippedFeatureCollection<T extends FeatureType, F extends Feature>

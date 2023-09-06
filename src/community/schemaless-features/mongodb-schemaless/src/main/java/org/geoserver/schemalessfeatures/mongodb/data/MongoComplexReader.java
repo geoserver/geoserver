@@ -13,8 +13,8 @@ import org.geoserver.schemalessfeatures.data.ComplexFeatureReader;
 import org.geoserver.schemalessfeatures.data.ComplexFeatureSource;
 import org.geoserver.schemalessfeatures.mongodb.mappers.SchemalessMongoToComplexMapper;
 import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
-import org.geotools.data.Query;
-import org.opengis.feature.Feature;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
 
 public class MongoComplexReader extends ComplexFeatureReader {
 

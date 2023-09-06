@@ -31,12 +31,12 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
+import org.geotools.api.filter.Filter;
 import org.geotools.feature.NameImpl;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class LocalWorkspaceCatalogTest {
 

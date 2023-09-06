@@ -42,10 +42,10 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.ows.util.OwsUtils;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 import org.springframework.util.Assert;
 
 /** @author groldan */

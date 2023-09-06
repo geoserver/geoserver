@@ -20,7 +20,7 @@ import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.validator.MaxSizeValidator;
 import org.geoserver.wps.validator.Validators;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Validator;
 

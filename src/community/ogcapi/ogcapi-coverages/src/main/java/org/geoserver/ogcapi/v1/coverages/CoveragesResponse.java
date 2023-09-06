@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import javax.xml.bind.annotation.XmlTransient;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ogcapi.AbstractDocument;
-import org.opengis.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverage;
 
 /**
  * A Coverages response that contains both the WCS request and response, to help reusing the

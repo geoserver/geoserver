@@ -12,8 +12,8 @@ import java.util.UUID;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.data.test.SystemTestData;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.junit.Test;
-import org.opengis.feature.type.PropertyDescriptor;
 import org.w3c.dom.Document;
 
 public class FeatureCatalogueTest extends MDTestSupport {

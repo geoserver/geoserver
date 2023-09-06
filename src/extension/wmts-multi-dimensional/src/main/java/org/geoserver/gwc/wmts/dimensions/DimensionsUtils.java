@@ -31,10 +31,21 @@ import org.geoserver.gwc.wmts.MultiDimensionalExtension;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
-import org.geotools.data.DataAccess;
-import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -52,24 +63,12 @@ import org.geotools.util.Range;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.service.OWSException;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.comparator.ComparableComparator;
 
 /** Some utils methods useful to interact with dimensions. */
 public final class DimensionsUtils {
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     /** No expansion limit provided */
     public static final int NO_LIMIT = Integer.MIN_VALUE;

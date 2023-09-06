@@ -26,11 +26,11 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.type.AttributeDescriptor;
 
 /** @author ian */
 public class WFSPPIOTest extends WPSTestSupport {

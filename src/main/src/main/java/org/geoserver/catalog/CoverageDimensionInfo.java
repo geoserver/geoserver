@@ -7,8 +7,8 @@ package org.geoserver.catalog;
 
 import java.io.Serializable;
 import java.util.List;
+import org.geotools.api.coverage.SampleDimensionType;
 import org.geotools.util.NumberRange;
-import org.opengis.coverage.SampleDimensionType;
 
 /**
  * A coverage dimension.

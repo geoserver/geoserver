@@ -21,7 +21,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
-import org.opengis.feature.type.PropertyDescriptor;
+import org.geotools.api.feature.type.PropertyDescriptor;
 
 /** Configures a layer KML related attributes (coming from metadata) */
 public class KMLLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> {

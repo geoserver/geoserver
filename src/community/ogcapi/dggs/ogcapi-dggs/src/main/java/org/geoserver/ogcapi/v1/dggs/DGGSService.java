@@ -51,6 +51,11 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wms.WMS;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
 import org.geotools.dggs.gstore.DGGSStore;
@@ -64,11 +69,6 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.PropertyIsEqualTo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -88,7 +88,7 @@ public class DGGSService {
 
     static final Logger LOGGER = Logging.getLogger(DGGSService.class);
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     public static final String CORE = "http://www.opengis.net/spec/ogcapi-dggs-1/1.0/conf/core";
 

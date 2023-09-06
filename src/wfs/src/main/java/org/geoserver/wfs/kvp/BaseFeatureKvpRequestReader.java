@@ -25,15 +25,15 @@ import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.identity.FeatureId;
+import org.geotools.api.filter.spatial.BBOX;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.identity.FeatureId;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Parses elements common to GetFeature/GetFeatureWithLock/LockFeature (2.0 version) */

@@ -13,12 +13,12 @@ import static org.junit.Assert.assertNull;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geotools.data.Join;
+import org.geotools.api.data.Join;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 public class JoinExtractingVisitorTest {
 
@@ -26,7 +26,7 @@ public class JoinExtractingVisitorTest {
 
     private FeatureTypeInfo forests;
 
-    private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    private FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     private FeatureTypeInfo buildings;
 

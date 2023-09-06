@@ -27,10 +27,19 @@ import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.CatalogStoreCapabilities;
 import org.geoserver.csw.store.RepositoryItem;
 import org.geoserver.platform.resource.Files;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.feature.ComplexAttribute;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
-import org.geotools.data.Query;
-import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -39,19 +48,10 @@ import org.geotools.filter.SortByImpl;
 import org.geotools.util.factory.Hints;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.ComplexAttribute;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 
 public class SimpleCatalogStoreTest {
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     File root = new File("./src/test/resources/org/geoserver/csw/store/simple");
     SimpleCatalogStore store = new SimpleCatalogStore(Files.asResource(root));

@@ -6,12 +6,12 @@
 package org.geoserver.importer.transform;
 
 import org.geoserver.importer.ImportTask;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  * Attribute that maps an attribute from one type to another.

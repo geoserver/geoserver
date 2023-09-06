@@ -23,7 +23,7 @@ import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.expression.Expression;
+import org.geotools.api.filter.expression.Expression;
 
 /**
  * Simple Panel which adds a TextField for setting the ECQL expression for the WorkSpace or Global

@@ -4,11 +4,11 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.22-SNAPSHOT</version>
+    <version>2.22.5</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-web-service-auth</artifactId>
-  <version>2.22-SNAPSHOT</version>
+  <version>2.22.5</version>
   <packaging>jar</packaging>
   <name>Web Service Authentication Provider</name>
   <dependencies>

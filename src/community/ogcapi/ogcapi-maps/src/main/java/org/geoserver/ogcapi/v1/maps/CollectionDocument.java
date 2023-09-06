@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.io.IOException;
 import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -14,9 +15,11 @@ import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.LinksBuilder;
+import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -29,15 +32,16 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
 
     PublishedInfo published;
 
-    public CollectionDocument(GeoServer geoServer, PublishedInfo published) {
+    public CollectionDocument(GeoServer geoServer, PublishedInfo published) throws IOException {
         super(published);
         // basic info
         String collectionId = published.prefixedName();
         this.id = collectionId;
         this.title = published.getTitle();
         this.description = published.getAbstract();
-        ReferencedEnvelope bbox = getExtents(published);
-        setExtent(new CollectionExtents(bbox));
+        ReferencedEnvelope bbox = getSpatialExtents(published);
+        DateRange timeExtent = getTimeExtent(published);
+        setExtent(new CollectionExtents(bbox, timeExtent));
         this.published = published;
 
         addSelfLinks("ogc/maps/v1/collections/" + id);
@@ -51,7 +55,7 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
                 .add(this);
     }
 
-    private ReferencedEnvelope getExtents(PublishedInfo published) {
+    private ReferencedEnvelope getSpatialExtents(PublishedInfo published) {
         try {
             if (published instanceof LayerInfo) {
                 return ((LayerInfo) published).getResource().getLatLonBoundingBox();
@@ -68,5 +72,16 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     e);
         }
+    }
+
+    private DateRange getTimeExtent(PublishedInfo published) throws IOException {
+        if (published instanceof LayerInfo) {
+            return TimeExtentCalculator.getTimeExtent(((LayerInfo) published).getResource());
+        } else if (published instanceof LayerGroupInfo) {
+            LOGGER.fine("Time extent not supported for Layer Groups");
+        } else {
+            throw new RuntimeException("Unexpected, don't know how to handle: " + published);
+        }
+        return null;
     }
 }

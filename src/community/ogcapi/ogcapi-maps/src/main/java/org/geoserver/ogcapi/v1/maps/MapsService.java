@@ -4,18 +4,24 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
+import static org.geoserver.ogcapi.APIException.INVALID_PARAMETER_VALUE;
+
 import java.awt.Color;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIBBoxParser;
@@ -27,6 +33,7 @@ import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.StyleDocument;
+import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetFeatureInfoRequest;
@@ -65,6 +72,7 @@ public class MapsService {
             "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/crs";
 
     private static final String DISPLAY_NAME = "OGC API Maps";
+    private TimeParser timeParser = new TimeParser();
 
     private final GeoServer geoServer;
     private final WebMapService wms;
@@ -114,7 +122,8 @@ public class MapsService {
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) {
+    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId)
+            throws IOException {
         PublishedInfo p = getPublished(collectionId);
         CollectionDocument collection = new CollectionDocument(geoServer, p);
 
@@ -158,13 +167,14 @@ public class MapsService {
             @RequestParam(name = "f") String format,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "crs", required = false) String crs,
+            @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "width", required = false) Integer width,
             @RequestParam(name = "height", required = false) Integer height,
             @RequestParam(name = "transparent", required = false, defaultValue = "true")
                     boolean transparent,
             @RequestParam(name = "bgcolor", required = false) String bgcolor
             // TODO: add all the vendor parameters we normally support in WMS
-            ) throws IOException, FactoryException {
+            ) throws IOException, FactoryException, ParseException {
         GetMapRequest request =
                 toGetMapRequest(
                         collectionId,
@@ -172,6 +182,7 @@ public class MapsService {
                         format,
                         bbox,
                         crs,
+                        datetime,
                         width,
                         height,
                         transparent,
@@ -229,6 +240,7 @@ public class MapsService {
             @RequestParam(name = "f") String format,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "crs", required = false) String crs,
+            @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "width", required = false) Integer width,
             @RequestParam(name = "height", required = false) Integer height,
             @RequestParam(name = "transparent", required = false, defaultValue = "true")
@@ -237,7 +249,7 @@ public class MapsService {
             @RequestParam(name = "i") int i,
             @RequestParam(name = "j") int j
             // TODO: add all the vendor parameters we normally support in WMS
-            ) throws IOException, FactoryException {
+            ) throws IOException, FactoryException, ParseException {
         GetMapRequest getMapRequest =
                 toGetMapRequest(
                         collectionId,
@@ -245,6 +257,7 @@ public class MapsService {
                         "image/png",
                         bbox,
                         crs,
+                        datetime,
                         width,
                         height,
                         transparent,
@@ -268,11 +281,12 @@ public class MapsService {
             String format,
             String bbox,
             String crs,
+            String datetime,
             Integer width,
             Integer height,
             boolean transparent,
             String bgcolor)
-            throws IOException, FactoryException {
+            throws IOException, FactoryException, ParseException {
         PublishedInfo p = getPublished(collectionId);
         checkStyle(p, styleId);
         StyleInfo styleInfo = getCatalog().getStyleByName(styleId);
@@ -297,6 +311,9 @@ public class MapsService {
         if (height != null) request.setHeight(height);
         if (bgcolor != null) request.setBgColor(Color.decode(bgcolor));
         request.setTransparent(transparent);
+        if (datetime != null) {
+            setupTimeSubset(datetime, p, request);
+        }
         Map<String, String> rawParamers = new LinkedHashMap<>();
         if (bbox != null) rawParamers.put("bbox", bbox);
         if (crs != null) rawParamers.put("crs", crs);
@@ -304,8 +321,37 @@ public class MapsService {
         rawParamers.put("height", String.valueOf(height));
         rawParamers.put("layers", collectionId);
         rawParamers.put("styles", styleId);
+        rawParamers.put("datetime", datetime);
         request.setRawKvp(rawParamers);
         // TODO: add other parameters
         return request;
+    }
+
+    private void setupTimeSubset(String datetime, PublishedInfo p, GetMapRequest request)
+            throws ParseException {
+        if (!(p instanceof LayerInfo)) {
+            throw new APIException(
+                    APIException.INVALID_PARAMETER_VALUE,
+                    "Can only handle time subset on layers, not layer groups",
+                    HttpStatus.BAD_REQUEST);
+        }
+        LayerInfo layer = (LayerInfo) p;
+        DimensionInfo time =
+                layer.getResource().getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        if (time == null || !time.isEnabled()) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE,
+                    "Time dimension is not enabled in this coverage",
+                    HttpStatus.BAD_REQUEST);
+        }
+        @SuppressWarnings("unchecked")
+        Collection<Object> times = timeParser.parse(datetime);
+        if (times.size() != 1) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE,
+                    "Invalid datetime specification, must be a single time, or a time range",
+                    HttpStatus.BAD_REQUEST);
+        }
+        request.setTime(List.copyOf(times));
     }
 }

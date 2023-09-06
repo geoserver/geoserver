@@ -184,11 +184,6 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 store.removeFeatures(filter);
             }
         } catch (IOException e) {
-            final StringBuilder msgBuilder = new StringBuilder();
-            msgBuilder.append("Delete error: ");
-            msgBuilder.append(e.getMessage());
-            final String exceptionMessage = msgBuilder.toString();
-
             String eHandle = delete.getHandle();
             String code = null;
 
@@ -198,7 +193,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 code = "MissingParameterValue";
             }
             throw exceptionFactory.newWFSTransactionException(
-                    exceptionMessage, e, code, eHandle, handle);
+                    "Delete error: " + e.getMessage(), e, code, eHandle, handle);
         }
 
         // update deletion count

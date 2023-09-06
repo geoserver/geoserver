@@ -237,12 +237,8 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
             // update the insert counter
             inserted += featureList.size();
         } catch (Exception e) {
-            final StringBuilder msgBuilder = new StringBuilder();
-            msgBuilder.append("Insert error: ");
-            msgBuilder.append(e.getMessage());
-            final String exceptionMessage = msgBuilder.toString();
             throw exceptionFactory.newWFSTransactionException(
-                    exceptionMessage, e, insert.getHandle());
+                    "Insert error: " + e.getMessage(), e, insert.getHandle());
         }
 
         // update transaction summary

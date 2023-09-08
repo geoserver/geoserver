@@ -1127,10 +1127,12 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
         List<Map<String, String>> viewParamsList = request.getViewParams();
         assertEquals(4, viewParamsList.size());
-        assertEquals(Map.of("test", "123"), viewParamsList.get(0));
-        assertEquals(Map.of("test", "123"), viewParamsList.get(1));
-        assertEquals(Map.of("where", "WHERE PERSONS > 1000000"), viewParamsList.get(2));
-        assertEquals(Map.of("str", "ABCD"), viewParamsList.get(3));
+        assertEquals(Collections.singletonMap("test", "123"), viewParamsList.get(0));
+        assertEquals(Collections.singletonMap("test", "123"), viewParamsList.get(1));
+        assertEquals(
+                Collections.singletonMap("where", "WHERE PERSONS > 1000000"),
+                viewParamsList.get(2));
+        assertEquals(Collections.singletonMap("str", "ABCD"), viewParamsList.get(3));
     }
 
     @Test
@@ -1144,10 +1146,12 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
         List<Map<String, String>> viewParamsList = request.getViewParams();
         assertEquals(4, viewParamsList.size());
-        assertEquals(Map.of("where", "WHERE PERSONS > 1000000"), viewParamsList.get(0));
-        assertEquals(Map.of("test", "123"), viewParamsList.get(1));
-        assertEquals(Map.of("test", "123"), viewParamsList.get(2));
-        assertEquals(Map.of("str", "ABCD"), viewParamsList.get(3));
+        assertEquals(
+                Collections.singletonMap("where", "WHERE PERSONS > 1000000"),
+                viewParamsList.get(0));
+        assertEquals(Collections.singletonMap("test", "123"), viewParamsList.get(1));
+        assertEquals(Collections.singletonMap("test", "123"), viewParamsList.get(2));
+        assertEquals(Collections.singletonMap("str", "ABCD"), viewParamsList.get(3));
     }
 
     @Test
@@ -1163,10 +1167,12 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
         List<Map<String, String>> viewParamsList = request.getViewParams();
         assertEquals(4, viewParamsList.size());
-        assertEquals(Map.of("where", "WHERE PERSONS > 1000000"), viewParamsList.get(0));
-        assertEquals(Map.of("str", "ABCD"), viewParamsList.get(1));
-        assertEquals(Map.of("test", "123"), viewParamsList.get(2));
-        assertEquals(Map.of("test", "123"), viewParamsList.get(3));
+        assertEquals(
+                Collections.singletonMap("where", "WHERE PERSONS > 1000000"),
+                viewParamsList.get(0));
+        assertEquals(Collections.singletonMap("str", "ABCD"), viewParamsList.get(1));
+        assertEquals(Collections.singletonMap("test", "123"), viewParamsList.get(2));
+        assertEquals(Collections.singletonMap("test", "123"), viewParamsList.get(3));
     }
 
     @Test

@@ -15,6 +15,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -518,11 +524,52 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             throw new ServiceException("TIME and ELEVATION values cannot be both multivalued");
         }
 
+        // add parameter clipPath to store wkt data file and read wkt data
+        if (rawKvp.get("clipPath") != null) {
+            // read the wkt format data in the file
+            String wktString = readTextFileWithNIO((String) rawKvp.get("clipPath"));
+            // add wkt data to clip parameter
+            rawKvp.put("clip", wktString);
+            getMap.getRawKvp().put("clip", wktString);
+        }
+
         if (rawKvp.get("clip") != null) {
             getMap.setClip(getClipGeometry(getMap));
         }
 
         return getMap;
+    }
+
+    /**
+     * read files by nio
+     *
+     * If the wkt data length exceeds the get request limit, data clipping will not be successful.
+     * Here, add the method of reading the file, write the wkt data to the file, and complete the
+     * data clipping by reading the file.
+     * @param path wkt file path
+     * @return wkt data
+     */
+    private String readTextFileWithNIO(String path) {
+        // Define file path
+        Path filePath = FileSystems.getDefault().getPath(path);
+        StringBuilder content = new StringBuilder();
+        try (FileChannel channel = FileChannel.open(filePath, StandardOpenOption.READ)) {
+            // Create a ByteBuffer to store the read data
+            ByteBuffer buffer = ByteBuffer.allocate(1024);
+            int bytesRead;
+            // Read data in a loop until the end of the file
+            while ((bytesRead = channel.read(buffer)) != -1) {
+                buffer.flip();
+                // Convert data in ByteBuffer to string
+                String data = StandardCharsets.UTF_8.decode(buffer).toString();
+                content.append(data);
+                buffer.clear();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content.toString().trim();
     }
 
     private void addGroupLayers(

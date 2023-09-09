@@ -2,3 +2,4 @@ org.geoserver.ogcapi.v1.stac.functions.MinXFunction
 org.geoserver.ogcapi.v1.stac.functions.MinYFunction
 org.geoserver.ogcapi.v1.stac.functions.MaxXFunction
 org.geoserver.ogcapi.v1.stac.functions.MaxYFunction
+org.geoserver.ogcapi.v1.stac.functions.EoSummaries

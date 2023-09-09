@@ -31,6 +31,9 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         tester.assertNoErrorMessage();
         tester.assertModelValue("form:maximumRecordsPerPage", OSEOInfo.DEFAULT_MAXIMUM_RECORDS);
         tester.assertModelValue("form:recordsPerPage", OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
+        tester.assertModelValue("form:aggregatesCacheTTL", OSEOInfo.DEFAULT_AGGR_CACHE_TTL);
+        tester.assertModelValue(
+                "form:aggregatesCacheTTLUnit", OSEOInfo.DEFAULT_AGGR_CACHE_TTL_UNIT);
         tester.assertModelValue("form:attribution", null);
         // print(tester.getLastRenderedPage(), true, true);
     }
@@ -39,6 +42,8 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
     public void verifyRequiredFields() throws Exception {
         checkRequired("maximumRecordsPerPage");
         checkRequired("recordsPerPage");
+        checkRequired("aggregatesCacheTTL");
+        checkRequired("aggregatesCacheTTLUnit");
     }
 
     @Test
@@ -67,6 +72,14 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
     }
 
     @Test
+    public void testCacheTTLValidatation() throws Exception {
+        setupCacheValues(-10);
+        assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+        setupCacheValues(10);
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
     public void testQueryables() throws Exception {
         tester.startPage(OSEOAdminPage.class);
         FormTester formTester = tester.newFormTester("form");
@@ -83,6 +96,13 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         FormTester formTester = tester.newFormTester("form");
         formTester.setValue("recordsPerPage", "" + records);
         formTester.setValue("maximumRecordsPerPage", "" + maxRecords);
+        formTester.submit();
+    }
+
+    private void setupCacheValues(int ttl) {
+        tester.startPage(OSEOAdminPage.class);
+        FormTester formTester = tester.newFormTester("form");
+        formTester.setValue("aggregatesCacheTTL", "" + ttl);
         formTester.submit();
     }
 

@@ -103,10 +103,18 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
         q.setFilter(FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true)));
         UniqueVisitor visitor = new UniqueVisitor(name);
         fs.getFeatures(q).accepts(visitor, null);
-        Set<Attribute> uniqueValues = visitor.getUnique();
-        return uniqueValues.stream()
-                .map(o -> (String) o.getValue())
-                .sorted()
-                .collect(Collectors.toList());
+        Set uniqueValues = visitor.getUnique();
+        return (List<String>)
+                uniqueValues.stream()
+                        .map(
+                                a -> {
+                                    if (a instanceof Attribute) {
+                                        return ((Attribute) a).getValue();
+                                    } else {
+                                        return a.toString();
+                                    }
+                                })
+                        .sorted()
+                        .collect(Collectors.toList());
     }
 }

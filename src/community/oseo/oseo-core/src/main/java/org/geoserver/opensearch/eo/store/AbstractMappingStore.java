@@ -163,7 +163,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     @Override
     public ResourceInfo getInfo() {
         try {
-            SimpleFeatureSource featureSource = getDelegateCollectionSource();
+            SimpleFeatureSource featureSource = getDelegateSource();
             ResourceInfo delegateInfo = featureSource.getInfo();
             DefaultResourceInfo result = new DefaultResourceInfo(delegateInfo);
             result.setSchema(new URI(schema.getName().getNamespaceURI()));
@@ -178,10 +178,10 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     /*
      * Returns the underlying delegate source
      */
-    protected abstract SimpleFeatureSource getDelegateCollectionSource() throws IOException;
+    public abstract SimpleFeatureSource getDelegateSource() throws IOException;
 
     protected SimpleFeatureStore getDelegateCollectionStore() throws IOException {
-        SimpleFeatureSource simpleFeatureSource = getDelegateCollectionSource();
+        SimpleFeatureSource simpleFeatureSource = getDelegateSource();
         if (simpleFeatureSource instanceof WorkspaceFeatureSource) {
             simpleFeatureSource = ((WorkspaceFeatureSource) simpleFeatureSource).getDelegate();
         }
@@ -242,19 +242,19 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
     @Override
     public ReferencedEnvelope getBounds() throws IOException {
-        return getDelegateCollectionSource().getBounds();
+        return getDelegateSource().getBounds();
     }
 
     @Override
     public ReferencedEnvelope getBounds(Query query) throws IOException {
         Query mapped = mapToSimpleCollectionQuery(query, false);
-        return getDelegateCollectionSource().getBounds(mapped);
+        return getDelegateSource().getBounds(mapped);
     }
 
     @Override
     public Set<Key> getSupportedHints() {
         try {
-            return getDelegateCollectionSource().getSupportedHints();
+            return getDelegateSource().getSupportedHints();
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -265,12 +265,12 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     @Override
     public int getCount(Query query) throws IOException {
         final Query mappedQuery = mapToSimpleCollectionQuery(query, false);
-        return getDelegateCollectionSource().getCount(mappedQuery);
+        return getDelegateSource().getCount(mappedQuery);
     }
 
     /** Maps query back the main underlying feature source */
     protected Query mapToSimpleCollectionQuery(Query query, boolean addJoins) throws IOException {
-        Query result = new Query(getDelegateCollectionSource().getSchema().getTypeName());
+        Query result = new Query(getDelegateSource().getSchema().getTypeName());
         final Filter originalFilter = query.getFilter();
         if (originalFilter != null) {
             Filter mappedFilter = mapFilterToDelegateSchema(originalFilter);
@@ -401,8 +401,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         Query idsQuery = mapToSimpleCollectionQuery(query, false);
         // uncommenting causes a ClassCastException, need to figure out why
         // idsQuery.setPropertyNames("eoIdentifier"); //  (no can do, there are mandatory fields)
-        SimpleFeatureCollection idFeatureCollection =
-                getDelegateCollectionSource().getFeatures(idsQuery);
+        SimpleFeatureCollection idFeatureCollection = getDelegateSource().getFeatures(idsQuery);
 
         Set<FeatureId> ids = new LinkedHashSet<>();
         idFeatureCollection.accepts(f -> ids.add(f.getIdentifier()), null);
@@ -410,12 +409,12 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         // if no features, return immediately
         SimpleFeatureCollection fc;
         if (ids.isEmpty()) {
-            fc = new EmptyFeatureCollection(getDelegateCollectionSource().getSchema());
+            fc = new EmptyFeatureCollection(getDelegateSource().getSchema());
         } else {
             // the run a joined query with the specified ids
             Query dataQuery = mapToSimpleCollectionQuery(query, true);
             dataQuery.setFilter(FF.id(ids));
-            fc = getDelegateCollectionSource().getFeatures(dataQuery);
+            fc = getDelegateSource().getFeatures(dataQuery);
         }
 
         return new MappingFeatureCollection(schema, fc, this::mapToComplexFeature);
@@ -519,7 +518,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     /** Maps a complex feature back to one or more simple features */
     protected SimpleFeature mapToMainSimpleFeature(Feature feature) throws IOException {
         // map the primary simple feature
-        final SimpleFeatureType simpleSchema = getDelegateCollectionSource().getSchema();
+        final SimpleFeatureType simpleSchema = getDelegateSource().getSchema();
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(simpleSchema);
         for (PropertyDescriptor pd : schema.getDescriptors()) {
             if (!(pd instanceof AttributeDescriptor)) {
@@ -816,7 +815,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     }
 
     public List<String> getMainTypeDatabaseIdentifiers(Filter filter) throws IOException {
-        SimpleFeatureSource fs = getDelegateCollectionSource();
+        SimpleFeatureSource fs = getDelegateSource();
         Transaction t = getTransaction();
         if (t != Transaction.AUTO_COMMIT && t != null) {
             if (fs instanceof WorkspaceFeatureSource) {

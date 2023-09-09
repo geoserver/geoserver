@@ -22,5 +22,10 @@
         <constructor-arg index="0" value="STAC"/>
         <constructor-arg index="1" value="1.0.0"/>
     </bean>
+    <bean id="aggregatesCache" class="org.geoserver.ogcapi.v1.stac.AggregatesCache">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="openSearchAccessProvider"/>
+    </bean>
+
 
 </beans>

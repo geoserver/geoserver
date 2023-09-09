@@ -18,6 +18,10 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     int recordsPerPage = DEFAULT_RECORDS_PER_PAGE;
 
+    Integer aggregatesCacheTTL = DEFAULT_AGGR_CACHE_TTL;
+
+    String aggregatesCacheTTLUnit = DEFAULT_AGGR_CACHE_TTL_UNIT;
+
     List<ProductClass> productClasses = new ArrayList<>(ProductClass.DEFAULT_PRODUCT_CLASSES);
 
     String attribution;
@@ -80,5 +84,25 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     public void setGlobalQueryables(List<String> globalQueryables) {
         this.globalQueryables = globalQueryables;
+    }
+
+    @Override
+    public Integer getAggregatesCacheTTL() {
+        return aggregatesCacheTTL;
+    }
+
+    @Override
+    public void setAggregatesCacheTTL(Integer aggregatesCacheTTL) {
+        this.aggregatesCacheTTL = aggregatesCacheTTL;
+    }
+
+    @Override
+    public String getAggregatesCacheTTLUnit() {
+        return aggregatesCacheTTLUnit;
+    }
+
+    @Override
+    public void setAggregatesCacheTTLUnit(String aggregatesCacheTTLUnit) {
+        this.aggregatesCacheTTLUnit = aggregatesCacheTTLUnit;
     }
 }

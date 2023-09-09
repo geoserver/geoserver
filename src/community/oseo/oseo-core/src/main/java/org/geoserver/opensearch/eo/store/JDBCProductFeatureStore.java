@@ -45,6 +45,7 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
     static final Logger LOGGER = Logging.getLogger(JDBCProductFeatureStore.class);
 
     String granuleForeignKey;
+
     /** The list of properties that come from JSONB fields and will need to be sorted by key */
     Set<Name> jsonBProperties;
 
@@ -69,7 +70,7 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
     }
 
     @Override
-    protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
+    public SimpleFeatureSource getDelegateSource() throws IOException {
         WorkspaceInfo workspaceInfo = LocalWorkspace.get();
         SimpleFeatureSource delegate =
                 openSearchAccess.getDelegateStore().getFeatureSource(JDBCOpenSearchAccess.PRODUCT);

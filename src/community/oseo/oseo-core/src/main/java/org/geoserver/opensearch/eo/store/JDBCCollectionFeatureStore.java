@@ -32,7 +32,7 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
     }
 
     @Override
-    protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
+    public SimpleFeatureSource getDelegateSource() throws IOException {
         SimpleFeatureSource delegate =
                 openSearchAccess
                         .getDelegateStore()

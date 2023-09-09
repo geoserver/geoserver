@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.v1.stac;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import org.geoserver.ogcapi.AbstractDocument;
+import org.geoserver.ogcapi.v1.stac.functions.EoSummaries;
 import org.opengis.feature.Feature;
 
 /**
@@ -16,12 +17,26 @@ import org.opengis.feature.Feature;
 public class CollectionResponse extends AbstractDocument {
 
     Feature collection;
+    EoSummaries eoSummaries;
 
     public CollectionResponse(Feature collection) {
         this.collection = collection;
+        eoSummaries = new EoSummaries();
     }
 
     public Feature getCollection() {
         return collection;
+    }
+
+    /**
+     * Returns the min, max, bounds, or distinct values of a property in a collection.
+     *
+     * @param aggregate min, max, bounds, or distinct
+     * @param collectionIdentifier the collection identifier
+     * @param property the property to aggregate
+     * @return the min, max, bounds, or distinct values of a property in a collection
+     */
+    public Object eoSummaries(String aggregate, String collectionIdentifier, String property) {
+        return eoSummaries.evaluate(aggregate, collectionIdentifier, property);
     }
 }

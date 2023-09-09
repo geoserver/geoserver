@@ -30,6 +30,28 @@
           ]
         }
       },
+      "cube:dimensions": {
+        "x": {
+          "type": "spatial",
+          "axis": "x",
+          "extent": "$${eoSummaries('bounds',eo:identifier,'x')}",
+          "reference_system": 4326
+        },
+        "y": {
+          "type": "spatial",
+          "axis": "y",
+          "extent": "$${eoSummaries('bounds',eo:identifier,'y')}",
+          "reference_system": 4326
+        },
+        "time": {
+          "type": "temporal",
+          "extent": [
+            "$${eoSummaries('min',eo:identifier,'timeStart')}",
+            "$${eoSummaries('max',eo:identifier,'timeEnd')}"
+          ],
+          "step": "P5D"
+        }
+      },
       "providers": [
         {
           "name": "GeoServer",

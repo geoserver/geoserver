@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.wicket.Component;
@@ -116,7 +117,20 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
                         new OpenSearchAccessListModel(),
                         new StoreListChoiceRenderer());
         form.add(openSearchAccessReference);
-
+        final TextField<Integer> aggregatesCacheTTL =
+                new TextField<>("aggregatesCacheTTL", Integer.class);
+        aggregatesCacheTTL.add(RangeValidator.minimum(0));
+        aggregatesCacheTTL.setRequired(true);
+        form.add(aggregatesCacheTTL);
+        List<String> units =
+                Arrays.asList(
+                        new String[] {
+                            TimeUnit.HOURS.name(), TimeUnit.MINUTES.name(), TimeUnit.SECONDS.name()
+                        });
+        DropDownChoice<String> aggregatesCacheTTLUnit =
+                new DropDownChoice<String>("aggregatesCacheTTLUnit", units);
+        aggregatesCacheTTLUnit.setRequired(true);
+        form.add(aggregatesCacheTTLUnit);
         final TextField<Integer> recordsPerPage = new TextField<>("recordsPerPage", Integer.class);
         recordsPerPage.add(RangeValidator.minimum(0));
         recordsPerPage.setRequired(true);

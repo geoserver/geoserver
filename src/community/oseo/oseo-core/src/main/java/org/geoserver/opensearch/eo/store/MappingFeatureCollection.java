@@ -4,15 +4,21 @@
  */
 package org.geoserver.opensearch.eo.store;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.collection.BaseFeatureCollection;
+import org.geotools.feature.visitor.MaxVisitor;
+import org.geotools.feature.visitor.MinVisitor;
+import org.geotools.feature.visitor.UniqueVisitor;
+import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -28,6 +34,8 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
 
     private Function<PushbackFeatureIterator<SimpleFeature>, Feature> mapper;
 
+    private SourcePropertyMapper sourcePropertyMapper;
+
     public MappingFeatureCollection(
             FeatureType schema,
             SimpleFeatureCollection features,
@@ -35,6 +43,7 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
         super(schema);
         this.features = features;
         this.mapper = mapper;
+        this.sourcePropertyMapper = new SourcePropertyMapper(schema);
     }
 
     @Override
@@ -60,5 +69,44 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
                 iterator.close();
             }
         };
+    }
+
+    @Override
+    public void accepts(
+            org.geotools.api.feature.FeatureVisitor visitor,
+            org.geotools.api.util.ProgressListener progress)
+            throws IOException {
+        if (visitor instanceof MinVisitor) {
+            Expression expression = ((MinVisitor) visitor).getExpression();
+            String expressionString = getExpressionString(expression);
+            String sourceField = sourcePropertyMapper.getSourceName(expressionString);
+            MinVisitor withFieldNameVisitor = new MinVisitor(sourceField);
+            features.accepts(withFieldNameVisitor, progress);
+            ((MinVisitor) visitor).setValue(withFieldNameVisitor.getResult().getValue());
+        } else if (visitor instanceof MaxVisitor) {
+            Expression expression = ((MaxVisitor) visitor).getExpression();
+            String expressionString = getExpressionString(expression);
+            String sourceField = sourcePropertyMapper.getSourceName(expressionString);
+            MaxVisitor withFieldNameVisitor = new MaxVisitor(sourceField);
+            features.accepts(withFieldNameVisitor, progress);
+            ((MaxVisitor) visitor).setValue(withFieldNameVisitor.getResult().getValue());
+        } else if (visitor instanceof UniqueVisitor) {
+            Expression expression = ((UniqueVisitor) visitor).getExpression();
+            String expressionString = getExpressionString(expression);
+            String sourceField = sourcePropertyMapper.getSourceName(expressionString);
+            UniqueVisitor withFieldNameVisitor = new UniqueVisitor(sourceField);
+            features.accepts(withFieldNameVisitor, progress);
+            ((UniqueVisitor) visitor).setValue(withFieldNameVisitor.getResult().getValue());
+        } else {
+            super.accepts(visitor, progress);
+        }
+    }
+
+    private String getExpressionString(Expression expression) {
+        if (expression instanceof AttributeExpressionImpl) {
+            return ((AttributeExpressionImpl) expression).getPropertyName();
+        } else {
+            return expression.toString();
+        }
     }
 }

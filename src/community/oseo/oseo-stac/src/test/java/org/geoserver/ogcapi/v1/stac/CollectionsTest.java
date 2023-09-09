@@ -71,6 +71,18 @@ public class CollectionsTest extends STACTestSupport {
     }
 
     @Test
+    public void testCollectionsHTMLEOSummaries() throws Exception {
+        Document document = getAsJSoup("ogc/stac/v1/collections?f=html");
+        Elements s2Body = document.select("div.card-header:has(a:contains(SENTINEL2))");
+        assertEquals(
+                "SENTINEL2 Distinct Orbit Direction Values: [DESCENDING] "
+                        + "Spatial Extent: -119.174, 33.333, 16.354, 44.247 "
+                        + "Min TimeStart: 2016-01-17T10:10:30.743Z "
+                        + "Max TimeEnd: 2017-03-08T18:54:21.026Z",
+                s2Body.text());
+    }
+
+    @Test
     public void testCollectionsJSON() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections?f=json", 200);
         // all collections are accounted for (one is disabled

@@ -39,6 +39,8 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
         oseo.setTitle("OpenSearch for Earth Observation");
         oseo.setMaximumRecordsPerPage(OSEOInfo.DEFAULT_MAXIMUM_RECORDS);
         oseo.setRecordsPerPage(OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
+        oseo.setAggregatesCacheTTL(OSEOInfo.DEFAULT_AGGR_CACHE_TTL);
+        oseo.setAggregatesCacheTTLUnit(OSEOInfo.DEFAULT_AGGR_CACHE_TTL_UNIT);
         final List<KeywordInfo> keywords = oseo.getKeywords();
         keywords.add(new Keyword("EarthObservation"));
         keywords.add(new Keyword("OGC"));
@@ -68,6 +70,12 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
         }
         if (service.getGlobalQueryables() == null) {
             ((OSEOInfoImpl) service).setGlobalQueryables(new ArrayList<>());
+        }
+        if (service.getAggregatesCacheTTLUnit() == null) {
+            service.setAggregatesCacheTTLUnit(OSEOInfo.DEFAULT_AGGR_CACHE_TTL_UNIT);
+        }
+        if (service.getAggregatesCacheTTL() == null) {
+            service.setAggregatesCacheTTL(OSEOInfo.DEFAULT_AGGR_CACHE_TTL);
         }
 
         return service;

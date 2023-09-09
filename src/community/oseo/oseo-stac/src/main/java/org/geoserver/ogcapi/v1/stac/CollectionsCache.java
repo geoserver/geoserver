@@ -48,6 +48,12 @@ public class CollectionsCache implements GeoServerLifecycleHandler, OseoEventLis
                                 }
                             });
 
+    /**
+     * Creates a new cache
+     *
+     * @param gs The GeoServer instance
+     * @param accessProvider The OpenSearch access provider
+     */
     public CollectionsCache(GeoServer gs, OpenSearchAccessProvider accessProvider) {
         this.accessProvider = accessProvider;
     }

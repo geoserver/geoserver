@@ -245,6 +245,20 @@
     </fieldset>
 
     <fieldset>
+      <legend><span><wicket:message key="disableTransformFeatureInfoTitle"></wicket:message></span></legend>
+      <ul class="choiceList">
+        <li>
+          <input type="checkbox" wicket:id="disableTransformFeatureInfo"></input>
+          <label for="disableTransformFeatureInfo">
+            <wicket:message key="disableTransformFeatureInfo">
+              Disable applying rendering transformation to raster data for GetFeatureInfo requests
+            </wicket:message>
+          </label>
+        </li>
+      </ul>
+    </fieldset>
+
+    <fieldset>
       <legend><span><wicket:message key="autoEscapeTemplateValuesTitle"></wicket:message></span></legend>
       <ul class="choiceList">
         <li>

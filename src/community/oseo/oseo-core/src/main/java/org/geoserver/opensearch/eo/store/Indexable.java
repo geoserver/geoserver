@@ -5,7 +5,7 @@
 package org.geoserver.opensearch.eo.store;
 
 import java.util.Objects;
-import org.opengis.filter.expression.Expression;
+import org.geotools.api.filter.expression.Expression;
 
 /**
  * Represents an indexable property essential traits:

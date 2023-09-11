@@ -8,11 +8,11 @@ package org.geoserver.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class XCQLTest {
 

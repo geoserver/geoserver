@@ -15,13 +15,13 @@ import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import javax.media.jai.RasterFactory;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** @author ETj <etj at geo-solutions.it> */
 public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
@@ -81,7 +81,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         return factory.create(
                 "Float coverage",
                 raster,
-                new Envelope2D(crs, envX0, envY0, envWidth, envHeight),
+                ReferencedEnvelope.rect(envX0, envY0, envWidth, envHeight, crs),
                 null,
                 null,
                 null,

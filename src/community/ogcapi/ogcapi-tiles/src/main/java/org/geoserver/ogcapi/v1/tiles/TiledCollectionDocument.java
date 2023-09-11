@@ -25,6 +25,8 @@ import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.wms.WMS;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -35,8 +37,6 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.mime.MimeType;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpStatus;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */

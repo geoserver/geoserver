@@ -11,8 +11,8 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wmts.model.WMTSLayer;
-import org.opengis.util.ProgressListener;
 
 /**
  * Wraps a {@link WMSLayerInfo} so that it will return secured layers and WMS stores

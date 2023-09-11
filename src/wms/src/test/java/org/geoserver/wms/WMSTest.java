@@ -31,7 +31,8 @@ import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.filter.Filter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
@@ -41,7 +42,6 @@ import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 /** @author Ian Schneider <ischneider@opengeo.org> */
 public class WMSTest extends WMSTestSupport {

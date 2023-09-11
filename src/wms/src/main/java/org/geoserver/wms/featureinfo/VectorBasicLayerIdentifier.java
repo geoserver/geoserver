@@ -16,8 +16,19 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.Or;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.Filters;
@@ -27,20 +38,9 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.Or;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * An identifier for vector layers that will take into account the filters, viewparams, styles and
@@ -97,7 +97,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         FeatureType schema = featureSource.getSchema();
 
         Filter getFInfoFilter = null;
-        FilterFactory2 ff = params.getFilterFactory();
+        FilterFactory ff = params.getFilterFactory();
         try {
             GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
             Name name = geometryDescriptor.getName();
@@ -211,7 +211,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         return radius;
     }
 
-    private Filter buildRulesFilter(org.opengis.filter.FilterFactory ff, List<Rule> rules) {
+    private Filter buildRulesFilter(org.geotools.api.filter.FilterFactory ff, List<Rule> rules) {
         // build up a or of all the rule filters
         List<Filter> filters = new ArrayList<>();
         for (Rule rule : rules) {

@@ -26,6 +26,10 @@ import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.util.IOUtils;
+import org.geotools.api.coverage.grid.GridGeometry;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.cs.CoordinateSystem;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -34,13 +38,9 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.property.PropertyDataStoreFactory;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
 
 /**
  * Class used to build a mock GeoServer data directory.
@@ -802,8 +802,8 @@ public class MockData implements TestData {
 
             // envelope
             CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
-            GeneralEnvelope envelope = reader.getOriginalEnvelope();
-            GeneralEnvelope wgs84envelope = CoverageStoreUtils.getWGS84LonLatEnvelope(envelope);
+            GeneralBounds envelope = reader.getOriginalEnvelope();
+            GeneralBounds wgs84envelope = CoverageStoreUtils.getWGS84LonLatEnvelope(envelope);
             final String nativeCrsName = CRS.lookupIdentifier(crs, false);
             writer.write(
                     "<envelope crs=\""
@@ -836,7 +836,7 @@ public class MockData implements TestData {
             double[] maxCP = {
                 minCP[0] + (envelope.getSpan(0) / 20.0), minCP[1] + (envelope.getSpan(1) / 20.0)
             };
-            final GeneralEnvelope subEnvelope = new GeneralEnvelope(minCP, maxCP);
+            final GeneralBounds subEnvelope = new GeneralBounds(minCP, maxCP);
             subEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());
 
             parameters.put(

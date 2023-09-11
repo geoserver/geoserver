@@ -25,7 +25,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.gce.geotiff.GeoTiffWriter;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.util.logging.Logging;
 
@@ -86,8 +86,7 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
 
         // crating a grid coverage
         GridCoverage2D gc =
-                factory.create(
-                        "geotiff", image, new GeneralEnvelope(mapContent.getRenderingArea()));
+                factory.create("geotiff", image, new GeneralBounds(mapContent.getRenderingArea()));
 
         // NoData stuff
         if (image instanceof PlanarImage) {

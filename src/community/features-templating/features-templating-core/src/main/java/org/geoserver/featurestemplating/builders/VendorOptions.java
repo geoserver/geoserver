@@ -1,7 +1,7 @@
 package org.geoserver.featurestemplating.builders;
 
 import java.util.HashMap;
-import org.opengis.filter.expression.Expression;
+import org.geotools.api.filter.expression.Expression;
 
 /**
  * Class listing the supported options a user can specify from a template to customize the output.

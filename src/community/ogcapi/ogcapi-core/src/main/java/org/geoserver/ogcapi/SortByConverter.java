@@ -6,10 +6,10 @@ package org.geoserver.ogcapi;
 
 import java.util.Arrays;
 import java.util.List;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SortByConverter implements Converter<String, SortBy[]> {
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     public static final SortBy[] convertList(List<String> sortBy) {
         return sortBy.stream().map(s -> sortBy(s)).toArray(n -> new SortBy[n]);

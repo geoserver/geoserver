@@ -12,12 +12,12 @@ import java.io.InputStream;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.gce.arcgrid.ArcGridFormat;
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.coverage.grid.GridCoverage;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /** @author Daniele Romagnoli, GeoSolutions */
@@ -145,11 +145,9 @@ public class RangeLookupTest extends WPSTestSupport {
                     new Envelope(144.9, 146.1, -40.9, -43.1)
                             .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-            double[] valueOnRangeA = (double[]) gc.evaluate(new DirectPosition2D(145.55, -42));
-            double[] valueOnRangeB =
-                    (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
-            double[] valueOutsideRange =
-                    (double[]) gc.evaluate(new DirectPosition2D(145.22, -42.66));
+            double[] valueOnRangeA = (double[]) gc.evaluate(new Position2D(145.55, -42));
+            double[] valueOnRangeB = (double[]) gc.evaluate(new Position2D(145.9584, -41.6587));
+            double[] valueOutsideRange = (double[]) gc.evaluate(new Position2D(145.22, -42.66));
 
             assertEquals(50.0, valueOnRangeA[0], DELTA);
             assertEquals(110.0, valueOnRangeB[0], DELTA);

@@ -23,6 +23,8 @@ import org.geoserver.wcs.responses.GeoTiffWriterHelper;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.resource.GridCoverageReaderResource;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -32,8 +34,6 @@ import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.process.ProcessException;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.parameter.ParameterValueGroup;
 
 /**
  * Decodes/encodes a GeoTIFF file

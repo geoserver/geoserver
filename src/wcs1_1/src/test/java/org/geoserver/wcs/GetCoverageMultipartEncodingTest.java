@@ -68,21 +68,6 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
     }
 
-    /**
-     * ArcGrid cannot encode rotate coverages, yet due to a bug the output was a garbled mime
-     * multipart instead of a service exception. This makes sure an exception is returned instead.
-     */
-    @Test
-    public void testArcgridException() throws Exception {
-        String request =
-                "wcs?service=WCS&version=1.1.1&request=GetCoverage&identifier="
-                        + getLayerId(TASMANIA_BM)
-                        + "&format=application/arcgrid"
-                        + "&boundingbox=-90,-180,90,180,urn:ogc:def:crs:EPSG:6.6:4326";
-        Document dom = getAsDOM(request);
-        checkOws11Exception(dom);
-    }
-
     @Test
     public void testTiffOutput() throws Exception {
         String request =

@@ -20,8 +20,8 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.Envelope2D;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -314,7 +314,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                                     .getCoverageByName("BlueMarble")
                                     .getGridCoverageReader(null, null)
                                     .read(null);
-            final Envelope2D sourceEnvelope = sourceCoverage.getEnvelope2D();
+            final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample
             MockHttpServletResponse response =
@@ -324,16 +324,16 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                                     + "&subset="
                                     + subsetPrefix
                                     + "Long("
-                                    + sourceEnvelope.x
+                                    + sourceEnvelope.getMinX()
                                     + ","
-                                    + (sourceEnvelope.x + sourceEnvelope.width / 2)
+                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
                                     + ")"
                                     + "&subset="
                                     + subsetPrefix
                                     + "Lat("
-                                    + sourceEnvelope.y
+                                    + sourceEnvelope.getMinY()
                                     + ","
-                                    + (sourceEnvelope.y + sourceEnvelope.height / 2)
+                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
                                     + ")"
                                     + "&SCALESIZE="
                                     + axisPrefix
@@ -353,12 +353,12 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             assertEquals(
                     sourceCoverage.getCoordinateReferenceSystem(),
                     targetCoverage.getCoordinateReferenceSystem());
-            final GeneralEnvelope finalEnvelope =
-                    new GeneralEnvelope(
-                            new double[] {sourceEnvelope.x, sourceEnvelope.y},
+            final GeneralBounds finalEnvelope =
+                    new GeneralBounds(
+                            new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()},
                             new double[] {
-                                sourceEnvelope.x + sourceEnvelope.width / 2,
-                                sourceEnvelope.y + sourceEnvelope.height / 2
+                                sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2,
+                                sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2
                             });
             finalEnvelope.setCoordinateReferenceSystem(
                     sourceCoverage.getCoordinateReferenceSystem());
@@ -382,7 +382,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                                     .getCoverageByName("BlueMarble")
                                     .getGridCoverageReader(null, null)
                                     .read(null);
-            final Envelope2D sourceEnvelope = sourceCoverage.getEnvelope2D();
+            final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // upsample
             MockHttpServletResponse response =
@@ -396,16 +396,16 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                                     + "&subset="
                                     + subsetPrefix
                                     + "Long("
-                                    + sourceEnvelope.x
+                                    + sourceEnvelope.getMinX()
                                     + ","
-                                    + (sourceEnvelope.x + sourceEnvelope.width / 2)
+                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
                                     + ")"
                                     + "&subset="
                                     + subsetPrefix
                                     + "Lat("
-                                    + sourceEnvelope.y
+                                    + sourceEnvelope.getMinY()
                                     + ","
-                                    + (sourceEnvelope.y + sourceEnvelope.height / 2)
+                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
                                     + ")");
 
             assertEquals("image/tiff", response.getContentType());
@@ -431,12 +431,12 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
 
-            final GeneralEnvelope finalEnvelope =
-                    new GeneralEnvelope(
-                            new double[] {sourceEnvelope.x, sourceEnvelope.y},
+            final GeneralBounds finalEnvelope =
+                    new GeneralBounds(
+                            new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()},
                             new double[] {
-                                sourceEnvelope.x + sourceEnvelope.width * 2,
-                                sourceEnvelope.y + sourceEnvelope.height * 2
+                                sourceEnvelope.getMinX() + sourceEnvelope.getWidth() * 2,
+                                sourceEnvelope.getMinY() + sourceEnvelope.getHeight() * 2
                             });
             finalEnvelope.setCoordinateReferenceSystem(
                     sourceCoverage.getCoordinateReferenceSystem());
@@ -665,7 +665,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                                     .getCoverageByName("BlueMarble")
                                     .getGridCoverageReader(null, null)
                                     .read(null);
-            final Envelope2D sourceEnvelope = sourceCoverage.getEnvelope2D();
+            final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample
             MockHttpServletResponse response =
@@ -679,16 +679,16 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                                     + "&subset="
                                     + subsetPrefix
                                     + "Long("
-                                    + sourceEnvelope.x
+                                    + sourceEnvelope.getMinX()
                                     + ","
-                                    + (sourceEnvelope.x + sourceEnvelope.width / 2)
+                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
                                     + ")"
                                     + "&subset="
                                     + subsetPrefix
                                     + "Lat("
-                                    + sourceEnvelope.y
+                                    + sourceEnvelope.getMinY()
                                     + ","
-                                    + (sourceEnvelope.y + sourceEnvelope.height / 2)
+                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
                                     + ")");
 
             assertEquals("image/tiff", response.getContentType());
@@ -709,12 +709,12 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             assertEquals(
                     sourceCoverage.getCoordinateReferenceSystem(),
                     targetCoverage.getCoordinateReferenceSystem());
-            final GeneralEnvelope finalEnvelope =
-                    new GeneralEnvelope(
-                            new double[] {sourceEnvelope.x, sourceEnvelope.y},
+            final GeneralBounds finalEnvelope =
+                    new GeneralBounds(
+                            new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()},
                             new double[] {
-                                sourceEnvelope.x + sourceEnvelope.width / 2,
-                                sourceEnvelope.y + sourceEnvelope.height / 2
+                                sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2,
+                                sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2
                             });
             finalEnvelope.setCoordinateReferenceSystem(
                     sourceCoverage.getCoordinateReferenceSystem());
@@ -737,7 +737,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                                     .getCoverageByName("BlueMarble")
                                     .getGridCoverageReader(null, null)
                                     .read(null);
-            final Envelope2D sourceEnvelope = sourceCoverage.getEnvelope2D();
+            final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // upsample
             MockHttpServletResponse response =
@@ -751,16 +751,16 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                                     + "&subset="
                                     + subsetPrefix
                                     + "Long("
-                                    + sourceEnvelope.x
+                                    + sourceEnvelope.getMinX()
                                     + ","
-                                    + (sourceEnvelope.x + sourceEnvelope.width / 2)
+                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
                                     + ")"
                                     + "&subset="
                                     + subsetPrefix
                                     + "Lat("
-                                    + sourceEnvelope.y
+                                    + sourceEnvelope.getMinY()
                                     + ","
-                                    + (sourceEnvelope.y + sourceEnvelope.height / 2)
+                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
                                     + ")");
 
             assertEquals("image/tiff", response.getContentType());
@@ -783,12 +783,12 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             assertEquals(
                     sourceCoverage.getCoordinateReferenceSystem(),
                     targetCoverage.getCoordinateReferenceSystem());
-            final GeneralEnvelope finalEnvelope =
-                    new GeneralEnvelope(
-                            new double[] {sourceEnvelope.x, sourceEnvelope.y},
+            final GeneralBounds finalEnvelope =
+                    new GeneralBounds(
+                            new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()},
                             new double[] {
-                                sourceEnvelope.x + sourceEnvelope.width / 2,
-                                sourceEnvelope.y + sourceEnvelope.height / 2
+                                sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2,
+                                sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2
                             });
             finalEnvelope.setCoordinateReferenceSystem(
                     sourceCoverage.getCoordinateReferenceSystem());

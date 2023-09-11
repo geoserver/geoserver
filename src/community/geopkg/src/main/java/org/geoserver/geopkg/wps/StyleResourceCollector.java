@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.ResourceLocator;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.ResourceLocator;
 import org.geotools.util.logging.Logging;
 
 class StyleResourceCollector extends AbstractStyleVisitor {

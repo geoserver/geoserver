@@ -20,16 +20,16 @@ import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.sldservice.rest.ClassifierTest;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
 
 public class RasterSymbolizerBuilderTest {
 

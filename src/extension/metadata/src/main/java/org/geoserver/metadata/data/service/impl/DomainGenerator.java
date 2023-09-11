@@ -19,18 +19,18 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.service.ComplexAttributeGenerator;
 import org.geoserver.metadata.web.layer.MetadataTabPanel;
 import org.geoserver.metadata.web.panel.GenerateDomainPanel;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataAccessFinder;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.DataAccessFinder;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.FeatureVisitor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
 
 @org.springframework.stereotype.Component
 public class DomainGenerator implements ComplexAttributeGenerator {

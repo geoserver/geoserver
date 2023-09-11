@@ -16,7 +16,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.geotools.util.URLs;
 
 /**

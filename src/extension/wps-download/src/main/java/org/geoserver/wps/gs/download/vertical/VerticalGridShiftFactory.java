@@ -7,18 +7,18 @@ package org.geoserver.wps.gs.download.vertical;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.metadata.i18n.ErrorKeys;
-import org.geotools.metadata.i18n.Errors;
 import org.geotools.referencing.factory.ReferencingFactory;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.URLs;
 import org.geotools.util.factory.AbstractFactory;
 import org.geotools.util.factory.BufferedFactory;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.FactoryException;
 
 /**
  * Loads and caches Vertical grid files. This incorporates a soft cache mechanism to keep grids in
@@ -99,7 +99,8 @@ public class VerticalGridShiftFactory extends ReferencingFactory implements Buff
                 File file = URLs.urlToFile(url);
 
                 if (!file.exists() || !file.canRead()) {
-                    throw new IOException(Errors.format(ErrorKeys.FILE_DOES_NOT_EXIST_$1, file));
+                    throw new IOException(
+                            MessageFormat.format(ErrorKeys.FILE_DOES_NOT_EXIST_$1, file));
                 }
                 return loadGridShift(file, gridCRSCode);
             }

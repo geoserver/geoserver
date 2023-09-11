@@ -13,19 +13,19 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.TiledImage;
+import org.geotools.api.coverage.CannotEvaluateException;
+import org.geotools.api.coverage.PointOutsideCoverageException;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.geometry.Position;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
-import org.opengis.coverage.CannotEvaluateException;
-import org.opengis.coverage.PointOutsideCoverageException;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.geometry.DirectPosition;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
 
 /**
  * A GridCoverage instance composed of several GridCoverage2D Granules which may be obtained through
@@ -66,7 +66,7 @@ public class GranuleStackImpl extends GridCoverage2D /*AbstractGridCoverage*/
                     SAMPLE_IMAGE,
                     new GridGeometry2D(
                             SAMPLE_GRID_ENVELOPE,
-                            new GeneralEnvelope(
+                            new GeneralBounds(
                                     SAMPLE_GRID_ENVELOPE,
                                     PixelInCell.CELL_CENTER,
                                     SAMPLE_TRANSFORM,
@@ -110,7 +110,7 @@ public class GranuleStackImpl extends GridCoverage2D /*AbstractGridCoverage*/
     }
 
     @Override
-    public Object evaluate(DirectPosition point)
+    public Object evaluate(Position point)
             throws PointOutsideCoverageException, CannotEvaluateException {
         throw new UnsupportedOperationException(
                 "This is a multidimensional coverage, you should access its contents calling getGranules");

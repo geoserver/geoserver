@@ -29,9 +29,9 @@ import org.geoserver.wms.legendgraphic.LegendUtils.HAlign;
 import org.geoserver.wms.legendgraphic.LegendUtils.LegendLayout;
 import org.geoserver.wms.legendgraphic.LegendUtils.VAlign;
 import org.geoserver.wms.map.ImageUtils;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.SelectedChannelType;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
+import org.geotools.api.style.SelectedChannelType;
 
 /**
  * This class is responsible for building a legend out of a {@link ColorMap} SLD 1.0 element.

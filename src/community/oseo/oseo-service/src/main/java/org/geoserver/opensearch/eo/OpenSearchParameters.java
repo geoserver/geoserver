@@ -9,15 +9,15 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Container/provider for common OpenSearch parameters. Parameter keys are used as the Kvp keys in
@@ -239,7 +239,7 @@ public class OpenSearchParameters {
      * @param ff The filter factory used to build the filters
      */
     public static PropertyName getFilterPropertyFor(
-            OSEOInfo oseo, FilterFactory2 ff, Parameter<?> parameter) {
+            OSEOInfo oseo, FilterFactory ff, Parameter<?> parameter) {
         String prefix = getParameterPrefix(parameter);
         String namespace = null;
 

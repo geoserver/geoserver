@@ -24,13 +24,13 @@ import org.geoserver.monitor.MonitorTestData;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RESTMonitorCallbackTest extends GeoServerSystemTestSupport {

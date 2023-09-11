@@ -6,9 +6,9 @@
 package org.geoserver.importer.transform;
 
 import org.geoserver.importer.ImportTask;
-import org.geotools.data.DataStore;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 
 /**
  * Vector transform that is performed inline features are read from the source and written to the

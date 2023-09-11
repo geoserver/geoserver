@@ -14,10 +14,10 @@ import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDFactory;
 import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDTypeDefinition;
+import org.geotools.api.feature.type.Name;
 import org.geotools.xsd.PropertyExtractor;
 import org.geotools.xsd.SchemaIndex;
 import org.geotools.xsd.Schemas;
-import org.opengis.feature.type.Name;
 
 /**
  * Extracts properties from an instance of {@link PropertyType}.

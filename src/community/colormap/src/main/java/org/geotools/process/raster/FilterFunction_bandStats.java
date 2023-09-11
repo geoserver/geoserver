@@ -7,13 +7,13 @@ package org.geotools.process.raster;
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 import java.util.List;
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.util.Utilities;
-import org.opengis.filter.capability.FunctionName;
 
 /**
  * Filter function to retrieve a grid coverage band min/max value

@@ -16,8 +16,8 @@
  */
 package org.geotools.dggs;
 
+import org.geotools.api.filter.expression.Function;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.filter.expression.Function;
 
 /** Duplicating filter visitor injecting a DGGS instance in well known DGGS related functions */
 public class DGGSFilterVisitor extends DuplicatingFilterVisitor {

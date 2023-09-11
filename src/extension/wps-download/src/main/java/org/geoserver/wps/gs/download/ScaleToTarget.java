@@ -16,6 +16,14 @@ import javax.media.jai.JAI;
 import javax.media.jai.Warp;
 import javax.media.jai.WarpAffine;
 import org.geoserver.data.util.CoverageUtils;
+import org.geotools.api.coverage.processing.Operation;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.parameter.GeneralParameterDescriptor;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -30,14 +38,6 @@ import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.processing.Operation;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * Class encapsulating the logic to scale a coverage to a pre-defined target size.
@@ -54,7 +54,7 @@ class ScaleToTarget {
 
     private GridCoverage2DReader reader;
 
-    private Envelope envelope;
+    private Bounds envelope;
 
     private Integer adjustedTargetSizeX;
 
@@ -76,7 +76,7 @@ class ScaleToTarget {
      * @param envelope the envelope of the ROI we want to scale (if <code>null</code>, the envelope
      *     of the whole coverage is used)
      */
-    ScaleToTarget(GridCoverage2DReader reader, Envelope envelope) {
+    ScaleToTarget(GridCoverage2DReader reader, Bounds envelope) {
         checkNotNull(reader, "reader");
         this.reader = reader;
         this.envelope = envelope;

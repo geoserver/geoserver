@@ -24,11 +24,11 @@ import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.process.Process;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 
 public class SextanteProcess implements Process {
     static final Logger LOGGER = Logging.getLogger(SextanteProcess.class);

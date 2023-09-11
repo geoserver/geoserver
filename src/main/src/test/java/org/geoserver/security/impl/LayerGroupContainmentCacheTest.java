@@ -39,13 +39,13 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.impl.LayerGroupContainmentCache.LayerGroupSummary;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.util.URLs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 /** Tests {@link LayerGroupContainmentCache} udpates in face of catalog setup and changes */

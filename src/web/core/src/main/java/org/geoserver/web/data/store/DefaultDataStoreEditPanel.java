@@ -42,9 +42,9 @@ import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.EnumAdapterModel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
-import org.geotools.data.DataAccessFactory;
-import org.geotools.data.DataAccessFactory.Param;
-import org.geotools.data.Repository;
+import org.geotools.api.data.DataAccessFactory;
+import org.geotools.api.data.DataAccessFactory.Param;
+import org.geotools.api.data.Repository;
 import org.xml.sax.EntityResolver;
 
 /**

@@ -62,10 +62,16 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.geometry.BoundingBox;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
@@ -74,12 +80,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class MonitorCallbackTest {
 
@@ -187,8 +187,8 @@ public class MonitorCallbackTest {
     @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWFSGetFeature() throws Exception {
         GetFeatureType gf = WfsFactory.eINSTANCE.createGetFeatureType();
-        org.opengis.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
-        org.opengis.filter.Filter f2 =
+        org.geotools.api.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
+        org.geotools.api.filter.Filter f2 =
                 parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
         QueryType q = WfsFactory.eINSTANCE.createQueryType();
         q.setTypeName(Arrays.asList(new QName("http://acme.org", "foo", "acme")));
@@ -230,8 +230,8 @@ public class MonitorCallbackTest {
     @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWFSTransaction() throws Exception {
         TransactionType t = WfsFactory.eINSTANCE.createTransactionType();
-        org.opengis.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
-        org.opengis.filter.Filter f2 =
+        org.geotools.api.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
+        org.geotools.api.filter.Filter f2 =
                 parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
 
         UpdateElementType ue = WfsFactory.eINSTANCE.createUpdateElementType();
@@ -379,8 +379,8 @@ public class MonitorCallbackTest {
                 Wcs10Factory.eINSTANCE.createSpatialSubsetType();
 
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
-        GeneralEnvelope env =
-                new GeneralEnvelope(new double[] {-123.4, 48.2}, new double[] {-120.9, 50.1});
+        GeneralBounds env =
+                new GeneralBounds(new double[] {-123.4, 48.2}, new double[] {-120.9, 50.1});
         env.setCoordinateReferenceSystem(crs);
         BoundingBox bbox = new ReferencedEnvelope(env);
 
@@ -417,8 +417,8 @@ public class MonitorCallbackTest {
         net.opengis.wcs11.GetCoverageType gc = Wcs11Factory.eINSTANCE.createGetCoverageType();
 
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
-        GeneralEnvelope env =
-                new GeneralEnvelope(new double[] {48.2, -123.4}, new double[] {50.1, -120.9});
+        GeneralBounds env =
+                new GeneralBounds(new double[] {48.2, -123.4}, new double[] {50.1, -120.9});
         env.setCoordinateReferenceSystem(crs);
         BoundingBox bbox = new ReferencedEnvelope(env);
         net.opengis.ows11.BoundingBoxType wcsBbox =
@@ -479,8 +479,8 @@ public class MonitorCallbackTest {
 
         CoordinateReferenceSystem crs = CRS.decode("EPSG:3348", false);
         CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326", false);
-        GeneralEnvelope env =
-                new GeneralEnvelope(
+        GeneralBounds env =
+                new GeneralBounds(
                         new double[] {5988504.35, 851278.90},
                         new double[] {7585113.55, 1950872.01});
         env.setCoordinateReferenceSystem(crs);

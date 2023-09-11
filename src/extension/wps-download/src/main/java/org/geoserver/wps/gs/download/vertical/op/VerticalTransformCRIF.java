@@ -11,7 +11,7 @@ import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import javax.media.jai.CRIFImpl;
 import javax.media.jai.ImageLayout;
-import org.opengis.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.MathTransform;
 
 public class VerticalTransformCRIF extends CRIFImpl {
 

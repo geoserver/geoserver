@@ -19,8 +19,8 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geotools.data.DataAccessFactory;
-import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.api.data.DataAccessFactory;
+import org.geotools.api.data.DataAccessFactory.Param;
 import org.geotools.util.logging.Logging;
 
 /**

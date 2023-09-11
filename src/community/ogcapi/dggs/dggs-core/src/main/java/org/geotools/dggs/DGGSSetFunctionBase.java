@@ -21,11 +21,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import org.geotools.api.filter.capability.FunctionName;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.parameter.Parameter;
 import org.geotools.filter.FunctionImpl;
-import org.opengis.filter.capability.FunctionName;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
-import org.opengis.parameter.Parameter;
 
 /**
  * Base class for DGGS functions based on set evaluation, e.g., neighbors, children, parents. This

@@ -16,23 +16,23 @@ import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageView.SelectedResolution;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.parameter.ParameterDescriptor;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.MathTransform2D;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
-import org.geotools.data.DataSourceException;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.MathTransform2D;
 
 /**
  * Class delegate to parse coverageView information and computing consistency checks, resolution and
@@ -161,14 +161,14 @@ class CoverageViewHandler {
     interface EnvelopeComposer {
         void visit(GridCoverage2DReader reader);
 
-        GeneralEnvelope getOriginalEnvelope();
+        GeneralBounds getOriginalEnvelope();
     };
 
     abstract class AbstractEnvelopeComposer implements EnvelopeComposer {
-        GeneralEnvelope env = null;
+        GeneralBounds env = null;
 
         @Override
-        public GeneralEnvelope getOriginalEnvelope() {
+        public GeneralBounds getOriginalEnvelope() {
             return env;
         }
     }
@@ -177,7 +177,7 @@ class CoverageViewHandler {
     class UnionEnvelopeComposer extends AbstractEnvelopeComposer {
         @Override
         public void visit(GridCoverage2DReader reader) {
-            GeneralEnvelope envelope = reader.getOriginalEnvelope();
+            GeneralBounds envelope = reader.getOriginalEnvelope();
             if (env == null) {
                 env = envelope;
             } else {
@@ -190,7 +190,7 @@ class CoverageViewHandler {
     class IntersectionEnvelopeComposer extends AbstractEnvelopeComposer {
         @Override
         public void visit(GridCoverage2DReader reader) {
-            GeneralEnvelope envelope = reader.getOriginalEnvelope();
+            GeneralBounds envelope = reader.getOriginalEnvelope();
             if (env == null) {
                 env = envelope;
             } else {
@@ -223,7 +223,7 @@ class CoverageViewHandler {
 
         private GridEnvelope gridRange;
 
-        private GeneralEnvelope envelope;
+        private GeneralBounds envelope;
 
         private CoordinateReferenceSystem crs;
 
@@ -248,7 +248,7 @@ class CoverageViewHandler {
          * reference coverage.
          */
         public boolean checkConsistency(GridCoverage2DReader reader) throws IOException {
-            GeneralEnvelope envelope = reader.getOriginalEnvelope();
+            GeneralBounds envelope = reader.getOriginalEnvelope();
             GridEnvelope gridRange = reader.getOriginalGridRange();
             CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
             String[] metadataNames = reader.getMetadataNames();
@@ -411,7 +411,7 @@ class CoverageViewHandler {
         return homogeneousCoverages;
     }
 
-    public GeneralEnvelope getOriginalEnvelope() {
+    public GeneralBounds getOriginalEnvelope() {
         if (homogeneousCoverages) {
             return delegate.getOriginalEnvelope(referenceName);
         }
@@ -431,7 +431,7 @@ class CoverageViewHandler {
         }
         // Due to mixed combinations, let's take the envelope and divide the span
         // by the resolution
-        GeneralEnvelope envelope = getOriginalEnvelope();
+        GeneralBounds envelope = getOriginalEnvelope();
         double[] res;
         try {
             res = getResolutionLevels()[0];

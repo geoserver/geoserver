@@ -25,10 +25,10 @@ import org.geoserver.platform.Service;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Style;
 import org.geotools.process.raster.DynamicColorMapTest;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Style;
 import org.geotools.xml.styling.SLDTransformer;
 import org.junit.Test;
 

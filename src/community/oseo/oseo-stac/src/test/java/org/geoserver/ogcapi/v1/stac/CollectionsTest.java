@@ -19,7 +19,7 @@ import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;

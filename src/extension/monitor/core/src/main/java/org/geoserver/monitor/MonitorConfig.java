@@ -26,13 +26,13 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.geotools.util.ConverterFactory;
 import org.geotools.util.Converters;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -64,6 +64,10 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     boolean enabled = true;
     Exception error;
     private GeoServerResourceLoader loader;
+
+    static final int POSTPROCES_THREADS_DEFAULT = 2;
+
+    static final String DNS_CACHE_DEFAULT = "expireAfterWrite=15m,maximumSize=1000";
 
     public MonitorConfig() {
         props = new PropertyFileWatcher.LinkedProperties();
@@ -301,5 +305,34 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
                 fw.setKnownLastModified(System.currentTimeMillis());
             }
         }
+    }
+
+    public int getPostProcessorThreads() {
+        Properties props = props();
+        String key = "postProcessorThreads";
+        String svalue = props.getProperty(key);
+        if (svalue != null) {
+            try {
+                int nvalue = Integer.parseInt(svalue.trim());
+                if (nvalue < 1) {
+                    LOGGER.warning(key + " is not 1 or more :" + svalue + "!");
+                } else {
+                    return nvalue;
+                }
+            } catch (NumberFormatException e) {
+                LOGGER.warning(key + " has non-integer value:" + svalue + "!");
+            }
+        }
+        return POSTPROCES_THREADS_DEFAULT;
+    }
+
+    public String getDNSCacheConfiguration() {
+        Properties props = props();
+        String key = "dnsCacheConfiguration";
+        String value = props.getProperty(key);
+        if (value == null) {
+            value = DNS_CACHE_DEFAULT;
+        }
+        return value;
     }
 }

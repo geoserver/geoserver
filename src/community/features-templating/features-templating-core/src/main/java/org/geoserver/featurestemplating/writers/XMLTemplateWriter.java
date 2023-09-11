@@ -19,9 +19,9 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.util.ISO8601Formatter;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.feature.ComplexAttribute;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.ComplexAttribute;
 
 /** A writer capable to generate a generic xml result. */
 public abstract class XMLTemplateWriter extends TemplateOutputWriter {

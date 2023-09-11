@@ -8,47 +8,47 @@ package org.geoserver.wms.map;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.capability.FunctionName;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.parameter.Parameter;
+import org.geotools.api.style.AnchorPoint;
+import org.geotools.api.style.ChannelSelection;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
+import org.geotools.api.style.ContrastEnhancement;
+import org.geotools.api.style.Displacement;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.FeatureTypeConstraint;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Fill;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.Halo;
+import org.geotools.api.style.ImageOutline;
+import org.geotools.api.style.LinePlacement;
+import org.geotools.api.style.LineSymbolizer;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.OverlapBehavior;
+import org.geotools.api.style.PointPlacement;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.PolygonSymbolizer;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.SelectedChannelType;
+import org.geotools.api.style.ShadedRelief;
+import org.geotools.api.style.Stroke;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleVisitor;
+import org.geotools.api.style.StyledLayer;
+import org.geotools.api.style.StyledLayerDescriptor;
+import org.geotools.api.style.Symbolizer;
+import org.geotools.api.style.TextSymbolizer;
+import org.geotools.api.style.UserLayer;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.CoverageReadingTransformation;
 import org.geotools.feature.FeatureTypes;
-import org.geotools.styling.AnchorPoint;
-import org.geotools.styling.ChannelSelection;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.ContrastEnhancement;
-import org.geotools.styling.Displacement;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.FeatureTypeConstraint;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Fill;
-import org.geotools.styling.Graphic;
-import org.geotools.styling.Halo;
-import org.geotools.styling.ImageOutline;
-import org.geotools.styling.LinePlacement;
-import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.Mark;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.OverlapBehavior;
-import org.geotools.styling.PointPlacement;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Rule;
-import org.geotools.styling.SelectedChannelType;
-import org.geotools.styling.ShadedRelief;
-import org.geotools.styling.Stroke;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleVisitor;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.Symbolizer;
-import org.geotools.styling.TextSymbolizer;
-import org.geotools.styling.UserLayer;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.capability.FunctionName;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-import org.opengis.parameter.Parameter;
 
 /**
  * Extracts the active raster symbolizers, as long as there are some, and only raster symbolizers
@@ -59,6 +59,16 @@ import org.opengis.parameter.Parameter;
  * @author Andrea Aime
  */
 public class RasterSymbolizerVisitor implements StyleVisitor {
+
+    /**
+     * Boolean value allowing to control whether rendering transformations should be evaluated when
+     * performing WMS GetFeatureInfo requests. This option applies only to transformations with a
+     * raster source (i.e., raster-to-raster and raster-to-vector). The default value can be
+     * configured by administrators in the global and workspace-specific WMS service settings
+     * (transformations will be evaluated by default) and this SLD vendor option can be used to
+     * override the service setting for a specific FeatureTypeStyle element within the SLD document.
+     */
+    public static final String TRANSFORM_FEATURE_INFO = "transformFeatureInfo";
 
     double scaleDenominator;
 
@@ -74,9 +84,17 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     List<Expression> otherRenderingTransformations = new ArrayList<>();
 
+    Boolean transformFeatureInfo = null;
+
     public RasterSymbolizerVisitor(double scaleDenominator, FeatureType featureType) {
+        this(scaleDenominator, featureType, null);
+    }
+
+    public RasterSymbolizerVisitor(
+            double scaleDenominator, FeatureType featureType, Boolean transformFeatureInfo) {
         this.scaleDenominator = scaleDenominator;
         this.featureType = featureType;
+        this.transformFeatureInfo = transformFeatureInfo;
     }
 
     public void reset() {
@@ -154,7 +172,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                                 || fts.featureTypeNames().stream()
                                         .anyMatch(tn -> FeatureTypes.matches(featureType, tn)))) {
             if (activeRules(fts)) {
-                Expression tx = fts.getTransformation();
+                Expression tx = isTransformFeatureInfo(fts) ? fts.getTransformation() : null;
                 if (tx != null) {
                     boolean rasterTransformation = false;
                     if (tx instanceof CoverageReadingTransformation)
@@ -169,6 +187,16 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                 }
             }
         }
+    }
+
+    private boolean isTransformFeatureInfo(FeatureTypeStyle fts) {
+        // ignore this setting if not a GetFeatureInfo request
+        if (this.transformFeatureInfo == null) {
+            return true;
+        }
+        // check the vendor option first, then the WMS settings
+        String option = fts.getOptions().get(TRANSFORM_FEATURE_INFO);
+        return option != null ? Boolean.parseBoolean(option) : this.transformFeatureInfo;
     }
 
     private boolean activeRules(FeatureTypeStyle fts) {

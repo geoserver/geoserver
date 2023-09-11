@@ -29,12 +29,12 @@ import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
-import org.geotools.data.DataAccessFactory;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.data.DataAccessFactory;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.coverage.grid.Format;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortBy;
 
 /** Data providers for the {@link StorePanel} */
 @SuppressWarnings("serial")
@@ -243,7 +243,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     private Filter getWorkspaceFilter(Filter filter) {
         // Filter by workspace if present
         if (workspace != null) {
-            FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+            FilterFactory ff = CommonFactoryFinder.getFilterFactory();
             Filter workspaceFilter =
                     ff.equal(ff.property("workspace.id"), ff.literal(workspace.getId()));
             filter = ff.and(filter, workspaceFilter);

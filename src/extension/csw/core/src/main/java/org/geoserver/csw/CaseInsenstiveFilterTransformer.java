@@ -5,9 +5,9 @@
  */
 package org.geoserver.csw;
 
+import org.geotools.api.filter.PropertyIsLike;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.filter.PropertyIsLike;
-import org.opengis.filter.expression.Expression;
 
 /**
  * Transforms like filters from case sensitive to case insensitive

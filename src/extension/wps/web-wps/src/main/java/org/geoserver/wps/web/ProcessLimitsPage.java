@@ -38,7 +38,7 @@ import org.geoserver.wps.validator.MultiplicityValidator;
 import org.geoserver.wps.validator.NumberRangeValidator;
 import org.geoserver.wps.validator.WPSInputValidator;
 import org.geoserver.wps.web.FilteredProcessesProvider.FilteredProcess;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.springframework.context.ApplicationContext;
 

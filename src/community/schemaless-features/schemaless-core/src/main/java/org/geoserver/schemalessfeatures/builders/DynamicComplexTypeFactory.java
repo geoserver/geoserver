@@ -8,15 +8,15 @@ import java.util.Collection;
 import java.util.List;
 import org.geoserver.schemalessfeatures.type.DynamicComplexTypeImpl;
 import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
+import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.ComplexType;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.util.InternationalString;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.ComplexType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.util.InternationalString;
 
 /** A FeatureTypeFactory able to produce Dynamic Type */
 public class DynamicComplexTypeFactory extends FeatureTypeFactoryImpl {

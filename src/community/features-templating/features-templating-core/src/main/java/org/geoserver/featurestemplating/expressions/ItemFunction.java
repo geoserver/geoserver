@@ -7,10 +7,10 @@ package org.geoserver.featurestemplating.expressions;
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 import java.lang.reflect.Array;
+import org.geotools.api.feature.Attribute;
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
-import org.opengis.feature.Attribute;
-import org.opengis.filter.capability.FunctionName;
 
 /**
  * Allows extraction of a given item from an array (as it's hard to do with a xpath, since the array

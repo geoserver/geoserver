@@ -3,9 +3,9 @@ package org.geoserver.featurestemplating.expressions;
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 import org.geoserver.ows.Request;
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.util.Converters;
-import org.opengis.filter.capability.FunctionName;
 
 /** Returns the value of request header with the name specified in the parameter. */
 public class HeaderFunction extends RequestFunction {

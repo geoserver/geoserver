@@ -38,12 +38,12 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.browser.ExtensionFileFilter;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
-import org.opengis.filter.Filter;
 
 @SuppressWarnings("serial")
 public class ResourceFilePanel extends Panel {

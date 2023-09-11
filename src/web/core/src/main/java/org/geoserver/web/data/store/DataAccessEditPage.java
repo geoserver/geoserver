@@ -20,9 +20,9 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.data.DataAccess;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 
 /**
  * Provides a form to edit a geotools {@link DataAccess} that already exists in the {@link Catalog}
@@ -47,7 +47,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             getSession()
                     .error(
                             new ParamResourceModel(
-                                            "DataAccessEditPage.notFound", this, wsName, storeName)
+                                            "DataAccessEditPage.notFound", this, storeName, wsName)
                                     .getString());
             doReturn(StorePage.class);
             return;

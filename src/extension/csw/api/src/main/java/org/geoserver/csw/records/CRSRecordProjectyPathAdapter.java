@@ -5,9 +5,9 @@
  */
 package org.geoserver.csw.records;
 
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -25,7 +25,7 @@ public class CRSRecordProjectyPathAdapter extends DuplicatingFilterVisitor {
 
     @Override
     public Object visit(PropertyName expression, Object extraData) {
-        FilterFactory2 filterFactory = getFactory(extraData);
+        FilterFactory filterFactory = getFactory(extraData);
         NamespaceSupport nss = expression.getNamespaceContext();
 
         return extender.extendProperty(expression, filterFactory, nss);

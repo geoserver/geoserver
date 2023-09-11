@@ -5,8 +5,8 @@
 package org.geoserver.wms.utfgrid;
 
 import java.awt.Color;
+import org.geotools.api.feature.Feature;
 import org.geotools.filter.expression.InternalVolatileFunction;
-import org.opengis.feature.Feature;
 
 /**
  * Creates a "color" for each feature

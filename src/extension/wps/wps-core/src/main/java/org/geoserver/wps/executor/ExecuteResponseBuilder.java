@@ -56,15 +56,15 @@ import org.geoserver.wps.ppio.XMLPPIO;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.resource.WPSResourceManager;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.EMFUtils;
-import org.opengis.feature.type.Name;
-import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
 
 public class ExecuteResponseBuilder {

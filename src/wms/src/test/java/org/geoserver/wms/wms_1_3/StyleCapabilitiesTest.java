@@ -19,7 +19,8 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
-import org.geotools.styling.StyleImpl;
+import org.geotools.api.style.Style;
+import org.geotools.brewer.styling.builder.StyleBuilder;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -102,9 +103,8 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
 
         // force the style without description to be null, by default it is not null if not set
         // https://github.com/geotools/geotools/blob/bdcdaeca35f0cb1c465f2e11dd1b04bb7fff30df/modules/library/main/src/main/java/org/geotools/styling/StyleImpl.java#L45
-        StyleImpl style =
-                (StyleImpl) catalog.getStyleByName(STYLE_NAME_WITHOUT_DESCRIPTION).getStyle();
-        style.setDescription(null);
+        Style style = catalog.getStyleByName(STYLE_NAME_WITHOUT_DESCRIPTION).getStyle();
+        style = new StyleBuilder().reset(style).styleAbstract(null).buildStyle();
 
         // For global set-up
         GeoServerInfo global = getGeoServer().getGlobal();

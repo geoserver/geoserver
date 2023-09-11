@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.util.Converters;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 
 /** A provider to show data attributes, sample values and some eventual stats */
 class DataAttributesProvider extends GeoServerDataProvider<DataAttribute> {

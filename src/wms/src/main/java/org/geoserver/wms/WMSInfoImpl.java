@@ -14,8 +14,8 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.util.InternationalStringUtils;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
-import org.opengis.util.InternationalString;
 
 public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
@@ -83,6 +83,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     private Integer remoteStyleTimeout;
 
     private Boolean defaultGroupStyleEnabled;
+
+    private boolean transformFeatureInfoDisabled;
 
     private boolean autoEscapeTemplateValues;
 
@@ -369,6 +371,16 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     public void setAllowedURLsForAuthForwarding(List<String> allowedURLsForAuthForwarding) {
         this.allowedURLsForAuthForwarding = allowedURLsForAuthForwarding;
+    }
+
+    @Override
+    public boolean isTransformFeatureInfoDisabled() {
+        return transformFeatureInfoDisabled;
+    }
+
+    @Override
+    public void setTransformFeatureInfoDisabled(boolean transformFeatureInfoDisabled) {
+        this.transformFeatureInfoDisabled = transformFeatureInfoDisabled;
     }
 
     @Override

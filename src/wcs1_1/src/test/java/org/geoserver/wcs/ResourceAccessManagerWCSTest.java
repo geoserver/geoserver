@@ -26,17 +26,17 @@ import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.TestResourceAccessManager;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.geometry.Position;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.filter.Filter;
-import org.opengis.geometry.DirectPosition;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
@@ -145,13 +145,13 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         int[] value = new int[3];
 
         // some point in USA
-        coverage.evaluate((DirectPosition) new DirectPosition2D(wgs84Flipped, 40, -90), value);
+        coverage.evaluate((Position) new Position2D(wgs84Flipped, 40, -90), value);
         assertTrue(value[0] > 0);
         assertTrue(value[1] > 0);
         assertTrue(value[2] > 0);
 
         // some point in Europe
-        coverage.evaluate((DirectPosition) new DirectPosition2D(wgs84Flipped, 45, 12), value);
+        coverage.evaluate((Position) new Position2D(wgs84Flipped, 45, 12), value);
         assertTrue(value[0] > 0);
         assertTrue(value[1] > 0);
         assertTrue(value[2] > 0);
@@ -221,13 +221,13 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         int[] value = new int[3];
 
         // some point in USA
-        coverage.evaluate((DirectPosition) new DirectPosition2D(wgs84Flipped, 40, -90), value);
+        coverage.evaluate((Position) new Position2D(wgs84Flipped, 40, -90), value);
         assertTrue(value[0] > 0);
         assertTrue(value[1] > 0);
         assertTrue(value[2] > 0);
 
         // some point in Europe (should have been cropped, we should get the bkg value)
-        coverage.evaluate((DirectPosition) new DirectPosition2D(wgs84Flipped, 45, 12), value);
+        coverage.evaluate((Position) new Position2D(wgs84Flipped, 45, 12), value);
         assertEquals(0, value[0]);
         assertEquals(0, value[1]);
         assertEquals(0, value[2]);

@@ -7,13 +7,13 @@ package org.geoserver.kml.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
+import org.geotools.brewer.styling.builder.FeatureTypeStyleBuilder;
 import org.geotools.feature.FeatureTypes;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.FeatureTypeStyleImpl;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * Returns a shallow copy of a style with only the active rules at the specified scale denominator
@@ -54,7 +54,7 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
 
     @Override
     public void visit(FeatureTypeStyle fts) {
-        FeatureTypeStyle copy = new FeatureTypeStyleImpl(fts);
+        FeatureTypeStyle copy = new FeatureTypeStyleBuilder().reset(fts).build();
 
         // preserve only the rules active at this scale range
         List<Rule> rulesCopy = new ArrayList<>();

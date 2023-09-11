@@ -13,7 +13,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 import org.springframework.security.core.Authentication;
 
 /**

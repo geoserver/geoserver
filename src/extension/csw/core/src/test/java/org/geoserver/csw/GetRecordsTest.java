@@ -29,13 +29,13 @@ import org.geoserver.csw.kvp.GetRecordsKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.Not;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.xml.XmlConverterFactory;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.Not;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.PropertyName;
 import org.w3c.dom.Document;
 
 public class GetRecordsTest extends CSWSimpleTestSupport {

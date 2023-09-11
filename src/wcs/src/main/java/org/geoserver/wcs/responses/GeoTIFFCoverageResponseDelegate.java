@@ -20,14 +20,14 @@ import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.parameter.ParameterValueGroup;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
@@ -69,6 +69,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                         "image/geotiff",
                         "image/tiff;application=geotiff"), // output formats
                 Map.ofEntries( // file extensions
+                        entry("tif", "tif"),
                         entry("tiff", "tif"),
                         entry("geotiff", "tif"),
                         entry("TIFF", "tif"),

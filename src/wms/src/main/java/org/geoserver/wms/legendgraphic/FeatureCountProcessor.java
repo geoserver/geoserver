@@ -29,24 +29,23 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.style.Description;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.style.TextSymbolizer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.RenderListener;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.DescriptionImpl;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory2;
-import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
 import org.geotools.util.Converters;
 import org.geotools.util.SimpleInternationalString;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.Name;
-import org.opengis.style.Description;
 
 /**
  * Alters a legend to add a count of the rules descriptions
@@ -55,7 +54,7 @@ import org.opengis.style.Description;
  */
 class FeatureCountProcessor {
 
-    static final StyleFactory2 SF = (StyleFactory2) CommonFactoryFinder.getStyleFactory();
+    static final StyleFactory SF = (StyleFactory) CommonFactoryFinder.getStyleFactory();
     public static final String WIDTH = "WIDTH";
     public static final String HEIGHT = "HEIGHT";
 
@@ -76,7 +75,7 @@ class FeatureCountProcessor {
             super.visit(rule);
             Rule copy = (Rule) pages.peek();
             Description description =
-                    new DescriptionImpl(
+                    sf.description(
                             new SimpleInternationalString(targetLabel),
                             copy.getDescription() != null
                                     ? copy.getDescription().getAbstract()

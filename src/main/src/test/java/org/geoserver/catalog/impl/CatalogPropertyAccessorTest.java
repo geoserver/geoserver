@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.common.collect.Lists;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Test;
-import org.opengis.filter.FilterFactory;
 
 public class CatalogPropertyAccessorTest {
 

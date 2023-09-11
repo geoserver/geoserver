@@ -208,8 +208,10 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                             LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
 
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
-                    final String formattedFilter =
+                    String formattedFilter =
                             MessageFormat.format(groupSearchFilter, userDn, username);
+                    // search requires an escaped string
+                    formattedFilter = LDAPUtils.escapeSearchString(formattedFilter);
                     userRolesNameDn.addAll(
                             authTemplate.search(
                                     getGroupSearchBase(),
@@ -277,8 +279,10 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                     SpringSecurityLdapTemplate authTemplate =
                             LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
-                    final String formattedFilter =
+                    String formattedFilter =
                             MessageFormat.format(nestedGroupSearchFilter, groupDn, groupName);
+                    // search requires an escaped string
+                    formattedFilter = LDAPUtils.escapeSearchString(formattedFilter);
                     groupRolesNameDn.addAll(
                             authTemplate.search(
                                     getGroupSearchBase(),

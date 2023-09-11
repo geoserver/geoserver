@@ -21,7 +21,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.RepositoryItem;
 import org.geoserver.platform.ServiceException;
-import org.opengis.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.AttributeDescriptor;
 
 /**
  * The interface representing a Catalog Service for the Web implementation

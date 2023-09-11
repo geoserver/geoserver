@@ -52,9 +52,13 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.api.coverage.Coverage;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridGeometry;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
@@ -62,10 +66,6 @@ import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xsd.Parser;
 import org.junit.After;
 import org.locationtech.jts.geom.CoordinateXY;
-import org.opengis.coverage.Coverage;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.referencing.operation.MathTransform;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -505,17 +505,17 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         final double scaleB = getScale(actual);
 
         assertEnvelopeEquals(
-                (GeneralEnvelope) expected.getEnvelope(),
+                (GeneralBounds) expected.getEnvelope(),
                 scaleA,
-                (GeneralEnvelope) actual.getEnvelope(),
+                (GeneralBounds) actual.getEnvelope(),
                 scaleB);
     }
 
     @SuppressWarnings("PMD.SimplifiableTestAssertion") // equality with tolerance
     protected static void assertEnvelopeEquals(
-            GeneralEnvelope expected,
+            GeneralBounds expected,
             double scaleExpected,
-            GeneralEnvelope actual,
+            GeneralBounds actual,
             double scaleActual) {
         final double tolerance;
         if (scaleExpected <= scaleActual) {

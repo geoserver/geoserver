@@ -20,9 +20,9 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geotools.api.filter.Filter;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class StorePageTest extends GeoServerWicketTestSupport {
 

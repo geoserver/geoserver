@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps.executor;
 
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 
 /**
  * A input provider for static string data

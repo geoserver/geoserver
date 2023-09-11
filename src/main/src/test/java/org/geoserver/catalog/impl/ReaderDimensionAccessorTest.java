@@ -19,14 +19,14 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.junit.Test;
-import org.opengis.coverage.grid.Format;
-import org.opengis.parameter.GeneralParameterValue;
 
 public class ReaderDimensionAccessorTest {
 

@@ -6,7 +6,7 @@ package org.geoserver.wms.utfgrid;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.opengis.feature.Feature;
+import org.geotools.api.feature.Feature;
 
 class UTFGridEntries {
 

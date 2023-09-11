@@ -8,24 +8,24 @@ package org.geoserver.importer.mosaic;
 import java.util.Date;
 import org.geoserver.importer.SpatialFile;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /** A tile of a mosaic. */
 public class Granule extends SpatialFile {
 
     Date timestamp;
-    Envelope2D envelope;
+    ReferencedEnvelope envelope;
     GridGeometry2D grid;
 
     public Granule(SpatialFile file) {
         super(file);
     }
 
-    public Envelope2D getEnvelope() {
+    public ReferencedEnvelope getEnvelope() {
         return envelope;
     }
 
-    public void setEnvelope(Envelope2D envelope) {
+    public void setEnvelope(ReferencedEnvelope envelope) {
         this.envelope = envelope;
     }
 

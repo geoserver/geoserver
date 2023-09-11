@@ -42,13 +42,13 @@ import org.geoserver.notification.support.Receiver;
 import org.geoserver.notification.support.ReceiverService;
 import org.geoserver.notification.support.Utils;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
 public class IntegrationTest extends CatalogRESTTestSupport {

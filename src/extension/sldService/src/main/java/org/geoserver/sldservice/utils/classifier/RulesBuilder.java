@@ -17,6 +17,16 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.StyleFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -27,18 +37,8 @@ import org.geotools.filter.function.ExplicitClassifier;
 import org.geotools.filter.function.RangedClassifier;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.styling.Mark;
-import org.geotools.styling.Rule;
 import org.geotools.styling.StyleBuilder;
-import org.geotools.styling.StyleFactory;
 import org.geotools.util.factory.GeoTools;
-import org.opengis.feature.Feature;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * Creates a List of Rule using different classification methods Sets up only filter not Symbolyzer
@@ -50,8 +50,8 @@ public class RulesBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(RulesBuilder.class.toString());
 
-    private static FilterFactory2 FF =
-            CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+    private static FilterFactory FF =
+            CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
 
     private static StyleFactory SF =
             CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());

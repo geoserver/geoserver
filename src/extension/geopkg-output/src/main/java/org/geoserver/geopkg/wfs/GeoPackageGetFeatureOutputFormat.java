@@ -30,12 +30,12 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.FeatureType;
 import org.springframework.util.StringUtils;
 
 /**

@@ -9,13 +9,13 @@ import java.util.logging.Logger;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.wps.process.DelegatingProcessFactory;
 import org.geoserver.wps.process.ProcessFilter;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.DelegateProgressListener;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
-import org.opengis.util.ProgressListener;
 
 /**
  * A process filter making sure the {@link ProgressListener#started()} method is called upon

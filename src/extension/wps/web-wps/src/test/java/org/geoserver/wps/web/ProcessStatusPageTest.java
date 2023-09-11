@@ -24,7 +24,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wps.MonkeyProcess;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
 import org.geotools.process.Processors;
 import org.junit.Test;
 import org.w3c.dom.Document;

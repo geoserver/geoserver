@@ -5,10 +5,10 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-import org.geotools.data.DataAccess;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
 
 /**
  * Extension point to initialize/cleanup the underlying resource of a feature type with custom

@@ -15,10 +15,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.notification.common.Notification;
 import org.geoserver.notification.common.NotificationProcessor;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
 
 /** @author Xandros */
 public class MessageProcessor {

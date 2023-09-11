@@ -21,13 +21,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.feature.visitor.AbstractCalcResult;
 import org.geotools.feature.visitor.Aggregate;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.FeatureAttributeVisitor;
 import org.geotools.feature.visitor.FeatureCalc;
-import org.opengis.feature.Feature;
-import org.opengis.filter.expression.Expression;
 
 public class MatrixAggregate implements FeatureCalc, FeatureAttributeVisitor {
 

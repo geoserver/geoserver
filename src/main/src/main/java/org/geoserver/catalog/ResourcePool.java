@@ -71,20 +71,42 @@ import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.EntityResolverProvider;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.DataAccessFactory;
+import org.geotools.api.data.DataAccessFactory.Param;
+import org.geotools.api.data.DataAccessFinder;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Join;
+import org.geotools.api.data.Repository;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.metadata.citation.Citation;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CRSAuthorityFactory;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.crs.SingleCRS;
+import org.geotools.api.referencing.cs.CoordinateSystem;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayerDescriptor;
+import org.geotools.brewer.styling.builder.StyleBuilder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataAccessFactory;
-import org.geotools.data.DataAccessFactory.Param;
-import org.geotools.data.DataAccessFinder;
-import org.geotools.data.DataSourceException;
-import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Join;
-import org.geotools.data.Repository;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.data.store.ContentState;
@@ -93,7 +115,7 @@ import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gce.geotiff.GeoTiffFormat;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.GML;
 import org.geotools.http.HTTPClient;
@@ -111,9 +133,6 @@ import org.geotools.ows.wmts.model.WMTSCapabilities;
 import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleImpl;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.CanonicalSet;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.URLs;
@@ -124,25 +143,6 @@ import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.XMLHandlerHints;
 import org.geotools.xml.handlers.DocumentHandler;
 import org.geotools.xsd.Schemas;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.metadata.citation.Citation;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CRSAuthorityFactory;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeographicCRS;
-import org.opengis.referencing.crs.SingleCRS;
-import org.opengis.referencing.cs.CoordinateSystem;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
 import org.vfny.geoserver.global.GeoServerFeatureSource;
@@ -1820,11 +1820,11 @@ public class ResourcePool {
             throw (IOException) new IOException("unable to calculate coverage bounds").initCause(e);
         }
 
-        GeneralEnvelope envelope = null;
+        GeneralBounds envelope = null;
         if (env == null) {
-            envelope = new GeneralEnvelope(coverageBounds);
+            envelope = new GeneralBounds(coverageBounds);
         } else {
-            envelope = new GeneralEnvelope(env);
+            envelope = new GeneralBounds(env);
         }
 
         // /////////////////////////////////////////////////////////
@@ -2213,12 +2213,7 @@ public class ResourcePool {
                     "Could not extract a UserStyle definition from " + info.getName());
         }
         // Make sure we don't change the name of an object in sldCache
-        if (style instanceof StyleImpl) {
-            style = (Style) ((StyleImpl) style).clone();
-        }
-        // remove this when wms works off style info
-        style.setName(info.getName());
-        return style;
+        return new StyleBuilder().reset(style).name(info.getName()).buildStyle();
     }
 
     /**

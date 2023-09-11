@@ -19,17 +19,17 @@ import org.geoserver.csw.feature.AbstractFeatureCollection;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.And;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.And;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
 
 /**
  * Internal Catalog Store Feature Collection Creates a Catalog Store from a GeoServer Catalog
@@ -50,7 +50,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
         }
     }
 
-    protected static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    protected static final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     protected int offset, count;
     protected SortBy[] sortOrder;

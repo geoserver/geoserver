@@ -17,8 +17,8 @@ import net.opengis.cat.csw20.DescribeRecordType;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  * Runs the DescribeRecord request

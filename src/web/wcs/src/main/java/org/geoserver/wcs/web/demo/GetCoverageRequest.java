@@ -8,9 +8,9 @@ package org.geoserver.wcs.web.demo;
 import java.awt.geom.AffineTransform;
 import java.io.Serializable;
 import java.util.List;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A simple model backing the WCS GetCoverage builder GUI

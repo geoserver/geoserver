@@ -14,9 +14,9 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.AbstractDocument;
+import org.geotools.api.filter.Filter;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
 import org.springframework.http.HttpStatus;
 
 /**

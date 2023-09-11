@@ -8,12 +8,12 @@ import static org.geotools.data.elasticsearch.ElasticLayerConfiguration.KEY;
 
 import org.geoserver.catalog.FeatureTypeCallback;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geotools.data.DataAccess;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.elasticsearch.ElasticDataStore;
 import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 
 /**
  * Implementation of FeatureTypeInitializer extension point to initialize Elasticsearch datastore.

@@ -24,14 +24,14 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.data.SimpleFeatureStore;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.memory.MemoryFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.util.Range;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * Tests the WMS default value support for ELEVATION dimension for both vector and raster layers.
@@ -273,7 +273,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
 
         SimpleFeature f = DataUtilities.createFeature(type, content.toString());
         coll.add(f);
-        try (org.geotools.data.Transaction tx = fs.getTransaction()) {
+        try (org.geotools.api.data.Transaction tx = fs.getTransaction()) {
             fs.addFeatures(coll);
             tx.commit();
         }

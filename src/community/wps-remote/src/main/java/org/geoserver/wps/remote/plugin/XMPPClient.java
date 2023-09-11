@@ -51,6 +51,8 @@ import org.geoserver.wps.remote.RemoteProcessFactoryConfiguration;
 import org.geoserver.wps.remote.RemoteProcessFactoryConfigurationWatcher;
 import org.geoserver.wps.remote.RemoteProcessFactoryListener;
 import org.geoserver.wps.remote.RemoteRequestDescriptor;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 import org.jivesoftware.smack.Chat;
@@ -81,8 +83,6 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.opengis.feature.type.Name;
-import org.opengis.util.ProgressListener;
 
 /**
  * XMPP implementation of the {@link RemoteProcessClient}

@@ -11,8 +11,8 @@ package org.geoserver.gsr.model.geometry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.geoserver.gsr.translate.geometry.SpatialReferences;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.referencing.FactoryException;
 
 /** @author Juan Marin - OpenGeo */
 public class Envelope extends Geometry {

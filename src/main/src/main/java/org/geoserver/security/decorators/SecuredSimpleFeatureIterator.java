@@ -7,8 +7,8 @@ package org.geoserver.security.decorators;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Simple Feature iterators are read only by design, but just to make extra sure there are no write

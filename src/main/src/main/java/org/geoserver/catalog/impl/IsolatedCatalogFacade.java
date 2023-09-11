@@ -4,7 +4,8 @@
  */
 package org.geoserver.catalog.impl;
 
-import java.util.ArrayList;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -28,8 +29,8 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.LocalWorkspace;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 
 /**
  * Catalog facade implementation that only allows OWS services to isolated workspaces resources in
@@ -485,15 +486,13 @@ final class IsolatedCatalogFacade implements CatalogFacade {
 
     @Override
     public <T extends CatalogInfo> int count(Class<T> of, Filter filter) {
-        CloseableIterator<T> found = facade.list(of, filter, null, null);
-        try (CloseableIterator<T> filtered = filterIsolated(of, found)) {
-            int count = 0;
-            while (filtered.hasNext()) {
-                count++;
-                filtered.next();
+        if (isOwsRequest()) {
+            CloseableIterator<T> found = facade.list(of, filter, null, null);
+            try (CloseableIterator<T> filtered = filterIsolated(of, found)) {
+                return Iterators.size(filtered);
             }
-            return count;
         }
+        return facade.count(of, filter);
     }
 
     @Override
@@ -648,7 +647,7 @@ final class IsolatedCatalogFacade implements CatalogFacade {
                 || workspace == CatalogFacade.ANY_WORKSPACE
                 || workspace == null
                 || !workspace.isIsolated()
-                || Dispatcher.REQUEST.get() == null) {
+                || !isOwsRequest()) {
             // the workspace content is visible in this context
             return true;
         }
@@ -657,6 +656,10 @@ final class IsolatedCatalogFacade implements CatalogFacade {
         // of its virtual services
         return localWorkspace != null
                 && Objects.equals(localWorkspace.getName(), workspace.getName());
+    }
+
+    private boolean isOwsRequest() {
+        return Dispatcher.REQUEST.get() != null;
     }
 
     /**
@@ -670,15 +673,18 @@ final class IsolatedCatalogFacade implements CatalogFacade {
      */
     private <T extends CatalogInfo> List<T> filterIsolated(
             List<T> objects, Class<T> type, Function<T, T> filter) {
-        // unwrap the catalog objects list
-        List<T> unwrapped = ModificationProxy.unwrap(objects);
-        // filter the non visible catalog objects and wrap the resulting list with a modification
-        // proxy
-        return ModificationProxy.createList(
-                unwrapped.stream()
-                        .filter(store -> filter.apply(store) != null)
-                        .collect(Collectors.toList()),
-                type);
+        if (isOwsRequest()) {
+            // unwrap the catalog objects list
+            List<T> unwrapped = ModificationProxy.unwrap(objects);
+            // filter the non visible catalog objects and wrap the resulting list with a
+            // modification proxy
+            return ModificationProxy.createList(
+                    unwrapped.stream()
+                            .filter(store -> filter.apply(store) != null)
+                            .collect(Collectors.toList()),
+                    type);
+        }
+        return objects;
     }
 
     /**
@@ -691,17 +697,13 @@ final class IsolatedCatalogFacade implements CatalogFacade {
      */
     private <T extends CatalogInfo> CloseableIterator<T> filterIsolated(
             CloseableIterator<T> objects, Function<T, T> filter) {
-        List<T> iterable = new ArrayList<>();
-        // consume the iterator
-        while (objects.hasNext()) {
-            T object = objects.next();
-            if (filter.apply(object) != null) {
-                // this catalog object is visible in the current context
-                iterable.add(object);
-            }
+
+        if (isOwsRequest()) {
+            Predicate<T> predicate = t -> filter.apply(t) != null;
+            objects = CloseableIteratorAdapter.filter(objects, predicate);
         }
-        // create an iterator for the visible catalog objects
-        return new CloseableIteratorAdapter<>(iterable.iterator());
+
+        return objects;
     }
 
     /**

@@ -34,10 +34,10 @@ import org.geoserver.web.data.store.panel.ColorPickerPanel;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.parameter.DefaultParameterDescriptor;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
 
 /**
  * A configuration panel for CoverageInfo properties that related to WCS publication

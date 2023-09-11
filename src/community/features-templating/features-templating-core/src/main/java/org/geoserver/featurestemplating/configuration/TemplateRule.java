@@ -11,8 +11,8 @@ import java.util.UUID;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.geoserver.ows.Request;
 import org.geoserver.util.XCQL;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQLException;
-import org.opengis.filter.Filter;
 
 /**
  * A template rule associated to a FeatureTypeInfo. Its evaluation determines if a specific template

@@ -13,11 +13,11 @@ import static org.mockito.Mockito.when;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.GWCSynchEnv;
+import org.geotools.api.filter.expression.Function;
 import org.geotools.filter.FilterFactoryImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.expression.Function;
 
 public class IsCachedFunctionTest {
 

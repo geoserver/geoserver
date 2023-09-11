@@ -13,13 +13,13 @@ import org.geoserver.wps.ProcessGroupInfoImpl;
 import org.geoserver.wps.ProcessInfo;
 import org.geoserver.wps.ProcessInfoImpl;
 import org.geoserver.wps.WPSInfo;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
 import org.geotools.process.vector.VectorProcessFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.opengis.feature.type.Name;
 
 /**
  * Same as {@link ProcessFilterTest} but using the WPS configuration this time

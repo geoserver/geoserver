@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.function.CategorizeFunction;
 import org.geotools.filter.function.RecodeFunction;
 import org.geotools.renderer.style.StyleAttributeExtractor;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 
 /** Extracts all classification functions */
 class ClassificationFunctionsVisitor extends StyleAttributeExtractor {

@@ -10,11 +10,11 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geotools.api.metadata.citation.Citation;
 import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.factory.gridshift.GridShiftLocator;
 import org.geotools.util.URLs;
 import org.geotools.util.factory.AbstractFactory;
-import org.opengis.metadata.citation.Citation;
 
 /**
  * Provides a hook to locate grid shift files, such as NTv1, NTv2 and NADCON ones.

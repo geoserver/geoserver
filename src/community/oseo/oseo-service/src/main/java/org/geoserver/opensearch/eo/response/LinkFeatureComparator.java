@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.springframework.util.comparator.ComparableComparator;
 import org.springframework.util.comparator.NullSafeComparator;
 

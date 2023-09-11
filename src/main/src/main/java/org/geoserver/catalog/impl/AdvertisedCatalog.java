@@ -22,9 +22,9 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.decorators.DecoratingLayerGroupInfo;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.filter.expression.InternalVolatileFunction;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 
 /**
  * Filters out the non advertised layers and resources.
@@ -257,7 +257,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
             return filter;
         }
 
-        org.opengis.filter.expression.Function visible =
+        org.geotools.api.filter.expression.Function visible =
                 new InternalVolatileFunction() {
                     /**
                      * Returns {@code false} if the catalog info shall be hidden, {@code true}

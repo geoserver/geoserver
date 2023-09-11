@@ -21,11 +21,11 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AbstractCatalogFilter;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Function;
 import org.geotools.filter.expression.InternalVolatileFunction;
 import org.geotools.util.decorate.Wrapper;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Function;
 
 /**
  * Filters the resources that are not in the current workspace (used only if virtual services are

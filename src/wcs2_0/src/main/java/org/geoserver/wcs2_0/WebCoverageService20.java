@@ -11,8 +11,8 @@ import net.opengis.wcs20.GetCapabilitiesType;
 import net.opengis.wcs20.GetCoverageType;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.response.WCS20DescribeCoverageTransformer;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.xml.transform.TransformerBase;
-import org.opengis.coverage.grid.GridCoverage;
 
 /**
  * Web Coverage Services interface.

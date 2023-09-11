@@ -7,10 +7,10 @@ package org.geoserver.wps.executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.wps.ProcessDismissedException;
+import org.geotools.api.util.InternationalString;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.DelegateProgressListener;
 import org.geotools.util.logging.Logging;
-import org.opengis.util.InternationalString;
-import org.opengis.util.ProgressListener;
 
 /**
  * A listener wrapper that will forcefully fail a process once the max time expired

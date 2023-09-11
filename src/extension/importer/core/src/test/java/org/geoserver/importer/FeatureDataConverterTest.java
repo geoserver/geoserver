@@ -11,10 +11,10 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /** @author Ian Schneider <ischneider@opengeo.org> */
 public class FeatureDataConverterTest {

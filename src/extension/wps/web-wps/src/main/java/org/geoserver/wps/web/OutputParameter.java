@@ -12,9 +12,9 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.GeoServerProcessors;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
 
 /**
  * A single output parameter, along with the chosen output mime type and the output inclusion flag

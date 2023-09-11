@@ -23,14 +23,14 @@ import org.geoserver.gsr.model.geometry.SpatialReference;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKID;
 import org.geoserver.gsr.translate.geometry.SpatialReferences;
 import org.geoserver.wms.WMSInfo;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
 
 /** Detailed model of a MapService */
 public class MapServiceRoot extends AbstractGSRModel implements GSRModel {

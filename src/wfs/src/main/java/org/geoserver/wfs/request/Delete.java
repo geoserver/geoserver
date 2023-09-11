@@ -12,11 +12,11 @@ import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs.impl.DeleteElementTypeImpl;
 import net.opengis.wfs20.impl.DeleteTypeImpl;
 import org.eclipse.emf.ecore.EObject;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.Or;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.xsd.EMFUtils;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.Or;
 
 /**
  * Delete element in a Transaction request.
@@ -77,7 +77,7 @@ public abstract class Delete extends TransactionElement {
     }
 
     protected void eAddForDelete(EObject obj, String property, Filter newFilter) {
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory2();
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         Filter currentFilter = (Filter) EMFUtils.get(obj, property);
 
         List<Filter> filters = new ArrayList<>();

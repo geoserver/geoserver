@@ -18,7 +18,7 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;

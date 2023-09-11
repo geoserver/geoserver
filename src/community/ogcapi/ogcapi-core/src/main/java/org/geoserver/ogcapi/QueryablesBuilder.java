@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyType;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
@@ -20,8 +22,6 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyType;
 
 public class QueryablesBuilder {
 

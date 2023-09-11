@@ -12,20 +12,20 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 
 /**
- * Utility to support calculation of time ranges for {@link org.geotools.data.ResourceInfo} objects.
- * Current implementation supports only {@link org.geoserver.catalog.FeatureTypeInfo}.
+ * Utility to support calculation of time ranges for {@link org.geotools.api.data.ResourceInfo}
+ * objects. Current implementation supports only {@link org.geoserver.catalog.FeatureTypeInfo}.
  */
 public class TimeExtentCalculator {
 

@@ -136,6 +136,18 @@ is added::
 
    /wfs
 
+Monitoring threads
+------------------
+You can choose the number of post processor threads by configuring the ``postProcessorThreads``
+property in the ``monitor.properties`` file.  The default is 2.
+
+DNS cache configuration
+-----------------------
+The reverseDNS post processor caches its result.  You can modify the cache configuration
+by configuring the ``dnsCacheConfiguration`` property in the ``monitor.properties`` file.
+The default policy is ``expireAfterWrite=15m,maximumSize=1000`` .  Consult the `guava cache builder documentation <https://guava.dev/releases/32.0.0-jre/api/docs/com/google/common/cache/CacheBuilderSpec.html>`_
+for all possibilities.
+
 How to determine the filter path
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

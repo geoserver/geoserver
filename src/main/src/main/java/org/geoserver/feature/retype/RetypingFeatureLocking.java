@@ -6,11 +6,11 @@
 package org.geoserver.feature.retype;
 
 import java.io.IOException;
-import org.geotools.data.FeatureLock;
-import org.geotools.data.FeatureLocking;
-import org.geotools.data.Query;
-import org.geotools.data.simple.SimpleFeatureLocking;
-import org.opengis.filter.Filter;
+import org.geotools.api.data.FeatureLock;
+import org.geotools.api.data.FeatureLocking;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureLocking;
+import org.geotools.api.filter.Filter;
 
 /**
  * Renaming wrapper for a {@link FeatureLocking} instance, to be used along with {@link

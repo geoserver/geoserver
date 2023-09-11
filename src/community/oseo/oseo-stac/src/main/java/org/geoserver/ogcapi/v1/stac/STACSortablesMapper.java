@@ -35,14 +35,14 @@ import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.filter.visitor.ExpressionTypeVisitor;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
 import org.springframework.http.HttpStatus;
 
 /**

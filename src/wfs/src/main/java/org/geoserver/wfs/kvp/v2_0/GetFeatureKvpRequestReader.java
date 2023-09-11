@@ -9,7 +9,7 @@ import java.util.Map;
 import net.opengis.wfs20.Wfs20Factory;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSException;
-import org.opengis.filter.FilterFactory;
+import org.geotools.api.filter.FilterFactory;
 
 public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeatureKvpRequestReader {
 

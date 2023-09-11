@@ -10,13 +10,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.factory.CommonFactoryFinder;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * Describes the access limits on a vector layer
@@ -25,7 +25,7 @@ import org.opengis.filter.expression.PropertyName;
  */
 public class VectorAccessLimits extends DataAccessLimits {
     private static final long serialVersionUID = 1646981660625898503L;
-    private static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2(null);
+    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory(null);
 
     /** The list of attributes the user is allowed to read (will be band names for raster data) */
     transient List<PropertyName> readAttributes;

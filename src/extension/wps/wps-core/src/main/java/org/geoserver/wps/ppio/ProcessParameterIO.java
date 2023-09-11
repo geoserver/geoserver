@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Envelope;
 import org.springframework.context.ApplicationContext;
@@ -84,6 +84,7 @@ public abstract class ProcessParameterIO {
         defaults.add(new GMLPPIO.GML3.Geometry());
         defaults.add(new GMLPPIO.GML2.Geometry());
         defaults.add(new WKTPPIO());
+        defaults.add(new EWKTPPIO());
         defaults.add(new GMLPPIO.GML3.GeometryAlternate());
         defaults.add(new GMLPPIO.GML2.GeometryAlternate());
 
@@ -103,7 +104,7 @@ public abstract class ProcessParameterIO {
 
         // envelopes
         defaults.add(new BoundingBoxPPIO(ReferencedEnvelope.class));
-        defaults.add(new BoundingBoxPPIO(org.opengis.geometry.Envelope.class));
+        defaults.add(new BoundingBoxPPIO(org.geotools.api.geometry.Bounds.class));
         defaults.add(new BoundingBoxPPIO(Envelope.class));
 
         // filters

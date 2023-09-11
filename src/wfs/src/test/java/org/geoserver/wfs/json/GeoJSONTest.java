@@ -35,12 +35,12 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /** @author carlo cancellieri - GeoSolutions */

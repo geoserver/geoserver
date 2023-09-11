@@ -28,6 +28,8 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.map.JpegOrPngChooser;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -41,8 +43,6 @@ import org.geotools.image.util.ColorUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
 
 public class GeopkgRasterPPIO extends GeopkgPPIO {
 

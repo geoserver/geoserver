@@ -6,9 +6,9 @@
 package org.geoserver.importer.transform;
 
 import org.geoserver.importer.ImportTask;
-import org.geotools.data.DataStore;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 
 /** Convenience base class to make creating inline vector transforms easier */
 public abstract class AbstractInlineVectorTransform extends AbstractTransform

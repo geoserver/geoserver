@@ -27,7 +27,7 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.AbstractCatalogController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
-import org.opengis.feature.type.PropertyDescriptor;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.CacheControl;

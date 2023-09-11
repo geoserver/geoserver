@@ -25,7 +25,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.dimension.RasterTimeDimensionDefaultValueTest;
 import org.geoserver.wms.dimension.VectorElevationDimensionDefaultValueTest;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
 import org.junit.Before;
 
 public abstract class TestsSupport extends WMSTestSupport {

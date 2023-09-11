@@ -11,9 +11,9 @@ import org.apache.wicket.Localizer;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geotools.api.util.InternationalString;
 import org.geotools.text.Text;
 import org.geotools.util.Version;
-import org.opengis.util.InternationalString;
 
 /** Describe REST services, which requires admin access to be listed in the user interface. */
 public class RESTServiceDescriptionProvider extends org.geoserver.web.ServiceDescriptionProvider {

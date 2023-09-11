@@ -7,6 +7,8 @@ package org.geoserver.gwc.dispatch;
 
 import java.util.Objects;
 import org.geoserver.gwc.GWC;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.ServiceException;
 import org.geotools.referencing.CRS;
@@ -15,8 +17,6 @@ import org.geowebcache.filter.security.SecurityFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.layer.TileLayer;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
 
 /**
  * Filter which applies GeoServer security to GWC requests

@@ -9,12 +9,12 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.dimension.AbstractFeatureAttributeVisitorSelectionStrategy;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.feature.visitor.NearestVisitor;
 import org.geotools.util.Converters;
-import org.opengis.filter.FilterFactory2;
 
 /**
  * Default implementation for selecting the default values for dimensions of feature (vector)
@@ -27,7 +27,7 @@ public class FeatureNearestValueSelectionStrategyImpl
 
     private Object toMatch;
     private String fixedCapabilitiesValue;
-    private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    private FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
     /** Default constructor. */
     public FeatureNearestValueSelectionStrategyImpl(Object toMatch) {

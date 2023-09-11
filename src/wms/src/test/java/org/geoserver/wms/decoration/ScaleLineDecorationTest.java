@@ -12,8 +12,8 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+import org.geotools.api.filter.expression.Expression;
 import org.junit.Test;
-import org.opengis.filter.expression.Expression;
 
 public class ScaleLineDecorationTest extends DecorationTestSupport {
 

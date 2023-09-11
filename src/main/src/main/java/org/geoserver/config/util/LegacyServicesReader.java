@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.catalog.util.ReaderUtils;
 import org.geoserver.ows.util.XmlCharsetDetector;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Element;
 
 /**

@@ -8,9 +8,9 @@ import java.util.Collection;
 import java.util.Collections;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDTypeDefinition;
+import org.geotools.api.feature.type.Schema;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.complex.FeatureTypeRegistryConfiguration;
-import org.opengis.feature.type.Schema;
 
 /**
  * Simple helper for FeatureTypeRegistry, creates feature type for particular name

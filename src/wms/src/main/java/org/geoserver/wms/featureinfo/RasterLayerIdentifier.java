@@ -33,6 +33,28 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.clip.CroppedGridCoverage2DReader;
 import org.geoserver.wms.map.RasterSymbolizerVisitor;
+import org.geotools.api.coverage.CannotEvaluateException;
+import org.geotools.api.coverage.PointOutsideCoverageException;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.spatial.BBOX;
+import org.geotools.api.geometry.Position;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.ReferenceIdentifier;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Style;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -43,7 +65,6 @@ import org.geotools.coverage.grid.io.CoverageReadingTransformation.ReaderAndPara
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.data.util.NullProgressListener;
@@ -51,8 +72,8 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.TransformedDirectPosition;
+import org.geotools.geometry.Position2D;
+import org.geotools.geometry.TransformedPosition;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.util.XRectangle2D;
 import org.geotools.image.ImageWorker;
@@ -61,32 +82,11 @@ import org.geotools.ows.ServiceException;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RenderingTransformationHelper;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Style;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.coverage.CannotEvaluateException;
-import org.opengis.coverage.PointOutsideCoverageException;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.geometry.DirectPosition;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.ReferenceIdentifier;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeographicCRS;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * Layer identifier specifialized for raster layers
@@ -122,7 +122,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                         (GridCoverage2DReader)
                                 cinfo.getGridCoverageReader(
                                         new NullProgressListener(), GeoTools.getDefaultHints()));
-        DirectPosition position = getQueryPosition(requestParams, cinfo, reader);
+        Position position = getQueryPosition(requestParams, cinfo, reader);
 
         // check that the provided point is inside the bbox for this coverage
         if (!reader.getOriginalEnvelope().contains(position)) {
@@ -136,10 +136,11 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         List<FeatureCollection> result = new ArrayList<>();
         boolean plainRenderingIdentified = false;
         for (FeatureTypeStyle fts : requestParams.getStyle().featureTypeStyles()) {
-            if (fts.getTransformation() == null && plainRenderingIdentified) {
+            Expression tx = isTransformFeatureInfo(fts) ? fts.getTransformation() : null;
+            if (tx == null && plainRenderingIdentified) {
                 continue;
             }
-            plainRenderingIdentified |= fts.getTransformation() == null;
+            plainRenderingIdentified |= tx == null;
             Object info = read(requestParams, reader, parameters, fts);
             if (info instanceof GridCoverage2D) {
                 GridCoverage2D coverage = (GridCoverage2D) info;
@@ -158,6 +159,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         return result;
     }
 
+    private boolean isTransformFeatureInfo(FeatureTypeStyle fts) {
+        // check the vendor option first, then the WMS settings
+        String option = fts.getOptions().get(RasterSymbolizerVisitor.TRANSFORM_FEATURE_INFO);
+        return option != null ? Boolean.parseBoolean(option) : this.wms.isTransformFeatureInfo();
+    }
+
     @SuppressWarnings("unchecked")
     private FeatureCollection filterCollection(
             FeatureCollection fc, FeatureInfoRequestParameters params) {
@@ -168,7 +175,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                         : params.getBuffer();
         ReferencedEnvelope bbox = LayerIdentifier.getEnvelopeFilter(params, requestBuffer);
 
-        FilterFactory2 ff = params.getFilterFactory();
+        FilterFactory ff = params.getFilterFactory();
         BBOX filter = ff.bbox(ff.property(""), bbox);
 
         return new FilteringFeatureCollection(fc, filter);
@@ -177,7 +184,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     private List<FeatureCollection> toFeatures(
             CoverageInfo cinfo,
             GridCoverage2D coverage,
-            DirectPosition position,
+            Position position,
             FeatureInfoRequestParameters requestParams) {
         FeatureCollection pixel = null;
         try {
@@ -223,7 +230,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             SortBy[] sort,
             CoverageInfo cinfo,
             GridCoverage2DReader reader,
-            DirectPosition position)
+            Position position)
             throws IOException, TransformException, ServiceException {
         // read from the request
         GetMapRequest getMap = requestParams.getGetMapRequest();
@@ -242,7 +249,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         // corner
         final MathTransform worldToGrid =
                 reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER).inverse();
-        final DirectPosition rasterMid = worldToGrid.transform(position, null);
+        final Position rasterMid = worldToGrid.transform(position, null);
         // create a 20X20 rectangle aruond the mid point and then intersect with the
         // original range
         final Rectangle2D.Double rasterArea = new Rectangle2D.Double();
@@ -320,7 +327,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     private boolean hasVectorTransformations(FeatureInfoRequestParameters params) {
         Style style = params.getStyle();
         RasterSymbolizerVisitor visitor =
-                new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
+                new RasterSymbolizerVisitor(
+                        params.getScaleDenominator(), null, this.wms.isTransformFeatureInfo());
         style.accept(visitor);
 
         // we could skip the reading altogether
@@ -328,7 +336,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         return readingTx != null || getTransformation(visitor) != null;
     }
 
-    private DirectPosition getQueryPosition(
+    private Position getQueryPosition(
             FeatureInfoRequestParameters params, CoverageInfo cinfo, GridCoverage2DReader reader) {
         CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
 
@@ -351,7 +359,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         double x = middle.x;
         double y = middle.y;
         // coverage median position in the coverage (target) CRS
-        DirectPosition targetCoverageMedianPosition = reader.getOriginalEnvelope().getMedian();
+        Position targetCoverageMedianPosition = reader.getOriginalEnvelope().getMedian();
 
         // support continuous map wrapping by adding integer multiples of 360 degrees to longitude
         // to move the requested position closer to the centre of the coverage
@@ -359,8 +367,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             // for consistency, the transformation is exactly the same as below when preparing
             // the request, but in the inverse direction (coverage (target) CRS to requested CRS)
             // coverage median position transformed into the requested CRS
-            TransformedDirectPosition coverageMedianPosition =
-                    new TransformedDirectPosition(
+            TransformedPosition coverageMedianPosition =
+                    new TransformedPosition(
                             targetCRS,
                             requestedCRS,
                             new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
@@ -379,14 +387,14 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             }
         }
 
-        DirectPosition position = new DirectPosition2D(requestedCRS, x, y);
+        Position position = new Position2D(requestedCRS, x, y);
 
         // change from request crs to coverage crs in order to compute a minimal request
         // area,
         // TODO this code need to be made much more robust
         if (requestedCRS != null) {
-            final TransformedDirectPosition arbitraryToInternal =
-                    new TransformedDirectPosition(
+            final TransformedPosition arbitraryToInternal =
+                    new TransformedPosition(
                             requestedCRS,
                             targetCRS,
                             new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
@@ -411,7 +419,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 // x and first ordinate are longitude
                 x += 360 * Math.round((targetCoverageMedianPosition.getOrdinate(0) - x) / 360);
             }
-            position = new DirectPosition2D(targetCRS, x, y);
+            position = new Position2D(targetCRS, x, y);
         }
         return position;
     }
@@ -423,7 +431,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             FeatureTypeStyle fts)
             throws IOException, SchemaException, TransformException, FactoryException {
         RasterSymbolizerVisitor visitor =
-                new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
+                new RasterSymbolizerVisitor(
+                        params.getScaleDenominator(), null, this.wms.isTransformFeatureInfo());
         fts.accept(visitor);
 
         // we could skip the reading altogether
@@ -455,7 +464,11 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                     null,
                     coverage.getCoordinateReferenceSystem2D(),
                     null);
-        } else if (!visitor.getRasterSymbolizers().isEmpty()) return coverage;
+        } else if (!visitor.getRasterSymbolizers().isEmpty() || !isTransformFeatureInfo(fts)) {
+            // return the coverage if there are active raster symbolizers or if transforming
+            // the feature info data is disabled
+            return coverage;
+        }
 
         // no transformation and no active raster symbolizers either
         return null;

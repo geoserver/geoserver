@@ -12,8 +12,8 @@ import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
-import org.opengis.util.InternationalString;
 
 /**
  * Configuration object for Web Map Service.
@@ -228,6 +228,12 @@ public interface WMSInfo extends ServiceInfo {
 
     /** Sets the international title of the root layer */
     void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract);
+
+    /** @return whether to apply rendering transformations for WMS GetFeatureInfo requests */
+    boolean isTransformFeatureInfoDisabled();
+
+    /** Sets whether to apply rendering transformations for WMS GetFeatureInfo requests */
+    void setTransformFeatureInfoDisabled(boolean transformFeatureInfoDisabled);
 
     /** @return whether to enable auto-escaping HTML FreeMarker template values */
     boolean isAutoEscapeTemplateValues();

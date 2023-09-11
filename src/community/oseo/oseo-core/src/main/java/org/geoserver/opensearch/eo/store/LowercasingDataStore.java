@@ -6,7 +6,7 @@ package org.geoserver.opensearch.eo.store;
 
 import java.io.IOException;
 import org.geoserver.feature.retype.RetypingDataStore;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
 
 /**
  * Handles idiosyncrasies in database table naming, for the moment only lowercase vs uppercase,

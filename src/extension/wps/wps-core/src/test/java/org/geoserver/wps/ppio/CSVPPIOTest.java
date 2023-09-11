@@ -29,13 +29,13 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.filter.Filter;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.filter.text.cql2.CQL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 /** @author ian */
 public class CSVPPIOTest extends WPSTestSupport {

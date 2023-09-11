@@ -17,11 +17,11 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverage;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class StoreCoverageTest extends WPSTestSupport {

@@ -16,6 +16,7 @@ import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.Version;
 import org.geotools.util.factory.Hints;
@@ -27,7 +28,6 @@ import org.junit.BeforeClass;
 import org.junit.ComparisonFailure;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
-import org.opengis.feature.type.Name;
 
 /**
  * Base test support class for GeoServer test cases.

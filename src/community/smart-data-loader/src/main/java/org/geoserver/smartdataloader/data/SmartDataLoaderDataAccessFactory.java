@@ -42,10 +42,12 @@ import org.geoserver.smartdataloader.metadata.DataStoreMetadataFactory;
 import org.geoserver.smartdataloader.metadata.jdbc.JdbcDataStoreMetadataConfig;
 import org.geoserver.smartdataloader.visitors.appschema.AppSchemaVisitor;
 import org.geoserver.smartdataloader.visitors.gml.GmlSchemaVisitor;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataAccessFactory;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.DataAccessFactory;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Parameter;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.FeatureTypeMapping;
 import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
@@ -56,8 +58,6 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 
 /** Smart AppSchema DataStore factory. */

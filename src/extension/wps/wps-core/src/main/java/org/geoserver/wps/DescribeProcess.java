@@ -46,10 +46,10 @@ import org.geoserver.wps.ppio.RawDataPPIO;
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.validator.MaxSizeValidator;
-import org.geotools.data.DataAccessFactory.Param;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.DataAccessFactory.Param;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 
 /**

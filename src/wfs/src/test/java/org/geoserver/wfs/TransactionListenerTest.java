@@ -13,9 +13,9 @@ import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.UpdateElementType;
 import org.geoserver.data.test.CiteTestData;
+import org.geotools.api.feature.Feature;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.Feature;
 import org.w3c.dom.Document;
 
 /**

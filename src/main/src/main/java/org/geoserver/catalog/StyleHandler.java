@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 import javax.activation.MimetypesFileTypeMap;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.api.style.ResourceLocator;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.ResourceLocator;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 import org.xml.sax.EntityResolver;
 

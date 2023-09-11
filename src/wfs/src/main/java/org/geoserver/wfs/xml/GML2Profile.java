@@ -7,12 +7,12 @@ package org.geoserver.wfs.xml;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.feature.type.Schema;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.ProfileImpl;
 import org.geotools.gml2.GML;
 import org.geotools.gml2.GMLSchema;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.Schema;
 
 public class GML2Profile extends TypeMappingProfile {
     static Set<Schema> profiles = new HashSet<>();

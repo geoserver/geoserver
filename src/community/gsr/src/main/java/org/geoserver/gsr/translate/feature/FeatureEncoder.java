@@ -23,13 +23,13 @@ import org.geoserver.gsr.model.feature.*;
 import org.geoserver.gsr.model.geometry.*;
 import org.geoserver.gsr.translate.geometry.AbstractGeometryEncoder;
 import org.geoserver.gsr.translate.geometry.GeometryEncoder;
+import org.geotools.api.feature.GeometryAttribute;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.FeatureTypes;
-import org.opengis.feature.GeometryAttribute;
-import org.opengis.feature.Property;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
 
 public class FeatureEncoder {
 
@@ -41,14 +41,14 @@ public class FeatureEncoder {
     }
 
     /**
-     * Get an {@link AttributeList} from a {@link org.opengis.feature.Feature}
+     * Get an {@link AttributeList} from a {@link org.geotools.api.feature.Feature}
      *
      * @param feature
      * @param objectIdFieldName
      * @return the list of feature attributes
      */
     public static Map<String, Object> attributeList(
-            org.opengis.feature.Feature feature, String objectIdFieldName) {
+            org.geotools.api.feature.Feature feature, String objectIdFieldName) {
         GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
         Map<String, Object> attributes = new HashMap<>();
         for (Property prop : feature.getProperties()) {
@@ -97,7 +97,7 @@ public class FeatureEncoder {
     }
 
     public static Feature feature(
-            org.opengis.feature.Feature feature,
+            org.geotools.api.feature.Feature feature,
             boolean returnGeometry,
             SpatialReference spatialReference) {
         return feature(
@@ -105,7 +105,7 @@ public class FeatureEncoder {
     }
 
     public static Feature feature(
-            org.opengis.feature.Feature feature,
+            org.geotools.api.feature.Feature feature,
             boolean returnGeometry,
             SpatialReference spatialReference,
             String objectIdFieldName) {
@@ -118,7 +118,7 @@ public class FeatureEncoder {
     }
 
     public static Feature feature(
-            org.opengis.feature.Feature feature,
+            org.geotools.api.feature.Feature feature,
             boolean returnGeometry,
             SpatialReference spatialReference,
             String objectIdFieldName,
@@ -173,7 +173,7 @@ public class FeatureEncoder {
                 field.isNillable());
     }
 
-    public static <T extends FeatureType, F extends org.opengis.feature.Feature>
+    public static <T extends FeatureType, F extends org.geotools.api.feature.Feature>
             FeatureIdSet objectIds(FeatureCollection<T, F> features) {
 
         // TODO: Advertise "real" identifier property
@@ -242,7 +242,7 @@ public class FeatureEncoder {
      */
     public static String calculateFeatureIdPrefix(FeatureTypeInfo targetFeature)
             throws IOException {
-        org.opengis.feature.Feature sampleFeature = null;
+        org.geotools.api.feature.Feature sampleFeature = null;
         String featureIdPrefix = "";
         try (FeatureIterator i =
                 targetFeature.getFeatureSource(null, null).getFeatures().features()) {

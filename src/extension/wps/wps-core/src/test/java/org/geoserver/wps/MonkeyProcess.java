@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
@@ -17,7 +18,6 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.SimpleInternationalString;
-import org.opengis.util.ProgressListener;
 
 @DescribeProcess(title = "Monkey", description = "Process used to test asynch calls")
 public class MonkeyProcess {

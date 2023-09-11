@@ -4,9 +4,9 @@
  */
 package org.geoserver.schemalessfeatures.data;
 
-import org.geotools.data.FeatureReader;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.api.data.FeatureReader;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 
 public abstract class ComplexFeatureReader implements FeatureReader<FeatureType, Feature> {
 

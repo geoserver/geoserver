@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.data.DataAccessFactory;
+import org.geotools.api.data.DataAccessFactory;
 import org.geotools.data.h2.H2DataStoreFactory;
 import org.junit.Test;
 import org.vfny.geoserver.util.DataStoreUtils;

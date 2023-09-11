@@ -21,8 +21,10 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.visitor.MaxVisitor;
@@ -30,8 +32,6 @@ import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.PropertyDescriptor;
 
 /** Panel for listing sample attributes of a FeatureTypeInfo resource. */
 public class DataPanel extends Panel {

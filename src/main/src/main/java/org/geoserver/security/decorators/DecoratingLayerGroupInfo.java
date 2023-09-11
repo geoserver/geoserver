@@ -22,9 +22,9 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geotools.api.util.InternationalString;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.decorate.AbstractDecorator;
-import org.opengis.util.InternationalString;
 
 /**
  * Delegates every method to the wrapped {@link LayerGroupInfo}. Subclasses will override selected

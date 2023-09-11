@@ -20,7 +20,10 @@ public class RenderingVariables {
     static final Logger LOGGER = Logging.getLogger(RenderingVariables.class);
     /** The WMS GetMap BBOX, as a {@link org.geotools.geometry.jts.ReferencedEnvelope} */
     public static final String WMS_BBOX = "wms_bbox";
-    /** The GetMap SRS, as a {@link org.opengis.referencing.crs.CoordinateReferenceSystem} object */
+    /**
+     * The GetMap SRS, as a {@link org.geotools.api.referencing.crs.CoordinateReferenceSystem}
+     * object
+     */
     private static final String WMS_SRS = "wms_srs";
     /** The GetMap width, as an {@link Integer} */
     private static final String WMS_WIDTH = "wms_width";

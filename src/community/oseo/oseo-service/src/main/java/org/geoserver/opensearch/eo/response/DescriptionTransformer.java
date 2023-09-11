@@ -19,7 +19,7 @@ import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
 

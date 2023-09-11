@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 import net.minidev.json.JSONArray;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.expression.Literal;
 import org.geotools.filter.IsGreaterThanImpl;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -31,8 +33,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.expression.Literal;
 
 public class SearchTest extends STACTestSupport {
 

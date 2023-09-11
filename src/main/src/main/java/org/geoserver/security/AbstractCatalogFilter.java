@@ -17,9 +17,9 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.filter.expression.InternalVolatileFunction;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 
 /**
  * A convenient base class for catalog filters. By default does not filter anything, it is advised
@@ -70,7 +70,7 @@ public abstract class AbstractCatalogFilter implements CatalogFilter {
      */
     @Override
     public Filter getSecurityFilter(final Class<? extends CatalogInfo> clazz) {
-        org.opengis.filter.expression.Function visible;
+        org.geotools.api.filter.expression.Function visible;
         if (ResourceInfo.class.isAssignableFrom(clazz)) {
             visible =
                     new InternalVolatileFunction() {

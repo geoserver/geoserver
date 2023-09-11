@@ -6,13 +6,13 @@ package org.geoserver.schemalessfeatures.data;
 
 import java.io.IOException;
 import java.util.List;
-import org.geotools.data.DataAccess;
-import org.geotools.data.ServiceInfo;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.ServiceInfo;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.FilterCapabilities;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 
 public abstract class ComplexContentDataAccess implements DataAccess<FeatureType, Feature> {
 

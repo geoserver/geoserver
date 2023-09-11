@@ -17,10 +17,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.request.Query;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.xsd.EMFUtils;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 
 public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 

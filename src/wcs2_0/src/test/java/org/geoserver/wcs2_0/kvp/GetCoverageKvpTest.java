@@ -35,16 +35,16 @@ import org.eclipse.emf.common.util.EList;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.WCS20Const;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.referencing.CRS;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -86,17 +86,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
                                 + "&coverageId=BlueMarble&Format=image/tiff");
 
         assertEquals("image/tiff", response.getContentType());
-    }
-
-    @Test
-    public void testGetCoverageNativeFormat() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=sf__rain");
-
-        // we got back an ArcGrid response
-        assertEquals("text/plain", response.getContentType());
     }
 
     @Test
@@ -367,12 +356,12 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             coverage = reader.read(null);
             assertNotNull(coverage);
 
-            GeneralEnvelope expected =
-                    new GeneralEnvelope(new double[] {-180.01, -90}, new double[] {180.01, 90});
+            GeneralBounds expected =
+                    new GeneralBounds(new double[] {-180.01, -90}, new double[] {180.01, 90});
             expected.setCoordinateReferenceSystem(EPSG_4326);
 
             final double scale = getScale(coverage);
-            assertEnvelopeEquals(expected, scale, (GeneralEnvelope) coverage.getEnvelope(), scale);
+            assertEnvelopeEquals(expected, scale, (GeneralBounds) coverage.getEnvelope(), scale);
 
         } finally {
             clean(reader, coverage);
@@ -410,12 +399,12 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             coverage = reader.read(null);
             assertNotNull(coverage);
 
-            GeneralEnvelope expected =
-                    new GeneralEnvelope(new double[] {40, -50}, new double[] {240, 50});
+            GeneralBounds expected =
+                    new GeneralBounds(new double[] {40, -50}, new double[] {240, 50});
             expected.setCoordinateReferenceSystem(EPSG_4326);
 
             final double scale = getScale(coverage);
-            assertEnvelopeEquals(expected, scale, (GeneralEnvelope) coverage.getEnvelope(), scale);
+            assertEnvelopeEquals(expected, scale, (GeneralBounds) coverage.getEnvelope(), scale);
             RenderedImage image = coverage.getRenderedImage();
             ImageAssert.assertEquals(
                     new File("src/test/resources/org/geoserver/wcs2_0/dateline-world.png"),
@@ -467,11 +456,11 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             assertEquals(256, scale, 0d);
 
             // expect the fitted bounding box
-            GeneralEnvelope expected =
-                    new GeneralEnvelope(
+            GeneralBounds expected =
+                    new GeneralBounds(
                             new double[] {440562, 3720758}, new double[] {471794, 3750966});
             expected.setCoordinateReferenceSystem(crs);
-            assertEnvelopeEquals(expected, scale, (GeneralEnvelope) coverage.getEnvelope(), scale);
+            assertEnvelopeEquals(expected, scale, (GeneralBounds) coverage.getEnvelope(), scale);
 
             // fitting adds a pixel left and right, removes one top and bottom
             assertEquals(122, reader.getOriginalGridRange().getSpan(0));
@@ -513,11 +502,11 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             coverage = reader.read(null);
             assertNotNull(coverage);
 
-            GeneralEnvelope expected =
-                    new GeneralEnvelope(
+            GeneralBounds expected =
+                    new GeneralBounds(
                             new double[] {5000000, 1402800}, new double[] {5000100, 1402900});
             expected.setCoordinateReferenceSystem(crs);
-            assertEnvelopeEquals(expected, 1, (GeneralEnvelope) coverage.getEnvelope(), 1);
+            assertEnvelopeEquals(expected, 1, (GeneralBounds) coverage.getEnvelope(), 1);
 
             // check scale more or less preserved
             double scale = getScale(coverage);
@@ -560,8 +549,8 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             assertEquals(0.005, scale, 1e-4);
 
             // expect the fitted bounding box
-            GeneralEnvelope expected =
-                    new GeneralEnvelope(new double[] {179.5, -84.272}, new double[] {180, -82.217});
+            GeneralBounds expected =
+                    new GeneralBounds(new double[] {179.5, -84.272}, new double[] {180, -82.217});
             expected.setCoordinateReferenceSystem(crs);
             assertTrue(
                     "Equality failed, actual envelope was " + coverage.getEnvelope2D(),
@@ -599,8 +588,8 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             coverage = reader.read(null);
             assertNotNull(coverage);
 
-            GeneralEnvelope expected =
-                    new GeneralEnvelope(
+            GeneralBounds expected =
+                    new GeneralBounds(
                             new double[] {-14570240, 6199732}, new double[] {-13790593, 7197101});
             expected.setCoordinateReferenceSystem(crs);
             assertTrue(expected.equals(coverage.getEnvelope(), 1, false));

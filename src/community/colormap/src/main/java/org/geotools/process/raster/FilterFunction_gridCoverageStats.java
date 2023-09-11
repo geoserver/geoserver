@@ -9,12 +9,12 @@ import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 import it.geosolutions.imageio.pam.PAMDataset;
 import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand;
 import it.geosolutions.imageio.pam.PAMParser;
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.util.Utilities;
-import org.opengis.filter.capability.FunctionName;
 
 /**
  * Filter function to retrieve a grid coverage Stat value from the underlying GridCoverage2D

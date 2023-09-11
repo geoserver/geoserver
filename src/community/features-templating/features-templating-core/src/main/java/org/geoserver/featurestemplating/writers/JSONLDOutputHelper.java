@@ -29,10 +29,10 @@ import org.geoserver.featurestemplating.utils.FeatureTypeInfoUtils;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
 
 /** This class provides methods to handle a JSON-LD output writing outside of WFS Response class. */
 public class JSONLDOutputHelper {

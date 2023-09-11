@@ -47,7 +47,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.StyleWriterConverter;
-import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.util.Version;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

@@ -12,10 +12,10 @@ import static org.hamcrest.Matchers.instanceOf;
 
 import java.io.File;
 import java.io.PrintWriter;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.PointSymbolizer;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.styling.SLD;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

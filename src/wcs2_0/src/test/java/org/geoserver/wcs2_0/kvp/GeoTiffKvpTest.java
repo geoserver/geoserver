@@ -32,7 +32,7 @@ import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
@@ -698,7 +698,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
                     CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()),
                     AxisOrder.NORTH_EAST);
 
-            final GeneralEnvelope transformedEnvelope =
+            final GeneralBounds transformedEnvelope =
                     CRS.transform(
                             (AffineTransform2D) CoverageUtilities.AXES_SWAP,
                             targetCoverage.getEnvelope());

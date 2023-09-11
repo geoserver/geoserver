@@ -35,6 +35,11 @@ import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader;
 import org.geoserver.wcs2_0.response.MIMETypeMapper;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
+import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridEnvelope;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -42,11 +47,6 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
@@ -223,7 +223,7 @@ public class GetCoverageTest extends WCSTestSupport {
                     MathTransform getMathTransform(
                             CoverageInfo ci,
                             GridCoverage2DReader reader,
-                            Envelope subset,
+                            Bounds subset,
                             GridCoverageRequest request,
                             PixelInCell pixelInCell,
                             ScalingType scaling)

@@ -32,10 +32,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.data.ows.URLCheckers;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
-import org.opengis.util.ProgressListener;
 
 /**
  * Handles an internal reference to a remote location

@@ -7,7 +7,7 @@ package org.geoserver.config.impl;
 
 import org.geoserver.config.ContactInfo;
 import org.geoserver.util.InternationalStringUtils;
-import org.opengis.util.InternationalString;
+import org.geotools.api.util.InternationalString;
 
 public class ContactInfoImpl implements ContactInfo {
 

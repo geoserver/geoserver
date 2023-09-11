@@ -15,11 +15,11 @@ package org.geoserver.wps.process;
 import java.awt.RenderingHints.Key;
 import java.util.Map;
 import java.util.Set;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.InternationalString;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
-import org.opengis.util.InternationalString;
 
 /**
  * A simple process factory delegating to another factory. Meant to be a base class for process

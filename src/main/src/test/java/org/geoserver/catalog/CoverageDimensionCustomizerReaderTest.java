@@ -22,18 +22,18 @@ import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapp
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.WrappedSampleDimension;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.coverage.ColorInterpretation;
+import org.geotools.api.coverage.SampleDimension;
+import org.geotools.api.coverage.SampleDimensionType;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.metadata.i18n.Vocabulary;
 import org.geotools.metadata.i18n.VocabularyKeys;
 import org.geotools.util.NumberRange;
 import org.junit.Test;
-import org.opengis.coverage.ColorInterpretation;
-import org.opengis.coverage.SampleDimension;
-import org.opengis.coverage.SampleDimensionType;
 import tech.units.indriya.unit.BaseUnit;
 
 public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSupport {
@@ -315,9 +315,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         GridCoverage2D original =
                 gcFactory.create(
-                        "original",
-                        image,
-                        new GeneralEnvelope(new Rectangle2D.Double(0, 0, 64, 64)));
+                        "original", image, new GeneralBounds(new Rectangle2D.Double(0, 0, 64, 64)));
         GridSampleDimension[] gsd = {new GridSampleDimension("wrappedSampleDimension")};
         GridCoverageWrapper wrapper = new GridCoverageWrapper("wrapped", original, gsd, null);
         assertNotSame(original.getSampleDimensions(), wrapper.getSampleDimensions());

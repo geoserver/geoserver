@@ -44,12 +44,12 @@ import org.geoserver.ows.kvp.ElevationKvpParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.DateTimeParser;
 import org.geotools.util.Range;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.feature.type.PropertyDescriptor;
 
 /**
  * Edits a {@link DimensionInfo} object for the specified resource

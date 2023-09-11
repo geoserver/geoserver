@@ -14,13 +14,13 @@ import static org.junit.Assert.fail;
 import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
-import org.geotools.data.DataAccess;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.NameImpl;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 
 public class ReadOnlyDataAccessTest<T extends FeatureType, F extends Feature>
         extends SecureObjectsTest {

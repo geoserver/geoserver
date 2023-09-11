@@ -24,8 +24,8 @@ import org.geoserver.wms.map.AbstractMapResponse;
 import org.geoserver.wms.map.PNGMapResponse;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
+import org.geotools.api.style.Style;
 import org.geotools.map.Layer;
-import org.geotools.styling.Style;
 
 /**
  * A map response that handles KML documents and writes them out either as KML or as KMZ

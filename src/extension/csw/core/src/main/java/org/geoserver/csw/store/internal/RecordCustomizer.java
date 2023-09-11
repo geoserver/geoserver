@@ -12,13 +12,13 @@ import java.util.List;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.csw.DownloadLinkHandler;
 import org.geoserver.csw.records.CSWRecordDescriptor;
-import org.geotools.data.CloseableIterator;
+import org.geotools.api.data.CloseableIterator;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.ComplexType;
 import org.geotools.feature.AttributeImpl;
 import org.geotools.feature.ComplexAttributeImpl;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.ComplexType;
 
 /** {@link FeatureCustomizer} subclass to deal with CSW DublinCore records */
 public class RecordCustomizer extends FeatureCustomizer {

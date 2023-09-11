@@ -6,10 +6,10 @@ package org.geoserver.wfs;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 
 /** {@link GetFeatureCallback} context object. */
 public final class GetFeatureContext {

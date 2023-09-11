@@ -16,7 +16,6 @@ Images:
 Georeferenced formats:
 
     * GeoTiff - (format=geotiff)
-    * ArcGrid - (format=ArcGrid)
-    * GZipped ArcGrid - (format=ArcGrid-GZIP)
+    * GML Coverage - (format=application/gml+xml)
 
-Beware, in the case of ArcGrid, the GetCoverage request must make sure the x and y resolution are equal, otherwise an exception will be thrown (ArcGrid is designed to have square cells).
+The GML Coverage format is described by the `OGC Coverage Implementation Schema <https://portal.ogc.org/files/?artifact_id=48553>`_, its components are also used to describe coverage metadata in WCS 2.0 ``DescribeCoverage`` responses. 

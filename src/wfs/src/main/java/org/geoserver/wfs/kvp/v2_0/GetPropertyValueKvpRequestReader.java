@@ -12,7 +12,7 @@ import net.opengis.wfs20.Wfs20Factory;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.wfs.WFSException;
-import org.opengis.filter.FilterFactory;
+import org.geotools.api.filter.FilterFactory;
 
 public class GetPropertyValueKvpRequestReader extends EMFKvpRequestReader {
 

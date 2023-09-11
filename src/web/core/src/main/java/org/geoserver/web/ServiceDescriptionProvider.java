@@ -17,7 +17,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.security.DisabledServiceResourceFilter;
 import org.geoserver.util.InternationalStringUtils;
-import org.opengis.util.InternationalString;
+import org.geotools.api.util.InternationalString;
 
 /**
  * Contributes service description and link information for global, workspace and layer services.

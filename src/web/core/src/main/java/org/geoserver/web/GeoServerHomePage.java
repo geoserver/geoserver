@@ -61,8 +61,8 @@ import org.geoserver.web.data.store.NewDataPage;
 import org.geoserver.web.data.store.StorePage;
 import org.geoserver.web.data.workspace.WorkspaceNewPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
+import org.geotools.api.util.InternationalString;
 import org.geotools.feature.NameImpl;
-import org.opengis.util.InternationalString;
 
 /**
  * Home page, shows introduction for each kind of service along with any service links.

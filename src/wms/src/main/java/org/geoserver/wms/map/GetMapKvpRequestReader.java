@@ -72,31 +72,31 @@ import org.geoserver.wms.WMSErrorCode;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.capabilities.CapabilityUtil;
 import org.geoserver.wms.clip.ClipWMSGetMapCallBack;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.Id;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.filter.identity.FeatureId;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.NamedStyle;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayer;
+import org.geotools.api.style.StyledLayerDescriptor;
+import org.geotools.api.style.UserLayer;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.DataStore;
 import org.geotools.data.ows.URLCheckerException;
 import org.geotools.data.ows.URLCheckers;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.style.StyleAttributeExtractor;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.NamedStyle;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.UserLayer;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.Id;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.identity.FeatureId;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.lang.Nullable;
 import org.vfny.geoserver.util.Requests;
@@ -463,7 +463,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // check the view params
         List<Map<String, String>> viewParams = getMap.getViewParams();
         if (viewParams != null && !viewParams.isEmpty()) {
-            applyViewParams(getMap, viewParams);
+            applyViewParams(getMap, viewParams, requestedLayerInfos);
         }
 
         // check if layers have time/elevation support
@@ -554,17 +554,38 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
     }
 
-    private void applyViewParams(GetMapRequest getMap, List<Map<String, String>> viewParams) {
+    private void applyViewParams(
+            GetMapRequest getMap,
+            List<Map<String, String>> viewParams,
+            List<Object> requestedLayerInfos) {
         int layerCount = getMap.getLayers().size();
+        if (viewParams.size() == layerCount) return;
 
-        // if we have just one replicate over all layers
+        List<Map<String, String>> replacement = new ArrayList<>();
         if (viewParams.size() == 1 && layerCount > 1) {
-            List<Map<String, String>> replacement = new ArrayList<>();
+            // if we have just one replicate over all layers
             for (int i = 0; i < layerCount; i++) {
                 replacement.add(viewParams.get(0));
             }
-            getMap.setViewParams(replacement);
-        } else if (viewParams.size() != layerCount) {
+        } else {
+            // expand based on group/layer/other
+            for (int i = 0; i < requestedLayerInfos.size(); i++) {
+                Object o = requestedLayerInfos.get(i);
+                Map<String, String> layerParams = viewParams.get(i);
+                if (o instanceof LayerGroupInfo) {
+                    LayerGroupInfo groupInfo = (LayerGroupInfo) o;
+                    List<LayerInfo> layers = groupInfo.layers();
+                    if (layers != null) layers.stream().forEach(l -> replacement.add(layerParams));
+                } else {
+                    replacement.add(layerParams);
+                }
+            }
+        }
+        getMap.setViewParams(replacement);
+
+        // final check, did we re-align? otherwiser report based on original list,
+        // that is, what the user actually provided
+        if (replacement.size() != layerCount) {
             String msg =
                     layerCount
                             + " layers requested, but found "
@@ -572,6 +593,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                             + " view params specified. ";
             throw new ServiceException(msg, getClass().getName());
         }
+
+        // update view params
+
     }
 
     @SuppressWarnings("PMD.ForLoopCanBeForeach")

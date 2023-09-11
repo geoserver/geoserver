@@ -32,18 +32,18 @@ import org.geoserver.gsr.model.label.PointLabelPlacementEnum;
 import org.geoserver.gsr.model.symbol.HorizontalAlignmentEnum;
 import org.geoserver.gsr.model.symbol.TextSymbol;
 import org.geoserver.gsr.model.symbol.VerticalAlignmentEnum;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Literal;
+import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.style.Displacement;
+import org.geotools.api.style.Font;
+import org.geotools.api.style.Halo;
+import org.geotools.api.style.PointPlacement;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.TextSymbolizer;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.Displacement;
-import org.geotools.styling.Font;
-import org.geotools.styling.Halo;
-import org.geotools.styling.PointPlacement;
-import org.geotools.styling.Rule;
-import org.geotools.styling.TextSymbolizer;
-import org.opengis.filter.Filter;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 
 public class LabelInfoVisitor extends AbstractStyleVisitor {
 

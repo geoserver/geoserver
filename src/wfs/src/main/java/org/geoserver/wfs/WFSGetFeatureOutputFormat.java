@@ -27,9 +27,9 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs.response.WFSResponse;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.Version;
-import org.opengis.feature.type.FeatureType;
 
 /**
  * Base class for a response to a WFS GetFeature operation.

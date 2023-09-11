@@ -30,6 +30,8 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected boolean getFeatureOutputTypeCheckingEnabled = false;
     protected Set<String> getFeatureOutputTypes = new HashSet<>();
 
+    protected String csvDateFormat;
+
     public WFSInfoImpl() {}
 
     @Override
@@ -44,6 +46,16 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
 
     public void setGML(Map<Version, GMLInfo> gml) {
         this.gml = gml;
+    }
+
+    @Override
+    public String getCsvDateFormat() {
+        return csvDateFormat;
+    }
+
+    @Override
+    public void setCsvDateFormat(String csvDateFormat) {
+        this.csvDateFormat = csvDateFormat;
     }
 
     @Override
@@ -207,6 +219,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         result =
                 prime * result
                         + ((getFeatureOutputTypes == null) ? 0 : getFeatureOutputTypes.hashCode());
+        result = prime * result + ((csvDateFormat == null) ? 0 : csvDateFormat.hashCode());
         return result;
     }
 
@@ -241,6 +254,11 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         if (getFeatureOutputTypes == null && other.getGetFeatureOutputTypes() != null
                 || getFeatureOutputTypes != null && other.getGetFeatureOutputTypes() == null
                 || !Objects.equals(getFeatureOutputTypes, other.getGetFeatureOutputTypes())) {
+            return false;
+        }
+        if (csvDateFormat == null && other.getCsvDateFormat() != null
+                || csvDateFormat != null && other.getCsvDateFormat() == null
+                || !Objects.equals(csvDateFormat, other.getCsvDateFormat())) {
             return false;
         }
         return true;

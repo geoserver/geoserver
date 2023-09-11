@@ -85,15 +85,15 @@ import org.geoserver.security.SecuredResourceNameChangeListener;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.MultiValuedFilter.MatchAction;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.MultiValuedFilter.MatchAction;
-import org.opengis.filter.sort.SortBy;
 
 public class CatalogImplTest extends GeoServerSystemTestSupport {
 
@@ -1666,12 +1666,12 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertEquals(1, tl.modified.size());
         assertEquals(l2, tl.modified.get(0).getSource());
         assertTrue(tl.modified.get(0).getPropertyNames().contains("path"));
-        assertTrue(tl.modified.get(0).getOldValues().contains(null));
+        assertTrue(tl.modified.get(0).getOldValues().contains((String) null));
         assertTrue(tl.modified.get(0).getNewValues().contains("newPath"));
         assertEquals(1, tl.postModified.size());
         assertEquals(l2, tl.postModified.get(0).getSource());
         assertTrue(tl.postModified.get(0).getPropertyNames().contains("path"));
-        assertTrue(tl.postModified.get(0).getOldValues().contains(null));
+        assertTrue(tl.postModified.get(0).getOldValues().contains((String) null));
         assertTrue(tl.postModified.get(0).getNewValues().contains("newPath"));
 
         assertTrue(tl.removed.isEmpty());

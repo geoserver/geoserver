@@ -19,8 +19,8 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
+import org.geotools.api.data.DataAccessFactory;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.data.DataAccessFactory;
 
 /**
  * Entry point to look up for StoreInfo related extension points

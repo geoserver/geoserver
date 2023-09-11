@@ -20,9 +20,9 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.gsr.api.GeoServicesJacksonJsonConverter;
 import org.geoserver.gsr.model.geometry.Geometry;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKID;
+import org.geotools.api.referencing.FactoryException;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.referencing.FactoryException;
 
 public class QuantizedGeometryEncoderTest {
 

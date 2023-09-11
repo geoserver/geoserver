@@ -19,8 +19,8 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.ProcessInfo;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
 
 /** Provides entries for the process filtering table in the {@link WPSAccessRulePage} */
 @SuppressWarnings("serial")

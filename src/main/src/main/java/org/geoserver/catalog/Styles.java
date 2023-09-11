@@ -14,13 +14,14 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.NamedStyle;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.style.StyledLayerDescriptor;
+import org.geotools.api.style.UserLayer;
+import org.geotools.brewer.styling.builder.StyledLayerDescriptorBuilder;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.NamedStyle;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.UserLayer;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
@@ -98,15 +99,9 @@ public class Styles {
      * @return The StyledLayerDescriptor.
      */
     public static StyledLayerDescriptor sld(Style style) {
-        StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
-
-        NamedLayer layer = styleFactory.createNamedLayer();
-        layer.setName(style.getName());
-        sld.addStyledLayer(layer);
-
-        layer.addStyle(style);
-
-        return sld;
+        StyledLayerDescriptorBuilder sldBuilder = new StyledLayerDescriptorBuilder();
+        sldBuilder.namedLayer().name(style.getName()).style().reset(style);
+        return sldBuilder.build();
     }
 
     /**

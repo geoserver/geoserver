@@ -10,8 +10,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.ProjectedCRS;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.ProjectedCRS;
 
 /**
  * Subclass of {@link OpenLayersMapOutputFormat} allowing to explictly request a OpenLayers 2 client

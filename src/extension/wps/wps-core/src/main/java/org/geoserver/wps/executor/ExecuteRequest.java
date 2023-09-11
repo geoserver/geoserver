@@ -27,10 +27,10 @@ import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.validator.ProcessLimitsFilter;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.ows.URLCheckerException;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
 import org.springframework.validation.Validator;
 
 /**

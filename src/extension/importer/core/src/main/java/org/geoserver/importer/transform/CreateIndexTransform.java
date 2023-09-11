@@ -12,8 +12,8 @@ import java.util.logging.Level;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
-import org.geotools.data.DataAccess;
-import org.geotools.data.Transaction;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.Transaction;
 import org.geotools.jdbc.JDBCDataStore;
 
 /** @author Ian Schneider <ischneider@opengeo.org> */

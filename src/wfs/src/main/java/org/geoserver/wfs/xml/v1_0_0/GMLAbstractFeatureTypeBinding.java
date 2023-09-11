@@ -7,6 +7,9 @@ package org.geoserver.wfs.xml.v1_0_0;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.xsd.BindingWalkerFactory;
 import org.geotools.xsd.Configuration;
@@ -18,9 +21,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
 
 public final class GMLAbstractFeatureTypeBinding
         extends org.geotools.gml2.bindings.GMLAbstractFeatureTypeBinding {

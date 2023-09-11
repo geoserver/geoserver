@@ -17,8 +17,8 @@
 package org.geotools.dggs.gstore;
 
 import java.io.IOException;
-import org.geotools.data.DataStore;
-import org.opengis.feature.type.AttributeDescriptor;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.feature.type.AttributeDescriptor;
 
 /**
  * Interface for stores implementing DGGS access. Each feature type returned by a DGGSStore must

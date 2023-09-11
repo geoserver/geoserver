@@ -4,7 +4,7 @@ import static org.geoserver.wms.featureinfo.ColorMapLabelMatcherTest.readSLD;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.junit.Test;
 
 public class ColorMapLabelMatcherExtractorTest {

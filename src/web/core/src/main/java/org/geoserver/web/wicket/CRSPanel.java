@@ -26,10 +26,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.ResourcePool;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A form component for a {@link CoordinateReferenceSystem} object.

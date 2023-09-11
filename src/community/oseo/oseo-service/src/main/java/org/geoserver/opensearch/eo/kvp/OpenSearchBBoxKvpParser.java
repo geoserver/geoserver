@@ -6,12 +6,12 @@ package org.geoserver.opensearch.eo.kvp;
 
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wfs.kvp.BBoxKvpParser;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.NoSuchAuthorityCodeException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A parser that allows dateline crossing envelopes

@@ -11,12 +11,12 @@ import static org.junit.Assert.fail;
 
 import java.util.Date;
 import org.geoserver.importer.transform.AttributeComputeTransform;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.Converters;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
 
 public class AttributeComputeTransformTest extends TransformTestSupport {
 

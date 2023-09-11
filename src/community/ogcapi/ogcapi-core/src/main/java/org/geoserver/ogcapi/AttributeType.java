@@ -75,8 +75,7 @@ public enum AttributeType {
             }
         } else if (Boolean.class.isAssignableFrom(binding)) {
             return AttributeType.BOOL;
-        } else if (Geometry.class.isAssignableFrom(binding)
-                || org.opengis.geometry.Geometry.class.isAssignableFrom(binding)) {
+        } else if (Geometry.class.isAssignableFrom(binding)) {
             return AttributeType.GEOMETRY;
         } else {
             // fallback

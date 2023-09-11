@@ -23,10 +23,10 @@ import org.geoserver.gsr.translate.feature.FeatureEncoder;
 import org.geoserver.gsr.translate.geometry.SpatialReferences;
 import org.geoserver.gsr.translate.map.LayerDAO;
 import org.geoserver.ogcapi.HTMLResponseBody;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.FactoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -76,8 +76,8 @@ public class FeatureController extends AbstractGSRController {
 
         FeatureSource<?, ?> source = featureType.getFeatureSource(null, null);
         FeatureCollection<?, ?> featureColl = source.getFeatures(idFilter);
-        org.opengis.feature.Feature[] featureArr =
-                featureColl.toArray(new org.opengis.feature.Feature[0]);
+        org.geotools.api.feature.Feature[] featureArr =
+                featureColl.toArray(new org.geotools.api.feature.Feature[0]);
         if (featureArr.length == 0) {
             throw new NoSuchElementException(
                     "No feature in layer or table " + layerId + " with id " + featureId);

@@ -22,9 +22,9 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
+import org.geotools.api.filter.identity.FeatureId;
 import org.geotools.util.Version;
 import org.geotools.xsd.Encoder;
-import org.opengis.filter.identity.FeatureId;
 
 public class LockFeatureTypeResponse extends WFSResponse {
 

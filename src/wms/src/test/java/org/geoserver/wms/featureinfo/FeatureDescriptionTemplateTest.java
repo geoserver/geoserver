@@ -13,13 +13,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.TemplateUtils;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class FeatureDescriptionTemplateTest {
 

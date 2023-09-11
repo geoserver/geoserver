@@ -8,10 +8,10 @@ package org.geoserver.wfs.xml.v1_1_0;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.LockType;
 import net.opengis.wfs.WfsFactory;
+import org.geotools.api.filter.Filter;
 import org.geotools.xsd.AbstractComplexBinding;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
-import org.opengis.filter.Filter;
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:LockType.

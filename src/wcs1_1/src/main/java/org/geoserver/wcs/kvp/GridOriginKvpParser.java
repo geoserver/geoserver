@@ -8,12 +8,12 @@ package org.geoserver.wcs.kvp;
 import java.util.List;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
-import org.opengis.geometry.DirectPosition;
+import org.geotools.api.geometry.Position;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
 /**
- * Parses the grid origin into a double[] TODO: consider use a {@link DirectPosition} instead?
+ * Parses the grid origin into a double[] TODO: consider use a {@link Position} instead?
  *
  * @author Andrea Aime
  */

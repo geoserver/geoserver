@@ -6,8 +6,8 @@
 package org.geoserver.wps.process;
 
 import java.util.Set;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
 
 public abstract class ProcessSelector implements ProcessFilter {
 

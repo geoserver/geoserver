@@ -6,7 +6,7 @@
 package org.geoserver.data;
 
 import java.util.List;
-import org.geotools.data.DataAccessFactory;
+import org.geotools.api.data.DataAccessFactory;
 
 /**
  * Provider of data access factories.

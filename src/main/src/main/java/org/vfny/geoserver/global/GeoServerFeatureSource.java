@@ -17,20 +17,33 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geotools.data.DataSourceException;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataSourceException;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.FeatureListener;
+import org.geotools.api.data.FeatureLocking;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.FeatureStore;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.QueryCapabilities;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.OperationNotFoundException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureListener;
-import org.geotools.data.FeatureLocking;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
-import org.geotools.data.Query;
-import org.geotools.data.QueryCapabilities;
-import org.geotools.data.ResourceInfo;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.crs.ReprojectFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.SchemaException;
@@ -43,19 +56,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.factory.Hints.ConfigurationMetadataKey;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.OperationNotFoundException;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * GeoServer wrapper for backend Geotools2 DataStore.
@@ -78,7 +78,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     protected SimpleFeatureSource source;
 
     /** The single filter factory for this source (grabbing it has a high sync penalty */
-    static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
+    static FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     /**
      * GeoTools2 Schema information
@@ -320,7 +320,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * <p>Description ...
      *
-     * @see org.geotools.data.FeatureSource#getDataStore()
+     * @see org.geotools.api.data.FeatureSource#getDataStore()
      */
     @Override
     public DataStore getDataStore() {
@@ -332,7 +332,8 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * <p>Description ...
      *
-     * @see org.geotools.data.FeatureSource#addFeatureListener(org.geotools.data.FeatureListener)
+     * @see
+     *     org.geotools.api.data.FeatureSource#addFeatureListener(org.geotools.api.data.FeatureListener)
      */
     @Override
     public void addFeatureListener(FeatureListener listener) {
@@ -344,7 +345,8 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * <p>Description ...
      *
-     * @see org.geotools.data.FeatureSource#removeFeatureListener(org.geotools.data.FeatureListener)
+     * @see
+     *     org.geotools.api.data.FeatureSource#removeFeatureListener(org.geotools.api.data.FeatureListener)
      */
     @Override
     public void removeFeatureListener(FeatureListener listener) {
@@ -356,7 +358,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * <p>Description ...
      *
-     * @see org.geotools.data.FeatureSource#getFeatures(org.geotools.data.Query)
+     * @see org.geotools.api.data.FeatureSource#getFeatures(org.geotools.api.data.Query)
      */
     @Override
     public SimpleFeatureCollection getFeatures(Query query) throws IOException {
@@ -601,7 +603,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * <p>Description ...
      *
-     * @see org.geotools.data.FeatureSource#getSchema()
+     * @see org.geotools.api.data.FeatureSource#getSchema()
      */
     @Override
     public SimpleFeatureType getSchema() {

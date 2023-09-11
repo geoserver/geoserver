@@ -16,11 +16,11 @@ import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.EntityResolverProvider;
+import org.geotools.api.style.Description;
+import org.geotools.api.style.NamedLayer;
+import org.geotools.api.style.StyledLayerDescriptor;
+import org.geotools.api.style.UserLayer;
 import org.geotools.styling.DefaultResourceLocator;
-import org.geotools.styling.Description;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.UserLayer;
 
 /** Helper class to work with style and their contents */
 class StyleWorker {

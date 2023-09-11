@@ -5,9 +5,9 @@
 package org.geoserver.featurestemplating.expressions;
 
 import java.util.List;
+import org.geotools.api.filter.expression.Expression;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opengis.filter.expression.Expression;
 
 public class StreamFunctionTest extends ListFunctionsTestSupport {
 

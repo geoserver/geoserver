@@ -19,12 +19,12 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.vector.DeferredFileOutputStreamWebMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.precision.CoordinatePrecisionReducerFilter;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import si.uom.SI;
 
 public class GeoJsonWMSBuilder implements VectorTileBuilder {

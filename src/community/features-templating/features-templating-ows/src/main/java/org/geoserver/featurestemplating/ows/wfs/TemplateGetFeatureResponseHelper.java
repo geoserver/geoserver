@@ -30,9 +30,9 @@ import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
 
 /**
  * Helper class for Template responses which mainly allows to obtain a writer according to the

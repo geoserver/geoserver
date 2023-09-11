@@ -21,9 +21,9 @@ import org.geoserver.wps.ProcessInfo;
 import org.geoserver.wps.ProcessInfoImpl;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.validator.WPSInputValidator;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.util.InternationalString;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
-import org.opengis.util.InternationalString;
 
 /**
  * Provides entries for the process filtering table in the {@link ProcessSelectionPage}

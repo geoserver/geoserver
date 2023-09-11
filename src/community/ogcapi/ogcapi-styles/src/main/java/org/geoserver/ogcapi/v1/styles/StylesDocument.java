@@ -12,7 +12,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.platform.ServiceException;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 /** Contains the list of styles for the "/styles" endpoint */
 @JsonPropertyOrder({"styles", "links"})

@@ -33,8 +33,8 @@ import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs.request.Replace;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.Name;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.Name;
 
 public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
 

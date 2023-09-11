@@ -15,10 +15,10 @@ import java.util.Iterator;
 import junit.framework.AssertionFailedError;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.style.Style;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.map.FeatureLayer;
-import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.junit.Test;
 

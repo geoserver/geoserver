@@ -16,9 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
-import org.geotools.styling.Style;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.style.Style;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class IconServiceTest extends IconTestSupport {
 

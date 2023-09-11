@@ -27,6 +27,8 @@ import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.WCS20DescribeCoverageExtension;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -35,8 +37,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
 import org.geotools.wcs.v2_0.WCS;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.ResponseUtils;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
@@ -242,7 +242,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 }
                 String axesLabel = builder.substring(0, builder.length() - 1);
                 // fit the native envelope to the native grid geometry
-                Envelope envelope = WCSUtils.fitEnvelope(ci, reader);
+                Bounds envelope = WCSUtils.fitEnvelope(ci, reader);
                 handleBoundedBy(envelope, axisSwap, srsName, axesLabel, dimensionsHelper);
 
                 // coverage id

@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.geoserver.crs.CapabilitiesCRSProvider;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Provides a filtered, sorted view over the available EPSG coordinate reference systems.

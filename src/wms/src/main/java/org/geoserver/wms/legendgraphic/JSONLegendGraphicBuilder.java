@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,52 +29,46 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.icons.IconProperties;
 import org.geoserver.wms.icons.IconPropertyExtractor;
 import org.geoserver.wms.icons.MiniRule;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.metadata.citation.OnLineResource;
+import org.geotools.api.style.AnchorPoint;
+import org.geotools.api.style.ChannelSelection;
+import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
+import org.geotools.api.style.ContrastEnhancement;
+import org.geotools.api.style.ContrastMethod;
+import org.geotools.api.style.Description;
+import org.geotools.api.style.Displacement;
+import org.geotools.api.style.ExternalGraphic;
+import org.geotools.api.style.ExternalMark;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Fill;
+import org.geotools.api.style.Font;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.GraphicalSymbol;
+import org.geotools.api.style.Halo;
+import org.geotools.api.style.LabelPlacement;
+import org.geotools.api.style.LinePlacement;
+import org.geotools.api.style.LineSymbolizer;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.PointPlacement;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.PolygonSymbolizer;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.SelectedChannelType;
+import org.geotools.api.style.Stroke;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.Symbolizer;
+import org.geotools.api.style.TextSymbolizer;
+import org.geotools.api.util.InternationalString;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.filter.text.ecql.ECQL;
-import org.geotools.styling.AnchorPoint;
-import org.geotools.styling.ChannelSelection;
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.ContrastEnhancement;
-import org.geotools.styling.Description;
-import org.geotools.styling.Displacement;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.ExternalMark;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Fill;
-import org.geotools.styling.Font;
-import org.geotools.styling.Graphic;
-import org.geotools.styling.Halo;
-import org.geotools.styling.LabelPlacement;
-import org.geotools.styling.LinePlacement;
-import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.LineSymbolizerImpl;
-import org.geotools.styling.Mark;
-import org.geotools.styling.PointPlacement;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.PointSymbolizerImpl;
-import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.PolygonSymbolizerImpl;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.RasterSymbolizerImpl;
-import org.geotools.styling.Rule;
-import org.geotools.styling.SelectedChannelType;
-import org.geotools.styling.Stroke;
-import org.geotools.styling.Style;
-import org.geotools.styling.Symbolizer;
-import org.geotools.styling.TextSymbolizer;
-import org.geotools.styling.TextSymbolizer2;
-import org.geotools.styling.TextSymbolizerImpl;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.expression.Expression;
-import org.opengis.metadata.citation.OnLineResource;
-import org.opengis.style.ContrastMethod;
-import org.opengis.style.GraphicalSymbol;
-import org.opengis.util.InternationalString;
 
 /** @author Ian Turton */
 public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
@@ -233,19 +226,13 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
     public static final String GRAPHIC = "graphic";
 
-    static Map<Class<?>, String> symbolizerNames = new HashMap<>();
-
-    static {
-        symbolizerNames.put(PolygonSymbolizer.class, POLYGON);
-        symbolizerNames.put(LineSymbolizer.class, LINE);
-        symbolizerNames.put(PointSymbolizer.class, POINT);
-        symbolizerNames.put(RasterSymbolizer.class, RASTER);
-        symbolizerNames.put(TextSymbolizer.class, TEXT);
-        symbolizerNames.put(PolygonSymbolizerImpl.class, POLYGON);
-        symbolizerNames.put(LineSymbolizerImpl.class, LINE);
-        symbolizerNames.put(PointSymbolizerImpl.class, POINT);
-        symbolizerNames.put(RasterSymbolizerImpl.class, RASTER);
-        symbolizerNames.put(TextSymbolizerImpl.class, TEXT);
+    static String getSymbolizerName(Symbolizer symbolizer) {
+        if (symbolizer instanceof PolygonSymbolizer) return POLYGON;
+        if (symbolizer instanceof LineSymbolizer) return LINE;
+        if (symbolizer instanceof PointSymbolizer) return POINT;
+        if (symbolizer instanceof RasterSymbolizer) return RASTER;
+        if (symbolizer instanceof TextSymbolizer) return TEXT;
+        throw new IllegalArgumentException("Unrecognized symbolizer type: " + symbolizer);
     }
 
     private Feature feature;
@@ -357,10 +344,10 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 for (Symbolizer symbolizer : symbolizers) {
                     JSONObject jSymb = new JSONObject();
                     JSONObject symb = processSymbolizer(symbolizer);
-                    jSymb.element(symbolizerNames.get(symbolizer.getClass()), symb);
+                    jSymb.element(getSymbolizerName(symbolizer), symb);
                     jSymbolizers.add(jSymb);
                 }
-                org.opengis.style.GraphicLegend l = rule.getLegend();
+                org.geotools.api.style.GraphicLegend l = rule.getLegend();
                 if (l != null) {
                     for (GraphicalSymbol g : l.graphicalSymbols()) {
                         String href =
@@ -852,9 +839,9 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         }
         ret.element(FONTS, fonts);
         ret = processFill(ret, symbolizer.getFill());
-        if (symbolizer instanceof TextSymbolizer2) {
+        if (symbolizer instanceof TextSymbolizer) {
             // handle font graphic
-            TextSymbolizer2 tSymb = (TextSymbolizer2) symbolizer;
+            TextSymbolizer tSymb = (TextSymbolizer) symbolizer;
             JSONObject graphic = new JSONObject();
             graphic = processGraphic(graphic, tSymb.getGraphic());
             ret.element(GRAPHIC, graphic);

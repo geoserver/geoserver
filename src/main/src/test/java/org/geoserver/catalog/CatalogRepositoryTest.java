@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.data.DataStore;
+import org.geotools.api.data.DataStore;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.URLs;
 import org.junit.Test;

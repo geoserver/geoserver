@@ -5,10 +5,10 @@
 package org.geoserver.featurestemplating.validation;
 
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * Visitor to perform a validation of a template based on evaluation of xpath against the {@link

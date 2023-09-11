@@ -20,15 +20,18 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.util.ProgressListener;
+import org.geotools.brewer.styling.builder.StyleBuilder;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.StyleImpl;
-import org.geotools.styling.NamedStyleImpl;
-import org.geotools.styling.Style;
-import org.opengis.util.ProgressListener;
 
 @SuppressWarnings("serial")
 public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
+    public static final StyleFactory STYLE_FACTORY = CommonFactoryFinder.getStyleFactory();
     // will style info with empty name
     // intended for legacy functionaloty
     // of using default remote style
@@ -207,8 +210,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public Optional<Style> findRemoteStyleByName(final String name) {
 
         // temp wrapper for the remote style name
-        final Style style = new NamedStyleImpl();
-        style.setName(name);
+        final Style style = new StyleBuilder().name(name).buildStyle();
         try {
             return getWMSLayer(null).getStyles().stream()
                     .filter(s -> s.getName().equalsIgnoreCase(name))
@@ -243,10 +245,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     }
 
     public static Style getStyleInfo(StyleInfo styleInfo) {
-
-        NamedStyleImpl gtStyle = new NamedStyleImpl();
-        gtStyle.setName(styleInfo.getName());
-        return gtStyle;
+        return new StyleBuilder().name(styleInfo.getName()).buildStyle();
     }
 
     @Override

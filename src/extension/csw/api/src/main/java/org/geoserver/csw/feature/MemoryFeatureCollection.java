@@ -13,11 +13,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import org.geoserver.csw.feature.sort.ComplexComparatorFactory;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 
 /**
  * A fully in memory feature collection

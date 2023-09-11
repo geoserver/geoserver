@@ -7,8 +7,8 @@ package org.geoserver.importer.jdbc;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.geoserver.importer.ImportContext;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.opengis.feature.simple.SimpleFeature;
 
 class MappingIterator implements Iterator<ImportContext>, AutoCloseable {
 

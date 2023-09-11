@@ -28,18 +28,18 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
 
 public class STACQueryablesBuilderTest {
 
@@ -147,7 +147,7 @@ public class STACQueryablesBuilderTest {
         TemplateReaderConfiguration config =
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         Filter collectionSampleFilter = ff.equals(ff.property("name"), ff.literal("GS_TEST"));
         Feature sampleCollectionFeature =
                 DataUtilities.first(data.getCollectionSource().getFeatures(collectionSampleFilter));
@@ -187,7 +187,7 @@ public class STACQueryablesBuilderTest {
         TemplateReaderConfiguration config =
                 new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
         Template template = new Template(templateDefinition, config);
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         Filter collectionSampleFilter = ff.equals(ff.property("name"), ff.literal("SENTINEL2"));
         Feature sampleCollectionFeature =
                 DataUtilities.first(data.getCollectionSource().getFeatures(collectionSampleFilter));
@@ -228,7 +228,7 @@ public class STACQueryablesBuilderTest {
         Resource templateDefinition = resourceStore.get("items-SAS1.json");
         FeatureSource<FeatureType, Feature> products = data.getProductSource();
         FeatureSource<FeatureType, Feature> collections = data.getCollectionSource();
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         Filter sampleFilter =
                 ff.equals(ff.property("identifier"), ff.literal("SAS1_20180226102021.01"));
         Feature sampleFeature = DataUtilities.first(products.getFeatures(sampleFilter));

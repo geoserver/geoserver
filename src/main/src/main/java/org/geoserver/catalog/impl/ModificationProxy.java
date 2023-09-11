@@ -29,8 +29,8 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.filter.FilterFactory;
 
 /**
  * Proxies an object storing any modifications to it.

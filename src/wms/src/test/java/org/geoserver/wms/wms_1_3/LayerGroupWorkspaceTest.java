@@ -20,10 +20,10 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.referencing.crs.GeographicCRS;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.referencing.crs.GeographicCRS;
 import org.w3c.dom.Document;
 
 public class LayerGroupWorkspaceTest extends WMSTestSupport {

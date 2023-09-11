@@ -6,8 +6,8 @@
 package org.geoserver.wfs;
 
 import java.io.IOException;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
 
 /**
  * A class executing a feature count, but also able to return a pre-computed one. Used as an

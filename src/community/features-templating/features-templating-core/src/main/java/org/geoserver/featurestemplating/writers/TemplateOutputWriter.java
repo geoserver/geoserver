@@ -9,12 +9,12 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 import org.geoserver.featurestemplating.builders.EncodingHints;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Base class for all the writers it provides some common fields as well as few common functionality

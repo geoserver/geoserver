@@ -7,10 +7,10 @@ package org.geoserver.wps.process;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.geotools.data.Parameter;
+import org.geotools.api.data.Parameter;
+import org.geotools.api.feature.type.Name;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 
 public abstract class AbstractRawData implements RawData {
 

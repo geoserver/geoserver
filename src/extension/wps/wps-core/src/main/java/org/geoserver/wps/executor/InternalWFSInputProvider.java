@@ -13,7 +13,7 @@ import org.geoserver.wfs.kvp.GetFeatureKvpRequestReader;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
 
 /**

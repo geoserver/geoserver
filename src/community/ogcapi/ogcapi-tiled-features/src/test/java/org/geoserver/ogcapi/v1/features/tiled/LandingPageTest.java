@@ -37,6 +37,7 @@ public class LandingPageTest extends TiledFeaturesTestSupport {
                         "getConformanceDeclaration",
                         "getFeature",
                         "getFeatures",
+                        "searchFeatures",
                         "getLandingPage",
                         "getQueryables",
                         "getFunctions",

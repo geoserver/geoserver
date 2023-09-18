@@ -124,7 +124,7 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         }
 
         FilterPredicate filterPredicate = new FilterPredicate(filter);
-        Predicate predicate = filterPredicate.predicate;
+        Predicate<String, ExecutionStatus> predicate = filterPredicate.predicate;
         Filter postFilter = filterPredicate.postFilter;
 
         Map<String, Object> results =
@@ -140,7 +140,7 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         int startIndex = query.getStartIndex() == null ? 0 : query.getStartIndex();
         boolean needsSorting = query.getSortBy() != null && query.getSortBy().length > 0;
         FilterPredicate filterPredicate = new FilterPredicate(query.getFilter());
-        Predicate predicate = filterPredicate.predicate;
+        Predicate<String, ExecutionStatus> predicate = filterPredicate.predicate;
         Filter postFilter = filterPredicate.postFilter;
 
         // Two cases here: if we have post-filtering we are going to run an entry processor,

@@ -43,6 +43,11 @@
   </li>
   <li>
     <fieldset>
+      <legend><span><wicket:message key="csv.title">CSV</wicket:message></span></legend>
+      <label for="csvDateFormat"><wicket:message key="csvDateFormat">Date Format</wicket:message></label>
+      <input class="field text" wicket:id="csvDateFormat" type="text"></input>
+    </fieldset>
+    <fieldset>
       <legend><span><wicket:message key="serviceLevel">Service Level</wicket:message></span></legend>
       <div wicket:id="serviceLevel">
         <ul class="choiceList">
@@ -143,14 +148,12 @@
         </li>
       </ul>
     </fieldset>
+    <fieldset>
+      <legend><span><wicket:message key="i18nSettings">i18n Settings</wicket:message></span></legend>
+      <label for="defaultLocale"><wicket:message key="defaultLocale">Default Language</wicket:message></label>
+      <select wicket:id="defaultLocale"/>
+    </fieldset>
   </li>
-    <li>
-      <fieldset>
-        <legend><span><wicket:message key="i18nSettings">i18n Settings</wicket:message></span></legend>
-        <label for="defaultLocale"><wicket:message key="defaultLocale">Default Language</wicket:message></label>
-        <select wicket:id="defaultLocale"/>
-      </fieldset>
-    </li>
   </wicket:extend>
 </body>
 </html>

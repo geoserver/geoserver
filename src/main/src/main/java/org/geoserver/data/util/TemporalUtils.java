@@ -4,6 +4,10 @@
  */
 package org.geoserver.data.util;
 
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -52,5 +56,38 @@ public final class TemporalUtils {
     public static boolean isDateTimeFormatEnabled() {
         Object hint = Hints.getSystemDefault(Hints.DATE_TIME_FORMAT_HANDLING);
         return !Boolean.FALSE.equals(hint);
+    }
+
+    /**
+     * Serialize date to format specified
+     *
+     * @param date date to be converted
+     * @param dateFormatPattern Pattern of dateFormat
+     * @return converted dateTime text
+     * @throws RuntimeException on conversion error
+     */
+    public static String serializeDateTime(Date date, String dateFormatPattern) {
+        try {
+            Object hint = Hints.getSystemDefault(Hints.LOCAL_DATE_TIME_HANDLING);
+
+            Calendar cal = toCalendar(date);
+            // if it's only a date, no time involved
+            if (date instanceof java.sql.Date) {
+                SimpleDateFormat formatter = new SimpleDateFormat(dateFormatPattern);
+                return formatter.format(date);
+            } else {
+                // timestamp handling
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormatPattern);
+                ZonedDateTime zonedDateTime;
+                if (Boolean.TRUE.equals(hint)) {
+                    zonedDateTime = cal.toInstant().atZone(ZoneId.systemDefault());
+                } else {
+                    zonedDateTime = cal.toInstant().atZone(TimeZone.getTimeZone("UTC").toZoneId());
+                }
+                return zonedDateTime.format(formatter);
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Error formatting date" + ex);
+        }
     }
 }

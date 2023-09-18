@@ -66,6 +66,66 @@ A list of values to be declared in all feature types can be provided in the WFS 
 
 The list will be used only for the capabilities document generation. It does not limit the actual target SRS usage in GetFeature requests.
 
+
+CSV
+---
+.. figure:: img/services_WFS_csv.png
+
+   WFS configuration options - CSV section 
+
+CSV is still widely used as a format to exchange tabular data. For GeoServer CSV output format, the date field format can specified using the Date Format text box as shown above.
+Here are some common formatting patterns supported
+
+.. list-table::
+   :widths: 25 25
+   :header-rows: 1
+
+   * - Date and Time Pattern 
+     - Result
+   * - ``yyyy.MM.dd G 'at' HH:mm:ss z``
+     - 2001.07.04 AD at 12:08:56 PDT  
+   * - ``EEE, MMM d, ''yy``
+     - Wed, Jul 4, '01
+   * - ``yyyy-MM-dd'T'HH:mm:ss.SSSZ``
+     - 2001-07-04T12:08:56.235-0700 
+   * - ``yyyy-MM-dd'T'HH:mm:ss.SSSXXX``
+     - 2001-07-04T12:08:56.235-07:00
+
+
+Here, **yyyy-MM-dd'T'HH:mm:ss.SSS'Z'** pattern represents the year, month, day, hour, minute, second and milliseconds. The components are separated by a hyphen character. A literal 'T' character is used to separate the date and time parts. A literal 'Z' character represents the UTC time zone. For instance, yyyy represents the year with four digits, MM represents the month with leading zeros, dd represents the day with leading zeros, and so on.
+
+Similarly, patterns can be formed by using the characters provided below
+
+::
+
+  y- Year (four digits) 
+  yy- Year (two digits) 
+  yyyy- Year (four digits) 
+  M- Month (1 or 2 digits) 
+  MM- Month (2 digits, with leading zero) 
+  MMM- Month abbreviation (e.g., 'Jan', 'Feb') 
+  MMMM- Full month name (e.g., 'January', 'February') 
+  d- Day of the month (1 or 2 digits) 
+  dd- Day of the month (2 digits, with leading zero) 
+  E- Day of the week abbreviation (e.g., 'Mon', 'Tue') 
+  EEEE- Full day of the week (e.g., 'Monday', 'Tuesday') 
+  H- Hour in 24-hour format (0 to 23) 
+  HH- Hour in 24-hour format (2 digits, with leading zero) 
+  h- Hour in 12-hour format (1 to 12) 
+  hh- Hour in 12-hour format (2 digits, with leading zero) 
+  m- Minute (1 or 2 digits) 
+  mm- Minute (2 digits, with leading zero) 
+  s- Second (1 or 2 digits) 
+  ss- Second (2 digits, with leading zero) 
+  SSS- Represents the milliseconds in a three-digit format (e.g., 750)
+  a- AM/PM marker 
+  n- Nanosecond 
+  Z- Time zone offset (e.g., '+0800') 
+  zzzz- Time zone full name (e.g., 'Pacific Standard Time')
+
+Reference SimpleDateFormat Link : https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html
+
+
 Configuration of Output Format types allowed in GetFeature
 ----------------------------------------------------------
 

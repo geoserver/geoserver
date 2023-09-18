@@ -28,6 +28,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         login();
         tester.startPage(WFSAdminPage.class);
         tester.assertModelValue("form:maxFeatures", wfs.getMaxFeatures());
+        tester.assertModelValue("form:csvDateFormat", wfs.getCsvDateFormat());
         tester.assertModelValue(
                 "form:maxNumberOfFeaturesForPreview", wfs.getMaxNumberOfFeaturesForPreview());
         tester.assertModelValue("form:keywords", wfs.getKeywords());
@@ -248,5 +249,18 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         ft.select("defaultLocale", 11);
         ft.submit("submit");
         assertNotNull(getGeoServer().getService(WFSInfo.class).getDefaultLocale());
+    }
+
+    @Test
+    public void testDateFormat() {
+        login();
+        tester.startPage(WFSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("csvDateFormat", "yyyy-MM-dd'T'HH:mm:ss'Z'");
+        ft.submit("submit");
+        assertNotNull(getGeoServer().getService(WFSInfo.class).getCsvDateFormat());
+        assertEquals(
+                getGeoServer().getService(WFSInfo.class).getCsvDateFormat(),
+                "yyyy-MM-dd'T'HH:mm:ss'Z'");
     }
 }

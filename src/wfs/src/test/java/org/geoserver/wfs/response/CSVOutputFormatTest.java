@@ -24,12 +24,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.Operation;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.FeatureSource;
@@ -436,5 +439,80 @@ public class CSVOutputFormatTest extends WFSTestSupport {
 
         // check expected list of values as a comma separated string
         assertEquals("prop1,prop2", lines.get(1)[1]);
+    }
+
+    @Test
+    public void testDates() throws Exception {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.add("geom", Point.class);
+        builder.add("label", String.class);
+        builder.add("dtg", Date.class);
+        builder.add("n", Integer.class);
+        builder.add("d", Double.class);
+        builder.setName("funnyLabels");
+        SimpleFeatureType type = builder.buildFeatureType();
+        Locale currentLocale = Locale.getDefault();
+        Locale.setDefault(new Locale("en", "US"));
+        Date d = new Date(1483228800000L);
+        GeometryFactory gf = new GeometryFactory();
+        SimpleFeature f =
+                SimpleFeatureBuilder.build(
+                        type,
+                        new Object[] {
+                            gf.createPoint(new Coordinate(5, 8)),
+                            "A label with \"quotes\"",
+                            d,
+                            10,
+                            100.0
+                        },
+                        null);
+
+        MemoryDataStore data = new MemoryDataStore();
+        data.addFeature(f);
+        SimpleFeatureSource fs = data.getFeatureSource("funnyLabels");
+
+        // build the request objects and feed the output format
+        GetFeatureType gft = WfsFactory.eINSTANCE.createGetFeatureType();
+        Operation op =
+                new Operation("GetFeature", getServiceDescriptor10(), null, new Object[] {gft});
+
+        FeatureCollectionResponse fct =
+                FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
+        fct.getFeature().add(fs.getFeatures());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        CSVOutputFormat format = setCSVDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        format.write(fct, bos, op);
+        assertDates("2017-01-01T00:00:00.000Z", bos);
+
+        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+        CSVOutputFormat format1 = setCSVDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        format1.write(fct, bos1, op);
+        assertDates("2017-01-01T00:00:00.000", bos1);
+
+        ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
+        CSVOutputFormat format2 = setCSVDateFormat("EEE, MMM d, ''yy");
+        format2.write(fct, bos2, op);
+        assertDates("Sun, Jan 1, '17", bos2);
+
+        ByteArrayOutputStream bos3 = new ByteArrayOutputStream();
+        CSVOutputFormat format3 = setCSVDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+        format3.write(fct, bos3, op);
+        assertDates("Sun, 1 Jan 2017 00:00:00 +0000", bos3);
+        Locale.setDefault(currentLocale);
+    }
+
+    private CSVOutputFormat setCSVDateFormat(String csvDateFormat) {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfsInfo = gs.getService(WFSInfo.class);
+        wfsInfo.setCsvDateFormat(csvDateFormat);
+        gs.save(wfsInfo);
+        return new CSVOutputFormat(gs);
+    }
+
+    private void assertDates(String date, ByteArrayOutputStream bou) throws IOException {
+        // read the response back with a parser that can handle escaping, newlines and what not
+        List<String[]> lines = readLines(bou.toString(), ',');
+
+        assertEquals(date, lines.get(1)[3]);
     }
 }

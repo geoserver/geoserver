@@ -8,8 +8,8 @@ package org.geoserver.cluster.hazelcast;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
+import com.hazelcast.topic.Message;
+import com.hazelcast.topic.MessageListener;
 import org.easymock.EasyMock;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;

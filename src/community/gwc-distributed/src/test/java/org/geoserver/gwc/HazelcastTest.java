@@ -12,10 +12,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.MapConfig;
-import com.hazelcast.config.MaxSizeConfig;
-import com.hazelcast.config.MaxSizeConfig.MaxSizePolicy;
+import com.hazelcast.config.MaxSizePolicy;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import java.io.File;
@@ -109,9 +109,10 @@ public class HazelcastTest extends GeoServerSystemTestSupport {
         // Configuring hazelcast caching
         Config config = new Config();
         MapConfig mapConfig = new MapConfig(HazelcastCacheProvider.HAZELCAST_MAP_DEFINITION);
-        MaxSizeConfig maxSizeConf = new MaxSizeConfig(16, MaxSizePolicy.USED_HEAP_SIZE);
-        mapConfig.setMaxSizeConfig(maxSizeConf);
-        mapConfig.setEvictionPolicy(EvictionPolicy.LRU);
+        EvictionConfig evictionConfig = mapConfig.getEvictionConfig();
+        evictionConfig.setMaxSizePolicy(MaxSizePolicy.USED_HEAP_SIZE);
+        evictionConfig.setSize(16);
+        evictionConfig.setEvictionPolicy(EvictionPolicy.LRU);
         config.addMapConfig(mapConfig);
         config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
         config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);

@@ -10,9 +10,9 @@ import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.hazelcast.core.ITopic;
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
+import com.hazelcast.topic.ITopic;
+import com.hazelcast.topic.Message;
+import com.hazelcast.topic.MessageListener;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;

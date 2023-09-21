@@ -8,13 +8,13 @@ import org.geoserver.config.SettingsInfo;
 
 /**
  * Factory for creating WFS_T application specific exception instances, including cause details in
- * exception messages based on the global verbose exceptions setting. This enables eg trigger
+ * exception messages based on the global verbose exceptions setting. This enables e.g. trigger
  * exception messages to bubble up to end-users in a controlled internal environment, where root
  * cause aids the user in entering correct data and is of no security concern.
  *
  * @author Martin Kalén
  */
-public class WFSTransactionExceptionFactory {
+class WFSTransactionExceptionFactory {
 
     private final SettingsInfo settings;
 
@@ -28,12 +28,13 @@ public class WFSTransactionExceptionFactory {
     }
 
     public WFSTransactionException newWFSTransactionException(
+            final String errorMessage, final Throwable cause) {
+        return new WFSTransactionException(getFinalMessage(errorMessage, cause), cause);
+    }
+
+    public WFSTransactionException newWFSTransactionException(
             final String errorMessage, final Throwable cause, final String code) {
-        String finalMessage = errorMessage;
-        if (settings.isVerboseExceptions()) {
-            finalMessage = decorateMessageWithUnderlyingCause(errorMessage, cause);
-        }
-        return new WFSTransactionException(finalMessage, cause, code);
+        return new WFSTransactionException(getFinalMessage(errorMessage, cause), cause, code);
     }
 
     public WFSTransactionException newWFSTransactionException(
@@ -42,11 +43,18 @@ public class WFSTransactionExceptionFactory {
             final String code,
             final String locator,
             final String handle) {
-        String finalMessage = errorMessage;
+        return new WFSTransactionException(
+                getFinalMessage(errorMessage, cause), cause, code, locator, handle);
+    }
+
+    private String getFinalMessage(final String errorMessage, final Throwable cause) {
+        final String finalMessage;
         if (settings.isVerboseExceptions()) {
             finalMessage = decorateMessageWithUnderlyingCause(errorMessage, cause);
+        } else {
+            finalMessage = errorMessage;
         }
-        return new WFSTransactionException(finalMessage, cause, code, locator, handle);
+        return finalMessage;
     }
 
     private String decorateMessageWithUnderlyingCause(

@@ -47,12 +47,10 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wfs");
 
     FilterFactory filterFactory;
-    private final WFSTransactionExceptionFactory exceptionFactory;
 
     public DeleteElementHandler(GeoServer gs) {
         super(gs);
         filterFactory = CommonFactoryFinder.getFilterFactory(null);
-        exceptionFactory = new WFSTransactionExceptionFactory(gs.getSettings());
     }
 
     @Override

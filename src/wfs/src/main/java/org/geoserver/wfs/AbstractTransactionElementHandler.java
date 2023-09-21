@@ -15,9 +15,11 @@ import org.geoserver.config.GeoServer;
 public abstract class AbstractTransactionElementHandler implements TransactionElementHandler {
 
     protected GeoServer geoServer;
+    protected final WFSTransactionExceptionFactory exceptionFactory;
 
     protected AbstractTransactionElementHandler(GeoServer geoServer) {
         this.geoServer = geoServer;
+        exceptionFactory = new WFSTransactionExceptionFactory(geoServer.getSettings());
     }
 
     protected WFSInfo getInfo() {

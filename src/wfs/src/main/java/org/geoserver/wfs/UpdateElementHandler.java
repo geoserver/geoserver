@@ -85,11 +85,8 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
     /** logger */
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wfs");
 
-    private final WFSTransactionExceptionFactory exceptionFactory;
-
     public UpdateElementHandler(GeoServer gs) {
         super(gs);
-        exceptionFactory = new WFSTransactionExceptionFactory(gs.getSettings());
     }
 
     @Override

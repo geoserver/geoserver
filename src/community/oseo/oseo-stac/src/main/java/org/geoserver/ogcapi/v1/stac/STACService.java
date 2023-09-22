@@ -471,7 +471,7 @@ public class STACService {
     @PostMapping(path = "search", name = "searchPost")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
-    public SearchResponse searchPost(@RequestBody SearchQuery sq) throws Exception {
+    public SearchResponse searchPost(@RequestBody STACSearchQuery sq) throws Exception {
 
         QueryResultBuilder resultBuilder =
                 new QueryResultBuilder(
@@ -479,8 +479,8 @@ public class STACService {
         resultBuilder
                 .collectionIds(sq.getCollections())
                 .intersects(sq.getIntersects())
-                .startIndex(sq.getStartIndex())
-                .requestedLimit(sq.getLimit())
+                .startIndex(sq.getStartIndexAsInt())
+                .requestedLimit(sq.getLimitAsInt())
                 .bbox(sq.getBbox())
                 .datetime(sq.getDatetime())
                 .filter(sq.getFilter())
@@ -497,7 +497,9 @@ public class STACService {
         PaginationLinksBuilder linksBuilder =
                 new PaginationLinksBuilder(
                         path,
-                        Optional.ofNullable(sq.getStartIndex()).orElse(0),
+                        Optional.ofNullable(sq.getStartIndex())
+                                .orElse(BigInteger.valueOf(0))
+                                .longValue(),
                         qr.getQuery().getMaxFeatures(),
                         qr.getReturned(),
                         qr.getNumberMatched().longValue());

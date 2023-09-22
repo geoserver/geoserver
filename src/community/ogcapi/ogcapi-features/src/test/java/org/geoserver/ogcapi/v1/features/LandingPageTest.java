@@ -40,6 +40,7 @@ public class LandingPageTest extends FeaturesTestSupport {
                         "getConformanceDeclaration",
                         "getFeature",
                         "getFeatures",
+                        "searchFeatures",
                         "getLandingPage",
                         "getQueryables",
                         "getFunctions",

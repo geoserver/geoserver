@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi;
 
 import java.util.Arrays;
+import java.util.List;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.filter.sort.SortOrder;
@@ -22,14 +23,17 @@ public class SortByConverter implements Converter<String, SortBy[]> {
 
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
-    @Override
-    public SortBy[] convert(String spec) {
+    public static final SortBy[] convertList(List<String> sortBy) {
+        return sortBy.stream().map(s -> sortBy(s)).toArray(n -> new SortBy[n]);
+    }
+
+    public static final SortBy[] convertString(String spec) {
         return Arrays.stream(spec.split("\\s*,\\s*"))
                 .map(s -> sortBy(s))
                 .toArray(n -> new SortBy[n]);
     }
 
-    private SortBy sortBy(String spec) {
+    private static SortBy sortBy(String spec) {
         SortOrder order = SortOrder.ASCENDING;
         if (spec.startsWith("+")) {
             spec = spec.substring(1);
@@ -38,5 +42,10 @@ public class SortByConverter implements Converter<String, SortBy[]> {
             order = SortOrder.DESCENDING;
         }
         return FF.sort(spec, order);
+    }
+
+    @Override
+    public SortBy[] convert(String spec) {
+        return convertString(spec);
     }
 }

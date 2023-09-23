@@ -127,6 +127,7 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
             // if no parent mappings, return empty list
             if (parentMappings == null || parentMappings.isEmpty()) return Collections.emptyList();
 
+            List<String> parentRoles;
             if (role != null && StringUtils.hasLength(role.getAuthority())) {
                 // filter out roles already used as parents
                 RoleHierarchyHelper helper = new RoleHierarchyHelper(parentMappings);
@@ -134,12 +135,14 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
                 Set<String> parents = new HashSet<>(parentMappings.keySet());
                 parents.removeAll(helper.getDescendants(role.getAuthority()));
                 parents.remove(role.getAuthority());
-                return new ArrayList<>(parents);
+                parentRoles = new ArrayList<>(parents);
 
             } else {
                 // no rolename given, we are creating a new one
-                return new ArrayList<>(parentMappings.keySet());
+                parentRoles = new ArrayList<>(parentMappings.keySet());
             }
+            Collections.sort(parentRoles);
+            return parentRoles;
         }
 
         @Override

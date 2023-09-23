@@ -16,7 +16,7 @@ Choose ``main`` for the latest development.::
 
   % git checkout main
 
-Or chose a stable branch for versions less likely to change often::
+Or choose a stable branch for versions less likely to change often::
 
   % git checkout 2.22.x
 

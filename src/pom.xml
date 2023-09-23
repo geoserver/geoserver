@@ -1718,7 +1718,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>2.10.3</version>
         </plugin>
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
@@ -2006,10 +2006,10 @@
           </tags>
 
           <links>
-            <link>http://docs.oracle.com/javase/8/docs/api/</link>
+            <link>https://docs.oracle.com/en/java/javase/11/docs/api</link>
             <link>http://docs.oracle.com/javaee/7/api/</link>
             <link>http://jscience.org/api/</link>
-            <link>http://tsusiatsoftware.net/jts/javadoc</link>
+            <link>https://locationtech.github.io/jts/javadoc/</link>
             <link>http://docs.geotools.org/latest/javadocs/</link>
             <link>http://xmlgraphics.apache.org/batik/javadoc</link>
             <link>http://freemarker.sourceforge.net/docs/api/</link>

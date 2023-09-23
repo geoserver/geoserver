@@ -1006,6 +1006,7 @@ public class TransactionTest extends WFSTestSupport {
 
             @SuppressWarnings("PMD.CloseResource")
             ApplicationContext context = GeoServerSystemTestSupport.applicationContext;
+            @SuppressWarnings("PMD.CloseResource")
             Transaction transaction = new Transaction(getWFS(), getCatalog(), context);
             gtTransaction = transaction.getDatastoreTransaction(request);
         } finally {
@@ -1180,36 +1181,34 @@ public class TransactionTest extends WFSTestSupport {
         FeatureTypeInfo ft = cb.buildFeatureType(fs);
         cat.add(ft);
 
-        Connection conn =
-                ((JDBCDataStore) store)
-                        .getConnection(org.geotools.api.data.Transaction.AUTO_COMMIT);
+        try (Connection conn =
+                        ((JDBCDataStore) store)
+                                .getConnection(org.geotools.api.data.Transaction.AUTO_COMMIT);
+                Statement stmt = conn.createStatement()) {
+            // Create the trigger
+            stmt.execute(
+                    "CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" FOR EACH ROW CALL \""
+                            + ExceptionThrowingTrigger.class.getName()
+                            + "\"");
+            String insert =
+                    "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                            + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                            + " xmlns:gml=\"http://www.opengis.net/gml\" "
+                            + " xmlns:gs='"
+                            + SystemTestData.DEFAULT_URI
+                            + "'>"
+                            + "<wfs:Insert idgen='UseExisting'>"
+                            + " <gs:bar gml:id='1'>"
+                            + "    <gs:name>acme</gs:name>"
+                            + " </gs:bar>"
+                            + "</wfs:Insert>"
+                            + "</wfs:Transaction>";
 
-        // Create the trigger
-        Statement stmt = conn.createStatement();
-        stmt.execute(
-                "CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" FOR EACH ROW CALL \""
-                        + ExceptionThrowingTrigger.class.getName()
-                        + "\"");
-        stmt.close();
-        conn.close();
-
-        String insert =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                        + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + " xmlns:gml=\"http://www.opengis.net/gml\" "
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "'>"
-                        + "<wfs:Insert idgen='UseExisting'>"
-                        + " <gs:bar gml:id='1'>"
-                        + "    <gs:name>acme</gs:name>"
-                        + " </gs:bar>"
-                        + "</wfs:Insert>"
-                        + "</wfs:Transaction>";
-
-        assertWfs10TransactionFailureContainsText(
-                insert, ExceptionThrowingTrigger.STATIC_CAUSE, false);
-        dispose(cat, ds, store, ft);
+            assertWfs10TransactionFailureContainsText(
+                    insert, ExceptionThrowingTrigger.STATIC_CAUSE, false);
+        } finally {
+            dispose(cat, ds, store, ft);
+        }
     }
 
     /** Assert trigger details in error message, if exception details are configured */
@@ -1231,36 +1230,35 @@ public class TransactionTest extends WFSTestSupport {
         FeatureTypeInfo ft = cb.buildFeatureType(fs);
         cat.add(ft);
 
-        Connection conn =
-                ((JDBCDataStore) store)
-                        .getConnection(org.geotools.api.data.Transaction.AUTO_COMMIT);
+        try (Connection conn =
+                        ((JDBCDataStore) store)
+                                .getConnection(org.geotools.api.data.Transaction.AUTO_COMMIT);
+                Statement stmt = conn.createStatement()) {
+            // Create the trigger
+            stmt.execute(
+                    "CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" FOR EACH ROW CALL \""
+                            + ExceptionThrowingTrigger.class.getName()
+                            + "\"");
 
-        // Create the trigger
-        Statement stmt = conn.createStatement();
-        stmt.execute(
-                "CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" FOR EACH ROW CALL \""
-                        + ExceptionThrowingTrigger.class.getName()
-                        + "\"");
-        stmt.close();
-        conn.close();
+            String insert =
+                    "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                            + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                            + " xmlns:gml=\"http://www.opengis.net/gml\" "
+                            + " xmlns:gs='"
+                            + SystemTestData.DEFAULT_URI
+                            + "'>"
+                            + "<wfs:Insert idgen='UseExisting'>"
+                            + " <gs:bar gml:id='1'>"
+                            + "    <gs:name>acme</gs:name>"
+                            + " </gs:bar>"
+                            + "</wfs:Insert>"
+                            + "</wfs:Transaction>";
 
-        String insert =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                        + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + " xmlns:gml=\"http://www.opengis.net/gml\" "
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "'>"
-                        + "<wfs:Insert idgen='UseExisting'>"
-                        + " <gs:bar gml:id='1'>"
-                        + "    <gs:name>acme</gs:name>"
-                        + " </gs:bar>"
-                        + "</wfs:Insert>"
-                        + "</wfs:Transaction>";
-
-        assertWfs10TransactionFailureContainsText(
-                insert, ExceptionThrowingTrigger.STATIC_CAUSE, true);
-        dispose(cat, ds, store, ft);
+            assertWfs10TransactionFailureContainsText(
+                    insert, ExceptionThrowingTrigger.STATIC_CAUSE, true);
+        } finally {
+            dispose(cat, ds, store, ft);
+        }
     }
 
     private void assertWfs10TransactionFailureContainsText(

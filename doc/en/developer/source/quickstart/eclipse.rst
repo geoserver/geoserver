@@ -35,7 +35,7 @@ Import modules into Eclipse
    .. image:: img/eclipse_import1.jpg
       :width: 300
 
-#. Select ``Existing Projects into Workspace`` and click ``Next``
+#. Select ``General``, ``Existing Projects into Workspace`` and click ``Next``.  (Do not make the mistake of importing ``Maven``, ``Existing Maven Projects``!)
 
    .. image:: img/eclipse_import2.jpg
       :width: 400

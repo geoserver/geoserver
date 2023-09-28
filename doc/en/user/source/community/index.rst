@@ -50,6 +50,7 @@ officially part of the GeoServer releases. They are however built along with the
    libdeflate/index
    mbtiles/index
    monitor-hibernate/index
+   monitor-kafka/index
    ncwms/index
    netcdf-ghrsst/index
    notification/index

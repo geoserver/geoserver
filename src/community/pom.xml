@@ -98,6 +98,7 @@
             <descriptor>release/ext-datadir-catalog-loader.xml</descriptor>
             <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
             <descriptor>release/ext-rat.xml</descriptor>
+            <descriptor>release/ext-monitor-kafka.xml</descriptor>
           </descriptors>
           <finalName>geoserver-${project.version}</finalName>
         </configuration>
@@ -246,6 +247,7 @@
         <module>datadir-catalog-loader</module>
         <module>wps-longitudinal-profile</module>
         <module>rat</module>
+        <module>monitor-kafka</module>
       </modules>
     </profile>
     <profile>
@@ -555,7 +557,6 @@
         <plugins>
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.2.0</version>
             <configuration>
               <descriptors>
                 <descriptor>release/ext-monitor-hibernate.xml</descriptor>
@@ -566,6 +567,24 @@
       </build>
       <modules>
         <module>monitor-hibernate</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>monitor-kafka</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <descriptors>
+                <descriptor>release/ext-monitor-kafka.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <modules>
+        <module>monitor-kafka</module>
       </modules>
     </profile>
     <profile>

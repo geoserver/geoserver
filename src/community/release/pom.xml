@@ -435,6 +435,11 @@
       <artifactId>gs-rat</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-monitor-kafka</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -542,6 +547,16 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-monitor-hibernate</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>monitor-kafka</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-monitor-kafka</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

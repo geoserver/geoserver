@@ -28,3 +28,15 @@ If you encounter a security vulnerability in GeoServer please take care to repor
 Please send a mail directly to geoserver-security@lists.osgeo.org (moderated list with no possibility to subscribe, please just send directly to the address, the mail will be evaluated and eventually posted) and provide information about the security issue you might have found there.
 
 For more information see [Community Support](http://geoserver.org/comm/).
+
+## Coordinated vulnerability disclosure
+
+Disclosure policy:
+
+1. Vulnerability has been verified by working with the geoserver-security list
+2. GitHub [security advisory](https://github.com/geoserver/geoserver/security) used to assign a CVE number
+3. Fix or documentation clarification is avialable and has been backported to both the stable and maintenance branches
+4. Fix is available for download (either by waiting for for natrual release of the stable and matinenace branches, or by issuing an emergency update)
+5. The CVE vulnerability released with mitigation and patch instructions
+
+This represents a balance between transparency and particpation that does not overwhelm particpants.  Those seeking greater visibility are encouraged to volunteer with the geoserver-security list; or work with a one of the excellent commercial support providers that will do so on their behalf.

@@ -44,6 +44,7 @@ import org.geoserver.platform.Service;
 import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
@@ -95,12 +96,14 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     private final WMS wms;
     private final GetMapKvpRequestReader getMapReader;
     private final HTTPWarningAppender warningAppender;
+    private final RasterCleaner rasterCleaner;
     private Service service;
     // defaulting to a stateless but reliable http client
     private Supplier<org.geotools.http.HTTPClient> httpClientSupplier =
             () -> HTTPClientFinder.createClient();
 
-    public DownloadMapProcess(GeoServer geoServer, HTTPWarningAppender warningAppender) {
+    public DownloadMapProcess(
+            GeoServer geoServer, HTTPWarningAppender warningAppender, RasterCleaner rasterCleaner) {
         // TODO: make these configurable
         this.wms =
                 new WMS(geoServer) {
@@ -116,6 +119,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 };
         this.getMapReader = new GetMapKvpRequestReader(wms);
         this.warningAppender = warningAppender;
+        this.rasterCleaner = rasterCleaner;
     }
 
     /** This process returns a potentially large map */
@@ -253,6 +257,11 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         } finally {
             // avoid accumulation of warnings in the executor thread that run this request
             warningAppender.finished(Dispatcher.REQUEST.get());
+            // clean up images, this process runs in a background thread, it won't get
+            // the callback invoked and the thread locals would accumulate images
+            rasterCleaner.finished(null);
+            // not wrong, and allows tests to check the raster cleaner has done its job
+            progressListener.progress(100);
         }
 
         // we got here, no supported format found
@@ -522,7 +531,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             progressListener.progress(95f * (++i) / layers.length / 2);
         }
 
-        progressListener.progress(100);
+        progressListener.progress(90);
 
         return result;
     }

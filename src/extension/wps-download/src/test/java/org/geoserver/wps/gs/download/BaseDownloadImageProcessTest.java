@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
@@ -25,6 +26,12 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
     protected static final String UNIT_SYMBOL = "ft";
     protected static QName GIANT_POLYGON =
             new QName(MockData.CITE_URI, "giantPolygon", MockData.CITE_PREFIX);
+
+    @Override
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add("classpath:TestContext.xml");
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

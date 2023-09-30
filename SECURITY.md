@@ -36,10 +36,10 @@ For more information see [Community Support](http://geoserver.org/comm/).
 
 Disclosure policy:
 
-1. Vulnerability has been verified by working with the geoserver-security list
-2. GitHub [security advisory](https://github.com/geoserver/geoserver/security) used to reserve a CVE number
-3. Fix or documentation clarification is accepted and backported to both the stable and maintenance branches
-4. Fix included for stable and maintenance downloads (released as scheudled, or issued via emergency update)
+1. The reported vulnerability has been verified by working with the geoserver-security list
+2. GitHub [security advisory](https://github.com/geoserver/geoserver/security) is used to reserve a CVE number
+3. A fix or documentation clarification is accepted and backported to both the "stable" and "maintenance" branches
+4. A fix is included for the "stable" and "maintenance" downloads (released as scheduled, or issued via emergency update)
 6. The CVE vulnerability is published with mitigation and patch instructions
 
 This represents a balance between transparency and particpation that does not overwhelm particpants. 

@@ -30,6 +30,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.HTTPWarningAppender;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.process.RawData;
@@ -75,12 +76,14 @@ public class DownloadAnimationProcess implements GeoServerProcess {
     private final DateTimeFormatter formatter;
     private final DownloadServiceConfigurationGenerator confiGenerator;
     private final HTTPWarningAppender warningAppender;
+    private final RasterCleaner rasterCleaner;
 
     public DownloadAnimationProcess(
             DownloadMapProcess mapper,
             WPSResourceManager resourceManager,
             DownloadServiceConfigurationGenerator downloadServiceConfigurationGenerator,
-            HTTPWarningAppender warningAppender) {
+            HTTPWarningAppender warningAppender,
+            RasterCleaner rasterCleaner) {
         this.mapper = mapper;
         this.resourceManager = resourceManager;
         this.confiGenerator = downloadServiceConfigurationGenerator;
@@ -90,6 +93,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                         .withLocale(Locale.ENGLISH)
                         .withZone(ZoneId.of("GMT"));
+        this.rasterCleaner = rasterCleaner;
     }
 
     @DescribeResults({
@@ -194,6 +198,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                 BufferedImage frame;
                                 while ((frame = renderingQueue.take()) != STOP) {
                                     enc.encodeImage(frame);
+                                    RasterCleaner.disposeImage(frame);
                                     listener.progress(90 * (((float) count) / totalTimes));
                                     String message =
                                             "Generated frames " + count + " out of " + totalTimes;
@@ -241,13 +246,16 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                 renderingQueue.put(STOP);
                 // wait for encoder to finish
                 future.get();
-                progressListener.progress(100);
             } finally {
                 // force encoding thread to stop in case we got here due to an exception
                 abortEncoding.set(true);
                 executor.shutdown();
+                // clean up the images collected during the execution, in case the
+                // clean ups above did not do the job
+                rasterCleaner.finished(null);
                 warningAppender.finished(request);
             }
+            progressListener.progress(100);
             enc.finish();
 
             // it's a derived property, but XStream does not like to use getters
@@ -266,6 +274,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             frame = (BufferedImage) image;
         } else {
             frame = PlanarImage.wrapRenderedImage(image).getAsBufferedImage();
+            RasterCleaner.disposeImage(image);
         }
         return frame;
     }

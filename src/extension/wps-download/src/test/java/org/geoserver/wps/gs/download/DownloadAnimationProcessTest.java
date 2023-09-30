@@ -49,14 +49,6 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         void accept(T t, U u) throws Exception;
     }
 
-    @Override
-    protected String getLogConfiguration() {
-        if (isQuietTests()) {
-            return "QUIET_LOGGING";
-        }
-        return "DEFAULT_LOGGING";
-    }
-
     @Test
     public void testDescribeProcess() throws Exception {
         Document d =

@@ -46,8 +46,8 @@ in the ``$GEOSERER_DATA_DIR/templates/ogc/stac`` folder:
 
 Specifically for the JSON output:
 
-* `$GEOSERER_DATA_DIR/templates/ogc/stac/collections.json` is the `collections template <https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/stac/collections.json>`_
-* `$GEOSERER_DATA_DIR/templates/ogc/stac/items.json` is the `items template <https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/stac/items.json>`_
+* `$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/collections.json` is the `collections template <https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/collections.json>`_
+* `$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/items.json` is the `items template <https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/items.json>`_
 
 The JSON templates in the case of STAC also drive database querying, the exposed STAC properties
 are back-mapped into database properties by interpreting the template. It is advised to keep 

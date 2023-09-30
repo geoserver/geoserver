@@ -28,7 +28,10 @@ If you encounter a security vulnerability in GeoServer please take care to repor
 
 Please send a mail directly to geoserver-security@lists.osgeo.org (moderated list with no possibility to subscribe,
 please just send directly to the address, the mail will be evaluated and eventually posted) and provide information
-about the security issue you might have found there.
+about the security issue you might have found there. The volunteer nature of geoserver-security list
+means that there is no expected response time. If your issue is urgent you are welcome to drop in to
+the [video chat meeting](https://geoserver.org/devel/) held every two weeks as this is an appropriate
+venue for sensitive discussion.
 
 For more information see [Community Support](http://geoserver.org/comm/).
 

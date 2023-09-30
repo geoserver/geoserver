@@ -45,6 +45,8 @@
 		<constructor-arg index="0" ref="downloadMapProcess"/>
 		<constructor-arg index="1" ref="wpsResourceManager"/>
 		<constructor-arg index="2" ref="downloadServiceConfigurationWatcher" />
+		<constructor-arg index="3" ref="httpWarningAppender"/>
+		<constructor-arg index="4" ref="rasterCleaner" />
 	</bean>
 	
 	<bean id="animationMetadataPPIO" class="org.geoserver.wps.gs.download.AnimationMetadataPPIO"/>

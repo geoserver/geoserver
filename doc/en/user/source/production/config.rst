@@ -10,6 +10,11 @@ Logging may visibly affect the performance of your server. High logging levels a
 
 You can change the logging level in the :ref:`config_globalsettings_log_profile`.  You will want to choose the ``PRODUCTION`` logging configuration, where only problems are written to the log files.
 
+Logging configuration hardening
+-------------------------------
+
+In order to ensure that the log file being used is written to the right location even if someone tries to misscofigure it on pourpose, it is adivised to [override the log location configuration with an environment variable](https://docs.geoserver.org/latest/en/user/configuration/logging.html?highlight=geoserver_log_location#overriding-the-log-location-setup-in-the-geoserver-configuration).
+
 Set a service strategy
 ----------------------
 

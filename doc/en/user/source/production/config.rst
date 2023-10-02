@@ -13,7 +13,7 @@ You can change the logging level in the :ref:`config_globalsettings_log_profile`
 Logging configuration hardening
 -------------------------------
 
-In order to ensure that the log file being used is written to the right location even if someone tries to misconfigure it on purpose, it is advised to override the log location configuration with an environment variable. Follow :ref:`overriding_the_log_location_setup_in_the_geoserver_configuration` for more information.
+For production systems, it is advised to set the log location via the environment variable. This prevents overriding it via the administration GUI or REST API, providing better separation of responsibility between those setting up and controlling the actual machine, and those configuring the GeoServer data, styles and the like. Follow :ref:`overriding_the_log_location_setup_in_the_geoserver_configuration` for more information
 
 Set a service strategy
 ----------------------

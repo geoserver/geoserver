@@ -32,6 +32,7 @@ import org.locationtech.jts.geom.Geometry;
  *
  * @author Andrea Aime - GeoSolutions
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ReprojectPage extends GeoServerBasePage {
 
@@ -119,7 +120,7 @@ public class ReprojectPage extends GeoServerBasePage {
                 new AjaxSubmitLink("forward", form) {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget at, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget at) {
                         Geometry source = sourceGeom.getModelObject();
                         if (source == null) {
                             error(
@@ -144,7 +145,7 @@ public class ReprojectPage extends GeoServerBasePage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 };
@@ -154,7 +155,7 @@ public class ReprojectPage extends GeoServerBasePage {
                 new AjaxSubmitLink("backward", form) {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget at, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget at) {
                         Geometry target = targetGeom.getModelObject();
                         if (target == null) {
                             error(
@@ -179,7 +180,7 @@ public class ReprojectPage extends GeoServerBasePage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 };

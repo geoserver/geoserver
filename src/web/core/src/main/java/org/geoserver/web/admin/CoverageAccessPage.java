@@ -28,6 +28,7 @@ import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /** Edits the Coverage configuration parameters */
+// TODO WICKET8 - Verify this page works OK
 public class CoverageAccessPage extends ServerAdminPage {
     private static final long serialVersionUID = -5028265196560034398L;
     private IModel<?> geoServerModel;
@@ -159,18 +160,18 @@ public class CoverageAccessPage extends ServerAdminPage {
         return new GeoserverAjaxSubmitLink("apply", form, this) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
-                target.add(form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+                target.add(getForm());
             }
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 try {
                     save(false);
                 } catch (IllegalArgumentException e) {
-                    form.error(e.getMessage());
-                    target.add(form);
+                    getForm().error(e.getMessage());
+                    target.add(getForm());
                 }
             }
         };

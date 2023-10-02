@@ -52,6 +52,7 @@ import org.geotools.util.logging.Logging;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  * @author Niels Charlier
  */
+// TODO WICKET8 - Verify this page works OK
 public class MetadataTemplatePage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplatePage.class);
@@ -169,7 +170,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 8749672113664556346L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
                 if (metadataTemplateModel.getObject().getLinkedLayers().size() > 0) {
                     dialog.showOkCancel(
                             target,
@@ -197,7 +198,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                                 @Override
                                 public void onClose(AjaxRequestTarget target) {
                                     if (ok) {
-                                        save(form, target);
+                                        save(getForm(), target);
                                     }
                                 }
 
@@ -209,12 +210,12 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                                 }
                             });
                 } else {
-                    save(form, target);
+                    save(getForm(), target);
                 }
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
+            protected void onError(AjaxRequestTarget target) {
                 addFeedbackPanels(target);
             }
         };

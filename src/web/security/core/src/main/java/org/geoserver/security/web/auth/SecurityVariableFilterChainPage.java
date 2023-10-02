@@ -119,10 +119,5 @@ public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
         public void setObject(List<String> object) {
             chainModel.getChain().setFilterNames(object);
         }
-
-        @Override
-        public void detach() {
-            // chainModel.detach();
-        }
     }
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
@@ -45,6 +46,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ResourceFilePanel extends Panel {
 
@@ -121,7 +123,7 @@ public class ResourceFilePanel extends Panel {
                 new AjaxSubmitLink("chooser") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         dialog.setTitle(new ParamResourceModel("chooseFile", this));
                         dialog.showOkCancel(
                                 target,
@@ -140,16 +142,18 @@ public class ResourceFilePanel extends Panel {
                                                 new GeoServerFileChooser(id, new Model(file)) {
                                                     @Override
                                                     protected void fileClicked(
-                                                            File file, AjaxRequestTarget target) {
+                                                            File file,
+                                                            Optional<AjaxRequestTarget> target) {
                                                         ResourceFilePanel.this.file =
                                                                 file.getAbsolutePath();
 
                                                         fileField.clearInput();
                                                         fileField.setModelObject(
                                                                 file.getAbsolutePath());
-
-                                                        target.add(fileField);
-                                                        dialog.close(target);
+                                                        if (target.isPresent()) {
+                                                            target.get().add(fileField);
+                                                            dialog.close(target.get());
+                                                        }
                                                     }
                                                 };
 

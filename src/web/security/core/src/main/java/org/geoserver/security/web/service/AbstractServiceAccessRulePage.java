@@ -148,9 +148,6 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
         public void setObject(List<String> object) {
             throw new UnsupportedOperationException();
         }
-
-        @Override
-        public void detach() {}
     }
 
     protected void updateModels() {

@@ -7,7 +7,6 @@ package org.geoserver.importer.web;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
@@ -64,6 +63,7 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - OpenGeo
  * @author Justin Deoliveira, OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ImportDataPage extends GeoServerSecuredPage {
 
@@ -475,12 +475,12 @@ public class ImportDataPage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected void onError(AjaxRequestTarget target, Form<?> form) {
+        protected void onError(AjaxRequestTarget target) {
             addFeedbackPanels(target);
         }
 
         @Override
-        protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
+        protected void onSubmit(AjaxRequestTarget target) {
 
             // update status to indicate we are working
             statusLabel.add(AttributeModifier.replace("class", "working-link"));
@@ -488,7 +488,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             target.add(statusLabel);
 
             // enable cancel and disable this
-            Component cancel = form.get("cancel");
+            Component cancel = getForm().get("cancel");
             cancel.setEnabled(true);
             target.add(cancel);
 
@@ -503,7 +503,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             } catch (Exception e) {
                 error(e);
                 LOGGER.log(Level.WARNING, "Error creating import", e);
-                resetButtons(form, target);
+                resetButtons(getForm(), target);
                 return;
             }
 
@@ -545,7 +545,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                                     stop(null);
 
                                     // update the button back to original state
-                                    resetButtons(form, target);
+                                    resetButtons(getForm(), target);
 
                                     addFeedbackPanels(target);
                                 }
@@ -560,17 +560,11 @@ public class ImportDataPage extends GeoServerSecuredPage {
                         };
 
                         @Override
-                        public boolean canCallListenerInterface(
-                                Component component, Method method) {
-                            if (self.equals(component)
-                                    && method.getDeclaringClass()
-                                            .equals(
-                                                    org.apache.wicket.behavior.IBehaviorListener
-                                                            .class)
-                                    && method.getName().equals("onRequest")) {
+                        public boolean canCallListener(Component component) {
+                            if (self.equals(component)) {
                                 return true;
                             }
-                            return super.canCallListenerInterface(component, method);
+                            return super.canCallListener(component);
                         }
                     });
         }

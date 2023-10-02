@@ -40,6 +40,7 @@ import org.geoserver.web.wicket.model.ExtPropertyModel;
  *
  * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
  */
+// TODO WICKET8 - Verify this page works OK
 public class GeofencePage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = 5845823599005718408L;
@@ -82,7 +83,7 @@ public class GeofencePage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = -91239899377941223L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         ((FormComponent<?>) form.get("servicesUrl")).processInput();
                         String servicesUrl =
                                 (String)
@@ -202,7 +203,7 @@ public class GeofencePage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 3847903240475052867L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         CachedRuleReader cacheRuleReader =
                                 GeoServerExtensions.bean(CachedRuleReader.class);
                         cacheRuleReader.invalidateAll();

@@ -33,6 +33,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  *
  * @author Timothy De Bock
  */
+// TODO WICKET8 - Verify this page works OK
 public class FileUploadPanel extends Panel {
 
     private FeedbackPanel feedbackPanel;
@@ -214,7 +215,7 @@ public class FileUploadPanel extends Panel {
             private static final long serialVersionUID = 7320342263365531859L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
                 dialog.setTitle(new ParamResourceModel("createFolder", FileUploadPanel.this));
                 dialog.setInitialHeight(100);
                 dialog.setInitialWidth(630);

@@ -81,14 +81,14 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                 new AjaxSubmitLink("execute") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         responseWindow.setDefaultModel(new Model<>(getRequestXML()));
                         responseWindow.show(target);
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
-                        super.onError(target, form);
+                    protected void onError(AjaxRequestTarget target) {
+                        super.onError(target);
                         target.add(builder.getFeedbackPanel());
                     }
                 });
@@ -97,7 +97,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                 new AjaxSubmitLink("executeXML") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             getRequestXML();
                             xmlWindow.show(target);
@@ -108,7 +108,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 });

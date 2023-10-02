@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.wicket.AttributeModifier;
@@ -45,6 +46,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  *
  * @author Andrea Aime
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class CodeMirrorEditor extends FormComponentPanel<String> {
 
@@ -272,28 +274,30 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
     public void setMode(String mode) {
         this.mode = mode;
-        AjaxRequestTarget requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
-        if (requestTarget != null) {
+        Optional<AjaxRequestTarget> requestTarget =
+                RequestCycle.get().find(AjaxRequestTarget.class);
+        if (requestTarget.isPresent()) {
             String javascript =
                     "document.gsEditors."
                             + editor.getMarkupId()
                             + ".setOption('mode', '"
                             + mode
                             + "');";
-            requestTarget.appendJavaScript(javascript);
+            requestTarget.get().appendJavaScript(javascript);
         }
     }
 
     public void setModeAndSubMode(String mode, String subMode) {
         this.mode = mode;
-        AjaxRequestTarget requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
-        if (requestTarget != null) {
+        Optional<AjaxRequestTarget> requestTarget =
+                RequestCycle.get().find(AjaxRequestTarget.class);
+        if (requestTarget.isPresent()) {
             String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode',";
             String modeObj = "{name: \"" + mode + "\", " + subMode + ": true}";
             javascript += modeObj + ");";
-            requestTarget.appendJavaScript(javascript);
+            requestTarget.get().appendJavaScript(javascript);
             editor.modelChanged();
-            requestTarget.add(editor);
+            requestTarget.get().add(editor);
         }
     }
 

@@ -61,6 +61,7 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     static Logger LOGGER = Logging.getLogger(Importer.class);
@@ -372,12 +373,12 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             form.add(
                     new AjaxSubmitLink("apply") {
                         @Override
-                        protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        protected void onError(AjaxRequestTarget target) {
                             target.add(feedbackPanel);
                         }
 
                         @Override
-                        protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        protected void onSubmit(AjaxRequestTarget target) {
                             target.add(feedbackPanel);
                             ImportTask item = model.getObject();
                             try {

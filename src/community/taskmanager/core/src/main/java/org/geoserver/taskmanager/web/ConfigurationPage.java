@@ -78,6 +78,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 import org.hibernate.exception.ConstraintViolationException;
 
+// TODO WICKET8 - Verify this page works OK
 public class ConfigurationPage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(ConfigurationPage.class);
@@ -334,7 +335,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 7320342263365531859L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
                 dialog.setTitle(new ParamResourceModel("newTaskDialog.title", getPage()));
                 dialog.setInitialWidth(600);
                 dialog.setInitialHeight(225);
@@ -429,7 +430,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
                 dialog.setTitle(new ParamResourceModel("confirmDeleteDialog.title", getPage()));
                 dialog.setInitialWidth(600);
                 dialog.setInitialHeight(175);
@@ -614,7 +615,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                         private static final long serialVersionUID = 2023797271780630795L;
 
                         @Override
-                        protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        protected void onSubmit(AjaxRequestTarget target) {
 
                             dialog.setInitialWidth(400);
                             dialog.setInitialHeight(100);
@@ -731,7 +732,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                         private static final long serialVersionUID = 3950104089264630053L;
 
                         @Override
-                        public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        public void onSubmit(AjaxRequestTarget target) {
                             Set<String> attributeNames = new HashSet<String>();
                             // add attributes before change
                             attributeNames.addAll(
@@ -881,7 +882,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                             -2791644626218648013L;
 
                                     @Override
-                                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                                    public void onSubmit(AjaxRequestTarget target) {
                                         Action action =
                                                 TaskManagerBeans.get()
                                                         .getActions()
@@ -927,7 +928,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 3735176778941168701L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
                 attributesModel.save(true);
                 List<ValidationError> errors =
                         TaskManagerBeans.get()
@@ -936,7 +937,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 if (!errors.isEmpty()) {
                     for (ValidationError error : errors) {
                         // TODO: use localized resource based on error type instead of toString
-                        form.error(error.toString());
+                        getForm().error(error.toString());
                     }
                     addFeedbackPanels(target);
                     return;
@@ -965,7 +966,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                     } else {
                         oldTasks = new HashMap<>(configurationModel.getObject().getTasks());
                         oldBatches = new HashMap<>(configurationModel.getObject().getBatches());
-                        form.success(new ParamResourceModel("success", getPage()).getString());
+                        getForm().success(new ParamResourceModel("success", getPage()).getString());
                         export.setVisible(true);
                         target.add(export);
                         target.add(batchesPanel);
@@ -982,21 +983,22 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                     }
                 } catch (Exception e) {
                     if (e.getCause() instanceof ConstraintViolationException) {
-                        form.error(new ParamResourceModel("duplicate", getPage()).getString());
+                        getForm().error(new ParamResourceModel("duplicate", getPage()).getString());
                     } else {
                         LOGGER.log(Level.WARNING, e.getMessage(), e);
                         Throwable rootCause = ExceptionUtils.getRootCause(e);
-                        form.error(
-                                rootCause == null
-                                        ? e.getLocalizedMessage()
-                                        : rootCause.getLocalizedMessage());
+                        getForm()
+                                .error(
+                                        rootCause == null
+                                                ? e.getLocalizedMessage()
+                                                : rootCause.getLocalizedMessage());
                     }
                     addFeedbackPanels(target);
                 }
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
+            protected void onError(AjaxRequestTarget target) {
                 addFeedbackPanels(target);
             }
         };

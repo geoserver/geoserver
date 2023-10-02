@@ -59,6 +59,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
+// TODO WICKET8 - Verify this page works OK
 /**
  * Class to render and manage the Elasticsearch modal dialog This dialog allow the user to choice
  * which Elasticsearch attributes include in layers, selects attribute to use as GEOMETRY.
@@ -130,7 +131,7 @@ abstract class ElasticConfigurationPage extends Panel {
         elastic_form.add(
                 new AjaxButton("es_save") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         onSave(target);
                     }
                 });

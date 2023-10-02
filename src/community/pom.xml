@@ -39,7 +39,8 @@
             <descriptor>release/ext-mbtiles-store.xml</descriptor>
             <descriptor>release/ext-geopkg.xml</descriptor>
             <descriptor>release/ext-pgraster.xml</descriptor>
-            <descriptor>release/ext-dyndimension.xml</descriptor>
+            <!-- TODO WICKET8 - Fix this module and re-enable -->
+            <!-- <descriptor>release/ext-dyndimension.xml</descriptor> -->
             <descriptor>release/ext-flatgeobuf.xml</descriptor>
             <descriptor>release/ext-spatialjson.xml</descriptor>
             <descriptor>release/ext-webp.xml</descriptor>
@@ -202,7 +203,8 @@
         <module>mbtiles</module>
         <module>geopkg</module>
         <module>pgraster</module>
-        <module>dyndimension</module>
+        <!-- TODO WICKET8 - Fix this module and re-enable -->
+        <!-- <module>dyndimension</module> -->
         <module>flatgeobuf</module>
         <module>spatialjson</module>
         <module>webp</module>

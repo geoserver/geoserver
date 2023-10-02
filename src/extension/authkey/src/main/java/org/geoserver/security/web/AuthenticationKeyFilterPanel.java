@@ -40,6 +40,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author mcr
  */
+// TODO WICKET8 - Verify this page works OK
 public class AuthenticationKeyFilterPanel
         extends AuthenticationFilterPanel<AuthenticationKeyFilterConfig> {
 
@@ -98,7 +99,7 @@ public class AuthenticationKeyFilterPanel
         add(
                 new AjaxSubmitLink("synchronize") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             // AuthenticationKeyFilterPanel.this.updateModel();
                             AuthenticationKeyFilterConfig config =

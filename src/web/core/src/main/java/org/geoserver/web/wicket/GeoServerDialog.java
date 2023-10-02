@@ -26,6 +26,7 @@ import org.apache.wicket.model.Model;
  * An abstract OK/cancel dialog, subclasses will have to provide the actual contents and behavior
  * for OK/cancel
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class GeoServerDialog extends Panel {
 
@@ -156,13 +157,13 @@ public class GeoServerDialog extends Panel {
                 new AjaxSubmitLink("submit") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         submit(target, (Component) this.getDefaultModelObject());
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
-                        delegate.onError(target, form);
+                    protected void onError(AjaxRequestTarget target) {
+                        delegate.onError(target, getForm());
                     }
                 };
         link.setDefaultModel(new Model<>(contents));

@@ -39,6 +39,7 @@ import org.geotools.data.ows.URLCheckers;
 import org.geotools.util.logging.Logging;
 
 /** Page for configuring URL checks */
+// TODO WICKET8 - Verify this page works OK
 public class URLChecksPage extends GeoServerSecuredPage {
 
     static final Logger LOGGER = Logging.getLogger(URLChecksPage.class);
@@ -98,7 +99,7 @@ public class URLChecksPage extends GeoServerSecuredPage {
                 new AjaxSubmitLink("testURL") {
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         try {
                             testInput.processInput();
 

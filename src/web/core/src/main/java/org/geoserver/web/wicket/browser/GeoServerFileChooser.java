@@ -9,6 +9,7 @@ import java.awt.AWTError;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.filechooser.FileSystemView;
@@ -28,6 +29,7 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 public class GeoServerFileChooser extends Panel {
 
     private static final long serialVersionUID = -6246944669686555266L;
@@ -143,7 +145,7 @@ public class GeoServerFileChooser extends Panel {
                     protected void onUpdate(AjaxRequestTarget target) {
                         File selection = choice.getModelObject();
                         breadcrumbs.setRootFile(selection);
-                        updateFileBrowser(selection, target);
+                        updateFileBrowser(selection, Optional.of(target));
                     }
                 });
         choice.setOutputMarkupId(true);
@@ -156,7 +158,7 @@ public class GeoServerFileChooser extends Panel {
                     private static final long serialVersionUID = -6995769189316700797L;
 
                     @Override
-                    protected void pathItemClicked(File file, AjaxRequestTarget target) {
+                    protected void pathItemClicked(File file, Optional<AjaxRequestTarget> target) {
                         updateFileBrowser(file, target);
                     }
                 };
@@ -170,7 +172,7 @@ public class GeoServerFileChooser extends Panel {
                     private static final long serialVersionUID = -5481794219862786117L;
 
                     @Override
-                    protected void linkNameClicked(File file, AjaxRequestTarget target) {
+                    protected void linkNameClicked(File file, Optional<AjaxRequestTarget> target) {
                         updateFileBrowser(file, target);
                     }
                 };
@@ -178,7 +180,7 @@ public class GeoServerFileChooser extends Panel {
         add(fileTable);
     }
 
-    void updateFileBrowser(File file, AjaxRequestTarget target) {
+    void updateFileBrowser(File file, Optional<AjaxRequestTarget> target) {
         if (file.isDirectory()) {
             directoryClicked(file, target);
         } else if (file.isFile()) {
@@ -187,7 +189,7 @@ public class GeoServerFileChooser extends Panel {
     }
 
     /** Called when a file name is clicked. By default it does nothing */
-    protected void fileClicked(File file, AjaxRequestTarget target) {
+    protected void fileClicked(File file, Optional<AjaxRequestTarget> target) {
         // do nothing, subclasses will override
     }
 
@@ -195,14 +197,15 @@ public class GeoServerFileChooser extends Panel {
      * Action undertaken as a directory is clicked. Default behavior is to drill down into the
      * directory.
      */
-    protected void directoryClicked(File file, AjaxRequestTarget target) {
+    protected void directoryClicked(File file, Optional<AjaxRequestTarget> target) {
         // explicitly change the root model, inform the other components the model has changed
         this.file.setObject(file);
         fileTable.getProvider().setDirectory(new Model<>(file));
         breadcrumbs.setSelection(file);
-
-        target.add(fileTable);
-        target.add(breadcrumbs);
+        if (target.isPresent()) {
+            target.get().add(fileTable);
+            target.get().add(breadcrumbs);
+        }
     }
 
     private boolean isSubfile(File root, File selection) {

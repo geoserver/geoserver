@@ -18,7 +18,9 @@
   <modules>
     <module>core</module>
     <module>s3</module>
-    <module>metadata</module>
+    <!-- TODO WICKET8 - this module depends on the extension metadata module, renable after fixing. -->
+    <!-- May need more work here too -->
+    <!-- <module>metadata</module> -->
   </modules>
 
   <dependencies>

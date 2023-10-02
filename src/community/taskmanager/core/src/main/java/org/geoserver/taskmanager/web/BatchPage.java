@@ -52,6 +52,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 import org.hibernate.exception.ConstraintViolationException;
 
+// TODO WICKET8 - Verify this page works OK
 public class BatchPage extends GeoServerSecuredPage {
     private static final long serialVersionUID = -5111795911981486778L;
 
@@ -233,7 +234,7 @@ public class BatchPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 3735176778941168701L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
                 try {
                     Configuration config = batchModel.getObject().getConfiguration();
                     batchModel.setObject(
@@ -250,25 +251,26 @@ public class BatchPage extends GeoServerSecuredPage {
                     if (doReturn) {
                         doReturn();
                     } else {
-                        form.success(new ParamResourceModel("success", getPage()).getString());
+                        getForm().success(new ParamResourceModel("success", getPage()).getString());
                     }
                 } catch (Exception e) {
                     if (e.getCause() instanceof ConstraintViolationException) {
-                        form.error(new ParamResourceModel("duplicate", getPage()).getString());
+                        getForm().error(new ParamResourceModel("duplicate", getPage()).getString());
                     } else {
                         LOGGER.log(Level.WARNING, e.getMessage(), e);
                         Throwable rootCause = ExceptionUtils.getRootCause(e);
-                        form.error(
-                                rootCause == null
-                                        ? e.getLocalizedMessage()
-                                        : rootCause.getLocalizedMessage());
+                        getForm()
+                                .error(
+                                        rootCause == null
+                                                ? e.getLocalizedMessage()
+                                                : rootCause.getLocalizedMessage());
                     }
                 }
                 addFeedbackPanels(target);
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
+            protected void onError(AjaxRequestTarget target) {
                 addFeedbackPanels(target);
             }
         };
@@ -280,7 +282,7 @@ public class BatchPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 7320342263365531859L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
                 dialog.setTitle(new ParamResourceModel("newTaskDialog.title", getPage()));
                 dialog.setInitialWidth(600);
                 dialog.setInitialHeight(100);
@@ -365,7 +367,7 @@ public class BatchPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
                 dialog.setTitle(new ParamResourceModel("confirmDeleteDialog.title", getPage()));
                 dialog.setInitialWidth(600);
                 dialog.setInitialHeight(100);

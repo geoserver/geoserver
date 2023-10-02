@@ -319,15 +319,15 @@ public class TemplatePreviewPanel extends Panel {
                 new AjaxSubmitLink("preview", previewInfoForm) {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        super.onSubmit(target, form);
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        super.onSubmit(target);
                         clearFeedbackMessages();
                         target.add(previewFeedback);
                         previewEditor.clearInput();
                         IModel<TemplateInfo> templateInfo = page.getTemplateInfoModel();
                         String rawTemplate = page.getStringTemplateFromInput();
                         page.saveTemplateInfo(templateInfo.getObject(), rawTemplate);
-                        Form<PreviewInfoModel> previewForm = (Form<PreviewInfoModel>) form;
+                        Form<PreviewInfoModel> previewForm = (Form<PreviewInfoModel>) getForm();
 
                         if (!validateAndReport(previewForm.getModelObject())) return;
                         String url = buildWFSLink(previewForm.getModelObject());
@@ -338,7 +338,7 @@ public class TemplatePreviewPanel extends Panel {
                     }
 
                     @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onAfterSubmit(AjaxRequestTarget target) {
                         FeatureTypeInfo featureTypeInfo = featureTypesDD.getModelObject();
                         if (featureTypeInfo != null) {
                             // clean cache
@@ -371,8 +371,8 @@ public class TemplatePreviewPanel extends Panel {
                 new AjaxSubmitLink("validate", previewInfoForm) {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        super.onSubmit(target, form);
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        super.onSubmit(target);
                         if (previewResult != null) {
                             SupportedFormat outputFormat = outputFormatsDropDown.getModelObject();
                             TemplateOutputValidator validator =
@@ -385,8 +385,8 @@ public class TemplatePreviewPanel extends Panel {
                     }
 
                     @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
-                        super.onAfterSubmit(target, form);
+                    protected void onAfterSubmit(AjaxRequestTarget target) {
+                        super.onAfterSubmit(target);
                         if (previewEditor.hasFeedbackMessage()) target.add(previewFeedback);
                     }
                 };

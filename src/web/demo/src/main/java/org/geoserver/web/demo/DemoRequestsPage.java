@@ -48,6 +48,7 @@ import org.geotools.util.logging.Logging;
  * @since 1.8.x
  * @version $Id$
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class DemoRequestsPage extends GeoServerBasePage {
 
@@ -235,7 +236,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         demoRequestsForm.add(
                 new AjaxSubmitLink("submit", demoRequestsForm) {
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form testWfsPostForm) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         responseWindow.show(target);
                     }
 

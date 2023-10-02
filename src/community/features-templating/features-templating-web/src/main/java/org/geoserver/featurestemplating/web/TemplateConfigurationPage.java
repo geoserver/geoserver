@@ -33,6 +33,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 
+// TODO WICKET8 - Verify this page works OK
 public class TemplateConfigurationPage extends GeoServerSecuredPage {
 
     protected AjaxTabbedPanel<ITab> tabbedPanel;
@@ -164,8 +165,8 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
         AjaxSubmitLink submitLink =
                 new AjaxSubmitLink("save", form) {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        super.onSubmit(target, form);
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        super.onSubmit(target);
                         clearFeedbackMessages();
                         TemplateInfo templateInfo = (TemplateInfo) form.getModelObject();
                         target.add(topFeedbackPanel);
@@ -176,14 +177,14 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
                     }
 
                     @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
-                        super.onAfterSubmit(target, form);
+                    protected void onAfterSubmit(AjaxRequestTarget target) {
+                        super.onAfterSubmit(target);
                         doReturn(TemplateInfoPage.class);
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
-                        super.onError(target, form);
+                    protected void onError(AjaxRequestTarget target) {
+                        super.onError(target);
                         addFeedbackPanels(target);
                     }
                 };
@@ -246,7 +247,7 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
                             private static final long serialVersionUID = 4599409150448651749L;
 
                             @Override
-                            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                            public void onSubmit(AjaxRequestTarget target) {
                                 TemplateInfo templateInfo =
                                         TemplateConfigurationPage.this.form.getModelObject();
                                 if (!validateAndReport(templateInfo)) return;
@@ -257,7 +258,7 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
                             }
 
                             @Override
-                            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                            protected void onError(AjaxRequestTarget target) {
                                 addFeedbackPanels(target);
                             }
                         };

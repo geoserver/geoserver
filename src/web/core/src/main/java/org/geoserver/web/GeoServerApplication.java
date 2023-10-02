@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
@@ -45,7 +46,6 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.settings.RequestCycleSettings.RenderStrategy;
-import org.apache.wicket.util.IProvider;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ValidationException;
 import org.geoserver.config.GeoServer;
@@ -79,6 +79,7 @@ import org.springframework.security.authentication.event.InteractiveAuthenticati
  * @author Andrea Aaime, The Open Planning Project
  * @author Justin Deoliveira, The Open Planning Project
  */
+// TODO WICKET8 - Verify this page works OK
 public class GeoServerApplication extends WebApplication
         implements ApplicationContextAware, ApplicationListener<ApplicationEvent> {
 
@@ -300,8 +301,7 @@ public class GeoServerApplication extends WebApplication
     }
 
     @Override
-    public IProvider<IExceptionMapper> getExceptionMapperProvider() {
-        // IProvider is functional, remove a bit of boilerplate
+    public Supplier<IExceptionMapper> getExceptionMapperProvider() {
         return () ->
                 new DefaultExceptionMapper() {
                     @Override

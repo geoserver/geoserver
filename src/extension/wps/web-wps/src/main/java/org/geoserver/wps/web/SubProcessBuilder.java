@@ -11,6 +11,7 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 
+// TODO WICKET8 - Verify this page works OK
 public class SubProcessBuilder extends WebPage {
 
     public SubProcessBuilder(ExecuteRequest request, final ModalWindow window) {
@@ -24,13 +25,13 @@ public class SubProcessBuilder extends WebPage {
                 new AjaxSubmitLink("apply") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         window.close(target);
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
-                        super.onError(target, form);
+                    protected void onError(AjaxRequestTarget target) {
+                        super.onError(target);
                         target.add(builder.getFeedbackPanel());
                     }
                 });

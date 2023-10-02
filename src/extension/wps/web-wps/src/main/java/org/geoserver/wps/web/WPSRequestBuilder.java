@@ -36,6 +36,7 @@ import org.geoserver.web.demo.PlainCodePage;
  * @author Andrea Aime - OpenGeo
  * @author Martin Davis - OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class WPSRequestBuilder extends GeoServerBasePage {
 
@@ -102,14 +103,14 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         responseWindow.setDefaultModel(new Model(getRequestXML()));
                         responseWindow.show(target);
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
-                        super.onError(target, form);
+                    protected void onError(AjaxRequestTarget target) {
+                        super.onError(target);
                         target.add(builder.getFeedbackPanel());
                     }
                 });
@@ -118,7 +119,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                 new AjaxSubmitLink("executeXML") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             getRequestXML();
                             xmlWindow.show(target);
@@ -129,7 +130,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 });

@@ -83,6 +83,7 @@ import org.xml.sax.SAXParseException;
  * you do modify anything in this class (especially the models), manually retest that the edits are
  * not lost on tab switch.
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
@@ -379,7 +380,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         add(
                 new AjaxSubmitLink("apply", styleForm) {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         // If we have a new style, go to the edit page
                         if (style == null) {
                             StyleInfo s = getStyleInfo();
@@ -411,7 +412,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
 
                     @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onAfterSubmit(AjaxRequestTarget target) {
                         // Re-initialize the Legend model object, if it is null.
                         if (styleModel.getObject().getLegend() == null) {
                             styleModel
@@ -421,15 +422,15 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 });
         add(
                 new AjaxSubmitLink("save", styleForm) {
                     @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
-                        if (form.hasError()) {
+                    protected void onAfterSubmit(AjaxRequestTarget target) {
+                        if (getForm().hasError()) {
                             addFeedbackPanels(target);
                         } else {
                             doReturn(StylePage.class);
@@ -437,7 +438,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 });
@@ -714,7 +715,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        public void onSubmit(AjaxRequestTarget target) {
                             if (getLayerInfo() == null || getLayerInfo().getId() == null) {
                                 switch (index) {
                                     case 1:

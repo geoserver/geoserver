@@ -8,12 +8,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -24,6 +24,7 @@ import org.apache.wicket.validation.IValidator;
 import org.geoserver.web.wicket.browser.FileRootsFinder;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 
+// TODO WICKET8 - Verify this page works OK
 /** Basic panel to set the Cog input URL. */
 public class CogInput extends Panel {
     TextField<String> textField;
@@ -102,7 +103,7 @@ public class CogInput extends Panel {
                     }
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         File file = null;
                         textField.processInput();
                         String input = textField.getConvertedInput();
@@ -118,14 +119,15 @@ public class CogInput extends Panel {
 
                                     @Override
                                     protected void fileClicked(
-                                            File file, AjaxRequestTarget target) {
+                                            File file, Optional<AjaxRequestTarget> target) {
                                         // clear the raw input of the field won't show the new model
                                         // value
                                         textField.clearInput();
                                         textField.setModelObject(file.getAbsolutePath());
-
-                                        target.add(textField);
-                                        dialog.close(target);
+                                        if (target.isPresent()) {
+                                            target.get().add(textField);
+                                            dialog.close(target.get());
+                                        }
                                     };
                                 };
                         chooser.setFileTableHeight(null);

@@ -46,6 +46,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 public class BatchesPanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 
@@ -324,8 +325,7 @@ public class BatchesPanel extends Panel {
 
                                                             @Override
                                                             protected void onSubmit(
-                                                                    AjaxRequestTarget target,
-                                                                    Form<?> form) {
+                                                                    AjaxRequestTarget target) {
                                                                 Batch batch =
                                                                         TaskManagerBeans.get()
                                                                                 .getDao()
@@ -418,8 +418,7 @@ public class BatchesPanel extends Panel {
                                                                     @Override
                                                                     protected void onSubmit(
                                                                             AjaxRequestTarget
-                                                                                    target,
-                                                                            Form<?> form) {
+                                                                                    target) {
                                                                         TaskManagerBeans.get()
                                                                                 .getBjService()
                                                                                 .scheduleNow(

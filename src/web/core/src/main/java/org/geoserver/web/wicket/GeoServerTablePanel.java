@@ -50,6 +50,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  *
  * @param <T>
  */
+// TODO WICKET8 - Verify this page works OK
 public abstract class GeoServerTablePanel<T> extends Panel {
 
     private static final long serialVersionUID = -5275268446479549108L;
@@ -501,7 +502,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             static final long serialVersionUID = 5334592790005438960L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 updateFilter(target, filter.getDefaultModelObjectAsString());
                 rememeberFilter();
             }
@@ -775,11 +776,6 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         @Override
         public void setObject(Boolean object) {
             selection[index] = object.booleanValue();
-        }
-
-        @Override
-        public void detach() {
-            // nothing to do
         }
     }
 

@@ -31,6 +31,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 
+// TODO WICKET8 - Verify this page works OK
 public class ClusterPage extends GeoServerSecuredPage {
 
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(ClusterPage.class);
@@ -89,9 +90,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(
-                            AjaxRequestTarget target,
-                            org.apache.wicket.markup.html.form.Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         // the container to use
                         final JMSContainer c = getJMSContainer();
                         if (c.isRunning()) {
@@ -172,9 +171,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(
-                            AjaxRequestTarget target,
-                            org.apache.wicket.markup.html.form.Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         ReadOnlyGeoServerLoader loader = getReadOnlyGeoServerLoader();
                         if (loader.isEnabled()) {
                             readOnlyInfo.getModel().setObject("disabled");
@@ -226,9 +223,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(
-                            AjaxRequestTarget target,
-                            org.apache.wicket.markup.html.form.Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         JMSFactory factory = getJMSFactory();
                         if (!factory.isEmbeddedBrokerStarted()) {
                             try {
@@ -296,16 +291,14 @@ public class ClusterPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onError(
-                            AjaxRequestTarget target,
-                            org.apache.wicket.markup.html.form.Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         fp.error("ERROR");
 
                         target.add(fp);
                     };
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         final boolean switchTo =
                                 !Boolean.parseBoolean(toggleInfo.getModel().getObject());
                         final ApplicationContext ctx =

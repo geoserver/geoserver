@@ -8,6 +8,7 @@ package org.geoserver.web.wicket.browser;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
@@ -39,7 +40,7 @@ public class FileBreadcrumsTest {
 
                                             @Override
                                             protected void pathItemClicked(
-                                                    File file, AjaxRequestTarget target) {
+                                                    File file, Optional<AjaxRequestTarget> target) {
                                                 lastClicked = file;
                                                 setSelection(file);
                                             }

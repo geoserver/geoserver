@@ -98,7 +98,6 @@ import org.geotools.jdbc.VirtualTable;
 import org.geotools.referencing.CRS;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.security.core.Authentication;
@@ -222,8 +221,6 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertNotNull(page2.getPublishedInfo().getResource().getCatalog());
     }
 
-    // TODO WICKET8 - Fix this test
-    @Ignore
     @Test
     public void testComputeLatLon() throws Exception {
         final Catalog catalog = getCatalog();
@@ -239,7 +236,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         print(tester.getLastRenderedPage(), true, true, true);
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:computeLatLon",
-                "onclick");
+                "click");
         print(tester.getLastRenderedPage(), true, true, true);
         // we used to have error messages
         tester.assertNoErrorMessage();

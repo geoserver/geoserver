@@ -46,6 +46,8 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  *
  * @author Andrea Aime
  */
+// TODO WICKET8 - migrate to https://yauaa.basjes.nl/ per
+// https://issues.apache.org/jira/browse/WICKET-6544
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class CodeMirrorEditor extends FormComponentPanel<String> {

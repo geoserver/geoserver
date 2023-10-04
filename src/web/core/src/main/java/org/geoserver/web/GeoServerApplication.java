@@ -37,7 +37,6 @@ import org.apache.wicket.request.IRequestHandlerDelegate;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestablePage;
-import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
@@ -411,7 +410,7 @@ public class GeoServerApplication extends WebApplication
     //
     // }
 
-    static class CallbackRequestCycleListener extends AbstractRequestCycleListener {
+    static class CallbackRequestCycleListener implements IRequestCycleListener {
         private List<WicketCallback> callbacks;
 
         public CallbackRequestCycleListener(GeoServerApplication app) {

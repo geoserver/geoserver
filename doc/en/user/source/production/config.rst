@@ -13,7 +13,11 @@ You can change the logging level in the :ref:`config_globalsettings_log_profile`
 Logging configuration hardening
 -------------------------------
 
-For production systems, it is advised to set the log location via the environment variable. This prevents overriding it via the administration GUI or REST API, providing better separation of responsibility between those setting up and controlling the actual machine, and those configuring the GeoServer data, styles and the like. Follow :ref:`overriding_the_log_location_setup_in_the_geoserver_configuration` for more information
+For production systems, it is advised to set ``GEOSERVER_LOG_LOCATION `` parameter during startup. The value may be defined as either an environment variable, java system property, or servlet context parameter.
+
+Defining ``GEOSERVER_LOG_LOCATION`` has priority, causing the value provided using the Admin Console GUI or REST API to be ignored. This apporach establishes a separation of responsibility between those setting up and controlling the actual machine, and those configuring the GeoServer application.
+
+Follow :ref:`overriding_the_log_location_setup_in_the_geoserver_configuration` for more information.
 
 Set a service strategy
 ----------------------

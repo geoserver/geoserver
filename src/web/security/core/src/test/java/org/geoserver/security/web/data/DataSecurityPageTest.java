@@ -22,7 +22,6 @@ import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.web.AbstractListPageTest;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
@@ -105,8 +104,6 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
                         .toString());
     }
 
-    // TODO WICKET8 - Fix this, re-add commented code
-    @Ignore
     @Test
     public void testEditCatalogMode() throws Exception {
         tester.startPage(DataSecurityPage.class);
@@ -122,15 +119,6 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
         final FormTester form = tester.newFormTester("catalogModeForm");
 
         form.select("catalogMode", 1);
-
-        // form.getForm()
-        //        .visitChildren(
-        //                RadioChoice.class,
-        //                (component, visit) -> {
-        //                    if (component.getId().equals("catalogMode")) {
-        //                        ((RadioChoice) component).onSelectionChanged();
-        //                    }
-        //                });
 
         assertEquals(
                 "MIXED",

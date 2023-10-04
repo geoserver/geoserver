@@ -185,6 +185,8 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         onSelectionUpdate(target);
     }
 
+    // TODO WICKET8 - remove deprecated IChainingModel
+    @SuppressWarnings("deprecation")
     abstract static class StatusModel<T> implements IChainingModel<T> {
 
         IModel chained;

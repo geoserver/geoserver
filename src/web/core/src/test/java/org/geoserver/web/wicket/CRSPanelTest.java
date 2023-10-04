@@ -21,7 +21,6 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class CRSPanelTest extends GeoServerWicketTestSupport {
@@ -229,8 +228,6 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:crs:popup:content:wkt", crs.toWKT());
     }
 
-    // TODO WICKET8 - Fix this test
-    @Ignore
     @Test
     public void testPlanetaryList() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
@@ -256,7 +253,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
                         (link, visit) -> {
                             if ("IAU:30115".equals(link.getDefaultModelObjectAsString())) {
                                 visit.stop();
-                                tester.executeAjaxEvent(link, "onclick");
+                                tester.executeAjaxEvent(link, "click");
                             }
                         });
 

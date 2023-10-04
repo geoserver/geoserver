@@ -150,6 +150,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                         .add(new AttributeAppender("title", title, " ")));
     }
 
+    @SuppressWarnings("deprecation")
     private boolean isCodeMirrorSupported() {
         boolean enableCodeMirror = true;
         WebClientInfo clientInfo = WebSession.get().getClientInfo();
@@ -184,6 +185,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return enableCodeMirror;
     }
 
+    @SuppressWarnings("deprecation")
     private ClientProperties extractIEVersion(String userAgent) {
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
@@ -201,6 +203,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return props;
     }
 
+    @SuppressWarnings("deprecation")
     private ClientProperties extractFirefoxVersion(String userAgent) {
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
@@ -214,6 +217,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return props;
     }
 
+    @SuppressWarnings("deprecation")
     private ClientProperties extractOperaVersion(String userAgent) {
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
@@ -231,6 +235,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return props;
     }
 
+    @SuppressWarnings("deprecation")
     private ClientProperties extractSafariVersion(String userAgent) {
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
@@ -242,6 +247,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return props;
     }
 
+    @SuppressWarnings("deprecation")
     private void setMajorMinorVersionByPattern(
             String userAgent, String patternString, ClientProperties properties) {
         Matcher matcher = Pattern.compile(patternString).matcher(userAgent);

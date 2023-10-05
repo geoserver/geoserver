@@ -22,7 +22,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /** These tests are quite brittle, and don't play well with others */
@@ -108,8 +107,6 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
                 dataDir.get("workspaces/sf/styles/" + STYLE_TO_MOVE_FILENAME).getType());
     }
 
-    // TODO WICKET8 - Fix this test
-    @Ignore
     @Test
     public void testGenerateTemplateFrenchLocale() throws Exception {
         final Session session = tester.getSession();
@@ -123,10 +120,10 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
 
             // test the copy style link
             tester.newFormTester("styleForm").select("context:panel:templates", 1);
-            tester.executeAjaxEvent("styleForm:context:panel:templates", "onchange");
+            tester.executeAjaxEvent("styleForm:context:panel:templates", "change");
             Component generateLink =
                     tester.getComponentFromLastRenderedPage("styleForm:context:panel:generate");
-            tester.executeAjaxEvent(generateLink, "onClick");
+            tester.executeAjaxEvent(generateLink, "click");
             // check single quote in the message has been escaped
             assertThat(
                     tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));
@@ -136,8 +133,6 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
         }
     }
 
-    // TODO WICKET8 - Fix this test
-    @Ignore
     @Test
     public void testCopyStyleFrenchLocale() throws Exception {
         final Session session = tester.getSession();
@@ -151,10 +146,10 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
 
             // test the copy style link
             tester.newFormTester("styleForm").select("context:panel:existingStyles", 1);
-            tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "onchange");
+            tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "change");
             Component copyLink =
                     tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy");
-            tester.executeAjaxEvent(copyLink, "onClick");
+            tester.executeAjaxEvent(copyLink, "click");
             // check single quote in the message has been escaped
             assertThat(
                     tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));

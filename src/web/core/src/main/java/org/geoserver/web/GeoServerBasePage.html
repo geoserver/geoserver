@@ -97,7 +97,9 @@
     </div><!-- /#page -->
     </div><!-- /.wrap> -->
   </div><!-- /#main -->
-  <div id="ajaxFeedback" class="d-none">
+  <!-- The feebdback component needs a local style so that the Wicket Ajax support can flip
+       its value to "display: true". Will not work with a class, do not use one here -->
+  <div id="ajaxFeedback" style="display: none">
     <img alt="Loading..." wicket:id="ajaxFeedbackImage"/>
   </div>
 </body>

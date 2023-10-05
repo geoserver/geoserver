@@ -123,7 +123,7 @@ public class RepeatableAttributesTablePanel extends Panel {
                                                     attributeConfiguration,
                                                     id,
                                                     itemModel.getObject(),
-                                                    dataProvider,
+                                                    dataProvider.getModel(),
                                                     rInfo);
 
                             if (component != null) {

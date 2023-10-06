@@ -361,7 +361,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                             for (int i = 1; Resources.exists(store().get(dest)); i++) {
                                 dest = getIthPath(i);
                             }
-                            editPanel = new PanelEdit(id, dest, true, "");
+                            editPanel = new PanelEdit(id, store().get(dest), true, "");
                             return editPanel;
                         }
 
@@ -380,11 +380,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                         protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                             editPanel.getFeedbackMessages().clear();
                             String resourcePath = editPanel.getResource();
-                            if (Paths.isAbsolute(resourcePath)) {
-                                // although ResourceStore.get(path) is limited to relative paths
-                                // out of an abundance of caution we will reject
-                                error(getLocalizer().getString("pathUnsupported", getPage()));
-                            } else if (!Paths.isValid(resourcePath)) {
+                            if (!Paths.isValid(resourcePath)) {
                                 try {
                                     Paths.valid(resourcePath);
                                 } catch (IllegalArgumentException reason) {
@@ -465,7 +461,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
 
                             @Override
                             protected Component getContents(String id) {
-                                editPanel = new PanelEdit(id, resource.path(), false, contents);
+                                editPanel = new PanelEdit(id, resource, false, contents);
                                 return editPanel;
                             }
 

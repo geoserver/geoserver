@@ -281,6 +281,11 @@ public final class Files {
             } else if (!file.equals(other.file)) return false;
             return true;
         }
+
+        @Override
+        public boolean isInternal() {
+            return false;
+        }
     }
 
     private static final Logger LOGGER = Logging.getLogger(Files.class);
@@ -320,7 +325,9 @@ public final class Files {
      * @param baseDirectory Optional base directory used to resolve relative file URLs
      * @param url File URL or path relative to data directory
      * @return File indicated by provided URL location
+     * @deprecated use resources.
      */
+    @Deprecated
     public static File url(File baseDirectory, String url) {
         String ss;
         if (!Objects.equals(url, ss = StringUtils.removeStart(url, "resource:"))) {

@@ -119,6 +119,7 @@ public class RefreshedPanel extends Panel {
 
                     @Override
                     public void onConfigure(Component component) {
+                        super.onConfigure(component);
                         Metrics metrics = systemInfoCollector.retrieveAllSystemInfo();
                         metricMdl.setObject(metrics.getMetrics());
                         time.setDefaultModel(Model.of(new Date()));

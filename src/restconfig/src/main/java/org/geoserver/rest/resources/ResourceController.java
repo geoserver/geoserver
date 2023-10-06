@@ -9,11 +9,8 @@ import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import freemarker.template.ObjectWrapper;
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,6 +20,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,6 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -129,24 +128,18 @@ public class ResourceController extends RestBaseController {
      * @return Content type requested
      */
     protected static MediaType getMediaType(Resource resource, HttpServletRequest request) {
-        if (resource.getType() == Resource.Type.DIRECTORY) {
-            return getFormat(request);
-        } else if (resource.getType() == Resource.Type.RESOURCE) {
-            String mimeType = URLConnection.guessContentTypeFromName(resource.name());
-            if (mimeType == null
-                    || MediaType.APPLICATION_OCTET_STREAM.toString().equals(mimeType)) {
-                // try guessing from data
-                try (InputStream is = new BufferedInputStream(resource.in())) {
-                    mimeType = URLConnection.guessContentTypeFromStream(is);
-                } catch (IOException e) {
-                    // do nothing, we'll just use application/octet-stream
-                }
-            }
-            return mimeType == null
-                    ? MediaType.APPLICATION_OCTET_STREAM
-                    : MediaType.valueOf(mimeType);
-        } else {
-            return null;
+        switch (resource.getType()) {
+            case DIRECTORY:
+                return getFormat(request);
+            case RESOURCE:
+                // set the mime if known by the servlet container, otherwise default to
+                // application/octet-stream to mitigate potential cross-site scripting
+                return Optional.ofNullable(request.getServletContext())
+                        .map(sc -> sc.getMimeType(resource.name()))
+                        .map(MediaType::valueOf)
+                        .orElse(MediaType.APPLICATION_OCTET_STREAM);
+            default:
+                throw new ResourceNotFoundException("Undefined resource path.");
         }
     }
 
@@ -265,13 +258,13 @@ public class ResourceController extends RestBaseController {
         Resource resource = resource(request);
         Operation operation = operation(operationName);
         Object result;
-        response.setContentType(getFormat(format).toString());
 
         if (operation == Operation.METADATA) {
             result =
                     wrapObject(
                             new ResourceMetadataInfo(resource, request),
                             ResourceMetadataInfo.class);
+            response.setContentType(getFormat(format).toString());
         } else {
             if (resource.getType() == Resource.Type.UNDEFINED) {
                 throw new ResourceNotFoundException("Undefined resource path.");
@@ -279,7 +272,13 @@ public class ResourceController extends RestBaseController {
                 HttpHeaders responseHeaders = new HttpHeaders();
                 MediaType mediaType = getMediaType(resource, request);
                 responseHeaders.setContentType(mediaType);
-                response.setContentType(mediaType.toString());
+                if (resource.getType() == Resource.Type.RESOURCE) {
+                    // Use Content-Disposition: attachment to mitigate potential XSS issues
+                    responseHeaders.setContentDisposition(
+                            ContentDisposition.builder("attachment")
+                                    .filename(resource.name())
+                                    .build());
+                }
 
                 if (request.getMethod().equals("HEAD")) {
                     result = new ResponseEntity<>("", responseHeaders, HttpStatus.OK);
@@ -288,6 +287,7 @@ public class ResourceController extends RestBaseController {
                             wrapObject(
                                     new ResourceDirectoryInfo(resource, request),
                                     ResourceDirectoryInfo.class);
+                    response.setContentType(mediaType.toString());
                 } else {
                     result = new ResponseEntity<>(resource.in(), responseHeaders, HttpStatus.OK);
                 }

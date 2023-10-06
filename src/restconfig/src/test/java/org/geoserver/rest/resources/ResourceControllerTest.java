@@ -5,13 +5,13 @@
 package org.geoserver.rest.resources;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.text.DateFormat;
@@ -239,6 +239,11 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     public void testResourceHeaders() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse(RestBaseController.ROOT_PATH + "/resource/mydir2/fake.png");
+        assertEquals(
+                "http://localhost:8080/geoserver"
+                        + RestBaseController.ROOT_PATH
+                        + "/resource/mydir2/fake.png",
+                response.getHeader("Location"));
         Assert.assertEquals(
                 FORMAT_HEADER.format(getDataDirectory().get("mydir2/fake.png").lastmodified()),
                 response.getHeader("Last-Modified"));
@@ -249,12 +254,19 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                 response.getHeader("Resource-Parent"));
         Assert.assertEquals("resource", response.getHeader("Resource-Type"));
         assertContentType("image/png", response);
+        assertEquals(
+                "attachment; filename=\"fake.png\"", response.getHeader("Content-Disposition"));
     }
 
     @Test
     public void testResourceHead() throws Exception {
         MockHttpServletResponse response =
                 headAsServletResponse(RestBaseController.ROOT_PATH + "/resource/mydir2/fake.png");
+        assertEquals(
+                "http://localhost:8080/geoserver"
+                        + RestBaseController.ROOT_PATH
+                        + "/resource/mydir2/fake.png",
+                response.getHeader("Location"));
         Assert.assertEquals(
                 FORMAT_HEADER.format(getDataDirectory().get("mydir2/fake.png").lastmodified()),
                 response.getHeader("Last-Modified"));
@@ -265,6 +277,8 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                 response.getHeader("Resource-Parent"));
         Assert.assertEquals("resource", response.getHeader("Resource-Type"));
         assertContentType("image/png", response);
+        assertEquals(
+                "attachment; filename=\"fake.png\"", response.getHeader("Content-Disposition"));
     }
 
     @Test
@@ -409,7 +423,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                         + "      'link':       {\n"
                         + "        'href': 'http://localhost:8080/geoserver/rest/resource/mydir2/imagewithoutextension',\n"
                         + "        'rel': 'alternate',\n"
-                        + "        'type': 'image/png'\n"
+                        + "        'type': 'application/octet-stream'\n"
                         + "      }\n"
                         + "    },\n"
                         + "        {\n"
@@ -417,7 +431,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                         + "      'link':       {\n"
                         + "        'href': 'http://localhost:8080/geoserver/rest/resource/mydir2/myres.json',\n"
                         + "        'rel': 'alternate',\n"
-                        + "        'type': 'application/octet-stream'\n"
+                        + "        'type': 'application/json'\n"
                         + "      }\n"
                         + "    },\n"
                         + "        {\n"
@@ -430,9 +444,6 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                         + "    }\n"
                         + "  ]}\n"
                         + "}}";
-        // starting with JDK 17 (v3?) json is correctly recognized, the test output
-        String jsonType = URLConnection.guessContentTypeFromName("test.json");
-        if (jsonType != null) expected = expected.replace("application/octet-stream", jsonType);
         JSONAssert.assertEquals(expected, (JSONObject) json);
     }
 
@@ -508,7 +519,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
         Document doc = getAsDOM(RestBaseController.ROOT_PATH + "/resource/mydir2?format=xml");
         // print(doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "image/png",
+                "application/octet-stream",
                 "/ResourceDirectory/children/child[name='imagewithoutextension']/atom:link/@type",
                 doc);
         XMLAssert.assertXpathEvaluatesTo(

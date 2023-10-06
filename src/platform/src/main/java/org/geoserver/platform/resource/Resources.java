@@ -572,8 +572,8 @@ public class Resources {
      *   <li>Actual URL to external resource using http or ftp protocol - will return null
      *   <li>Resource URL - will support resources from resource store
      *   <li>File URL - will support absolute file references
-     *   <li>File URL - will support relative file references - this is deprecated, use resource:
-     *       instead
+     *   <li>File URL - relative file references are interpreted as resource paths - this is
+     *       deprecated, use resource: instead
      *   <li>Fake URLs - sde://user:pass@server:port - will return null.
      *   <li>path - user supplied file path (operating specific specific)
      * </ul>
@@ -593,7 +593,7 @@ public class Resources {
         // if path looks like an absolute file: URL, try standard conversion
         if (url.startsWith("file:/")) {
             try {
-                return Files.asResource(URLs.urlToFile(new URL(url)));
+                return fromFile(baseDirectory, URLs.urlToFile(new URL(url)));
             } catch (Exception e) {
                 // failure, so fall through
             }
@@ -672,8 +672,8 @@ public class Resources {
      *   <li>Actual URL to external resource using http or ftp protocol - will return null
      *   <li>Resource URL - will support resources from resource store
      *   <li>File URL - will support absolute file references
-     *   <li>File URL - will support relative file references - this is deprecated, use resource:
-     *       instead
+     *   <li>File URL - relative file references are interpreted as resource paths - this is
+     *       deprecated, use resource: instead
      *   <li>Fake URLs - sde://user:pass@server:port - will return null.
      * </ul>
      *
@@ -685,9 +685,28 @@ public class Resources {
         if (url.getProtocol().equalsIgnoreCase("resource")) {
             return baseDirectory.get(Paths.convert(url.getPath()));
         } else if (url.getProtocol().equalsIgnoreCase("file")) {
-            return Files.asResource(URLs.urlToFile(url));
+            return fromFile(baseDirectory, URLs.urlToFile(url));
         } else {
             return null;
+        }
+    }
+
+    /**
+     * @param baseDirectory base directory for resource: or relative file: paths
+     * @param file the file
+     * @return
+     */
+    public static Resource fromFile(Resource baseDirectory, File file) {
+        String path;
+        try {
+            path = Paths.convert(baseDirectory.dir(), file.getCanonicalFile());
+        } catch (IOException e) {
+            path = Paths.convert(baseDirectory.dir(), file);
+        }
+        if (FilePaths.isAbsolute(path)) {
+            return Files.asResource(file);
+        } else {
+            return baseDirectory.get(path);
         }
     }
 

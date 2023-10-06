@@ -39,6 +39,16 @@ public class StylePublisher extends AbstractURLPublisher {
     }
 
     @Override
+    protected boolean isAttachment(URL url, String filename, String mime) {
+        // prevent stored XSS using malicious style resources with the
+        // text/html, text/xml, application/xml or image/svg+xml mime types
+        String lowerCaseMime = mime.toLowerCase();
+        return lowerCaseMime.contains("xml")
+                || lowerCaseMime.contains("html")
+                || super.isAttachment(url, filename, mime);
+    }
+
+    @Override
     protected URL getUrl(HttpServletRequest request) throws IOException {
         String ctxPath = request.getContextPath();
         String reqPath = request.getRequestURI();
@@ -75,7 +85,10 @@ public class StylePublisher extends AbstractURLPublisher {
 
             switch (resource.getType()) {
                 case RESOURCE:
-                    return URLs.fileToUrl(resource.file());
+                    // don't allow access to the style .xml files
+                    return resource.name().endsWith(".xml")
+                            ? null
+                            : URLs.fileToUrl(resource.file());
                 case DIRECTORY:
                 case UNDEFINED:
                 default:

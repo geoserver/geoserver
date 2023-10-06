@@ -5,6 +5,8 @@
  */
 package org.geoserver.ows;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,6 +21,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -28,6 +31,8 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
 
     static StylePublisher publisher;
 
+    static MockServletContext context;
+
     static List<String[]> paths = new ArrayList<>();
 
     @Override
@@ -35,7 +40,8 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
 
         Catalog catalog = getCatalog();
         publisher = new StylePublisher(catalog);
-        publisher.setServletContext(new MockServletContext());
+        context = new MockServletContext();
+        publisher.setServletContext(context);
         GeoServerResourceLoader resourceLoader = getResourceLoader();
 
         // add style - global
@@ -74,6 +80,9 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
                 "org/geoserver/ows/smileyface.png", "styles/icons/override.png");
         resourceLoader.copyFromClassPath(
                 "org/geoserver/ows/grass_fill.png", "workspaces/cite/styles/icons/override.png");
+
+        resourceLoader.createFile("styles/test.foo");
+        resourceLoader.createFile("styles/test.bar");
     }
 
     private MockHttpServletResponse request(String[] path, String modifiedSince) throws Exception {
@@ -92,6 +101,64 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response = new MockHttpServletResponse();
         publisher.handleRequest(request, response);
         return response;
+    }
+
+    @Test
+    public void testBlockXML() throws Exception {
+        // test that access to styles' XML configuration files is blocked
+        String[] path1 = {"styles/Default.sld"};
+        MockHttpServletResponse response1 = request(path1, null);
+        assertEquals(200, response1.getStatus());
+        String[] path2 = {"styles/Default.xml"};
+        MockHttpServletResponse response2 = request(path2, null);
+        assertEquals(404, response2.getStatus());
+    }
+
+    @Test
+    public void testDefaultContentType() throws Exception {
+        // test that the application/octect-stream content type is used if
+        // the servlet context doesn't contain a mapping for the mime type.
+        String[] path = {"styles/test.bar"};
+        MockHttpServletResponse response = request(path, null);
+        assertEquals(200, response.getStatus());
+        assertThat(
+                response.getHeader("Content-Type"),
+                startsWith(MediaType.APPLICATION_OCTET_STREAM_VALUE));
+    }
+
+    @Test
+    public void testForceDownload() throws Exception {
+        // test that style resources with certain mime types have a Content-Disposition
+        // to force the web browser to download the file
+        String[] path = {"styles/test.foo"};
+        context.addMimeType("foo", MediaType.TEXT_XML);
+        MockHttpServletResponse response1 = request(path, null);
+        assertEquals(200, response1.getStatus());
+        assertThat(response1.getHeader("Content-Type"), startsWith(MediaType.TEXT_XML_VALUE));
+        assertEquals(
+                "attachment; filename=\"test.foo\"", response1.getHeader("Content-Disposition"));
+
+        context.addMimeType("foo", MediaType.APPLICATION_XML);
+        MockHttpServletResponse response2 = request(path, null);
+        assertEquals(200, response2.getStatus());
+        assertThat(
+                response2.getHeader("Content-Type"), startsWith(MediaType.APPLICATION_XML_VALUE));
+        assertEquals(
+                "attachment; filename=\"test.foo\"", response2.getHeader("Content-Disposition"));
+
+        context.addMimeType("foo", MediaType.TEXT_HTML);
+        MockHttpServletResponse response3 = request(path, null);
+        assertEquals(200, response3.getStatus());
+        assertThat(response3.getHeader("Content-Type"), startsWith(MediaType.TEXT_HTML_VALUE));
+        assertEquals(
+                "attachment; filename=\"test.foo\"", response3.getHeader("Content-Disposition"));
+
+        context.addMimeType("foo", MediaType.valueOf("image/svg+xml"));
+        MockHttpServletResponse response4 = request(path, null);
+        assertEquals(200, response4.getStatus());
+        assertThat(response4.getHeader("Content-Type"), startsWith("image/svg+xml"));
+        assertEquals(
+                "attachment; filename=\"test.foo\"", response4.getHeader("Content-Disposition"));
     }
 
     @Test

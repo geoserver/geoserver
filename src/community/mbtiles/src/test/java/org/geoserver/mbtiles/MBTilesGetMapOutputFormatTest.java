@@ -24,12 +24,12 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.tiles.FileBackedRawMap;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
-import org.geoserver.wms.map.RawMap;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -195,9 +195,9 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
     }
 
     MBTilesFile createMbTilesFiles(WebMap map) throws IOException {
-        assertTrue(map instanceof RawMap);
+        assertTrue(map instanceof FileBackedRawMap);
 
-        RawMap rawMap = (RawMap) map;
+        FileBackedRawMap rawMap = (FileBackedRawMap) map;
         File f = File.createTempFile("temp", ".mbtiles", new File("target"));
         FileOutputStream fout = new FileOutputStream(f);
         rawMap.writeTo(fout);

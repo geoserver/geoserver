@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.util.EncodingInfo;
 import org.geoserver.ows.util.XmlCharsetDetector;
 import org.geotools.util.URLs;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -79,15 +81,18 @@ public abstract class AbstractURLPublisher extends AbstractController {
             return null;
         }
 
-        // set the mime if known by the servlet container, set nothing otherwise
-        // (Tomcat behaves like this when it does not recognize the file format)
+        // set the mime if known by the servlet container, otherwise default to
+        // application/octet-stream to mitigate potential cross-site scripting
+        String filename = new File(url.getFile()).getName();
         String mime =
                 Optional.ofNullable(getServletContext())
-                        .map(sc -> sc.getMimeType(new File(url.getFile()).getName()))
-                        .orElse(null);
-        if (mime != null) {
-            response.setContentType(mime);
-        }
+                        .map(sc -> sc.getMimeType(filename))
+                        .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        response.setContentType(mime);
+        String dispositionType = isAttachment(url, filename, mime) ? "attachment" : "inline";
+        response.setHeader(
+                "Content-Disposition",
+                ContentDisposition.builder(dispositionType).filename(filename).build().toString());
 
         // set the content length and content type
         URLConnection connection = url.openConnection();
@@ -163,6 +168,14 @@ public abstract class AbstractURLPublisher extends AbstractController {
         }
         // the HTTP header has second precision
         return 1000 * (ifModifiedSince / 1000);
+    }
+
+    /**
+     * Can be overridden to set the Content-Disposition: attachment to mitigate potential XSS issues
+     * with certain resources
+     */
+    protected boolean isAttachment(URL url, String filename, String mime) {
+        return false;
     }
 
     /** Retrieves the resource URL from the specified request */

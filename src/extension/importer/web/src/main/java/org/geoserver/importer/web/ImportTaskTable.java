@@ -32,7 +32,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.IChainingModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -185,9 +184,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         onSelectionUpdate(target);
     }
 
-    // TODO WICKET8 - remove deprecated IChainingModel
-    @SuppressWarnings("deprecation")
-    abstract static class StatusModel<T> implements IChainingModel<T> {
+    abstract static class StatusModel<T> implements IModel<T> {
 
         IModel chained;
 
@@ -203,12 +200,10 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             chained.detach();
         }
 
-        @Override
         public void setChainedModel(IModel<?> model) {
             this.chained = model;
         }
 
-        @Override
         public IModel<?> getChainedModel() {
             return chained;
         }

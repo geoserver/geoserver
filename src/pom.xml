@@ -88,6 +88,7 @@
   </distributionManagement>
 
   <properties>
+    <geoserverBaseDir>${maven.multiModuleProjectDirectory}</geoserverBaseDir>
     <gs.version>2.25-SNAPSHOT</gs.version>
     <gt.version>31-SNAPSHOT</gt.version>
     <gwc.version>1.25-SNAPSHOT</gwc.version>
@@ -2064,24 +2065,6 @@
           <verifyFail>stop</verifyFail>
           <verifyFailOn>strict</verifyFailOn>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.commonjava.maven.plugins</groupId>
-        <artifactId>directory-maven-plugin</artifactId>
-        <version>0.3.1</version>
-        <executions>
-          <execution>
-            <id>directories</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>highest-basedir</goal>
-            </goals>
-            <configuration>
-              <property>geoserverBaseDir</property>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
     </plugins>

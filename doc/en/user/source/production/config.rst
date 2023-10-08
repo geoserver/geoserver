@@ -17,7 +17,7 @@ For production systems, it is advised to set ``GEOSERVER_LOG_LOCATION `` paramet
 
 Defining ``GEOSERVER_LOG_LOCATION`` has priority, causing the value provided using the Admin Console GUI or REST API to be ignored. This apporach establishes a separation of responsibility between those setting up and controlling the actual machine, and those configuring the GeoServer application.
 
-Follow :ref:`overriding_the_log_location_setup_in_the_geoserver_configuration` for more information.
+Follow :ref:`logging` for more information.
 
 Set a service strategy
 ----------------------

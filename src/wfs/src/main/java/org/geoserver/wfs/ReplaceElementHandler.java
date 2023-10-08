@@ -153,7 +153,8 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
                 replace(oldFeature, newFeature, featureStore, oldFeatures, replaced);
             }
         } catch (IOException e) {
-            throw new WFSException(element, "Transaction REPLACE failed", e);
+            throw exceptionFactory.newWFSTransactionException(
+                    "Replace error: " + e.getMessage(), e);
         }
 
         response.setTotalReplaced(BigInteger.valueOf(replaced.size()));

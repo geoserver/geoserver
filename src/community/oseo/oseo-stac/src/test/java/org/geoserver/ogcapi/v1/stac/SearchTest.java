@@ -236,6 +236,26 @@ public class SearchTest extends STACTestSupport {
                         "JSONB_TEST.02"));
     }
 
+    @Test
+    public void testBBOXAsTextFilterPost() throws Exception {
+        // two sentinel, one landsat, one sas
+        String request = "{\"bbox\":\"16,42,17,43\"}";
+        DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
+
+        checkCollectionsItemsSinglePage(
+                doc,
+                6,
+                containsInAnyOrder(
+                        "LANDSAT8", "LANDSAT8", "SAS1", "SAS1", "SENTINEL2", "SENTINEL2"),
+                containsInAnyOrder(
+                        "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWG_N02.01",
+                        "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01",
+                        "LS8_TEST.02",
+                        "SAS1_20180226102021.01",
+                        "SAS1_20180227102021.02",
+                        "JSONB_TEST.02"));
+    }
+
     public void checkCollectionsItemsSinglePage(
             DocumentContext doc,
             int matched,

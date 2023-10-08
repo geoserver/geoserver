@@ -6,12 +6,15 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -19,6 +22,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.impl.GeoServerUser;
@@ -29,6 +33,7 @@ import org.geotools.api.data.DataStore;
 import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Point;
@@ -882,23 +887,8 @@ public class TransactionTest extends WFSTestSupport {
     @Test
     public void elementHandlerOrder() throws Exception {
         Catalog cat = getCatalog();
-        DataStoreInfo ds = cat.getFactory().createDataStore();
-        ds.setName("foo");
-        ds.setWorkspace(cat.getDefaultWorkspace());
-        ds.setEnabled(true);
-
-        Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
-        cat.add(ds);
-
+        DataStoreInfo ds = getDataStoreInfo(cat);
         DataStore store = (DataStore) ds.getDataStore(null);
-        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        tb.setName("bar");
-        tb.add("name", String.class);
-        tb.add("geom", Point.class);
-
-        store.createSchema(tb.buildFeatureType());
 
         CatalogBuilder cb = new CatalogBuilder(cat);
         cb.setStore(ds);
@@ -969,6 +959,7 @@ public class TransactionTest extends WFSTestSupport {
 
         dom = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&featureId=bar.5");
         XMLAssert.assertXpathEvaluatesTo("daffy", "//gs:name/text()", dom);
+        dispose(cat, ds, store, ft);
     }
 
     @Test
@@ -1015,6 +1006,7 @@ public class TransactionTest extends WFSTestSupport {
 
             @SuppressWarnings("PMD.CloseResource")
             ApplicationContext context = GeoServerSystemTestSupport.applicationContext;
+            @SuppressWarnings("PMD.CloseResource")
             Transaction transaction = new Transaction(getWFS(), getCatalog(), context);
             gtTransaction = transaction.getDatastoreTransaction(request);
         } finally {
@@ -1022,7 +1014,6 @@ public class TransactionTest extends WFSTestSupport {
         }
         assertNotNull(gtTransaction);
         assertEquals("extValue", gtTransaction.getProperty("extKey"));
-        gtTransaction.close();
     }
 
     /** Tests XML entity expansion limit on parsing with system property configuration. */
@@ -1169,5 +1160,151 @@ public class TransactionTest extends WFSTestSupport {
                 exceptionNode.getAttributes().getNamedItem("exceptionCode").getTextContent());
         assertEquals(
                 "the_geom", exceptionNode.getAttributes().getNamedItem("locator").getTextContent());
+    }
+
+    /** Assert no trigger details leaked by default */
+    @Test
+    public void testOptionalTransactionCauseNotInException() throws Exception {
+        GeoServerInfo gs = getGeoServer().getGlobal();
+        gs.getSettings().setVerboseExceptions(false);
+        getGeoServer().save(gs);
+
+        Catalog cat = getCatalog();
+        DataStoreInfo ds = getDataStoreInfo(cat);
+        DataStore store = (DataStore) ds.getDataStore(null);
+
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(ds);
+
+        SimpleFeatureStore fs = (SimpleFeatureStore) store.getFeatureSource("bar");
+
+        FeatureTypeInfo ft = cb.buildFeatureType(fs);
+        cat.add(ft);
+
+        try (Connection conn =
+                        ((JDBCDataStore) store)
+                                .getConnection(org.geotools.api.data.Transaction.AUTO_COMMIT);
+                Statement stmt = conn.createStatement()) {
+            // Create the trigger
+            stmt.execute(
+                    "CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" FOR EACH ROW CALL \""
+                            + ExceptionThrowingTrigger.class.getName()
+                            + "\"");
+            String insert =
+                    "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                            + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                            + " xmlns:gml=\"http://www.opengis.net/gml\" "
+                            + " xmlns:gs='"
+                            + SystemTestData.DEFAULT_URI
+                            + "'>"
+                            + "<wfs:Insert idgen='UseExisting'>"
+                            + " <gs:bar gml:id='1'>"
+                            + "    <gs:name>acme</gs:name>"
+                            + " </gs:bar>"
+                            + "</wfs:Insert>"
+                            + "</wfs:Transaction>";
+
+            assertWfs10TransactionFailureContainsText(
+                    insert, ExceptionThrowingTrigger.STATIC_CAUSE, false);
+        } finally {
+            dispose(cat, ds, store, ft);
+        }
+    }
+
+    /** Assert trigger details in error message, if exception details are configured */
+    @Test
+    public void testOptionalTransactionCauseInException() throws Exception {
+        GeoServerInfo gs = getGeoServer().getGlobal();
+        gs.getSettings().setVerboseExceptions(true);
+        getGeoServer().save(gs);
+
+        Catalog cat = getCatalog();
+        DataStoreInfo ds = getDataStoreInfo(cat);
+        DataStore store = (DataStore) ds.getDataStore(null);
+
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(ds);
+
+        SimpleFeatureStore fs = (SimpleFeatureStore) store.getFeatureSource("bar");
+
+        FeatureTypeInfo ft = cb.buildFeatureType(fs);
+        cat.add(ft);
+
+        try (Connection conn =
+                        ((JDBCDataStore) store)
+                                .getConnection(org.geotools.api.data.Transaction.AUTO_COMMIT);
+                Statement stmt = conn.createStatement()) {
+            // Create the trigger
+            stmt.execute(
+                    "CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" FOR EACH ROW CALL \""
+                            + ExceptionThrowingTrigger.class.getName()
+                            + "\"");
+
+            String insert =
+                    "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                            + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                            + " xmlns:gml=\"http://www.opengis.net/gml\" "
+                            + " xmlns:gs='"
+                            + SystemTestData.DEFAULT_URI
+                            + "'>"
+                            + "<wfs:Insert idgen='UseExisting'>"
+                            + " <gs:bar gml:id='1'>"
+                            + "    <gs:name>acme</gs:name>"
+                            + " </gs:bar>"
+                            + "</wfs:Insert>"
+                            + "</wfs:Transaction>";
+
+            assertWfs10TransactionFailureContainsText(
+                    insert, ExceptionThrowingTrigger.STATIC_CAUSE, true);
+        } finally {
+            dispose(cat, ds, store, ft);
+        }
+    }
+
+    private void assertWfs10TransactionFailureContainsText(
+            String wfsTransaction, String pattern, boolean expected) throws Exception {
+        Document resp = postAsDOM("wfs", wfsTransaction);
+        assertEquals("WFS_TransactionResponse", resp.getDocumentElement().getLocalName());
+        assertEquals(1, resp.getElementsByTagName("wfs:FAILED").getLength());
+        assertEquals(1, resp.getElementsByTagName("wfs:Message").getLength());
+        String failureMessage = resp.getElementsByTagName("wfs:Message").item(0).getTextContent();
+        if (expected) {
+            assertTrue(failureMessage.contains(pattern));
+        } else {
+            assertFalse(failureMessage.contains(pattern));
+        }
+    }
+
+    private DataStoreInfo getDataStoreInfo(Catalog cat) throws IOException {
+        DataStoreInfo ds = cat.getFactory().createDataStore();
+        ds.setName("foo");
+        ds.setWorkspace(cat.getDefaultWorkspace());
+        ds.setEnabled(true);
+
+        Map<String, Serializable> params = ds.getConnectionParameters();
+        params.put("dbtype", "h2");
+        params.put(
+                "database", getTestData().getDataDirectoryRoot().getAbsolutePath()
+                // For optional H2 SQL console trace: + ";TRACE_LEVEL_SYSTEM_OUT=3"
+                );
+        cat.add(ds);
+
+        DataStore store = (DataStore) ds.getDataStore(null);
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.setName("bar");
+        tb.add("name", String.class);
+        tb.add("geom", Point.class);
+
+        store.createSchema(tb.buildFeatureType());
+
+        return ds;
+    }
+
+    private void dispose(Catalog cat, DataStoreInfo ds, DataStore store, FeatureTypeInfo ft)
+            throws IOException {
+        store.removeSchema(ft.getName());
+        store.dispose();
+        cat.remove(ft);
+        cat.remove(ds);
     }
 }

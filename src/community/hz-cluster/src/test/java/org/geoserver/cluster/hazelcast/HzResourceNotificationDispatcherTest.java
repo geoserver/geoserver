@@ -10,11 +10,12 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 
-import com.hazelcast.core.Cluster;
+import com.hazelcast.cluster.Cluster;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ITopic;
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
+import com.hazelcast.topic.ITopic;
+import com.hazelcast.topic.Message;
+import com.hazelcast.topic.MessageListener;
+import java.util.UUID;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
@@ -40,7 +41,8 @@ public class HzResourceNotificationDispatcherTest
         expect(hz.getCluster()).andStubReturn(cluster);
         expect(hz.<ResourceNotification>getTopic(HzResourceNotificationDispatcher.TOPIC_NAME))
                 .andStubReturn(topic);
-        expect(topic.addMessageListener(capture(captureTopicListener))).andReturn("fake-id");
+        expect(topic.addMessageListener(capture(captureTopicListener)))
+                .andReturn(UUID.randomUUID());
         topic.publish(EasyMock.capture(captureTopicPublish));
         expectLastCall()
                 .andStubAnswer(

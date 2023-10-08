@@ -46,10 +46,11 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
     /** logger */
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wfs");
 
-    FilterFactory factory = CommonFactoryFinder.getFilterFactory(null);
+    FilterFactory filterFactory;
 
     public DeleteElementHandler(GeoServer gs) {
         super(gs);
+        filterFactory = CommonFactoryFinder.getFilterFactory(null);
     }
 
     @Override
@@ -166,8 +167,8 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                     while (writer.hasNext()) {
                         String fid = writer.next().getID();
                         Set<FeatureId> featureIds = new HashSet<>();
-                        featureIds.add(factory.featureId(fid));
-                        locking.unLockFeatures(factory.id(featureIds));
+                        featureIds.add(filterFactory.featureId(fid));
+                        locking.unLockFeatures(filterFactory.id(featureIds));
                         writer.remove();
                         deleted++;
                     }
@@ -181,7 +182,6 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 store.removeFeatures(filter);
             }
         } catch (IOException e) {
-            String message = e.getMessage();
             String eHandle = delete.getHandle();
             String code = null;
 
@@ -190,7 +190,8 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
             if (e instanceof FeatureLockException) {
                 code = "MissingParameterValue";
             }
-            throw new WFSTransactionException(message, e, code, eHandle, handle);
+            throw exceptionFactory.newWFSTransactionException(
+                    "Delete error: " + e.getMessage(), e, code, eHandle, handle);
         }
 
         // update deletion count

@@ -47,6 +47,7 @@ import org.geotools.renderer.i18n.ErrorKeys;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.renderer.style.ExpressionExtractor;
+import org.geotools.renderer.style.FontCache;
 import org.geotools.util.SuppressFBWarnings;
 
 /**
@@ -333,6 +334,10 @@ public class LegendUtils {
                 && (legendFontSize == LegendUtils.DEFAULT_FONT_SIZE || legendFontSize <= 0))
             return DEFAULT_FONT;
 
+        Font f = FontCache.getDefaultInstance().getFont(legendFontName);
+        if (f != null) {
+            return f.deriveFont(legendFontFamily, legendFontSize);
+        }
         return new Font(legendFontName, legendFontFamily, legendFontSize);
     }
 

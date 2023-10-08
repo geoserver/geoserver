@@ -11,9 +11,10 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-import com.hazelcast.core.Cluster;
+import com.hazelcast.cluster.Cluster;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.CPSubsystem;
+import com.hazelcast.cp.lock.FencedLock;
 import org.geoserver.platform.resource.Resource.Lock;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +45,10 @@ public class HzLockProviderTest {
     @Test
     public void testAqcuire() {
 
-        ILock lock = createMock(ILock.class);
-        expect(this.hz.getLock(eq("path1"))).andReturn(lock);
+        FencedLock lock = createMock(FencedLock.class);
+        CPSubsystem cpSubsystem = createMock(CPSubsystem.class);
+        expect(this.hz.getCPSubsystem()).andReturn(cpSubsystem);
+        expect(cpSubsystem.getLock(eq("path1"))).andReturn(lock);
         expect(lock.isLockedByCurrentThread()).andStubReturn(true);
 
         lock.lock();
@@ -56,7 +59,7 @@ public class HzLockProviderTest {
         lock.unlock();
         expectLastCall();
 
-        replay(lock, hz, cluster);
+        replay(lock, cpSubsystem, hz, cluster);
 
         Lock gsLock = lockProvider.acquire("path1");
 

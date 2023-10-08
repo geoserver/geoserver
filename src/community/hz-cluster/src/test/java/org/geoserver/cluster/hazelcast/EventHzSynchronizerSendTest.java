@@ -10,9 +10,9 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 
-import com.hazelcast.core.Member;
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
+import com.hazelcast.cluster.Member;
+import com.hazelcast.topic.Message;
+import com.hazelcast.topic.MessageListener;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import org.easymock.Capture;

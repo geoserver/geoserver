@@ -374,11 +374,10 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             } catch (Exception e) {
                 // JD: this is a bit hacky but some of the wfs cite tests require
                 // that the 'InvalidParameterValue' code be set on exceptions in
-                // cases where a "bad" value is being suppliedin an update, so
-                // we always set to that code
-                throw new WFSTransactionException(
+                // cases where a "bad" value is being supplied in an update,
+                // so we always set to that code
+                throw exceptionFactory.newWFSTransactionException(
                         "Update error: " + e.getMessage(), e, "InvalidParameterValue");
-
             } finally {
                 // make sure we unlock
                 if ((request.getLockId() != null)

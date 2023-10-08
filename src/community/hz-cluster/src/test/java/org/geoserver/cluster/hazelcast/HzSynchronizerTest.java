@@ -16,12 +16,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 
 import com.google.common.collect.Sets;
-import com.hazelcast.core.Cluster;
+import com.hazelcast.cluster.Cluster;
+import com.hazelcast.cluster.Member;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ITopic;
-import com.hazelcast.core.Member;
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
+import com.hazelcast.topic.ITopic;
+import com.hazelcast.topic.Message;
+import com.hazelcast.topic.MessageListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -110,11 +110,13 @@ public abstract class HzSynchronizerTest {
         expect(this.cluster.getAckTimeoutMillis()).andStubReturn(100);
 
         expect(hz.<Event>getTopic(TOPIC_NAME)).andStubReturn(topic);
-        expect(topic.addMessageListener(capture(captureTopicListener))).andReturn("fake-id");
+        expect(topic.addMessageListener(capture(captureTopicListener)))
+                .andReturn(UUID.randomUUID());
         expectLastCall().anyTimes();
 
         expect(hz.<UUID>getTopic(ACK_TOPIC_NAME)).andStubReturn(ackTopic);
-        expect(ackTopic.addMessageListener(capture(captureAckTopicListener))).andReturn("fake-id");
+        expect(ackTopic.addMessageListener(capture(captureAckTopicListener)))
+                .andReturn(UUID.randomUUID());
         expectLastCall().anyTimes();
 
         ackTopic.publish(EasyMock.capture(captureAckTopicPublish));

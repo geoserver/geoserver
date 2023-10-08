@@ -190,15 +190,21 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     private String bboxCrsQueryParameters(ReferencedEnvelope re) throws FactoryException {
-        String boxValue =
-                re.getMinX() + "," + re.getMinY() + "," + re.getMaxX() + "," + re.getMaxY();
-        String crsValue =
-                CRS.equalsIgnoreMetadata(
-                                re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)
-                        ? FeatureService.DEFAULT_CRS
-                        : FeatureService.CRS_PREFIX
-                                + CRS.lookupEpsgCode(re.getCoordinateReferenceSystem(), true);
+        String boxValue = bboxQueryParameter(re);
+        String crsValue = crsQueryParameter(re);
         return "bbox=" + boxValue + "&bbox-crs=" + crsValue;
+    }
+
+    private String bboxQueryParameter(ReferencedEnvelope re) {
+        return re.getMinX() + "," + re.getMinY() + "," + re.getMaxX() + "," + re.getMaxY();
+    }
+
+    private String crsQueryParameter(ReferencedEnvelope re) throws FactoryException {
+        return CRS.equalsIgnoreMetadata(
+                        re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)
+                ? FeatureService.DEFAULT_CRS
+                : FeatureService.CRS_PREFIX
+                        + CRS.lookupEpsgCode(re.getCoordinateReferenceSystem(), true);
     }
 
     @Test
@@ -310,7 +316,7 @@ public class FeatureTest extends FeaturesTestSupport {
                 getAsJSONPath(
                         "ogc/features/v1/collections/"
                                 + roadSegments
-                                + "/items?filter=%7B%22op%22%3A%22s_intersects%22%2C%22args%22%3A%5B%7B%22property%22%3A%22pointProperty%22%7D%2C%7B%22bbox%22%3A%5B38%2C1%2C40%2C3%5D%7D%5D%7D" // {"op":"s_intersects","args":[{"property":"pointProperty"},{"bbox":[38,1,40,3]}]}
+                                + "/items?filter=%7B%22op%22%3A%22s_intersects%22%2C%22args%22%3A%5B%7B%22property%22%3A%22pointProperty%22%7D%2C%7B%22bbox%22%3A%5B38%2C1%2C40%2C3%5D%7D%5D%7D" //
                                 + "&filter-lang=cql2-json",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
@@ -341,22 +347,8 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     private String filterCrsQueryParameters(ReferencedEnvelope re) throws FactoryException {
-        String boxValue =
-                "BBOX(pointProperty,"
-                        + re.getMinX()
-                        + ","
-                        + re.getMinY()
-                        + ","
-                        + re.getMaxX()
-                        + ","
-                        + re.getMaxY()
-                        + ")";
-        String crsValue =
-                CRS.equalsIgnoreMetadata(
-                                re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)
-                        ? FeatureService.DEFAULT_CRS
-                        : FeatureService.CRS_PREFIX
-                                + CRS.lookupEpsgCode(re.getCoordinateReferenceSystem(), true);
+        String boxValue = "BBOX(pointProperty," + bboxQueryParameter(re) + ")";
+        String crsValue = crsQueryParameter(re);
         return "filter=" + boxValue + "&filter-crs=" + crsValue + "&filter-lang=cql-text";
     }
 
@@ -531,6 +523,212 @@ public class FeatureTest extends FeaturesTestSupport {
         assertEquals(2, (int) json.read("features.length()", Integer.class));
         assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
         assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+    }
+
+    @Test
+    public void testSearchCql2JsonFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        String request =
+                "{\n"
+                        + "  \"filter\": {\"op\":\"=\",\"args\":[{\"property\":\"name\"},\"name-f001\"]},"
+                        + "  \"filter-lang\": \"cql2-json\"\n"
+                        + "}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
+    public void testSearchCql2TextFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        String request =
+                "{\n"
+                        + "  \"filter\": \"BBOX(pointProperty,38,1,40,3)\",\n"
+                        + "  \"filter-lang\": \"cql-text\"\n"
+                        + "}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
+    public void testSearchCql2TextFilterWithFilterCrs() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(38, 40, 1, 3, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope wmBox = bbox.transform(CRS.decode("EPSG:3857", true), true);
+        String crsValue = crsQueryParameter(wmBox);
+
+        String request =
+                "{\n"
+                        + "  \"filter\": \"BBOX(pointProperty,"
+                        + bboxQueryParameter(wmBox)
+                        + ")\",\n"
+                        + " \"filter-lang\": \"cql-text\"\n,"
+                        + " \"filter-crs\": \""
+                        + crsValue
+                        + "\"\n}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
+    public void testSearchBBoxJsonFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        String request = "{\"bbox\":[35, 0, 60, 3]}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f002 and f003
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    @Test
+    public void testSearchBBoxTextFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        String request = "{\"bbox\":\"35,0,60,3\"}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f002 and f003
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    @Test
+    public void testSearchBBoxCRSFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(35, 60, 0, 3, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope wmBox = bbox.transform(CRS.decode("EPSG:3857", true), true);
+        String boxValue = bboxQueryParameter(wmBox);
+        String bboxCrsValue = crsQueryParameter(wmBox);
+        String request = "{\"bbox\":\"" + boxValue + "\",\"bbox-crs\":\"" + bboxCrsValue + "\"}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f002 and f003
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    @Test
+    public void testSearchCRSFilter() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        String crs = FeatureService.CRS_PREFIX + "3857";
+        String request = "{\"crs\":\"" + crs + "\"}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(5, (int) json.read("features.length()", Integer.class));
+        // get ordinates of RoadSegments.1107532045091, returns array[array[array[double]]]
+        List<List<List<Double>>> result =
+                readSingle(
+                        json,
+                        "features[?(@.id=='RoadSegments.1107532045091')].geometry.coordinates");
+        // original feature:
+        // RoadSegments.1107532045091=MULTILINESTRING ((-0.0014 -0.0024, -0.0014 0.0002))|
+        //                            106|Dirt Road by Green Forest
+        List<Double> ordinate0 = result.get(0).get(0);
+        List<Double> ordinate1 = result.get(0).get(1);
+        assertThat(ordinate0, contains(closeTo(-156, 1), closeTo(-267, 1)));
+        assertThat(ordinate1, contains(closeTo(-156, 1), closeTo(22, 1)));
+    }
+
+    @Test
+    public void testSearchIdsJsonFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
+        String request =
+                "{\"ids\":[\"RoadSegments.1107532045088\",\"RoadSegments.1107532045091\"]}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
+        assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+    }
+
+    @Test
+    public void testSearchIdsTextFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
+        String request = "{\"ids\":\"RoadSegments.1107532045088,RoadSegments.1107532045091\"}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
+        assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+    }
+
+    @Test
+    public void testSearchDatetimeFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        String request = "{\"datetime\":\"2006-10-25\"}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
+    public void testSearchSortByJson() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        String request = "{\"sortBy\":[\"name\"],\"limit\":2}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(null, json.read("features[0].properties.name", String.class));
+        assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+    }
+
+    @Test
+    public void testSearchSortByText() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        String request = "{\"sortBy\":\"name\",\"limit\":2}";
+        DocumentContext json =
+                postAsJSONPath(
+                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(null, json.read("features[0].properties.name", String.class));
+        assertEquals("name-f001", json.read("features[1].properties.name", String.class));
     }
 
     @Test

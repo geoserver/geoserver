@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.wicket.model.Model;
 import org.geoserver.data.test.MockData;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.web.util.MapModel;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class FileModelTest {
             FileModel model = new FileModel(new Model<>(), root);
             model.setObject(f.getAbsolutePath());
             String path = model.getObject();
-            assertEquals("file://" + f.getAbsolutePath(), path);
+            assertEquals("file://" + Paths.convert(f.getAbsolutePath()), path);
         } finally {
             f.delete();
         }

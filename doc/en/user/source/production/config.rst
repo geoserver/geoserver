@@ -13,7 +13,7 @@ You can change the logging level in the :ref:`config_globalsettings_log_profile`
 Logging configuration hardening
 -------------------------------
 
-For production systems, it is advised to set ``GEOSERVER_LOG_LOCATION `` parameter during startup. The value may be defined as either an environment variable, java system property, or servlet context parameter.
+For production systems, it is advised to set ``GEOSERVER_LOG_LOCATION`` parameter during startup. The value may be defined as either an environment variable, java system property, or servlet context parameter.
 
 The location set for ``GEOSERVER_LOG_LOCATION`` has priority, causing the value provided using the Admin Console GUI or REST API to be ignored. This approach establishes a separation of responsibility between those setting up and controlling the actual machine, and those configuring the GeoServer application.
 

@@ -20,16 +20,26 @@ You can volunteer on the developer list to make additional releases, or engage w
 
 If you encounter a security vulnerability in GeoServer please take care to report in a responsible fashion:
 
-* Keep exploit details out of public mailing lists and issue tracker
-* Send details to volunteers on private geoserver-security@lists.osgeo.org mailing list; or via
-  GitHub [security](https://github.com/geoserver/geoserver/security) page using *Private vulnerability reporting*
-* Be prepared to work with geoserver-security email list volunteers on a solution
-* Keep in mind participants are volunteering their time, an extensive fix may require fundraising/resources
+1. Keep exploit details out of public mailing lists and issue tracker
 
-Please send a mail directly to geoserver-security@lists.osgeo.org  and provide information
-about the security vulnerability you might have found there. This is a moderated list:
-send directly to the address; your email will be moderated; and eventually shared with volunteers.
-The volunteer nature of geoserver-security list means that there is no expected response time. 
+2. To report via email:
+
+   Please send an email directly to the volunteers on the private geoserver-security@lists.osgeo.org mailing list.
+   Provide information about the security vulnerability you might have found in your email.
+
+   This is a moderated list: send directly to the address; your email will be moderated; and eventually shared with volunteers.
+  
+3. To report via GitHub:
+
+   Navigate to [security](https://github.com/geoserver/geoserver/security) page, use link for *Private vulnerability reporting*.
+
+   For more information see [GitHub documentation](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability).
+
+5. The volunteer nature of geoserver-security list means that there is no expected response time.
+
+6. Be prepared to work with geoserver-security email list volunteers on a solution
+
+7. Keep in mind participants are volunteering their time, an extensive fix may require fundraising/resources
 
 For more information see [Community Support](http://geoserver.org/comm/).
 

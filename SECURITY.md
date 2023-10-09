@@ -24,7 +24,7 @@ If you encounter a security vulnerability in GeoServer please take care to repor
 * Send details to volunteers on private geoserver-security@lists.osgeo.org mailing list; or via
   GitHub [security](https://github.com/geoserver/geoserver/security) page using *Private vulnerability reporting*
 * Be prepared to work with geoserver-security email list volunteers on a solution
-* Keep in mind particpants are volunteering their time, an extensive fix may require fundraising / resources
+* Keep in mind participants are volunteering their time, an extensive fix may require fundraising/resources
 
 Please send a mail directly to geoserver-security@lists.osgeo.org  and provide information
 about the security vulnerability you might have found there. This is a moderated list:

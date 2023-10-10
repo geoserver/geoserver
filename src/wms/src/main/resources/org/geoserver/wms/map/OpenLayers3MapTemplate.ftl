@@ -228,6 +228,7 @@
         <em>Click on the map to get feature info</em>
     </div>
     <script type="text/javascript">
+    <#outputformat "JavaScript">
       var pureCoverage = ${pureCoverage?string};
       // if this is just a coverage or a group of them, disable a few items,
       // and default to jpeg format
@@ -257,7 +258,7 @@
       var untiled = new ol.layer.Image({
         source: new ol.source.ImageWMS({
           ratio: 1,
-          url: '${baseUrl}/${servicePath}',
+          url: '${baseUrl}/${servicePath?js_string}',
           params: {'FORMAT': format,
                    'VERSION': '1.1.1',  
              <#list parameters as param>
@@ -269,7 +270,7 @@
       var tiled = new ol.layer.Tile({
         visible: false,
         source: new ol.source.TileWMS({
-          url: '${baseUrl}/${servicePath}',
+          url: '${baseUrl}/${servicePath?js_string}',
           params: {'FORMAT': format, 
                    'VERSION': '1.1.1',
                    tiled: true,
@@ -450,7 +451,7 @@
           }
           map.updateSize()
         }
-
+    </#outputformat>
     </script>
   </body>
 </html>

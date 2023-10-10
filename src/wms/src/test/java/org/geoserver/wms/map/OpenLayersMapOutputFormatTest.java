@@ -130,22 +130,28 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         StyleInfo styleByName = catalog.getStyleByName("Default");
         Style basicStyle = styleByName.getStyle();
         FeatureLayer layer = new FeatureLayer(fs, basicStyle);
-        layer.setTitle("Title");
+        layer.setTitle("Title</foo");
         map.addLayer(layer);
         request.setFormat("application/openlayers");
-        String htmlDoc = getAsHTML(map);
-        // check that weird param is correctly encoded to avoid js code execution
-        int index =
-                htmlDoc.replace("\\n", "")
-                        .replace("\\r", "")
-                        .indexOf(
-                                "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'");
-        assertTrue(index > -1);
-        index =
-                htmlDoc.replace("\\n", "")
-                        .replace("\\r", "")
-                        .indexOf("\"25064;ALERT(1)//419\": '1'");
-        assertTrue(index > -1);
+
+        StyleInfo otherStyle = new StyleInfoImpl(null);
+        otherStyle.setName("style<>");
+        try {
+            request.getLayers().get(0).getLayerInfo().getStyles().add(otherStyle);
+            String htmlDoc = getAsHTML(map);
+            // check that weird param is correctly encoded to avoid js code execution
+            assertThat(
+                    htmlDoc,
+                    containsString(
+                            "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'"));
+            assertThat(htmlDoc, containsString("\"25064;ALERT(1)//419\": '1'"));
+            assertThat(htmlDoc, not(containsString(layer.getTitle())));
+            assertThat(htmlDoc, containsString("Title<\\/foo"));
+            assertThat(htmlDoc, not(containsString(otherStyle.getName())));
+            assertThat(htmlDoc, containsString("style&lt;&gt;"));
+        } finally {
+            request.getLayers().get(0).getLayerInfo().getStyles().remove(otherStyle);
+        }
     }
 
     @Test
@@ -472,19 +478,23 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         layer.setTitle("Title");
         map.addLayer(layer);
         request.setFormat("application/openlayers3");
-        String htmlDoc = getAsHTMLOL3(map);
-        // check that weird param is correctly encoded to avoid js code execution
-        int index =
-                htmlDoc.replace("\\n", "")
-                        .replace("\\r", "")
-                        .indexOf(
-                                "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'");
-        assertTrue(index > -1);
-        index =
-                htmlDoc.replace("\\n", "")
-                        .replace("\\r", "")
-                        .indexOf("\"25064;ALERT(1)//419\": '1'");
-        assertTrue(index > -1);
+
+        StyleInfo otherStyle = new StyleInfoImpl(null);
+        otherStyle.setName("style<>");
+        try {
+            request.getLayers().get(0).getLayerInfo().getStyles().add(otherStyle);
+            String htmlDoc = getAsHTMLOL3(map);
+            // check that weird param is correctly encoded to avoid js code execution
+            assertThat(
+                    htmlDoc,
+                    containsString(
+                            "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'"));
+            assertThat(htmlDoc, containsString("\"25064;ALERT(1)//419\": '1'"));
+            assertThat(htmlDoc, not(containsString(otherStyle.getName())));
+            assertThat(htmlDoc, containsString("style&lt;&gt;"));
+        } finally {
+            request.getLayers().get(0).getLayerInfo().getStyles().remove(otherStyle);
+        }
     }
 
     @Test

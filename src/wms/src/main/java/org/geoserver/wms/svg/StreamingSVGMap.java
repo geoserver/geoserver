@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.svg;
 
+import static org.apache.commons.text.StringEscapeUtils.escapeXml10;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -138,10 +140,10 @@ public class StreamingSVGMap extends WebMap {
 
                 String styleName = layer.getStyle().getName();
 
-                writer.write("<g id=\"" + groupId + "\"");
+                writer.write("<g id=\"" + escapeXml10(groupId) + "\"");
 
                 if (!styleName.startsWith("#")) {
-                    writer.write(" class=\"" + styleName + "\"");
+                    writer.write(" class=\"" + escapeXml10(styleName) + "\"");
                 }
 
                 writer.write(">\n");

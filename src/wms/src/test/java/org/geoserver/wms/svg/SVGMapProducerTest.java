@@ -6,11 +6,7 @@
 package org.geoserver.wms.svg;
 
 import java.awt.Color;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.wms.WMSMapContent;
@@ -31,13 +27,31 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 public class SVGMapProducerTest extends WMSTestSupport {
 
-    @Test
-    public void testHeterogeneousGeometry() throws Exception {
+    private static String EXPECTED_DOC =
+            "<?xml version=\"1.0\" standalone=\"no\"?>"
+                    + "<svg xmlns=\"http://www.w3.org/2000/svg\""
+                    + "    xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+                    + "    stroke=\"green\""
+                    + "    fill=\"none\""
+                    + "    stroke-width=\"0.1%\""
+                    + "    stroke-linecap=\"round\""
+                    + "    stroke-linejoin=\"round\""
+                    + "    width=\"300\""
+                    + "    height=\"300\""
+                    + "    viewBox=\"-250.0 -250.0 500.0 500.0\""
+                    + "    preserveAspectRatio=\"xMidYMid meet\">"
+                    + "  <g id=\"LAYER\" class=\"STYLE\">"
+                    + "    <use x=\"10\" y=\"-10\" xlink:href=\"#point\"/>"
+                    + "    <path d=\"M50 -50l50 -50 \"/>"
+                    + "    <path d=\"M0 0l0 -200 200 0 0 200 -200 0 Z\"/>"
+                    + "  </g>"
+                    + "</svg>";
+
+    private void doTestSVGMapProducer(String layer, String style, String expectedDoc)
+            throws Exception {
         GeometryFactory gf = new GeometryFactory();
         Point point = gf.createPoint(new Coordinate(10, 10));
         LineString line =
@@ -56,7 +70,7 @@ public class SVGMapProducerTest extends WMSTestSupport {
                         null);
 
         SimpleFeatureTypeBuilder ftb = new SimpleFeatureTypeBuilder();
-        ftb.setName("test");
+        ftb.setName(layer);
         ftb.add("geom", Geometry.class);
         SimpleFeatureType type = ftb.buildFeatureType();
 
@@ -68,7 +82,7 @@ public class SVGMapProducerTest extends WMSTestSupport {
         ds.createSchema(type);
         ds.addFeatures(f1, f2, f3);
 
-        FeatureSource fs = ds.getFeatureSource("test");
+        FeatureSource fs = ds.getFeatureSource(layer);
 
         final WMSMapContent map = new WMSMapContent();
         map.getViewport().setBounds(new ReferencedEnvelope(-250, 250, -250, 250, null));
@@ -78,6 +92,7 @@ public class SVGMapProducerTest extends WMSTestSupport {
         map.setTransparent(false);
 
         Style basicStyle = getCatalog().getStyleByName("Default").getStyle();
+        basicStyle.setName(style);
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
         SVGStreamingMapOutputFormat producer = new SVGStreamingMapOutputFormat();
@@ -86,33 +101,27 @@ public class SVGMapProducerTest extends WMSTestSupport {
         encodeSVG.encode(out);
         // System.out.println(out.toString());
 
-        String expectedDoc =
-                "<?xml version=\"1.0\" standalone=\"no\"?>"
-                        + "<svg xmlns=\"http://www.w3.org/2000/svg\" " //
-                        + "    xmlns:xlink=\"http://www.w3.org/1999/xlink\" " //
-                        + "    stroke=\"green\"  " //
-                        + "    fill=\"none\"  " //
-                        + "    stroke-width=\"0.1%\" " //
-                        + "    stroke-linecap=\"round\" " //
-                        + "    stroke-linejoin=\"round\" " //
-                        + "    width=\"300\"  " //
-                        + "    height=\"300\"  " //
-                        + "    viewBox=\"-250.0 -250.0 500.0 500.0\"  " //
-                        + "    preserveAspectRatio=\"xMidYMid meet\"> " //
-                        + "  <g id=\"test\" class=\"Default\"> " //
-                        + "    <use x=\"10\" y=\"-10\" xlink:href=\"#point\"/> " //
-                        + "    <path d=\"M50 -50l50 -50 \"/> " //
-                        + "    <path d=\"M0 0l0 -200 200 0 0 200 -200 0 Z\"/> " //
-                        + "  </g> " //
-                        + "</svg> ";
-
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document expected = builder.parse(new InputSource(new StringReader(expectedDoc)));
-        Document result = builder.parse(new ByteArrayInputStream(out.toByteArray()));
-
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
-        XMLUnit.setIgnoreComments(true);
-        XMLAssert.assertXMLEqual(expected, result);
+        XMLAssert.assertXMLEqual(expectedDoc, out.toString());
+    }
+
+    @Test
+    public void testHeterogeneousGeometry() throws Exception {
+        String layer = "test";
+        String style = "Default";
+        String expectedDoc = EXPECTED_DOC.replace("LAYER", layer).replace("STYLE", style);
+        doTestSVGMapProducer(layer, style, expectedDoc);
+    }
+
+    @Test
+    public void testEscaping() throws Exception {
+        String unescapedLayer = "layer\"<>";
+        String escapedLayer = "layer&quot;&lt;&gt;";
+        String unescapedStyle = "style\"<>";
+        String escapedStyle = "style&quot;&lt;&gt;";
+        String expectedDoc =
+                EXPECTED_DOC.replace("LAYER", escapedLayer).replace("STYLE", escapedStyle);
+        doTestSVGMapProducer(unescapedLayer, unescapedStyle, expectedDoc);
     }
 }

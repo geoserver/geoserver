@@ -6,6 +6,9 @@ package org.geoserver.mapml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -241,6 +244,34 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(
                 "HTML layer group title must NOT be internationalized",
                 "layerGroup".equalsIgnoreCase(d.title()));
+    }
+
+    @Test
+    public void testEscaping() throws Exception {
+        String unescapedTitle = "title\"><";
+        String escapedTitle = "title&quot;&gt;&lt;";
+        Catalog catalog = getCatalog();
+        LayerGroupInfo lg = catalog.getLayerGroupByName("layerGroup");
+        MockHttpServletRequest request = createRequest("mapml/" + lg.getName() + "/osmtile");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        try {
+            lg.setTitle(unescapedTitle);
+            catalog.save(lg);
+            String htmlResponse =
+                    mc.Html(
+                            request,
+                            response,
+                            lg.getName(),
+                            "osmtile",
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty());
+            assertThat(htmlResponse, not(containsString(unescapedTitle)));
+            assertThat(htmlResponse, containsString(escapedTitle));
+        } finally {
+            lg.setTitle(null);
+            catalog.save(lg);
+        }
     }
 
     @Test

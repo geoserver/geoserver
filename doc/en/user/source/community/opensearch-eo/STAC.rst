@@ -88,7 +88,7 @@ Support for the `STAC Datacube Extension <https://github.com/stac-extensions/dat
 
 `eoSummaries` has three arguments:
 
-* aggregate - The type of summary statistic.  One of "min", "max", "distinct", or "spatial".
+* aggregate - The type of summary statistic.  One of "min", "max", "distinct", or "bounds".
 * collectionIdentifier - The name of the collection that is being summarized.
 * property - The name of the property being summarized.  
 	

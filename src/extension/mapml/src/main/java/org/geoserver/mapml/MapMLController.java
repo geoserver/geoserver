@@ -5,6 +5,7 @@
 
 package org.geoserver.mapml;
 
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
 
 import java.io.IOException;
@@ -186,13 +187,12 @@ public class MapMLController {
                         "/mapml/viewer/widget/mapml-viewer.js",
                         null,
                         URLMangler.URLType.RESOURCE);
-        String title = layerLabel;
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>\n")
                 .append("<html>\n")
                 .append("<head>\n")
                 .append("<title>")
-                .append(title)
+                .append(escapeHtml4(layerLabel))
                 .append("</title>\n")
                 .append("<meta charset='utf-8'>\n")
                 .append("<script type=\"module\"  src=\"")
@@ -225,17 +225,17 @@ public class MapMLController {
                 .append(longitude)
                 .append("\" controls controlslist=\"geolocation\">\n")
                 .append("<layer- label=\"")
-                .append(layerLabel)
+                .append(escapeHtml4(layerLabel))
                 .append("\" ")
                 .append("src=\"")
                 .append(request.getContextPath())
                 .append(request.getServletPath())
                 .append("/")
-                .append(layer)
+                .append(escapeHtml4(layer))
                 .append("/")
                 .append(proj)
                 .append("/")
-                .append(!styleName.isEmpty() ? "?style=" + styleName : "")
+                .append(!styleName.isEmpty() ? "?style=" + escapeHtml4(styleName) : "")
                 .append("\" checked></layer->\n")
                 .append("</mapml-viewer>\n")
                 .append("</body>\n")

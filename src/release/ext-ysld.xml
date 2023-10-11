@@ -18,10 +18,10 @@
       <directory>release/target/html/licenses</directory>
       <outputDirectory>licenses</outputDirectory>
       <includes>
-         <include>LGPL.html</include>
-         <include>GEOTOOLS_NOTICE.html</include>
-         <include>GPL.html</include>
-         <include>NOTICE.html</include>
+        <include>LGPL.html</include>
+        <include>GEOTOOLS_NOTICE.html</include>
+        <include>GPL.html</include>
+        <include>NOTICE.html</include>
       </includes>
     </fileSet>
   </fileSets>

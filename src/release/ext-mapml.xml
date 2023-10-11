@@ -22,12 +22,24 @@
       </includes>
     </fileSet>
     <fileSet>
-        <directory>release/target/html/licenses</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
-            <include>GPL.html</include>
-            <include>NOTICE.html</include>
-        </includes>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory>licenses</outputDirectory>
+      <includes>
+         <include>GPL.html</include>
+         <include>NOTICE.html</include>
+      </includes>
     </fileSet>
   </fileSets>
+  <files>
+     <file>
+       <source>release/target/html/extensions/mapml/mapml-LICENSE.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>LICENSE.html</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/mapml/mapml-README.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.html</destName>
+     </file>
+  </files>
 </assembly>

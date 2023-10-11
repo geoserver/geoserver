@@ -21,9 +21,10 @@
          <include>NOTICE.html</include>
       </includes>
     </fileSet>
+  </fileSets>
   <files>
      <file>
-       <source>release/extensions/README.txt</source>
+       <source>release/extensions/README.md</source>
        <outputDirectory></outputDirectory>
        <destName>README.txt</destName>
      </file>
@@ -38,5 +39,4 @@
        <destName>README.html</destName>
      </file>
   </files>
-  </fileSets>
 </assembly>

@@ -13,19 +13,19 @@
       </includes>
     </fileSet>
     <fileSet>
-     <directory>release/target/html</directory>
-     <outputDirectory></outputDirectory>
-     <includes>
-      <include>README.html</include>
-     </includes>
-    </fileSet>
-    <fileSet>
       <directory>release/target/html/licenses</directory>
-      <outputDirectory>license</outputDirectory>
+      <outputDirectory>licenses</outputDirectory>
       <includes>
          <include>NOTICE.html</include>
          <include>GPL.html</include>
       </includes>
+    </fileSet>
+    <fileSet>
+     <directory>release/target/html/release</directory>
+     <outputDirectory></outputDirectory>
+     <includes>
+      <include>README.html</include>
+     </includes>
     </fileSet>
   </fileSets>
 </assembly>

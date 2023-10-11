@@ -21,5 +21,5 @@ Tutorial
 --------
 
 The tutorial data directory is described in the GeoServer user manual:
-http://docs.geoserver.org/latest/en/user/data/app-schema/tutorial.html
+https://docs.geoserver.org/latest/en/user/data/app-schema/tutorial.html
 

@@ -1,16 +1,15 @@
-GeoServer IAU authority readme
-------------------------------
+GeoServer IAU Authority Extension
+=================================
 
 This package contains the International Astronomical Union CRS database,
 with over 2000 CRSs covering planetary bodies.
 
-Please report any bugs with jira (https://osgeo-org.atlassian.net/projects/GEOS).
+Please report any bugs with [jira](https://osgeo-org.atlassian.net/projects/GEOS).
 
-Any other issues can be discussed on the mailing list (http://lists.sourceforge.net/lists/listinfo/geoserver-users).
+Any other issues can be discussed on the [mailing list](http://lists.sourceforge.net/lists/listinfo/geoserver-users).
 
-Contains the following data stores:
-
-INSTALLATION
+Installation
+------------
 
 1. Copy included gt-iau-wkt jar included to your 
    GeoServer library directory.  In a binary install this is at 
@@ -19,6 +18,6 @@ INSTALLATION
 
 2. Restart GeoServer.
 
-The IAU codes should now show up in the "SRS list" demo page, it should
-be possible to publish data in such CRSs, and have the IAU codes embedded
-in various types of outputs, including GML, GeoJSON, Shapefile, GeoTIFF.
+3. The IAU codes now show up in the "SRS list" demo page. It is now possible
+   to publish data in such CRSs, and have the IAU codes embedded in various
+   types of outputs, including GML, GeoJSON, Shapefile, GeoTIFF.

@@ -165,6 +165,19 @@ If you wish to change this behavior you can do so through the following properti
 These properties can be set either via Java system property, command line argument (-D), environment
 variable or web.xml init parameter.
 
+X-Content-Type-Options Policy
+-----------------------------
+
+In order to mitigate MIME confusion attacks (which often results in Cross-Site Scripting), GeoServer defaults to setting the ``X-Content-Type-Options: nosniff`` HTTP header.
+See the `OWASP X-Content-Type-Options entry <https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#x-content-type-options>`_ for details.
+
+If you wish to change this behavior you can do so through the following property:
+
+* ``geoserver.xContentType.shouldSetPolicy``: controls whether the X-Content-Type-Options header should be set. Default is true.
+
+This property can be set either via Java system property, command line argument (-D), environment
+variable or web.xml init parameter.
+
 OWS ServiceException XML mimeType
 --------------------------------------------------
 

@@ -20,19 +20,22 @@
          <include>NOTICE.html</include>
       </includes>
     </fileSet>
-    <fileSet>
-      <directory>release/target/html/extensions</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-         <include>LICENSE.html</include>
-      </includes>
-    </fileSet>
   </fileSets>
   <files>
-    <file>
-      <source>extension/web-resource/README.md</source>
-      <outputDirectory></outputDirectory>
-      <destName>web-resource-README.txt</destName>
-    </file>
+     <file>
+       <source>release/extensions/README.md</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.txt</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/LICENSE_GS.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>LICENSE.html</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/README.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.html</destName>
+     </file>
   </files>
 </assembly>

@@ -14,40 +14,41 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>target</directory>
-      <includes>
-        <include>VERSION.txt</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>release/target/html</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-         <include>README.html</include>
-      </includes>
-    </fileSet>
-    <fileSet>
       <directory>release/target/html/licenses</directory>
-      <outputDirectory>license</outputDirectory>
+      <outputDirectory>licenses</outputDirectory>
       <includes>
-         <include>NOTICE.html</include>
-         <include>apache-1.1.html</include>
-         <include>apache-2.0.html</include>
-         <include>epl-1.0.html</include>
-         <include>EPSG.html</include>
-         <include>GEOTOOLS_NOTICE.html</include>
-         <include>HSQL.html</include>
-         <include>LGPL.html</include>
-         <include>OGC.html</include>
-         <include>W3C.html</include>
-      </includes>
-    </fileSet>
+        <include>NOTICE.html</include>
+        <include>apache-1.1.html</include>
+        <include>apache-2.0.html</include>
+        <include>epl-1.0.html</include>
+        <include>EPSG.html</include>
+        <include>GEOTOOLS_NOTICE.html</include>
+        <include>HSQL.html</include>
+        <include>LGPL.html</include>
+        <include>GPL.html</include>
+        <include>OGC.html</include>
+        <include>W3C.html</include>
+     </includes>
+   </fileSet>
   </fileSets>
   <files>
+     <file>
+       <source>release/target/html/release/README.html</source>
+       <outputDirectory></outputDirectory>
+     </file>
+     <file>
+       <source>release/target/html/release/LICENSE.html</source>
+       <outputDirectory></outputDirectory>
+     </file>
      <file>
        <source>../licenses/NOTICE.md</source>
        <outputDirectory>license</outputDirectory>
        <destName>NOTICE.txt</destName>
      </file>
+     <file>
+       <source>target/VERSION.txt</source>
+       <outputDirectory></outputDirectory>
+     </file>
+
   </files>
 </assembly>

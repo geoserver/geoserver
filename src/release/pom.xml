@@ -454,7 +454,7 @@
             </goals>
             <configuration>
               <inputDirectory>${project.basedir}/src/markdown</inputDirectory>
-              <outputDirectory>${project.build.directory}/html</outputDirectory>
+              <outputDirectory>${project.build.directory}/html/release</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -465,7 +465,7 @@
             </goals>
             <configuration>
               <inputDirectory>${project.basedir}/extensions</inputDirectory>
-              <outputDirectory>${project.build.directory}/html</outputDirectory>
+              <outputDirectory>${project.build.directory}/html/extensions</outputDirectory>
               <recursiveInput>true</recursiveInput>
             </configuration>
           </execution>

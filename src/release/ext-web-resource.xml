@@ -14,10 +14,17 @@
     </fileSet>
     <fileSet>
       <directory>release/target/html/licenses</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory>licenses</outputDirectory>
       <includes>
          <include>GPL.html</include>
          <include>NOTICE.html</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/html/extensions</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>LICENSE.html</include>
       </includes>
     </fileSet>
   </fileSets>

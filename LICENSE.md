@@ -41,7 +41,7 @@ GeoServer is distributed under the GNU General Public License Version 2.0 licens
 For latest contact information of Open Source Geospatial Foundation see the website at
 http://www.osgeo.org.  Current email is info@osgeo.org and address is OSGeo, 14525 SW Millikan #42523, Beaverton, Oregon, United States, 97005-2343.
 
-The full GPL license is available in this directory in the file [GPL.md](GPL.md)
+The full GPL license is available in [licenses/GPL](licenses/GPL.md)
 
 ## Additional Libraries and Code used
 

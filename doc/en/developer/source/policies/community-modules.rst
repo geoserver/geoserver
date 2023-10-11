@@ -270,111 +270,85 @@ Process
 
    The next step is to include the new module in the release process.
 
-   *Core modules*
-
-   #. Edit ``release/src.xml`` and add an ``<include>`` for the module::
-
-            ...
-            <moduleSets>
-              <moduleSet>
-               ...
-               <include>org.geoserver:myCommunityModule</include>
-              </moduleSet>
-            </moduleSets>
-            ...
-
    *Extensions*
 
    #. Create a new directory under ``release/extensions`` which matches the
       name of the extension
    #. Add the following to the new directory:
   
-      #. A license called '<module>-LICENSE.txt' which contains the license
-         for the extension
-      #. A readme called '<module>-README.txt' which contains instructions 
-         on how to install the extension
+      #. A license called :file:`<module>-LICENSE.md` which contains the license notice
+         for the extension (linking to full `licenses/` documents included below).
+         
+         Follow the :download:`h2-LICENSE.md </../../../../src/release/extensions/h2/h2-LICENSE.md>` example:
+         
+         .. literalinclude:: /../../../../src/release/extensions/h2/h2-LICENSE.md
+            :language: Markdown
 
+      #. A readme called :file:`<module>-README.md` which contains instructions 
+         on how to install the extension.
+         
+         Follow the :download:`h2-README.md </../../../../src/release/extensions/h2/h2-README.md>` example:
+         
+         .. literalinclude:: /../../../../src/release/extensions/h2/h2-README.md
+            :language: Markdown
+            
          .. warning::
 
-              Don't skip this step.
+            Don't skip this step.
 
-      #. Any "static" files that are required by the extension (example 
-         would be a proprietary driver not available for download via maven)
+      #. Any "static" files that are required by the extension.
+         
+         An example would be data files or a proprietary driver not available for download via maven.
 
-   #. Create a release descriptor called 'ext-<module>.xml' under the 
-      release directory which follows the following structure (where 
-      "%module%" is the name of the module):
-
-      .. code-block:: xml  
-
-             <assembly>
-               <id>%module%</id>
-               <formats>
-                 <format>zip</format>
-               </formats>
-               <includeBaseDirectory>false</includeBaseDirectory>
-               <fileSets>
-                 <fileSet>
-                   <directory>release/extensions/%module%</directory>
-                   <outputDirectory></outputDirectory>
-                   <includes>
-                     <include>*</include>
-                   </includes>
-                 </fileSet>
-                 <fileSet>
-                   <directory>release/target/dependency</directory>
-                   <outputDirectory></outputDirectory>
-                   <includes>
-                     <include>%module%-*.jar</include>
-                   </includes>
-                 </fileSet>
-                 <fileSet>
-                   <directory>release/extensions</directory>
-                   <outputDirectory></outputDirectory>
-                   <includes>
-                     <include>LICENSE.txt</include>
-                   </includes>
-                 </fileSet>
-               </fileSets>
-             </assembly>
-
-          * Add additional ``include`` elements in the second ``fileSet`` for
-            the jar dependencies of the module 
-          * Add additional ``include`` elements in the third ``fileSet`` for
-            the static file dependencies of the module
+   #. Create a release assembly called :file:`ext-<module>.xml` under the release directory.
+      
+      Follow the example of :download:`ext-h2-xml </../../../../src/release/ext-h2.xml>`:
+      
+      .. literalinclude:: /../../../../src/release/ext-h2.xml
+         :language: xml
+         
+      * Add additional ``include`` elements in the root folder (outputDirectory empty) for
+        the jar dependencies of the module 
+      * Add additional ``include`` elements in the licenses folder (outputDirectory ``licenses``) for
+        licenses required
+      * Add an additional fileSet if there are any static file dependencies of the module required by the module
+      * Use ``file`` with ``desName`` for any individual files that require renaming
 
    #. Add a dependency from ``release/pom.xml`` to the extension 
-      module::
+      module:
+      
+      .. code-block:: xml
 
-            <dependencies>
-               ...
-               <dependency>
-                 <groupId>org.geoserver.extension</groupId>
-                 <artifactId>%module%</artifactId>
-                 <version>%version%</version>
-               </dependency>
-               ...
-             </dependencies>
+         <dependencies>
+            ...
+            <dependency>
+              <groupId>org.geoserver.extension</groupId>
+              <artifactId>%module%</artifactId>
+              <version>%version%</version>
+            </dependency>
+            ...
+          </dependencies>
 
    #. Add an entry for the release descriptor to the root ``pom.xml`` of
-      the source tree (i.e. one step up from the release directory)::
+      the source tree (i.e. one step up from the release directory):
+      
+      .. code-block:: xml
 
-             <!-- artifact assembly -->
-             <plugin>
-               <artifactId>maven-assembly-plugin</artifactId>
-               <version>2.1</version>
-               <configuration>
-                 <descriptors>
-                  <descriptor>release/src.xml</descriptor>
-                  <descriptor>release/war.xml</descriptor>
-                  <descriptor>release/javadoc.xml</descriptor>
-                  <descriptor>release/bin.xml</descriptor>
-                  <descriptor>release/doc.xml</descriptor>
-                  ...
-                  <descriptor>release/ext-%module%.xml</descriptor>
-                 </descriptors>
-               </configuration>
-             </plugin>
+         <!-- artifact assembly -->
+         <plugin>
+           <artifactId>maven-assembly-plugin</artifactId>
+           <version>2.1</version>
+           <configuration>
+             <descriptors>
+              <descriptor>release/war.xml</descriptor>
+              <descriptor>release/javadoc.xml</descriptor>
+              <descriptor>release/bin.xml</descriptor>
+              <descriptor>release/doc.xml</descriptor>
+              ...
+              <descriptor>release/ext-%module%.xml</descriptor>
+             </descriptors>
+           </configuration>
+         </plugin>
 
     #. Update the documentation
 
@@ -384,11 +358,16 @@ Process
  
           Finish this by linking somewhere...
 
-    #. Download the contributor agreement 
+    #. Download and a contributor license agreement as pdf for txt file:
 
-       The final step in the process is to download and fill out the 
-       `contributor agreement form <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`_. Follow the instructions
-       on the form to submit it.
+       * `Individual Contributor License Agreement <https://www.osgeo.org/resources/individual-contributor-license/>`_
+       
+       * `Software Grant and Corporate Contributor License Agreement <https://www.osgeo.org/resources/corporate-contributor-license/>`_
+         
+         This option can also be used as a "software grant" to donate a specific named contribution in its entirety,
+         as was done for GeoFence, and indeed GeoServer itself.
+       
+    #. Follow the instructions on the form to submit it.
      
 Demoting a community module
 ---------------------------

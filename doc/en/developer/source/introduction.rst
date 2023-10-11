@@ -36,10 +36,10 @@ Question and answer:
 License
 -------
 
-For complete license information review :download:`LICENSE.txt </../../../../LICENSE.txt>`.
+For complete notice of license information :download:`LICENSE </../../../../licenses/NOTICE.md>`.
 
 * GeoServer is free software and is licensed under the :download:`GNU General Public License </../../../../licenses/GPL.md>`::
-  
+
     GeoServer, open geospatial information server
     Copyright (C) 2014 - Open Source Geospatial Foundation
     Copyright (C) 2001 - 2014 OpenPlans

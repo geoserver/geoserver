@@ -76,3 +76,62 @@ According to the current specification:
 - If only exclude is specified, these attributes are subtracted from the union of the default set of attributes and the include attributes (set difference operation). This will result in an entity that is not a valid Item if any of the excluded attributes are in the default set of attributes, but no error message will be raised by GeoServer.
 - If a attribute is included, e.g. ``properties``, but one or more of the nested attributes is excluded, e.g. ``-properties.datetime``, then the excluded nested attributes will not appear in properties.
 - If an attribute is excluded, e.g. ``-properties.nestedObj``, but one of more of the nested attributes is included, e.g. ``properties.nestedObject.attribute``, then ``nestedObject`` will appear in the output with the included attributes only.
+
+Datacube Extension Support
+--------------------------
+Support for the `STAC Datacube Extension <https://github.com/stac-extensions/datacube>`_ "cube_dimensions" elements is available in HTML and JSON templates via the `eoSummaries` function.  `eoSummaries` supports presenting the following collection-wide summary statistics:
+
+* min - The minimum value of the field in the collection
+* max - The maximum value of the field in the collection
+* distinct - An array of distinct values of the field in the collection
+* bounds - Minimum and maximum dimension values of the spatial bounding box of the collection (either x or y, presented as a two value array)
+
+`eoSummaries` has three arguments:
+
+* aggregate - The type of summary statistic.  One of "min", "max", "distinct", or "bounds".
+* collectionIdentifier - The name of the collection that is being summarized.
+* property - The name of the property being summarized.  
+	
+	* Note that for the "bounds" aggregate, this value should either be "x" or "y".
+
+**JSON Template Example**:
+
+.. code-block:: none
+
+	"cube:dimensions"\: {
+     "x": {
+      	"type": "spatial",
+      	"axis": "x",
+      	"extent": "$${eoSummaries('bounds',eop:parentIdentifier,'x')}",
+      	"reference_system": 4326},
+			"y": {
+     		"type": "spatial",
+     		"axis": "y",
+     		"extent": "$${eoSummaries('bounds',eop:parentIdentifier,'y')}",
+     		"reference_system": 4326},
+     		"time": 
+     			{"type": "temporal",
+     			"extent": 
+     				["$${eoSummaries('min',eop:parentIdentifier,'timeStart')}",
+     			"$${eoSummaries('min',eop:parentIdentifier,'timeEnd')}"]
+     			}
+     	}
+    
+**HTML/FTL Example**:
+
+.. code-block:: none
+
+	<li><b>Extents</b>:
+	     <ul>
+        <li data-tid='gbounds'>Geographic (WGS84):
+					${model.eoSummaries("bounds",a.name.value,"x")[0]}, 
+					${model.eoSummaries("bounds",a.name.value,"y")[0]}, 
+					${model.eoSummaries("bounds",a.name.value,"x")[1]}, 
+					${model.eoSummaries("bounds",a.name.value,"y")[1]}.
+				</li>
+				<li data-tid='tbounds'>Temporal: 
+					${model.eoSummaries("min",a.name.value,"timeStart")}/
+					${model.eoSummaries("max",a.name.value,"timeEnd")}
+				</li> 
+			</ul>
+	</li>

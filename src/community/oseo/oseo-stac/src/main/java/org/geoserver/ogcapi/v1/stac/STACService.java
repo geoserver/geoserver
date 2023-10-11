@@ -287,8 +287,18 @@ public class STACService {
         Name name = new NameImpl(schema.getName().getNamespaceURI(), "name");
         UniqueVisitor unique = new UniqueVisitor(FF.property(schema.getDescriptor(name).getName()));
         collections.accepts(unique, null);
-        Set<Attribute> values = unique.getUnique();
-        return values.stream().map(a -> (String) a.getValue()).collect(Collectors.toSet());
+        Set values = unique.getUnique();
+        return (Set<String>)
+                values.stream()
+                        .map(
+                                a -> {
+                                    if (a instanceof Attribute) {
+                                        return ((Attribute) a).getValue();
+                                    } else {
+                                        return a.toString();
+                                    }
+                                })
+                        .collect(Collectors.toSet());
     }
 
     @GetMapping(path = "collections/{collectionId}/items/{itemId:.+}", name = "getItem")

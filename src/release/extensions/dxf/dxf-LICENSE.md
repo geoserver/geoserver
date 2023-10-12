@@ -21,4 +21,4 @@ Mauro Bartolomeoli, GeoSolutions Sas
 This GeoServer plugin is licensed under the GNU General Public License (GPL). For more information see license [notice](licenses/NOTICE.md) and the full [GPL](licenses/GPL.html).
 
 This software is an extension for GeoServer. You can find full information
-on it at https://www.geoserver. 
+on it at https://www.geoserver.org

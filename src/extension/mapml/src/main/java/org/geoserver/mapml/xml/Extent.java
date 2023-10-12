@@ -18,8 +18,6 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Java class for anonymous complex type.
@@ -93,18 +91,17 @@ public class Extent {
     @XmlAttribute(name = "units")
     protected ProjType units;
 
-    @XmlAttribute(name = "action")
-    @XmlSchemaType(name = "anyURI")
-    protected String action;
+    @XmlAttribute(name = "label")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String label;
 
-    @XmlAttribute(name = "method")
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String method;
+    @XmlAttribute(name = "checked")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String checked = "checked";
 
-    @XmlAttribute(name = "enctype")
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String enctype;
-
+    @XmlAttribute(name = "hidden")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String hidden = "hidden";
     /**
      * Gets the value of the inputOrDatalistOrLink property.
      *
@@ -145,58 +142,56 @@ public class Extent {
     public void setUnits(ProjType value) {
         this.units = value;
     }
-
     /**
-     * Gets the value of the action property.
+     * Gets the value of the label property.
      *
      * @return possible object is {@link String }
      */
-    public String getAction() {
-        return action;
+    public String getLabel() {
+        return label;
     }
 
     /**
-     * Sets the value of the action property.
+     * Sets the value of the label property.
      *
      * @param value allowed object is {@link String }
      */
-    public void setAction(String value) {
-        this.action = value;
+    public void setLabel(String value) {
+        this.label = value;
     }
 
     /**
-     * Gets the value of the method property.
+     * Gets the value of the checked property.
      *
      * @return possible object is {@link String }
      */
-    public String getMethod() {
-        return method;
+    public String getChecked() {
+        return checked;
     }
 
     /**
-     * Sets the value of the method property.
+     * Sets the value of the checked property.
      *
      * @param value allowed object is {@link String }
      */
-    public void setMethod(String value) {
-        this.method = value;
+    public void setChecked(String value) {
+        this.checked = value;
     }
-
     /**
-     * Gets the value of the enctype property.
+     * Gets the value of the hidden property.
      *
      * @return possible object is {@link String }
      */
-    public String getEnctype() {
-        return enctype;
+    public String getHidden() {
+        return hidden;
     }
 
     /**
-     * Sets the value of the enctype property.
+     * Sets the value of the hidden property.
      *
      * @param value allowed object is {@link String }
      */
-    public void setEnctype(String value) {
-        this.enctype = value;
+    public void setHidden(String value) {
+        this.hidden = value;
     }
 }

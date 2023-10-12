@@ -393,8 +393,17 @@ public class MapMLControllerTest extends WMSTestSupport {
         BodyContent b = mapml.getBody();
         assertNotNull("mapML method must return MapML body in response", b);
         Extent e = b.getExtent();
-        String action = e.getAction();
-        assertNull(action);
+
+        String checked = e.getChecked();
+        assertTrue(
+                "extent checked attribute is always checked", checked.equalsIgnoreCase("checked"));
+
+        String hidden = e.getHidden();
+        assertTrue("single extent is always hidden", hidden.equalsIgnoreCase("hidden"));
+
+        String label = e.getLabel();
+        assertNull(label);
+
         ProjType projType = e.getUnits();
         assertSame(ProjType.OSMTILE, projType);
 

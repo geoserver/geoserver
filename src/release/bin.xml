@@ -66,16 +66,8 @@
    </includes>
   </fileSet>
   <fileSet>
-   <directory>release/target/html</directory>
-   <outputDirectory></outputDirectory>
-   <includes>
-    <include>README.html</include>
-    <include>RUNNING.html</include>
-   </includes>
-  </fileSet>
-  <fileSet>
     <directory>release/target/html/licenses</directory>
-    <outputDirectory>license</outputDirectory>
+    <outputDirectory>licenses</outputDirectory>
     <includes>
        <include>NOTICE.html</include>
        <include>apache-1.1.html</include>
@@ -85,16 +77,10 @@
        <include>GEOTOOLS_NOTICE.html</include>
        <include>HSQL.html</include>
        <include>LGPL.html</include>
+       <include>GPL.html</include>
        <include>OGC.html</include>
        <include>W3C.html</include>
     </includes>
-  </fileSet>
-  <fileSet>
-   <directory>target</directory>
-   <outputDirectory></outputDirectory>
-   <includes>
-    <include>VERSION.txt</include>
-   </includes>
   </fileSet>
   <fileSet>
    <!-- jetty configuration -->
@@ -121,5 +107,23 @@
       <outputDirectory></outputDirectory>
       <destName>start.jar</destName>
     </file>
+     <file>
+       <source>release/target/html/release/README.html</source>
+     </file>
+     <file>
+       <source>release/target/html/release/RUNNING.html</source>
+     </file>
+     <file>
+       <source>release/target/html/release/LICENSE.html</source>
+     </file>
+     <file>
+       <source>../licenses/NOTICE.md</source>
+       <outputDirectory>license</outputDirectory>
+       <destName>NOTICE.txt</destName>
+     </file>
+     <file>
+       <source>target/VERSION.txt</source>
+       <outputDirectory></outputDirectory>
+     </file>
  </files>
 </assembly>

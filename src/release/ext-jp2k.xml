@@ -1,35 +1,52 @@
 <assembly>
-    <id>jp2k-plugin</id>
-    <formats>
-        <format>zip</format>
-    </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <fileSets>
-      <fileSet>
-        <directory>release/extensions/jp2k</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
-          <include>*</include>
-        </includes>
-      </fileSet>
-      <fileSet>
-        <directory>release/target/dependency</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
-          <include>*gt-jp2k*.jar</include>
-          <include>*imageio-ext-kakadu*.jar</include>
-          <include>*imageio-ext-imagereadmt*.jar</include>
-        </includes>
-      </fileSet>
+  <id>jp2k-plugin</id>
+  <formats>
+      <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
     <fileSet>
-      <directory>release/target/html/licenses</directory>
+      <directory>release/extensions/jp2k</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>LGPL.html</include>
-        <include>GEOTOOLS_NOTICE.html</include>
-        <include>GPL.html</include>
-        <include>NOTICE.html</include>
+        <include>*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>*gt-jp2k*.jar</include>
+        <include>*imageio-ext-kakadu*.jar</include>
+        <include>*imageio-ext-imagereadmt*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory>licenses</outputDirectory>
+      <includes>
+         <include>LGPL.html</include>
+         <include>GEOTOOLS_NOTICE.html</include>
+         <include>GPL.html</include>
+         <include>NOTICE.html</include>
       </includes>
     </fileSet>
   </fileSets>
+  <files>
+     <file>
+       <source>release/extensions/README.md</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.txt</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/LICENSE.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>LICENSE.html</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/README.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.html</destName>
+     </file>
+  </files>
 </assembly>

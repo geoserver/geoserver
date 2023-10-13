@@ -13,12 +13,22 @@
       </includes>
     </fileSet>
     <fileSet>
-        <directory>release/target/html/licenses</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
-            <include>GPL.html</include>
-            <include>NOTICE.html</include>
-        </includes>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory>licenses</outputDirectory>
+      <includes>
+         <include>LGPL.html</include>
+         <include>GEOTOOLS_NOTICE.html</include>
+         <include>GPL.html</include>
+         <include>NOTICE.html</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/html/extensions</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>README.html</include>
+         <include>LICENSE.html</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>

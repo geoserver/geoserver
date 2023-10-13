@@ -33,4 +33,21 @@
       </includes>
     </fileSet>
   </fileSets>
+  <files>
+     <file>
+       <source>release/extensions/oracle/oracle-README.md</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.txt</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/LICENSE.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>LICENSE.html</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/oracle/oracle-README.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.html</destName>
+     </file>
+  </files>
 </assembly>

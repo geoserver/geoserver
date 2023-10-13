@@ -8,6 +8,10 @@ see the website:
 
 https://geoserver.org
 
+Reference:
+
+* https://docs.geoserver.org/latest/en/user/installation
+
 In order to install and run this application, follow these steps:
 
 1. Download and install Java:
@@ -110,7 +114,7 @@ In order to install and run this application, follow these steps:
     
         ```bash
         $GEOSERVER_HOME/bin/shutdown.sh
-        ````
+        ```
 
     Modify your current working directory:
     
@@ -126,7 +130,7 @@ In order to install and run this application, follow these steps:
         ```bash
         cd $GEOSERVER_HOME/bin
         ./shutdown.sh
-        ````
+        ```
 
 5. Troubleshooting
 

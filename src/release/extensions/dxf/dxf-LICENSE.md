@@ -1,3 +1,6 @@
+Extension License Notice
+========================
+
 DXFOutputFormat WFS Output and WPS PPIO for GeoServer
 Mauro Bartolomeoli, GeoSolutions Sas
 
@@ -15,7 +18,7 @@ Mauro Bartolomeoli, GeoSolutions Sas
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-The full GPL license is available in this directory at GPL.txt
+This GeoServer plugin is licensed under the GNU General Public License (GPL). For more information see license [notice](licenses/NOTICE.md) and the full [GPL](licenses/GPL.html).
 
 This software is an extension for GeoServer. You can find full information
-on it at http://www.geoserver. 
+on it at https://www.geoserver.org

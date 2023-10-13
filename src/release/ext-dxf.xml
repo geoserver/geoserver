@@ -13,19 +13,29 @@
       </includes>
     </fileSet>
     <fileSet>
-     <directory>release/extensions/dxf</directory>
-     <outputDirectory></outputDirectory>
-     <includes>
-       <include>*</include>
-     </includes>
-   </fileSet>
-   <fileSet>
-       <directory>release/target/html/licenses</directory>
-       <outputDirectory></outputDirectory>
-       <includes>
-           <include>GPL.html</include>
-           <include>NOTICE.html</include>
-       </includes>
-   </fileSet>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory>licenses</outputDirectory>
+      <includes>
+         <include>GPL.html</include>
+         <include>NOTICE.html</include>
+      </includes>
+    </fileSet>
   </fileSets>
+  <files>
+     <file>
+       <source>release/extensions/dxf/dxf-README.md</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.txt</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/dxf/dxf-LICENSE.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>LICENSE.html</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/dxf/dxf-README.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.html</destName>
+     </file>
+  </files>
 </assembly>

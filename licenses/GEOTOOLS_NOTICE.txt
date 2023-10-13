@@ -1,4 +1,4 @@
-# GeoTools license notice
+# GeoTools License Notice
 
 The files in this library are part of GeoTools, an open source Java GIS 
 toolkit. See [geotools.org](https://geotools.org/) for details on the project.

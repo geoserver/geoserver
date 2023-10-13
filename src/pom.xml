@@ -1734,7 +1734,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
-          <version>3.3.2</version>
+          <version>3.4.0</version>
         </plugin>
 
         <!-- third-party plugins -->
@@ -1806,59 +1806,59 @@
             <descriptor>release/javadoc.xml</descriptor>
             <descriptor>release/bin.xml</descriptor>
             <descriptor>release/data.xml</descriptor>
-            <descriptor>release/ext-db2.xml</descriptor>
-            <descriptor>release/ext-feature-pregeneralized.xml</descriptor>
-            <descriptor>release/ext-jp2k.xml</descriptor>
-            <descriptor>release/ext-mysql.xml</descriptor>
-            <descriptor>release/ext-oracle.xml</descriptor>
-            <descriptor>release/ext-pyramid.xml</descriptor>
-            <descriptor>release/ext-gdal.xml</descriptor>
-            <descriptor>release/ext-h2.xml</descriptor>
-            <descriptor>release/ext-sqlserver.xml</descriptor>
-            <descriptor>release/ext-ogr-wfs.xml</descriptor>
-            <descriptor>release/ext-ogr-wps.xml</descriptor>
-            <descriptor>release/ext-excel.xml</descriptor>
-            <descriptor>release/ext-charts.xml</descriptor>
+            <!-- extensions -->
             <descriptor>release/ext-app-schema.xml</descriptor>
-            <descriptor>release/ext-control-flow.xml</descriptor>
-            <descriptor>release/ext-wps.xml</descriptor>
-            <descriptor>release/ext-wps-hazelcast.xml</descriptor>
-            <descriptor>release/ext-querylayer.xml</descriptor>
+            <descriptor>release/ext-authkey.xml</descriptor>
             <descriptor>release/ext-cas.xml</descriptor>
-            <descriptor>release/ext-monitor.xml</descriptor>
-            <descriptor>release/ext-mongodb.xml</descriptor>
-            <descriptor>release/ext-inspire.xml</descriptor>
+            <descriptor>release/ext-charts.xml</descriptor>
+            <descriptor>release/ext-control-flow.xml</descriptor>
             <descriptor>release/ext-css.xml</descriptor>
-            <descriptor>release/ext-csw.xml</descriptor>
             <descriptor>release/ext-csw-iso.xml</descriptor>
+            <descriptor>release/ext-csw.xml</descriptor>
+            <descriptor>release/ext-db2.xml</descriptor>
             <descriptor>release/ext-dxf.xml</descriptor>
-            <descriptor>release/ext-printing.xml</descriptor>
-            <descriptor>release/ext-wcs2_0-eo.xml</descriptor>
-            <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
-            <descriptor>release/ext-importer.xml</descriptor>
-            <descriptor>release/ext-grib.xml</descriptor>
-            <descriptor>release/ext-geopkg-output.xml</descriptor>
-            <descriptor>release/ext-netcdf.xml</descriptor>
-            <descriptor>release/ext-netcdf-out.xml</descriptor>
-            <descriptor>release/ext-vectortiles.xml</descriptor>
-            <descriptor>release/ext-ysld.xml</descriptor>
-            <descriptor>release/ext-mbstyle.xml</descriptor>
-            <descriptor>release/ext-sldservice.xml</descriptor>
-            <descriptor>release/ext-geofence.xml</descriptor>
+            <descriptor>release/ext-excel.xml</descriptor>
+            <descriptor>release/ext-feature-pregeneralized.xml</descriptor>
+            <descriptor>release/ext-gdal.xml</descriptor>
             <descriptor>release/ext-geofence-server.xml</descriptor>
             <descriptor>release/ext-geofence-wps.xml</descriptor>
-            <descriptor>release/ext-authkey.xml</descriptor>
-            <descriptor>release/ext-web-resource.xml</descriptor>
-            <descriptor>release/ext-params-extractor.xml</descriptor>
+            <descriptor>release/ext-geofence.xml</descriptor>
+            <descriptor>release/ext-geopkg-output.xml</descriptor>
+            <descriptor>release/ext-grib.xml</descriptor>
             <descriptor>release/ext-gwc-s3.xml</descriptor>
+            <descriptor>release/ext-h2.xml</descriptor>
+            <descriptor>release/ext-iau.xml</descriptor>
+            <descriptor>release/ext-importer.xml</descriptor>
+            <descriptor>release/ext-inspire.xml</descriptor>
+            <descriptor>release/ext-jp2k.xml</descriptor>
+            <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
+            <descriptor>release/ext-mapml.xml</descriptor>
+            <descriptor>release/ext-mbstyle.xml</descriptor>
+            <descriptor>release/ext-metadata.xml</descriptor>
+            <descriptor>release/ext-mongodb.xml</descriptor>
+            <descriptor>release/ext-monitor.xml</descriptor>
+            <descriptor>release/ext-mysql.xml</descriptor>
+            <descriptor>release/ext-netcdf-out.xml</descriptor>
+            <descriptor>release/ext-netcdf.xml</descriptor>
+            <descriptor>release/ext-ogr-wfs.xml</descriptor>
+            <descriptor>release/ext-ogr-wps.xml</descriptor>
+            <descriptor>release/ext-oracle.xml</descriptor>
+            <descriptor>release/ext-params-extractor.xml</descriptor>
+            <descriptor>release/ext-printing.xml</descriptor>
+            <descriptor>release/ext-pyramid.xml</descriptor>
+            <descriptor>release/ext-querylayer.xml</descriptor>
+            <descriptor>release/ext-sldservice.xml</descriptor>
+            <descriptor>release/ext-sqlserver.xml</descriptor>
+            <descriptor>release/ext-vectortiles.xml</descriptor>
+            <descriptor>release/ext-wcs2_0-eo.xml</descriptor>
+            <descriptor>release/ext-web-resource.xml</descriptor>
             <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor>
             <descriptor>release/ext-wps-download.xml</descriptor>
+            <descriptor>release/ext-wps-hazelcast.xml</descriptor>
             <descriptor>release/ext-wps-jdbc.xml</descriptor>
-            <descriptor>release/ext-mapml.xml</descriptor>
-            <descriptor>release/ext-metadata.xml</descriptor>
-            <descriptor>release/ext-iau.xml</descriptor>
+            <descriptor>release/ext-wps.xml</descriptor>
+            <descriptor>release/ext-ysld.xml</descriptor>
           </descriptors>
-          <finalName>geoserver-${project.version}</finalName>
           <outputDirectory>${project.build.directory}/release</outputDirectory>
         </configuration>
       </plugin>

@@ -1,4 +1,4 @@
-# GeoServer Notice
+# GeoServer License Notice
 
 GeoServer is distributed under the GNU General Public License Version 2.0 license:
 
@@ -39,7 +39,7 @@ GeoServer is distributed under the GNU General Public License Version 2.0 licens
     Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335  USA
 
 For latest contact information of Open Source Geospatial Foundation see the website at
-http://www.osgeo.org.  Current email is info@osgeo.org and address is OSGeo, 14525 SW Millikan #42523, Beaverton, Oregon, United States, 97005-2343.
+https://www.osgeo.org.  Current email is info@osgeo.org and address is OSGeo, 14525 SW Millikan #42523, Beaverton, Oregon, United States, 97005-2343.
 
 The full GPL license is available in this directory in the file [GPL.md](GPL.md)
 
@@ -50,9 +50,9 @@ including the appropriate notices in this file.  We'd like to thank all
 the creators of the libraries we rely on, GeoServer would certainly not
 be possible without them.  There are also several LGPL libraries that do
 not require us to cite them, but we'd like to thank GeoTools - 
-http://geotools.org, JTS - http://www.vividsolutions.com/jts/jtshome.htm
- WKB4J http://wkb4j.sourceforge.net, OpenPDF - https://github.com/LibrePDF/OpenPDF,
-and J. David Eisenberg's PNG encoder http://www.catcode.com/pngencoder/
+https://geotools.org, JTS - https://locationtech.github.io/jts/
+ WKB4J https://wkb4j.sourceforge.net, OpenPDF - https://github.com/LibrePDF/OpenPDF,
+and J. David Eisenberg's PNG encoder https://www.catcode.com/pngencoder/
 
 ### NeuQuant Neural-Net Quantization Algorithm
 
@@ -133,7 +133,7 @@ by David Blasby for The Open Planning Project (now OpenPlans).
 >     // SUCH DAMAGE.
 >     //
 >     // Visit the ACME Labs Java page for up-to-date versions of this and other
->     // fine Java utilities: http://www.acme.com/java/
+>     // fine Java utilities: https://www.acme.com/java/
 
 ------
 
@@ -187,7 +187,7 @@ BSD license (new).  Notice is below:
 ### Jetty
 
 GeoServer also includes binaries and from Jetty, the standard version can be 
-found at http://www.eclipse.org/jetty/, released under an OSI-approved artistic
+found at https://www.eclipse.org/jetty/, released under an OSI-approved artistic
 license.  We include the license completely, as some versions will be 
 distributed without full source.
 
@@ -197,7 +197,7 @@ distributed without full source.
 > $Revision: 3.7 $
 > Preamble:
 > 
-> The intent of this document is to state the conditions under which the Jetty Package may be copied, such that the Copyright Holder maintains some semblance of control over the development of the package, while giving the users of the package the right to use, distribute and make reasonable modifications to the Package in accordance with the goals and ideals of the Open Source concept as described at http://www.opensource.org.
+> The intent of this document is to state the conditions under which the Jetty Package may be copied, such that the Copyright Holder maintains some semblance of control over the development of the package, while giving the users of the package the right to use, distribute and make reasonable modifications to the Package in accordance with the goals and ideals of the Open Source concept as described at https://www.opensource.org.
 > 
 > It is the intent of this license to allow commercial usage of the Jetty package, so long as the source code is distributed or suitable visible credit given or other arrangements made with the copyright holders.
 > 
@@ -220,7 +220,7 @@ distributed without full source.
 > 
 > 0. The Jetty Package is Copyright (c) Mort Bay Consulting Pty. Ltd. (Australia) and others. Individual files in this package may contain additional copyright notices. The javax.servlet packages are copyright Sun Microsystems Inc.
 > 
-> 1. The Standard Version of the Jetty package is available from http://jetty.mortbay.org.
+> 1. The Standard Version of the Jetty package is available from https://jetty.mortbay.org.
 > 
 > 2. You may make and distribute verbatim copies of the source form of the Standard Version of this Package without restriction, provided that you include this license and all of the original copyright notices and associated disclaimers.
 > 
@@ -293,14 +293,14 @@ under a MIT license:
 ### Apache License
 
 GeoServer uses a number of libraries licensed under the Apache License, 
-Version 2.0.  These include Spring - http://www.springsource.org/,
-a number of Apache commons libraries - http://jakarta.apache.org/commons/
+Version 2.0.  These include Spring - https://www.springsource.org/,
+a number of Apache commons libraries - https://jakarta.apache.org/commons/
 whose jars we distribute and include in our source tree under lib/.  Also 
-included as libraries are log4 http://logging.apache.org/log4j/docs/index.htmlj, 
-batik http://xmlgraphics.apache.org/batik/, and xerces http://xerces.apache.org/xerces-j/.
+included as libraries are log4 https://logging.apache.org/log4j/docs/index.htmlj, 
+batik https://xmlgraphics.apache.org/batik/, and xerces https://xerces.apache.org/xerces-j/.
 
 Note there is some disagreement as to whether GPL and Apache 2.0 are compatible see 
-http://www.apache.org/licenses/GPL-compatibility.html for more information.  We
+https://www.apache.org/licenses/GPL-compatibility.html for more information.  We
 hope that something will work out, as GeoServer would not be possible without
 apache libraries.
 
@@ -310,7 +310,7 @@ Notice for apache license is included below:
 
    Apache License
    Version 2.0, January 2004
-   http://www.apache.org/licenses/
+   https://www.apache.org/licenses/
 
    TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
@@ -378,7 +378,7 @@ The notice for EPL license is included below:
     All rights reserved.   This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-v10.html
+    https://www.eclipse.org/legal/epl-v10.html
 
 -------
 

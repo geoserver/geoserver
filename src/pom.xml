@@ -1734,7 +1734,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
-          <version>3.3.2</version>
+          <version>3.4.0</version>
         </plugin>
 
         <!-- third-party plugins -->

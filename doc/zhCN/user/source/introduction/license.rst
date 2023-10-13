@@ -7,7 +7,7 @@
 
 　　GeoServer是 :download:`GNU通用性公开许可 </../../../../licenses/GPL.md>` 授权下的自由软件。
 
-.. include:: /../../../../LICENSE.txt
+.. include:: /../../../../LICENSE.md
    :start-line: 3
    :end-line: 37
 

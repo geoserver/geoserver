@@ -40,7 +40,7 @@
        <destName>README.txt</destName>
      </file>
      <file>
-       <source>release/target/html/extensions/h2/h2-license.html</source>
+       <source>release/target/html/extensions/h2/h2-LICENSE.html</source>
        <outputDirectory></outputDirectory>
        <destName>LICENSE.html</destName>
      </file>

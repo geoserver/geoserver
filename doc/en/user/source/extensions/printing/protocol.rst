@@ -7,6 +7,16 @@ Four commands are available and are documented in the next sections.
 
 Every command uses the HTTP status code to notify errors.
 
+.. note::  Warranty disclaimer and license
+
+   The authors provide these documents "AS-IS", without warranty of any kind
+   either expressed or implied.
+
+   Document under `Creative Common License Attribution-Share Alike 2.5 Generic
+   <http://creativecommons.org/licenses/by-sa/2.5/>`_.
+
+   Authors: MapFish developers.
+
 info.json
 ---------
 

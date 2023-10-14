@@ -7,14 +7,18 @@ provides an HTTP API for printing that is useful within JavaScript mapping
 applications.  User interface components for interacting with the print service
 are available from the Mapfish and GeoExt projects.
 
+Reference:
+
+* https://mapfish.github.io/mapfish-print-v2/ (mapfish-print-lib documentation)
+
 Installation
 ------------
 
 * Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`printing`
 * Extract the contents of the ZIP archive into the :file:`/WEB-INF/lib/` in the
   GeoServer webapp.  For example, if you have installed the GeoServer binary to
-  :file:`/opt/geoserver-2.20/`, the printing extension JAR files should be
-  placed in :file:`/opt/geoserver-2.20/webapps/geoserver/WEB-INF/lib/`.
+  :file:`/opt/geoserver/`, the printing extension JAR files should be
+  placed in :file:`/opt/geoserver/webapps/geoserver/WEB-INF/lib/`.
 * After extracting the extension, restart GeoServer in order for the changes to
   take effect.  All further configuration can be done with GeoServer running.
 
@@ -26,7 +30,7 @@ configuration file in :file:`{GEOSERVER_DATA_DIR}/printing/config.yaml`.
 Checking for this file's existence is a quick way to verify the module is
 installed properly.  It is safe to edit this file; in fact there is currently
 no way to modify the print module settings other than by opening this
-configuration file in a text editor.  
+configuration file in a text editor.
 
 If the module is installed and configured properly, then you will also be able
 to retrieve a list of configured printing parameters from

@@ -1,6 +1,16 @@
 FAQ
 ***
 
+.. note::  Warranty disclaimer and license
+
+   The authors provide these documents "AS-IS", without warranty of any kind
+   either expressed or implied.
+
+   Document under `Creative Common License Attribution-Share Alike 2.5 Generic
+   <http://creativecommons.org/licenses/by-sa/2.5/>`_.
+
+   Authors: MapFish developers.
+
 **All I get in my PDF is: "ERROR: infinite table loop". What's wrong?**
   Something in your page is too big. For example, the width or the height of your !map block.
 
@@ -48,13 +58,3 @@ FAQ
 
   If it still doesn't work, use firefox, install firebug and check in the console panel that the AJAX request made by the print widget works fine.
   
-Warranty disclaimer and license
--------------------------------
-
-The authors provide these documents "AS-IS", without warranty of any kind
-either expressed or implied.
-
-Document under `Creative Common License Attribution-Share Alike 2.5 Generic
-<http://creativecommons.org/licenses/by-sa/2.5/>`_.
-
-Authors: MapFish developers.

@@ -98,6 +98,7 @@
             <descriptor>release/ext-datadir-catalog-loader.xml</descriptor>
             <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
           </descriptors>
+          <finalName>geoserver-${project.version}</finalName>
         </configuration>
       </plugin>
       <plugin>

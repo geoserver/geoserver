@@ -1870,6 +1870,9 @@
             <goals>
               <goal>test-jar</goal>
             </goals>
+            <configuration>
+              <skipIfEmpty>true</skipIfEmpty>
+            </configuration>
           </execution>
         </executions>
         <configuration>

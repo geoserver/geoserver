@@ -43,10 +43,6 @@ jobs:
       run: mvn -B -U -T3 -fae -Dspotless.apply.skip=true -Prelease -f src/pom.xml clean install
     - name: Build community modules
       run: mvn -nsu -B -U -T4 -fae -Dspotless.apply.skip=true -DskipTests -Prelease -PcommunityRelease -f src/community/pom.xml clean install
-    - name: Package
-      run: mvn -f src/pom.xml assembly:single -nsu -N
-    - name: Package community modules
-      run:  mvn -f src/community/pom.xml assembly:single -nsu -N
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

@@ -1,4 +1,4 @@
-name: Linux JDK 11 GitHub CI
+name: Docs javadocs GitHub CI
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - '!**/src/main/resources/GeoServerApplication_fr.properties'
 
 env:
-  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx512m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS
+  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx512m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 jobs:
   javadoc:
@@ -19,30 +19,30 @@ jobs:
             jdk: 11
             dist: 'temurin'
     steps:
-    - uses: actions/checkout@v2
-      with:
-        # 500 commits, set to 0 to get all
-        fetch-depth: 500
-    - name: Set up JDK
-      uses: actions/setup-java@v2
+    - uses: actions/checkout@v4
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
       with:
         java-version: ${{ matrix.jdk }}
         distribution: ${{ matrix.dist }}
     - name: Set up Maven
-      uses: stCarolas/setup-maven@v4
+      uses: stCarolas/setup-maven@v4.5
       with:
-        maven-version: 3.8.4
+        maven-version: 3.9.5
     - name: Maven repository caching
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.m2/repository
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           gs-${{ runner.os }}-maven-
-    - name: Build with Maven
-      run: mvn -B -fae -Dspotless.apply.skip=true -f src/pom.xml  clean install -DskipTests
+    - name: Build GeoServer modules and extensions without tests
+      run: |
+        mvn --version
+        mvn -B -ntp -U -T3 -DskipTests -Dspotless.apply.skip=true -Prelease -f src/pom.xml install
     - name: Build aggregate javadocs
-      run: mvn -B -fae -Dspotless.apply.skip=true -f src/pom.xml javadoc:aggregate
+      run: |
+        mvn -B -ntp -fae -Dspotless.apply.skip=true -f src/pom.xml javadoc:aggregate
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

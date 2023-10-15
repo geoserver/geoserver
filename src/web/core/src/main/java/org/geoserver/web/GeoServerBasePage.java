@@ -178,7 +178,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                             org.apache.wicket.markup.ComponentTag tag) {
                                         String loginPath = getResourcePath(info.getLoginPath());
                                         tag.put("action", loginPath);
-                                    };
+                                    }
                                 };
 
                         Image image;
@@ -500,9 +500,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // need it)
         response.render(
                 new PriorityHeaderItem(
-                        JavaScriptHeaderItem.forReference(
-                                new JavaScriptResourceReference(
-                                        JQueryResourceReference.class, VERSION_3))));
+                        JavaScriptHeaderItem.forReference(JQueryResourceReference.INSTANCE_3)));
         List<HeaderContribution> cssContribs =
                 getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {

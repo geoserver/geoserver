@@ -282,7 +282,7 @@ Process
          Follow the :download:`h2-LICENSE.md </../../../../src/release/extensions/h2/h2-LICENSE.md>` example:
          
          .. literalinclude:: /../../../../src/release/extensions/h2/h2-LICENSE.md
-            :language: Markdown
+            :language: markdown
 
       #. A readme called :file:`<module>-README.md` which contains instructions 
          on how to install the extension.
@@ -290,7 +290,7 @@ Process
          Follow the :download:`h2-README.md </../../../../src/release/extensions/h2/h2-README.md>` example:
          
          .. literalinclude:: /../../../../src/release/extensions/h2/h2-README.md
-            :language: Markdown
+            :language: markdown
             
          .. warning::
 

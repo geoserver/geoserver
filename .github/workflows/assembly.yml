@@ -36,21 +36,19 @@ jobs:
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           gs-${{ runner.os }}-maven-
-    - name: Remove SNAPSHOT jars from repository before build  # optimization to avoid -U on each step
-      run: |
-        find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
     - name: Build GeoServer modules and extensions
       run: |
-        mvn -B -ntp -T3 -DskipTests -Dspotless.apply.skip=true -Prelease -f src/pom.xml install
+        mvn --version
+        mvn -B -ntp -U -T3 -DskipTests -Dspotless.apply.skip=true -Prelease -f src/pom.xml install
     - name: Package GeoServer modules and extensions
       run: |
         mvn -B -ntp -f src/pom.xml assembly:single -nsu -N
     - name: Build community modules
       run: |
-        mvn -B -ntp -T3 -DskipTests -Dspotless.apply.skip=true -Prelease -PcommunityRelease -f src/community/pom.xml install
+        mvn -B -ntp -U -T3 -DskipTests -Dspotless.apply.skip=true -Prelease -PcommunityRelease -f src/community/pom.xml install
     - name: Package community modules
       run:  |
         mvn -B -ntp -f src/community/pom.xml assembly:single -nsu -N
-    - name: Remove SNAPSHOT jars from repository after build
+    - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

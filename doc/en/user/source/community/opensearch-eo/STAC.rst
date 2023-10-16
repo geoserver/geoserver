@@ -84,7 +84,7 @@ Support for the `STAC Datacube Extension <https://github.com/stac-extensions/dat
 * min - The minimum value of the field in the collection
 * max - The maximum value of the field in the collection
 * distinct - An array of distinct values of the field in the collection
-* bounds - Minimum and maximum dimension values of the spatial bounding box of the collection (either x or y, presented as a two value array)
+* bounds - Minimum and maximum dimension values of the spatial bounding box of the collection (either x or y, presented as a two value array or xmin, xmax, ymin, ymax presented as individual dimension values)
 
 `eoSummaries` has three arguments:
 
@@ -92,28 +92,39 @@ Support for the `STAC Datacube Extension <https://github.com/stac-extensions/dat
 * collectionIdentifier - The name of the collection that is being summarized.
 * property - The name of the property being summarized.  
 	
-	* Note that for the "bounds" aggregate, this value should either be "x" or "y".
+	* Note that for the "bounds" aggregate, this value should either be "x","y","xmin","ymin","xmax", or "ymax".
 
 **JSON Template Example**:
 
 .. code-block:: none
 
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          "$${eoSummaries('bounds',eo:parentIdentifier,'xmin')}",
+          "$${eoSummaries('bounds',eo:parentIdentifier,'ymin')}",
+          "$${eoSummaries('bounds',eo:parentIdentifier,'xmax')}",
+          "$${eoSummaries('bounds',eo:parentIdentifier,'ymax')}"
+        ]
+      ]
+    },
 	"cube:dimensions"\: {
      "x": {
       	"type": "spatial",
       	"axis": "x",
-      	"extent": "$${eoSummaries('bounds',eop:parentIdentifier,'x')}",
+      	"extent": "$${eoSummaries('bounds',eo:parentIdentifier,'x')}",
       	"reference_system": 4326},
 			"y": {
      		"type": "spatial",
      		"axis": "y",
-     		"extent": "$${eoSummaries('bounds',eop:parentIdentifier,'y')}",
+     		"extent": "$${eoSummaries('bounds',eo:parentIdentifier,'y')}",
      		"reference_system": 4326},
      		"time": 
      			{"type": "temporal",
      			"extent": 
-     				["$${eoSummaries('min',eop:parentIdentifier,'timeStart')}",
-     			"$${eoSummaries('min',eop:parentIdentifier,'timeEnd')}"]
+     				["$${eoSummaries('min',eo:parentIdentifier,'timeStart')}",
+     			"$${eoSummaries('min',eo:parentIdentifier,'timeEnd')}"]
      			}
      	}
     

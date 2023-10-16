@@ -59,14 +59,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver.community.security</groupId>
-      <artifactId>gs-sec-oauth2-web</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
       <version>${project.version}</version>

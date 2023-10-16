@@ -106,6 +106,7 @@
         <script src="${relBaseUrl}/openlayers/OpenLayers.js" type="text/javascript">
         </script>
         <script defer="defer" type="text/javascript">
+        <#outputformat "JavaScript">
             var map;
             var untiled;
             var tiled;
@@ -149,7 +150,7 @@
             
                 // setup tiled layer
                 tiled = new OpenLayers.Layer.WMS(
-                    "${layerName} - Tiled", "${baseUrl}/${servicePath}",
+                    "${layerName?js_string} - Tiled", "${baseUrl}/${servicePath?js_string}",
                     {
                         <#list parameters as param>
                         "${param.name?js_string}": '${param.value?js_string}',
@@ -168,7 +169,7 @@
                   
                 // setup single tiled layer
                 untiled = new OpenLayers.Layer.WMS(
-                    "${layerName} - Untiled", "${baseUrl}/${servicePath}",
+                    "${layerName?js_string} - Untiled", "${baseUrl}/${servicePath?js_string}",
                     {
                         <#list parameters as param>
                         "${param.name?js_string}": '${param.value?js_string}',
@@ -242,7 +243,7 @@
                     if(map.layers[0].params.FEATUREID) {
                         params.featureid = map.layers[0].params.FEATUREID;
                     }
-                    OpenLayers.loadURL("${baseUrl}/${servicePath}", params, this, setHTML, setHTML);
+                    OpenLayers.loadURL("${baseUrl}/${servicePath?js_string}", params, this, setHTML, setHTML);
                     OpenLayers.Event.stop(e);
                 });
             }
@@ -447,6 +448,7 @@
                 tiled.mergeNewParams(params);
                 untiled.mergeNewParams(params);
             }
+        </#outputformat>
         </script>
     </head>
     <body onload="init()">

@@ -175,7 +175,7 @@ public class CollectionsTest extends STACTestSupport {
                                 + "satellites"));
         assertEquals(STACService.STAC_VERSION, s2.read("stac_version"));
         assertEquals("CC-BY-NC-ND-3.0-IGO", s2.read("license"));
-        // Sentinel 2 bounding box
+        // Sentinel 2 bounding box, uses the eoSummaries function in the collections.json template
         DocumentContext s2bbox = readContext(s2, "extent.spatial.bbox");
         assertEquals(-179, s2bbox.read("$[0][0]"), 0d);
         assertEquals(-89, s2bbox.read("$[0][1]"), 0d);

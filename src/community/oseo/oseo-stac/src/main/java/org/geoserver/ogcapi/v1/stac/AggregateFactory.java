@@ -84,6 +84,16 @@ public class AggregateFactory {
                     return new EnvelopeWrapper(envelope).getX();
                 } else if ("y".equals(property)) {
                     return new EnvelopeWrapper(envelope).getY();
+                } else if ("xmin".equals(property)) {
+                    return envelope.getMinX();
+                } else if ("xmax".equals(property)) {
+                    return envelope.getMaxX();
+                } else if ("ymin".equals(property)) {
+                    return envelope.getMinY();
+                } else if ("ymax".equals(property)) {
+                    return envelope.getMaxY();
+                } else {
+                    return new EnvelopeWrapper(envelope);
                 }
             } else {
                 return new EnvelopeWrapper(null);

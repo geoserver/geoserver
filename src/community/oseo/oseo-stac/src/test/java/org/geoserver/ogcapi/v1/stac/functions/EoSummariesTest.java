@@ -90,7 +90,7 @@ public class EoSummariesTest extends STACTestSupport {
     }
 
     @Test
-    public void testBounds() {
+    public void testBoundsX() {
         List<Expression> parameters =
                 List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("x"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
@@ -98,6 +98,38 @@ public class EoSummariesTest extends STACTestSupport {
                 Double.valueOf(-119.173780060482),
                 ((List<Double>) eoSummaries.evaluate(null)).get(0),
                 0.1);
+    }
+
+    @Test
+    public void testBoundsXMin() {
+        List<Expression> parameters =
+                List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("xmin"));
+        when(eoSummaries.getParameters()).thenReturn(parameters);
+        assertEquals(Double.valueOf(-119.173780060482), (Double) eoSummaries.evaluate(null), 0.1);
+    }
+
+    @Test
+    public void testBoundsYMin() {
+        List<Expression> parameters =
+                List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("ymin"));
+        when(eoSummaries.getParameters()).thenReturn(parameters);
+        assertEquals(Double.valueOf(33.3327671071438), (Double) eoSummaries.evaluate(null), 0.1);
+    }
+
+    @Test
+    public void testBoundsXMax() {
+        List<Expression> parameters =
+                List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("xmax"));
+        when(eoSummaries.getParameters()).thenReturn(parameters);
+        assertEquals(Double.valueOf(16.3544473299751), (Double) eoSummaries.evaluate(null), 0.1);
+    }
+
+    @Test
+    public void testBoundsYMax() {
+        List<Expression> parameters =
+                List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("ymax"));
+        when(eoSummaries.getParameters()).thenReturn(parameters);
+        assertEquals(Double.valueOf(44.2465509344875), (Double) eoSummaries.evaluate(null), 0.1);
     }
 
     class MyMinVisitor extends MinVisitor {

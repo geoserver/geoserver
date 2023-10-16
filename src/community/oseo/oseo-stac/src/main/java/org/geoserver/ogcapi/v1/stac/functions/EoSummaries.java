@@ -96,9 +96,15 @@ public class EoSummaries extends FunctionImpl {
         if (property == null) {
             throw new IllegalArgumentException("Property cannot be null");
         }
-        if (BOUNDS.equals(aggregate) && !"x".equals(property) && !"y".equals(property)) {
+        if (BOUNDS.equals(aggregate)
+                && !"x".equals(property)
+                && !"y".equals(property)
+                && !"xmin".equals(property)
+                && !"xmax".equals(property)
+                && !"ymin".equals(property)
+                && !"ymax".equals(property)) {
             throw new IllegalArgumentException(
-                    "Property must be 'x' or 'y' when aggregate is 'bounds'");
+                    "Property must be 'x' or 'y' or 'xmin' or 'xmax' or 'ymin' or 'ymax' when aggregate is 'bounds'");
         }
     }
 

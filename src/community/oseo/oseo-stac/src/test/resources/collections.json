@@ -14,10 +14,10 @@
         "spatial": {
           "bbox": [
             [
-              "$${minx(footprint)}",
-              "$${miny(footprint)}",
-              "$${maxx(footprint)}",
-              "$${maxy(footprint)}"
+              "$${eoSummaries('bounds',name,'xmin')}",
+              "$${eoSummaries('bounds',name,'ymin')}",
+              "$${eoSummaries('bounds',name,'xmax')}",
+              "$${eoSummaries('bounds',name,'ymax')}"
             ]
           ]
         },

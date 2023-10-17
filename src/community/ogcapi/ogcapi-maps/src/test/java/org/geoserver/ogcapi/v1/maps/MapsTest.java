@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -48,6 +49,22 @@ public class MapsTest extends MapsTestSupport {
         Document document =
                 getAsJSoup(
                         "ogc/maps/v1/collections/sf:TimeWithStartEnd/styles/Default/map?f=html&datetime=2012-02-12T00:00:00Z");
+        boolean found = searchParameter(document, "\"datetime\": '2012-02-12T00:00:00Z'");
+        assertTrue(found);
+    }
+
+    @Test
+    public void testHTMLNoDatetime() throws Exception {
+        setupStartEndTimeDimension(
+                TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
+        // failed here when no datetime provided, FTL processing error, null on js_string
+        Document document =
+                getAsJSoup("ogc/maps/v1/collections/sf:TimeWithStartEnd/styles/Default/map?f=html");
+        boolean found = searchParameter(document, "\"datetime\": '2012-02-12T00:00:00Z'");
+        assertFalse(found);
+    }
+
+    private static boolean searchParameter(Document document, String keyValue) {
         Elements scriptsOnPage = document.select("script");
         Matcher matcher = null;
         // check that the datetime is in the javascript parameters
@@ -58,12 +75,12 @@ public class MapsTest extends MapsTestSupport {
             for (DataNode node : element.dataNodes()) {
                 matcher = pattern.matcher(node.getWholeData());
                 while (matcher.find()) {
-                    if (matcher.group().equals("\"datetime\": '2012-02-12T00:00:00Z'")) {
+                    if (matcher.group().equals(keyValue)) {
                         found = true;
                     }
                 }
             }
         }
-        assertTrue(found);
+        return found;
     }
 }

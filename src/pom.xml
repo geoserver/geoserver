@@ -1774,8 +1774,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <runOrder>alphabetical</runOrder>
-          <source>11</source>
-          <target>11</target>
           <includes>
             <include>**/*Test.java</include>
           </includes>
@@ -1882,6 +1880,9 @@
             <goals>
               <goal>test-jar</goal>
             </goals>
+            <configuration>
+              <skipIfEmpty>true</skipIfEmpty>
+            </configuration>
           </execution>
         </executions>
         <configuration>

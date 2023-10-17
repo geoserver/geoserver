@@ -321,7 +321,7 @@ public class MapsService {
         rawParamers.put("height", String.valueOf(height));
         rawParamers.put("layers", collectionId);
         rawParamers.put("styles", styleId);
-        rawParamers.put("datetime", datetime);
+        if (datetime != null) rawParamers.put("datetime", datetime);
         request.setRawKvp(rawParamers);
         // TODO: add other parameters
         return request;

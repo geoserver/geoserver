@@ -42,7 +42,7 @@ public class FilePaths {
      * marker.
      *
      * <p>Linux absolute paths are start with leading slash character ({@code / } ). <br>
-     * {@code convert("/srv/gis/cadaster/district.geopg") --> "/srv/gis/cadaster/district.geopg" <br>
+     * {@code convert("/srv/gis/cadaster/district.geopkg") --> "/srv/gis/cadaster/district.geopkg" <br>
      * {@code names("/srv/gis/cadaster/district.geopkg) --> {"/", "srv","gis", "cadaster",
      * "district.geopkg"}}. <br>
      * This agrees with URL representation of

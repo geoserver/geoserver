@@ -21,8 +21,8 @@ Reference:
 
    The methods in the Resource API use String parameter names consistently:
 
- * ``resource path`` path to a resource in the resource store. (For instance in the case of the default FileSystemResourceStore, this is file path that is relative with respect to the data directory, but for perserving generic behaviour compatible with any resource store, developers should not assume this to be the case). Resource paths do not support the `.` and `..` relative directory names. Resource paths use forward slashes, similar to URL's and unix style file paths, and are OS-independent.
- * ``file path`` absolute path to a file in the file system. While these are OS dependent (with regard to the root of the absolute path) but they must always forward slashes, as supported by all operating systems and compatible with resource paths as well as file URL's. Note that ``Resource.path()`` for resources obtained by ``Files.asResource(file)`` will return a file path rather than a resource path.  
+ * ``resource path`` path to a resource in the resource store. (For instance in the case of the default FileSystemResourceStore, this is file path that is relative with respect to the data directory, but to preserve generic behaviour compatible with any resource store, developers should not assume this to be the case). Resource paths do not support the `.` and `..` relative directory names. Resource paths use forward slashes, similar to URL's and unix style file paths, and are OS-independent.
+ * ``file path`` absolute path to a file in the file system. While these are OS dependent (with regard to the root of the absolute path) but they must always use forward slashes, as supported by all operating systems and compatible with resource paths as well as file URL's. Note that ``Resource.path()`` for resources obtained by ``Files.asResource(file)`` will return a file path rather than a resource path.  
  * ``file`` a java File reference.  
  * ``url`` a location resolved with respect to the resource store. A number of special cases developed over time distilled into ``Resources.fromUrl(base,url)`` and ``Files.url(base,url)`` methods.  
 

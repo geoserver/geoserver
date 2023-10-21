@@ -132,6 +132,14 @@ public class GeoServerClient {
         feignBuilder.errorDecoder(new GeoServerFeignErrorDecoder());
         // use okhttp client, the default one doesn't send request headers correctly
         feignBuilder.client(new OkHttpClient());
+        // but avoid error "feign.FeignException: source exhausted prematurely reading POST" due to
+        // server sending incorrect content-length
+        feignBuilder.requestInterceptor(
+                new RequestInterceptor() {
+                    public @Override void apply(RequestTemplate template) {
+                        template.header("Accept-Encoding", "identity");
+                    }
+                });
 
         Decoder decoder =
                 new Decoder() {

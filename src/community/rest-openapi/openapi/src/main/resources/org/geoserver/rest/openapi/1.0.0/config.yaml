@@ -23,9 +23,6 @@ components:
           format: int64
           description: The update sequence. This value is used by various ogc services to track changes to a capabilities
             document.
-        useHeadersProxyURL:
-          type: boolean
-          description: The flag to use request headers for the proxy URL
         settings:
           $ref: '#/components/schemas/SettingsInfo'
     ContactInfo:
@@ -97,6 +94,9 @@ components:
           type: string
           description: The url of a proxy in front of the GeoServer instance. This value is used when a reference back to
             the GeoServer instance must be made in a response.
+        useHeadersProxyURL:
+          type: boolean
+          description: The flag to use request headers for the proxy URL
         schemaBaseUrl:
           type: string
           description: The base url to use when including a reference to an xml schema document in a response.

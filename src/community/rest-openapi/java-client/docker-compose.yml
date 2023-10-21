@@ -2,7 +2,7 @@ version: "3"
 
 services:
   geoserver:
-    image: oscarfonts/geoserver:latest
+    image: docker.osgeo.org/geoserver:2.23.1
     ports:
       - ${GEOSERVER_PORT}:8080
     #command: dockerize -wait tcp://database:5432 --timeout 80s catalina.sh run

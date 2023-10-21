@@ -17,18 +17,28 @@
       <groupId>javax.annotation</groupId>
       <artifactId>javax.annotation-api</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>io.swagger</groupId>
-      <artifactId>swagger-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <!-- @Nullable annotation -->
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+
+    <!-- @Nullable annotation -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
     </dependency>
   </dependencies>
   <build>
@@ -48,7 +58,7 @@
               <inputSpec>${openapi-base-folder}/catalog.yaml</inputSpec>
               <configurationFile>${project.basedir}/catalog-model-config.json</configurationFile>
               <generateApis>false</generateApis>
-              <generateSupportingFiles>false</generateSupportingFiles>
+              <generateSupportingFiles>true</generateSupportingFiles>
               <generateModelTests>false</generateModelTests>
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>

@@ -776,12 +776,12 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>4.3</version>
+        <version>5.2.0</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
-        <version>2.2</version>
+        <version>3.3.0</version>
       </dependency>
       <dependency>
         <groupId>httpunit</groupId>

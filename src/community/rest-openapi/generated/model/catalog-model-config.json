@@ -11,5 +11,7 @@
 	"useTags" : "true",
 	"useRuntimeException" : "true",
 	"useBeanValidation" : "false",
-	"performBeanValidation" : "false"
+	"performBeanValidation" : "false",
+	"useJakartaEe": "false",
+	"openApiNullable": "false"
 }

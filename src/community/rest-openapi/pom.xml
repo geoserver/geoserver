@@ -18,15 +18,12 @@
   </modules>
 
   <properties>
-    <openapi-generator-maven-plugin.version>4.3.1</openapi-generator-maven-plugin.version>
-    <mapstruct.version>1.4.2.Final</mapstruct.version>
+    <openapi-generator-maven-plugin.version>6.6.0</openapi-generator-maven-plugin.version>
+    <mapstruct.version>1.5.5.Final</mapstruct.version>
 
-    <lombok.version>1.18.24</lombok.version>
-    <feign-version>11.0</feign-version>
+    <lombok.version>1.18.30</lombok.version>
+    <feign-version>10.11</feign-version>
     <feign-form-version>3.8.0</feign-form-version>
-    <jackson-version>2.10.5</jackson-version>
-    <jackson-databind-version>2.10.5.1</jackson-databind-version>
-    <jackson-databind-nullable-version>0.2.1</jackson-databind-nullable-version>
     <swagger-annotations.version>1.5.24</swagger-annotations.version>
     <oltu-version>1.0.2</oltu-version>
 
@@ -63,22 +60,17 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${jackson-databind-version}</version>
+        <version>${jackson2.databind.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${jackson-version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openapitools</groupId>
-        <artifactId>jackson-databind-nullable</artifactId>
-        <version>${jackson-databind-nullable-version}</version>
+        <version>${jackson2.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
         <artifactId>jackson-datatype-jsr310</artifactId>
-        <version>${jackson-version}</version>
+        <version>${jackson2.version}</version>
       </dependency>
       <dependency>
         <groupId>io.github.openfeign</groupId>

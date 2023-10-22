@@ -12,6 +12,8 @@
 	"useRuntimeException" : "true",
 	"useBeanValidation" : "false",
 	"performBeanValidation" : "false",
+	"openApiNullable": "false",
+	"useJakartaEe": "false",
 	"importMappings": {
 	    "AttributeTypeInfo": "org.geoserver.openapi.model.catalog.AttributeTypeInfo",
 	    "AttributionInfo": "org.geoserver.openapi.model.catalog.AttributionInfo",

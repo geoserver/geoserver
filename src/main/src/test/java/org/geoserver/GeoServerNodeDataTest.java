@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.InetAddress;
-import org.easymock.EasyMock;
+import java.net.UnknownHostException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,13 +17,9 @@ import org.junit.Test;
 public class GeoServerNodeDataTest {
 
     @Before
-    public void mockAddress() {
-        InetAddress addr = EasyMock.createMock(InetAddress.class);
-
-        EasyMock.expect(addr.getHostAddress()).andStubReturn("192.2.0.42");
-        EasyMock.expect(addr.getHostName()).andStubReturn("test.local");
-
-        EasyMock.replay(addr);
+    public void mockAddress() throws UnknownHostException {
+        InetAddress addr =
+                InetAddress.getByAddress("test.local", new byte[] {(byte) 192, 2, 0, 42});
 
         GeoServerNodeData.setMockAddress(addr);
     }

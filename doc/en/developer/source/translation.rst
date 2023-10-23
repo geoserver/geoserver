@@ -24,14 +24,14 @@ Once created, each line in the files represents a string that will need to be tr
 
 .. warning:: property files must always be encoded in ISO-8859 (or something equivalent like us-ascii or latin1). If you need a whole unicode file, the extension of the file must be `utf8.properties`. 
 
-Translating in Transifex
+Translating in WebLate
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-A GeoServer project is maintained on the Transifex website to allow people to participate to the translation of the UI without going into the source code of GeoServer. Transifex requires an account to log in but GitHub accounts can be used.
+A GeoServer project is maintained on the WebLate website hosted by OSGEO to allow people to participate to the translation of the UI without going into the source code of GeoServer. WebLate requires an  OSGEO account to log in (accounts can be created at https://id.osgeo.org/ldap/create).
 
-The project is available here : https://www.transifex.com/GeoServer/geoserver-github-integration/dashboard/.
+The project is available here : https://weblate.osgeo.org/projects/geoserver/.
 
-The administrators of the project update the Transifex resources on a regular basis and synchronize the translations in GeoServer at the same time.
+The WebLate project is automatically synchronized with the GitHub repository of GeoServer. The administrators of the WebLate projects are responsible for pushing translations from WebLate to GitHub.
 
 Editing in Eclipse
 ~~~~~~~~~~~~~~~~~~

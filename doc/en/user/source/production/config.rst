@@ -171,3 +171,16 @@ GeoServer provides a number of facilities to control external entity resolution:
 * To turn off all restrictions (allowing ``http``, ``https``, and ``file`` references) use the global setting :ref:`config_globalsettings_external_entities`.
   
   This setting prevents ``ENTITY_RESOLUTION_ALLOWLIST`` from being used.
+
+Session Management
+------------------
+
+GeoServer defaults to managing user sessions using cookies with the ``HttpOnly`` flag set to prevent attackers from using cross-site scripting (XSS) attacks to steal
+a user's session token. You can configure the session behavior by modifying the :file:`web.xml` file of your GeoServer instance.
+
+It is strongly recommended that production environments also set the ``Secure`` flag on session cookies. This can be enabled by uncommenting the following in the :file:`web.xml`
+file if the web interface is only being accessed through HTTPS but the flag may need to be set by a proxy server if the web interface needs to support both HTTP and HTTPS.
+
+.. code-block:: xml
+
+   <secure>true</secure>

@@ -1,4 +1,4 @@
-FROM tomcat:jdk11-openjdk
+FROM tomcat:9-jdk11
 LABEL maintainer="Alessandro Parma<alessandro.parma@geo-solutions.it>"
 
 ENV  DEBIAN_FRONTEND noninteractive

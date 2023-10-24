@@ -51,7 +51,7 @@ paths:
           $ref: '#/components/responses/LandingPage'
         '500':
           $ref: '#/components/responses/ServerError'
-  '/api':
+  '/openapi':
     get:
       tags:
         - Capabilities
@@ -61,7 +61,7 @@ paths:
       operationId: getOpenApiDocument
       responses:
         '200':
-          $ref: '#/components/responses/ConformanceDeclaration'
+          $ref: '#/components/responses/OpenAPI'
         '500':
           $ref: '#/components/responses/ServerError'
   '/conformance':
@@ -1137,11 +1137,11 @@ components:
                 rel: self
                 type: application/json
                 title: this document
-              - href: 'http://data.example.org/api'
+              - href: 'http://data.example.org/openapi'
                 rel: service-desc
                 type: application/vnd.oai.openapi+json;version=3.0
                 title: the API definition
-              - href: 'http://data.example.org/api.html'
+              - href: 'http://data.example.org/openapi.html'
                 rel: service-doc
                 type: text/html
                 title: the API documentation
@@ -1156,6 +1156,10 @@ components:
         text/html:
           schema:
             type: string
+    OpenAPI:
+      description: |-
+        The OpenAPI page provides an Open API (aka Swagger) view
+        of the OGC API - Feature interface.
     ConformanceDeclaration:
       description: |-
         The URIs of all conformance classes supported by the server.

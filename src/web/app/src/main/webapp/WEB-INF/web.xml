@@ -277,6 +277,17 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
+    <session-config>
+        <cookie-config>
+            <http-only>true</http-only>
+            <!-- The Secure flag should be set on session cookies but is commented out by default since it -->
+            <!-- will break non-HTTPS web UI access and may cause problems with some proxy configurations. -->
+            <!-- Uncomment the following line to add the Secure flag to session cookies. -->
+            <!-- <secure>true</secure> -->
+        </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
     
     <mime-mapping>
       <extension>xsl</extension>

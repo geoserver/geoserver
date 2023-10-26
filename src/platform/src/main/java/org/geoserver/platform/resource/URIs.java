@@ -28,6 +28,7 @@ public final class URIs {
         private URL url;
 
         public ResourceAdaptor(URL url) {
+            Paths.valid(url.getPath());
             this.url = url;
         }
 

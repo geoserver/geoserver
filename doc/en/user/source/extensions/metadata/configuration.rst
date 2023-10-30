@@ -59,7 +59,7 @@ Example UI configuration:
     - key: data-date
       fieldType: COMPLEX
       typename: data-identification-date
-      occurrence: REPEAT            
+      occurrence: REPEAT   
   types:    
      - typename: data-identification-date
        attributes:
@@ -77,11 +77,11 @@ This configuration results in the following GUI:
 .. figure:: images/basic-gui.png
 
 
-
-There are 2 main parts in the `yaml <https://yaml.org/>`__:
+There are 3 main parts in the `yaml <https://yaml.org/>`__:
 
     - **attributes:** a list of GUI components that will be rendered in the tab. They can be a basic type or a complex type, a complex type is a collection of basic types.
     - **types:** a list that defines the fields in each complex type.
+    - **tabs** optionally, attributes may be displayed on separate tabs.
 
 :ref:`community_metadata_uiconfiguration` gives an overview of all supported types and advanced features.
 

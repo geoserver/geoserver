@@ -7,7 +7,7 @@ on:
       - '!**/src/main/resources/GeoServerApplication_fr.properties'
 
 env:
-  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx512m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx512m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true 
 
 jobs:
   javadoc:
@@ -39,10 +39,10 @@ jobs:
     - name: Build GeoServer modules and extensions without tests
       run: |
         mvn --version
-        mvn -B -ntp -U -T3 -DskipTests -Dspotless.apply.skip=true -Prelease -f src/pom.xml install
+        mvn -B -ntp -U -T3 -DskipTests -Prelease -f src/pom.xml install
     - name: Build aggregate javadocs
       run: |
-        mvn -B -ntp -fae -Dspotless.apply.skip=true -f src/pom.xml javadoc:aggregate
+        mvn -B -ntp -fae -f src/pom.xml javadoc:aggregate
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

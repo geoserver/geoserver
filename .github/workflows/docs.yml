@@ -34,7 +34,7 @@ jobs:
         pip install -r requirements.txt
     - name: Build docs
       run: |
-        mvn -f doc/en -ntp -B compile
+        mvn -B -ntp -f doc/en compile
     - name: Check index.html
       run: |
         if test ! -f doc/en/target/user/html/index.html; then
@@ -66,7 +66,7 @@ jobs:
         pip install -r requirements.txt
     - name: Build docs
       run: |
-        mvn -f doc/zhCN -ntp -B compile
+        mvn -B -ntp -f doc/zhCN compile
     - name: Check index.html
       run: |
         if test ! -f doc/zhCN/target/user/html/index.html; then

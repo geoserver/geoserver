@@ -7,7 +7,7 @@ on:
       - '!**/src/main/resources/GeoServerApplication_fr.properties'
 
 env:
-  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 -Dmaven.wagon.http.retryHandler.count=3 -Xmx768m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 -Dmaven.wagon.http.retryHandler.count=3 -Xmx768m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
 
 jobs:
   build:
@@ -33,7 +33,8 @@ jobs:
         restore-keys: |
           gs-${{ runner.os }}-maven-
     - name: Build with Maven
-      run: mvn --% -B -ntp clean install -Dall -U -T2 -Prelease -Pwindows-github-build --file src/pom.xml -Dspotless.apply.skip=true
+      run: |
+        mvn --% -B -ntp -U -T2 -Dall -Prelease,windows-github-build -f src/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
       run: |
         cmd --% /c for /f %i in ('dir /a:d /s /b %userprofile%\*SNAPSHOT*') do rd /s /q %i

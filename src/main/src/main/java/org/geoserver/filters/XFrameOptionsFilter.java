@@ -37,6 +37,10 @@ public class XFrameOptionsFilter implements Filter {
     /** The system property for the value of the X-Frame-Options header */
     public static final String GEOSERVER_XFRAME_POLICY = "geoserver.xframe.policy";
 
+    /** The system property to set whether the X-Content-Type-Options header should be set */
+    public static final String GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY =
+            "geoserver.xContentType.shouldSetPolicy";
+
     /**
      * Whether the X-Frame-Option header should be set at all. Check this on the fly for easier
      * testing and in order to potentially make this a GUI controlled option in the future.
@@ -62,6 +66,22 @@ public class XFrameOptionsFilter implements Filter {
         return framePolicy;
     }
 
+    /**
+     * Whether the X-Content-Type-Options header should be set at all. Check this on the fly for
+     * easier testing and in order to potentially make this a GUI controlled option in the future.
+     */
+    private static boolean shouldSetContentTypePolicy() {
+        boolean shouldSetPolicy = true;
+        if (StringUtils.isNotEmpty(
+                GeoServerExtensions.getProperty(GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY))) {
+            shouldSetPolicy =
+                    Boolean.parseBoolean(
+                            GeoServerExtensions.getProperty(
+                                    GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY));
+        }
+        return shouldSetPolicy;
+    }
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}
 
@@ -69,9 +89,12 @@ public class XFrameOptionsFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
         if (shouldSetPolicy()) {
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setHeader(X_FRAME_OPTIONS, getFramePolicy());
+        }
+        if (shouldSetContentTypePolicy()) {
+            httpResponse.setHeader("X-Content-Type-Options", "nosniff");
         }
 
         chain.doFilter(request, response);

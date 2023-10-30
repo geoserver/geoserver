@@ -38,35 +38,32 @@ The following are necessary to perform a GeoServer release:
 Versions and revisions
 ----------------------
 
-When performing a release, we don't require a "code freeze" in which no developers can commit to the repository. Instead, we release from a revision that is known to pass all tests, including unit/integration tests as well as CITE tests.
+When performing a release, we don't require a "code freeze" in which no developers can commit to the repository. Instead we release from a revision that is known to pass all tests, including unit/integration tests from a nightly build.
 
-To obtain the GeoServer and GeoTools revisions that have passed the `CITE test <https://build.geoserver.org/view/testing-cite/>`_, navigate to the latest Jenkins run of the CITE test  and view its console output and select to view its full log. For example:
-
-    https://build.geoserver.org/job/2.11-cite-wms-1.1/286/consoleText
-
-Perform a search on the log for 'git revision' (this is the GeoServer revision) and you should obtain the following:
+To obtain the GeoServer, GWC and GeoTools revisions that have passed testing, navigate to `geoserver.org/download > Development <https://geoserver.org/download>`__, find the correct series (e.g. 2.17.x) and download a “binary” nightly build. From the download check the :file:`src/target/VERSION.txt` file. For example:
 
 .. code-block:: none
 
-    version = 2.11-SNAPSHOT
-    git revision = 08f43fa77fdcd0698640d823065b6dfda7f87497
-    git branch = origin/2.11.x
-    build date = 18-Dec-2017 19:51
-    geotools version = 17-SNAPSHOT
-    geotools revision = a91a88002c7b2958140321fbba4d5ed0fa85b78d
-    geowebcache version = 1.11-SNAPSHOT
-    geowebcache revision = 0f1cbe9466e424621fae9fefdab4ac5a7e26bd8b/0f1cb
+    version = 2.17-SNAPSHOT
+    git revision = 1ee183d9af205080f1543dc94616bbe3b3e4f890
+    git branch = origin/2.17.x
+    build date = 19-Jul-2020 04:41
+    geotools version = 23-SNAPSHOT
+    geotools revision = 3bde6940610d228e01aec9de7c222823a2638664
+    geowebcache version = 1.17-SNAPSHOT
+    geowebcache revision = 27eec3fb31b8b4064ce8cc0894fa84d0ff97be61/27eec
+    hudson build = -1
 
-Since most GeoServer releases require an official GeoTools release, the GeoTools revision is usually not needed.
+Since most GeoServer releases require official GeoTools and GeoWebCache releases, the GeoTools and GeoWebCache revisions are usually not needed - the version numbers are used instead.
 
 Release in JIRA
 ---------------
 
 1. Navigate to the `GeoServer project page <https://osgeo-org.atlassian.net/projects/GEOS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&status=released-unreleased>`_ in JIRA.
 
-2. Add a new version for the next version to be released after the current release. For example, if you are releasing GeoServer 2.11.5, create version 2.11.6.
+2. Add a new version for the next version to be released after the current release. For example, if you are releasing GeoServer 2.11.5, create version 2.11.6.  Enter the current date as the Start Date and use the date from the `release schedule <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`_ for the Release Date.
 
-3. Click in the Actions column for the version you are releasing and select Release. Enter the release date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2.
+3. Click in the Actions column for the version you are releasing and select Release. Update the Release Date to the current date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2 above.
 
 If you are cutting the first RC of a series, create the stable branch
 ---------------------------------------------------------------------

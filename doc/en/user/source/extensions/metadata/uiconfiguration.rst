@@ -18,6 +18,7 @@ A field is defined in the yaml following key-value pairs:
     - `label`_
     - `occurrence`_
     - `condition`_
+    - `tab`_
     - `values`_  (specific field types)
     - `derivedFrom`_  (specific field types)
     - `typename`_  (specific field types)
@@ -114,6 +115,13 @@ For example:
 .. code:: YAML
 
   condition: equalTo(typeOf("."), 'FeatureTypeInfo')
+
+tab
+^^^
+Optionally, attributes may be displayed on separate tabs. All tabs must be listed under `tabs` in the main configuration. Then this
+property is used to assign each attribute to a tab, so that the custom metadata panel is divided in tabs:
+
+    .. figure:: images/metadata-tabs.png
 
 values
 ^^^^^^

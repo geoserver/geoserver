@@ -130,7 +130,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
                     @Override
                     public Panel getPanel(String panelId) {
-                        return new MetadataPanel(panelId, metadataModel, null, null);
+                        return MetadataPanel.buildPanel(panelId, metadataModel, null, null);
                     }
                 });
         tabs.add(

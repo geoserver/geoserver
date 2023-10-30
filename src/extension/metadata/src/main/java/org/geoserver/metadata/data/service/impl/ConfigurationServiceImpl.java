@@ -85,6 +85,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                         });
     }
 
+    public void reload() {
+        readConfiguration();
+    }
+
     private void readCustomTranslations() {
         application
                 .getApplicationListeners()

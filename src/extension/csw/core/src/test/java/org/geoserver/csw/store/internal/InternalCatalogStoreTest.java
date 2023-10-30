@@ -42,14 +42,15 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         File record = new File(csw, "Record.properties");
         assertTrue(record.exists());
 
-        assertNotNull(store.getMapping("Record"));
-        assertNotNull(store.getMapping("Record").getElement("identifier.value"));
-
-        assertNull(store.getMapping("Record").getElement("format.value"));
+        assertNotNull(store.getMappings("Record"));
+        assertEquals(1, store.getMappings("Record").size());
+        CatalogStoreMapping mapping = store.getMappings("Record").get(0);
+        assertNotNull(mapping.getElement("identifier.value"));
+        assertNull(mapping.getElement("format.value"));
 
         // On Linux and older versions of JDK last modification resolution is one second,
         // and we need the watcher to see the file as changed. Account for slow build servers too.
-        PropertyFileWatcher watcher = store.watchers.get("Record");
+        PropertyFileWatcher watcher = store.watchers.get("Record").iterator().next();
         Awaitility.await()
                 .atMost(5, TimeUnit.SECONDS)
                 .until(
@@ -60,9 +61,8 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
                             return watcher.isStale();
                         });
 
+        mapping = store.getMappings("Record").get(0);
         // mapping should be automatically reloaded now
-        assertEquals(
-                "img/jpeg",
-                store.getMapping("Record").getElement("format.value").getContent().toString());
+        assertEquals("img/jpeg", mapping.getElement("format.value").getContent().toString());
     }
 }

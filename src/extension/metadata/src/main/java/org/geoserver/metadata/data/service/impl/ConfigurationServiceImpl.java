@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -82,6 +83,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                                 readConfiguration();
                             }
                         });
+    }
+
+    public void reload() {
+        readConfiguration();
     }
 
     private void readCustomTranslations() {
@@ -225,6 +230,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 typesKeys.add(type.getTypename());
             }
         }
+        // Merge Tabs configuration and remove duplicates
+        LinkedHashSet<String> tabs = new LinkedHashSet<>();
+        tabs.addAll(configuration.getTabs());
+        tabs.addAll(config.getTabs());
+        configuration.getTabs().clear();
+        configuration.getTabs().addAll(tabs);
 
         // merge csv imports
         for (String csvImport : config.getCsvImports()) {

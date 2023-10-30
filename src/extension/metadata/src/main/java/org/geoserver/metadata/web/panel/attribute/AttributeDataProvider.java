@@ -42,8 +42,11 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeConfig
 
     private ResourceInfo rInfo;
 
-    public AttributeDataProvider(ResourceInfo rInfo) {
+    private String tab;
+
+    public AttributeDataProvider(ResourceInfo rInfo, String tab) {
         this.rInfo = rInfo;
+        this.tab = tab;
         ConfigurationService metadataConfigurationService =
                 GeoServerApplication.get()
                         .getApplicationContext()
@@ -87,7 +90,12 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeConfig
                 LOGGER.log(Level.WARNING, "Failed to parse condition for " + config.getKey(), e);
             }
         }
-        return true;
+        if (tab == null) {
+            return true;
+        } else {
+            String attConfigTab = config.getTab() == null ? "" : config.getTab();
+            return attConfigTab.equals(tab);
+        }
     }
 
     @Override

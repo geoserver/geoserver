@@ -26,6 +26,8 @@ public interface MetadataConfiguration extends AttributeCollection {
 
     List<AttributeTypeConfiguration> getTypes();
 
+    List<String> getTabs();
+
     AttributeTypeConfiguration findType(String typename);
 
     boolean isWcsField();

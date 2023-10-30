@@ -32,7 +32,9 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.platform.resource.Resource.Type;
+import org.junit.Test;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
@@ -489,5 +491,25 @@ public abstract class ResourceTheoryTest {
 
         final Resource res = getResource(Paths.convert(file.getPath()));
         assertTrue(Paths.isAbsolute(res.path()));
+    }
+
+    @Test
+    public void testPathTraversal() {
+        assertInvalidPath("..");
+        assertInvalidPath("../foo/bar");
+        assertInvalidPath("foo/../bar");
+        assertInvalidPath("foo/bar/..");
+    }
+
+    @Test
+    public void testPathTraversalWindows() {
+        assumeTrue(SystemUtils.IS_OS_WINDOWS);
+        assertInvalidPath("..\\foo\\bar");
+        assertInvalidPath("foo\\..\\bar");
+        assertInvalidPath("foo\\bar\\..");
+    }
+
+    protected final void assertInvalidPath(String path) {
+        assertThrows(IllegalArgumentException.class, () -> getResource(path));
     }
 }

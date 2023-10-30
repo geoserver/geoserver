@@ -4,7 +4,7 @@ on:
   pull_request
 
 env:
-  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx756m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx756m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
 
 jobs:
   build:
@@ -36,13 +36,13 @@ jobs:
     - name: Build GeoServer modules and extensions without tests
       run: |
         mvn --version
-        mvn -B -ntp -U -T3 -DskipTests -Dspotless.apply.skip=true -Prelease -f src/pom.xml install
+        mvn -B -ntp -U -T3 -DskipTests -Prelease -f src/pom.xml install
     - name: Package GeoServer modules and extensions
       run: |
         mvn -B -ntp -nsu -N -f src/pom.xml assembly:single
     - name: Build community modules without tests
       run: |
-        mvn -B -ntp -U -T3 -DskipTests -Dspotless.apply.skip=true -Prelease,communityRelease -f src/community/pom.xml install
+        mvn -B -ntp -U -T3 -DskipTests -PcommunityRelease -f src/community/pom.xml install
     - name: Package community modules
       run:  |
         mvn -B -ntp -nsu -N -f src/community/pom.xml assembly:single

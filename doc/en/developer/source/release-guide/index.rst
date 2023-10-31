@@ -254,7 +254,7 @@ Publish JIRA markdown release notes to GitHub tag:
    
    * Select format `Markdown`
    * Layout: Issue key with link
-   * Issue types: `Bug` and `Improvement`
+   * Issue types: All
    
    Change the heading to :kbd:`Release notes`, and apply the change with :guilabel:`Done`.
 
@@ -294,6 +294,7 @@ Publish JIRA markdown release notes to GitHub tag:
    
    * Release title: `GeoServer 2.20.0`
    * Write: Paste the markdown from Jira release notes editor
+   * Set as the latest release: only tick this for stable releases, leave unticked for maintenance and support releases
    
    Use :guilabel:`Publish release` button to publish the release notes.
    

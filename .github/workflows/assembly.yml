@@ -1,16 +1,13 @@
-name: Docs javadocs GitHub CI
+name: Assembly GitHub CI
 
 on:
-  pull_request:
-    paths-ignore:
-      - '**/src/main/resources/GeoServerApplication_*.properties'
-      - '!**/src/main/resources/GeoServerApplication_fr.properties'
+  pull_request
 
 env:
-  MAVEN_OPTS: -Xmx1024m -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx756m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
 
 jobs:
-  javadoc:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -20,7 +17,7 @@ jobs:
             dist: 'temurin'
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 11
+    - name: Set up JDK
       uses: actions/setup-java@v3
       with:
         java-version: ${{ matrix.jdk }}
@@ -40,10 +37,15 @@ jobs:
       run: |
         mvn --version
         mvn -B -ntp -U -T3 -DskipTests -Prelease -f src/pom.xml install
-    - name: Build aggregate javadocs
+    - name: Package GeoServer modules and extensions
       run: |
-        mvn -B -ntp -fae -f src/pom.xml javadoc:aggregate
+        mvn -B -ntp -nsu -N -f src/pom.xml assembly:single
+    - name: Build community modules without tests
+      run: |
+        mvn -B -ntp -U -T3 -DskipTests -PcommunityRelease -f src/community/pom.xml install
+    - name: Package community modules
+      run:  |
+        mvn -B -ntp -nsu -N -f src/community/pom.xml assembly:single
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
-

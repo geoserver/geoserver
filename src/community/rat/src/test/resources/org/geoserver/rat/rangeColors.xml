@@ -1,0 +1,83 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <GDALRasterAttributeTable tableType="athematic">
+      <FieldDefn index="0">
+        <Name>Value Min</Name>
+        <Type>1</Type>
+        <Usage>3</Usage>
+      </FieldDefn>
+      <FieldDefn index="1">
+        <Name>Value Max</Name>
+        <Type>1</Type>
+        <Usage>4</Usage>
+      </FieldDefn>
+      <FieldDefn index="2">
+        <Name>Class</Name>
+        <Type>2</Type>
+        <Usage>2</Usage>
+      </FieldDefn>
+      <FieldDefn index="3">
+        <Name>Class2</Name>
+        <Type>2</Type>
+        <Usage>2</Usage>
+      </FieldDefn>
+      <FieldDefn index="4">
+        <Name>Class3</Name>
+        <Type>2</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="5">
+        <Name>Red</Name>
+        <Type>0</Type>
+        <Usage>6</Usage>
+      </FieldDefn>
+      <FieldDefn index="6">
+        <Name>Green</Name>
+        <Type>0</Type>
+        <Usage>7</Usage>
+      </FieldDefn>
+      <FieldDefn index="7">
+        <Name>Blue</Name>
+        <Type>0</Type>
+        <Usage>8</Usage>
+      </FieldDefn>
+      <Row index="0">
+        <F>-1e+25</F>
+        <F>3000000000000</F>
+        <F>zero</F>
+        <F>zero2</F>
+        <F>zero3</F>
+        <F>0</F>
+        <F>10</F>
+        <F>100</F>
+      </Row>
+      <Row index="1">
+        <F>3000000000000</F>
+        <F>1e+20</F>
+        <F>one</F>
+        <F>one2</F>
+        <F>one3</F>
+        <F>100</F>
+        <F>20</F>
+        <F>0</F>
+      </Row>
+      <Row index="2">
+        <F>1e+20</F>
+        <F>5e+25</F>
+        <F>two</F>
+        <F>zero2</F>
+        <F>two3</F>
+        <F>200</F>
+        <F>30</F>
+        <F>50</F>
+      </Row>
+    </GDALRasterAttributeTable>
+    <Metadata>
+      <MDI key="STATISTICS_MAXIMUM">4.5669998617727e+23</MDI>
+      <MDI key="STATISTICS_MEAN">8.9174997099692e+22</MDI>
+      <MDI key="STATISTICS_MINIMUM">-9.9999997781963e+22</MDI>
+      <MDI key="STATISTICS_STDDEV">2.1608225083275e+23</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">100</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

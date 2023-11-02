@@ -1,0 +1,28 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<form name="theForm">
+<wicket:panel>
+
+  <fieldset>
+    <legend><span><wicket:message key="RasterAttributeTableConfig.title">RAT</wicket:message></span></legend>
+    <ul>
+      <li wicket:id="styleToolbar" class="genericToolbar">
+        <span>Band</span><select wicket:id="bands"></select>
+        <span>Classification</span><select wicket:id="classifications"></select>
+        <span>Style name</span><input type="text" wicket:id="styleName"></input>
+        <button wicket:id="createStyles" type="submit"><wicket:message key="RasterAttributeTableConfig.create">Create style</wicket:message></button>
+      </li>
+      <li>
+        <div wicket:id="rat" class="largeTable"></div>
+      </li>
+    </ul>
+  </fieldset>
+
+  
+
+</wicket:panel>
+<button type="submit"></button>
+</form>
+</body>
+</html>

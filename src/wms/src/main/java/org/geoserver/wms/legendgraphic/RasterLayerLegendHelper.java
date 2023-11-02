@@ -12,8 +12,11 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import javax.imageio.ImageIO;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -194,7 +197,10 @@ public class RasterLayerLegendHelper {
                 cmapLegendBuilder.checkAdditionalOptions();
 
                 // adding the colormap entries
-                final ColorMapEntry[] colorMapEntries = cmap.getColorMapEntries();
+                ColorMapEntry[] colorMapEntries = cmap.getColorMapEntries();
+                if (cmap.getType() == ColorMap.TYPE_VALUES) {
+                    colorMapEntries = removeDuplicates(cmap.getColorMapEntries());
+                }
                 ColorMapEntryLegendBuilder lastEntry = null;
                 boolean first = true;
                 for (ColorMapEntry ce : colorMapEntries) {
@@ -220,6 +226,25 @@ public class RasterLayerLegendHelper {
 
             } else cMapLegendCreator = null;
         }
+    }
+
+    /**
+     * Removes color map entries that would result in duplicate entries in the legend (same color
+     * and same label)
+     */
+    protected static ColorMapEntry[] removeDuplicates(ColorMapEntry[] colorMapEntries) {
+        List<ColorMapEntry> results = new ArrayList<>();
+        Map<Color, String> found = new HashMap<>();
+        for (ColorMapEntry entry : colorMapEntries) {
+            Color color = LegendUtils.color(entry);
+            String label = LegendUtils.getLabel(entry);
+            if (color != null
+                    && (!found.containsKey(color) || !Objects.equals(label, found.get(color)))) {
+                results.add(entry);
+                found.put(color, label);
+            }
+        }
+        return results.toArray(new ColorMapEntry[results.size()]);
     }
 
     /**

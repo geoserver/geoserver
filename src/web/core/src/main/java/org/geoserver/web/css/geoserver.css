@@ -1628,3 +1628,16 @@ li.select2-results__option {
 #localeSwitcher img, #_spring_security_remember_me {
    vertical-align: middle;
 }
+
+.largeTable table {
+    overflow-x: auto;
+    white-space: nowrap;
+    overflow-y: hidden;
+    width: 100em;
+    padding: 0.5em 0em;
+    display: block;
+}
+
+.genericToolbar * {
+   margin: 0px 0.2em;
+}

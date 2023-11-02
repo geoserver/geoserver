@@ -97,6 +97,7 @@
             <descriptor>release/ext-xslt.xml</descriptor>
             <descriptor>release/ext-datadir-catalog-loader.xml</descriptor>
             <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
+            <descriptor>release/ext-rat.xml</descriptor>
           </descriptors>
           <finalName>geoserver-${project.version}</finalName>
         </configuration>
@@ -244,6 +245,7 @@
         <module>imagemap</module>
         <module>datadir-catalog-loader</module>
         <module>wps-longitudinal-profile</module>
+        <module>rat</module>
       </modules>
     </profile>
     <profile>
@@ -672,6 +674,12 @@
       <id>wps-longitudinal-profile</id>
       <modules>
         <module>wps-longitudinal-profile</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>rat</id>
+      <modules>
+        <module>rat</module>
       </modules>
     </profile>
   </profiles>

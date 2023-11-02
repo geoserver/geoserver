@@ -1,0 +1,143 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <Description>Elevation</Description>
+  </PAMRasterBand>
+  <PAMRasterBand band="2">
+    <Description>Uncertainty</Description>
+  </PAMRasterBand>
+  <PAMRasterBand band="3">
+    <Description>Contributor</Description>
+    <GDALRasterAttributeTable tableType="thematic">
+      <FieldDefn index="0">
+        <Name>value</Name>
+        <Type>0</Type>
+        <Usage>5</Usage>
+      </FieldDefn>
+      <FieldDefn index="1">
+        <Name>count</Name>
+        <Type>0</Type>
+        <Usage>1</Usage>
+      </FieldDefn>
+      <FieldDefn index="2">
+        <Name>data_assessment</Name>
+        <Type>0</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="3">
+        <Name>feature_least_depth</Name>
+        <Type>0</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="4">
+        <Name>significant_features</Name>
+        <Type>0</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="5">
+        <Name>feature_size</Name>
+        <Type>1</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="6">
+        <Name>coverage</Name>
+        <Type>0</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="7">
+        <Name>bathy_coverage</Name>
+        <Type>0</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="8">
+        <Name>horizontal_uncert_fixed</Name>
+        <Type>1</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="9">
+        <Name>horizontal_uncert_var</Name>
+        <Type>1</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="10">
+        <Name>vertical_uncert_fixed</Name>
+        <Type>1</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="11">
+        <Name>vertical_uncert_var</Name>
+        <Type>1</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="12">
+        <Name>license_name</Name>
+        <Type>2</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="13">
+        <Name>license_url</Name>
+        <Type>2</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="14">
+        <Name>source_survey_id</Name>
+        <Type>2</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="15">
+        <Name>source_institution</Name>
+        <Type>2</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="16">
+        <Name>survey_date_start</Name>
+        <Type>2</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="17">
+        <Name>survey_date_end</Name>
+        <Type>2</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <Row index="0">
+        <F>0</F>
+        <F>9397</F>
+        <F>3</F>
+        <F>0</F>
+        <F>0</F>
+        <F>1000000</F>
+        <F>0</F>
+        <F>0</F>
+        <F>1000000</F>
+        <F>1000000</F>
+        <F>1000000</F>
+        <F>1000000</F>
+        <F>cc0-1.0</F>
+        <F>https://creativecommons.org/publicdomain/zero/1.0/legalcode</F>
+        <F>NBS Generalization</F>
+        <F>DOC/NOAA/NOS/OCS -- Office of Coast Survey</F>
+        <F>N/A</F>
+        <F>N/A</F>
+      </Row>
+      <Row index="1">
+        <F>1544412</F>
+        <F>14</F>
+        <F>1</F>
+        <F>0</F>
+        <F>0</F>
+        <F>1000000</F>
+        <F>1</F>
+        <F>1</F>
+        <F>5</F>
+        <F>0.05</F>
+        <F>1</F>
+        <F>0.02</F>
+        <F></F>
+        <F></F>
+        <F>StonyBrook_Hempstead_2010_MLLW_m_posdown</F>
+        <F>Stony Brook University</F>
+        <F>2010-11-30</F>
+        <F>2011-01-20</F>
+      </Row>
+    </GDALRasterAttributeTable>
+  </PAMRasterBand>
+</PAMDataset>

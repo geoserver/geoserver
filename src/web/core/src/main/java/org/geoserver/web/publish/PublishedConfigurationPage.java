@@ -445,6 +445,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                                                 .getComponentClass()
                                                 .getConstructor(String.class, IModel.class)
                                                 .newInstance("content", myModel);
+                                panel.setOutputMarkupId(true); // allow cross panel ajax updates
                                 item.add(panel);
                             } catch (Exception e) {
                                 throw new WicketRuntimeException(

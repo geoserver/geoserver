@@ -14,7 +14,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerHomePage;
@@ -22,8 +24,8 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.web.WMSAdminPage;
+import org.geotools.api.util.InternationalString;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class WMSAdminPageTest extends GeoServerWicketTestSupport {
@@ -180,7 +182,6 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testIncludeDefaultGroupStyleInCapabilitiesDisabled() throws Exception {
-        assertTrue(wms.isDefaultGroupStyleEnabled());
         tester.startPage(WMSAdminPage.class);
         FormTester ft = tester.newFormTester("form");
         ft.setValue("defaultGroupStyleEnabled", false);
@@ -188,13 +189,20 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         assertFalse(wms.isDefaultGroupStyleEnabled());
     }
 
-    // TODO WICKET8 - Fix this test
-    @Ignore
+    @Test
+    public void testIncludeDefaultGroupStyleInCapabilitiesEnabled() throws Exception {
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("defaultGroupStyleEnabled", true);
+        ft.submit("submit");
+        assertTrue(wms.isDefaultGroupStyleEnabled());
+    }
+
     @Test
     public void testInternationalContent() {
         tester.startPage(WMSAdminPage.class);
         FormTester form = tester.newFormTester("form");
-        // enable i18n for title
+        // enable i18n for title and add two entries
         form.setValue(
                 "serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
                 true);
@@ -204,27 +212,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
                 "click");
-
-        form.select(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
-                10);
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
-                "an international title");
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
                 "click");
-        form.select(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
-                20);
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
-                "another international title");
-        tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
-                "click");
 
-        // enable i18n for abstract
+        // enable i18n for abstract and add two entries
         form.setValue(
                 "serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
                 true);
@@ -234,27 +226,65 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
                 "click");
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
+        // figure out the locales used in the test (might not be stable across JVMs)
+        @SuppressWarnings("unchecked")
+        DropDownChoice<Locale> select =
+                (DropDownChoice)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
+        Locale l10 = select.getChoices().get(10);
+        Locale l20 = select.getChoices().get(20);
+
+        // fill the form (don't do this in between ajax calls)
+        form.select(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title for WMS");
+        form.select(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                20);
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "another international title for WMS");
         form.select(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
         form.setValue(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
-                "an international title");
-        tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "an international abstract for WMS");
         form.select(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
         form.setValue(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
-                "another international title");
-        tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
-                "click");
-        form = tester.newFormTester("form");
+                "another international abstract for WMS");
+
+        // mandatory fields
+        form.setValue("maxRenderingTime", "999");
+        form.setValue("maxRequestMemory", "99999");
+        form.setValue("maxRenderingErrors", "1");
+        form.setValue("maxBuffer", "99");
+        form.setValue("maxRequestedDimensionValues", "2");
+        form.setValue("watermark.transparency", "5");
+        form.setValue("cacheConfiguration.maxEntries", "1000");
+        form.setValue("cacheConfiguration.maxEntrySize", "100000");
+        form.setValue("remoteStyleTimeout", "9999");
+        form.setValue("remoteStyleMaxRequestTime", "99");
+
         form.submit("submit");
         tester.assertNoErrorMessage();
+        WMSInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
+        InternationalString internationalTitle = wmsInfo.getInternationalTitle();
+        assertEquals("an international title for WMS", internationalTitle.toString(l10));
+        assertEquals("another international title for WMS", internationalTitle.toString(l20));
+        InternationalString internationalAbstract = wmsInfo.getInternationalAbstract();
+        assertEquals("an international abstract for WMS", internationalAbstract.toString(l10));
+        assertEquals("another international abstract for WMS", internationalAbstract.toString(l20));
     }
 
     @Test

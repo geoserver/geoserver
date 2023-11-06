@@ -67,6 +67,13 @@
       <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-iau-wkt</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

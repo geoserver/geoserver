@@ -101,7 +101,7 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
                     @Override
                     public boolean isRequired() {
                         boolean result = false;
-                        IFormSubmitter submitter = form.getRootForm().findSubmittingButton();
+                        IFormSubmitter submitter = form.getRootForm().findSubmitter();
                         if (submitter != null)
                             result = !submitter.equals(dataPanel.getUploadLink());
                         return result;

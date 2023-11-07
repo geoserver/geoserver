@@ -173,7 +173,7 @@ public class FileUploadPanel extends Panel {
 
     protected boolean hasBeenSubmitted() {
         Form<?> dialogForm = (Form<?>) getParent();
-        return dialogForm.findSubmittingButton() == dialogForm.get("submit");
+        return dialogForm.findSubmitter() == dialogForm.get("submit");
     }
 
     @Override

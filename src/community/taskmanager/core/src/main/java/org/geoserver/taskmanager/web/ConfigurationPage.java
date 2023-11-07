@@ -193,8 +193,8 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
                     @Override
                     public boolean isRequired() {
-                        return form.findSubmittingButton() == saveButton
-                                || form.findSubmittingButton() == applyButton;
+                        return form.findSubmitter() == saveButton
+                                || form.findSubmitter() == applyButton;
                     }
                 });
 
@@ -228,8 +228,8 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                     @Override
                     public boolean isRequired() {
                         return !canBeNull
-                                && (form.findSubmittingButton() == saveButton
-                                        || form.findSubmittingButton() == applyButton);
+                                && (form.findSubmitter() == saveButton
+                                        || form.findSubmitter() == applyButton);
                     }
                 }.setNullValid(canBeNull));
 

@@ -160,7 +160,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
             @Override
             public boolean isRequired() {
-                return form.findSubmittingButton() == saveButton;
+                return form.findSubmitter() == saveButton;
             }
         };
     }
@@ -171,7 +171,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
             @Override
             public void onSubmit(AjaxRequestTarget target) {
-                if (metadataTemplateModel.getObject().getLinkedLayers().size() > 0) {
+                if (!metadataTemplateModel.getObject().getLinkedLayers().isEmpty()) {
                     dialog.showOkCancel(
                             target,
                             new GeoServerDialog.DialogDelegate() {

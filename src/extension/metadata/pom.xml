@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.wicketstuff</groupId>
       <artifactId>wicketstuff-progressbar</artifactId>
-      <version>8.3.0</version>
+      <version>${wicket.version}</version>
     </dependency>
     <!--Yaml Parser -->
     <dependency>

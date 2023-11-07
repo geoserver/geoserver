@@ -105,7 +105,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
         @Override
         public void validate(Form<?> form) {
             // only validate on final submit
-            if (form.findSubmittingButton() != form.get("save")) {
+            if (!form.findSubmitter().getInputName().equals("save")) {
                 return;
             }
             updateModels();

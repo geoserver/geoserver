@@ -46,7 +46,7 @@ public class CoverageAccessPage extends ServerAdminPage {
         @Override
         public void validate(Form<?> form) {
             // only validate on final submit
-            if (form.findSubmittingButton() != form.get("submit")) {
+            if (!form.findSubmitter().getInputName().equals("submit")) {
                 return;
             }
 

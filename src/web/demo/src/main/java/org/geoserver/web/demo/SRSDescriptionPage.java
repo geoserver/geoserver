@@ -50,6 +50,7 @@ import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Envelope;
 
+// TODO: WICKET 9 verify this page still works
 public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderContributor {
 
     private String jsSrs;
@@ -104,9 +105,6 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                                                 "openlayers3/ol.js",
                                                 null,
                                                 URLMangler.URLType.RESOURCE),
-                                        null,
-                                        false,
-                                        "UTF-8",
                                         null));
                     }
                 });

@@ -57,9 +57,10 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 
 /**
- * Style page tab for displaying an OpenLayers 2 layer preview and legend. Includes a link for
+ * Style page tab for displaying an OpenLayers 3 layer preview and legend. Includes a link for
  * changing the current preview layer.
  */
+// TODO: WICKET 9 test this page
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
 
     private static final long serialVersionUID = -8742721113748106000L;
@@ -232,9 +233,6 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         header.render(
                 new JavaScriptUrlReferenceHeaderItem(
                         ResponseUtils.buildURL(base, "/openlayers3/ol.js", null, URLType.RESOURCE),
-                        null,
-                        false,
-                        "UTF-8",
                         null));
         header.render(OnLoadHeaderItem.forScript(script.toString()));
     }

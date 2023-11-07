@@ -15,8 +15,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -155,6 +153,8 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         boolean enableCodeMirror = true;
         WebClientInfo clientInfo = WebSession.get().getClientInfo();
         ClientProperties clientProperties = clientInfo.getProperties();
+        // TODO: WICKET9 fix this
+        /*
         if (clientProperties.isBrowserInternetExplorer()) {
             ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());
             enableCodeMirror =
@@ -182,9 +182,11 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                     clientProperties.getBrowserVersionMajor() >= 9
                             || props.getBrowserVersionMajor() >= 9;
         }
+        */
         return enableCodeMirror;
     }
 
+    /*
     @SuppressWarnings("deprecation")
     private ClientProperties extractIEVersion(String userAgent) {
         ClientProperties props = new ClientProperties();
@@ -256,6 +258,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             properties.setBrowserVersionMinor(Integer.parseInt(matcher.group(2)));
         }
     }
+    */
 
     public CodeMirrorEditor(String id, IModel<String> model) {
         this(id, "xml", model);

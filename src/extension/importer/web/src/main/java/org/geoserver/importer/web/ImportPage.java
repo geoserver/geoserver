@@ -10,6 +10,7 @@ import static org.geoserver.importer.web.ImporterWebUtils.importer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +35,6 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.util.time.Duration;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.importer.BasicImportFilter;
 import org.geoserver.importer.Database;
@@ -51,7 +51,6 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.Icon;
 
-@SuppressWarnings({"deprecation"})
 public class ImportPage extends GeoServerSecuredPage {
 
     GeoServerDialog dialog;
@@ -170,7 +169,7 @@ public class ImportPage extends GeoServerSecuredPage {
                         // create a timer to update the table and reload the page when
                         // necessary
                         taskTable.add(
-                                new AbstractAjaxTimerBehavior(Duration.milliseconds(500)) {
+                                new AbstractAjaxTimerBehavior(Duration.ofMillis(500)) {
                                     @Override
                                     protected void onTimer(AjaxRequestTarget target) {
                                         Task<ImportContext> job = importer().getTask(jobid);

@@ -23,6 +23,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /** Allows to edit the root layer of a layer group */
+@SuppressWarnings("deprecation")
 public class RootLayerEntryPanel extends Panel {
 
     private static final long serialVersionUID = 3471204885852128002L;

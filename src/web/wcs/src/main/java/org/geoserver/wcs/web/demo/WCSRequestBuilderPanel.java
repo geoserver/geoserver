@@ -52,7 +52,7 @@ import org.locationtech.jts.geom.Envelope;
  *
  * @author Andrea Aime - OpenGeo
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class WCSRequestBuilderPanel extends Panel {
 
     /**

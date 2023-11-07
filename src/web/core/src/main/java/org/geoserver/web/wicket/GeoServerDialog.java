@@ -27,7 +27,7 @@ import org.apache.wicket.model.Model;
  * for OK/cancel
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class GeoServerDialog extends Panel {
 
     ModalWindow window;

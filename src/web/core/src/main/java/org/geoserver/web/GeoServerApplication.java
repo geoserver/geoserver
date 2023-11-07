@@ -214,6 +214,7 @@ public class GeoServerApplication extends WebApplication
     }
 
     /** Initialization override which sets up a locator for i18n resources. */
+    @SuppressWarnings("deprecation")
     @Override
     protected void init() {
         // enable GeoServer custom resource locators

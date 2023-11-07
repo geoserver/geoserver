@@ -47,7 +47,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     private static Logger LOGGER = Logging.getLogger(CRSPanel.class);
     private static final long serialVersionUID = -6677103383336166008L;

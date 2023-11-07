@@ -56,6 +56,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testPopupWindow() throws Exception {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage(new CRSPanelTestPage(crs));
@@ -71,6 +72,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testPopupWindowNoCRS() throws Exception {
         // see GEOS-3207
         tester.startPage(new CRSPanelTestPage());
@@ -214,6 +216,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testPlanetaryPopupWindow() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
         tester.startPage(new CRSPanelTestPage(crs));
@@ -229,6 +232,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testPlanetaryList() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
         tester.startPage(new CRSPanelTestPage(crs));

@@ -26,6 +26,7 @@ import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.ModuleStatusImpl;
 import org.geoserver.web.CatalogIconFactory;
 
+@SuppressWarnings("deprecation")
 public class ModuleStatusPanel extends Panel {
 
     private static final long serialVersionUID = 3892224318224575781L;

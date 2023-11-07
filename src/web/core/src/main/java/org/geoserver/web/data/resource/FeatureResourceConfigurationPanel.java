@@ -53,7 +53,7 @@ import org.geotools.jdbc.VirtualTable;
 import org.geotools.measure.Measure;
 import org.geotools.util.logging.Logging;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class FeatureResourceConfigurationPanel extends ResourceConfigurationPanel {
     static final Logger LOGGER = Logging.getLogger(FeatureResourceConfigurationPanel.class);
 

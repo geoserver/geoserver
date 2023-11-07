@@ -31,6 +31,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Andrea Aime - GeoSolutions
  */
+@SuppressWarnings("deprecation")
 public class FileInput extends Panel {
     private static final Logger LOGGER = Logging.getLogger(FileInput.class);
     protected TextField<String> textField;

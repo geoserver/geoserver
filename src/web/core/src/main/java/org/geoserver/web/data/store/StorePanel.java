@@ -43,7 +43,7 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
  * @see StorePage
  * @see StoreProvider
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
     private static final long serialVersionUID = 5957961031378924960L;

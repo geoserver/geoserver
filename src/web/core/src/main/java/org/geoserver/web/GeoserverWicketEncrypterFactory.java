@@ -51,6 +51,7 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
                 }
 
                 @Override
+                @SuppressWarnings("removal")
                 public void setKey(String key) {}
             };
 
@@ -112,8 +113,10 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
         if (manager.isStrongEncryptionAvailable()) {
             enc.setProvider(new BouncyCastleProvider());
             enc.setAlgorithm("PBEWITHSHA256AND128BITAES-CBC-BC");
-        } else // US export restrictions
-        enc.setAlgorithm("PBEWITHMD5ANDDES");
+        } else {
+            // US export restrictions
+            enc.setAlgorithm("PBEWITHMD5ANDDES");
+        }
 
         result = new CryptImpl(enc);
         s.setAttribute(ICRYPT_ATTR_NAME, result);

@@ -40,6 +40,7 @@ import org.geoserver.web.wicket.ReorderableTablePanel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
 /** Allows to edit the list of layers contained in a layer group */
+@SuppressWarnings("deprecation")
 public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     private static final long serialVersionUID = -5483938812185582866L;

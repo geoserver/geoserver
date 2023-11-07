@@ -51,6 +51,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.Icon;
 
+@SuppressWarnings({"deprecation"})
 public class ImportPage extends GeoServerSecuredPage {
 
     GeoServerDialog dialog;

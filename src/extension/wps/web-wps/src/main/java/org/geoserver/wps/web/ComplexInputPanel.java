@@ -40,7 +40,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Andrea Aime - OpenGeo
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class ComplexInputPanel extends Panel {
     static final Logger LOGGER = Logging.getLogger(WPSRequestBuilderPanel.class);
 

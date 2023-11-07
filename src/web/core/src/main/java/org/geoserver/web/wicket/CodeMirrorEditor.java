@@ -33,9 +33,6 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.ClientProperties;
-import org.apache.wicket.protocol.http.WebSession;
-import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
@@ -151,10 +148,11 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     @SuppressWarnings("deprecation")
     private boolean isCodeMirrorSupported() {
         boolean enableCodeMirror = true;
-        WebClientInfo clientInfo = WebSession.get().getClientInfo();
-        ClientProperties clientProperties = clientInfo.getProperties();
         // TODO: WICKET9 fix this
         /*
+        WebClientInfo clientInfo = WebSession.get().getClientInfo();
+        ClientProperties clientProperties = clientInfo.getProperties();
+
         if (clientProperties.isBrowserInternetExplorer()) {
             ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());
             enableCodeMirror =

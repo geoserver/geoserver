@@ -68,7 +68,7 @@ import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
 
 /** Edits the WMS service details */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
     static final List<String> SVG_RENDERERS =

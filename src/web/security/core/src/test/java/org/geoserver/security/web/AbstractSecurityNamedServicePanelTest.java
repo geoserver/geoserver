@@ -139,6 +139,8 @@ public abstract class AbstractSecurityNamedServicePanelTest
         }
     }
 
+    // TODO: WICKET 9 fix this
+    @SuppressWarnings("deprecation")
     protected void doRemove(String pathForLink, String... serviceNames) throws Exception {
         AbstractSecurityPage testPage = (AbstractSecurityPage) tester.getLastRenderedPage();
 
@@ -206,13 +208,15 @@ public abstract class AbstractSecurityNamedServicePanelTest
         return formTester.getForm().get("config.className").getDefaultModelObjectAsString();
     }
 
+    // TODO: WICKET 9 fix this
+    @SuppressWarnings("unchecked")
     protected <T extends SecurityNamedServicePanelInfo> void setSecurityConfigClassName(
             Class<T> clazz) throws Exception {
         ListView list = (ListView) tester.getLastRenderedPage().get("servicesContainer:services");
         list.forEach(
                 i -> {
                     if (i instanceof ListItem) {
-                        ListItem listItem = (ListItem) i;
+                        ListItem<? extends Object> listItem = (ListItem<? extends Object>) i;
                         listItem.forEach(
                                 action -> {
                                     if (action instanceof AjaxLink) {

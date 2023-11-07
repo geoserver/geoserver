@@ -112,6 +112,8 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
         doRemove(getTabbedPanelPath() + ":panel:header:removeSelected");
     }
 
+    // TODO: WICKET 9 fix this
+    @SuppressWarnings("deprecation")
     protected void doRemove(String pathForLink) throws Exception {
         Page testPage = listPage(getServiceName());
 

@@ -13,6 +13,7 @@ import org.apache.wicket.model.PropertyModel;
 /**
  * Shows the text in a <pre> section
  */
+@SuppressWarnings("deprecation")
 public class PlainCodePage extends WebPage {
     String code;
 

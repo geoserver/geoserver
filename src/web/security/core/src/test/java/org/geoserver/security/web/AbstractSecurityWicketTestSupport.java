@@ -263,6 +263,8 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
         }
     }
 
+    // TODO: WICKET 9 fix this
+    @SuppressWarnings("deprecation")
     public void executeModalWindowClosedCallback(ModalWindow modalWindow) {
         for (Behavior behavior : modalWindow.getBehaviors()) {
             if (behavior instanceof AbstractDefaultAjaxBehavior) {
@@ -274,6 +276,8 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
         }
     }
 
+    // TODO: WICKET 9 fix this
+    @SuppressWarnings("deprecation")
     public void executeModalWindowCloseButtonCallback(ModalWindow modalWindow) {
         for (Behavior behavior : modalWindow.getBehaviors()) {
             if (behavior instanceof AbstractDefaultAjaxBehavior) {

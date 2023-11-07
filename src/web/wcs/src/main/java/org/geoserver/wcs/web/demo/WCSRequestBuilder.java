@@ -32,7 +32,7 @@ import org.geotools.xml.transform.TransformerBase;
  *
  * @author Andrea Aime - OpenGeo
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class WCSRequestBuilder extends GeoServerBasePage {
 
     ModalWindow responseWindow;

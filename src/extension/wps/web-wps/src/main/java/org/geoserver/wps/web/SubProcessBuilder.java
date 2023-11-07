@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.form.Form;
 // TODO WICKET8 - Verify this page works OK
 public class SubProcessBuilder extends WebPage {
 
+    @SuppressWarnings("deprecation")
     public SubProcessBuilder(ExecuteRequest request, final ModalWindow window) {
         Form form = new Form("form");
         add(form);

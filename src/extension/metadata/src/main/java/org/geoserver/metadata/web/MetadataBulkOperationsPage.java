@@ -46,6 +46,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 /** @author Niels Charlier */
 // TODO WICKET8 - Verify this page works OK
+@SuppressWarnings("deprecation")
 public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = 2273966783474224452L;

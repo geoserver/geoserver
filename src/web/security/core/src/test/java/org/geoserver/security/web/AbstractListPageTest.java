@@ -100,6 +100,8 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
         doRemove("headerPanel:removeSelected");
     }
 
+    // TODO: WICKET 9 fix this
+    @SuppressWarnings("deprecation")
     protected void doRemove(String pathForLink) throws Exception {
         tester.startPage(listPage(null));
 

@@ -22,6 +22,7 @@ import org.geotools.util.logging.Logging;
  * layer. Delegates to {@link BandsPanel} or {@link LayerAttributePanel} to display the attributes,
  * depending on the type of the layer resource.
  */
+@SuppressWarnings("deprecation")
 public class LayerAttributePanel extends StyleEditTabPanel {
 
     static final Logger LOGGER = Logging.getLogger(LayerAttributePanel.class);

@@ -61,6 +61,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 
 // TODO WICKET8 - Verify this page works OK
+@SuppressWarnings("deprecation")
 public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     static Logger LOGGER = Logging.getLogger(Importer.class);

@@ -37,7 +37,7 @@ import org.geoserver.web.demo.PlainCodePage;
  * @author Martin Davis - OpenGeo
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class WPSRequestBuilder extends GeoServerBasePage {
 
     public static final String PARAM_NAME = "name";

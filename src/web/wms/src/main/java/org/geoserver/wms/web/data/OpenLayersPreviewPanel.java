@@ -61,6 +61,7 @@ import org.geotools.util.logging.Logging;
  * changing the current preview layer.
  */
 // TODO: WICKET 9 test this page
+@SuppressWarnings("deprecation")
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
 
     private static final long serialVersionUID = -8742721113748106000L;

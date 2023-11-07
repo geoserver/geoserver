@@ -33,7 +33,7 @@ import org.locationtech.jts.geom.Geometry;
  * @author Andrea Aime - GeoSolutions
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class ReprojectPage extends GeoServerBasePage {
 
     String sourceCRS;

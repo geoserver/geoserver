@@ -46,6 +46,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
 
     /** Kind of smoke test to make sure the page structure was correctly set up once loaded */
     @Test
+    @SuppressWarnings("deprecation")
     public void testStructure() {
         // print(tester.getLastRenderedPage(), true, true);
 

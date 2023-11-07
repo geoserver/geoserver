@@ -8,6 +8,7 @@ package org.geoserver.importer.web;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -34,7 +35,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.util.time.Duration;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -64,7 +64,7 @@ import org.geotools.util.logging.Logging;
  * @author Justin Deoliveira, OpenGeo
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class ImportDataPage extends GeoServerSecuredPage {
 
     static Logger LOGGER = Logging.getLogger(ImportDataPage.class);
@@ -509,7 +509,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
             cancel.setDefaultModelObject(jobid);
             this.add(
-                    new AbstractAjaxTimerBehavior(Duration.seconds(3)) {
+                    new AbstractAjaxTimerBehavior(Duration.ofSeconds(3)) {
                         @Override
                         protected void onTimer(AjaxRequestTarget target) {
                             Importer importer = ImporterWebUtils.importer();

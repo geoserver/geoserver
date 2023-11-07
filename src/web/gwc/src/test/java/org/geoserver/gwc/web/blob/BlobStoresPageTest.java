@@ -110,6 +110,7 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testDelete() throws Exception {
         BlobStoresPage page = new BlobStoresPage();
         tester.startPage(page);

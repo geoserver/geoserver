@@ -84,7 +84,7 @@ import org.xml.sax.SAXParseException;
  * not lost on tab switch.
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     static final Pattern HEX_COLOR = Pattern.compile("^#(?:[0-9a-fA-F]{3}){1,2}$");

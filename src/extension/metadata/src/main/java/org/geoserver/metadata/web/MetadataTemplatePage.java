@@ -53,6 +53,7 @@ import org.geotools.util.logging.Logging;
  * @author Niels Charlier
  */
 // TODO WICKET8 - Verify this page works OK
+@SuppressWarnings("deprecation")
 public class MetadataTemplatePage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplatePage.class);

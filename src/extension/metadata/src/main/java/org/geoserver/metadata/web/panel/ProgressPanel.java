@@ -8,7 +8,6 @@ package org.geoserver.metadata.web.panel;
 import java.io.Serializable;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.CloseButtonCallback;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -17,6 +16,7 @@ import org.wicketstuff.progressbar.ProgressBar;
 import org.wicketstuff.progressbar.Progression;
 import org.wicketstuff.progressbar.ProgressionModel;
 
+@SuppressWarnings("deprecation")
 public class ProgressPanel extends Panel {
 
     public interface EventHandler extends Serializable {
@@ -78,7 +78,7 @@ public class ProgressPanel extends Panel {
 
         window.setContent(progressBar);
         window.setCloseButtonCallback(
-                new CloseButtonCallback() {
+                new ModalWindow.CloseButtonCallback() {
                     private static final long serialVersionUID = 5570427983448661370L;
 
                     @Override

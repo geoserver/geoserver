@@ -50,6 +50,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  * @author Niels Charlier
  */
+@SuppressWarnings("deprecation")
 public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = 2273966783474224452L;

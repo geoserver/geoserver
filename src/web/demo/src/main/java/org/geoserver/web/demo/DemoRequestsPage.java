@@ -49,7 +49,7 @@ import org.geotools.util.logging.Logging;
  * @version $Id$
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class DemoRequestsPage extends GeoServerBasePage {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.demo");

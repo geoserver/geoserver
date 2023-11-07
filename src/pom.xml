@@ -2650,7 +2650,7 @@
                       <excludes>src/main/resources/GeoServerApplication*.utf8.properties</excludes>
                     </requireEncoding>
                   </rules>
-                  <fastFail>false</fastFail>
+                  <failFast>false</failFast>
                 </configuration>
               </execution>
             </executions>

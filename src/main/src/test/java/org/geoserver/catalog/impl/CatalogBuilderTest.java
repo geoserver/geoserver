@@ -75,19 +75,6 @@ import org.locationtech.jts.geom.Point;
 
 public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
-    //    /**
-    //     * This is a READ ONLY TEST so we can use one time setup
-    //     */
-    //    public static Test suite() {
-    //        return new OneTimeTestSetup(new CatalogBuilderTest());
-    //    }
-    //
-    //    @Override
-    //    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-    //        super.populateDataDirectory(dataDirectory);
-    //        dataDirectory.addWellKnownCoverageTypes();
-    //    }
-
     @Override
     protected MockTestData createTestData() throws Exception {
         MockTestData testData = new MockTestData();
@@ -890,5 +877,20 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         // no codes available, thus, extensive lookup needed
         cb.lookupSRS(fti, true);
         assertEquals("IAU:1000", fti.getSRS());
+    }
+
+    @Test
+    public void testNanNoData() throws Exception {
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        CoverageStoreInfo ratStore = cb.buildCoverageStore("ratStore");
+        ratStore.setURL("src/test/resources/org/geoserver/catalog/impl/rat.tiff");
+        ratStore.setType("GeoTIFF");
+        cb.setStore(ratStore);
+        CoverageInfo rat = cb.buildCoverage();
+        assertEquals(1, rat.getDimensions().size());
+        CoverageDimensionInfo dim = rat.getDimensions().get(0);
+        assertEquals("GRAY_INDEX", dim.getName());
+        assertEquals(1, dim.getNullValues().size());
+        assertEquals(Double.NaN, dim.getNullValues().get(0), 0d);
     }
 }

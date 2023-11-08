@@ -1313,7 +1313,7 @@ public class CatalogBuilder {
                         double max = cat.getRange().getMaximum();
 
                         dim.getNullValues().add(min);
-                        if (min != max) {
+                        if (!(Double.isNaN(min) && Double.isNaN(max)) && min != max) {
                             dim.getNullValues().add(max);
                         }
                     }

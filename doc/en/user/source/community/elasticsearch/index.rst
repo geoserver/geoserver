@@ -167,6 +167,8 @@ The initial layer configuration panel for an Elasticsearch layer will include an
      - Native spatial reference ID of the geometries. Currently only EPSG:4326 is supported.
    * - ``Valid Date Formats``
      - Possible valid date formats used for parsing field values and printing filter elements
+   * - ``Refresh``
+     - If the field mappings or Elasticsearch schema has changed since this page was loaded, use this button to update the field configuration list.
 
 To return to the field table after it has been closed, click the "Configure Elasticsearch fields" button below the "Feature Type Details" panel on the layer configuration page.
 

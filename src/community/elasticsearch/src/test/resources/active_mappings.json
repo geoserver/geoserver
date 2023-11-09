@@ -1,0 +1,82 @@
+{
+  "properties": {
+    "geo": {
+      "type": "geo_point"
+    },
+    "geo2": {
+      "type": "geo_shape",
+      "tree": "quadtree"
+    },
+    "geo3": {
+      "type": "geo_shape",
+      "tree": "quadtree"
+    },
+    "geo4": {
+      "properties": {
+        "coordinates": {
+          "type": "geo_point"
+        }
+      }
+    },
+    "geo5": {
+      "type": "geo_point"
+    },
+    "id": {
+      "type": "keyword"
+    },
+    "installed_tdt": {
+      "type": "date",
+      "format": "dateOptionalTime"
+    },
+    "installed_td": {
+      "type": "date"
+    },
+    "modem_b": {
+      "type": "boolean",
+      "store": "true"
+    },
+    "security_ss": {
+      "type": "keyword",
+      "store": "true"
+    },
+    "speed_is": {
+      "type": "integer",
+      "store": "true"
+    },
+    "standard_ss": {
+      "type": "keyword"
+    },
+    "status_s": {
+      "type": "keyword"
+    },
+    "vendor_s": {
+      "type": "keyword"
+    },
+    "object": {
+      "properties": {
+        "hejda": {
+          "type": "double"
+        }
+      }
+    },
+    "nested": {
+      "type": "nested",
+      "properties": {
+        "hej": {
+          "type": "double"
+        },
+        "parent": {
+          "type": "nested",
+          "properties": {
+            "child": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+    },
+    "long": {
+      "type": "long"
+    }
+  }
+}

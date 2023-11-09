@@ -7,6 +7,7 @@ package org.geoserver.elasticsearch;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -16,6 +17,8 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
@@ -49,6 +52,8 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
 
     private ElasticLayerConfiguration _layerConfig;
 
+    protected ModalWindow modal;
+
     /**
      * Adds Elasticsearch configuration panel link, configure modal dialog and implements modal
      * callback.
@@ -59,7 +64,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         super(panelId, model);
         final FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject();
 
-        final ModalWindow modal = new ModalWindow("modal");
+        modal = new ModalWindow("modal");
         modal.setInitialWidth(800);
         modal.setTitle(new ParamResourceModel("modalTitle", this));
 
@@ -67,18 +72,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
             modal.add(new OpenWindowOnLoadBehavior());
         }
 
-        modal.setContent(
-                new ElasticConfigurationPage(panelId, model) {
-                    @Override
-                    void done(
-                            AjaxRequestTarget target,
-                            LayerInfo layerInfo,
-                            ElasticLayerConfiguration layerConfig) {
-                        _layerInfo = layerInfo;
-                        _layerConfig = layerConfig;
-                        modal.close(target);
-                    }
-                });
+        modal.setContent(getElasticConfigurationPage(modal.getContentId(), model, modal, false));
         add(modal);
 
         AjaxLink<?> findLink =
@@ -92,6 +86,90 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         attributePanel.setOutputMarkupId(true);
         add(attributePanel);
         attributePanel.add(findLink);
+    }
+
+    protected ElasticConfigurationPage getElasticConfigurationPage(
+            final String panelId,
+            final IModel<?> model,
+            final ModalWindow modal,
+            boolean isRefresh) {
+        modal.setWindowClosedCallback(
+                new ModalWindow.WindowClosedCallback() {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        Optional<ListView> listView = getEditTabPanel(modal);
+                        if (listView.isPresent()) {
+                            Optional<WebMarkupContainer> attributePanel2 =
+                                    getAttributePanel(listView.get());
+                            if (attributePanel2.isPresent()) {
+                                WebMarkupContainer attributePanel = attributePanel2.get();
+                                GeoServerApplication app = (GeoServerApplication) getApplication();
+                                FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
+                                app.getCatalog().getResourcePool().clear(ft);
+                                app.getCatalog().getResourcePool().clear(ft.getStore());
+                                attributePanel.modelChanged();
+                                target.add(attributePanel);
+                            } else {
+                                LOGGER.log(
+                                        Level.INFO,
+                                        "Cannot refresh the attribute panel, cannot find the attributePanel component");
+                            }
+                        } else {
+                            LOGGER.log(
+                                    Level.INFO,
+                                    "DataLayerEditTabPanel is not present, cannot refresh the attribute panel");
+                        }
+
+                        modal.close(target);
+                    }
+                });
+        return new ElasticConfigurationPage(panelId, model, isRefresh) {
+            @Override
+            void done(
+                    AjaxRequestTarget target,
+                    LayerInfo layerInfo,
+                    ElasticLayerConfiguration layerConfig) {
+                _layerInfo = layerInfo;
+                _layerConfig = layerConfig;
+                modal.close(target);
+            }
+
+            @Override
+            void refresh(AjaxRequestTarget target) {
+                Component elasticConfigurationPage =
+                        getElasticConfigurationPage(panelId, this.getDefaultModel(), modal, true)
+                                .setOutputMarkupId(true);
+                elasticConfigurationPage.setEnabled(true);
+                modal.addOrReplace(elasticConfigurationPage);
+                target.add(elasticConfigurationPage);
+            }
+        };
+    }
+
+    private Optional<ListView> getEditTabPanel(ModalWindow modal) {
+        Component c = modal;
+        for (int i = 0; i < 5; i++) { // The parent should be within 5 levels
+            c = c.getParent();
+            if (ListView.class.isAssignableFrom(c.getClass())) {
+                return Optional.of((ListView) c);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<WebMarkupContainer> getAttributePanel(ListView listView) {
+        for (int i = 0; i < listView.size(); i++) {
+            Component c = listView.get(String.valueOf(i));
+            if (c.get("content") != null) {
+                Component content = c.get("content");
+                if (content.get("attributePanel") != null) {
+                    return Optional.of((WebMarkupContainer) content.get("attributePanel"));
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     /*

@@ -14,6 +14,8 @@ import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.data.elasticsearch.ElasticDataStore;
 import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of FeatureTypeInitializer extension point to initialize Elasticsearch datastore.
@@ -21,6 +23,7 @@ import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
  * @see FeatureTypeCallback
  */
 class ElasticFeatureTypeCallback implements FeatureTypeCallback {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticFeatureTypeCallback.class);
 
     @Override
     public boolean canHandle(
@@ -38,6 +41,9 @@ class ElasticFeatureTypeCallback implements FeatureTypeCallback {
         layerConfig = (ElasticLayerConfiguration) info.getMetadata().get(KEY);
         if (layerConfig == null) {
             layerConfig = new ElasticLayerConfiguration(info.getName());
+            LOGGER.debug(
+                    "Created new empty ElasticSearch layer configuration for {} because none was found in the FeatureTypeInfo metadata",
+                    info.getName());
         }
 
         ((ElasticDataStore) dataAccess).setLayerConfiguration(layerConfig);

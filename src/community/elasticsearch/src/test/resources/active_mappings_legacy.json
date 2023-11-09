@@ -1,0 +1,88 @@
+{
+  "properties": {
+    "geo": {
+      "type": "geo_point"
+    },
+    "geo2": {
+      "type": "geo_shape",
+      "tree": "quadtree"
+    },
+    "geo3": {
+      "type": "geo_shape",
+      "tree": "quadtree"
+    },
+    "geo4": {
+      "properties": {
+        "coordinates": {
+          "type": "geo_point"
+        }
+      }
+    },
+    "geo5": {
+      "type": "geo_point"
+    },
+    "id": {
+      "type": "string",
+      "index": "not_analyzed"
+    },
+    "installed_tdt": {
+      "type": "date",
+      "format": "dateOptionalTime"
+    },
+    "installed_td": {
+      "type": "date"
+    },
+    "modem_b": {
+      "type": "boolean",
+      "store": "true"
+    },
+    "security_ss": {
+      "type": "string",
+      "index": "not_analyzed",
+      "store": "true"
+    },
+    "speed_is": {
+      "type": "integer",
+      "store": "true"
+    },
+    "standard_ss": {
+      "type": "string",
+      "index": "not_analyzed"
+    },
+    "status_s": {
+      "type": "string",
+      "index": "not_analyzed"
+    },
+    "vendor_s": {
+      "type": "string",
+      "index": "not_analyzed"
+    },
+    "object": {
+      "properties": {
+        "hejda": {
+          "type": "double"
+        }
+      }
+    },
+    "nested": {
+      "type": "nested",
+      "properties": {
+        "hej": {
+          "type": "double"
+        },
+        "parent": {
+          "type": "nested",
+          "properties": {
+            "child": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        }
+      }
+    },
+    "long": {
+      "type": "long"
+    }
+  }
+}

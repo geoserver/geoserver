@@ -15,15 +15,51 @@ import java.math.BigDecimal;
  */
 public interface DimensionInfo extends Serializable {
 
+    public static final String CUSTOM_DIM_PREFIX = "DIM_";
+
     /** Default value for elevation dimension 'units'. * */
     public static final String ELEVATION_UNITS = "EPSG:5030";
+
     /** Default value for elevation dimension 'unitSymbol'. * */
     public static final String ELEVATION_UNIT_SYMBOL = "m";
+
     /** Default value for time dimension 'unitSymbol'. * */
     public static final String TIME_UNITS = "ISO8601";
 
     /** The maximum number of dimension values GeoServer accepts if not otherwise configured */
     public static int DEFAULT_MAX_REQUESTED_DIMENSION_VALUES = 100;
+
+    /**
+     * Controls how nearest match behaves in combination with acceptable interval. If set to
+     * IGNORE_ON_FAIL, the failed match will be ignored and the original dimension value used. If
+     * set to THROW_ON_FAIL, the failed match will cause a service exception to be thrown.
+     */
+    public static enum NearestFailBehavior {
+        /** On failed match, ignore the nearest lookup and use the original dimension value */
+        IGNORE,
+        /** On failed match, throw a service exception */
+        EXCEPTION
+    }
+
+    /** System property key to control the nearest fail behavior */
+    public static String NEAREST_FAIL_BEHAVIOR_KEY = "org.geoserver.wms.nearestFail";
+
+    /** Default value for nearest fail behavior */
+    public static final NearestFailBehavior DEFAULT_NEAREST_FAIL =
+            NearestFailBehavior.valueOf(
+                    System.getProperty(
+                            NEAREST_FAIL_BEHAVIOR_KEY, NearestFailBehavior.IGNORE.name()));
+
+    /**
+     * Returns the KVP key used for a given dimension name, which can be either a standard one
+     * (returned as-is) or a custom one (prefixed with {@link #CUSTOM_DIM_PREFIX}) custom one
+     */
+    public static String getDimensionKey(String name) {
+        if ("time".equalsIgnoreCase(name) || "elevation".equalsIgnoreCase(name)) {
+            return name;
+        }
+        return CUSTOM_DIM_PREFIX + name.toUpperCase();
+    }
 
     /** Whether this dimension is enabled or not */
     public boolean isEnabled();
@@ -146,4 +182,13 @@ public interface DimensionInfo extends Serializable {
 
     /** Sets the endValue for the data range */
     public void setEndValue(String endValue);
+
+    /**
+     * Returns tje current nearest {@link NearestFailBehavior}. If unset, the default will be {@link
+     * NearestFailBehavior#IGNORE}
+     */
+    public NearestFailBehavior getNearestFailBehavior();
+
+    /** Sets the {@link NearestFailBehavior} */
+    public void setNearestFailBehavior(NearestFailBehavior matchBehavior);
 }

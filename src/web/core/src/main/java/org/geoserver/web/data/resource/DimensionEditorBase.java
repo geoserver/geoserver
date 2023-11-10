@@ -4,6 +4,9 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.catalog.DimensionInfo.NearestFailBehavior.EXCEPTION;
+import static org.geoserver.catalog.DimensionInfo.NearestFailBehavior.IGNORE;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -36,6 +39,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionInfo.NearestFailBehavior;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -43,6 +47,7 @@ import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.ows.kvp.ElevationKvpParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.web.wicket.EnumChoiceRenderer;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.DateTimeParser;
@@ -90,6 +95,8 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
     private final CheckBox rawNearestMatch;
 
     private final TextField<String> acceptableInterval;
+
+    private final DropDownChoice<NearestFailBehavior> nearestFailBehavior;
 
     boolean time;
 
@@ -389,6 +396,10 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         WebMarkupContainer acceptableIntervalEditor =
                 new WebMarkupContainer("acceptableIntervalEditor");
         acceptableIntervalEditor.setVisible(isNearestMatchEnabled);
+        WebMarkupContainer failedMatchBehaviorContainer =
+                new WebMarkupContainer("failedMatchBehaviorContainer");
+        failedMatchBehaviorContainer.setVisible(isNearestMatchEnabled);
+        nearestMatchContainer.add(failedMatchBehaviorContainer);
 
         // At the moment, Nearest Match on raw is only supported for WCS (Coverages).
         // Let's do a check on the resource type and show/hide the raw nearest accordingly
@@ -408,6 +419,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                         updateAccetptedInterval(
                                 target,
                                 acceptableIntervalEditor,
+                                failedMatchBehaviorContainer,
                                 configsContainer,
                                 rawNearestIsSupported);
                     }
@@ -420,6 +432,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                         updateAccetptedInterval(
                                 target,
                                 acceptableIntervalEditor,
+                                failedMatchBehaviorContainer,
                                 configsContainer,
                                 rawNearestIsSupported);
                     }
@@ -442,6 +455,16 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                                                 .setVariable("actual", validatable.getValue()));
                             }
                         });
+
+        List<NearestFailBehavior> nearestFailBehaviorList = Arrays.asList(IGNORE, EXCEPTION);
+        nearestFailBehavior =
+                new DropDownChoice<>(
+                        "nearestFailBehavior",
+                        new PropertyModel<>(model, "nearestFailBehavior"),
+                        nearestFailBehaviorList);
+        nearestFailBehavior.setChoiceRenderer(new EnumChoiceRenderer(nearestFailBehavior));
+        nearestFailBehavior.setNullValid(true);
+        failedMatchBehaviorContainer.add(nearestFailBehavior);
 
         // add container for defining start and end data range values
         final WebMarkupContainer startEndContainer = new WebMarkupContainer("startEndContainer");
@@ -544,13 +567,15 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
     protected void updateAccetptedInterval(
             AjaxRequestTarget target,
             WebMarkupContainer acceptableIntervalEditor,
+            WebMarkupContainer failedMatchBehaviorContainer,
             WebMarkupContainer configsContainer,
             boolean rawNearestIsSupported) {
         // Keep the acceptedInterval text box if one of the 2 nearest match flags is checked
         Boolean nearestEnabled = nearestMatch.getModelObject();
         Boolean rawNearestEnabled = rawNearestIsSupported && rawNearestMatch.getModelObject();
-        acceptableIntervalEditor.setVisible(
-                Boolean.TRUE.equals(nearestEnabled || rawNearestEnabled));
+        boolean visible = Boolean.TRUE.equals(nearestEnabled || rawNearestEnabled);
+        acceptableIntervalEditor.setVisible(visible);
+        failedMatchBehaviorContainer.setVisible(visible);
         target.add(configsContainer);
     }
 
@@ -680,9 +705,11 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         nearestMatch.processInput();
         rawNearestMatch.processInput();
         acceptableInterval.processInput();
+        nearestFailBehavior.processInput();
         if (nearestMatch.isVisible() && nearestMatch.getModelObject()) {
             info.setNearestMatchEnabled(true);
             info.setAcceptableInterval(acceptableInterval.getModelObject());
+            info.setNearestFailBehavior(nearestFailBehavior.getModelObject());
         } else {
             info.setNearestMatchEnabled(false);
             info.setAcceptableInterval(null);
@@ -700,7 +727,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         convertInputExtensions(info);
 
         setConvertedInput(info);
-    };
+    }
 
     protected void convertInputExtensions(T info) {}
 

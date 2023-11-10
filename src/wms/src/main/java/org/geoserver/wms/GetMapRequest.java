@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms;
 
+import static org.geoserver.catalog.DimensionInfo.CUSTOM_DIM_PREFIX;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.image.IndexColorModel;
@@ -812,7 +814,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
     public List<String> getCustomDimension(String dimensionName) {
         if (getRawKvp() != null) {
-            String key = "DIM_" + dimensionName;
+            String key = CUSTOM_DIM_PREFIX + dimensionName;
             Object value = getRawKvp().get(key);
             if (value instanceof String) {
                 String s = (String) value;

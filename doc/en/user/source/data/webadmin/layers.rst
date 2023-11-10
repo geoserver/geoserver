@@ -390,6 +390,7 @@ For each enabled dimension the following configuration options are available:
   Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to
   specify an asymmetric search range. Time distances should specified using the ISO period syntax. For example, ``PT1H/PT0H`` allows to search up to one hour before the user specified value,
   but not after.
+* **On nearest match fail**—What to do if the nearest match fails the acceptable interval. The default behavior is to use the original value and thus return an empty result, but can also be configured to throw an ``InvalidDimensionValue`` exception instead. In case the value is not set, it defaults to ignoring the nearest match and using the original value. To switch to the opposite default, set the following variable (system, environment, or web.xml, as usual): ``org.geoserver.wms.nearestFail=EXCEPTION``.
 * **Begin of data range**—A manually declared start value for the data range. When specified, the ``End of data range`` has to be specified also.
   Has to be either numeric, an ISO 8601 DateTime format or the string ``PRESENT``. If left blank GeoServer will determine the value automatically
   based on the data. When using 'PRESENT' the current DateTime of the server will be used when the capabilities document is generated.

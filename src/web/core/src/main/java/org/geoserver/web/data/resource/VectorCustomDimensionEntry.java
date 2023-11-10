@@ -168,6 +168,16 @@ public class VectorCustomDimensionEntry implements DimensionInfo {
     }
 
     @Override
+    public NearestFailBehavior getNearestFailBehavior() {
+        return dimensionInfo.getNearestFailBehavior();
+    }
+
+    @Override
+    public void setNearestFailBehavior(NearestFailBehavior matchBehavior) {
+        dimensionInfo.setNearestFailBehavior(matchBehavior);
+    }
+
+    @Override
     public boolean isRawNearestMatchEnabled() {
         // raw nearest match isn't implemented on vectors, yet.
         return false;

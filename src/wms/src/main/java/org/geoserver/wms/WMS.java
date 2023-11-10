@@ -1258,7 +1258,7 @@ public class WMS implements ApplicationContextAware {
                                     + maxValues
                                     + " dimension values specified in the request, bailing out.",
                             ServiceException.INVALID_PARAMETER_VALUE,
-                            "DIM_" + domain.toUpperCase());
+                            DimensionInfo.getDimensionKey(domain));
                 }
 
                 readParameters =

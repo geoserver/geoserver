@@ -13,10 +13,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeSet;
 import org.geoserver.catalog.AcceptableRange;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionInfo.NearestFailBehavior;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StructuredCoverageViewReader;
@@ -65,6 +67,7 @@ public abstract class NearestMatchFinder {
             AcceptableRange acceptableRange =
                     AcceptableRange.getAcceptableRange(
                             dimensionInfo.getAcceptableInterval(), dataType);
+            NearestFailBehavior nearestFailBehavior = dimensionInfo.getNearestFailBehavior();
             if (info instanceof FeatureTypeInfo) {
                 FeatureTypeInfo featureType = (FeatureTypeInfo) info;
                 return new Vector(
@@ -72,6 +75,7 @@ public abstract class NearestMatchFinder {
                         dimensionInfo.getAttribute(),
                         dimensionInfo.getEndAttribute(),
                         acceptableRange,
+                        nearestFailBehavior,
                         dataType);
             } else if (info instanceof CoverageInfo) {
                 GridCoverageReader reader = ((CoverageInfo) info).getGridCoverageReader(null, null);
@@ -85,11 +89,13 @@ public abstract class NearestMatchFinder {
                             dd.getStartAttribute(),
                             dd.getEndAttribute(),
                             acceptableRange,
+                            nearestFailBehavior,
                             dataType);
                 } else if (reader instanceof GridCoverage2DReader) {
                     return new Reader(
                             (GridCoverage2DReader) reader,
                             acceptableRange,
+                            nearestFailBehavior,
                             dimensionName,
                             dataType);
                 }
@@ -141,15 +147,19 @@ public abstract class NearestMatchFinder {
     PropertyName endAttribute;
     AcceptableRange acceptableRange;
     Class<?> dataType;
+    NearestFailBehavior nearestFailBehavior;
 
     public NearestMatchFinder(
             String startAttribute,
             String endAttribute,
             AcceptableRange acceptableRange,
+            NearestFailBehavior nearestFailBehavior,
             Class<?> dataType) {
         this.attribute = FF.property(startAttribute);
         this.endAttribute = endAttribute == null ? null : FF.property(endAttribute);
         this.acceptableRange = acceptableRange;
+        this.nearestFailBehavior =
+                Optional.ofNullable(nearestFailBehavior).orElse(DimensionInfo.DEFAULT_NEAREST_FAIL);
         this.dataType = dataType;
     }
 
@@ -306,10 +316,7 @@ public abstract class NearestMatchFinder {
         for (Object value : values) {
             Object nearest = getNearest(value);
             if (nearest == null) {
-                // no way to specify there is no match yet, so we'll use the original value, which
-                // will not match
-                addWarning(DimensionWarning.notFound(resource, dimensionName));
-                result.add(value);
+                handleNearestFail(resource, dimensionName, value, result);
             } else if (value.equals(nearest)) {
                 result.add(value);
             } else {
@@ -328,6 +335,23 @@ public abstract class NearestMatchFinder {
         }
 
         return result;
+    }
+
+    private void handleNearestFail(
+            ResourceInfo resource, String dimensionName, Object value, List<Object> result) {
+        if (nearestFailBehavior == NearestFailBehavior.EXCEPTION)
+            throw new ServiceException(
+                    "No nearest match found on "
+                            + resource.prefixedName()
+                            + " for "
+                            + dimensionName
+                            + " dimension",
+                    ServiceException.INVALID_DIMENSION_VALUE,
+                    DimensionInfo.getDimensionKey(dimensionName));
+        // no way to specify there is no match yet, so we'll use the original value, which
+        // will not match, and add a warning in the response
+        addWarning(DimensionWarning.notFound(resource, dimensionName));
+        result.add(value);
     }
 
     private Filter buildComparisonFilter(
@@ -372,9 +396,10 @@ public abstract class NearestMatchFinder {
                 String attribute,
                 String endAttribute,
                 AcceptableRange acceptableRange,
+                NearestFailBehavior nearestFailBehavior,
                 Class<?> dataType)
                 throws IOException {
-            super(attribute, endAttribute, acceptableRange, dataType);
+            super(attribute, endAttribute, acceptableRange, nearestFailBehavior, dataType);
             this.featureSource = ftInfo.getFeatureSource(null, null);
         }
 
@@ -395,8 +420,9 @@ public abstract class NearestMatchFinder {
                 String startAttribute,
                 String endAttribute,
                 AcceptableRange acceptableRange,
+                NearestFailBehavior nearestFailBehavior,
                 Class<?> dataType) {
-            super(startAttribute, endAttribute, acceptableRange, dataType);
+            super(startAttribute, endAttribute, acceptableRange, nearestFailBehavior, dataType);
             this.reader = reader;
         }
 
@@ -418,9 +444,10 @@ public abstract class NearestMatchFinder {
         public Reader(
                 GridCoverage2DReader reader,
                 AcceptableRange acceptableRange,
+                NearestFailBehavior nearestFailBehavior,
                 String dimensionName,
                 Class<?> dataType) {
-            super(null, null, acceptableRange, dataType);
+            super(null, null, acceptableRange, nearestFailBehavior, dataType);
             this.reader = reader;
             this.dimensionName = dimensionName;
         }

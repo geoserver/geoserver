@@ -168,7 +168,9 @@ class VectorDownload {
         // do we need to reproject?
         SimpleFeatureCollection reprojectedFeatures;
         if (targetCRS != null && !CRS.equalsIgnoreMetadata(nativeCRS, targetCRS)) {
-            roiManager.useTargetCRS(targetCRS);
+            if (hasROI) {
+                roiManager.useTargetCRS(targetCRS);
+            }
             // testing reprojection...
             final MathTransform targetTX = CRS.findMathTransform(nativeCRS, targetCRS, true);
             if (!targetTX.isIdentity()) {

@@ -383,6 +383,37 @@ public class DownloadProcessTest extends WPSTestSupport {
     }
 
     @Test
+    public void testGetFeaturesWithNoROIAsShapefile() throws Exception {
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess();
+
+        FeatureTypeInfo ti = getCatalog().getFeatureTypeByName(getLayerId(MockData.POLYGONS));
+        SimpleFeatureCollection rawSource =
+                (SimpleFeatureCollection) ti.getFeatureSource(null, null).getFeatures();
+        // Download
+        RawData shpeZip =
+                executeVectorDownload(
+                        downloadProcess,
+                        MockData.POLYGONS,
+                        "application/zip",
+                        "application/zip",
+                        null,
+                        null,
+                        false,
+                        "EPSG:4326");
+
+        try (AutoCloseableResource resource =
+                        new AutoCloseableResource(getResourceManager(), shpeZip);
+                InputStream is = new FileInputStream(resource.getFile())) {
+            ShapefileDataStore store = decodeShape(is);
+            SimpleFeatureCollection rawTarget = store.getFeatureSource().getFeatures();
+            Assert.assertNotNull(rawTarget);
+            Assert.assertEquals(rawSource.size(), rawTarget.size());
+            store.dispose();
+        }
+    }
+
+    @Test
     public void testGetFeaturesAsGeoPackageZipped() throws Exception {
         // Creates the new process for the download
         DownloadProcess downloadProcess = createDefaultTestingDownloadProcess();
@@ -619,13 +650,34 @@ public class DownloadProcessTest extends WPSTestSupport {
             Polygon roi,
             boolean cropToGeometry)
             throws FactoryException {
+        return executeVectorDownload(
+                downloadProcess,
+                polygons,
+                mimeType,
+                outputFormat,
+                roiCRS,
+                roi,
+                cropToGeometry,
+                null);
+    }
+
+    private RawData executeVectorDownload(
+            DownloadProcess downloadProcess,
+            QName polygons,
+            String mimeType,
+            String outputFormat,
+            String roiCRS,
+            Polygon roi,
+            boolean cropToGeometry,
+            String targetCRS)
+            throws FactoryException {
         return downloadProcess.execute(
                 getLayerId(polygons), // layerName
                 null, // filter
                 mimeType,
                 outputFormat,
-                null, // targetCRS
-                CRS.decode(roiCRS), // roiCRS
+                targetCRS == null ? null : CRS.decode(targetCRS), // targetCRS
+                roiCRS == null ? null : CRS.decode(roiCRS), // roiCRS
                 roi, // roi
                 cropToGeometry, // cropToGeometry
                 null, // interpolation

@@ -7,6 +7,8 @@ package org.geoserver.wms.featureinfo;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.function.Function;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
@@ -30,6 +33,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -46,11 +50,18 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.tiffspy.GeoTIFFSpyFormat;
+import org.geoserver.wms.tiffspy.GeoTIFFSpyReader;
 import org.geoserver.wms.wms_1_1_1.GetFeatureInfoTest;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
+import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -76,35 +87,37 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 
     public static final String FOOTPRINT_RASTER = "footprintsRaster";
 
+    public static final String JIFFLE_CONDITION = "jiffleCondition";
+
+    public static final QName TASMANIA_SPY = new QName(WCS_URI, "BlueMarbleSpy", WCS_PREFIX);
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
+        Catalog catalog = getCatalog();
         testData.addVectorLayer(
                 TEMPORAL_DATA,
                 Collections.emptyMap(),
                 "TemporalData.properties",
                 SystemTestData.class,
-                getCatalog());
-        testData.addStyle(LABEL_IN_FEATURE_INFO_STYLE_DEM, getClass(), getCatalog());
-        testData.addStyle(LABEL_CUSTOM_NAME_STYLE_DEM, getClass(), getCatalog());
-        testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_REPLACE, getClass(), getCatalog());
-        testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_NONE, getClass(), getCatalog());
-        testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_VALUES, getClass(), getCatalog());
-        testData.addStyle(LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS, getClass(), getCatalog());
-        testData.addStyle(LABEL_IN_FEATURE_INFO_STYLE_BM, getClass(), getCatalog());
-        testData.addStyle(
-                LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2, getClass(), getCatalog());
-        testData.addStyle(RASTER_VECTOR, getClass(), getCatalog());
-        testData.addStyle(FOOTPRINT_RASTER, getClass(), getCatalog());
+                catalog);
+        testData.addStyle(LABEL_IN_FEATURE_INFO_STYLE_DEM, getClass(), catalog);
+        testData.addStyle(LABEL_CUSTOM_NAME_STYLE_DEM, getClass(), catalog);
+        testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_REPLACE, getClass(), catalog);
+        testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_NONE, getClass(), catalog);
+        testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_VALUES, getClass(), catalog);
+        testData.addStyle(LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS, getClass(), catalog);
+        testData.addStyle(LABEL_IN_FEATURE_INFO_STYLE_BM, getClass(), catalog);
+        testData.addStyle(LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2, getClass(), catalog);
+        testData.addStyle(RASTER_VECTOR, getClass(), catalog);
+        testData.addStyle(JIFFLE_CONDITION, getClass(), catalog);
+        testData.addStyle(FOOTPRINT_RASTER, getClass(), catalog);
         Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(SystemTestData.LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
-                TASMANIA_DEM,
-                "tazdem.tiff",
-                "tiff",
-                propertyMap,
-                SystemTestData.class,
-                getCatalog());
+                TASMANIA_DEM, "tazdem.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
+        testData.addRasterLayer(
+                TASMANIA_SPY, "tazbm.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
     }
 
     /** Tests JSONP outside of expected polygon */
@@ -1239,5 +1252,86 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(
                 "urn:ogc:def:crs:IAU::49900",
                 json.getJSONObject("crs").getJSONObject("properties").getString("name"));
+    }
+
+    @Test
+    public void testFeatureInfoRTMultiband() throws Exception {
+        // use the request as is, ping one point in the middle where the condition applies
+        // and one in the top/left corner where it doesn't
+        checkFeatureInfoRTMultiband(r -> r, 25);
+        checkFeatureInfoRTMultiband(r -> r.replace("&X=50&Y=50", "&X=0&Y=0"), 0);
+    }
+
+    @Test
+    public void testFeatureInfoRTMultibandSelection() throws Exception {
+        // add a property selection (the code turns the original band names into band indexes,
+        // has no way to know the result will be named in a different way... a fix for another day)
+        checkFeatureInfoRTMultiband(r -> r + "&propertyNames=RED_BAND", 25);
+        checkFeatureInfoRTMultiband(
+                r -> (r + "&propertyNames=RED_BAND").replace("&X=50&Y=50", "&X=0&Y=0"), 0);
+    }
+
+    private void checkFeatureInfoRTMultiband(
+            Function<String, String> requestCustomizer, int expected) throws Exception {
+        // set up the layer to use the spy format
+        GeoTIFFSpyFormat.ENABLED = true;
+        Catalog catalog = getCatalog();
+        CoverageStoreInfo spyStore =
+                catalog.getCoverageStoreByName(
+                        TASMANIA_SPY.getPrefix(), TASMANIA_SPY.getLocalPart());
+        spyStore.setType(GeoTIFFSpyFormat.NAME);
+        catalog.save(spyStore);
+        catalog.getResourcePool().clear(spyStore);
+
+        try {
+            String layerId = getLayerId(TASMANIA_SPY);
+            String request =
+                    "wms?version=1.1.1"
+                            + "&styles="
+                            + JIFFLE_CONDITION
+                            + "&format=jpeg"
+                            + "&request=GetFeatureInfo&layers="
+                            + layerId
+                            + "&query_layers="
+                            + layerId
+                            + "&X=50&Y=50"
+                            + "&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
+                            + "&BBOX=146.5,-44.5,148,-43"
+                            + "&info_format="
+                            + JSONType.json;
+            request = requestCustomizer.apply(request);
+            JSONObject json = (JSONObject) getAsJSON(request);
+
+            JSONObject properties =
+                    json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+            assertTrue(properties.has("jiffle"));
+            assertEquals(expected, properties.getInt("jiffle"));
+
+            // the read is gathering all bands required
+            GeneralParameterValue[] params = GeoTIFFSpyReader.getLastParams();
+            GeneralParameterValue bands = getParameterValue(params, AbstractGridFormat.BANDS);
+            assertNotNull(bands);
+            assertThat(bands, CoreMatchers.instanceOf(ParameterValue.class));
+            assertThat(((ParameterValue) bands).intValueList(), equalTo(new int[] {0, 2}));
+        } finally {
+            GeoTIFFSpyFormat.ENABLED = false;
+        }
+    }
+
+    /**
+     * Returns the matching {@link GeneralParameterValue} from the given array of parameters
+     *
+     * @param params
+     * @param bands
+     * @return
+     */
+    private GeneralParameterValue getParameterValue(
+            GeneralParameterValue[] params, DefaultParameterDescriptor<?> parameter) {
+        for (GeneralParameterValue param : params) {
+            if (param.getDescriptor().equals(parameter)) {
+                return param;
+            }
+        }
+        return null;
     }
 }

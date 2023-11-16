@@ -216,8 +216,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         // check all the geometries that are on line, but not on polygon
         geometriesOnLineSymbolizer.removeAll(geometriesOnPolygonSymbolizer);
         for (Expression geom : geometriesOnLineSymbolizer) {
-            Object result = geom.evaluate(schema);
-            Class<?> geometryType = getTargetGeometryType(result);
+            Class<?> geometryType = getTargetGeometryType(geom);
             if (Polygon.class.isAssignableFrom(geometryType)
                     || MultiPolygon.class.isAssignableFrom(geometryType)) {
                 // we know it's a polygon type, but there is no polygon symbolizer, add one
@@ -242,8 +241,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         geometriesOnTextSymbolizer.removeAll(geometriesOnLineSymbolizer);
         geometriesOnTextSymbolizer.removeAll(geometriesOnPointSymbolizer);
         for (Expression geom : geometriesOnTextSymbolizer) {
-            Object result = geom.evaluate(schema);
-            Class<?> geometryType = getTargetGeometryType(result);
+            Class<?> geometryType = getTargetGeometryType(geom);
             if (Polygon.class.isAssignableFrom(geometryType)
                     || MultiPolygon.class.isAssignableFrom(geometryType)) {
                 copy.symbolizers().add(sb.createPolygonSymbolizer());
@@ -300,13 +298,19 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         return extra;
     }
 
-    private Class<?> getTargetGeometryType(Object descriptor) {
-        if (!(descriptor instanceof GeometryDescriptor)) {
-            // we don't know what this will be, we probably evaluated a filter function
+    private Class<?> getTargetGeometryType(Expression geom) {
+        try {
+            Object descriptor = geom.evaluate(schema);
+            if (!(descriptor instanceof GeometryDescriptor)) {
+                // we don't know what this will be, we probably evaluated a filter function
+                return Geometry.class;
+            } else {
+                // see if we are dealing with a polygon
+                return ((GeometryDescriptor) descriptor).getType().getBinding();
+            }
+        } catch (IllegalArgumentException e) {
+            // Default to generic geometry if the type evaluation fails
             return Geometry.class;
-        } else {
-            // see if we are dealing with a polygon
-            return ((GeometryDescriptor) descriptor).getType().getBinding();
         }
     }
 

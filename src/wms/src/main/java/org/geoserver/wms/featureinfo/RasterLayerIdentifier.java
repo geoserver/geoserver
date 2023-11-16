@@ -51,6 +51,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.filter.function.RenderingTransformation;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.TransformedDirectPosition;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -443,8 +444,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         }
 
         // otherwise read, evaluate if a transformation is needed
-        GridCoverage2D coverage = reader.read(parameters);
         Expression transformation = getTransformation(visitor);
+        if (transformation != null && transformation instanceof RenderingTransformation) {
+            ((RenderingTransformation) transformation).customizeReadParams(reader, parameters);
+        }
+        GridCoverage2D coverage = reader.read(parameters);
+
         if (transformation != null) {
             RenderingTransformationHelper helper =
                     new RenderingTransformationHelper() {

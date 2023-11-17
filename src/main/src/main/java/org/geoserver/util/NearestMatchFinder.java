@@ -23,6 +23,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StructuredCoverageViewReader;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.api.data.FeatureSource;
@@ -339,7 +340,7 @@ public abstract class NearestMatchFinder {
 
     private void handleNearestFail(
             ResourceInfo resource, String dimensionName, Object value, List<Object> result) {
-        if (nearestFailBehavior == NearestFailBehavior.EXCEPTION)
+        if (nearestFailBehavior == NearestFailBehavior.EXCEPTION && isWMSRequest())
             throw new ServiceException(
                     "No nearest match found on "
                             + resource.prefixedName()
@@ -352,6 +353,13 @@ public abstract class NearestMatchFinder {
         // will not match, and add a warning in the response
         addWarning(DimensionWarning.notFound(resource, dimensionName));
         result.add(value);
+    }
+
+    private static Boolean isWMSRequest() {
+        return Optional.of(Dispatcher.REQUEST.get())
+                .map(r -> r.getService())
+                .map(s -> "WMS".equalsIgnoreCase(s))
+                .orElse(false);
     }
 
     private Filter buildComparisonFilter(

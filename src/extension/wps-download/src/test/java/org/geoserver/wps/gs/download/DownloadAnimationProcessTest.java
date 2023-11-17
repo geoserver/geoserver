@@ -155,6 +155,27 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         Document dom = dom(response, true);
         print(dom);
 
+        checkAnimateBmTimeMetadataWarnings(dom);
+    }
+
+    @Test
+    public void testAnimateBmTimeMetadataWarningsAsynch() throws Exception {
+        // sync request
+        String base =
+                IOUtils.toString(
+                        getClass().getResourceAsStream("animateBlueMarbleMetadataWarnings.xml"),
+                        UTF_8);
+        // now asynch
+        String xml =
+                base.replace(
+                        "<wps:ResponseDocument>",
+                        "<wps:ResponseDocument status=\"true\" storeExecuteResponse=\"true\">");
+
+        Document doc = submitAsynchronous(xml, 60);
+        checkAnimateBmTimeMetadataWarnings(doc);
+    }
+
+    private void checkAnimateBmTimeMetadataWarnings(Document dom) throws Exception {
         // check the animation is produced as normal, de-referencing the link
         String fullLocation =
                 XMLUnit.newXpathEngine()

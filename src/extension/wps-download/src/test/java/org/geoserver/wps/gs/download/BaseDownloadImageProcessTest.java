@@ -1,5 +1,7 @@
 package org.geoserver.wps.gs.download;
 
+import static org.geoserver.catalog.DimensionInfo.NearestFailBehavior.EXCEPTION;
+
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
@@ -62,14 +64,11 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
         // add a bluemarble four months mosaic
         testData.addRasterLayer(BMTIME, "bm_time.zip", null, null, getClass(), catalog);
         setupRasterDimension(
-                BMTIME,
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null,
-                null,
-                null,
-                true,
-                "P3D");
+                BMTIME, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        // set up the nearest match with exception behavior, should not really throw though
+        // as this is a WPS service trying to mimic a WMS client (which would just not display
+        // the layer)
+        setupNearestMatch(BMTIME, ResourceInfo.TIME, true, "P3D", EXCEPTION, false);
 
         // a world covering layer with no dimensions
         testData.addVectorLayer(

@@ -11,6 +11,9 @@ package org.geoserver.mapml.xml;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.referencing.CRS;
 
 /**
  * Java class for projType.
@@ -36,8 +39,10 @@ public enum ProjType {
     OSMTILE("OSMTILE", 3857),
     CBMTILE("CBMTILE", 3978),
     APSTILE("APSTILE", 5936),
+
     @XmlEnumValue("WGS84")
     WGS_84("WGS84", 4326);
+
     private final String value;
     public final int epsgCode;
 
@@ -50,12 +55,29 @@ public enum ProjType {
         return value;
     }
 
-    public static ProjType fromValue(String v) {
+    private static int getEpsgCode(String codeWithPrefix) throws FactoryException {
+        CoordinateReferenceSystem coordinateReferenceSystem = CRS.decode(codeWithPrefix, false);
+        return CRS.lookupEpsgCode(coordinateReferenceSystem, true);
+    }
+
+    public static ProjType fromValue(String v) throws FactoryException {
+        // try the predefined values first
         for (ProjType c : ProjType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }
         }
+        // try to parse the value as an EPSG code
+        int epsg = getEpsgCode(v);
+        for (ProjType c : ProjType.values()) {
+            if (c.epsgCode == (epsg)) {
+                return c;
+            }
+        }
         throw new IllegalArgumentException(v);
+    }
+
+    public String getEpsgCode() {
+        return "EPSG:" + epsgCode;
     }
 }

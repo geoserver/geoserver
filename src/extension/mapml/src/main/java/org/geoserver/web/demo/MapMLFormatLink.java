@@ -4,27 +4,20 @@
  */
 package org.geoserver.web.demo;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.model.StringResourceModel;
-import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.mapml.MapMLConstants;
 
 public class MapMLFormatLink extends CommonFormatLink {
 
     @Override
     public ExternalLink getFormatLink(PreviewLayer layer) {
-        ExternalLink mapmlLink =
+        ExternalLink olLink =
                 new ExternalLink(
                         this.getComponentId(),
-                        ResponseUtils.buildURL(
-                                layer.getBaseURL("", true),
-                                "mapml/" + layer.getName() + "/osmtile/",
-                                null,
-                                URLType.SERVICE),
-                        (new StringResourceModel(this.getTitleKey(), (Component) null, null))
-                                .getString());
-        mapmlLink.setVisible(layer.hasServiceSupport("WMS"));
-        return mapmlLink;
+                        layer.getWmsLink() + "&format=" + MapMLConstants.MAPML_HTML_MIME_TYPE,
+                        (new StringResourceModel(this.getTitleKey(), null, null)).getString());
+        olLink.setVisible(layer.hasServiceSupport("WMS"));
+        return olLink;
     }
 }

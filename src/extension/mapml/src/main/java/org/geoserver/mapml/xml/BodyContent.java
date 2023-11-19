@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
 public class BodyContent {
 
     @XmlElement(name = "map-extent", namespace = "http://www.w3.org/1999/xhtml")
-    protected Extent extent;
+    protected List<Extent> extents;
 
     @XmlElement(name = "map-link", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Link> links;
@@ -57,12 +57,12 @@ public class BodyContent {
     @XmlElement(name = "map-image", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Image> images;
 
-    public Extent getExtent() {
-        return extent;
+    public List<Extent> getExtents() {
+        return extents;
     }
 
-    public void setExtent(Extent extent) {
-        this.extent = extent;
+    public void setExtents(List<Extent> extents) {
+        this.extents = extents;
     }
 
     /**

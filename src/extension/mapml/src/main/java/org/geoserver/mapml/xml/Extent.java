@@ -102,6 +102,7 @@ public class Extent {
     @XmlAttribute(name = "hidden")
     @XmlSchemaType(name = "anySimpleType")
     protected String hidden = "hidden";
+
     /**
      * Gets the value of the inputOrDatalistOrLink property.
      *
@@ -142,6 +143,7 @@ public class Extent {
     public void setUnits(ProjType value) {
         this.units = value;
     }
+
     /**
      * Gets the value of the label property.
      *
@@ -177,6 +179,7 @@ public class Extent {
     public void setChecked(String value) {
         this.checked = value;
     }
+
     /**
      * Gets the value of the hidden property.
      *

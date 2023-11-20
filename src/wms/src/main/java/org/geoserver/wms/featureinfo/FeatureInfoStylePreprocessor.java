@@ -309,7 +309,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
                 // see if we are dealing with a polygon
                 return ((GeometryDescriptor) descriptor).getType().getBinding();
             }
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             // Default to generic geometry if the type evaluation fails
             return Geometry.class;
         }

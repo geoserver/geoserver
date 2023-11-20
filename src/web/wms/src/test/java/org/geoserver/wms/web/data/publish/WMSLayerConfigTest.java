@@ -131,8 +131,37 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         assertTrue(img.getBehaviors().get(0) instanceof AttributeModifier);
 
         AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
-        assertTrue(mod.toString().contains("wms?REQUEST=GetLegendGraphic"));
+        assertTrue(mod.toString().contains("cite/wms?REQUEST=GetLegendGraphic"));
         assertTrue(mod.toString().contains("style=cite:Ponds"));
+        assertFalse(cascadedControlsVisible(tester));
+
+        // restore style
+        style.setWorkspace(null);
+        catalog.save(style);
+    }
+
+    @Test
+    public void testLegendGraphicURLNoWorkspace() throws Exception {
+        final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
+        FormTestPage page =
+                new FormTestPage(
+                        (ComponentBuilder) id -> new WMSLayerConfig(id, new Model<>(layer)));
+        tester.startPage(page);
+        tester.assertRenderedPage(FormTestPage.class);
+        tester.debugComponentTrees();
+
+        Image img =
+                (Image)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:panel:styles:defaultStyleLegendGraphic");
+        assertNotNull(img);
+        assertEquals(1, img.getBehaviors().size());
+        assertTrue(img.getBehaviors().get(0) instanceof AttributeModifier);
+
+        AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
+        assertFalse(mod.toString().contains("cite/wms?REQUEST=GetLegendGraphic"));
+        assertTrue(mod.toString().contains("wms?REQUEST=GetLegendGraphic"));
+        assertTrue(mod.toString().contains("style=Ponds"));
         assertFalse(cascadedControlsVisible(tester));
     }
 

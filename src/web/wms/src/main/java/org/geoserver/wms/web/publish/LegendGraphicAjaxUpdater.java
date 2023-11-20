@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.geoserver.catalog.StyleInfo;
 
 /**
@@ -29,26 +30,34 @@ class LegendGraphicAjaxUpdater implements Serializable {
     private IModel<StyleInfo> styleInfoModel;
     private IModel<String> urlModel;
 
-    private String wmsURL;
-
-    public LegendGraphicAjaxUpdater(
-            final String wmsURL, final Image image, final IModel<StyleInfo> styleInfoModel) {
-        this.wmsURL = wmsURL;
+    public LegendGraphicAjaxUpdater(final Image image, final IModel<StyleInfo> styleInfoModel) {
         this.image = image;
         this.styleInfoModel = styleInfoModel;
-        this.urlModel = new Model<>(wmsURL);
+        this.urlModel = new Model<>();
         this.image.add(new AttributeModifier("src", urlModel));
         updateStyleImage(null);
     }
 
     public void updateStyleImage(AjaxRequestTarget target) {
-        String url =
-                wmsURL
-                        + "REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style=";
         StyleInfo styleInfo = styleInfoModel.getObject();
         if (styleInfo != null) {
+            String url;
+            if (styleInfo.getWorkspace() == null) {
+                // the wms url is build without qualification to allow usage of global styles,
+                // the style name and layer name will be ws qualified instead
+                url = RequestCycle.get().getUrlRenderer().renderContextRelativeUrl("wms") + "?";
+            } else {
+                url =
+                        RequestCycle.get()
+                                        .getUrlRenderer()
+                                        .renderContextRelativeUrl(
+                                                styleInfo.getWorkspace().getName() + "/wms")
+                                + "?";
+            }
             String style = styleInfo.prefixedName();
-            url += style;
+            url +=
+                    "REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style="
+                            + style;
             urlModel.setObject(url);
             if (target != null) {
                 target.add(image);

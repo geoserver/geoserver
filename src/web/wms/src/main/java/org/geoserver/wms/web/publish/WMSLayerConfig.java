@@ -30,7 +30,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -82,12 +81,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         defStyleImg.setOutputMarkupId(true);
         styleContainer.add(defStyleImg);
 
-        // the wms url is build without qualification to allow usage of global styles,
-        // the style name and layer name will be ws qualified instead
-        String wmsURL = RequestCycle.get().getUrlRenderer().renderContextRelativeUrl("wms") + "?";
-
         final LegendGraphicAjaxUpdater defaultStyleUpdater =
-                new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel);
+                new LegendGraphicAjaxUpdater(defStyleImg, defaultStyleModel);
 
         defaultStyle.add(
                 new OnChangeAjaxBehavior() {

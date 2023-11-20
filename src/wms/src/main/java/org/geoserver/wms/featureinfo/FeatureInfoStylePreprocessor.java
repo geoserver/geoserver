@@ -61,7 +61,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
 
     private PropertyName defaultGeometryExpression;
 
-    private boolean addSolidLineSymbolier;
+    private boolean addSolidLineSymbolizer;
 
     public FeatureInfoStylePreprocessor(FeatureType schema) {
         this.schema = schema;
@@ -204,10 +204,10 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         geometriesOnPolygonSymbolizer.clear();
         geometriesOnPointSymbolizer.clear();
         geometriesOnTextSymbolizer.clear();
-        addSolidLineSymbolier = false;
+        addSolidLineSymbolizer = false;
         super.visit(rule);
         Rule copy = (Rule) pages.peek();
-        if (addSolidLineSymbolier) {
+        if (addSolidLineSymbolizer) {
             // add also a black line to make sure we get something in output even
             // if the user clicks in between symbols or dashes
             LineSymbolizer ls = sb.createLineSymbolizer(Color.BLACK);
@@ -319,7 +319,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
             List<Expression> dashArray = stroke.dashArray();
             Graphic graphicStroke = stroke.getGraphicStroke();
             if (graphicStroke != null || dashArray != null && !dashArray.isEmpty()) {
-                addSolidLineSymbolier = true;
+                addSolidLineSymbolizer = true;
             }
         }
     }

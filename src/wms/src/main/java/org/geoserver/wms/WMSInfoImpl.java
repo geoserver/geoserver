@@ -88,6 +88,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     private boolean autoEscapeTemplateValues;
 
+    private Boolean exceptionOnInvalidDimension;
+
     public WMSInfoImpl() {
         authorityURLs = new ArrayList<>(2);
         identifiers = new ArrayList<>(2);
@@ -391,5 +393,15 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     @Override
     public void setAutoEscapeTemplateValues(boolean autoEscapeTemplateValues) {
         this.autoEscapeTemplateValues = autoEscapeTemplateValues;
+    }
+
+    @Override
+    public Boolean isExceptionOnInvalidDimension() {
+        return exceptionOnInvalidDimension;
+    }
+
+    @Override
+    public void setExceptionOnInvalidDimension(Boolean exceptionOnInvalidDimension) {
+        this.exceptionOnInvalidDimension = exceptionOnInvalidDimension;
     }
 }

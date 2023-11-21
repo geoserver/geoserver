@@ -6,6 +6,9 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.platform.ServiceException.INVALID_DIMENSION_VALUE;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -27,8 +30,8 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WMSTestSupport;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.junit.After;
 import org.junit.Test;
@@ -41,7 +44,7 @@ import org.w3c.dom.Document;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class DynamicDimensionsTest extends WMSTestSupport {
+public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
 
     private static final QName WATTEMP =
             new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
@@ -116,8 +119,9 @@ public class DynamicDimensionsTest extends WMSTestSupport {
     }
 
     @Test
-    public void testGetMapInvalidValue() throws Exception {
+    public void testGetMapInvalidIgnore() throws Exception {
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setExceptionsOnInvalidDimension(false);
 
         // check that we get no data when requesting an incorrect value for custom dimension
         MockHttpServletResponse response =
@@ -137,6 +141,61 @@ public class DynamicDimensionsTest extends WMSTestSupport {
                                 + "=bad_dimension_value");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertTrue(isEmpty(image));
+    }
+
+    /** Syntactically invalid */
+    @Test
+    public void testGetMapInvalidException() throws Exception {
+        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setExceptionsOnInvalidDimension(true);
+
+        // check that we get no data when requesting an incorrect value for custom dimension
+        Document dom =
+                getAsDOM(
+                        "wms?bbox="
+                                + BBOX
+                                + "&styles="
+                                + "&layers="
+                                + LAYERS
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326"
+                                + "&DIM_"
+                                + DIMENSION_NAME
+                                + "=bad_dimension_value");
+        String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "DIM_WAVELENGTH");
+        assertThat(
+                message,
+                containsString(
+                        "Could not find a match for 'WAVELENGTH' value: 'bad_dimension_value'"));
+    }
+
+    /** Syntactically valid, but not in the list of allowed values */
+    @Test
+    public void testGetMapInvalidException2() throws Exception {
+        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setExceptionsOnInvalidDimension(true);
+
+        // check that we get no data when requesting an incorrect value for custom dimension
+        Document dom =
+                getAsDOM(
+                        "wms?bbox="
+                                + BBOX
+                                + "&styles="
+                                + "&layers="
+                                + LAYERS
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326"
+                                + "&DIM_"
+                                + DIMENSION_NAME
+                                + "=50");
+        String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "DIM_WAVELENGTH");
+        assertThat(message, containsString("Could not find a match for 'WAVELENGTH' value: '50'"));
     }
 
     @Test

@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.capabilities;
 
+import static org.geoserver.wms.WMS.DIM_;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -170,7 +172,7 @@ public abstract class DimensionHelper {
                 metadata = "";
             }
             String defaultValue =
-                    getDefaultValueRepresentation(featureTypeInfo, "dim_" + customDim.getKey(), "");
+                    getDefaultValueRepresentation(featureTypeInfo, DIM_ + customDim.getKey(), "");
             writeCustomDimensionVector(
                     customDim.getKey(), values, metadata, units, unitSymbol, defaultValue);
         } catch (IOException e) {
@@ -188,14 +190,10 @@ public abstract class DimensionHelper {
                         e ->
                                 e.getValue() instanceof DimensionInfo
                                         && e.getKey() != null
-                                        && e.getKey().startsWith("dim_")
+                                        && e.getKey().startsWith(DIM_)
                                         && !ResourceInfo.ELEVATION.equals(e.getKey())
                                         && !ResourceInfo.TIME.equals(e.getKey()))
-                .map(
-                        e ->
-                                Pair.of(
-                                        e.getKey().replaceFirst("dim_", ""),
-                                        (DimensionInfo) e.getValue()))
+                .map(e -> Pair.of(e.getKey().replaceFirst(DIM_, ""), (DimensionInfo) e.getValue()))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 

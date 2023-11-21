@@ -41,13 +41,6 @@ public class OpenIdConnectFilterConfigValidator extends OAuth2FilterConfigValida
                     OpenIdConnectFilterConfigException
                             .OAUTH2_CHECKTOKEN_OR_WKTS_ENDPOINT_URL_REQUIRED);
         }
-        if (StringUtils.hasLength(filterConfig.getCheckTokenEndpointUrl())
-                && StringUtils.hasLength(oidcFilterConfig.getJwkURI())) {
-            // Only one of checkTokenEndpointUrl or jwkURI is required
-            throw createFilterException(
-                    OpenIdConnectFilterConfigException
-                            .OAUTH2_CHECKTOKEN_OR_WKTS_ENDPOINT_URL_REQUIRED);
-        }
         if (StringUtils.hasLength(filterConfig.getCheckTokenEndpointUrl()) != false) {
             try {
                 new URL(filterConfig.getCheckTokenEndpointUrl());

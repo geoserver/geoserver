@@ -13,8 +13,15 @@ import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.oauth2.client.token.AccessTokenRequest;
+import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
+import org.springframework.security.oauth2.core.endpoint.PkceParameterNames;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.MultiValueMapAdapter;
 
-public class PKCEAuthenticationEntryPointTest extends GeoServerSystemTestSupport {
+import java.util.HashMap;
+
+public class PKCEAuthenticationTest extends GeoServerSystemTestSupport {
 
     private OpenIdConnectFilterConfig config;
 
@@ -37,7 +44,6 @@ public class PKCEAuthenticationEntryPointTest extends GeoServerSystemTestSupport
         PKCEAuthenticationEntryPoint entryPoint = new PKCEAuthenticationEntryPoint(config);
 
         MockHttpServletRequest request = createRequest("web/", true);
-        request.getSession().setAttribute("OIDC_CODE_VERIFIER", "1234");
 
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -51,5 +57,19 @@ public class PKCEAuthenticationEntryPointTest extends GeoServerSystemTestSupport
         HttpSession session = request.getSession();
         String codeVerifier = (String) session.getAttribute("OIDC_CODE_VERIFIER");
         assertNotNull(codeVerifier);
+    }
+
+    @Test
+    public void testPKCERequestEnhancer() throws Exception {
+        PKCERequestEnhancer enhancer = new PKCERequestEnhancer(config);
+
+        AccessTokenRequest request = new DefaultAccessTokenRequest();
+        String validator = "1234";
+        request.set(PkceParameterNames.CODE_VERIFIER, validator);
+
+        MultiValueMap<String, String> form = new MultiValueMapAdapter( new HashMap<String,String>());
+        enhancer.enhance( request, null, form, null);
+
+        assertEquals(validator,form.getFirst(PkceParameterNames.CODE_VERIFIER));
     }
 }

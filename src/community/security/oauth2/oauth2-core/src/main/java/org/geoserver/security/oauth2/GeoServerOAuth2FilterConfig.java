@@ -212,6 +212,7 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
                 .append("&")
                 .append("redirect_uri=")
                 .append(getRedirectUri());
+
         return loginUri;
     }
 

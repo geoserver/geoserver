@@ -45,16 +45,7 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
         }
         super.validateFilterConfig((SecurityNamedServiceConfig) filterConfig);
 
-        if (StringUtils.hasLength(filterConfig.getCheckTokenEndpointUrl()) == false)
-            throw createFilterException(
-                    OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED);
-
-        try {
-            new URL(filterConfig.getCheckTokenEndpointUrl());
-        } catch (MalformedURLException ex) {
-            throw createFilterException(
-                    OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
-        }
+        validateCheckTokenEndpointUrl(filterConfig);
 
         if (StringUtils.hasLength(filterConfig.getAccessTokenUri())) {
             URL accessTokenUri = null;
@@ -97,12 +88,43 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
             throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED);
         }
 
-        if (!StringUtils.hasLength(filterConfig.getClientSecret())) {
-            throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED);
-        }
+        validateClientSecret(filterConfig);
 
         if (!StringUtils.hasLength(filterConfig.getScopes())) {
             throw createFilterException(OAuth2FilterConfigException.OAUTH2_SCOPE_REQUIRED);
+        }
+    }
+
+    /**
+     * Check OAuth2FilterConfig#getCheckTokenEndpointUrl value.
+     *
+     * <p>The default implementation requires checkTokenEndpointUrl to be provided. Subclasses can
+     * override (to allow alternatives such as WTKS).
+     */
+    protected void validateCheckTokenEndpointUrl(OAuth2FilterConfig filterConfig)
+            throws FilterConfigException {
+        if (StringUtils.hasLength(filterConfig.getCheckTokenEndpointUrl()) == false)
+            throw createFilterException(
+                    OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED);
+
+        try {
+            new URL(filterConfig.getCheckTokenEndpointUrl());
+        } catch (MalformedURLException ex) {
+            throw createFilterException(
+                    OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
+        }
+    }
+
+    /**
+     * Validate {@code client_secret} if required.
+     *
+     * <p>Default implementation requires {@code client_secret} to be provided. Subclasses can
+     * override if working with a public client that cannot keep a secret.
+     */
+    protected void validateClientSecret(OAuth2FilterConfig filterConfig)
+            throws FilterConfigException {
+        if (!StringUtils.hasLength(filterConfig.getClientSecret())) {
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED);
         }
     }
 

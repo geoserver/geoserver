@@ -23,6 +23,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -76,6 +77,18 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         getCatalog().save(te);
         teEmpty.getMetadata().clear();
         getCatalog().save(teEmpty);
+    }
+
+    @After
+    public void restoreWMSExceptions() throws Exception {
+        setExceptionsOnInvalidDimension(null);
+    }
+
+    protected void setExceptionsOnInvalidDimension(Boolean value) throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setExceptionOnInvalidDimension(value);
+        gs.save(wms);
     }
 
     @Override

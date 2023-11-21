@@ -8,6 +8,9 @@ package org.geoserver.wms.wms_1_1_1;
 import static org.geoserver.catalog.DimensionPresentation.LIST;
 import static org.geoserver.catalog.ResourceInfo.CUSTOM_DIMENSION_PREFIX;
 import static org.geoserver.catalog.ResourceInfo.TIME;
+import static org.geoserver.platform.ServiceException.INVALID_DIMENSION_VALUE;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -133,6 +136,33 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     }
 
     @Test
+    public void testElevationInvalidIgnore() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
+        setExceptionsOnInvalidDimension(false);
+
+        // invalid elevation, no value found, but also no exception
+        String url = BASE_URL + "&elevation=-100";
+        assertNull(getFeatureAt(url, 36, 31, "sf:watertemp"));
+    }
+
+    @Test
+    public void testElevationInvalidException() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
+        setExceptionsOnInvalidDimension(true);
+
+        // invalid elevation, no value found, but also no exception
+        Document dom =
+                getAsDOM(
+                        String.format(
+                                "%s&elevation=%d&info_format=text/plain&x=%d&y=%d",
+                                BASE_URL, -100, 36, 31));
+        String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "elevation");
+        assertThat(message, containsString("Could not find a match for 'elevation' value: '-100'"));
+    }
+
+    @Test
     public void testTime() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
@@ -145,9 +175,23 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     }
 
     @Test
+    public void testTimeInvalidIgnore() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
+        setExceptionsOnInvalidDimension(false);
+
+        String url = BASE_URL + "&time=2050-10-31T00:00:00.000Z";
+
+        // nothing found, but no exception either
+        assertNull(getFeatureAt(url, 36, 31, "sf:watertemp"));
+        assertNull(getFeatureAt(url, 68, 72, "sf:watertemp"));
+    }
+
+    @Test
     public void testTimeNoNearestClose() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
+        setExceptionsOnInvalidDimension(false); // no match with exception tested elsewhere
 
         String url = BASE_URL + "&time=2008-10-31T08:00:00.000Z";
 
@@ -264,9 +308,20 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals(-30000, getFeatureAt(url, 36, 31, layer), EPS);
         assertEquals(14.782, getFeatureAt(url, 68, 72, layer), EPS);
 
-        // in the middle hole, no data
+        // in the middle hole, no data, no exception
+        setExceptionsOnInvalidDimension(false);
         url = baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z";
         assertNull(getFeatureAt(url, 36, 31, layer));
+
+        // in the middle hole, no data, exception
+        setExceptionsOnInvalidDimension(true);
+        url = baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z";
+        Document dom = getAsDOM(url + "&info_format=application/vnd.ogc.gml&x=" + 36 + "&y=" + 31);
+        String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "time");
+        assertThat(
+                message,
+                containsString(
+                        "Could not find a match for 'time' value: '2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z'"));
 
         // first range
         url = baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-10-31T16:00:00.000Z";

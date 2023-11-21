@@ -8,6 +8,7 @@ package org.geoserver.wms.web.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -285,5 +286,33 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         tester.assertErrorMessages(
                 String.format(
                         "The provided values are not valid HTTP urls: [%s]", reportedInvalidURLs));
+    }
+
+    /** Comprehensive test as a drop-down with default value is a tricky component to test. */
+    @Test
+    public void testInvalidDimensionsFlag() throws Exception {
+        wms.setExceptionOnInvalidDimension(true);
+        getGeoServer().save(wms);
+
+        // set to false
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.select("exceptionOnInvalidDimension", 1);
+        ft.submit("submit");
+        assertFalse(wms.isExceptionOnInvalidDimension());
+
+        // reset to default
+        tester.startPage(WMSAdminPage.class);
+        ft = tester.newFormTester("form");
+        ft.setValue("exceptionOnInvalidDimension", null);
+        ft.submit("submit");
+        assertNull(wms.isExceptionOnInvalidDimension());
+
+        // set to true
+        tester.startPage(WMSAdminPage.class);
+        ft = tester.newFormTester("form");
+        ft.select("exceptionOnInvalidDimension", 0);
+        ft.submit("submit");
+        assertTrue(wms.isExceptionOnInvalidDimension());
     }
 }

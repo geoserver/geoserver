@@ -240,8 +240,11 @@ public class Predicates {
      * a false predicate is found.
      */
     public static Filter and(Filter... operands) {
+        if (operands == null || operands.length == 0) return Filter.INCLUDE;
+        else if (operands.length == 1) return operands[0];
+
         List<Filter> anded = Lists.newArrayList(operands);
-        return factory.and(anded);
+        return and(anded);
     }
 
     /**

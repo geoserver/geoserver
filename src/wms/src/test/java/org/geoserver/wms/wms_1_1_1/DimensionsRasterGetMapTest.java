@@ -104,6 +104,31 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 68, 72, new Color(246, 246, 255));
     }
 
+    @Test
+    public void testElevationInvalidIgnore() throws Exception {
+        setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
+        setExceptionsOnInvalidDimension(false);
+
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&elevation=-100", "image/png");
+
+        // the two test pixels should both be bgcolor, no data selected
+        assertPixel(image, 36, 31, Color.WHITE);
+        assertPixel(image, 68, 72, Color.WHITE);
+    }
+
+    @Test
+    public void testElevationInvalidException() throws Exception {
+        setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
+        setExceptionsOnInvalidDimension(true);
+
+        Document dom = getAsDOM(BASE_PNG_URL + "&elevation=-100");
+
+        String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "elevation");
+        assertThat(message, containsString("Could not find a match for 'elevation' value: '-100'"));
+    }
+
     /** Same as above, but obtained via sorting instead of using dimensions */
     @Test
     public void testSortElevationDescending() throws Exception {
@@ -143,9 +168,10 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     }
 
     @Test
-    public void testTimeNoNearestClose() throws Exception {
+    public void testTimeNoNearestCloseIgnore() throws Exception {
         setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
+        setExceptionsOnInvalidDimension(false);
 
         BufferedImage image =
                 getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
@@ -153,6 +179,20 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         // no match, so we're getting th default background color
         assertPixel(image, 36, 31, Color.WHITE);
         assertPixel(image, 68, 72, Color.WHITE);
+    }
+
+    @Test
+    public void testTimeNoNearestCloseException() throws Exception {
+        setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
+        setExceptionsOnInvalidDimension(true);
+
+        Document dom = getAsDOM(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z");
+        String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "time");
+        assertThat(
+                message,
+                containsString(
+                        "Could not find a match for 'time' value: '2008-10-31T08:00:00.000Z'"));
     }
 
     @Test
@@ -319,12 +359,23 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 68, 72, new Color(249, 249, 255));
 
         // in the middle hole, no data, thus blue
+        setExceptionsOnInvalidDimension(false);
         image =
                 getAsImage(
                         baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z",
                         "image/png");
         assertPixel(image, 36, 31, Color.BLUE);
         assertPixel(image, 68, 72, Color.BLUE);
+
+        // same as above, but with more attitude
+        setExceptionsOnInvalidDimension(true);
+        Document dom =
+                getAsDOM(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z");
+        String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "time");
+        assertThat(
+                message,
+                containsString(
+                        "Could not find a match for 'time' value: '2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z'"));
 
         // first range, red-ish
         image =

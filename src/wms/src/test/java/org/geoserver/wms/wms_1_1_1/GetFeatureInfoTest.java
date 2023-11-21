@@ -751,7 +751,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * text format as in https://osgeo-org.atlassian.net/browse/GEOS-1924
      */
     @Test
-    public void testUknownFormat() throws Exception {
+    public void testUnknownFormat() throws Exception {
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
         String request =
                 "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=unknown/format&request=GetFeatureInfo&layers="
@@ -887,7 +887,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
     /** Check we report back an exception when query_layer contains layers not part of LAYERS */
     @Test
-    public void testUnkonwnQueryLayer() throws Exception {
+    public void testUnknownQueryLayer() throws Exception {
         String layers1 = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
         String layers2 = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.BRIDGES);
         String request =

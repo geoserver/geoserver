@@ -28,10 +28,12 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
 import org.geotools.data.FeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
@@ -163,7 +165,11 @@ public class WMSTest extends WMSTestSupport {
         List<Object> times = time == null ? null : Arrays.asList(time);
         List<Object> elevations = elevation == null ? null : Arrays.asList(elevation);
 
-        Filter filter = wms.getTimeElevationToFilter(times, elevations, timeWithStartEnd);
+        DimensionFilterBuilder builder =
+                new DimensionFilterBuilder(CommonFactoryFinder.getFilterFactory());
+        wms.getTimeFilter(times, timeWithStartEnd, builder);
+        wms.getElevationFilter(elevations, timeWithStartEnd, builder);
+        Filter filter = builder.getFilter();
         FeatureCollection features = fs.getFeatures(filter);
 
         Set<Integer> results = new HashSet<>();

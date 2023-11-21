@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms;
 
+import static org.geoserver.catalog.ResourceInfo.ELEVATION;
+import static org.geoserver.catalog.ResourceInfo.TIME;
 import static org.geoserver.util.HTTPWarningAppender.addWarning;
 
 import java.awt.geom.AffineTransform;
@@ -64,6 +66,7 @@ import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.ows.OperationType;
@@ -90,6 +93,8 @@ import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -141,6 +146,9 @@ public class WMS implements ApplicationContextAware {
     public static final String SVG_SIMPLE = "Simple";
 
     public static final String SVG_BATIK = "Batik";
+
+    /** Prefix for custom dimensions used in GetMap requests */
+    public static final String DIM_ = "dim_";
 
     /** KML reflector mode */
     public static String KML_REFLECTOR_MODE = "kmlReflectorMode";
@@ -268,6 +276,15 @@ public class WMS implements ApplicationContextAware {
     public boolean isEnabled() {
         WMSInfo serviceInfo = getServiceInfo();
         return serviceInfo.isEnabled();
+    }
+
+    /**
+     * Whether to throw an InvalidDimensioValue on invalid dimension values
+     *
+     * @return
+     */
+    public boolean exceptionOnInvalidDimension() {
+        return getServiceInfo().exceptionOnInvalidDimension();
     }
 
     /**
@@ -979,7 +996,7 @@ public class WMS implements ApplicationContextAware {
      *     version matching on of the available wms versions will be returned.
      */
     public static Version version(String version, boolean exact) {
-        if (version == null || 0 == version.trim().length()) {
+        if (version == null || version.trim().isEmpty()) {
             return null;
         }
         if (VERSION_1_1_1.toString().equals(version)) {
@@ -1676,18 +1693,10 @@ public class WMS implements ApplicationContextAware {
         return source;
     }
 
-    /**
-     * Builds a filter for the current time and elevation, should the layer support them. Only one
-     * among time and elevation can be multi-valued
-     */
-    public Filter getTimeElevationToFilter(
-            List<Object> times, List<Object> elevations, FeatureTypeInfo typeInfo)
+    public Filter getTimeFilter(
+            List<Object> times, FeatureTypeInfo typeInfo, DimensionFilterBuilder builder)
             throws IOException {
         DimensionInfo timeInfo = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-        DimensionInfo elevationInfo =
-                typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
-
-        DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
 
         // handle time support
         if (timeInfo != null && timeInfo.isEnabled() && times != null) {
@@ -1714,6 +1723,15 @@ public class WMS implements ApplicationContextAware {
             }
         }
 
+        return builder.getFilter();
+    }
+
+    public Filter getElevationFilter(
+            List<Object> elevations, FeatureTypeInfo typeInfo, DimensionFilterBuilder builder)
+            throws IOException {
+        DimensionInfo elevationInfo =
+                typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+
         // handle elevation support
         if (elevationInfo != null && elevationInfo.isEnabled() && elevations != null) {
             List<Object> defaultedElevations = new ArrayList<>(elevations.size());
@@ -1733,8 +1751,114 @@ public class WMS implements ApplicationContextAware {
                     defaultedElevations);
         }
 
-        Filter result = builder.getFilter();
-        return result;
+        return builder.getFilter();
+    }
+
+    /** Validates the vector dimensions, if enabled and available */
+    public void validateVectorDimensions(
+            List<Object> times,
+            List<Object> elevations,
+            FeatureTypeInfo typeInfo,
+            GetMapRequest request)
+            throws IOException {
+        // value validation and exception throwing enabled?
+        if (!exceptionOnInvalidDimension()) return;
+
+        FeatureSource<? extends FeatureType, ? extends Feature> fs =
+                typeInfo.getFeatureSource(null, null);
+
+        validateTimes(times, typeInfo, fs, request);
+        validateElevations(elevations, typeInfo, fs, request);
+        validateCustomDimensions(typeInfo, fs, request);
+    }
+
+    private void validateCustomDimensions(
+            FeatureTypeInfo typeInfo,
+            FeatureSource<? extends FeatureType, ? extends Feature> fs,
+            GetMapRequest request)
+            throws IOException {
+        CustomDimensionFilterConverter converter = getCustomDimensionFilterConverter(typeInfo);
+        Map<String, DimensionInfo> dimensions = converter.getCustomDimensions();
+        for (String dimension : dimensions.keySet()) {
+            DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(ff);
+            converter.getDimensionsToFilter(request.getRawKvp(), filterBuilder);
+            Filter filter = filterBuilder.getFilter();
+            if (DataUtilities.first(fs.getFeatures(filter)) == null) {
+                String key = (DIM_ + dimension).toUpperCase();
+                throwInvalidDimensionValue(request, dimension, key);
+            }
+        }
+    }
+
+    private void validateTimes(
+            List<Object> times,
+            FeatureTypeInfo typeInfo,
+            FeatureSource<? extends FeatureType, ? extends Feature> fs,
+            GetMapRequest request)
+            throws IOException {
+        DimensionInfo timeInfo = typeInfo.getMetadata().get(TIME, DimensionInfo.class);
+        if (timeInfo == null || !timeInfo.isEnabled() || timeInfo.isNearestMatchEnabled()) return;
+
+        if (times != null) {
+            DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
+            List<Object> explicitTimes =
+                    times.stream().filter(v -> v != null).collect(Collectors.toList());
+            getTimeFilter(explicitTimes, typeInfo, builder);
+            Filter filter = builder.getFilter();
+            if (DataUtilities.first(fs.getFeatures(filter)) == null) {
+                throwInvalidDimensionValue(request, TIME, TIME);
+            }
+        }
+    }
+
+    private void validateElevations(
+            List<Object> elevations,
+            FeatureTypeInfo typeInfo,
+            FeatureSource<? extends FeatureType, ? extends Feature> fs,
+            GetMapRequest request)
+            throws IOException {
+        DimensionInfo elevationInfo = typeInfo.getMetadata().get(ELEVATION, DimensionInfo.class);
+        // elevation does not currently support nearest match
+        if (elevationInfo == null || !elevationInfo.isEnabled()) return;
+
+        if (elevations != null) {
+            DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
+            List<Object> explicitEleevations =
+                    elevations.stream().filter(v -> v != null).collect(Collectors.toList());
+            getElevationFilter(explicitEleevations, typeInfo, builder);
+            Filter filter = builder.getFilter();
+            if (DataUtilities.first(fs.getFeatures(filter)) == null) {
+                throwInvalidDimensionValue(request, ELEVATION, ELEVATION);
+            }
+        }
+    }
+
+    /** Returns a filter based on times, elevation and custom dimensions found in the request. */
+    public Filter getDimensionFilter(
+            List<Object> times,
+            List<Object> elevations,
+            final FeatureTypeInfo featureTypeInfo,
+            final GetMapRequest request)
+            throws IOException {
+        DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
+        getTimeFilter(times, featureTypeInfo, builder);
+        getElevationFilter(elevations, featureTypeInfo, builder);
+        getCustomDimensionFilter(request.getRawKvp(), featureTypeInfo, builder);
+        return builder.getFilter();
+    }
+
+    /**
+     * Builds a filter for the current time and elevation, should the layer support them. Only one
+     * among time and elevation can be multi-valued
+     */
+    @Deprecated
+    public Filter getTimeElevationToFilter(
+            List<Object> times, List<Object> elevations, FeatureTypeInfo typeInfo)
+            throws IOException {
+        DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
+        getTimeFilter(times, typeInfo, builder);
+        getElevationFilter(elevations, typeInfo, builder);
+        return builder.getFilter();
     }
 
     /**
@@ -1743,15 +1867,102 @@ public class WMS implements ApplicationContextAware {
      * @param rawKVP Request KVP map
      * @param typeInfo Feature type info instance
      * @return builded filter
+     * @deprecated Use {@link #getCustomDimensionFilter(Map, FeatureTypeInfo,
+     *     DimensionFilterBuilder)} instead
      */
+    @Deprecated
     public Filter getDimensionsToFilter(
             final Map<String, String> rawKVP, final FeatureTypeInfo typeInfo) {
+        DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
+        return getCustomDimensionFilter(rawKVP, typeInfo, builder);
+    }
+
+    /**
+     * Builds filters for the custom dimensions, given the request to gather the custom dimension
+     * values, the feature type info to check they are configured, and a filter builder to accumlate
+     * the filters build at each step
+     */
+    public Filter getCustomDimensionFilter(
+            Map<String, String> rawKVP, FeatureTypeInfo typeInfo, DimensionFilterBuilder builder) {
+        CustomDimensionFilterConverter converter = getCustomDimensionFilterConverter(typeInfo);
+        return converter.getDimensionsToFilter(rawKVP, builder);
+    }
+
+    private CustomDimensionFilterConverter getCustomDimensionFilterConverter(
+            FeatureTypeInfo typeInfo) {
         CustomDimensionFilterConverter.DefaultValueStrategyFactory defaultValueStrategyFactory =
                 (resource, dimensionName, dimensionInfo) ->
                         getDefaultValueStrategy(resource, dimensionName, dimensionInfo);
         final CustomDimensionFilterConverter converter =
-                new CustomDimensionFilterConverter(defaultValueStrategyFactory, ff);
-        return converter.getDimensionsToFilter(rawKVP, typeInfo);
+                new CustomDimensionFilterConverter(typeInfo, defaultValueStrategyFactory);
+        return converter;
+    }
+
+    /**
+     * Validates that the provided custom dimension values are within the allowed range, eventually
+     * throws ServiceException#INVALID_DIMENSION_VALUE if not.
+     *
+     * @param times
+     * @param elevations
+     * @param mapLayerInfo
+     * @param request
+     */
+    public void validateRasterDimensions(
+            List<Object> times,
+            List<Object> elevations,
+            MapLayerInfo mapLayerInfo,
+            GetMapRequest request)
+            throws IOException {
+        // value validation and exception throwing enabled?
+        if (!exceptionOnInvalidDimension()) return;
+
+        CoverageInfo coverage = mapLayerInfo.getCoverage();
+        Map<String, DimensionInfo> dimensions =
+                coverage.getMetadata().entrySet().stream()
+                        .filter(e -> e.getValue() instanceof DimensionInfo)
+                        .filter(e -> ((DimensionInfo) e.getValue()).isEnabled())
+                        .filter(e -> !((DimensionInfo) e.getValue()).isNearestMatchEnabled())
+                        .collect(
+                                Collectors.toMap(
+                                        e -> e.getKey(), e -> (DimensionInfo) e.getValue()));
+        ReaderDimensionsAccessor accessor =
+                new ReaderDimensionsAccessor(
+                        (GridCoverage2DReader) mapLayerInfo.getCoverageReader());
+        for (Map.Entry<String, DimensionInfo> entry : dimensions.entrySet()) {
+            String key = entry.getKey().replaceFirst(DIM_, "");
+            if (key.equalsIgnoreCase(TIME)) {
+                List<Object> nonDefaultTimes =
+                        times.stream().filter(t -> t != null).collect(Collectors.toList());
+                if (nonDefaultTimes.isEmpty()) continue;
+                if (!accessor.hasAnyTime(nonDefaultTimes)) {
+                    throwInvalidDimensionValue(request, TIME, key);
+                }
+            } else if (key.equalsIgnoreCase(ELEVATION)) {
+                List<Object> nonDefaultElevations =
+                        elevations.stream().filter(e -> e != null).collect(Collectors.toList());
+                if (nonDefaultElevations.isEmpty()) continue;
+                if (!accessor.hasAnyElevation(nonDefaultElevations)) {
+                    throwInvalidDimensionValue(request, ELEVATION, key);
+                }
+            } else {
+                key = key.replaceFirst(ResourceInfo.CUSTOM_DIMENSION_PREFIX, "");
+                List<String> values = request.getCustomDimension(key);
+                if (values == null) continue;
+                if (!accessor.hasAnyCustomDimension(key, values)) {
+                    throwInvalidDimensionValue(request, key, (DIM_ + key).toUpperCase());
+                }
+            }
+        }
+    }
+
+    private static void throwInvalidDimensionValue(
+            GetMapRequest request, String dimension, String key) {
+        throw new ServiceException(
+                String.format(
+                        "Could not find a match for '%s' value: '%s'",
+                        dimension, request.getRawKvp().get(key)),
+                ServiceException.INVALID_DIMENSION_VALUE,
+                key);
     }
 
     /**

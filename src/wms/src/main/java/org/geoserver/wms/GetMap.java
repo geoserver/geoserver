@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
@@ -449,6 +450,8 @@ public class GetMap {
         final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
         if (reader != null) {
 
+            wms.validateRasterDimensions(times, elevations, mapLayerInfo, request);
+
             // get the group of parameters tha this reader supports
             GeneralParameterValue[] readParameters =
                     wms.getWMSReadParameters(
@@ -548,11 +551,13 @@ public class GetMap {
             throw new ServiceException("Internal error", exp);
         }
         FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
-        featureLayer.setTitle(mapLayerInfo.getFeature().prefixedName());
+        FeatureTypeInfo featureInfo = mapLayerInfo.getFeature();
+        featureLayer.setTitle(featureInfo.prefixedName());
         featureLayer.getUserData().put("abstract", mapLayerInfo.getDescription());
 
         // mix the dimension related filter with the layer filter
-        Filter dimensionFilter = buildDimensionFilter(times, elevations, mapLayerInfo, request);
+        wms.validateVectorDimensions(times, elevations, featureInfo, request);
+        Filter dimensionFilter = wms.getDimensionFilter(times, elevations, featureInfo, request);
         Filter filter =
                 SimplifyingFilterVisitor.simplify(Filters.and(ff, layerFilter, dimensionFilter));
 
@@ -610,20 +615,6 @@ public class GetMap {
         featureLayer.setQuery(definitionQuery);
 
         mapContent.addLayer(featureLayer);
-    }
-
-    protected Filter buildDimensionFilter(
-            List<Object> times,
-            List<Object> elevations,
-            final MapLayerInfo mapLayerInfo,
-            final GetMapRequest request)
-            throws IOException {
-        final Filter dimensionFilter =
-                wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());
-        final Filter customDimensionsfilter =
-                wms.getDimensionsToFilter(request.getRawKvp(), mapLayerInfo.getFeature());
-        return SimplifyingFilterVisitor.simplify(
-                Filters.and(ff, dimensionFilter, customDimensionsfilter));
     }
 
     private void validateSort(

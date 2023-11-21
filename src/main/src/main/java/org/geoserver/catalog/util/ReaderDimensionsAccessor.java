@@ -26,13 +26,16 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StructuredCoverageViewReader;
+import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
@@ -532,5 +535,112 @@ public class ReaderDimensionsAccessor {
         }
 
         return list;
+    }
+
+    /** Checks if the reader has any time in the specified list of times */
+    public boolean hasAnyTime(List<Object> times) throws IOException {
+        if (reader instanceof StructuredGridCoverage2DReader) {
+            return hasAnyValueStructured(ResourceInfo.TIME, times);
+        }
+        // dump search in the domain
+        TreeSet<Object> timeDomain = getTimeDomain();
+        for (Object time : times) {
+            // check if the time is in the domain, using the floor and ceiling functions
+            // to quickly locate nearby elements, without having to compare them all
+            Object floor = timeDomain.floor(time);
+            if (timeIntersection(floor, time)) return true;
+            Object ceiling = timeDomain.ceiling(time);
+            if (timeIntersection(ceiling, time)) return true;
+        }
+
+        return false;
+    }
+
+    /** Checks if the reader has any time in the specified list of times */
+    public boolean hasAnyElevation(List<Object> elevations) throws IOException {
+        if (reader instanceof StructuredGridCoverage2DReader) {
+            return hasAnyValueStructured(ResourceInfo.ELEVATION, elevations);
+        }
+        // dump search in the domain
+        TreeSet<Object> elevationDomain = getElevationDomain();
+        for (Object elevation : elevations) {
+            // check if the elevation is in the domain, using the floor and ceiling functions
+            // to quickly locate nearby elements, without having to compare them all
+            Object floor = elevationDomain.floor(elevation);
+            if (elevationIntersection(floor, elevation)) return true;
+            Object ceiling = elevationDomain.ceiling(elevation);
+            if (elevationIntersection(ceiling, elevation)) return true;
+        }
+        return false;
+    }
+
+    public boolean hasAnyCustomDimension(String name, List<String> values) throws IOException {
+        if (reader instanceof StructuredGridCoverage2DReader) {
+            return hasAnyValueStructured(name, values);
+        }
+        // dump search in the domain
+        Set<String> domain = new HashSet<>(getDomain(name));
+        for (String value : values) {
+            if (domain.contains(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasAnyValueStructured(String dimensionName, List<?> values) throws IOException {
+        StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+        final String name = sr.getGridCoverageNames()[0];
+        List<DimensionDescriptor> descriptors = sr.getDimensionDescriptors(name);
+        for (DimensionDescriptor descriptor : descriptors) {
+            // do we find the time, and can we optimize?
+            if (dimensionName.equalsIgnoreCase(descriptor.getName())) {
+                GranuleSource gs = sr.getGranules(name, true);
+                final Query query = new Query(gs.getSchema().getName().getLocalPart());
+                DimensionFilterBuilder builder = new DimensionFilterBuilder(FF);
+                builder.appendFilters(
+                        descriptor.getStartAttribute(), descriptor.getEndAttribute(), values);
+                query.setFilter(builder.getFilter());
+                return DataUtilities.first(gs.getGranules(query)) != null;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the two objects intersect in time. The objects can be either {@link Date} or {@link
+     * DateRange} objects.
+     */
+    private boolean timeIntersection(Object a, Object b) {
+        if (a == null) {
+            return false;
+        }
+        if (a instanceof Date) {
+            if (b instanceof Date) return ((Date) a).equals(b);
+            else if (b instanceof DateRange) return ((DateRange) b).contains((Date) a);
+        } else if (a instanceof DateRange) {
+            if (b instanceof DateRange) return ((DateRange) a).intersects((DateRange) b);
+            else if (b instanceof Date) return ((DateRange) a).contains((Date) b);
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the two objects intersect as numbers. The objects can be either {@link Double} or
+     * {@link NumberRange} objects.
+     */
+    @SuppressWarnings("unchecked") // un-qualified NumberRange
+    private boolean elevationIntersection(Object a, Object b) {
+        if (a == null) {
+            return false;
+        }
+        if (a instanceof Double) {
+            if (b instanceof Double) return ((Double) a).equals(b);
+            else if (b instanceof NumberRange) return ((NumberRange) b).contains((Number) a);
+        } else if (a instanceof NumberRange) {
+            if (b instanceof NumberRange) return ((NumberRange) a).intersects((NumberRange) b);
+            else if (b instanceof Double) return ((NumberRange) a).contains((Number) b);
+        }
+        return false;
     }
 }

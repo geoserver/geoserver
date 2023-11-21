@@ -5,6 +5,8 @@
 package org.geoserver.catalog.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -152,5 +154,103 @@ public class ReaderDimensionAccessorTest {
         assertEquals(1, converted.size());
         NumberRange<Double> expected = new NumberRange<>(Double.class, 75d, 100d);
         assertEquals(expected, converted.get(0));
+    }
+
+    /** Checks that the hasAnyTime method works as expected for the non structured reader case */
+    @Test
+    public void testHasAnyTime() throws Exception {
+        MockDimensionReader reader = new MockDimensionReader();
+        reader.metadata.put(GridCoverage2DReader.HAS_TIME_DOMAIN, "true");
+        reader.metadata.put(
+                GridCoverage2DReader.TIME_DOMAIN,
+                "2016-02-23T03:00:00.000Z/2016-02-23T03:00:00.000Z/PT1S,2016-02-23T06:00:00.000Z,2016-02-23T09:00:00.000Z/2016-02-23T12:00:00.000Z/PT1S");
+
+        ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
+
+        SimpleDateFormat format = accessor.getTimeFormat();
+        // test a few positive cases
+        // ... exact instant match
+        assertHasTimes(accessor, format, "2016-02-23T06:00:00.000Z");
+        // ... contained instant
+        assertHasTimes(accessor, format, "2016-02-23T10:00:00.000Z");
+        // ... intersecting range from below
+        DateRange rangeBelow =
+                new DateRange(
+                        format.parse("2016-02-23T00:00:00.000Z"),
+                        format.parse("2016-02-23T05:00:00.000Z"));
+        assertTrue(accessor.hasAnyTime(Arrays.asList(rangeBelow)));
+        // ... intersecting range from above
+        DateRange rangeAbove =
+                new DateRange(
+                        format.parse("2016-02-23T11:00:00.000Z"),
+                        format.parse("2016-02-23T15:00:00.000Z"));
+        assertTrue(accessor.hasAnyTime(Arrays.asList(rangeAbove)));
+
+        // test a few negative cases
+        // ... before, mid, and after instants
+        assertNoTimes(accessor, format, "2016-02-23T02:00:00.000Z");
+        assertNoTimes(accessor, format, "2016-02-23T05:00:00.000Z");
+        assertNoTimes(accessor, format, "2016-02-23T23:00:00.000Z");
+        // ... before, mid, and after ranges
+        DateRange rangeBefore =
+                new DateRange(
+                        format.parse("2016-02-22T00:00:00.000Z"),
+                        format.parse("2016-02-22T23:00:00.000Z"));
+        assertFalse(accessor.hasAnyTime(Arrays.asList(rangeBefore)));
+        DateRange rangeMid =
+                new DateRange(
+                        format.parse("2016-02-23T04:00:00.000Z"),
+                        format.parse("2016-02-23T05:00:00.000Z"));
+        assertFalse(accessor.hasAnyTime(Arrays.asList(rangeMid)));
+        DateRange rangeAfter =
+                new DateRange(
+                        format.parse("2016-02-24T00:00:00.000Z"),
+                        format.parse("2016-02-24T23:00:00.000Z"));
+        assertFalse(accessor.hasAnyTime(Arrays.asList(rangeAfter)));
+    }
+
+    private static void assertHasTimes(
+            ReaderDimensionsAccessor accessor, SimpleDateFormat format, String source)
+            throws IOException, ParseException {
+        assertTrue(accessor.hasAnyTime(Arrays.asList(format.parse(source))));
+    }
+
+    private static void assertNoTimes(
+            ReaderDimensionsAccessor accessor, SimpleDateFormat format, String source)
+            throws IOException, ParseException {
+        assertFalse(accessor.hasAnyTime(Arrays.asList(format.parse(source))));
+    }
+
+    @Test
+    public void testHasAnyElevation() throws Exception {
+        MockDimensionReader reader = new MockDimensionReader();
+        reader.metadata.put(GridCoverage2DReader.HAS_ELEVATION_DOMAIN, "true");
+        reader.metadata.put(GridCoverage2DReader.ELEVATION_DOMAIN, "0/0/0,10,15/20/1");
+        ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
+
+        // test a few positive cases
+        // ... exact match
+        assertTrue(accessor.hasAnyElevation(Arrays.asList(10d)));
+        // ... contained value
+        assertTrue(accessor.hasAnyElevation(Arrays.asList(16d)));
+        // ... intersecting range from below
+        NumberRange<Double> rangeBelow = new NumberRange<>(Double.class, -3d, 3d);
+        assertTrue(accessor.hasAnyElevation(Arrays.asList(rangeBelow)));
+        // ... intersecting range from above
+        NumberRange<Double> rangeAbove = new NumberRange<>(Double.class, 17d, 23d);
+        assertTrue(accessor.hasAnyElevation(Arrays.asList(rangeAbove)));
+
+        // test a few negative cases
+        // ... before, mid, and after instants
+        assertFalse(accessor.hasAnyElevation(Arrays.asList(-3d)));
+        assertFalse(accessor.hasAnyElevation(Arrays.asList(5d)));
+        assertFalse(accessor.hasAnyElevation(Arrays.asList(23d)));
+        // ... before, mid, and after ranges
+        NumberRange<Double> rangeBefore = new NumberRange<>(Double.class, -3d, -1d);
+        assertFalse(accessor.hasAnyElevation(Arrays.asList(rangeBefore)));
+        NumberRange<Double> rangeMid = new NumberRange<>(Double.class, 5d, 7d);
+        assertFalse(accessor.hasAnyElevation(Arrays.asList(rangeMid)));
+        NumberRange<Double> rangeAfter = new NumberRange<>(Double.class, 23d, 27d);
+        assertFalse(accessor.hasAnyElevation(Arrays.asList(rangeAfter)));
     }
 }

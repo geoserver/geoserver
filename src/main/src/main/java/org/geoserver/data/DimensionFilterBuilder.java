@@ -30,8 +30,7 @@ public class DimensionFilterBuilder {
         this.ff = ff;
     }
 
-    public void appendFilters(
-            String startAttributeName, String endAttributeName, List<Object> ranges) {
+    public void appendFilters(String startAttributeName, String endAttributeName, List<?> ranges) {
         if (ranges == null || ranges.isEmpty()) {
             return;
         }
@@ -41,8 +40,8 @@ public class DimensionFilterBuilder {
         final PropertyName endAttribute =
                 endAttributeName == null ? null : ff.property(endAttributeName);
 
-        for (Object datetime : ranges) {
-            timeFilters.add(buildDimensionFilter(datetime, attribute, endAttribute));
+        for (Object range : ranges) {
+            timeFilters.add(buildDimensionFilter(range, attribute, endAttribute));
         }
         final int size = timeFilters.size();
         Filter result;

@@ -17,6 +17,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.kvp.ElevationParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategyFactory;
 import org.geoserver.wms.dimension.FixedValueStrategyFactory;
@@ -36,8 +37,6 @@ import org.geotools.feature.type.DateUtil;
  */
 public class DimensionDefaultValueSelectionStrategyFactoryImpl
         implements DimensionDefaultValueSelectionStrategyFactory {
-
-    private static final String VECTOR_CUSTOM_DIMENSION_PREFIX = "dim_";
 
     // Initialized in the applicationContext:
     private DimensionDefaultValueSelectionStrategy featureTimeMinimumStrategy;
@@ -104,7 +103,7 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl
                 retval = coverageElevationMinimumStrategy;
             }
         } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)
-                || dimensionName.startsWith(VECTOR_CUSTOM_DIMENSION_PREFIX)) {
+                || dimensionName.startsWith(WMS.DIM_)) {
             if (resource instanceof FeatureTypeInfo) {
                 retval = featureCustomDimensionMinimumStrategy;
             } else if (resource instanceof CoverageInfo) {

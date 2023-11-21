@@ -235,16 +235,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             throws IOException, TransformException, ServiceException {
         // read from the request
         GetMapRequest getMap = requestParams.getGetMapRequest();
+        List<Object> times = requestParams.getTimes();
+        List<Object> elevations = requestParams.getElevations();
+        wms.validateRasterDimensions(times, elevations, layer, requestParams.getGetMapRequest());
         GeneralParameterValue[] parameters =
                 wms.getWMSReadParameters(
-                        getMap,
-                        layer,
-                        filter,
-                        sort,
-                        requestParams.getTimes(),
-                        requestParams.getElevations(),
-                        reader,
-                        true);
+                        getMap, layer, filter, sort, times, elevations, reader, true);
 
         // now get the position in raster space using the world to grid related to
         // corner

@@ -5,18 +5,19 @@
  */
 package org.geoserver.wms.dimension;
 
+import static org.geoserver.wms.WMS.DIM_;
 import static org.junit.Assert.assertEquals;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.util.KvpMap;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -81,10 +82,10 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
                 new MapLayerInfo(getCatalog().getLayerByName(WATTEMP_TIME.getLocalPart()));
         final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
         GetMapRequest req = new GetMapRequest();
-        req.setRawKvp(new HashMap<>());
+        req.setRawKvp(new KvpMap<>());
         req.getRawKvp()
                 .put(
-                        "DIM_" + CustomFormat.CUSTOM_DIMENSION_NAME,
+                        DIM_ + CustomFormat.CUSTOM_DIMENSION_NAME,
                         "2001-05-01T00:00:00.000Z, 2001-05-02T00:00:00.000Z");
 
         GeneralParameterValue[] readParam =
@@ -104,8 +105,8 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
                 new MapLayerInfo(getCatalog().getLayerByName(WATTEMP_DEPTH.getLocalPart()));
         final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
         GetMapRequest req = new GetMapRequest();
-        req.setRawKvp(new HashMap<>());
-        req.getRawKvp().put("DIM_" + CustomFormat.CUSTOM_DIMENSION_NAME, "10/50");
+        req.setRawKvp(new KvpMap<>());
+        req.getRawKvp().put(DIM_ + CustomFormat.CUSTOM_DIMENSION_NAME, "10/50");
 
         GeneralParameterValue[] readParam =
                 wms.getWMSReadParameters(
@@ -122,8 +123,8 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
                 new MapLayerInfo(getCatalog().getLayerByName(WATTEMP_DEPTH.getLocalPart()));
         final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
         GetMapRequest req = new GetMapRequest();
-        req.setRawKvp(new HashMap<>());
-        req.getRawKvp().put("DIM_" + CustomFormat.CUSTOM_DIMENSION_NAME, "10,50");
+        req.setRawKvp(new KvpMap<>());
+        req.getRawKvp().put(DIM_ + CustomFormat.CUSTOM_DIMENSION_NAME, "10,50");
 
         GeneralParameterValue[] readParam =
                 wms.getWMSReadParameters(

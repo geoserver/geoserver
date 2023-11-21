@@ -11,9 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.FeatureInfoRequestParameters;
+import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geotools.api.data.FeatureSource;
@@ -69,6 +71,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
         final MapLayerInfo layer = params.getLayer();
         final Filter filter = params.getFilter();
+
         final Style style = params.getStyle();
         // ok, internally rendered layer then, we check the style to see what's active
         final List<Rule> rules = getActiveRules(style, params.getScaleDenominator());
@@ -76,10 +79,10 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
             return null;
         }
 
-        // compute the request radius
+        // compute the getMapRequest radius
         double radius = getSearchRadius(params, layer, rules);
 
-        // compute the bbox for the request
+        // compute the bbox for the getMapRequest
         ReferencedEnvelope queryEnvelope = LayerIdentifier.getEnvelopeFilter(params, radius);
         CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
         CoordinateReferenceSystem dataCRS = layer.getCoordinateReferenceSystem();
@@ -126,10 +129,14 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         }
 
         // handle time/elevation
-        Filter timeElevationFilter =
-                wms.getTimeElevationToFilter(
-                        params.getTimes(), params.getElevations(), layer.getFeature());
-        getFInfoFilter = Filters.and(ff, getFInfoFilter, timeElevationFilter);
+        List<Object> times = params.getTimes();
+        List<Object> elevations = params.getElevations();
+        FeatureTypeInfo featureInfo = layer.getFeature();
+        GetMapRequest getMapRequest = params.getGetMapRequest();
+        wms.validateVectorDimensions(times, elevations, featureInfo, getMapRequest);
+        Filter dimensionFilter =
+                wms.getDimensionFilter(times, elevations, featureInfo, getMapRequest);
+        getFInfoFilter = Filters.and(ff, getFInfoFilter, dimensionFilter);
 
         // simplify the filter
         SimplifyingFilterVisitor simplifier = new SimplifyingFilterVisitor();
@@ -156,8 +163,8 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         LOGGER.log(Level.FINE, q.toString());
         // let's see if we need to reproject
         if (!wms.isFeaturesReprojectionDisabled()) {
-            // reproject the features to the request CRS, this way complex feature will also be
-            // reprojected
+            // reproject the features to the getMapRequest CRS, this way complex feature will also
+            // be reprojected
             q.setCoordinateSystemReproject(requestedCRS);
         }
         FeatureCollection<? extends FeatureType, ? extends Feature> match =

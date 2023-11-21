@@ -212,6 +212,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         TextField<Integer> maxBuffer = new TextField<>("maxBuffer");
         maxBuffer.add(RangeValidator.minimum(0));
         form.add(maxBuffer);
+        // throwing exceptions on invalid dimension
+        List<Boolean> exceptionValues = Arrays.asList(Boolean.TRUE, Boolean.FALSE);
+        DropDownChoice<Boolean> invalidDimensionThrow =
+                new DropDownChoice<>("exceptionOnInvalidDimension", exceptionValues);
+        invalidDimensionThrow.setChoiceRenderer(new ExceptionChoiceRenderer());
+        invalidDimensionThrow.setNullValid(true);
+        form.add(invalidDimensionThrow);
         // max dimension values
         TextField<Integer> maxRequestedDimensionValues =
                 new TextField<>("maxRequestedDimensionValues");
@@ -547,6 +554,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 }
                 super.onBeforeRender();
             }
+
             /** Override otherwise the header is not i18n'ized */
             @Override
             public Component newSelectedHeader(final String componentId) {
@@ -702,5 +710,20 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     @Override
     protected boolean supportInternationalContent() {
         return true;
+    }
+
+    private class ExceptionChoiceRenderer extends ChoiceRenderer<Boolean> {
+
+        @Override
+        public Object getDisplayValue(Boolean object) {
+            return new ParamResourceModel(
+                            "exceptionOnInvalidDimension." + object, WMSAdminPage.this)
+                    .getString();
+        }
+
+        @Override
+        public String getIdValue(Boolean object, int index) {
+            return String.valueOf(object);
+        }
     }
 }

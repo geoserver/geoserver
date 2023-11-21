@@ -32,15 +32,15 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WMSTestSupport;
 import org.geotools.image.io.ImageIOExt;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-public class CustomDimensionsTest extends WMSTestSupport {
+public class CustomDimensionsTest extends WMSDimensionsTestSupport {
 
     private static final QName WATTEMP =
             new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
@@ -159,6 +159,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
 
         setupRasterDimension(
                 CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setExceptionsOnInvalidDimension(false);
 
         // check that we get no data when requesting an incorrect value for custom dimension
         MockHttpServletResponse response =

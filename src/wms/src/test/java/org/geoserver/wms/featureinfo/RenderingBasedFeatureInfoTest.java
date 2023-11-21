@@ -75,6 +75,8 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     public static QName REPEATED = new QName(MockData.CITE_URI, "repeated", MockData.CITE_PREFIX);
     public static QName GIANT_POLYGON =
             new QName(MockData.CITE_URI, "giantPolygon", MockData.CITE_PREFIX);
+    public static QName GEOM_FUNCTION =
+            new QName(MockData.CITE_URI, "geom-function", MockData.CITE_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -105,6 +107,12 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                 "giantPolygon.properties",
                 SystemTestData.class,
                 getCatalog());
+        testData.addVectorLayer(
+                GEOM_FUNCTION,
+                Collections.emptyMap(),
+                "geom-function.properties",
+                RenderingBasedFeatureInfoTest.class,
+                getCatalog());
 
         testData.addStyle("ranged", "ranged.sld", this.getClass(), getCatalog());
         testData.addStyle("dynamic", "dynamic.sld", this.getClass(), getCatalog());
@@ -117,6 +125,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("doublepoly", "doublepoly.sld", this.getClass(), getCatalog());
         testData.addStyle("pureLabel", "purelabel.sld", this.getClass(), getCatalog());
         testData.addStyle("transform", "transform.sld", this.getClass(), getCatalog());
+        testData.addStyle("geom-function", "geom-function.sld", this.getClass(), getCatalog());
     }
 
     @After
@@ -712,6 +721,25 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                                 + "gml:interior/gml:LinearRing/gml:posList/text()",
                         result);
         checkCoordinates(interiorLinearRing, 0.0001, 2, 61.5, 2, 62.5, 4, 62, 2, 61.5);
+    }
+
+    @Test
+    public void testGeomFunction() throws Exception {
+        String layer = getLayerId(GEOM_FUNCTION);
+        String request =
+                "wms?version=1.1.1&bbox=1.2,0.2,1.8,0.7&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&styles=geom-function"
+                        + "&width=20&height=20&x=10&y=10"
+                        + "&info_format=application/json&feature_count=50";
+
+        JSONObject result = (JSONObject) getAsJSON(request);
+        // we used to get a bad-wkt exception here
+        // print(result);
+        assertEquals(1, result.getJSONArray("features").size());
     }
 
     /**

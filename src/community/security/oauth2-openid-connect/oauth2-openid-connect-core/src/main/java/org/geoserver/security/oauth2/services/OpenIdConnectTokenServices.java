@@ -4,7 +4,6 @@
  */
 package org.geoserver.security.oauth2.services;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.security.oauth2.GeoServerAccessTokenConverter;
@@ -41,22 +40,23 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
     protected Map<String, Object> checkToken(String accessToken) {
         if (this.checkTokenEndpointUrl != null) {
             return checkTokenEndpoint(this.checkTokenEndpointUrl, accessToken);
-        }
-        else if (this.config != null && config.getJwkURI() != null && !config.getJwkURI().isEmpty()){
+        } else if (this.config != null
+                && config.getJwkURI() != null
+                && !config.getJwkURI().isEmpty()) {
             return checkTokenJWKS(config.getJwkURI(), accessToken);
-        }
-        else {
-            throw new IllegalStateException("Unable to check access token: require check token endpoint url, or JWK URI");
+        } else {
+            throw new IllegalStateException(
+                    "Unable to check access token: require check token endpoint url, or JWK URI");
         }
     }
 
     /**
      * According to the spec, the token can be verified issuing a GET request, and putting the token
-     * in the Authorization header.
-     * See
+     * in the Authorization header. See
      * https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
      */
-    protected Map<String, Object> checkTokenEndpoint(String checkTokenEndpoint, String accessToken) {
+    protected Map<String, Object> checkTokenEndpoint(
+            String checkTokenEndpoint, String accessToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthorizationHeader(accessToken));
@@ -70,7 +70,8 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
     }
 
     /**
-     * According to the spec, the token signature can be checked using public JSON Web Key set document.
+     * According to the spec, the token signature can be checked using public JSON Web Key set
+     * document.
      */
     protected Map<String, Object> checkTokenJWKS(String jwkUri, String rawAccessToken) {
         // validate against jwkURI
@@ -78,9 +79,9 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
         OAuth2AccessToken accessToken = store.readAccessToken(rawAccessToken);
 
         // Extract information from token
-        Map<String,Object> map = new HashMap<>();
-        map.put("scope",accessToken.getScope());
-        map.putAll( accessToken.getAdditionalInformation());
+        Map<String, Object> map = new HashMap<>();
+        map.put("scope", accessToken.getScope());
+        map.putAll(accessToken.getAdditionalInformation());
 
         return map;
     }

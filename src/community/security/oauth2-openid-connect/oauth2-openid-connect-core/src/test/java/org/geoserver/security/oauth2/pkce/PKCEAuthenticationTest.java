@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
@@ -18,8 +19,6 @@ import org.springframework.security.oauth2.client.token.DefaultAccessTokenReques
 import org.springframework.security.oauth2.core.endpoint.PkceParameterNames;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.MultiValueMapAdapter;
-
-import java.util.HashMap;
 
 public class PKCEAuthenticationTest extends GeoServerSystemTestSupport {
 
@@ -67,9 +66,10 @@ public class PKCEAuthenticationTest extends GeoServerSystemTestSupport {
         String validator = "1234";
         request.set(PkceParameterNames.CODE_VERIFIER, validator);
 
-        MultiValueMap<String, String> form = new MultiValueMapAdapter( new HashMap<String,String>());
-        enhancer.enhance( request, null, form, null);
+        MultiValueMap<String, String> form =
+                new MultiValueMapAdapter(new HashMap<String, String>());
+        enhancer.enhance(request, null, form, null);
 
-        assertEquals(validator,form.getFirst(PkceParameterNames.CODE_VERIFIER));
+        assertEquals(validator, form.getFirst(PkceParameterNames.CODE_VERIFIER));
     }
 }

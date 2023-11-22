@@ -40,6 +40,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUploadPathMapper;
+import org.geoserver.rest.util.RESTUtils;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.DataAccessFactory;
 import org.geotools.api.data.DataStore;
@@ -567,15 +568,14 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         boolean postRequest =
                 request != null && HttpMethod.POST.name().equalsIgnoreCase(request.getMethod());
 
-        // Prepare the directory only in case this is not an external upload
-        if (method.isInline()) {
-            // Mapping of the input directory
-            if (method == UploadMethod.url) {
-                // For URL upload method, workspace and StoreName are not considered
-                directory = createFinalRoot(null, null, postRequest);
-            } else {
-                directory = createFinalRoot(workspaceName, storeName, postRequest);
-            }
+        // Mapping of the input directory
+        if (method == UploadMethod.url) {
+            // For URL upload method, workspace and StoreName are not considered
+            directory = createFinalRoot(null, null, postRequest);
+        } else if (method == UploadMethod.file
+                || (method == UploadMethod.external && RESTUtils.isZipMediaType(request))) {
+            // Prepare the directory for file upload or external upload of a zip file
+            directory = createFinalRoot(workspaceName, storeName, postRequest);
         }
         return handleFileUpload(
                 storeName, workspaceName, filename, method, format, directory, request);

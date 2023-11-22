@@ -5,6 +5,8 @@
 package org.geoserver.rest.catalog;
 
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -19,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,18 +37,24 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.filters.LoggingFilter;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.URLs;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
+
+    @ClassRule public static TemporaryFolder temp = new TemporaryFolder();
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -73,6 +82,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     public void removePdsDataStore() {
         removeStore("gs", "pds");
         removeStore("gs", "store with spaces");
+        removeStore("gs", "san_andres_y_providencia");
     }
 
     @After
@@ -405,5 +415,92 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         } else {
             return null;
         }
+    }
+
+    @Test
+    public void testShapefileUploadExternalZipDirectory() throws Exception {
+        // get the path to a directory
+        File file = temp.getRoot();
+        String body = file.getAbsolutePath();
+        // the request will fail since it won't attempt to copy a directory
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        ROOT_PATH + "/workspaces/foo/datastores/bar/external.shp",
+                        body,
+                        "application/zip");
+        assertEquals(500, response.getStatus());
+        assertThat(response.getContentAsString(), startsWith("Error renaming zip file from "));
+        // verify that the external file was not deleted
+        assertTrue("The external file was unexpectedly deleted", file.exists());
+    }
+
+    @Test
+    public void testShapefileUploadExternalZipExistingDirectory() throws Exception {
+        // create a file to copy and get its path
+        File file1 = temp.newFile("test1.zip");
+        String body = file1.getAbsolutePath();
+        // create the file in the data directory
+        File file2 = getResourceLoader().createDirectory("data/foo/bar1/test1.zip");
+        // the request will fail since it won't overwrite an existing zip file
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        ROOT_PATH + "/workspaces/foo/datastores/bar1/external.shp",
+                        body,
+                        "application/zip");
+        assertEquals(500, response.getStatus());
+        assertThat(response.getContentAsString(), startsWith("Error renaming zip file from "));
+        // verify that the external file was not deleted
+        assertTrue("The external file was unexpectedly deleted", file1.exists());
+        // verify that the file in the data directory was not deleted
+        assertTrue("The file in the data directory was unexpectedly deleted", file2.isDirectory());
+    }
+
+    @Test
+    public void testShapefileUploadExternalZipBadFile() throws Exception {
+        // create a file that is not a valid zip file and get its path
+        File file = temp.newFile("test2.zip");
+        String body = file.getAbsolutePath();
+        // the request will fail unzipping since it is not a valid zip fail
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        ROOT_PATH + "/workspaces/foo/datastores/bar2/external.shp",
+                        body,
+                        "application/zip");
+        assertEquals(500, response.getStatus());
+        assertEquals("Error occured unzipping file", response.getContentAsString());
+        // verify that the external file was not deleted
+        assertTrue("The external file was unexpectedly deleted", file.exists());
+        // verify that the zip file was deleted from the data directory
+        assertEquals(
+                "The data directory file was not deleted",
+                Resource.Type.UNDEFINED,
+                getResourceLoader().get("data/foo/bar2/test2.zip").getType());
+    }
+
+    @Test
+    public void testShapefileUploadExternalZipValid() throws Exception {
+        // create a valid zip file and get its path
+        File file = temp.newFile("test3.zip");
+        Files.write(file.toPath(), shpSanAndresShapefilesZipAsBytes());
+        String body = file.getAbsolutePath();
+        // verify that the datastore does not already exist
+        Catalog cat = getCatalog();
+        assertNull(cat.getDataStoreByName("gs", "san_andres_y_providencia"));
+        // the request should succeed
+        put(
+                ROOT_PATH + "/workspaces/gs/datastores/san_andres_y_providencia/external.shp",
+                body,
+                "application/zip");
+        // verify that the datastore was created successfully
+        DataStoreInfo ds = cat.getDataStoreByName("gs", "san_andres_y_providencia");
+        assertNotNull(ds);
+        assertEquals(1, cat.getFeatureTypesByDataStore(ds).size());
+        // verify that the external file was not deleted
+        assertTrue("The external file was unexpectedly deleted", file.exists());
+        // verify that the zip file was deleted from the data directory
+        assertEquals(
+                "The data directory file was not deleted",
+                Resource.Type.UNDEFINED,
+                getResourceLoader().get("data/gs/san_andres_y_providencia/test3.zip").getType());
     }
 }

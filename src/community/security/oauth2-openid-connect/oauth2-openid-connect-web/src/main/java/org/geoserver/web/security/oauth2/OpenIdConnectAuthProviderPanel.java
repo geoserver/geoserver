@@ -153,6 +153,9 @@ public class OpenIdConnectAuthProviderPanel
 
         add(new HelpLink("allowBearerTokensHelp", this).setDialog(dialog));
         add(new CheckBox("allowBearerTokens"));
+
+        add(new HelpLink("PKCEHelp", this).setDialog(dialog));
+        add(new CheckBox("usePKCE"));
     }
 
     @Override

@@ -14,6 +14,7 @@
         <include>gs-sec-oauth2-openid-connect*</include>
         <include>spring-security-core-*</include>
         <include>spring-security-config-*</include>
+        <include>spring-security-crypto*</include>
         <include>spring-security-web-*</include>
         <include>spring-security-oauth2*</include>
         <include>spring-security-jwt*</include>

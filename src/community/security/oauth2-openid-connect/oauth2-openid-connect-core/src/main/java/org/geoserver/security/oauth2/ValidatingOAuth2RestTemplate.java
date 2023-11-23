@@ -17,6 +17,10 @@ import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStor
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+/**
+ * Rest template that is able to make OpenID Connect REST requests with resource {@link
+ * OpenIdConnectFilterConfig}.
+ */
 class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
 
     private static final Logger LOGGER = Logging.getLogger(ValidatingOAuth2RestTemplate.class);
@@ -45,8 +49,7 @@ class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
             return result;
         } finally {
             // CODE shouldn't typically be displayed since it can be "handed in" for an access/id
-            // token
-            // So, we don't log the CODE until AFTER it has been handed in.
+            // token So, we don't log the CODE until AFTER it has been handed in.
             // CODE is one-time-use.
             if (config.isAllowUnSecureLogging()) {
                 if ((oauth2Context != null) && (oauth2Context.getAccessTokenRequest() != null)) {

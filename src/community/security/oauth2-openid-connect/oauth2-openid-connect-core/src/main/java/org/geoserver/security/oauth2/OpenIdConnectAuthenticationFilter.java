@@ -12,7 +12,9 @@ import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRole
 import com.jayway.jsonpath.JsonPath;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -28,12 +30,16 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geoserver.security.oauth2.bearer.TokenValidator;
+import org.geoserver.security.oauth2.pkce.PKCERequestEnhancer;
 import org.geoserver.security.oauth2.services.OpenIdConnectTokenServices;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
+import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
+import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.DefaultRequestEnhancer;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -48,6 +54,10 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     static final String ID_TOKEN_VALUE = "OpenIdConnect-IdTokenValue";
     TokenValidator bearerTokenValidator;
 
+    /** Generator used for Public Key Code Exchange code_verifier */
+    private final StringKeyGenerator secureKeyGenerator =
+            new Base64StringKeyGenerator(Base64.getUrlEncoder().withoutPadding(), 96);
+
     public OpenIdConnectAuthenticationFilter(
             SecurityNamedServiceConfig config,
             RemoteTokenServices tokenServices,
@@ -58,12 +68,16 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         // reconfigure the token services
         if (tokenServices instanceof OpenIdConnectTokenServices
                 && config instanceof OpenIdConnectFilterConfig) {
-            ((OpenIdConnectTokenServices) tokenServices)
-                    .setConfiguration((OpenIdConnectFilterConfig) config);
+
+            OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) config;
+
+            ((OpenIdConnectTokenServices) tokenServices).setConfiguration(idConfig);
             AuthorizationCodeAccessTokenProvider provider =
                     (AuthorizationCodeAccessTokenProvider)
                             GeoServerExtensions.bean("authorizationAccessTokenProvider");
-            if (((OpenIdConnectFilterConfig) config).isSendClientSecret())
+            if (idConfig.isUsePKCE())
+                provider.setTokenRequestEnhancer(new PKCERequestEnhancer(idConfig));
+            else if (idConfig.isSendClientSecret())
                 provider.setTokenRequestEnhancer(new ClientSecretRequestEnhancer());
             else provider.setTokenRequestEnhancer(new DefaultRequestEnhancer());
         }
@@ -76,6 +90,21 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             sc.setConfiguration(idConfig);
         }
         this.bearerTokenValidator = bearerTokenValidator;
+    }
+
+    @Override
+    protected void enhanceAccessTokenRequest(
+            HttpServletRequest httpRequest, AccessTokenRequest accessTokenRequest) {
+        super.enhanceAccessTokenRequest(httpRequest, accessTokenRequest);
+
+        OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) filterConfig;
+        if (idConfig.isUsePKCE()) {
+            var session = httpRequest.getSession();
+            var validator = (String) session.getAttribute("OIDC_CODE_VERIFIER");
+            if (validator != null) {
+                accessTokenRequest.put("code_verifier", Collections.singletonList(validator));
+            }
+        }
     }
 
     @Override

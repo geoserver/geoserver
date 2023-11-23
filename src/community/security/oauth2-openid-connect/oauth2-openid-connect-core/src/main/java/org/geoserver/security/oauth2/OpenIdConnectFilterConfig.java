@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
+import org.geoserver.security.oauth2.pkce.PKCEAuthenticationEntryPoint;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -32,6 +34,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     String postLogoutRedirectUri;
     boolean sendClientSecret = false;
     boolean allowBearerTokens = true;
+    boolean usePKCE = false;
 
     /** Supports extraction of roles among the token claims */
     public static enum OpenIdRoleSource implements RoleSource {
@@ -133,6 +136,14 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         this.postLogoutRedirectUri = postLogoutRedirectUri;
     }
 
+    public boolean isUsePKCE() {
+        return usePKCE;
+    }
+
+    public void setUsePKCE(boolean usePKCE) {
+        this.usePKCE = usePKCE;
+    }
+
     @Override
     public StringBuilder buildAuthorizationUrl() {
         StringBuilder sb = super.buildAuthorizationUrl();
@@ -143,7 +154,11 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     }
 
     protected StringBuilder buildEndSessionUrl(final String idToken) {
-        final StringBuilder logoutUri = new StringBuilder(getLogoutUri());
+        String uri = getLogoutUri();
+        if (uri == null) {
+            throw new NullPointerException("Logout URI not provided");
+        }
+        final StringBuilder logoutUri = new StringBuilder(uri);
         boolean first = true;
         if (idToken != null) first = appendParam(first, "id_token_hint", idToken, logoutUri);
         if (StringUtils.hasText(getPostLogoutRedirectUri()))
@@ -154,5 +169,19 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     private boolean appendParam(boolean first, String name, String value, StringBuilder sb) {
         sb.append(first ? "?" : "&").append(name).append("=").append(value);
         return false;
+    }
+
+    /**
+     * Checks {@link #isUsePKCE()} to determine if {@link PKCEAuthenticationEntryPoint} is needed.
+     *
+     * @return filter {@link AuthenticationEntryPoint} actual implementation
+     */
+    @Override
+    public AuthenticationEntryPoint getAuthenticationEntryPoint() {
+        if (isUsePKCE()) {
+            return new PKCEAuthenticationEntryPoint(this);
+        } else {
+            return super.getAuthenticationEntryPoint();
+        }
     }
 }

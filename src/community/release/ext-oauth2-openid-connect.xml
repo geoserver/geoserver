@@ -32,6 +32,7 @@
         <include>json-smart*.jar</include>
         <include>accessors-smart*</include>
         <include>json-simple*</include>
+        <include>nimbus-jose-jwt*</include>
       </includes>
     </fileSet>
   </fileSets>

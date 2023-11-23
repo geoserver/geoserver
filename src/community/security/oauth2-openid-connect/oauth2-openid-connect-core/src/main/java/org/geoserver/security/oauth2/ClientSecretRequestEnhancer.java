@@ -13,12 +13,16 @@ import org.springframework.util.MultiValueMap;
 
 /** This class is used to add to Token Requests the client_secret in the query string. */
 public class ClientSecretRequestEnhancer implements RequestEnhancer {
+
+    /** {@code client_secret} - used in Token Request. */
+    public static final String CLIENT_SECRET = "client_secret";
+
     @Override
     public void enhance(
             AccessTokenRequest request,
             OAuth2ProtectedResourceDetails resource,
             MultiValueMap<String, String> form,
             HttpHeaders headers) {
-        form.put("client_secret", Arrays.asList(resource.getClientSecret()));
+        form.put(CLIENT_SECRET, Arrays.asList(resource.getClientSecret()));
     }
 }

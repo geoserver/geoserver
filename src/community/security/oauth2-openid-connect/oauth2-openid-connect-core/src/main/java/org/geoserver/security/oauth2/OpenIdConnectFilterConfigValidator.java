@@ -25,7 +25,7 @@ public class OpenIdConnectFilterConfigValidator extends OAuth2FilterConfigValida
             try {
                 new URL(oidcFilterConfig.getJwkURI());
             } catch (MalformedURLException ex) {
-                throw createFilterException(
+                throw new OpenIdConnectFilterConfigException(
                         OpenIdConnectFilterConfigException.OAUTH2_WKTS_URL_MALFORMED);
             }
         }
@@ -37,7 +37,7 @@ public class OpenIdConnectFilterConfigValidator extends OAuth2FilterConfigValida
         if (StringUtils.hasLength(filterConfig.getCheckTokenEndpointUrl()) == false
                 && StringUtils.hasLength(oidcFilterConfig.getJwkURI()) == false) {
             // One of checkTokenEndpointUrl or jwkURI is required
-            throw createFilterException(
+            throw new OpenIdConnectFilterConfigException(
                     OpenIdConnectFilterConfigException
                             .OAUTH2_CHECKTOKEN_OR_WKTS_ENDPOINT_URL_REQUIRED);
         }

@@ -22,7 +22,7 @@ See :ref:`logging` for more information.
 Set a service strategy
 ----------------------
 
-A service strategy is the method in which output is served to the client.  This is a balance between proper form (being absolutely sure of reporting errors with the proper OGC codes, etc) and speed (serving output as quickly as possible).  This is a decision to be made based on the function that GeoServer is providing.  You can configure the service strategy by modifying the :file:`web.xml` file of your GeoServer instance.
+A service strategy is the method in which output is served to the client.  This is a balance between proper form (being absolutely sure of reporting errors with the proper OGC codes, etc.) and speed (serving output as quickly as possible).  This is a decision to be made based on the function that GeoServer is providing.  You can configure the service strategy by modifying the :file:`web.xml` file of your GeoServer instance.
 
 The possible strategies are:
 
@@ -43,7 +43,7 @@ The possible strategies are:
 Personalize your server
 -----------------------
 
-This is isn't a performance consideration, but is just as important.  In order to make GeoServer as useful as possible, you should customize the server's metadata to your organization.  It may be tempting to skip some of the configuration steps, and leave in the same keywords and abstract as the sample, but this will only confuse potential users.
+This isn't a performance consideration, but it is just as important.  In order to make GeoServer as useful as possible, you should customize the server's metadata to your organization.  It may be tempting to skip some of the configuration steps, and leave in the same keywords and abstract as the sample, but this will only confuse potential users.
 
 Suggestions:
 
@@ -86,7 +86,7 @@ Welcome page selectors
 ----------------------
 
 
-The workspace and layer selectors migth take a lot of time to fill up against large catalogs. Because of this, GeoServer tries to limit the time taken to fill them (by default, 5 seconds), and the amount of items in them (by default, ``1000``), and will fall back on simple text fields if the time limit is reached.
+The workspace and layer selectors might take a lot of time to fill up against large catalogs. Because of this, GeoServer tries to limit the time taken to fill them (by default, 5 seconds), and the number of items in them (by default, ``1000``), and will fall back on simple text fields if the time limit is reached.
 
 In some situations, that won't be enough and the page might get stuck anyways. The following properties can be used to tweak the behavior:
 

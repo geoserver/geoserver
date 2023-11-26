@@ -124,7 +124,7 @@ There are however a few rules to follow:
     ALL     Turn on all logging
     ======= ===========
     
-    The more verbose logging levels potentially include a strack-trace showing where the message occurred.
+    The more verbose logging levels potentially include a stack-trace showing where the message occurred.
 
   * Use ``additivity="false"`` to prevent a message collected from one logger from being passed to the next.
   
@@ -229,7 +229,7 @@ This can be combined with ``log4j2.configurationFile`` system property to `confi
 Forcing GeoServer to use an alternate logging redirection
 ---------------------------------------------------------
 
-GeoServer uses the GeoTools logging framework, which in turn is based on Java Logging, but allowing to redirect all message to an alternate framework of users choice.
+GeoServer uses the GeoTools logging framework, which in turn is based on Java Logging, but allowing to redirect all messages to an alternate framework of the user's choice.
 
 By default GeoServer setups a Log4J redirection, but it is possible to configure GeoServer to use plain Java Logging, or Commons Logging instead (support for other loggers is also possible by using some extra programming).
 

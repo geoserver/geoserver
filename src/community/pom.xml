@@ -248,6 +248,7 @@
         <module>wps-longitudinal-profile</module>
         <module>rat</module>
         <module>monitor-kafka</module>
+        <module>graticule</module>
       </modules>
     </profile>
     <profile>
@@ -699,6 +700,24 @@
       <id>rat</id>
       <modules>
         <module>rat</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>graticule</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <descriptors>
+                <descriptor>release/ext-graticule.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <modules>
+        <module>graticule</module>
       </modules>
     </profile>
   </profiles>

@@ -275,31 +275,7 @@
           </execution>
         </executions>
       </plugin>
-      <!--plugin>
-        <groupId>org.geoserver.maven</groupId>
-        <artifactId>gs-config</artifactId>
-        <version>${project.version}</version>
-        <executions>
-          <execution>
-            <id>configPackage</id>
-            <configuration>
-              <configDirectory>${configDirectory}</configDirectory>
-              <configId>${configId}</configId>
-            </configuration>
-            <phase>package</phase>
-            <goals>
-              <goal>config</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>configClean</id>
-            <phase>clean</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin-->
+
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
@@ -396,6 +372,16 @@
       </properties>
     </profile>
 
+    <profile>
+      <id>graticule</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-graticule</artifactId>
+          <version>2.25-SNAPSHOT</version>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <id>kml</id>
       <dependencies>

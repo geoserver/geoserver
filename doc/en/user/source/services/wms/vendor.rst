@@ -15,14 +15,14 @@ GetCapabilities Request
 format
 ^^^^^^
 
-The ``format`` parameter can be used to request capabilities documents in a certain format. If the requested format is not supported the default format will be used.
+The ``format`` parameter can be used to request capabilities documents in a certain format. If the requested format is not supported the default format of ``application/vnd.ogc.wms_xml`` will be used.
 
 An example request:
 
   http://localhost:8080/geoserver/ows?service=wms&version=1.1.1&request=GetCapabilities&format=text/xml
 
 .. note::  
-  Currently this parameter can only be used to request WMS 1.1.1 capabilities documents encoded in ``text/xml``, if used with other WMS versions or other formats it will have no effect.
+  Currently this parameter can only be used to request WMS 1.1.1 capabilities documents encoded in ``text/xml``, if used with other WMS versions or other formats it will have no effect.  ``application/json`` is not supported.
 
 
 namespace

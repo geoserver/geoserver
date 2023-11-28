@@ -170,6 +170,10 @@ to the key file::
     set GOOGLE_APPLICATION_CREDENTIALS=/path/to/the/key-file.json
     export GOOGLE_APPLICATION_CREDENTIALS
 
+URL acquired over google cloud console by clicking "Copy Authenticated URL" will not work. URL must conform to following template:
+
+    cog://https://storage.googleapis.com/download/storage/v1/b/BUCKET_NAME/o/OBJECT_NAME?alt=media
+
 Azure configuration
 -------------------
 A single Azure Client will be used for the same container. 

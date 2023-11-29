@@ -7,10 +7,7 @@ package org.geoserver.web.data.store.graticule;
 
 import java.util.ArrayList;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.validation.IFormValidator;
@@ -22,15 +19,9 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
-/**
- * Provides more components for PGRaster store automatic configuration
- *
- * @author Daniele Romagnoli, GeoSolutions SAS
- */
 public final class GraticuleStoreEditPanel extends StoreEditPanel {
-
-    private CheckBox enabled;
 
     public GraticuleStoreEditPanel(final String componentId, final Form storeEditForm) {
         super(componentId, storeEditForm);
@@ -39,7 +30,6 @@ public final class GraticuleStoreEditPanel extends StoreEditPanel {
         setDefaultModel(model);
         final IModel paramsModel = new PropertyModel(model, "connectionParameters");
 
-        // double container dance to get stuff to show up and hide on demand (grrr)
         final WebMarkupContainer configsContainer = new WebMarkupContainer("configsContainer");
         configsContainer.setOutputMarkupId(true);
         add(configsContainer);
@@ -50,32 +40,7 @@ public final class GraticuleStoreEditPanel extends StoreEditPanel {
         advancedConfigPanel.setVisible(true);
         configsContainer.add(advancedConfigPanel);
 
-        // TODO: Check whether this constructor is properly setup
-        /*final TextParamPanel url =
-                        new TextParamPanel(
-                                "urlPanel",
-                                new PropertyModel(paramsModel, "URL"),
-                                new ResourceModel("url", "URL"),
-                                true);
-                final FormComponent urlFormComponent = url.getFormComponent();
-                urlFormComponent.add(new FileExistsValidator());
-                add(url);
-        */
-        // enabled flag, and show the rest only if enabled is true
         IModel<Boolean> enabledModel = new Model<Boolean>(false);
-        enabled = new CheckBox("enabled", enabledModel);
-        add(enabled);
-        enabled.add(
-                new AjaxFormComponentUpdatingBehavior("click") {
-
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Boolean visible = enabled.getModelObject();
-
-                        advancedConfigPanel.setVisible(visible);
-                        target.add(configsContainer);
-                    }
-                });
 
         /*
          * Listen to form submission and update the model's URL
@@ -86,18 +51,26 @@ public final class GraticuleStoreEditPanel extends StoreEditPanel {
 
                     @Override
                     public FormComponent[] getDependentFormComponents() {
-                        if (enabled.getModelObject()) {
-                            return advancedConfigPanel.getDependentFormComponents();
-                        } else {
-                            return new FormComponent[] {null};
-                        }
+                        return advancedConfigPanel.getDependentFormComponents();
                     }
 
                     @Override
                     public void validate(final Form form) {
                         DataStoreInfo storeInfo = (DataStoreInfo) form.getModelObject();
-                        if (enabled.getModelObject()) {
-                            ArrayList<Double> steps = new ArrayList<>();
+                        FormComponent[] comps = getDependentFormComponents();
+                        for (FormComponent comp : comps) {
+                            if (comp.getId().equalsIgnoreCase("steps")) {
+                                String s  = (String)comp.getModelObject();
+                                String[] parts = s.split(",");
+                                ArrayList<Double> steps = new ArrayList<>();
+                                for(String p:parts ){
+                                    steps.add(Double.parseDouble(p));
+                                }
+                            }
+                            if (comp.getId().equalsIgnoreCase("bounds")) {
+                                ReferencedEnvelope bounds =
+                                        (ReferencedEnvelope) comp.getModelObject();
+                            }
                         }
                     }
                 });

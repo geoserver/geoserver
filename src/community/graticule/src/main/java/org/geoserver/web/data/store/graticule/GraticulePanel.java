@@ -9,6 +9,7 @@ package org.geoserver.web.data.store.graticule;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -17,10 +18,13 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.EnvelopePanel;
+import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geotools.api.geometry.Bounds;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.graticule.GraticuleDataStore;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 
 public class GraticulePanel extends Panel {
@@ -52,11 +56,37 @@ public class GraticulePanel extends Panel {
         steps = addTextPanel(paramsModel, "steps", true);
 
         // bounding box
-        add(envelopePanel = new EnvelopePanel("bounds") /*.setReadOnly(true)*/);
+        add(
+                envelopePanel =
+                        new EnvelopePanel(
+                                "bounds", new ReferencedEnvelope(DEFAULT_CRS)) /*.setReadOnly(true)*/);
+
         envelopePanel.setRequired(true);
         envelopePanel.setCRSFieldVisible(true);
         envelopePanel.setCrsRequired(true);
         envelopePanel.setOutputMarkupId(true);
+
+        add(
+                new GeoServerAjaxFormLink("generateBoundsFromCRS") {
+
+                    private static final long serialVersionUID = -7907583302556368270L;
+
+                    @Override
+                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                        LOGGER.log(Level.FINE, "Computing bounds for graticule based off CRS");
+
+                        CoordinateReferenceSystem crs =
+                                envelopePanel.getCoordinateReferenceSystem();
+                        Bounds crsEnvelope = CRS.getEnvelope(crs);
+                        if (crsEnvelope != null) {
+                            ReferencedEnvelope refEnvelope = new ReferencedEnvelope(crsEnvelope);
+                            envelopePanel.setDefaultModelObject(refEnvelope);
+                        }
+
+                        envelopePanel.modelChanged();
+                        target.add(envelopePanel);
+                    }
+                });
 
         steps.setOutputMarkupId(true);
     }

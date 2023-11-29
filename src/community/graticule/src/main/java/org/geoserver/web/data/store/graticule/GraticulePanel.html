@@ -3,16 +3,16 @@
 <wicket:panel>
 <ul>
             <li>
-              <span id="steps", wicket:id="steps"></span>
+              <span id="steps" wicket:id="steps"></span>
             </li>
+    <li>
+        <input  wicket:id="generateBoundsFromCRS" type="submit" wicket:message="value:generateBoundsFromSRS"/>
+    </li>
     <li>
         <label><wicket:message key="bounds">Bounds</wicket:message></label>
         <div wicket:id="bounds" class="selfclear"></div>
     </li>
-    <li>
-        <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"/>
-        <input wicket:id="generateBoundsFromCRS" type="submit" wicket:message="value:generateBoundsFromSRS"/>
-    </li>
+
           </ul>
 </wicket:panel>
 </body>

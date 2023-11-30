@@ -734,6 +734,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 wsNamePropertyFilter = Predicates.equal("store.workspace.name", wsName);
             }
 
+            // need to set up a wsFilter if the workspace is an exception compared to the root
             Filter wsFilter = null;
             if (rootAccess && !wsAccess) {
                 wsFilter = Predicates.not(wsNamePropertyFilter);
@@ -748,11 +749,18 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
             } else {
                 Filter id = Predicates.in("id", layerExceptionIds);
 
+                // if we can access the workspace, the ids are the ones we want to exclude,
+                // otherwise, the ids are the ones we want to make an exception for instead
                 if (wsAccess) {
                     id = Predicates.not(id);
                 }
                 if (wsFilter != null) {
-                    filters.add(Predicates.and(wsFilter, id));
+                    if (wsAccess)
+                        // ws is the one, but exclude selected layers in it
+                        filters.add(Predicates.and(wsFilter, id));
+                    else
+                        // ws is not the one, but make an exception for selected layers in it
+                        filters.add(Predicates.or(wsFilter, id));
                 } else {
                     filters.add(id);
                 }

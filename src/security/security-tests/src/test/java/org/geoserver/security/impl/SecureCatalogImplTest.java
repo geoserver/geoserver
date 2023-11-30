@@ -78,7 +78,11 @@ import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.security.decorators.SecuredWMSLayerInfo;
 import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
 import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.PropertyIsEqualTo;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.api.filter.sort.SortBy;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -92,6 +96,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
     public static final Logger LOGGER = Logging.getLogger(SecureCatalogImplTest.class);
+
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory(null);
+    public static final PropertyName RESOURCE_WS_NAME =
+            FF.property("resource.store.workspace.name");
 
     @Rule
     public GeoServerExtensionsHelper.ExtensionsHelperRule extensions =
@@ -1850,5 +1858,92 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
             assertEquals(1, groups.size());
             assertEquals("wsContainerD", groups.get(0).getName());
         }
+    }
+
+    @Test
+    public void testLayerPositiveException() throws Exception {
+        // prepare the stage
+        ResourceAccessManager manager = buildManager("layerPositiveException.properties");
+
+        // try with read only user
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+
+        // direct invocation, state is allowed, others not
+        assertNotNull(sc.getLayerByName("topp:states"));
+        assertNull(sc.getLayerByName("topp:roads"));
+
+        // now check the security filter
+        Filter securityFilter = manager.getSecurityFilter(roUser, LayerInfo.class);
+        Filter expected =
+                FF.or(
+                        FF.not(FF.equal(RESOURCE_WS_NAME, FF.literal("topp"), false)),
+                        layerIdFilter("states-lid"));
+        assertEquals(expected, securityFilter);
+    }
+
+    @Test
+    public void testLayerPositiveException2() throws Exception {
+        // prepare the stage
+        ResourceAccessManager manager = buildManager("layerPositiveException2.properties");
+
+        // try with read only user
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+
+        // direct invocation, state is allowed, others not
+        assertNotNull(sc.getLayerByName("topp:states"));
+        assertNull(sc.getLayerByName("topp:roads"));
+
+        // now check the security filter
+        Filter securityFilter = manager.getSecurityFilter(roUser, LayerInfo.class);
+        Filter expected = layerIdFilter("states-lid");
+        assertEquals(expected, securityFilter);
+    }
+
+    @Test
+    public void testLayerNegativeException() throws Exception {
+        // prepare the stage
+        ResourceAccessManager manager = buildManager("layerNegativeException.properties");
+
+        // try with read only user
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+
+        // direct invocation, state is not allowed, others are
+        assertNull(sc.getLayerByName("topp:states"));
+        assertNotNull(sc.getLayerByName("topp:roads"));
+
+        // now check the security filter
+        Filter securityFilter = manager.getSecurityFilter(roUser, LayerInfo.class);
+        Filter expected =
+                FF.and(
+                        (FF.equal(RESOURCE_WS_NAME, FF.literal("topp"), false)),
+                        FF.not(layerIdFilter("states-lid")));
+        assertEquals(expected, securityFilter);
+    }
+
+    @Test
+    public void testLayerNegativeException2() throws Exception {
+        // prepare the stage
+        ResourceAccessManager manager = buildManager("layerNegativeException2.properties");
+
+        // try with read only user
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+
+        // direct invocation, state is not allowed, others are
+        assertNull(sc.getLayerByName("topp:states"));
+        assertNotNull(sc.getLayerByName("topp:roads"));
+
+        // now check the security filter
+        Filter securityFilter = manager.getSecurityFilter(roUser, LayerInfo.class);
+        Filter expected = FF.not(layerIdFilter("states-lid"));
+        assertEquals(expected, securityFilter);
+    }
+
+    /**
+     * Builds a filter matching a single identifier using the "in" function (same way the
+     * DefaultResourceAccessManager builds a filter)
+     */
+    private static PropertyIsEqualTo layerIdFilter(String id) {
+        return FF.equal(
+                FF.function("in", FF.property("id"), FF.literal(id)), FF.literal(true), false);
     }
 }

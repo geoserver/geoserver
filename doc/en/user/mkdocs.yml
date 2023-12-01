@@ -1,0 +1,116 @@
+# Project information
+site_name: GeoServer
+site_description: Designed for interoperability to publishes data from any major spatial data source using open standards.
+
+site_dir: target/html
+site_url: https://docs.geoserver.org/
+
+# Repository
+repo_name: geoserver
+repo_url: https://github.com/geoserver/geoserver
+edit_uri: edit/main/docs/en/user/docs
+
+# Copyright
+copyright: Copyright &copy; 2023 Open Source Geospatial Foundation
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+# Configuration
+theme:
+  name: material
+  language: en
+  custom_dir: overrides
+  logo: assets/images/geoserver-logo.svg
+  favicon: assets/images/geoserver_mark.png
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - content.action.view
+    - content.action.edit
+    - content.code.copy
+    - content.tabs.link
+    - navigation.tabs
+    - navigation.tracking
+    - navigation.prune
+    - navigation.indexes
+    - toc.follow
+    - navigation.top
+    - navigation.footer
+    - announce.dismiss
+
+# Plugins - install using: pip3 install -r requirements.txt
+plugins:
+  - exclude:
+      glob:
+        - '**/*.rst'
+        - 'conf.py'
+  - include-markdown:
+      preserve_includer_indent: true
+      dedent: true
+      comments: false
+  - search
+  
+# Customizations
+extra:
+  homepage: https://geoserver.org/
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/geoserver
+    - icon: geoserver/logo
+      link: https://geoserver.org/
+      name: GeoServer Home
+
+# Extensions
+# - These are carefully chosen to work with pandoc markdown support for whole document translation
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+      options:
+        custom_icons:
+          - overrides/.icons
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - md_in_html
+
+# Page tree
+nav:
+  - 'GeoServer': index.md
+  - 'Introduction':
+    - introduction/index.md
+    - introduction/overview.md
+    - introduction/history.md
+    - introduction/gettinginvolved.md
+    - introduction/license.md

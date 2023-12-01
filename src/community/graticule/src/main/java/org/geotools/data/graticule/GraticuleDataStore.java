@@ -21,7 +21,9 @@ import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.CollectionFeatureReader;
+import org.geotools.data.DefaultServiceInfo;
 import org.geotools.data.graticule.gridsupport.LineFeatureBuilder;
+import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -90,7 +92,10 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public ServiceInfo getInfo() {
-        return null;
+        DefaultServiceInfo info = new DefaultServiceInfo();
+        info.setDescription("Features from " + getClass().getSimpleName());
+        info.setSchema(FeatureTypes.DEFAULT_NAMESPACE);
+        return info;
     }
 
     /**

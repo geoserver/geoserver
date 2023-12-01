@@ -33,29 +33,30 @@ In case this is not satisfactory, a ``hazelcast.xml`` file can be created/edited
 root of the GeoServer data directory to modify the network connection methods.
 
 The file is not using a GeoServer specific syntax, it's instead a regular 
-`Hazelcast configuration <http://docs.hazelcast.org/docs/3.3/manual/html-single/hazelcast-documentation.html#configuring-hazelcast>`_
+`Hazelcast configuration <https://docs.hazelcast.com/hazelcast/5.3/configuration/configuring-declaratively>`_
 file with a simple distributed map declaration:
 
 .. code-block:: xml
 
-    <hazelcast xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.hazelcast.com/schema/config
-                                   http://www.hazelcast.com/schema/config/hazelcast-config-3.3.xsd"
-      xmlns="http://www.hazelcast.com/schema/config">
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!--
+    Configure Hazelcast for clustering GeoServer's WPS process status.
+    For more information, see:
+    https://docs.hazelcast.com/hazelcast/5.3/configuration/configuring-declaratively
+    -->
+    <hazelcast xmlns="http://www.hazelcast.com/schema/config"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://www.hazelcast.com/schema/config
+                                   https://hazelcast.com/schema/config/hazelcast-config-5.3.xsd">
+      <cluster-name>gsWpsCluster</cluster-name>
     
-      <!-- Protecting against accidental cluster joining -->
-      <group>
-        <name>geoserver</name>
-        <password>geoserver</password>
-      </group>
-      
       <!-- 
-         Make Hazelcast use log4j just like GeoServer. Remember to add:
-           log4j.category.com.hazelcast=INFO
+         Make Hazelcast use log4j2 just like GeoServer. Remember to add
+         a Logger for com.hazelcast with the appropriate logging level
          in the geoserver logging configuration to see Hazelcast log messages
       -->
       <properties>
-        <property name="hazelcast.logging.type">log4j</property>
+        <property name="hazelcast.logging.type">log4j2</property>
       </properties>
     
       <!-- Network section, by default it enables multicast, tune it to use tcp in case 
@@ -85,8 +86,16 @@ file with a simple distributed map declaration:
       <map name="wpsExecutionStatusMap">
         <indexes>
           <!-- Add indexes to support the two most common queries -->
-          <index ordered="false">executionId</index>
-          <index ordered="true">completionTime</index>
+          <index type="HASH">
+            <attributes>
+              <attribute>executionId</attribute>
+            </attributes>
+          </index>
+          <index type="SORTED">
+            <attributes>
+              <attribute>completionTime</attribute>
+            </attributes>
+          </index>
         </indexes>
       </map>
     </hazelcast>

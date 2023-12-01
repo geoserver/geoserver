@@ -20,6 +20,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.springframework.beans.factory.DisposableBean;
 
 /**
@@ -35,6 +36,18 @@ public class HazelcastLoader implements DisposableBean {
 
     /** Hazelcast instance to pass to the {@link HazelcastCacheProvider} class */
     private HazelcastInstance instance;
+
+    // Disable Hazelcast's XXE protection if the XML libraries don't support JAXP 1.5
+    static {
+        if (System.getProperty("hazelcast.ignoreXxeProtectionFailures") == null) {
+            try {
+                XMLUtils.checkSupportForJAXP15Properties();
+            } catch (IllegalStateException e) {
+                LOGGER.warning("Disabling Hazelcast XXE protection because " + e.getMessage());
+                System.setProperty("hazelcast.ignoreXxeProtectionFailures", "true");
+            }
+        }
+    }
 
     /** Loads a new {@link HazelcastInstance} from the data directory, and */
     public HazelcastLoader(ResourceStore store) throws IOException {

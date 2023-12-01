@@ -1,0 +1,11 @@
+{
+	"gwcQuotaConfiguration":{
+		"diskBlockSize":2048,
+		"enabled":true,
+		"maxConcurrentCleanUps":2,
+		"cacheCleanUpFrequency":5,
+		"cacheCleanUpUnits":"SECONDS"
+		"globalExpirationPolicyName":"LRU",
+		"globalQuota":{"value":"100","units":"MiB"},
+	}
+}

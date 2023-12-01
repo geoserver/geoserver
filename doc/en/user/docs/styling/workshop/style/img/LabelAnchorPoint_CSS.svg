@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="132px" height="176px" viewBox="0 0 132 176" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>LabelAnchorPoint_CSS</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="71" height="17"></rect>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="71" height="17" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="LabelAnchorPoint_CSS">
+            <g id="Anchor-Point" transform="translate(5.000000, 8.000000)">
+                <polygon id="Polygon-Line" stroke="#9B9B9B" stroke-width="2" points="59.09375 35.4609375 13.4648438 125.179688 102.074219 125.179688 102.074219 65.7382812"></polygon>
+                <g id="Label" transform="translate(31.000000, 78.000000)">
+                    <use id="Rectangle-13" stroke="#000000" mask="url(#mask-2)" stroke-width="2" stroke-dasharray="5,3" xlink:href="#path-1"></use>
+                    <text id="Manchester" font-family="ProximaNova-Light, Proxima Nova" font-size="13" font-weight="300" fill="#000000">
+                        <tspan x="2.5" y="13">Manchester</tspan>
+                    </text>
+                </g>
+                <circle id="Centriod" stroke="#000000" fill="#FFFFFF" cx="67.5" cy="87.5" r="4.5"></circle>
+                <g id="Callout-copy" transform="translate(6.000000, 137.000000)" font-size="12" font-family="ProximaNova-Light, Proxima Nova" fill="#000000" font-weight="300">
+                    <text id="Label">
+                        <tspan x="0" y="11">label-anchor: 0.5 0.5;</tspan>
+                    </text>
+                </g>
+                <text font-family="ProximaNova-Semibold, Proxima Nova" font-size="13" font-weight="500" fill="#000000">
+                    <tspan x="22.9625" y="12">Anchor Point</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

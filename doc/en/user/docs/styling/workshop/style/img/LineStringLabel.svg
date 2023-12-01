@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="150px" height="173px" viewBox="0 0 150 173" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>LineStringLabel</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="LineStringLabel">
+            <g id="Label" transform="translate(2.000000, 1.000000)">
+                <rect id="Backdrop" stroke="#979797" fill="#FFFFFF" x="0" y="0" width="147" height="170"></rect>
+                <polyline id="LineString-Inner" stroke="#8080E6" stroke-width="2" points="25.21875 85.6796875 57.109375 70.625 85.3671875 85.6796875 113.996094 129.882812"></polyline>
+                <text id="Hume" transform="translate(104.500000, 102.263456) rotate(55.000000) translate(-104.500000, -102.263456) " font-family="Cantarell-Regular, Cantarell" font-size="11" font-weight="normal" fill="#000000">
+                    <tspan x="89" y="105.763456">Hume</tspan>
+                </text>
+                <text font-family="ProximaNova-Semibold, Proxima Nova" font-size="13" font-weight="500" fill="#000000">
+                    <tspan x="64.757" y="19">Label</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

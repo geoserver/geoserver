@@ -1,0 +1,33 @@
+{
+  "dataStore": {
+    "name": "postgis",
+    "type": "PostGIS",
+    "workspace": {
+      "name": "cite"
+    },
+    "connectionParameters": {
+      "entry": [
+        {"@key": "schema","$": "public"},
+        {"@key": "database","$": "postgres"},
+        {"@key": "host","$": "localhost"},
+        {"@key": "port","$": "5432"},
+        {"@key": "passwd","$": "postgres"},
+        {"@key": "dbtype","$": "postgis"},
+        {"@key": "user","$": "postgres"},
+        {"@key": "Estimated extends","$": "true"},
+        {"@key": "encode functions","$": "true"},
+        {"@key": "Loose bbox","$": "true"},
+        {"@key": "Method used to simplify geometries","$": "PRESERVETOPOLOGY"},
+        {"@key": "Support on the fly geometry simplification","$": "true"},
+        {"@key": "validate connections","$": "true"},
+        {"@key": "Connection timeout","$": "20"},
+        {"@key": "min connections","$": "1"},
+        {"@key": "max connections","$": "10"},
+        {"@key": "Evictor tests per run","$": "3"},
+        {"@key": "Test while idle","$": "true"},
+        {"@key": "Max connection idle time","$": "300"}
+      ]
+    },
+    "_default": true
+  }
+}

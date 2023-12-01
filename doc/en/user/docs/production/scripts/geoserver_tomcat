@@ -1,0 +1,139 @@
+#!/bin/bash
+#
+# This shell script takes care of starting and stopping Geoserver deployed in Apache Tomcat
+# It also handles killing Geoserver in case it doesn’t stop gracefully
+# It uses a PID file to determine the process ID so it should work with multiple Tomcat instances on one server
+# Just copy the script and change $INSTANCE variable to run multiple Geoserver instances
+# Tested on Ubuntu 12.04
+#
+# chkconfig: - 80 20
+#
+### BEGIN INIT INFO
+# Provides: Geoserver
+# Required-Start: $network $syslog
+# Required-Stop: $network $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Description: Geoserver service
+# Short-Description: start and stop tomcat
+### END INIT INFO
+#
+# Author dragan.podvezanec@gmail.com
+#
+# Based on work by Yoryos Valotasios
+
+
+# Geoserver configuration section
+INSTANCE=1
+USER=geoserver
+GEOSERVER_DATA_DIR=/home/geoserver/data_dir
+GEOSERVER_HOME=/home/geoserver/geoserver$INSTANCE
+
+export GEOSERVER_DATA_DIR=$GEOSERVER_DATA_DIR
+export GEOSERVER_HOME=$GEOSERVER_HOME
+
+# Uncomment this if you need custom logging location
+#export GEOSERVER_LOG_LOCATION=$GEOSERVER_HOME/logs/geoserver.log
+
+# Java configuration section
+JAVA_HOME=/home/geoserver/jre
+JAVA_OPTS="-Xms256m -Xmx2048m -XX:+UseParallelGC -XX:+UseParallelOldGC"
+CATALINA_PID=/var/run/geoserver$INSTANCE.pid
+
+export JAVA_HOME=$JAVA_HOME
+export JAVA_OPTS=$JAVA_OPTS
+export CATALINA_PID=$CATALINA_PID
+export PATH=$JAVA_HOME/bin:$PATH
+# End configuration section
+
+# Number of seconds to wait after nicely requesting stop
+SHUTDOWN_WAIT=10
+
+geoserver_pid(){
+        echo `ps aux | grep org.apache.catalina.startup.Bootstrap | grep $GEOSERVER_HOME | grep -v grep | awk '{ print $2 }'`
+}
+
+start() {
+pid=$(geoserver_pid)
+if [ -n "$pid" ]
+then
+echo "Geoserver is already running (pid: $pid)"
+else
+
+echo "Starting Geoserver"
+touch $CATALINA_PID
+chown $USER $CATALINA_PID
+/bin/su -p -s /bin/sh $USER $GEOSERVER_HOME/bin/startup.sh
+echo "Started Geoserver with next variables:" 
+echo "GEOSERVER_HOME=$GEOSERVER_HOME"
+echo "GEOSERVER_DATA_DIR=$GEOSERVER_DATA_DIR"
+echo "Geoserver PID is: $(geoserver_pid)"
+fi
+
+return 0
+}
+
+stop() {
+pid=$(geoserver_pid)
+if [ -n "$pid" ]
+then
+/bin/su -p -s /bin/sh $USER $GEOSERVER_HOME/bin/shutdown.sh
+echo -n "Stopping Geoserver"
+
+let kwait=$SHUTDOWN_WAIT
+count=0;
+until [ `ps -p $pid | grep -c $pid` = '0' ] || [ $count -gt $kwait ]
+do
+echo -n ".";
+sleep 1
+let count=$count+1;
+done
+
+if [ $count -gt $kwait ]; then
+echo "process is still running after $SHUTDOWN_WAIT seconds, killing process"
+kill $pid
+sleep 3
+
+# if it’s still running use kill -9
+if [ `ps -p $pid | grep -c $pid` -gt '0' ]; then
+echo "process is still running, using kill -9"
+kill -9 $pid
+sleep 3
+fi
+
+fi
+
+if [ `ps -p $pid | grep -c $pid` -gt '0' ]; then
+echo "process is still running, I give up"
+else
+# success, delete PID file
+rm $CATALINA_PID
+fi
+else
+echo "Geoserver $INSTANCE is not running"
+fi
+return 0
+}
+
+case $1 in
+start)
+start
+;;
+stop)
+stop
+;;
+restart)
+stop
+start
+;;
+status)
+pid=$(geoserver_pid)
+if [ -n "$pid" ]
+then
+echo "Geoserver $INSTANCE is running with pid: $pid"
+else
+echo "Geoserver $INSTANCE is not running"
+fi
+;;
+esac
+exit 0

@@ -1,0 +1,13 @@
+{
+  "version": 8,
+  "name": "simple-polygon",
+  "layers": [
+    {
+      "id": "polygon",
+      "type": "fill",
+      "paint": {
+        "fill-color": "#000080"
+      }
+    }
+  ]
+}

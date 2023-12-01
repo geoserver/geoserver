@@ -1,0 +1,18 @@
+title: 'YSLD Cook Book: Many color gradient'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - raster:
+        opacity: 1
+        color-map:
+          type: ramp
+          entries:
+          - ['#000000',1,95,'']
+          - ['#0000FF',1,110,'']
+          - ['#00FF00',1,135,'']
+          - ['#FF0000',1,160,'']
+          - ['#FF00FF',1,185,'']
+          - ['#FFFF00',1,210,'']
+          - ['#00FFFF',1,235,'']
+          - ['#FFFFFF',1,256,'']

@@ -1,0 +1,13 @@
+title: 'YSLD Cook Book: Simple point with stroke'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - point:
+        size: 6
+        symbols:
+        - mark:
+            shape: circle
+            stroke-color: '#000000'
+            stroke-width: 2
+            fill-color: '#FF0000'

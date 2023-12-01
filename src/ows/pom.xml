@@ -97,8 +97,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>jakarta.mail</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

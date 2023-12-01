@@ -1,29 +1,52 @@
 package org.geotools.data.graticule;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
+    static final Logger log = Logger.getLogger("GraticuleDataStoreFactory");
 
-    public static final Param STEPS =
+    public static Param STEPS =
             new Param(
                     "steps",
                     List.class,
                     "A list of steps for the grids to be produced for",
                     true,
-                    null);
+                    null) {
+                @Override
+                public Object parse(String text) throws Throwable {
+                    return Arrays.stream(text.split("\\s*,\\s*"))
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
+                }
+            };
 
     public static final Param BOUNDS =
             new Param(
-                    "bbox",
+                    "bounds",
                     ReferencedEnvelope.class,
                     "The maximum bounding box for the grids in the projection that will be used for the grid",
                     true,
                     null);
+
+    public static final Param TYPE =
+            new Param("type", String.class, "the data store type (graticule)", true, "graticule");
+
+    static final List<Param> params = new ArrayList<>();
+
+    static {
+        params.add(TYPE);
+        params.add(STEPS);
+        params.add(BOUNDS);
+    }
     /**
      * Name suitable for display to end user.
      *
@@ -83,7 +106,7 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
      */
     @Override
     public Param[] getParametersInfo() {
-        return new Param[0];
+        return params.toArray(new Param[0]);
     }
 
     /**
@@ -155,6 +178,7 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
      * @param <T>
      */
     <T> T lookup(Param param, Map<String, ?> params, Class<T> target) throws IOException {
+        log.info("Looking up " + param.key + " in " + params);
         T result = target.cast(param.lookUp(params));
         if (result == null) {
             result = target.cast(param.getDefaultValue());

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.FeatureReader;
 import org.geotools.api.data.FeatureWriter;
@@ -30,25 +31,25 @@ import org.geotools.grid.ortholine.OrthoLineDef;
 import org.locationtech.jts.geom.LineString;
 
 public class GraticuleDataStore implements DataStore {
-
+    static final Logger log = Logger.getLogger("GraticuleDataStore");
     private final ReferencedEnvelope bounds;
     private final List<Double> steps;
     private final HashMap<Name, SimpleFeatureSource> sources = new HashMap<>();
 
     private final ArrayList<Name> names = new ArrayList<>();
-    private final SimpleFeatureType schema;
 
     public GraticuleDataStore(ReferencedEnvelope env, List<Double> steps) {
         this.steps = steps;
         this.bounds = env;
-        schema = buildType(bounds.getCoordinateReferenceSystem());
+
         int level = 0;
         Collections.sort(steps);
         for (double step : steps) {
             Name name = new NameImpl("" + step);
+            SimpleFeatureType schema = buildType(name, bounds.getCoordinateReferenceSystem());
+            log.fine("Creating graticule with name " + name);
             names.add(name);
 
-            double vertexSpacing = (bounds.getHeight() / 2);
             List<OrthoLineDef> lineDefs =
                     Arrays.asList(
                             // vertical (longitude) lines
@@ -57,7 +58,7 @@ public class GraticuleDataStore implements DataStore {
                             new OrthoLineDef(LineOrientation.HORIZONTAL, level, step));
 
             // Specify vertex spacing to get "densified" polygons
-
+            double vertexSpacing = (bounds.getHeight() / 20); // should be dynamic
             SimpleFeatureSource grid =
                     Lines.createOrthoLines(
                             bounds, lineDefs, vertexSpacing, new LineFeatureBuilder(schema));
@@ -66,9 +67,9 @@ public class GraticuleDataStore implements DataStore {
         }
     }
 
-    private static SimpleFeatureType buildType(CoordinateReferenceSystem crs) {
+    private static SimpleFeatureType buildType(Name name, CoordinateReferenceSystem crs) {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        tb.setName("grid");
+        tb.setName(name);
         tb.add(LineFeatureBuilder.DEFAULT_GEOMETRY_ATTRIBUTE_NAME, LineString.class, crs);
         tb.add(LineFeatureBuilder.ID_ATTRIBUTE_NAME, Integer.class);
         tb.add(LineFeatureBuilder.LEVEL_ATTRIBUTE_NAME, Integer.class);
@@ -158,7 +159,20 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public SimpleFeatureType getSchema(Name name) throws IOException {
-        return sources.get(name).getSchema();
+        log.finest("asking for " + name + "'s schema");
+        return sources.get(cleanName(name)).getSchema();
+    }
+
+    /**
+     * There is an issue that the requested name (if coming from GeoServer) will have a FQN and when
+     * we created the sources map we didn't have a domain so we need to strip the domain and
+     * generate a new Name.
+     *
+     * @param name
+     * @return
+     */
+    private Name cleanName(Name name) {
+        return new NameImpl(name.getLocalPart());
     }
 
     /**
@@ -211,7 +225,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public String[] getTypeNames() throws IOException {
-        return sources.keySet().toArray(new String[] {});
+        return (String[]) sources.keySet().stream().map(x -> x.toString()).toArray(String[]::new);
     }
 
     /**
@@ -223,7 +237,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public SimpleFeatureType getSchema(String typeName) throws IOException {
-        return sources.get(new NameImpl(typeName)).getSchema();
+        return getSchema(new NameImpl(typeName));
     }
 
     /**
@@ -271,7 +285,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public SimpleFeatureSource getFeatureSource(Name typeName) throws IOException {
-        return sources.get(typeName);
+        return sources.get(cleanName(typeName));
     }
 
     /**
@@ -295,8 +309,10 @@ public class GraticuleDataStore implements DataStore {
     @Override
     public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(
             Query query, Transaction transaction) throws IOException {
+        String typeName = query.getTypeName();
+        log.info("requesting feature reader for " + typeName);
         return new CollectionFeatureReader(
-                sources.get(query.getTypeName()).getFeatures(query), this.schema);
+                sources.get(typeName).getFeatures(query), sources.get(typeName).getSchema());
     }
 
     /**

@@ -48,7 +48,7 @@ public class GraticulePanel extends Panel {
         }
     }
 
-    private EnvelopePanel envelopePanel;
+    private final EnvelopePanel bounds;
 
     public GraticulePanel(final String id, final IModel paramsModel, final Form storeEditForm) {
 
@@ -56,15 +56,33 @@ public class GraticulePanel extends Panel {
         steps = addTextPanel(paramsModel, "steps", true);
 
         // bounding box
-        add(
-                envelopePanel =
-                        new EnvelopePanel(
-                                "bounds", new ReferencedEnvelope(DEFAULT_CRS)) /*.setReadOnly(true)*/);
+        add(bounds = new EnvelopePanel("bounds", new MapModel<>(paramsModel, "bounds")));
 
-        envelopePanel.setRequired(true);
-        envelopePanel.setCRSFieldVisible(true);
-        envelopePanel.setCrsRequired(true);
-        envelopePanel.setOutputMarkupId(true);
+        bounds.setDefaultModelObject(new ReferencedEnvelope(DEFAULT_CRS));
+        bounds.setRequired(true);
+        bounds.setCRSFieldVisible(true);
+        bounds.setCrsRequired(true);
+        bounds.setOutputMarkupId(true);
+
+        add(
+                new GeoServerAjaxFormLink("generateBoundsFromCRS") {
+                    private static final long serialVersionUID = -7907583302556368270L;
+
+                    @Override
+                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                        LOGGER.log(Level.FINE, "Computing bounds for graticule based off CRS");
+
+                        CoordinateReferenceSystem crs = bounds.getCoordinateReferenceSystem();
+                        Bounds crsEnvelope = CRS.getEnvelope(crs);
+                        if (crsEnvelope != null) {
+                            ReferencedEnvelope refEnvelope = new ReferencedEnvelope(crsEnvelope);
+                            bounds.setDefaultModelObject(refEnvelope);
+                        }
+
+                        bounds.modelChanged();
+                        target.add(bounds);
+                    }
+                });
 
         add(
                 new GeoServerAjaxFormLink("generateBoundsFromCRS") {
@@ -123,6 +141,6 @@ public class GraticulePanel extends Panel {
     }
 
     public FormComponent[] getDependentFormComponents() {
-        return new FormComponent[] {steps, envelopePanel};
+        return new FormComponent[] {steps, bounds};
     }
 }

@@ -9,6 +9,7 @@ package org.geoserver.web.data.store.graticule;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -49,6 +50,7 @@ public class GraticulePanel extends Panel {
     }
 
     private final EnvelopePanel bounds;
+
 
     public GraticulePanel(final String id, final IModel paramsModel, final Form storeEditForm) {
 
@@ -94,15 +96,15 @@ public class GraticulePanel extends Panel {
                         LOGGER.log(Level.FINE, "Computing bounds for graticule based off CRS");
 
                         CoordinateReferenceSystem crs =
-                                envelopePanel.getCoordinateReferenceSystem();
+                                bounds.getCoordinateReferenceSystem();
                         Bounds crsEnvelope = CRS.getEnvelope(crs);
                         if (crsEnvelope != null) {
                             ReferencedEnvelope refEnvelope = new ReferencedEnvelope(crsEnvelope);
-                            envelopePanel.setDefaultModelObject(refEnvelope);
+                            bounds.setDefaultModelObject(refEnvelope);
                         }
 
-                        envelopePanel.modelChanged();
-                        target.add(envelopePanel);
+                        bounds.modelChanged();
+                        target.add(bounds);
                     }
                 });
 

@@ -175,10 +175,10 @@ Exceptions
 Parameters
 ~~~~~~~~~~
 
+.. _rest_api_datastores_extension:
+
 ``extension``
 ^^^^^^^^^^^^^
-
-.. _rest_api_datastores_extension:
 
 The ``extension`` parameter specifies the type of data being uploaded. The following extensions are supported:
 

@@ -21,7 +21,7 @@ theme:
   name: material
   language: en
   custom_dir: overrides
-  logo: assets/images/geoserver-logo.svg
+  logo: assets/images/geoserver_mark.png
   favicon: assets/images/geoserver_mark.png
   icon:
     repo: fontawesome/brands/github

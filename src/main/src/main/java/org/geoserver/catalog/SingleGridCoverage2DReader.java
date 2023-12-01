@@ -6,6 +6,10 @@
 package org.geoserver.catalog;
 
 import it.geosolutions.imageio.maskband.DatasetLayout;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +28,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.geometry.GeneralBounds;
+import org.geotools.image.util.ImageUtilities;
 
 /** A wrapper restricting the provided reader to return a single grid coverage */
 public class SingleGridCoverage2DReader implements GridCoverage2DReader {
@@ -198,13 +203,32 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
 
     @Override
     public ImageLayout getImageLayout() throws IOException {
-        return delegate.getImageLayout(coverageName);
+        return getImageLayout(coverageName);
     }
 
     @Override
     public ImageLayout getImageLayout(String coverageName) throws IOException {
         checkCoverageName(coverageName);
-        return delegate.getImageLayout(coverageName);
+
+        GridEnvelope gridRange = getOriginalGridRange(coverageName);
+        final Dimension tileSize =
+                ImageUtilities.toTileSize(
+                        new Dimension(gridRange.getSpan(0), gridRange.getSpan(1)));
+
+        BufferedImage image =
+                new BufferedImage(tileSize.width, tileSize.height, BufferedImage.TYPE_4BYTE_ABGR);
+        ColorModel cm = image.getColorModel();
+        SampleModel sm = image.getSampleModel();
+
+        ImageLayout imageLayout = new ImageLayout(0, 0, gridRange.getSpan(0), gridRange.getSpan(1));
+        imageLayout
+                .setTileGridXOffset(0)
+                .setTileGridYOffset(0)
+                .setTileWidth(tileSize.width)
+                .setTileHeight(tileSize.height);
+        imageLayout.setColorModel(cm).setSampleModel(sm);
+
+        return imageLayout;
     }
 
     @Override

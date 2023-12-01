@@ -1239,7 +1239,7 @@ public class CatalogBuilder {
                                 + format.getName());
             }
             SampleModel sm = imageLayout.getSampleModel(null);
-            if (cm == null) {
+            if (sm == null) {
                 throw new Exception(
                         "Unable to acquire test coverage and sample model for format:"
                                 + format.getName());

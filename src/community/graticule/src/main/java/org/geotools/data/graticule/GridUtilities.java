@@ -38,6 +38,8 @@ import org.locationtech.jts.geom.LineString;
 
 public class GridUtilities {
 
+    public static final double DELTA = 0.00001;
+
     private GridUtilities() {
         // stop people instantiating the class
     }
@@ -60,7 +62,7 @@ public class GridUtilities {
         double yMax = gridBounds.getMaximum(1);
         NiceScale xNiceScale = new NiceScale(xMin, xMax);
         NiceScale yNiceScale = new NiceScale(yMin, yMax);
-        System.out.println(
+        /*        System.out.println(
                 "Long: "
                         + xNiceScale.getNiceMin()
                         + " to "
@@ -75,7 +77,7 @@ public class GridUtilities {
                         + yNiceScale.getNiceMax()
                         + " with "
                         + yNiceScale.getTickSpacing()
-                        + " steps");
+                        + " steps");*/
         double deltaX = (xNiceScale.getNiceMax() - xNiceScale.getNiceMin()) - width;
         double deltaY = (yNiceScale.getNiceMax() - yNiceScale.getNiceMin()) - height;
         gridBounds.expandBy(deltaX / 2.0, deltaY / 2.0);
@@ -241,13 +243,12 @@ public class GridUtilities {
         Format xFormat = formatter.getFormat(0);
         Format yFormat = formatter.getFormat(1);
         String unit =
-                ""
-                        + type.getCoordinateReferenceSystem()
-                                .getCoordinateSystem()
-                                .getAxis(0)
-                                .getUnit()
-                                .toString();
-        if (Math.abs(xmax - xmin) < 0.00001) {
+                type.getCoordinateReferenceSystem()
+                        .getCoordinateSystem()
+                        .getAxis(0)
+                        .getUnit()
+                        .toString();
+        if (Math.abs(xmax - xmin) < DELTA) {
             label = xFormat.format(xmax) + unit; /*
 						 * xmax +
 						 * type.getCoordinateReferenceSystem
@@ -308,24 +309,25 @@ public class GridUtilities {
         XWilkinson yXW = XWilkinson.of(new double[] {1, 2, 5, 10, 20}, 10);
 
         Label xLabels = xXW.search(xMin, xMax, 20);
-        System.out.println(
-                "Long: "
-                        + xLabels.getMin()
-                        + " to "
-                        + xLabels.getMax()
-                        + " with "
-                        + xLabels.getStep()
-                        + " steps");
         Label yLabels = yXW.search(yMin, yMax, 20);
-        System.out.println(
-                "Lat: "
-                        + yLabels.getMin()
-                        + " to "
-                        + yLabels.getMax()
-                        + " with "
-                        + yLabels.getStep()
-                        + " steps");
+        /*System.out.println(
+                        "Long: "
+                                + xLabels.getMin()
+                                + " to "
+                                + xLabels.getMax()
+                                + " with "
+                                + xLabels.getStep()
+                                + " steps");
 
+                System.out.println(
+                        "Lat: "
+                                + yLabels.getMin()
+                                + " to "
+                                + yLabels.getMax()
+                                + " with "
+                                + yLabels.getStep()
+                                + " steps");
+        */
         xMin = Math.min(xMin, xLabels.getMin());
         xMax = Math.max(xMax, xLabels.getMax());
         yMin = Math.min(yMin, yLabels.getMin());

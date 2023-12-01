@@ -24,7 +24,9 @@ public class GraticuleDataStoreTest {
         bounds.expandToInclude(-180, -90);
         bounds.expandToInclude(180, 90);
         params.put(GraticuleDataStoreFactory.BOUNDS.key, bounds);
+        params.put(GraticuleDataStoreFactory.TYPE.key, GraticuleDataStoreFactory.TYPE.sample);
         DataStore datastore = DataStoreFinder.getDataStore(params);
+        assertNotNull(datastore);
         String[] names = datastore.getTypeNames();
         for (String name : names) {
             System.out.println(name);

@@ -159,9 +159,10 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
      * @throws IOException if there were any problems setting up (creating or connecting) the
      *     datasource.
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public DataStore createDataStore(Map<String, ?> params) throws IOException {
-        List steps = lookup(STEPS, params, List.class);
+        List<Double> steps = lookup(STEPS, params, List.class);
         ReferencedEnvelope bounds = lookup(BOUNDS, params, ReferencedEnvelope.class);
         return new GraticuleDataStore(bounds, steps);
     }

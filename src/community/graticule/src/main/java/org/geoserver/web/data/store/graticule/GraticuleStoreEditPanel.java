@@ -46,6 +46,7 @@ public final class GraticuleStoreEditPanel extends StoreEditPanel {
          */
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private FormComponent addTextPanel(final IModel paramsModel, final String paramName) {
 
         final String resourceKey = getClass().getSimpleName() + "." + paramName;

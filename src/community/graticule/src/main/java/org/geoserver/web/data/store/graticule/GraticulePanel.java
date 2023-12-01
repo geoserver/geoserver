@@ -50,13 +50,19 @@ public class GraticulePanel extends Panel {
 
     private final EnvelopePanel bounds;
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public GraticulePanel(final String id, final IModel paramsModel, final Form storeEditForm) {
 
         super(id);
         steps = addTextPanel(paramsModel, "steps", true);
 
         // bounding box
-        add(bounds = new EnvelopePanel("bounds", new MapModel<>(paramsModel, "bounds")));
+        add(
+                bounds =
+                        new EnvelopePanel(
+                                "bounds",
+                                new MapModel<org.geotools.geometry.jts.ReferencedEnvelope>(
+                                        paramsModel, "bounds")));
 
         bounds.setDefaultModelObject(new ReferencedEnvelope(DEFAULT_CRS));
         bounds.setRequired(true);
@@ -84,8 +90,6 @@ public class GraticulePanel extends Panel {
                     }
                 });
 
-
-
         steps.setOutputMarkupId(true);
     }
 
@@ -94,6 +98,7 @@ public class GraticulePanel extends Panel {
         return addTextPanel(paramsModel, paramName, paramName, required);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private FormComponent addTextPanel(
             final IModel paramsModel,
             final String paramName,

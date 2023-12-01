@@ -78,7 +78,7 @@ public class XWilkinson {
     private final double w[];
 
     // calculation of scale-goodness
-    private double w(double s, double c, double d, double l) {
+    private double widths(double s, double c, double d, double l) {
         return w[0] * s + w[1] * c + w[2] * d + w[3] * l;
     }
 
@@ -235,13 +235,13 @@ public class XWilkinson {
                 int i = _i + 1;
                 double q = Q[_i];
                 sm = simplicity_max(i, j);
-                if (w(sm, 1, 1, 1) < bestScore) {
+                if (widths(sm, 1, 1, 1) < bestScore) {
                     break main_loop;
                 }
                 int k = 2;
                 while (k < Integer.MAX_VALUE) {
                     dm = density_max(k, m);
-                    if (w(sm, 1, dm, 1) < bestScore) {
+                    if (widths(sm, 1, dm, 1) < bestScore) {
                         break;
                     }
                     delta = (dmax - dmin) / (k + 1) / (j * q);
@@ -249,7 +249,7 @@ public class XWilkinson {
                     while (z < Integer.MAX_VALUE) {
                         double step = j * q * Math.pow(base, z);
                         cm = coverage_max(dmin, dmax, step * (k - 1));
-                        if (w(sm, cm, dm, 1) < bestScore) {
+                        if (widths(sm, cm, dm, 1) < bestScore) {
                             break;
                         }
                         int min_start = (int) (Math.floor(dmax / step - (k - 1)) * j);
@@ -262,7 +262,7 @@ public class XWilkinson {
                             double s = simplicity(i, j, lmin, lmax, step);
                             double d = density(k, m, dmin, dmax, lmin, lmax);
                             double l = legibility(lmin, lmax, step);
-                            double score = w(s, c, d, l);
+                            double score = widths(s, c, d, l);
 
                             // later legibility logic can be implemented hier
 

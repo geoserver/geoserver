@@ -47,7 +47,7 @@ public class GraticuleDataStore implements DataStore {
         int level = 0;
         Collections.sort(steps);
         for (double step : steps) {
-            Name name = new NameImpl("" + step);
+            Name name = new NameImpl(Double.toString(step));
             SimpleFeatureType schema = buildType(name, bounds.getCoordinateReferenceSystem());
             log.fine("Creating graticule with name " + name);
             names.add(name);
@@ -150,7 +150,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public List<Name> getNames() throws IOException {
-        return new ArrayList(sources.keySet());
+        return new ArrayList<Name>(sources.keySet());
     }
 
     /**
@@ -314,7 +314,7 @@ public class GraticuleDataStore implements DataStore {
     @Override
     public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(
             Query query, Transaction transaction) throws IOException {
-        String typeName = query.getTypeName();
+        Name typeName = new NameImpl(query.getTypeName());
         log.info("requesting feature reader for " + typeName);
         return new CollectionFeatureReader(
                 sources.get(typeName).getFeatures(query), sources.get(typeName).getSchema());

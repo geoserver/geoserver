@@ -80,6 +80,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
                 label = yFormat.format(v0.y) + yUnit;
                 // TODO: parameterize or localize this
                 if (!projected) {
+                    label = yFormat.format(Math.abs(v0.y)) + yUnit;
                     if (v0.y < 0) label += 'S';
                     else label += 'N';
                 }
@@ -88,8 +89,12 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
                 value = v0.x;
                 label = xFormat.format(v0.x) + xUnit;
                 if (!projected) {
-                    if (v0.x < 0) label += 'W';
-                    else label += 'E';
+                    label = xFormat.format(Math.abs(v0.x)) + xUnit;
+                    if (v0.x < 0){
+                        label += 'W';
+                    } else {
+                        label += 'E';
+                    }
                 }
                 horizontal = false;
             }

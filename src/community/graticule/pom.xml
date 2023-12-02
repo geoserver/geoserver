@@ -80,6 +80,11 @@
       <artifactId>gs-web-core</artifactId>
       <version>${gs.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-process-feature</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
 
   </dependencies>
 </project>

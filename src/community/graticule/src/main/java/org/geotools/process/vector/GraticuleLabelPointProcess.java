@@ -22,6 +22,7 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
 @DescribeProcess(
@@ -89,48 +90,54 @@ public class GraticuleLabelPointProcess implements VectorProcess {
     private SimpleFeature setPoint(
             SimpleFeature feature, ReferencedEnvelope bounds, PositionEnum position) {
 
-        Geometry line = (Geometry) feature.getDefaultGeometry();
+        LineString line = (LineString) feature.getDefaultGeometry();
         boolean horizontal = (boolean) feature.getAttribute(LineFeatureBuilder.ORIENTATION);
         Point p = null;
         Geometry box = JTS.toGeometry(bounds);
         // find the location of the new point
         if (bounds.contains(line.getEnvelopeInternal())) {
-            log.info("bounds contains line - choosing start");
+            log.info("bounds contains line - choosing start or end");
             switch (position) {
                 case BOTTOMLEFT:
-                    p = StaticGeometry.startPoint(line);
+                    p = line.getStartPoint();
 
                     break;
                 case TOPLEFT:
                     if (horizontal) {
-                        p = StaticGeometry.startPoint(line);
+                        p = line.getStartPoint();
                     } else {
-                        p = (Point) StaticGeometry.endPoint(line);
+                        p = line.getEndPoint();
                     }
                     break;
                 case TOPRIGHT:
-                    p = (Point) StaticGeometry.endPoint(line);
+                    p = line.getEndPoint();
                     break;
                 case BOTTOMRIGHT:
                     if (horizontal) {
-                        p = (Point) StaticGeometry.endPoint(line);
+                        p = line.getEndPoint();
                     } else {
-                        p = (Point) StaticGeometry.startPoint(line);
+                        p = line.getStartPoint();
                     }
                     break;
             }
 
-        } else if (line.getEnvelopeInternal().contains(bounds)) {
-            log.info("line containd bounds");
+        } else {
+            log.info("line contained bounds");
             Geometry points = box.intersection(line);
-            if (points.getGeometryType() == Geometry.TYPENAME_MULTIPOINT) {
+            if (points.getGeometryType() == Geometry.TYPENAME_LINESTRING && !points.isEmpty()) {
+                Point[] ps = new Point[2];
+                ps[0]=((LineString)points).getStartPoint();
+                ps[1]=((LineString)points).getEndPoint();
+
                 // get left most
+                log.info("Got a multipoint intersection "+points);
                 Point left = null;
                 Point right = null;
                 Point top = null;
                 Point bottom = null;
-                for (int i = 0; i < points.getNumGeometries(); i++) {
-                    Point point = (Point) points.getGeometryN(i);
+                for (int i = 0; i < ps.length; i++) {
+                    log.info("considering "+ps[i]);
+                    Point point = ps[i];
                     if (left == null) {
                         left = point;
                     } else if (point.getX() < left.getX()) {
@@ -198,13 +205,8 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                 }
                 log.info("produced " + p);
             } else {
-                log.info("just one point ");
-                p = (Point) points;
+                // no intersection
             }
-        } else {
-            log.info("No intersection between line and bbox");
-            log.info(line.toString());
-            log.info(bounds.toString());
         }
         SimpleFeature result = buildFeature(p, feature);
         return result;

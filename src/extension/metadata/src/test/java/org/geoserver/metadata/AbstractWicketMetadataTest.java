@@ -33,12 +33,12 @@ public abstract class AbstractWicketMetadataTest extends AbstractMetadataTest {
     }
 
     @Before
-    public void start() {
+    public void start() throws Exception {
         tester = new WicketTester(app, true);
     }
 
     @After
-    public void stop() {
+    public void stop() throws Exception {
         tester.destroy();
     }
 

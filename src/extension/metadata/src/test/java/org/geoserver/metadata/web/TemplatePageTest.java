@@ -27,7 +27,9 @@ import org.junit.Test;
 public class TemplatePageTest extends AbstractWicketMetadataTest {
 
     @Before
-    public void before() throws IOException {
+    @Override
+    public void start() throws Exception {
+        super.start();
         login();
         // Load the page
         MetadataTemplate allData = templateService.findByName("allData");
@@ -39,9 +41,11 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
     }
 
     @After
-    public void after() throws IOException {
+    @Override
+    public void stop() throws Exception {
         logout();
         restoreTemplates();
+        super.stop();
     }
 
     @Test

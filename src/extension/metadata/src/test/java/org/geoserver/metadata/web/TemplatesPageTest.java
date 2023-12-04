@@ -6,7 +6,6 @@ package org.geoserver.metadata.web;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -31,7 +30,9 @@ import org.junit.Test;
 public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
     @Before
-    public void before() throws IOException {
+    @Override
+    public void start() throws Exception {
+        super.start();
         login();
         // Make sure the catalog is loaded
         LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
@@ -43,10 +44,12 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
     }
 
     @After
-    public void after() throws Exception {
+    @Override
+    public void stop() throws Exception {
         restoreLayers();
         restoreTemplates();
         logout();
+        super.stop();
     }
 
     @Test

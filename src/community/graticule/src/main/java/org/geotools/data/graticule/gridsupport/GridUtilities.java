@@ -1,4 +1,4 @@
-package org.geotools.data.graticule;
+package org.geotools.data.graticule.gridsupport;
 
 import java.io.IOException;
 import java.text.Format;
@@ -13,9 +13,6 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.cs.CoordinateSystem;
 import org.geotools.api.referencing.cs.CoordinateSystemAxis;
 import org.geotools.api.style.Style;
-import org.geotools.data.graticule.gridsupport.LineFeatureBuilder;
-import org.geotools.data.graticule.gridsupport.NiceScale;
-import org.geotools.data.graticule.gridsupport.XWilkinson;
 import org.geotools.data.graticule.gridsupport.XWilkinson.Label;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;

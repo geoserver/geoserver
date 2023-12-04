@@ -47,7 +47,7 @@ public class GraticuleDataStore implements DataStore {
         int level = 0;
         Collections.sort(steps);
         for (double step : steps) {
-            Name name = new NameImpl(Double.toString(step));
+            Name name = new NameImpl(Double.toString(step).replace('.', '_'));
             SimpleFeatureType schema = buildType(name, bounds.getCoordinateReferenceSystem());
             log.fine("Creating graticule with name " + name);
             names.add(name);

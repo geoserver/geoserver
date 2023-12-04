@@ -90,7 +90,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
                 label = xFormat.format(v0.x) + xUnit;
                 if (!projected) {
                     label = xFormat.format(Math.abs(v0.x)) + xUnit;
-                    if (v0.x < 0){
+                    if (v0.x < 0) {
                         label += 'W';
                     } else {
                         label += 'E';

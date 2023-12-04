@@ -6,9 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFactorySpi;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
@@ -35,8 +39,50 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
                     ReferencedEnvelope.class,
                     "The maximum bounding box for the grids in the projection that will be used for the grid",
                     true,
-                    null);
+                    null) {
+                @Override
+                public Object parse(String text) {
+                    // ReferencedEnvelope[-180.0 : 180.0, -90.0 : 90.0]
+                    // DefaultGeographicCRS[EPSG:WGS 84] AXIS["Geodetic longitude", EAST]
+                    // AXIS["Geodetic latitude", NORTH]
+                    Pattern pat =
+                            Pattern.compile(
+                                    "\\[([-+]?[0-9]*\\.?[0-9]+) : ([-+]?[0-9]*\\.?[0-9]+), ([-+]?[0-9]*\\.?[0-9]+) : ([-+]?[0-9]*\\.?[0-9]+)\\] \\{(.*)\\}",
+                                    Pattern.MULTILINE | Pattern.DOTALL);
 
+                    Matcher m = pat.matcher(text);
+
+                    m.find();
+                    double minX = Double.parseDouble(m.group(1));
+                    double maxX = Double.parseDouble(m.group(2));
+                    double minY = Double.parseDouble(m.group(3));
+                    double maxY = Double.parseDouble(m.group(4));
+                    try {
+                        CoordinateReferenceSystem crs =
+                                org.geotools.referencing.CRS.parseWKT(m.group(5));
+                        return new ReferencedEnvelope(minX, minY, maxX, maxY, crs);
+                    } catch (FactoryException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public String text(Object value) {
+                    ReferencedEnvelope env = (ReferencedEnvelope) value;
+
+                    return "["
+                            + env.getMinX()
+                            + " : "
+                            + env.getMaxX()
+                            + ", "
+                            + env.getMinY()
+                            + " : "
+                            + env.getMaxY()
+                            + "] {"
+                            + env.getCoordinateReferenceSystem().toWKT()
+                            + "}";
+                }
+            };
     public static final Param TYPE =
             new Param("type", String.class, "the data store type (graticule)", true, "graticule");
 
@@ -47,6 +93,7 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
         params.add(STEPS);
         params.add(BOUNDS);
     }
+
     /**
      * Name suitable for display to end user.
      *

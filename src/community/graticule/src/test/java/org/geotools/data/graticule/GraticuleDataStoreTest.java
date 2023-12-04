@@ -31,7 +31,7 @@ public class GraticuleDataStoreTest {
         for (String name : names) {
             System.out.println(name);
         }
-        SimpleFeatureType schema = datastore.getSchema("10.0");
+        SimpleFeatureType schema = datastore.getSchema("10_0");
         assertNotNull(schema);
         System.out.println(schema);
     }

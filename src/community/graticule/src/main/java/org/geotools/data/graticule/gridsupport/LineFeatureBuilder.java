@@ -23,12 +23,16 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
     /** Name of the Integer level attribute ("level") */
     public static final String LEVEL_ATTRIBUTE_NAME = "level";
 
-    /** Name of the Object value attribute ("value") */
+    /**
+     * Name of the Object value attribute ("vaStringlue")
+     */
     public static final String VALUE_ATTRIBUTE_NAME = "value";
 
     public static final String VALUE_LABEL_NAME = "label";
 
     public static final String ORIENTATION = "horizontal";
+    public static final String TOP = "top";
+    public static final String LEFT = "left";
     private boolean projected;
 
     protected int id;

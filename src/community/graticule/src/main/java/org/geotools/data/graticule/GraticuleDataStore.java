@@ -78,6 +78,8 @@ public class GraticuleDataStore implements DataStore {
         tb.add(LineFeatureBuilder.VALUE_LABEL_NAME, String.class);
         tb.add(LineFeatureBuilder.VALUE_ATTRIBUTE_NAME, Double.class);
         tb.add(LineFeatureBuilder.ORIENTATION, Boolean.class);
+        tb.add(LineFeatureBuilder.TOP, Boolean.class);
+        tb.add(LineFeatureBuilder.LEFT, Boolean.class);
         return tb.buildFeatureType();
     }
 

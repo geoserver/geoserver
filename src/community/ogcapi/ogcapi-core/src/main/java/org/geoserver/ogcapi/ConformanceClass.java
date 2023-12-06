@@ -41,6 +41,10 @@ public class ConformanceClass {
 
     public static final String ECQL_TEXT = "http://geoserver.org/spec/ecql/1.0/req/ecql-text";
 
+    /** Search conformance class for "OGC API - Features - Part 5: Search (PROPOSAL DRAFT)" */
+    public static final String SEARCH =
+            "http://www.opengis.net/spec/ogcapi-features-5/1.0/req/search";
+
     /** CQL2 encoding conformance classes */
     public static final String CQL2_TEXT = "http://www.opengis.net/spec/cql2/1.0/req/cql2-text";
 

@@ -17,6 +17,7 @@ import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.IDS;
+import static org.geoserver.ogcapi.ConformanceClass.SEARCH;
 import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
 import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
@@ -313,6 +314,7 @@ public class FeatureService {
                         CRS_BY_REFERENCE,
                         FEATURES_FILTER,
                         FILTER,
+                        SEARCH,
                         ECQL,
                         ECQL_TEXT,
                         CQL2_BASIC,

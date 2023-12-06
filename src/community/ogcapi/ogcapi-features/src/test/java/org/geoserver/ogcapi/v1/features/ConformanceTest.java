@@ -17,6 +17,7 @@ import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.IDS;
+import static org.geoserver.ogcapi.ConformanceClass.SEARCH;
 import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -51,6 +52,7 @@ public class ConformanceTest extends FeaturesTestSupport {
             FeatureService.CRS_BY_REFERENCE,
             FEATURES_FILTER,
             FILTER,
+            SEARCH,
             ECQL,
             ECQL_TEXT,
             CQL2_BASIC,

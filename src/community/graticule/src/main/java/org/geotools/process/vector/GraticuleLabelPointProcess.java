@@ -133,15 +133,15 @@ public class GraticuleLabelPointProcess implements VectorProcess {
         } else {
 
             Geometry points = line.intersection(box);
-            log.info("line contained bounds "+points+ " "+feature.getAttribute("label") );
-            log.info("bbox:"+box);
+            log.info("line contained bounds " + points + " " + feature.getAttribute("label"));
+            log.info("bbox:" + box);
             if (points.getGeometryType() == Geometry.TYPENAME_LINESTRING && !points.isEmpty()) {
                 Point[] ps = new Point[2];
                 ps[0] = ((LineString) points).getStartPoint();
                 ps[1] = ((LineString) points).getEndPoint();
 
                 // get left most
-                log.info("Got a multipoint intersection " + ps[0]+" "+ps[1]);
+                log.info("Got a multipoint intersection " + ps[0] + " " + ps[1]);
                 Point left = null;
                 Point right = null;
                 Point top = null;
@@ -186,7 +186,7 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                     case TOPRIGHT:
                         if (horizontal) {
                             p = right;
-                            p.getCoordinate().setX(p.getX()-DELTA);
+                            p.getCoordinate().setX(p.getX() - DELTA);
                         } else {
                             p = top;
                         }
@@ -196,27 +196,27 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                             p = left;
                         } else {
                             p = bottom;
-                            p.getCoordinate().setY(p.getY()- DELTA);
+                            p.getCoordinate().setY(p.getY() - DELTA);
                         }
                         break;
                     case BOTTOMRIGHT:
                         if (horizontal) {
                             p = right;
-                            p.getCoordinate().setX(p.getX()-0.1);
+                            p.getCoordinate().setX(p.getX() - 0.1);
                         } else {
                             p = bottom;
-                            p.getCoordinate().setY(p.getY()-0.1);
+                            p.getCoordinate().setY(p.getY() - 0.1);
                         }
                         break;
                 }
-                log.info("produced " + p + " "+feature.getAttribute("label"));
+                log.info("produced " + p + " " + feature.getAttribute("label"));
             } else {
                 // no intersection
                 log.info("No intersection");
             }
         }
         if (p != null) {
-            log.info("buiding point at "+p + " "+feature.getAttribute("label") );
+            log.info("buiding point at " + p + " " + feature.getAttribute("label"));
             SimpleFeature result = buildFeature(p, feature, position);
             return result;
         }

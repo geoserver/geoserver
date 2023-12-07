@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-graticule-*.jar</include>
+        <include>gt-process-feature-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

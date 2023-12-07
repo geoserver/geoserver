@@ -2,7 +2,6 @@ package org.geotools.process.vector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,9 +57,16 @@ public class GraticuleLabelPointProcessTest {
 
     @Test
     public void testSmallBBox() throws Exception {
-        ReferencedEnvelope bbox = new ReferencedEnvelope(-92.724609375,-25.224609375,-0.615234375,33.134765625,DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope bbox =
+                new ReferencedEnvelope(
+                        -92.724609375,
+                        -25.224609375,
+                        -0.615234375,
+                        33.134765625,
+                        DefaultGeographicCRS.WGS84);
         runLabels(bbox, GraticuleLabelPointProcess.PositionEnum.BOTH);
     }
+
     private void runLabels(ReferencedEnvelope box, GraticuleLabelPointProcess.PositionEnum pos)
             throws IOException {
         SimpleFeatureCollection features = store.getFeatureSource("10_0").getFeatures();
@@ -68,7 +74,7 @@ public class GraticuleLabelPointProcessTest {
         GraticuleLabelPointProcess process = new GraticuleLabelPointProcess();
 
         SimpleFeatureCollection results = process.execute(features, box, pos);
-        //assertEquals(features.size() * 2, results.size());
+        // assertEquals(features.size() * 2, results.size());
         try (SimpleFeatureIterator iterator = results.features()) {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
@@ -78,19 +84,35 @@ public class GraticuleLabelPointProcessTest {
                 boolean left = (boolean) feature.getAttribute("left");
                 boolean horizontal = (boolean) feature.getAttribute("horizontal");
 
-                if(horizontal) {
+                if (horizontal) {
                     if (left) {
-                        assertEquals("wrong left", Math.floor(Math.max(bounds.getMinimum(0), box.getMinimum(0))), Math.floor(p.getX() ), 0.1);
+                        assertEquals(
+                                "wrong left",
+                                Math.floor(Math.max(bounds.getMinimum(0), box.getMinimum(0))),
+                                Math.floor(p.getX()),
+                                0.1);
                     }
                     if (!left) {
-                        assertEquals("wrong right", Math.ceil(Math.min(bounds.getMaximum(0), box.getMaximum(0))), Math.ceil(p.getX() + GraticuleLabelPointProcess.DELTA), 0.1);
+                        assertEquals(
+                                "wrong right",
+                                Math.ceil(Math.min(bounds.getMaximum(0), box.getMaximum(0))),
+                                Math.ceil(p.getX() + GraticuleLabelPointProcess.DELTA),
+                                0.1);
                     }
                 } else {
                     if (top) {
-                        assertEquals("wrong top", Math.floor(Math.min(bounds.getMaximum(1), box.getMaximum(1))), Math.floor(p.getY() ), 0.1);
+                        assertEquals(
+                                "wrong top",
+                                Math.floor(Math.min(bounds.getMaximum(1), box.getMaximum(1))),
+                                Math.floor(p.getY()),
+                                0.1);
                     }
                     if (!top) {
-                        assertEquals("wrong bottom", Math.ceil(Math.max(bounds.getMinimum(1), box.getMinimum(1))), Math.ceil(p.getY() + GraticuleLabelPointProcess.DELTA), 0.1);
+                        assertEquals(
+                                "wrong bottom",
+                                Math.ceil(Math.max(bounds.getMinimum(1), box.getMinimum(1))),
+                                Math.ceil(p.getY() + GraticuleLabelPointProcess.DELTA),
+                                0.1);
                     }
                 }
             }

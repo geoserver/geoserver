@@ -13,7 +13,6 @@ public enum StyleType {
     GRID("Graticule"),
     GENERIC("Generic"); // Unknown Type
 
-
     private final String name;
 
     private StyleType(String name) {

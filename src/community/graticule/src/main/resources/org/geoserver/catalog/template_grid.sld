@@ -10,6 +10,7 @@
       <Title>A Grid style</Title>
       <FeatureTypeStyle>
         <Rule>
+          <!-- Draw the base lines dashed -->
           <LineSymbolizer>
             <Stroke>
               <CssParameter name="stroke">#666666</CssParameter>
@@ -18,9 +19,9 @@
           </LineSymbolizer>
         </Rule>
         <Rule>
+          <!-- make 0 lines standout (Equator, Greenwich Meridian-->
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
-
               <ogc:PropertyName>value</ogc:PropertyName>
               <ogc:Literal>0.0</ogc:Literal>
             </ogc:PropertyIsEqualTo>
@@ -34,6 +35,7 @@
 
       </FeatureTypeStyle>
       <FeatureTypeStyle>
+        <!-- Create Label Points from lines -->
         <Transformation>
           <ogc:Function name="vec:GraticuleLabelPoint">
             <ogc:Function name="parameter">
@@ -48,7 +50,7 @@
           </ogc:Function>
         </Transformation>
         <Rule>
-          <Name>Left Label</Name>
+          <!--Left Label-->
           <ogc:Filter>
             <ogc:And>
               <ogc:PropertyIsEqualTo>
@@ -71,11 +73,12 @@
                 </Displacement>
               </PointPlacement>
             </LabelPlacement>
+            <VendorOption name="partials">true</VendorOption>
           </TextSymbolizer>
 
         </Rule>
         <Rule>
-          <Title>Top Label</Title>
+          <!--Top Label-->
           <ogc:Filter>
             <ogc:And>
               <ogc:PropertyIsEqualTo>
@@ -102,11 +105,12 @@
                 </Displacement>
               </PointPlacement>
             </LabelPlacement>
+            <VendorOption name="partials">true</VendorOption>
           </TextSymbolizer>
 
         </Rule>
         <Rule>
-          <Title>Right Label</Title>
+          <!--Right Label-->
           <ogc:Filter>
             <ogc:And>
               <ogc:PropertyIsEqualTo>
@@ -138,7 +142,7 @@
 
         </Rule>
         <Rule>
-          <Title>Bottom Label</Title>
+          <!--Bottom Label-->
           <ogc:Filter>
             <ogc:And>
               <ogc:PropertyIsEqualTo>
@@ -165,12 +169,9 @@
                 </Displacement>
               </PointPlacement>
             </LabelPlacement>
+            <VendorOption name="partials">true</VendorOption>
           </TextSymbolizer>
-
         </Rule>
-
-
-
       </FeatureTypeStyle>
     </UserStyle>
   </NamedLayer>

@@ -10,7 +10,9 @@ public enum StyleType {
     LINE("Line"), // Line Feature Type
     POLYGON("Polygon"), // Polygon Feature Type
     RASTER("Raster"), // Coverage Type
+    GRID("Graticule"),
     GENERIC("Generic"); // Unknown Type
+
 
     private final String name;
 

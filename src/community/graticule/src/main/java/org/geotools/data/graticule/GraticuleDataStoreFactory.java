@@ -226,7 +226,7 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
      * @param <T>
      */
     <T> T lookup(Param param, Map<String, ?> params, Class<T> target) throws IOException {
-        log.info("Looking up " + param.key + " in " + params);
+        log.finest("Looking up " + param.key + " in " + params);
         T result = target.cast(param.lookUp(params));
         if (result == null) {
             result = target.cast(param.getDefaultValue());

@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.GraticuleHandler;
+import org.geoserver.config.GeoServer;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.FeatureReader;
 import org.geotools.api.data.FeatureWriter;
@@ -39,6 +42,7 @@ public class GraticuleDataStore implements DataStore {
     private final HashMap<Name, SimpleFeatureSource> sources = new HashMap<>();
 
     private final ArrayList<Name> names = new ArrayList<>();
+    private static GraticuleHandler handler;
 
     public GraticuleDataStore(ReferencedEnvelope env, List<Double> steps) {
         this.steps = steps;
@@ -93,6 +97,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public ServiceInfo getInfo() {
+
         DefaultServiceInfo info = new DefaultServiceInfo();
         info.setDescription("Features from " + getClass().getSimpleName());
         info.setSchema(FeatureTypes.DEFAULT_NAMESPACE);
@@ -316,7 +321,7 @@ public class GraticuleDataStore implements DataStore {
     public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(
             Query query, Transaction transaction) throws IOException {
         Name typeName = new NameImpl(query.getTypeName());
-        log.info("requesting feature reader for " + typeName);
+        log.finest("requesting feature reader for " + typeName);
         return new CollectionFeatureReader(
                 sources.get(typeName).getFeatures(query), sources.get(typeName).getSchema());
     }

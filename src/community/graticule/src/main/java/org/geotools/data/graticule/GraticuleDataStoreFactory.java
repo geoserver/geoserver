@@ -60,7 +60,7 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
                     try {
                         CoordinateReferenceSystem crs =
                                 org.geotools.referencing.CRS.parseWKT(m.group(5));
-                        return new ReferencedEnvelope(minX, minY, maxX, maxY, crs);
+                        return new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
                     } catch (FactoryException e) {
                         throw new RuntimeException(e);
                     }

@@ -2,6 +2,7 @@ package org.geotools.data.graticule;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.geotools.api.data.DataStore;
@@ -9,12 +10,15 @@ import org.geotools.api.data.DataStoreFinder;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GraticuleDataStoreTest {
 
-    @Test
-    public void testCreation() throws Exception {
+    DataStore datastore;
+
+    @Before
+    public void setup() throws IOException {
         HashMap<String, Object> params = new HashMap<>();
         ArrayList<Double> steps = new ArrayList<>();
         steps.add(10.0);
@@ -25,8 +29,13 @@ public class GraticuleDataStoreTest {
         bounds.expandToInclude(180, 90);
         params.put(GraticuleDataStoreFactory.BOUNDS.key, bounds);
         params.put(GraticuleDataStoreFactory.TYPE.key, GraticuleDataStoreFactory.TYPE.sample);
-        DataStore datastore = DataStoreFinder.getDataStore(params);
+        datastore = DataStoreFinder.getDataStore(params);
         assertNotNull(datastore);
+    }
+
+    @Test
+    public void testCreation() throws Exception {
+
         String[] names = datastore.getTypeNames();
         for (String name : names) {
             System.out.println(name);

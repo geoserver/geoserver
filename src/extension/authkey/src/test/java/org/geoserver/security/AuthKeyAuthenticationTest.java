@@ -656,6 +656,38 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     }
 
     @Test
+    public void testAuthKeyMapperAutoSynchronize() throws Exception {
+        String authKeyUrlParam = "myAuthKey";
+        String filterName = "testAuthKeyFilterAuto1";
+
+        AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
+        config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
+        config.setName(filterName);
+        config.setAllowMapperKeysAutoSync(true);
+        config.setUserGroupServiceName("ug1");
+        config.setAuthKeyParamName(authKeyUrlParam);
+        config.setAuthKeyMapperName("propertyMapper");
+
+        getSecurityManager().saveFilter(config);
+
+        // File Property Mapper
+        File authKeyFile = new File(getSecurityManager().userGroup().dir(), "testAuthKey");
+        authKeyFile = new File(authKeyFile, "authkeys.properties");
+
+        GeoServerAuthenticationKeyProvider geoServerAuthenticationKeyProvider =
+                new GeoServerAuthenticationKeyProvider(getSecurityManager(), 10);
+        assertNotNull(geoServerAuthenticationKeyProvider.getScheduler());
+        assertFalse(geoServerAuthenticationKeyProvider.getScheduler().isTerminated());
+        assertFalse(geoServerAuthenticationKeyProvider.getScheduler().isShutdown());
+        assertEquals(10, geoServerAuthenticationKeyProvider.getAutoSyncDelaySeconds());
+        Thread.sleep(2 * geoServerAuthenticationKeyProvider.getAutoSyncDelaySeconds() * 1000L);
+        assertTrue(authKeyFile.exists());
+        Properties props = new Properties();
+        loadPropFile(authKeyFile, props);
+        assertFalse(props.isEmpty());
+    }
+
+    @Test
     public void testWebServiceAuthKeyBodyResponseNoRoleMatchingRegex() throws Exception {
         WebServiceBodyResponseUserGroupServiceConfig config =
                 new WebServiceBodyResponseUserGroupServiceConfig();

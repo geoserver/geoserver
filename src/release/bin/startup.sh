@@ -44,7 +44,7 @@ if [ -z "${GEOSERVER_HOME:-}" ]; then
       echo "GEOSERVER_HOME environment variable not found, using current "
       echo "location.  If not set then running this script from other "
       echo "directories will not work in the future."
-      GEOSERVER_HOME="$(pwd)/.."
+      GEOSERVER_HOME="$(cd .. && pwd)"
     fi
   fi 
 

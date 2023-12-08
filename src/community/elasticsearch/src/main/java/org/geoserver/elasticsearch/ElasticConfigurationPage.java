@@ -139,7 +139,7 @@ abstract class ElasticConfigurationPage extends Panel {
         elastic_form.add(
                 new AjaxButton("es_refresh") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         onRefresh(target);
                     }
                 });

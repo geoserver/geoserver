@@ -41,8 +41,6 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  *
  * @author Andrea Aime
  */
-// TODO WICKET8 - migrate to https://yauaa.basjes.nl/ per
-// https://issues.apache.org/jira/browse/WICKET-6544
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class CodeMirrorEditor extends FormComponentPanel<String> {
@@ -94,36 +92,26 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         super(id, model);
         this.mode = mode;
 
-        // figure out if we're running against a browser supported by CodeMirror
-        boolean enableCodeMirror = isCodeMirrorSupported();
-
         container = new WebMarkupContainer("editorContainer");
         container.setOutputMarkupId(true);
         add(container);
 
         WebMarkupContainer toolbar = new WebMarkupContainer("toolbar");
-        toolbar.setVisible(enableCodeMirror);
+        toolbar.setVisible(true);
         container.add(toolbar);
 
         customButtons = new RepeatingView("custom-buttons");
         toolbar.add(customButtons);
 
         WebMarkupContainer editorParent = new WebMarkupContainer("editorParent");
-        if (enableCodeMirror) {
-            editorParent.add(
-                    AttributeModifier.replace(
-                            "style", "border: 1px solid black; padding-bottom: 3px"));
-        }
+        editorParent.add(
+                AttributeModifier.replace("style", "border: 1px solid black; padding-bottom: 3px"));
         container.add(editorParent);
         editor = new TextArea<>("editor", model);
         editorParent.add(editor);
         editor.setOutputMarkupId(true);
 
-        if (enableCodeMirror) {
-            editor.add(new CodeMirrorBehavior());
-        } else {
-            editor.add(AttributeModifier.replace("style", "width:100%"));
-        }
+        editor.add(new CodeMirrorBehavior());
     }
 
     public void addCustomButton(String title, String cssClass, CustomButtonAction action) {
@@ -144,119 +132,6 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                 }.add(new AttributeAppender("class", cssClass, " "))
                         .add(new AttributeAppender("title", title, " ")));
     }
-
-    @SuppressWarnings("deprecation")
-    private boolean isCodeMirrorSupported() {
-        boolean enableCodeMirror = true;
-        // TODO: WICKET9 fix this
-        /*
-        WebClientInfo clientInfo = WebSession.get().getClientInfo();
-        ClientProperties clientProperties = clientInfo.getProperties();
-
-        if (clientProperties.isBrowserInternetExplorer()) {
-            ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() >= 8
-                            || props.getBrowserVersionMajor() >= 8;
-        } else if (clientProperties.isBrowserMozillaFirefox()) {
-            ClientProperties props =
-                    extractFirefoxVersion(clientProperties.getNavigatorUserAgent());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() >= 3
-                            || props.getBrowserVersionMajor() >= 3;
-        } else if (clientProperties.isBrowserSafari()) {
-            ClientProperties props =
-                    extractSafariVersion(clientProperties.getNavigatorAppVersion());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() > 5
-                            || (clientProperties.getBrowserVersionMajor() == 5
-                                    && clientProperties.getBrowserVersionMinor() >= 2)
-                            || props.getBrowserVersionMajor() > 5
-                            || (props.getBrowserVersionMajor() == 5
-                                    && props.getBrowserVersionMinor() >= 2);
-        } else if (clientProperties.isBrowserOpera()) {
-            ClientProperties props = extractOperaVersion(clientProperties.getNavigatorAppVersion());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() >= 9
-                            || props.getBrowserVersionMajor() >= 9;
-        }
-        */
-        return enableCodeMirror;
-    }
-
-    /*
-    @SuppressWarnings("deprecation")
-    private ClientProperties extractIEVersion(String userAgent) {
-        ClientProperties props = new ClientProperties();
-        props.setBrowserVersionMajor(-1);
-        props.setBrowserVersionMinor(-1);
-        if (userAgent != null) {
-            String userAgencyLc = userAgent.toLowerCase();
-            String pattern;
-            if (userAgencyLc.contains("like gecko")) {
-                pattern = "rv:(\\d+)\\.(\\d+)";
-            } else {
-                pattern = "msie (\\d+)\\.(\\d+)";
-            }
-            setMajorMinorVersionByPattern(userAgencyLc, pattern, props);
-        }
-        return props;
-    }
-
-    @SuppressWarnings("deprecation")
-    private ClientProperties extractFirefoxVersion(String userAgent) {
-        ClientProperties props = new ClientProperties();
-        props.setBrowserVersionMajor(-1);
-        props.setBrowserVersionMinor(-1);
-        if (userAgent != null) {
-            String userAgencyLc = userAgent.toLowerCase();
-            props.setBrowserVersionMajor(-1);
-            props.setBrowserVersionMinor(-1);
-            setMajorMinorVersionByPattern(userAgencyLc, "firefox/(\\d+)\\.(\\d+)", props);
-        }
-        return props;
-    }
-
-    @SuppressWarnings("deprecation")
-    private ClientProperties extractOperaVersion(String userAgent) {
-        ClientProperties props = new ClientProperties();
-        props.setBrowserVersionMajor(-1);
-        props.setBrowserVersionMinor(-1);
-        if (userAgent != null) {
-            String userAgencyLc = userAgent.toLowerCase();
-            if (userAgencyLc.startsWith("opera/") && userAgencyLc.contains("version/")) {
-                setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)", props);
-            } else if (userAgencyLc.startsWith("opera/") && !userAgencyLc.contains("version/")) {
-                setMajorMinorVersionByPattern(userAgencyLc, "opera/(\\d+)\\.(\\d+)", props);
-            } else {
-                setMajorMinorVersionByPattern(userAgencyLc, "opera (\\d+)\\.(\\d+)", props);
-            }
-        }
-        return props;
-    }
-
-    @SuppressWarnings("deprecation")
-    private ClientProperties extractSafariVersion(String userAgent) {
-        ClientProperties props = new ClientProperties();
-        props.setBrowserVersionMajor(-1);
-        props.setBrowserVersionMinor(-1);
-        if (userAgent != null) {
-            String userAgencyLc = userAgent.toLowerCase();
-            setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)", props);
-        }
-        return props;
-    }
-
-    @SuppressWarnings("deprecation")
-    private void setMajorMinorVersionByPattern(
-            String userAgent, String patternString, ClientProperties properties) {
-        Matcher matcher = Pattern.compile(patternString).matcher(userAgent);
-        if (matcher.find()) {
-            properties.setBrowserVersionMajor(Integer.parseInt(matcher.group(1)));
-            properties.setBrowserVersionMinor(Integer.parseInt(matcher.group(2)));
-        }
-    }
-    */
 
     public CodeMirrorEditor(String id, IModel<String> model) {
         this(id, "xml", model);

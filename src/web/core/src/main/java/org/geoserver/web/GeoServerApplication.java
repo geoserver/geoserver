@@ -27,6 +27,8 @@ import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.csp.CSPDirective;
+import org.apache.wicket.csp.CSPDirectiveSrcValue;
 import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
@@ -220,8 +222,26 @@ public class GeoServerApplication extends WebApplication
         // enable GeoServer custom resource locators
         getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
-        // TODO WICKET9: This definitely needs some fine tuning
-        getCspSettings().blocking().clear().disabled();
+        // TODO WICKET9: This needs some fine tuning
+        getCspSettings()
+                .blocking()
+                .clear()
+                // TODO: we definitely want to remove UNSAFE_INLINE and UNSAFE_EVAL
+                .add(
+                        CSPDirective.SCRIPT_SRC,
+                        CSPDirectiveSrcValue.SELF,
+                        CSPDirectiveSrcValue.UNSAFE_INLINE)
+                // TODO: we definitely want to  remove UNSAFE_INLINE
+                .add(
+                        CSPDirective.STYLE_SRC,
+                        CSPDirectiveSrcValue.SELF,
+                        CSPDirectiveSrcValue.UNSAFE_INLINE)
+                .add(CSPDirective.IMG_SRC, CSPDirectiveSrcValue.SELF)
+                .add(CSPDirective.CONNECT_SRC, CSPDirectiveSrcValue.SELF)
+                .add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)
+                .add(CSPDirective.MANIFEST_SRC, CSPDirectiveSrcValue.SELF)
+                .add(CSPDirective.CHILD_SRC, CSPDirectiveSrcValue.SELF)
+                .add(CSPDirective.BASE_URI, CSPDirectiveSrcValue.SELF);
         /*
          * The order string resource loaders are added to IResourceSettings is of importance so we need to add any contributed loader prior to the
          * standard ones so it takes precedence. Otherwise it won't be hit due to GeoServerStringResourceLoader never resolving to null but falling

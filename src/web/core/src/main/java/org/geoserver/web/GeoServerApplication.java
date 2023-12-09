@@ -226,7 +226,7 @@ public class GeoServerApplication extends WebApplication
         getCspSettings()
                 .blocking()
                 .clear()
-                // TODO: we definitely want to remove UNSAFE_INLINE and UNSAFE_EVAL
+                // TODO: we definitely want to remove UNSAFE_INLINE
                 .add(
                         CSPDirective.SCRIPT_SRC,
                         CSPDirectiveSrcValue.SELF,

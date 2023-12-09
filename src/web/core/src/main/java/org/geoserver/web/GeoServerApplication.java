@@ -220,7 +220,8 @@ public class GeoServerApplication extends WebApplication
         // enable GeoServer custom resource locators
         getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
-
+        // TODO WICKET9: This definitely needs some fine tuning
+        getCspSettings().blocking().clear().disabled();
         /*
          * The order string resource loaders are added to IResourceSettings is of importance so we need to add any contributed loader prior to the
          * standard ones so it takes precedence. Otherwise it won't be hit due to GeoServerStringResourceLoader never resolving to null but falling

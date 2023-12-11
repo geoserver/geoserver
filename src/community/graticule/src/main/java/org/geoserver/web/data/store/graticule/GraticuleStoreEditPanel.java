@@ -40,7 +40,6 @@ public final class GraticuleStoreEditPanel extends StoreEditPanel {
         configsContainer.add(advancedConfigPanel);
 
         IModel<Boolean> enabledModel = new Model<Boolean>(false);
-
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

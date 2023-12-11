@@ -23,7 +23,6 @@ import org.geotools.api.filter.Filter;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.DefaultServiceInfo;
 import org.geotools.data.graticule.gridsupport.LineFeatureBuilder;
-import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -31,13 +30,12 @@ import org.locationtech.jts.geom.LineString;
 
 public class GraticuleDataStore implements DataStore {
     static final Logger log = Logger.getLogger("GraticuleDataStore");
-     final ReferencedEnvelope bounds;
-     ArrayList<Double> steps;
+    final ReferencedEnvelope bounds;
+    ArrayList<Double> steps;
     final Name name;
 
-
     private static GraticuleHandler handler;
-     final public SimpleFeatureType schema;
+    public final SimpleFeatureType schema;
 
     public GraticuleDataStore(ReferencedEnvelope env, List<Double> steps) {
         this.steps = new ArrayList<>(steps);
@@ -45,15 +43,13 @@ public class GraticuleDataStore implements DataStore {
         Collections.sort(steps);
         StringBuilder n = new StringBuilder("Graticule(");
         n.append(steps.get(0));
-        if(steps.size()>1) {
+        if (steps.size() > 1) {
             n.append("-").append(steps.get(steps.size() - 1));
         }
         n.append(")");
         this.name = cleanName(new NameImpl(n.toString()));
         schema = buildType(n.toString(), bounds.getCoordinateReferenceSystem());
     }
-
-
 
     /**
      * Information about this service.
@@ -209,7 +205,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public String[] getTypeNames() throws IOException {
-        return new String[]{name.toString()} ;
+        return new String[] {name.toString()};
     }
 
     /**

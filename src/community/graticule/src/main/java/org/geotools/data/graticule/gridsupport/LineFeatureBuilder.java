@@ -84,7 +84,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
                 if (!projected) {
                     label = yFormat.format(Math.abs(v0.y)) + yUnit;
                     if (v0.y < 0) label += 'S';
-                    else if(v0.y>0) label+= 'N';
+                    else if (v0.y > 0) label += 'N';
                 }
                 horizontal = true;
             } else {
@@ -94,7 +94,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
                     label = xFormat.format(Math.abs(v0.x)) + xUnit;
                     if (v0.x < 0) {
                         label += 'W';
-                    } else if (v0.x > 0){
+                    } else if (v0.x > 0) {
                         label += 'E';
                     }
                 }

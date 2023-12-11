@@ -18,6 +18,7 @@ import org.junit.Test;
 public class GraticuleFeatureReaderTest {
     private DataStore datastore;
     ArrayList<Double> steps = new ArrayList<>();
+
     @Before
     public void setup() throws IOException {
         HashMap<String, Object> params = new HashMap<>();
@@ -36,18 +37,19 @@ public class GraticuleFeatureReaderTest {
     }
 
     @Test
-    public void testReader() throws Exception{
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader = datastore.getFeatureReader(new Query(), null);
+    public void testReader() throws Exception {
+        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                datastore.getFeatureReader(new Query(), null);
         Assert.assertNotNull(reader);
         double[] counts = new double[steps.size()];
-        while(reader.hasNext()){
+        while (reader.hasNext()) {
             SimpleFeature f = reader.next();
             int level = (int) f.getAttribute("level");
-            System.out.println(f.getAttribute("label")+" "+f.getAttribute("level"));
+            System.out.println(f.getAttribute("label") + " " + f.getAttribute("level"));
             counts[level]++;
         }
-        for(int i=0;i<steps.size();i++){
-            System.out.println(""+i+": "+counts[i]);
+        for (int i = 0; i < steps.size(); i++) {
+            System.out.println("" + i + ": " + counts[i]);
         }
     }
 }

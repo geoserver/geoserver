@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.FeatureListener;
 import org.geotools.api.data.Query;
@@ -33,17 +33,19 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
     private final List<Double> steps;
 
     private final SimpleFeatureType schema;
-    private final  ReferencedEnvelope bounds;
+    private final ReferencedEnvelope bounds;
     private final GraticuleDataStore parent;
 
-
-    public GraticuleFeatureSource(GraticuleDataStore parent, List<Double>steps, ReferencedEnvelope bounds, SimpleFeatureType schema)  {
+    public GraticuleFeatureSource(
+            GraticuleDataStore parent,
+            List<Double> steps,
+            ReferencedEnvelope bounds,
+            SimpleFeatureType schema) {
 
         this.parent = parent;
         this.steps = steps;
         this.bounds = bounds;
         this.schema = schema;
-
     }
 
     @Override
@@ -76,7 +78,7 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
      * getFeatures().getBounds()</code> instead.
      *
      * @return The bounding envelope of the feature data; or {@code null} if the bounds are unknown
-     * or too costly to calculate.
+     *     or too costly to calculate.
      * @throws IOException on any errors calculating the bounds
      */
     @Override
@@ -93,7 +95,7 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
      *
      * @param query the query to select features
      * @return The bounding envelope of the feature data; or {@code null} if the bounds are unknown
-     * or too costly to calculate.
+     *     or too costly to calculate.
      * @throws IOException on any errors calculating the bounds
      */
     @Override
@@ -263,9 +265,7 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
      * @param listener the new listener
      */
     @Override
-    public void addFeatureListener(FeatureListener listener) {
-
-    }
+    public void addFeatureListener(FeatureListener listener) {}
 
     /**
      * Removes an object from this {@code FeatureSource's} listeners.
@@ -273,9 +273,7 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
      * @param listener the listener to remove
      */
     @Override
-    public void removeFeatureListener(FeatureListener listener) {
-
-    }
+    public void removeFeatureListener(FeatureListener listener) {}
 
     @Override
     public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
@@ -288,13 +286,14 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
     public SimpleFeatureCollection getFeatures(Query query) throws IOException {
         Transaction transaction = null;
         GraticuleFeatureReader reader = new GraticuleFeatureReader(parent, query);
-        return new SimpleFeatureCollection(){
+        return new SimpleFeatureCollection() {
 
             /**
              * Obtain a SimpleFeatureIterator of the Features within this SimpleFeatureCollection.
              *
-             * <p>The implementation of FeatureIterator must adhere to the rules of fail-fast concurrent
-             * modification. In addition (to allow for resource backed collections) the <code>
+             * <p>The implementation of FeatureIterator must adhere to the rules of fail-fast
+             * concurrent modification. In addition (to allow for resource backed collections) the
+             * <code>
              * SimpleFeatureIterator.close()</code> method must be called.
              *
              * <p>Example use:
@@ -320,27 +319,28 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
             /**
              * The schema for the child feature members of this collection.
              *
-             * <p>Represents the most general FeatureType in common to all the features in this collection.
+             * <p>Represents the most general FeatureType in common to all the features in this
+             * collection.
              *
              * <ul>
-             *   <li>For a collection backed by a shapefiles (or database tables) the FeatureType returned
-             *       by getSchema() will complete describe each and every child in the collection.
-             *   <li>For mixed content FeatureCollections you will need to check the FeatureType of each
-             *       Feature as it is retrived from the collection
-             *   <li>The degenerate case returns the "_Feature" FeatureType, where the only thing known is
-             *       that the contents are Features.
+             *   <li>For a collection backed by a shapefiles (or database tables) the FeatureType
+             *       returned by getSchema() will complete describe each and every child in the
+             *       collection.
+             *   <li>For mixed content FeatureCollections you will need to check the FeatureType of
+             *       each Feature as it is retrived from the collection
+             *   <li>The degenerate case returns the "_Feature" FeatureType, where the only thing
+             *       known is that the contents are Features.
              * </ul>
              *
-             * @return FeatureType describing the "common" schema to all child features of this collection
+             * @return FeatureType describing the "common" schema to all child features of this
+             *     collection
              */
             @Override
             public SimpleFeatureType getSchema() {
                 return reader.schema;
             }
 
-            /**
-             * ID used when serializing to GML
-             */
+            /** ID used when serializing to GML */
             @Override
             public String getID() {
                 return "id";
@@ -350,15 +350,16 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
              * Visit the contents of a feature collection.
              *
              * <p>The order of traversal is dependent on the FeatureCollection implementation; some
-             * collections are able to make efficient use of an internal index in order to quickly visit
-             * features located in the same region.
+             * collections are able to make efficient use of an internal index in order to quickly
+             * visit features located in the same region.
              *
-             * @param visitor  Closure applied to each feature in turn.
+             * @param visitor Closure applied to each feature in turn.
              * @param progress Used to report progress, may be used to interrupt the operation
              * @since 2.5
              */
             @Override
-            public void accepts(FeatureVisitor visitor, ProgressListener progress) throws IOException {
+            public void accepts(FeatureVisitor visitor, ProgressListener progress)
+                    throws IOException {
                 DataUtilities.visit(this, visitor, progress);
             }
 
@@ -373,8 +374,8 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
             }
 
             /**
-             * Get the total bounds of this collection which is calculated by doing a union of the bounds of
-             * each feature inside of it
+             * Get the total bounds of this collection which is calculated by doing a union of the
+             * bounds of each feature inside of it
              *
              * @return An Envelope containing the total bounds of this collection.
              */
@@ -421,9 +422,7 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
                 return -1;
             }
 
-            /**
-             * @see Collection#toArray()
-             */
+            /** @see Collection#toArray() */
             @Override
             public Object[] toArray() {
                 return new Object[0];
@@ -439,5 +438,4 @@ public class GraticuleFeatureSource implements SimpleFeatureSource {
             }
         };
     }
-
 }

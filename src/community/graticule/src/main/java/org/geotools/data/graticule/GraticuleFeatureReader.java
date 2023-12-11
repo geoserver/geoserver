@@ -25,12 +25,13 @@ public class GraticuleFeatureReader implements SimpleFeatureReader {
     Query query;
     int level = 0;
 
-    public GraticuleFeatureReader(GraticuleDataStore graticuleDataStore, Query query) throws IOException {
+    public GraticuleFeatureReader(GraticuleDataStore graticuleDataStore, Query query)
+            throws IOException {
         this.parent = graticuleDataStore;
         this.query = query;
         this.steps = parent.getSteps();
         schema = parent.getSchema(query.getTypeName());
-        currentGrid = buildGrid( parent.bounds);
+        currentGrid = buildGrid(parent.bounds);
         delegate = currentGrid.getFeatures(query).features();
     }
 
@@ -52,9 +53,9 @@ public class GraticuleFeatureReader implements SimpleFeatureReader {
      * Reads the next Feature in the FeatureReader.
      *
      * @return The next feature in the reader.
-     * @throws IOException               If an error occurs reading the Feature.
+     * @throws IOException If an error occurs reading the Feature.
      * @throws IllegalAttributeException If the attributes read do not comply with the FeatureType.
-     * @throws NoSuchElementException    If there are no more Features in the Reader.
+     * @throws NoSuchElementException If there are no more Features in the Reader.
      */
     @Override
     public SimpleFeature next() throws IllegalArgumentException, NoSuchElementException {
@@ -66,7 +67,7 @@ public class GraticuleFeatureReader implements SimpleFeatureReader {
      * Query whether this FeatureReader has another Feature.
      *
      * @return True if there are more Features to be read. In other words, true if calls to next
-     * would return a feature rather than throwing an exception.
+     *     would return a feature rather than throwing an exception.
      * @throws IOException If an error occurs determining if there are more Features.
      */
     @Override
@@ -84,22 +85,19 @@ public class GraticuleFeatureReader implements SimpleFeatureReader {
         delegate.close();
     }
 
-    private SimpleFeatureSource buildGrid(ReferencedEnvelope box){
-            List<OrthoLineDef> lineDefs = new ArrayList<>();
-            for (int i = 0; i < steps.size(); i++) {
-                double step = steps.get(i);
+    private SimpleFeatureSource buildGrid(ReferencedEnvelope box) {
+        List<OrthoLineDef> lineDefs = new ArrayList<>();
+        for (int i = 0; i < steps.size(); i++) {
+            double step = steps.get(i);
 
-                // vertical (longitude) lines
-                lineDefs.add(new OrthoLineDef(LineOrientation.VERTICAL, i, step));
-                // horizontal (latitude) lines
-                lineDefs.add(new OrthoLineDef(LineOrientation.HORIZONTAL, i, step));
-            }
-
-            SimpleFeatureSource grid =
-                    Lines.createOrthoLines(
-                            box, lineDefs, steps.get(0), new LineFeatureBuilder(schema));
-            return grid;
+            // vertical (longitude) lines
+            lineDefs.add(new OrthoLineDef(LineOrientation.VERTICAL, i, step));
+            // horizontal (latitude) lines
+            lineDefs.add(new OrthoLineDef(LineOrientation.HORIZONTAL, i, step));
         }
 
-
+        SimpleFeatureSource grid =
+                Lines.createOrthoLines(box, lineDefs, steps.get(0), new LineFeatureBuilder(schema));
+        return grid;
+    }
 }

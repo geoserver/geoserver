@@ -33,7 +33,6 @@ The ``env`` function can be used in an SLD anywhere an OGC expression is allowed
 For example, it can be used in ``CSSParameter`` elements, in size and offset elements, and in rule filter expressions. 
 It is also accepted in some places where full expressions are not allowed, such as in the ``Mark/WellKnownName`` element.
 
-.. _substitution_predefined_variables
 
 Predefined Variables
 --------------------

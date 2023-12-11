@@ -41,9 +41,6 @@ public final class GraticuleStoreEditPanel extends StoreEditPanel {
 
         IModel<Boolean> enabledModel = new Model<Boolean>(false);
 
-        /*
-         * Listen to form submission and update the model's URL
-         */
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

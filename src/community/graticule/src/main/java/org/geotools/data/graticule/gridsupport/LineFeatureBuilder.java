@@ -28,7 +28,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
 
     public static final String VALUE_LABEL_NAME = "label";
 
-    public static final String ORIENTATION = "horizontal";
+    public static final String ORIENTATION_NAME = "horizontal";
     public static final String TOP = "top";
     public static final String LEFT = "left";
     private boolean projected;
@@ -84,7 +84,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
                 if (!projected) {
                     label = yFormat.format(Math.abs(v0.y)) + yUnit;
                     if (v0.y < 0) label += 'S';
-                    else label += 'N';
+                    else if(v0.y>0) label+= 'N';
                 }
                 horizontal = true;
             } else {
@@ -94,7 +94,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
                     label = xFormat.format(Math.abs(v0.x)) + xUnit;
                     if (v0.x < 0) {
                         label += 'W';
-                    } else {
+                    } else if (v0.x > 0){
                         label += 'E';
                     }
                 }
@@ -102,7 +102,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
             }
             attributes.put(VALUE_ATTRIBUTE_NAME, value);
             attributes.put(VALUE_LABEL_NAME, label);
-            attributes.put(ORIENTATION, horizontal);
+            attributes.put(ORIENTATION_NAME, horizontal);
         } else {
             throw new IllegalArgumentException("Expected an instance of OrthoLine");
         }

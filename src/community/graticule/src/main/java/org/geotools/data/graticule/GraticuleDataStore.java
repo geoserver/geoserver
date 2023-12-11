@@ -1,10 +1,10 @@
 package org.geotools.data.graticule;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.catalog.GraticuleHandler;
@@ -21,68 +21,39 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
-import org.geotools.data.CollectionFeatureReader;
 import org.geotools.data.DefaultServiceInfo;
 import org.geotools.data.graticule.gridsupport.LineFeatureBuilder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.grid.Lines;
-import org.geotools.grid.ortholine.LineOrientation;
-import org.geotools.grid.ortholine.OrthoLineDef;
 import org.locationtech.jts.geom.LineString;
 
 public class GraticuleDataStore implements DataStore {
     static final Logger log = Logger.getLogger("GraticuleDataStore");
-    private final ReferencedEnvelope bounds;
-    private final List<Double> steps;
-    private final HashMap<Name, SimpleFeatureSource> sources = new HashMap<>();
+     final ReferencedEnvelope bounds;
+     ArrayList<Double> steps;
+    final Name name;
 
-    private final ArrayList<Name> names = new ArrayList<>();
+
     private static GraticuleHandler handler;
+     final public SimpleFeatureType schema;
 
     public GraticuleDataStore(ReferencedEnvelope env, List<Double> steps) {
-        this.steps = steps;
+        this.steps = new ArrayList<>(steps);
         this.bounds = env;
-
-        int level = 0;
         Collections.sort(steps);
-        for (double step : steps) {
-            Name name = new NameImpl(Double.toString(step).replace('.', '_'));
-            SimpleFeatureType schema = buildType(name, bounds.getCoordinateReferenceSystem());
-            log.fine("Creating graticule with name " + name);
-            names.add(name);
-
-            List<OrthoLineDef> lineDefs =
-                    Arrays.asList(
-                            // vertical (longitude) lines
-                            new OrthoLineDef(LineOrientation.VERTICAL, level, step),
-                            // horizontal (latitude) lines
-                            new OrthoLineDef(LineOrientation.HORIZONTAL, level, step));
-
-            // Specify vertex spacing to get "densified" polygons
-            double vertexSpacing = (bounds.getHeight() / 20); // should be dynamic
-            SimpleFeatureSource grid =
-                    Lines.createOrthoLines(
-                            bounds, lineDefs, vertexSpacing, new LineFeatureBuilder(schema));
-            sources.put(name, grid);
-            level++;
+        StringBuilder n = new StringBuilder("Graticule(");
+        n.append(steps.get(0));
+        if(steps.size()>1) {
+            n.append("-").append(steps.get(steps.size() - 1));
         }
+        n.append(")");
+        this.name = cleanName(new NameImpl(n.toString()));
+        schema = buildType(n.toString(), bounds.getCoordinateReferenceSystem());
     }
 
-    private static SimpleFeatureType buildType(Name name, CoordinateReferenceSystem crs) {
-        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        tb.setName(name);
-        tb.add(LineFeatureBuilder.DEFAULT_GEOMETRY_ATTRIBUTE_NAME, LineString.class, crs);
-        tb.add(LineFeatureBuilder.ID_ATTRIBUTE_NAME, Integer.class);
-        tb.add(LineFeatureBuilder.LEVEL_ATTRIBUTE_NAME, Integer.class);
-        tb.add(LineFeatureBuilder.VALUE_LABEL_NAME, String.class);
-        tb.add(LineFeatureBuilder.VALUE_ATTRIBUTE_NAME, Double.class);
-        tb.add(LineFeatureBuilder.ORIENTATION, Boolean.class);
 
-        return tb.buildFeatureType();
-    }
 
     /**
      * Information about this service.
@@ -98,7 +69,11 @@ public class GraticuleDataStore implements DataStore {
 
         DefaultServiceInfo info = new DefaultServiceInfo();
         info.setDescription("Features from " + getClass().getSimpleName());
-        info.setSchema(FeatureTypes.DEFAULT_NAMESPACE);
+        try {
+            info.setSchema(new URI(name.getNamespaceURI()));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
         return info;
     }
 
@@ -154,7 +129,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public List<Name> getNames() throws IOException {
-        return new ArrayList<Name>(sources.keySet());
+        return Collections.singletonList(name);
     }
 
     /**
@@ -168,8 +143,8 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public SimpleFeatureType getSchema(Name name) throws IOException {
-        log.finest("asking for " + name + "'s schema");
-        return sources.get(cleanName(name)).getSchema();
+
+        return schema;
     }
 
     /**
@@ -234,7 +209,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public String[] getTypeNames() throws IOException {
-        return (String[]) sources.keySet().stream().map(x -> x.toString()).toArray(String[]::new);
+        return new String[]{name.toString()} ;
     }
 
     /**
@@ -246,7 +221,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public SimpleFeatureType getSchema(String typeName) throws IOException {
-        return getSchema(new NameImpl(typeName));
+        return schema;
     }
 
     /**
@@ -277,7 +252,7 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public SimpleFeatureSource getFeatureSource(String typeName) throws IOException {
-        return sources.get(new NameImpl(typeName));
+        return new GraticuleFeatureSource(this, steps, bounds, schema);
     }
 
     /**
@@ -294,7 +269,8 @@ public class GraticuleDataStore implements DataStore {
      */
     @Override
     public SimpleFeatureSource getFeatureSource(Name typeName) throws IOException {
-        return sources.get(cleanName(typeName));
+
+        return new GraticuleFeatureSource(this, steps, bounds, schema);
     }
 
     /**
@@ -320,8 +296,7 @@ public class GraticuleDataStore implements DataStore {
             Query query, Transaction transaction) throws IOException {
         Name typeName = new NameImpl(query.getTypeName());
         log.finest("requesting feature reader for " + typeName);
-        return new CollectionFeatureReader(
-                sources.get(typeName).getFeatures(query), sources.get(typeName).getSchema());
+        return new GraticuleFeatureReader(this, query);
     }
 
     /**
@@ -387,5 +362,25 @@ public class GraticuleDataStore implements DataStore {
     @Override
     public LockingManager getLockingManager() {
         return null;
+    }
+
+    private SimpleFeatureType buildType(String name, CoordinateReferenceSystem crs) {
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.setName(name);
+
+        tb.add(LineFeatureBuilder.ID_ATTRIBUTE_NAME, Integer.class);
+        tb.add(LineFeatureBuilder.DEFAULT_GEOMETRY_ATTRIBUTE_NAME, LineString.class, crs);
+        tb.setDefaultGeometry(LineFeatureBuilder.DEFAULT_GEOMETRY_ATTRIBUTE_NAME);
+        tb.setCRS(crs);
+        tb.add(LineFeatureBuilder.LEVEL_ATTRIBUTE_NAME, Integer.class);
+        tb.add(LineFeatureBuilder.VALUE_LABEL_NAME, String.class);
+        tb.add(LineFeatureBuilder.VALUE_ATTRIBUTE_NAME, Double.class);
+        tb.add(LineFeatureBuilder.ORIENTATION_NAME, Boolean.class);
+        SimpleFeatureType type = tb.buildFeatureType();
+        return type;
+    }
+
+    public List<Double> getSteps() {
+        return steps;
     }
 }

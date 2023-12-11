@@ -101,7 +101,7 @@ public class GraticuleLabelPointProcess implements VectorProcess {
             SimpleFeature feature, ReferencedEnvelope bounds, PositionEnum position) {
 
         LineString line = (LineString) feature.getDefaultGeometry();
-        boolean horizontal = (boolean) feature.getAttribute(LineFeatureBuilder.ORIENTATION);
+        boolean horizontal = (boolean) feature.getAttribute(LineFeatureBuilder.ORIENTATION_NAME);
         Point p = null;
         Geometry box = JTS.toGeometry(bounds);
         // find the location of the new point

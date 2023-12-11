@@ -8,7 +8,7 @@
 
 <beans>
 
-  <bean class="org.geoserver.platform.ModuleStatusImpl">
+  <bean id="webDemosExtension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-web-demo"/>
     <constructor-arg index="1" value="GeoServer Web Demos"/>
   </bean>

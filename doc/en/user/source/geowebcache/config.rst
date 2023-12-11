@@ -89,7 +89,7 @@ Guava Cache
 Hazelcast Cache
 +++++++++++++++
 
-`Hazelcast <http://docs.hazelcast.org/docs/3.3/manual/html/>`_ is an open-source API for distributed structures like clusters. GWC supports this API for creating a distributed in memory cache. 
+`Hazelcast <https://docs.hazelcast.com/hazelcast/5.3/configuration/configuring-declaratively>`_ is an open-source API for distributed structures like clusters. GWC supports this API for creating a distributed in memory cache.
 At the time of writing, Hazelcast requires the installation of the *gs-gwc-distributed* plugin in the `WEB_INF/lib` directory of your geoserver application. This plugin can be found at the following `link <https://build.geoserver.org/geoserver/main/community-latest/>`_.
 
 There are 2 ways for configuring distributed caching in GWC:
@@ -113,13 +113,11 @@ Here can be found an example file:
 
 		.. code-block:: xml
 			
-			<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-2.3.xsd"
-					   xmlns="http://www.hazelcast.com/schema/config"
-					   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-			  <group>
-				<name>cacheCluster</name>
-				<password>geoserverCache</password>
-			  </group>
+			<hazelcast xmlns="http://www.hazelcast.com/schema/config"
+					   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					   xsi:schemaLocation="http://www.hazelcast.com/schema/config
+										   https://hazelcast.com/schema/config/hazelcast-config-5.3.xsd">
+			  <cluster-name>gsCacheCluster</cluster-name>
 
 			  <network>
 				<!--
@@ -143,8 +141,7 @@ Here can be found an example file:
 			  </network>
 			  
 			  <map name="CacheProviderMap">
-					<eviction-policy>LRU</eviction-policy>
-					<max-size policy="USED_HEAP_SIZE">16</max-size>
+					<eviction eviction-policy="LRU" max-size-policy="USED_HEAP_SIZE" size="16" />
 			  </map>
 
 			</hazelcast>
@@ -214,10 +211,9 @@ In this section are described other available configuration parameters to config
 					entries in the near cache. A value of Integer.MAX_VALUE indicates no limit on the maximum 
 					size.
 				  -->
-				  <max-size>5000</max-size>
 				  <time-to-live-seconds>0</time-to-live-seconds>
 				  <max-idle-seconds>60</max-idle-seconds>
-				  <eviction-policy>LRU</eviction-policy>
+				  <eviction eviction-policy="LRU" size="5000" />
 
 				  <!--
 					Indicates if a cached entry can be evicted if the same value is modified in the Hazelcast Map. Default is true.

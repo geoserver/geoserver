@@ -14,7 +14,7 @@
   <name>GeoServer Hazelcast Clustering Module</name>
 
   <properties>
-    <hazelcast.web.version>3.8.3</hazelcast.web.version>
+    <hazelcast.web.version>4.0</hazelcast.web.version>
     <metrics.version>4.0.3</metrics.version>
   </properties>
 

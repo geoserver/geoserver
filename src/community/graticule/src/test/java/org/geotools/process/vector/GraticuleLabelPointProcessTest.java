@@ -1,50 +1,29 @@
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 package org.geotools.process.vector;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import org.geotools.api.data.DataStore;
-import org.geotools.api.data.DataStoreFinder;
 import org.geotools.api.feature.simple.SimpleFeature;
-import org.geotools.data.graticule.GraticuleDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
 import org.locationtech.jts.geom.Point;
 
-public class GraticuleLabelPointProcessTest {
-    DataStore store;
-    ReferencedEnvelope bounds;
-
-    @Before
-    public void setup() throws IOException {
-        HashMap<String, Object> params = new HashMap<>();
-        ArrayList<Double> steps = new ArrayList<>();
-        steps.add(10.0);
-        steps.add(30.0);
-        params.put(GraticuleDataStoreFactory.STEPS.key, steps);
-        bounds = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
-        bounds.expandToInclude(-180, -90);
-        bounds.expandToInclude(180, 90);
-        params.put(GraticuleDataStoreFactory.BOUNDS.key, bounds);
-        params.put(GraticuleDataStoreFactory.TYPE.key, GraticuleDataStoreFactory.TYPE.sample);
-        store = DataStoreFinder.getDataStore(params);
-        assertNotNull(store);
-    }
+public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
 
     @Test
     public void testBothLabelGrid() throws Exception {
-
-        GraticuleLabelPointProcess.PositionEnum pos = GraticuleLabelPointProcess.PositionEnum.BOTH;
+        String pos = "both";
         ReferencedEnvelope box = bounds;
-
-        runLabels(box, pos);
+        SimpleFeatureCollection features = runLabels(box, pos);
     }
 
     @Test
@@ -52,7 +31,7 @@ public class GraticuleLabelPointProcessTest {
         ReferencedEnvelope bbox =
                 new ReferencedEnvelope(
                         -260.15625, 279.84375, -97.734375, 172.265625, DefaultGeographicCRS.WGS84);
-        runLabels(bbox, GraticuleLabelPointProcess.PositionEnum.BOTH);
+        runLabels(bbox, "both");
     }
 
     @Test
@@ -64,10 +43,44 @@ public class GraticuleLabelPointProcessTest {
                         -0.615234375,
                         33.134765625,
                         DefaultGeographicCRS.WGS84);
-        runLabels(bbox, GraticuleLabelPointProcess.PositionEnum.BOTH);
+        runLabels(bbox, "both");
+        SimpleFeatureCollection features = runLabels(bbox, "topright");
+        checkLabels(features, "topright");
+        runLabels(bbox, "bottomLeft");
     }
 
-    private void runLabels(ReferencedEnvelope box, GraticuleLabelPointProcess.PositionEnum pos)
+    private void checkLabels(SimpleFeatureCollection features, String placement) {
+        GraticuleLabelPointProcess.PositionEnum pos =
+                GraticuleLabelPointProcess.PositionEnum.byName(placement).get();
+        boolean left = false, top = false;
+        switch (pos) {
+            case TOPLEFT:
+                left = true;
+                top = true;
+                break;
+            case TOPRIGHT:
+                left = false;
+                top = true;
+                break;
+            case BOTTOMLEFT:
+                left = true;
+                top = false;
+                break;
+            case BOTTOMRIGHT:
+                left = false;
+                top = false;
+                break;
+        }
+        try (SimpleFeatureIterator itr = features.features()) {
+            while (itr.hasNext()) {
+                SimpleFeature f = itr.next();
+                Assert.assertEquals("wrong left", left, f.getAttribute("left"));
+                Assert.assertEquals("wrong top", top, f.getAttribute("top"));
+            }
+        }
+    }
+
+    private SimpleFeatureCollection runLabels(ReferencedEnvelope box, String pos)
             throws IOException {
         SimpleFeatureCollection features = store.getFeatureSource("10_0").getFeatures();
 
@@ -79,7 +92,7 @@ public class GraticuleLabelPointProcessTest {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
                 Point p = (Point) feature.getAttribute("element");
-                System.out.println(feature);
+
                 boolean top = (boolean) feature.getAttribute("top");
                 boolean left = (boolean) feature.getAttribute("left");
                 boolean horizontal = (boolean) feature.getAttribute("horizontal");
@@ -117,5 +130,6 @@ public class GraticuleLabelPointProcessTest {
                 }
             }
         }
+        return features;
     }
 }

@@ -1,10 +1,10 @@
-package org.geoserver.web.data.store.graticule;
-
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+
+package org.geoserver.web.data.store.graticule;
+
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

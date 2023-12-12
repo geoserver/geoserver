@@ -1,6 +1,13 @@
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 package org.geotools.process.vector;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.logging.Logger;
 import org.geotools.api.feature.GeometryAttribute;
 import org.geotools.api.feature.Property;
@@ -33,12 +40,24 @@ public class GraticuleLabelPointProcess implements VectorProcess {
     public static final double DELTA = 0.0;
 
     public enum PositionEnum {
-        TOPLEFT,
-        BOTTOMLEFT,
-        TOPRIGHT,
-        BOTTOMRIGHT,
-        BOTH,
-        NONE
+        TOPLEFT("topleft"),
+        BOTTOMLEFT("bottomleft"),
+        TOPRIGHT("topright"),
+        BOTTOMRIGHT("bottomright"),
+        BOTH("both"),
+        NONE("none");
+
+        private final String value;
+
+        PositionEnum(String position) {
+            value = position;
+        }
+
+        static Optional<PositionEnum> byName(String givenName) {
+            return Arrays.stream(values())
+                    .filter(it -> it.name().equalsIgnoreCase(givenName))
+                    .findAny();
+        }
     }
 
     SimpleFeatureType schema;
@@ -48,10 +67,18 @@ public class GraticuleLabelPointProcess implements VectorProcess {
     public SimpleFeatureCollection execute(
             @DescribeParameter(name = "grid") SimpleFeatureCollection features,
             @DescribeParameter(name = "boundingBox") ReferencedEnvelope bounds,
-            @DescribeParameter(name = "positions", min = 0, max = 1) PositionEnum position)
+            @DescribeParameter(name = "positions", min = 0, max = 1) String placement)
             throws ProcessException {
-        if (position == null) {
+        PositionEnum position;
+        if (placement == null) {
             position = PositionEnum.BOTH;
+        } else {
+            Optional<PositionEnum> opt = PositionEnum.byName(placement);
+            if (opt.isPresent()) {
+                position = opt.get();
+            } else {
+                position = PositionEnum.BOTH;
+            }
         }
         log.finest("Buiilding labels for " + features.size() + " lines, across " + bounds);
         schema = buildNewSchema(features.getSchema());

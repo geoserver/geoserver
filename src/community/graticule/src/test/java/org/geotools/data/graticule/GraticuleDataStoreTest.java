@@ -1,47 +1,25 @@
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 package org.geotools.data.graticule;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import org.geotools.api.data.DataStore;
-import org.geotools.api.data.DataStoreFinder;
 import org.geotools.api.feature.simple.SimpleFeatureType;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.Before;
+import org.geotools.process.vector.GraticuleLabelTestSupport;
 import org.junit.Test;
 
-public class GraticuleDataStoreTest {
-
-    DataStore datastore;
-
-    @Before
-    public void setup() throws IOException {
-        HashMap<String, Object> params = new HashMap<>();
-        ArrayList<Double> steps = new ArrayList<>();
-        steps.add(10.0);
-        steps.add(30.0);
-        params.put(GraticuleDataStoreFactory.STEPS.key, steps);
-        ReferencedEnvelope bounds = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
-        bounds.expandToInclude(-180, -90);
-        bounds.expandToInclude(180, 90);
-        params.put(GraticuleDataStoreFactory.BOUNDS.key, bounds);
-        params.put(GraticuleDataStoreFactory.TYPE.key, GraticuleDataStoreFactory.TYPE.sample);
-        datastore = DataStoreFinder.getDataStore(params);
-        assertNotNull(datastore);
-    }
+public class GraticuleDataStoreTest extends GraticuleLabelTestSupport {
 
     @Test
     public void testCreation() throws Exception {
 
-        String[] names = datastore.getTypeNames();
-        for (String name : names) {
-            System.out.println(name);
-        }
-        SimpleFeatureType schema = datastore.getSchema("10_0");
+        String[] names = store.getTypeNames();
+        assertEquals(1, names.length);
+        SimpleFeatureType schema = store.getSchema("10_0");
         assertNotNull(schema);
-        System.out.println(schema);
     }
 }

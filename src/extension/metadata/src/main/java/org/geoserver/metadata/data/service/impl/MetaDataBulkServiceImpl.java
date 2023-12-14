@@ -76,7 +76,7 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
                 }
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
         } finally {
             if (progressKey != null) {
                 globalModelService.put(progressKey, 1.0f);
@@ -117,7 +117,7 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
 
                 LOGGER.log(Level.INFO, "Fixed layer " + info.getName() + " succesfully.");
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to fix layer: " + info.getName(), e);
+                LOGGER.log(Level.WARNING, "Failed to fix layer: " + info.getName(), e);
             }
         }
         if (progressKey != null) {
@@ -162,7 +162,7 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
                     try {
                         geonetworkService.importLayer(rInfo, complex, geonetwork, uuid);
                     } catch (IOException | IllegalArgumentException e) {
-                        LOGGER.log(Level.SEVERE, "Exception importing layer " + uuid, e);
+                        LOGGER.log(Level.WARNING, "Exception importing layer " + uuid, e);
                         succesful = false;
                     }
                 }
@@ -193,7 +193,7 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
                 templateService.save(template);
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Exception saving templates.", e);
+            LOGGER.log(Level.WARNING, "Exception saving templates.", e);
             succesful = false;
         } finally {
             if (progressKey != null) {

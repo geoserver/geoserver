@@ -145,17 +145,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             try (InputStream in = file.in()) {
                 readConfiguration(in, mapper);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                LOGGER.log(Level.FINE, e.getMessage(), e);
             }
             try (InputStream in = file.in()) {
                 readMapping(in, mapper);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                LOGGER.log(Level.FINE, e.getMessage(), e);
             }
             try (InputStream in = file.in()) {
                 readingCustomNativeMapping(in, mapper);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                LOGGER.log(Level.FINE, e.getMessage(), e);
             }
         }
         // add feature catalog
@@ -163,7 +163,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 getClass().getResourceAsStream(MetadataConstants.FEATURE_CATALOG_CONFIG_FILE)) {
             readConfiguration(in, mapper);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.log(Level.FINE, e.getMessage(), e);
         }
         // add WCS field
         if (configuration.isWcsField()) {
@@ -171,7 +171,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     getClass().getResourceAsStream(MetadataConstants.WCS_FIELD_CONFIG_FILE)) {
                 readConfiguration(in, mapper);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                LOGGER.log(Level.FINE, e.getMessage(), e);
             }
         }
 
@@ -302,7 +302,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 }
 
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                LOGGER.log(Level.FINE, e.getMessage(), e);
             }
         }
     }

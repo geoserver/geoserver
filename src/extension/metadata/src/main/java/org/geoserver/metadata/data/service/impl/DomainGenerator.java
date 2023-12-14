@@ -113,7 +113,7 @@ public class DomainGenerator implements ComplexAttributeGenerator {
             }
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Failed to retrieve domain for " + fti.getName(), e);
+            LOGGER.log(Level.WARNING, "Failed to retrieve domain for " + fti.getName(), e);
         }
     }
 
@@ -141,7 +141,7 @@ public class DomainGenerator implements ComplexAttributeGenerator {
         try {
             dataAccess = DataAccessFinder.getDataStore(connectionParams);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Failed to access datastore for " + fti.getName(), e);
+            LOGGER.log(Level.WARNING, "Failed to access datastore for " + fti.getName(), e);
             dataAccess = null;
         }
         return dataAccess;

@@ -114,3 +114,11 @@ nav:
     - introduction/history.md
     - introduction/gettinginvolved.md
     - introduction/license.md
+  - 'Installation':
+    - installation/index.md
+    - installation/linux.md
+    - installation/win_binary.md
+    - installation/win_installer.md
+    - installation/war.md
+    - installation/docker.md
+    - installation/upgrade.md

@@ -21,23 +21,18 @@ This will run the container, with the data directory included with the container
       These instructions are for GeoServer |version|-SNAPSHOT which is provided as a :website:`Nightly <release/main>` release.
       Testing a Nightly release is a great way to try out new features, and test community modules.
       Nightly releases change on an ongoing basis and are not suitable for a production environment.
+   
+      .. parsed-literal::
+
+            docker pull docker.osgeo.org/geoserver:|version|.x
       
    .. only:: not snapshot
 
       These instructions are for GeoServer |release|.
-   
-   .. only:: not snapshot
-   
+      
       .. parsed-literal::
 
          docker pull docker.osgeo.org/geoserver:|release|
-
-   .. only:: snapshot
-   
-      .. parsed-literal::
-
-         docker pull docker.osgeo.org/geoserver:|version|.x
-   
 
 #. Run the container
 

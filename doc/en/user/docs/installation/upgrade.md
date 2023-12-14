@@ -33,7 +33,8 @@ The general GeoServer upgrade process is as follows:
 
 The ArcGRID output format for WCS has been removed in GeoServer 2.24.0. If you have been using this format, you will need to switch to another text based format, such as GML coverage, or can get back the ArcGRID format by installing the [WCS GDAL](../../user/community/gdal/index.md) community module and use a configuration like the following (please adapt to your system):
 
-``` xml<ToolConfiguration>
+``` xml
+<ToolConfiguration>
   <executable>gdal_translate</executable>
   <environment>
     <variable name="GDAL_DATA" value="/usr/local/share/gdal" />
@@ -48,8 +49,8 @@ The ArcGRID output format for WCS has been removed in GeoServer 2.24.0. If you h
     </Format>
   </formats>
 </ToolConfiguration>
-
 ```
+
 ### Disk Quota HSQL DB usage (GeoServer 2.24 and newer)
 
 As of GeoServer 2.24, H2 DB support will be replaced with HSQL DB for Tile Caching / Disk Quota store.

@@ -15,52 +15,42 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
     !!! abstract "Nightly Build"
 
-        This documentation covers GeoServer -SNAPSHOT which is under development and is available as a `Nightly <release/main>`{.interpreted-text role="website"} release.
+        This documentation covers GeoServer 2.25-SNAPSHOT which is under development and is available as a `Nightly <release/main>`{.interpreted-text role="website"} release.
     
-        Nightly releases are used to test out try out new features and test community modules and do not provide a windows installer. When GeoServer .0 is released a windows installer will be provided.
+        Nightly releases are used to test out try out new features and test community modules and do not provide a windows installer. When GeoServer 2.25.0 is released a windows installer will be provided.
 
 
     !!! abstract "Release"
 
-        These instructions are for GeoServer .
+        These instructions are for GeoServer 2.25-RC.
 
 
 4.  Click the link for the :**Windows Installer**.
 
-    <figure>
-    <img src="images/win_download.png" alt="images/win_download.png" />
-    <figcaption>Downloading the Windows installer</figcaption>
-    </figure>
+    ![](images/win_download.png)
+    *Downloading the Windows installer*
 
 5.  After downloading, double-click the file to launch.
 
 6.  At the Welcome screen, click :**Next**.
 
-    <figure>
-    <img src="images/win_welcome.png" alt="images/win_welcome.png" />
-    <figcaption>Welcome screen</figcaption>
-    </figure>
+    ![](images/win_welcome.png)
+    *Welcome screen*
 
 7.  Read the [License](../../user/introduction/license.md) and click :**I Agree**.
 
-    <figure>
-    <img src="images/win_license.png" alt="images/win_license.png" />
-    <figcaption>GeoServer license</figcaption>
-    </figure>
+    ![](images/win_license.png)
+    *GeoServer license*
 
 8.  Select the directory of the installation, then click :**Next**.
 
-    <figure>
-    <img src="images/win_installdir.png" alt="images/win_installdir.png" />
-    <figcaption>GeoServer install directory</figcaption>
-    </figure>
+    ![](images/win_installdir.png)
+    *GeoServer install directory*
 
 9.  Select the Start Menu directory name and location, then click :**Next**.
 
-    <figure>
-    <img src="images/win_startmenu.png" alt="images/win_startmenu.png" />
-    <figcaption>Start menu location</figcaption>
-    </figure>
+    ![](images/win_startmenu.png)
+    *Start menu location*
 
 10. Enter the path to a **valid Java Runtime Environment (JRE)**. GeoServer requires a valid JRE in order to run, so this step is required. The installer will inspect your system and attempt to automatically populate this box with a JRE if it is found, but otherwise you will have to enter this path manually. When finished, click :**Next**.
 
@@ -79,59 +69,43 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
         For more information about Java and GeoServer, please see the section on [Java Considerations](../../user/production/java.md).
 
 
-    <figure>
-    <img src="images/win_jre.png" alt="images/win_jre.png" />
-    <figcaption>Selecting a valid JRE</figcaption>
-    </figure>
+    ![](images/win_jre.png)
+    *Selecting a valid JRE*
 
 11. Enter the path to your GeoServer data directory or select the default. If this is your first time using GeoServer, select the :**Default data directory`. When finished, click :guilabel:`Next**.
 
-    <figure>
-    <img src="images/win_datadir.png" alt="images/win_datadir.png" />
-    <figcaption>Setting a GeoServer data directory</figcaption>
-    </figure>
+    ![](images/win_datadir.png)
+    *Setting a GeoServer data directory*
 
 12. Enter the username and password for administration of GeoServer. GeoServer's [Web administration interface](../../user/webadmin/index.md) requires authentication for management, and what is entered here will become those administrator credentials. The defaults are :**admin / geoserver`. It is recommended to change these from the defaults. When finished, click :guilabel:`Next**.
 
-    <figure>
-    <img src="images/win_creds.png" alt="images/win_creds.png" />
-    <figcaption>Setting the username and password for GeoServer administration</figcaption>
-    </figure>
+    ![](images/win_creds.png)
+    *Setting the username and password for GeoServer administration*
 
 13. Enter the port that GeoServer will respond on. This affects the location of the GeoServer [Web administration interface](../../user/webadmin/index.md), as well as the endpoints of the GeoServer services such as [Web Map Service (WMS)](../../user/services/wms/index.md) and [Web Feature Service (WFS)](../../user/services/wfs/index.md). The default port is :**8080`, though any valid and unused port will work. When finished, click :guilabel:`Next**.
 
-    <figure>
-    <img src="images/win_port.png" alt="images/win_port.png" />
-    <figcaption>Setting the GeoServer port</figcaption>
-    </figure>
+    ![](images/win_port.png)
+    *Setting the GeoServer port*
 
 14. Select whether GeoServer should be run manually or installed as a service. When run manually, GeoServer is run like a standard application under the current user. When installed as a service, GeoServer is integrated into Windows Services, and thus is easier to administer. If running on a server, or to manage GeoServer as a service, select :**Install as a service`. Otherwise, select :guilabel:`Run manually`. When finished, click :guilabel:`Next**.
 
-    <figure>
-    <img src="images/win_service.png" alt="images/win_service.png" />
-    <figcaption>Installing GeoServer as a service</figcaption>
-    </figure>
+    ![](images/win_service.png)
+    *Installing GeoServer as a service*
 
 15. Review your selections and click the :**Back` button if any changes need to be made. Otherwise, click :guilabel:`Install**.
 
-    <figure>
-    <img src="images/win_review.png" alt="images/win_review.png" />
-    <figcaption>Verifying settings</figcaption>
-    </figure>
+    ![](images/win_review.png)
+    *Verifying settings*
 
 16. GeoServer will install on your system.
 
-    <figure>
-    <img src="images/win_install_process.png" alt="images/win_install_process.png" />
-    <figcaption>Install progress</figcaption>
-    </figure>
+    ![](images/win_install_process.png)
+    *Install progress*
 
 17. When finished, click :**Finish** to close the installer.
 
-    <figure>
-    <img src="images/win_completing.png" alt="images/win_completing.png" />
-    <figcaption>Completing</figcaption>
-    </figure>
+    ![](images/win_completing.png)
+    *Completing*
 
 18. If you installed GeoServer as a service, it is already running. Otherwise, you can start GeoServer by going to the Start Menu, and clicking :**Start GeoServer** in the GeoServer folder.
 
@@ -139,10 +113,8 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
     If you see the GeoServer Welcome page, then GeoServer is successfully installed.
 
-    <figure>
-    <img src="images/success.png" alt="images/success.png" />
-    <figcaption>GeoServer Welcome Page</figcaption>
-    </figure>
+    ![](images/success.png)
+    *GeoServer Welcome Page*
 
 ## Uninstallation
 

@@ -15,6 +15,7 @@ img + em, .browser-border + em, .browser-mockup + em {
   column-gap: 2em;
   margin-bottom: 20px;
 }
+/*
 .md-typeset .grid dl {
   display: grid;
   grid-template-columns: repeat(auto-fit,minmax(16rem,1fr));
@@ -50,7 +51,7 @@ img + em, .browser-border + em, .browser-mockup + em {
     width: calc(100vw - 1.2rem - 1.2rem);
   }
 }
-
+*/
 /* definition list used to display general inputs */
 .md-typeset dl dd {
   margin: 10px 0;

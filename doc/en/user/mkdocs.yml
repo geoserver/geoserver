@@ -107,7 +107,7 @@ markdown_extensions:
 
 # Page tree
 nav:
-  - 'GeoServer': index.md
+  - 'User Manual': index.md
   - 'Introduction':
     - introduction/index.md
     - introduction/overview.md

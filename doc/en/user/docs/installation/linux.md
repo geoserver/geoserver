@@ -22,12 +22,12 @@ The platform-independent binary is a GeoServer web application bundled inside [J
 
     !!! abstract "Nightly Build"
 
-        These instructions are for GeoServer -SNAPSHOT which is provided as a `Nightly <release/main>`{.interpreted-text role="website"} release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
+        These instructions are for GeoServer 2.25-SNAPSHOT which is provided as a `Nightly <release/main>`{.interpreted-text role="website"} release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
 
 
     !!! abstract "Release"
 
-        These instructions are for GeoServer .
+        These instructions are for GeoServer 2.25-RC.
 
 
 4.  Select :**Platform Independent Binary` on the download page: :download_release:`bin**
@@ -63,10 +63,8 @@ The platform-independent binary is a GeoServer web application bundled inside [J
 
     If you see the GeoServer Welcome page, then GeoServer is successfully installed.
 
-    <figure>
-    <img src="images/success.png" alt="images/success.png" />
-    <figcaption>GeoServer Welcome Page</figcaption>
-    </figure>
+    ![](images/success.png)
+    *GeoServer Welcome Page*
 
 10. To shut down GeoServer, either close the persistent command-line window, or run the **`shutdown.sh`** file inside the **`bin`** directory.
 

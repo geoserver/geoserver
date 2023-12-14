@@ -14,42 +14,44 @@ This will run the container, with the data directory included with the container
 
     !!! abstract "Nightly Build"
 
-        These instructions are for GeoServer -SNAPSHOT which is provided as a `Nightly <release/main>`{.interpreted-text role="website"} release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
+        These instructions are for GeoServer 2.25-SNAPSHOT which is provided as a `Nightly <release/main>`{.interpreted-text role="website"} release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
     
         ``` text
-        docker pull docker.osgeo.org/geoserver:|version|.x
+        docker pull docker.osgeo.org/geoserver:2.25.x
         ```
+
 
     !!! abstract "Release"
 
-        These instructions are for GeoServer .
+        These instructions are for GeoServer 2.25-RC.
     
         ``` text
-        docker pull docker.osgeo.org/geoserver:|release|
+        docker pull docker.osgeo.org/geoserver:2.25-RC
         ```
+
 
 3.  Run the container
 
     !!! abstract "Release"
 
         ``` text
-        docker run -it -p8080:8080 docker.osgeo.org/geoserver:|release|
+        docker run -it -p8080:8080 docker.osgeo.org/geoserver:2.25-RC
         ```
+
 
     !!! abstract "Nightly Build"
 
         ``` text
-        docker run -it -p8080:8080 docker.osgeo.org/geoserver:|version|.x
+        docker run -it -p8080:8080 docker.osgeo.org/geoserver:2.25.x
         ```
+
 
 4.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
     If you see the GeoServer Welcome page, then GeoServer is successfully installed.
 
-    <figure>
-    <img src="images/success.png" alt="images/success.png" />
-    <figcaption>GeoServer Welcome Page</figcaption>
-    </figure>
+    ![](images/success.png)
+    *GeoServer Welcome Page*
 
 5.  This setup is a quick test to ensure the software is working, but is difficult to use as file data can only be transferred to the data directory included with the container via the REST API.
 
@@ -69,38 +71,40 @@ This will run the container with a local data directory. The data directory will
     !!! abstract "Release"
 
         ``` text
-        docker pull docker.osgeo.org/geoserver:|release|
+        docker pull docker.osgeo.org/geoserver:2.25-RC
         ```
+
 
     !!! abstract "Nightly Build"
 
         ``` text
-        docker pull docker.osgeo.org/geoserver:|version|.x
+        docker pull docker.osgeo.org/geoserver:2.25.x
         ```
+
 
 3.  Run the container
 
     !!! abstract "Release"
 
         ``` text
-        ```    
-        docker run --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:
+        ```
+    
+        docker run --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:2.25-RC
 
 
     !!! abstract "Nightly Build"
 
         ``` text
-        docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|version|.x
+        docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:2.25.x
         ```
+
 
 4.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
     If you see the GeoServer Welcome page, then GeoServer is successfully installed.
 
-    <figure>
-    <img src="images/success.png" alt="images/success.png" />
-    <figcaption>GeoServer Welcome Page</figcaption>
-    </figure>
+    ![](images/success.png)
+    *GeoServer Welcome Page*
 
 5.  This setup allows direct management of the file data shared with the container. This setup is also easy to update to use the latest container.
 
@@ -111,8 +115,9 @@ You can add GeoServer Extensions - the container will download them during start
 !!! abstract "Release"
 
     ``` text
-    ```    
-    docker run -it -p8080:8080 \\ --env INSTALL_EXTENSIONS=true \\ --env STABLE_EXTENSIONS="ysld,h2" \\ docker.osgeo.org/geoserver:
+    ```
+    
+    docker run -it -p8080:8080 \\ --env INSTALL_EXTENSIONS=true \\ --env STABLE_EXTENSIONS="ysld,h2" \\ docker.osgeo.org/geoserver:2.25-RC
 
 
 !!! abstract "Nightly Build"
@@ -121,8 +126,9 @@ You can add GeoServer Extensions - the container will download them during start
     docker run -it -p8080:8080 \\
       \-\-env INSTALL_EXTENSIONS=true \\
       \-\-env STABLE_EXTENSIONS="ysld,h2" \\
-      docker.osgeo.org/geoserver:|version|.x
+      docker.osgeo.org/geoserver:2.25.x
     ```
+
 
 This will download and install the YSLD and H2 extension.
 
@@ -143,15 +149,16 @@ Here is a list of available extensions (taken from the [build server](https://bu
 
 Working with a Nightly build is a good way to test community modules and provide feedback to developers working on new functionality.
 
-To work with community modules you must be using the GeoServer .x nightly build that matches the community module build:
+To work with community modules you must be using the GeoServer 2.25.x nightly build that matches the community module build:
 
 ``` text
 docker run -it -p8080:8080 \\
 \-\-env INSTALL_EXTENSIONS=true \\
 \-\-env STABLE_EXTENSIONS="ysld,h2" \\
 \-\-env COMMUNITY_EXTENSIONS="ogcapi-features,ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
-docker.osgeo.org/geoserver:|version|.x
+docker.osgeo.org/geoserver:2.25.x
 ```
+
 For the current list see GeoServer [build server](https://build.geoserver.org/geoserver/main/community-latest/).
 
     activeMQ-broker            jdbcconfig                 pgraster                    

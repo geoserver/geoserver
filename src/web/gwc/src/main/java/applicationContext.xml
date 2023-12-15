@@ -7,7 +7,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  <bean class="org.geoserver.platform.ModuleStatusImpl">
+  <bean id="gwcWebExtension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-web-gwc"/>
     <constructor-arg index="1" value="GeoServer Web UI GeoWebCache"/>
   </bean>

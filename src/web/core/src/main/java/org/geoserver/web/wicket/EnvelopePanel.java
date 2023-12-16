@@ -18,6 +18,7 @@ import org.apache.wicket.validation.ValidationError;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
+import org.geotools.util.Converters;
 import org.locationtech.jts.geom.Envelope;
 
 /**
@@ -159,7 +160,13 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
     }
 
     private void updateFields() {
-        ReferencedEnvelope e = getModelObject();
+        Object o = getModelObject();
+        ReferencedEnvelope e;
+        if (o instanceof ReferencedEnvelope) {
+            e = getModelObject();
+        } else {
+            e = Converters.convert(o, ReferencedEnvelope.class);
+        }
         if (e != null) {
             this.minX = e.getMinX();
             this.minY = e.getMinY();

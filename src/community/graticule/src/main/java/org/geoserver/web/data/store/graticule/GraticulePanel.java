@@ -5,7 +5,6 @@
 
 package org.geoserver.web.data.store.graticule;
 
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
@@ -57,6 +56,8 @@ public class GraticulePanel extends Panel {
         steps = addTextPanel(paramsModel, "steps", true);
 
         // bounding box
+        // deseialise bounds
+
         add(
                 bounds =
                         new EnvelopePanel(
@@ -64,7 +65,7 @@ public class GraticulePanel extends Panel {
                                 new MapModel<org.geotools.geometry.jts.ReferencedEnvelope>(
                                         paramsModel, "bounds")));
 
-        bounds.setDefaultModelObject(new ReferencedEnvelope(DEFAULT_CRS));
+        // bounds.setDefaultModelObject(new ReferencedEnvelope(DEFAULT_CRS));
         bounds.setRequired(true);
         bounds.setCRSFieldVisible(true);
         bounds.setCrsRequired(true);

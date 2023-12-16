@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.HashMap;
@@ -149,6 +150,11 @@ public class MapMLControllerTest extends WMSTestSupport {
         ReferencedEnvelope webMercEnv = new ReferencedEnvelope(x1, x2, y1, y2, webMerc);
         lgi.setBounds(webMercEnv);
         catalog.save(lgi);
+    }
+
+    @Before
+    public void resetLayers() throws IOException {
+        revertLayer(SystemTestData.ROAD_SEGMENTS);
     }
 
     @Test
@@ -506,9 +512,8 @@ public class MapMLControllerTest extends WMSTestSupport {
         org.w3c.dom.Document doc = getMapML(path);
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
-        URL url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
-        String host = url.getHost();
-        assertTrue(host.equalsIgnoreCase("{s}.example.com"));
+        String url = xpath.evaluate("//html:map-link[@rel='image']/@tref", doc);
+        assertTrue(url.startsWith("http://{s}.example.com"));
         assertXpathEvaluatesTo("1", "count(//html:map-datalist[@id='servers'])", doc);
         assertXpathEvaluatesTo(
                 "1",
@@ -523,9 +528,8 @@ public class MapMLControllerTest extends WMSTestSupport {
                 "1", "count(//html:map-datalist/html:map-option[@value='server3'])", doc);
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
-        url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
-        host = url.getHost();
-        assertTrue(host.equalsIgnoreCase("{s}.example.com"));
+        url = xpath.evaluate("//html:map-link[@rel='query']/@tref", doc);
+        assertTrue(url.startsWith("http://{s}.example.com"));
     }
 
     @Test

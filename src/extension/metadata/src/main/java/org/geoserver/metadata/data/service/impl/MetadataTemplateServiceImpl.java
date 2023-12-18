@@ -114,13 +114,13 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
                                     persister.load(inTemplate, MetadataTemplate.class);
                             templates.add(template);
                         } catch (StreamException | IOException e) {
-                            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                            LOGGER.log(Level.WARNING, e.getMessage(), e);
                         }
                     }
                 } catch (StreamException e) {
                     LOGGER.warning("Priorities file is empty.");
                 } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
                 }
             }
         }
@@ -180,7 +180,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
         try (OutputStream out = getFolder().get(template.getId() + ".xml").out()) {
             persister.save(template, out);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw e;
         }
 
@@ -229,7 +229,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
             try (OutputStream out = getFolder().get(LIST_FILE).out()) {
                 persister.save(priorities, out);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                LOGGER.log(Level.WARNING, e.getMessage(), e);
                 throw e;
             }
         }

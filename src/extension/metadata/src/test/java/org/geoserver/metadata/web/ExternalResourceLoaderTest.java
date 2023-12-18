@@ -33,7 +33,9 @@ public class ExternalResourceLoaderTest extends AbstractWicketMetadataTest {
     private Locale originalLocale;
 
     @Before
-    public void before() throws IOException {
+    @Override
+    public void start() throws Exception {
+        super.start();
         login();
 
         originalLocale = Session.get().getLocale();
@@ -45,10 +47,12 @@ public class ExternalResourceLoaderTest extends AbstractWicketMetadataTest {
     }
 
     @After
-    public void after() throws Exception {
+    @Override
+    public void stop() throws Exception {
         logout();
 
         Session.get().setLocale(originalLocale);
+        super.stop();
     }
 
     @Test

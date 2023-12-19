@@ -65,7 +65,7 @@ public class GraticulePanel extends Panel {
                                 new MapModel<org.geotools.geometry.jts.ReferencedEnvelope>(
                                         paramsModel, "bounds")));
 
-        // bounds.setDefaultModelObject(new ReferencedEnvelope(DEFAULT_CRS));
+        bounds.setDefaultModelObject(new ReferencedEnvelope(DEFAULT_CRS));
         bounds.setRequired(true);
         bounds.setCRSFieldVisible(true);
         bounds.setCrsRequired(true);

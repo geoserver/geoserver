@@ -12,11 +12,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-import org.geoserver.catalog.GraticuleHandler;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.FeatureReader;
 import org.geotools.api.data.FeatureWriter;
-import org.geotools.api.data.LockingManager;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.ServiceInfo;
 import org.geotools.api.data.SimpleFeatureSource;
@@ -28,32 +26,37 @@ import org.geotools.api.filter.Filter;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.DefaultServiceInfo;
 import org.geotools.data.graticule.gridsupport.LineFeatureBuilder;
+import org.geotools.data.store.ContentDataStore;
+import org.geotools.data.store.ContentEntry;
+import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.UnsupportedImplementationException;
 import org.locationtech.jts.geom.LineString;
 
-public class GraticuleDataStore implements DataStore {
+public class GraticuleDataStore extends ContentDataStore implements DataStore {
     static final Logger log = Logger.getLogger("GraticuleDataStore");
     final ReferencedEnvelope bounds;
     ArrayList<Double> steps;
     final Name name;
 
-    private static GraticuleHandler handler;
     public final SimpleFeatureType schema;
+    private ContentEntry entry;
 
     public GraticuleDataStore(ReferencedEnvelope env, List<Double> steps) {
         this.steps = new ArrayList<>(steps);
         this.bounds = env;
         Collections.sort(steps);
-        StringBuilder n = new StringBuilder("Graticule(");
+        StringBuilder n = new StringBuilder("Graticule_");
         n.append(steps.get(0));
         if (steps.size() > 1) {
             n.append("-").append(steps.get(steps.size() - 1));
         }
-        n.append(")");
+
         this.name = cleanName(new NameImpl(n.toString()));
         schema = buildType(n.toString(), bounds.getCoordinateReferenceSystem());
+        entry = new ContentEntry(this, this.name);
     }
 
     /**
@@ -157,103 +160,31 @@ public class GraticuleDataStore implements DataStore {
      * @return
      */
     private Name cleanName(Name name) {
-        return new NameImpl(name.getLocalPart());
+        String local = name.getLocalPart().toString().replace('(', '_').replace(')', '_');
+
+        return new NameImpl(name.getNamespaceURI(), local);
     }
 
-    /**
-     * Disposes of this data store and releases any resource that it is using.
-     *
-     * <p>A <code>DataStore</code> cannot be used after <code>dispose</code> has been called,
-     * neither can any data access object it helped create, such as {@link FeatureReader}, {@link
-     * FeatureSource} or {@link FeatureCollection}.
-     *
-     * <p>This operation can be called more than once without side effects.
-     *
-     * <p>There is no thread safety assurance associated with this method. For example, client code
-     * will have to make sure this method is not called while retrieving/saving data from/to the
-     * storage, or be prepared for the consequences.
-     */
     @Override
     public void dispose() {}
 
-    /**
-     * Applies a new schema to the given feature type. This can be used to add or remove properties.
-     * The resulting update will be persistent.
-     *
-     * @param typeName name of the feature type to update
-     * @param featureType the new schema to apply
-     * @throws IOException on error
-     */
     @Override
-    public void updateSchema(String typeName, SimpleFeatureType featureType) throws IOException {}
+    protected List<Name> createTypeNames() throws IOException {
+        return Collections.singletonList(name);
+    }
 
-    /**
-     * Used to permanently remove a schema from the underlying storage
-     *
-     * <p>This functionality is similar to an "drop table" statement in SQL. Implementation is
-     * optional; it may not be supported by all servers or files.
-     *
-     * @param typeName
-     * @throws IOException if the operation failed
-     * @throws UnsupportedOperation if functionality is not available
-     */
+    @Override
+    protected ContentFeatureSource createFeatureSource(ContentEntry contentEntry)
+            throws IOException {
+        return null;
+    }
+
     @Override
     public void removeSchema(String typeName) throws IOException {}
 
-    /**
-     * Gets the names of feature types available in this {@code DataStore}. Please note that this is
-     * not guaranteed to return a list of unique names since the same unqualified name may be
-     * present in separate namespaces within the {@code DataStore}.
-     *
-     * @return names of feature types available in this {@code DataStore}
-     * @throws IOException if data access errors occur
-     */
     @Override
-    public String[] getTypeNames() throws IOException {
-        return new String[] {name.toString()};
-    }
-
-    /**
-     * Gets the type information (schema) for the specified feature type.
-     *
-     * @param typeName the feature type name
-     * @return the requested feature type
-     * @throws IOException if {@code typeName} is not available
-     */
-    @Override
-    public SimpleFeatureType getSchema(String typeName) throws IOException {
-        return schema;
-    }
-
-    /**
-     * Gets a {@code SimpleFeatureSource} for features of the specified type. {@code
-     * SimpleFeatureSource} provides a high-level API for feature operations.
-     *
-     * <p>The resulting {@code SimpleFeatureSource} may implment more functionality as in this
-     * example:
-     *
-     * <pre><code>
-     *
-     * SimpleFeatureSource fsource = dataStore.getFeatureSource("roads");
-     * if (fsource instanceof SimpleFeatureStore) {
-     *     // we have write access to the feature data
-     *     SimpleFeatureStore fstore = (SimpleFeatureStore) fs;
-     * }
-     * else {
-     *     // System.out.println("We do not have write access to roads");
-     * }
-     * </code></pre>
-     *
-     * @param typeName the feature type
-     * @return a {@code SimpleFeatureSource} (or possibly a subclass) providing operations for
-     *     features of the specified type
-     * @throws IOException if data access errors occur
-     * @see SimpleFeatureSource
-     * @see SimpleFeatureStore
-     */
-    @Override
-    public SimpleFeatureSource getFeatureSource(String typeName) throws IOException {
-        return new GraticuleFeatureSource(this, steps, bounds, schema);
+    public ContentFeatureSource getFeatureSource(String typeName) throws IOException {
+        return new GraticuleFeatureSource(entry, new Query(typeName), steps, bounds, schema);
     }
 
     /**
@@ -271,27 +202,10 @@ public class GraticuleDataStore implements DataStore {
     @Override
     public SimpleFeatureSource getFeatureSource(Name typeName) throws IOException {
 
-        return new GraticuleFeatureSource(this, steps, bounds, schema);
+        return new GraticuleFeatureSource(
+                entry, new Query(typeName.getLocalPart()), steps, bounds, schema);
     }
 
-    /**
-     * Gets a {@code FeatureReader} for features selected by the given {@code Query}. {@code
-     * FeatureReader} provies an iterator-style API to feature data.
-     *
-     * <p>The {@code Query} provides the schema for the form of the returned features as well as a
-     * {@code Filter} to constrain the features available via the reader.
-     *
-     * <p>The {@code Transaction} can be used to externalize the state of the {@code DataStore}.
-     * Examples of this include a {@code JDBCDataStore} sharing a connection for use across several
-     * {@code FeatureReader} requests; and a {@code ShapefileDataStore} redirecting requests to an
-     * alternate file during the course of a {@code Transaction}.
-     *
-     * @param query a query providing the schema and constraints for features that the reader will
-     *     return
-     * @param transaction a transaction that this reader will operate against
-     * @return an instance of {@code FeatureReader}
-     * @throws IOException if data access errors occur
-     */
     @Override
     public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(
             Query query, Transaction transaction) throws IOException {
@@ -300,69 +214,10 @@ public class GraticuleDataStore implements DataStore {
         return new GraticuleFeatureReader(this, query);
     }
 
-    /**
-     * Gets a {@code FeatureWriter} to modify features in this {@code DataStore}. {@code
-     * FeatureWriter} provides an iterator style API to features.
-     *
-     * <p>The returned writer does <b>not</b> allow features to be added.
-     *
-     * @param typeName the type name for features that will be accessible
-     * @param filter defines additional constraints on the features that will be accessible
-     * @param transaction the transaction that the returned writer operates against
-     * @return an instance of {@code FeatureWriter}
-     * @throws IOException if data access errors occur
-     * @see #getFeatureWriterAppend(String, Transaction)
-     */
     @Override
     public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(
             String typeName, Filter filter, Transaction transaction) throws IOException {
-        return null;
-    }
-
-    /**
-     * Gets a {@code FeatureWriter} to modify features in this {@code DataStore}. {@code
-     * FeatureWriter} provides an iterator style API to features.
-     *
-     * <p>The returned writer does <b>not</b> allow features to be added.
-     *
-     * @param typeName the type name for features that will be accessible
-     * @param transaction the transaction that the returned writer operates against
-     * @return an instance of {@code FeatureWriter}
-     * @throws IOException if data access errors occur
-     * @see #getFeatureWriterAppend(String, Transaction)
-     */
-    @Override
-    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(
-            String typeName, Transaction transaction) throws IOException {
-        return null;
-    }
-
-    /**
-     * Gets a {@code FeatureWriter} that can add new features to the {@code DataStore}.
-     *
-     * <p>The {@code FeatureWriter} will return {@code false} when its {@code hasNext()} method is
-     * called, but {@code next()} can be used to acquire new features.
-     *
-     * @param typeName name of the feature type for which features will be added
-     * @param transaction the transaction to operate against
-     * @return an instance of {@code FeatureWriter} that can only be used to append new features
-     * @throws IOException if data access errors occur
-     */
-    @Override
-    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriterAppend(
-            String typeName, Transaction transaction) throws IOException {
-        return null;
-    }
-
-    /**
-     * Retrieve a per featureID based locking service from this {@code DataStore}.
-     *
-     * @return an instance of {@code LockingManager}; or {@code null} if locking is handled by the
-     *     {@code DataStore} in a different fashion
-     */
-    @Override
-    public LockingManager getLockingManager() {
-        return null;
+        throw new UnsupportedImplementationException("Grids are not writable");
     }
 
     private SimpleFeatureType buildType(String name, CoordinateReferenceSystem crs) {

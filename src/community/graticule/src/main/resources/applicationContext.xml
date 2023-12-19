@@ -15,7 +15,5 @@
     <property name="icon" value="img/icons/geosilk/ruler.png"/>
     <property name="componentClass" value="org.geoserver.web.data.store.graticule.GraticuleStoreEditPanel"/>
   </bean>
-  <bean id="GraticuleHandler" class="org.geoserver.catalog.GraticuleHandler">
-      <constructor-arg ref="sldHandler"/>
-   </bean>
+
  </beans>

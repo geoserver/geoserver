@@ -31,7 +31,8 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
         ReferencedEnvelope bbox =
                 new ReferencedEnvelope(
                         -260.15625, 279.84375, -97.734375, 172.265625, DefaultGeographicCRS.WGS84);
-        runLabels(bbox, "both");
+        SimpleFeatureCollection features = runLabels(bbox, "both");
+        checkLabels(features, "both");
     }
 
     @Test
@@ -52,7 +53,9 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
     private void checkLabels(SimpleFeatureCollection features, String placement) {
         GraticuleLabelPointProcess.PositionEnum pos =
                 GraticuleLabelPointProcess.PositionEnum.byName(placement).get();
+        System.out.println(pos);
         boolean left = false, top = false;
+        boolean both = false;
         switch (pos) {
             case TOPLEFT:
                 left = true;
@@ -70,12 +73,32 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
                 left = false;
                 top = false;
                 break;
+            case BOTH:
+                both = true;
+                top = true;
+                left = true;
         }
+
         try (SimpleFeatureIterator itr = features.features()) {
             while (itr.hasNext()) {
                 SimpleFeature f = itr.next();
-                Assert.assertEquals("wrong left", left, f.getAttribute("left"));
-                Assert.assertEquals("wrong top", top, f.getAttribute("top"));
+                if (both) {
+                    top = !top;
+                    left = !left;
+                }
+                boolean horizontal = (boolean) f.getAttribute("horizontal");
+                System.out.println(
+                        f.getDefaultGeometry()
+                                + " left:"
+                                + f.getAttribute("left")
+                                + " top:"
+                                + f.getAttribute("top")
+                                + " Horiz:"
+                                + horizontal);
+                boolean obs = (boolean) f.getAttribute("left");
+                if (horizontal) Assert.assertEquals("wrong left", left, obs);
+                obs = (boolean) f.getAttribute("top");
+                if (!horizontal) Assert.assertEquals("wrong top", top, obs);
             }
         }
     }
@@ -130,6 +153,6 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
                 }
             }
         }
-        return features;
+        return results;
     }
 }

@@ -8,6 +8,7 @@ package org.geotools.process.vector;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import org.geotools.api.feature.Property;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -25,6 +26,14 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
         ReferencedEnvelope box = bounds;
         SimpleFeatureCollection features = runLabels(box, pos);
     }
+    @Test
+    public void testBottomBigBBox() throws Exception {
+        ReferencedEnvelope bbox =
+                new ReferencedEnvelope(
+                        -260.15625, 279.84375, -97.734375, 172.265625, DefaultGeographicCRS.WGS84);
+        SimpleFeatureCollection features = runLabels(bbox, "bottom");
+        checkLabels(features, "bottom");
+    }
 
     @Test
     public void testBigBBox() throws Exception {
@@ -33,6 +42,7 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
                         -260.15625, 279.84375, -97.734375, 172.265625, DefaultGeographicCRS.WGS84);
         SimpleFeatureCollection features = runLabels(bbox, "both");
         checkLabels(features, "both");
+
     }
 
     @Test
@@ -58,6 +68,8 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
         boolean both = false;
         switch (pos) {
             case TOPLEFT:
+            case TOP:
+            case LEFT:
                 left = true;
                 top = true;
                 break;
@@ -70,6 +82,8 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
                 top = false;
                 break;
             case BOTTOMRIGHT:
+            case BOTTOM:
+            case RIGHT:
                 left = false;
                 top = false;
                 break;
@@ -83,6 +97,7 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
             while (itr.hasNext()) {
                 SimpleFeature f = itr.next();
                 if (both) {
+                    // for both we get top left, then bottom right in sequence
                     top = !top;
                     left = !left;
                 }
@@ -114,8 +129,11 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
         try (SimpleFeatureIterator iterator = results.features()) {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
-                Point p = (Point) feature.getAttribute("element");
 
+                Point p = (Point) feature.getAttribute("element");
+                for(Property prop:feature.getProperties()){
+                    System.out.println(prop);
+                }
                 boolean top = (boolean) feature.getAttribute("top");
                 boolean left = (boolean) feature.getAttribute("left");
                 boolean horizontal = (boolean) feature.getAttribute("horizontal");

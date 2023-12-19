@@ -45,6 +45,10 @@ public class GraticuleLabelPointProcess implements VectorProcess {
         TOPRIGHT("topright"),
         BOTTOMRIGHT("bottomright"),
         BOTH("both"),
+        TOP("top"),
+        BOTTOM("bottom"),
+        LEFT("left"),
+        RIGHT("right"),
         NONE("none");
 
         private final String value;
@@ -80,7 +84,7 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                 position = PositionEnum.BOTH;
             }
         }
-        log.finest("Buiilding labels for " + features.size() + " lines, across " + bounds);
+        log.fine("Buiilding labels for " + features.size() + " lines, across " + bounds);
         schema = buildNewSchema(features.getSchema());
         builder = new SimpleFeatureBuilder(schema);
         DefaultFeatureCollection results = new DefaultFeatureCollection();
@@ -139,6 +143,8 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                     p = line.getStartPoint();
                     break;
                 case TOPLEFT:
+                case LEFT:
+                case TOP:
                     if (horizontal) {
                         p = line.getStartPoint();
                     } else {
@@ -149,6 +155,8 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                     p = line.getEndPoint();
                     break;
                 case BOTTOMRIGHT:
+                case RIGHT:
+                case BOTTOM:
                     if (horizontal) {
                         p = line.getEndPoint();
                     } else {
@@ -174,7 +182,6 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                 Point top = null;
                 Point bottom = null;
                 for (int i = 0; i < ps.length; i++) {
-                    log.fine("considering " + ps[i]);
                     Point point = ps[i];
                     if (left == null) {
                         left = point;
@@ -205,6 +212,8 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                     default:
                         break;
                     case TOPLEFT:
+                    case TOP:
+                    case LEFT:
                         if (horizontal) {
                             p = left;
                         } else {
@@ -228,6 +237,8 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                         }
                         break;
                     case BOTTOMRIGHT:
+                    case BOTTOM:
+                    case RIGHT:
                         if (horizontal) {
                             p = right;
                             p.getCoordinate().setX(p.getX() - 0.1);
@@ -261,25 +272,31 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                 builder.set(prop.getName(), prop.getValue());
             }
         }
+        builder.set(LineFeatureBuilder.TOP, false);
+        builder.set(LineFeatureBuilder.LEFT, false);
         switch (position) {
             case TOPLEFT:
             case TOPRIGHT:
+            case TOP:
                 log.finest("Doing top");
                 builder.set(LineFeatureBuilder.TOP, true);
                 break;
             case BOTTOMLEFT:
             case BOTTOMRIGHT:
+            case BOTTOM:
                 log.finest("Doing bottom");
                 builder.set(LineFeatureBuilder.TOP, false);
         }
         switch (position) {
             case TOPLEFT:
             case BOTTOMLEFT:
+            case LEFT:
                 log.finest("Doing left");
                 builder.set(LineFeatureBuilder.LEFT, true);
                 break;
             case TOPRIGHT:
             case BOTTOMRIGHT:
+            case RIGHT:
                 log.finest("Doing right");
                 builder.set(LineFeatureBuilder.LEFT, false);
         }

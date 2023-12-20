@@ -1,10 +1,12 @@
+---
 render_macros: true
 ---
-# Windows binary {#installation_windows_bin}
+
+# Windows binary
 
 !!! note
 
-    For installing on Windows with an existing application server such as Tomcat, please see the [Web archive](../../user/installation/war.md) section.
+    For installing on Windows with an existing application server such as Tomcat, please see the [Web archive](war.md) section.
 
 
 The other way of installing GeoServer on Windows is to use the platform-independent binary. This version is a GeoServer web application bundled inside [Jetty](http://eclipse.org/jetty/), a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
@@ -15,7 +17,7 @@ The other way of installing GeoServer on Windows is to use the platform-independ
 
     !!! note
 
-        For more information about Java and GeoServer, please see the section on [Java Considerations](../../user/production/java.md).
+        For more information about Java and GeoServer, please see the section on [Java Considerations](../production/java.md).
 
 
 2.  Navigate to the `GeoServer Download page <download>`{.interpreted-text role="website"}.
@@ -66,7 +68,7 @@ You will need to set the `JAVA_HOME` environment variable if it is not already s
 
 2.  Run **`startup.bat`**. A command-line window will appear and persist. This window contains diagnostic and troubleshooting information. This window must be left open, otherwise GeoServer will shut down.
 
-3.  Navigate to `http://localhost:8080/geoserver` (or wherever you installed GeoServer) to access the GeoServer [Web administration interface](../../user/webadmin/index.md).
+3.  Navigate to `http://localhost:8080/geoserver` (or wherever you installed GeoServer) to access the GeoServer [Web administration interface](../webadmin/index.md).
 
     If you see the GeoServer Welcome page, then GeoServer is successfully installed.
 

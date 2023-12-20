@@ -1,8 +1,8 @@
-# Upgrading existing versions {#installation_upgrade}
+# Upgrading existing versions
 
 !!! warning
 
-    Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See [Migrating a data directory between versions](../../user/datadirectory/migrating.md) for more details.
+    Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See [Migrating a data directory between versions](../datadirectory/migrating.md) for more details.
 
 
 The general GeoServer upgrade process is as follows:
@@ -31,7 +31,7 @@ The general GeoServer upgrade process is as follows:
 
 ### WCS ArcGRID output format removal
 
-The ArcGRID output format for WCS has been removed in GeoServer 2.24.0. If you have been using this format, you will need to switch to another text based format, such as GML coverage, or can get back the ArcGRID format by installing the [WCS GDAL](../../user/community/gdal/index.md) community module and use a configuration like the following (please adapt to your system):
+The ArcGRID output format for WCS has been removed in GeoServer 2.24.0. If you have been using this format, you will need to switch to another text based format, such as GML coverage, or can get back the ArcGRID format by installing the [WCS GDAL](../community/gdal/index.md) community module and use a configuration like the following (please adapt to your system):
 
 ``` xml
 <ToolConfiguration>
@@ -69,7 +69,7 @@ As of GeoServer 2.24, remote requests control has been added, and enabled by def
 -   WMS "feature portrayal" with dynamic remote WFS references provided in the request (`REMOTE_OWS_TYPE` and `REMOTE_OWS_URL` parameters).
 -   WPS remote inputs via either GET or POST request (e.g., remote GeoJSON file source).
 
-The list of locations that are safe to contact can be configured using the [URL Checks](../../user/security/urlchecks.md) page.
+The list of locations that are safe to contact can be configured using the [URL Checks](../security/urlchecks.md) page.
 
 ### Log4J Upgrade (GeoServer 2.21 and newer)
 
@@ -94,7 +94,7 @@ As of GeoServer 2.21, the logging system used by GeoServer has been upgraded fro
 
 ### JTS Type Bindings (GeoServer 2.14 and newer)
 
-As of GeoServer 2.14, the output produced by [REST](../../user/rest/index.md) featuretype and structured coverage requests using a different package name (`org.locationtech` instead of `com.vividsolutions`) for geometry type bindings, due to the upgrade to JTS (Java Topology Suite) 1.16.0. For example:
+As of GeoServer 2.14, the output produced by [REST](../rest/index.md) featuretype and structured coverage requests using a different package name (`org.locationtech` instead of `com.vividsolutions`) for geometry type bindings, due to the upgrade to JTS (Java Topology Suite) 1.16.0. For example:
 
 Before:
 

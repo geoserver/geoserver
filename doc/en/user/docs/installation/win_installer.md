@@ -1,6 +1,8 @@
+---
 render_macros: true
 ---
-# Windows installer {#installation_windows_installer}
+
+# Windows installer
 
 The Windows installer provides an easy way to set up GeoServer on your system, as it requires no configuration files to be edited or command line settings.
 
@@ -8,7 +10,7 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
     !!! note
 
-        For more information about Java and GeoServer, please see the section on [Java Considerations](../../user/production/java.md).
+        For more information about Java and GeoServer, please see the section on [Java Considerations](../production/java.md).
 
 
 2.  Navigate to the `GeoServer Download page <download>`{.interpreted-text role="website"}.
@@ -39,7 +41,7 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
     ![](images/win_welcome.png)
     *Welcome screen*
 
-7.  Read the [License](../../user/introduction/license.md) and click :**I Agree**.
+7.  Read the [License](../introduction/license.md) and click :**I Agree**.
 
     ![](images/win_license.png)
     *GeoServer license*
@@ -68,7 +70,7 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
     !!! note
 
-        For more information about Java and GeoServer, please see the section on [Java Considerations](../../user/production/java.md).
+        For more information about Java and GeoServer, please see the section on [Java Considerations](../production/java.md).
 
 
     ![](images/win_jre.png)
@@ -79,12 +81,12 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
     ![](images/win_datadir.png)
     *Setting a GeoServer data directory*
 
-12. Enter the username and password for administration of GeoServer. GeoServer's [Web administration interface](../../user/webadmin/index.md) requires authentication for management, and what is entered here will become those administrator credentials. The defaults are :**admin / geoserver`. It is recommended to change these from the defaults. When finished, click :guilabel:`Next**.
+12. Enter the username and password for administration of GeoServer. GeoServer's [Web administration interface](../webadmin/index.md) requires authentication for management, and what is entered here will become those administrator credentials. The defaults are :**admin / geoserver`. It is recommended to change these from the defaults. When finished, click :guilabel:`Next**.
 
     ![](images/win_creds.png)
     *Setting the username and password for GeoServer administration*
 
-13. Enter the port that GeoServer will respond on. This affects the location of the GeoServer [Web administration interface](../../user/webadmin/index.md), as well as the endpoints of the GeoServer services such as [Web Map Service (WMS)](../../user/services/wms/index.md) and [Web Feature Service (WFS)](../../user/services/wfs/index.md). The default port is :**8080`, though any valid and unused port will work. When finished, click :guilabel:`Next**.
+13. Enter the port that GeoServer will respond on. This affects the location of the GeoServer [Web administration interface](../webadmin/index.md), as well as the endpoints of the GeoServer services such as [Web Map Service (WMS)](../services/wms/index.md) and [Web Feature Service (WFS)](../services/wfs/index.md). The default port is :**8080`, though any valid and unused port will work. When finished, click :guilabel:`Next**.
 
     ![](images/win_port.png)
     *Setting the GeoServer port*
@@ -111,7 +113,7 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
 18. If you installed GeoServer as a service, it is already running. Otherwise, you can start GeoServer by going to the Start Menu, and clicking :**Start GeoServer** in the GeoServer folder.
 
-19. Navigate to `http://localhost:8080/geoserver` (or wherever you installed GeoServer) to access the GeoServer [Web administration interface](../../user/webadmin/index.md).
+19. Navigate to `http://localhost:8080/geoserver` (or wherever you installed GeoServer) to access the GeoServer [Web administration interface](../webadmin/index.md).
 
     If you see the GeoServer Welcome page, then GeoServer is successfully installed.
 

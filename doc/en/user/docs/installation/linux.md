@@ -1,10 +1,12 @@
+---
 render_macros: true
 ---
-# Linux binary {#installation_linux}
+
+# Linux binary
 
 !!! note
 
-    For installing on Linux with an existing application server such as Tomcat, please see the [Web archive](../../user/installation/war.md) section.
+    For installing on Linux with an existing application server such as Tomcat, please see the [Web archive](war.md) section.
 
 
 The platform-independent binary is a GeoServer web application bundled inside [Jetty](http://eclipse.org/jetty/), a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
@@ -15,7 +17,7 @@ The platform-independent binary is a GeoServer web application bundled inside [J
 
     !!! note
 
-        For more information about Java and GeoServer compatibility, please see the section on [Java Considerations](../../user/production/java.md).
+        For more information about Java and GeoServer compatibility, please see the section on [Java Considerations](../production/java.md).
 
 
 2.  Navigate to the `GeoServer Download page <download>`{.interpreted-text role="website"}.

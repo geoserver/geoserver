@@ -67,7 +67,7 @@ plugins:
       render_by_default: false
       on_error_fail: true
       on_undefined: strict
-      # j2_comment_start_string: __supress_jinja_comments__
+      j2_comment_start_string: __supress_jinja_comments__
   - search
   
 # Customizations

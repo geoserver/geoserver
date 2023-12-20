@@ -4,7 +4,7 @@ There are many ways to install GeoServer on your system. This section will discu
 
 !!! note
 
-    To run GeoServer as part of an existing servlet container such as Tomcat, please see the [Web archive](../../user/installation/war.md) section.
+    To run GeoServer as part of an existing servlet container such as Tomcat, please see the [Web archive](war.md) section.
 
 
 !!! warning
@@ -14,9 +14,9 @@ There are many ways to install GeoServer on your system. This section will discu
     This must be done prior to installation.
 
 
--   [Linux](linux.md)
--   [Win Binary](win_binary.md)
--   [Win Installer](win_installer.md)
--   [War](war.md)
--   [Docker](docker.md)
--   [Upgrade](upgrade.md)
+-   [Linux binary](linux.md)
+-   [Windows binary](win_binary.md)
+-   [Windows installer](win_installer.md)
+-   [Web archive](war.md)
+-   [Docker Container](docker.md)
+-   [Upgrading existing versions](upgrade.md)

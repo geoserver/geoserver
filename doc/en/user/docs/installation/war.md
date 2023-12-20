@@ -1,6 +1,8 @@
+---
 render_macros: true
 ---
-# Web archive {#installation_war}
+
+# Web archive
 
 GeoServer is packaged as a standalone servlet for use with existing application servers such as [Apache Tomcat](http://tomcat.apache.org/) and [Jetty](http://eclipse.org/jetty/).
 
@@ -15,7 +17,7 @@ GeoServer is packaged as a standalone servlet for use with existing application 
 
     !!! note
 
-        For more information about Java and GeoServer compatibility, please see the section on [Java Considerations](../../user/production/java.md).
+        For more information about Java and GeoServer compatibility, please see the section on [Java Considerations](../production/java.md).
 
 
 2.  Navigate to the `GeoServer Download page <download>`{.interpreted-text role="website"}.
@@ -109,7 +111,7 @@ Notice: For support reason, the local output of version.sh still outputs the cur
 
 Use your container application's method of starting and stopping webapps to run GeoServer.
 
-To access the [Web administration interface](../../user/webadmin/index.md), open a browser and navigate to `http://SERVER/geoserver` . For example, with Tomcat running on port 8080 on localhost, the URL would be `http://localhost:8080/geoserver`.
+To access the [Web administration interface](../webadmin/index.md), open a browser and navigate to `http://SERVER/geoserver` . For example, with Tomcat running on port 8080 on localhost, the URL would be `http://localhost:8080/geoserver`.
 
 If you see the GeoServer Welcome page, then GeoServer is successfully installed.
 

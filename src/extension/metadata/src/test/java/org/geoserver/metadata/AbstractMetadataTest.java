@@ -74,7 +74,7 @@ public abstract class AbstractMetadataTest {
             metadata.mkdirs();
             metadataTemplates.mkdirs();
             IOUtils.copy(
-                    AbstractMetadataTest.class.getResourceAsStream("fouteinhoud.yaml"),
+                    AbstractMetadataTest.class.getResourceAsStream("fouteinhoud.yaml.ignore"),
                     new File(metadata, "fouteinhoud.yaml"));
             IOUtils.copy(
                     AbstractMetadataTest.class.getResourceAsStream("metadata-geonetwork.yaml"),

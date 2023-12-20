@@ -174,7 +174,7 @@ public class CustomNativeMappingServiceImpl implements CustomNativeMappingServic
                         } catch (IllegalAccessException
                                 | InvocationTargetException
                                 | NoSuchMethodException e) {
-                            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                            LOGGER.log(Level.WARNING, e.getMessage(), e);
                         }
                     }
                     if (mappedRecord != null) {
@@ -216,7 +216,7 @@ public class CustomNativeMappingServiceImpl implements CustomNativeMappingServic
                                                 ? values.get(i)
                                                 : values.get(indexList.get(i)));
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                        LOGGER.log(Level.WARNING, e.getMessage(), e);
                     }
                 }
             }

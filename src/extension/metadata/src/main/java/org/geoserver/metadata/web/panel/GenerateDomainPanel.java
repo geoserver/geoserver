@@ -87,7 +87,7 @@ public class GenerateDomainPanel extends Panel {
             try {
                 names.addAll(dataAccess.getNames());
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Failed to retrieve table names", e);
+                LOGGER.log(Level.WARNING, "Failed to retrieve table names", e);
             }
         }
         methodChoice.setEnabled(!names.isEmpty());
@@ -154,7 +154,7 @@ public class GenerateDomainPanel extends Panel {
                     attributeNames.add(descriptor.getName());
                 }
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Failed to retrieve attributenames", e);
+                LOGGER.log(Level.WARNING, "Failed to retrieve attributenames", e);
             }
         }
         return attributeNames;

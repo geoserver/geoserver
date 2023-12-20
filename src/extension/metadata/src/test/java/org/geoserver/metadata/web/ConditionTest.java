@@ -24,8 +24,10 @@ public class ConditionTest extends AbstractWicketMetadataTest {
     }
 
     @After
-    public void after() throws Exception {
+    @Override
+    public void stop() throws Exception {
         restoreLayers();
+        super.stop();
     }
 
     @Test

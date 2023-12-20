@@ -22,17 +22,21 @@ import org.junit.Test;
 public class BulkOperationsPageTest extends AbstractWicketMetadataTest {
 
     @Before
-    public void before() throws IOException {
+    @Override
+    public void start() throws Exception {
+        super.start();
         login();
         tester.startPage(new MetadataBulkOperationsPage());
         tester.assertRenderedPage(MetadataBulkOperationsPage.class);
     }
 
     @After
-    public void after() throws Exception {
+    @Override
+    public void stop() throws Exception {
         restoreLayers();
         restoreTemplates();
         logout();
+        super.stop();
     }
 
     @Test

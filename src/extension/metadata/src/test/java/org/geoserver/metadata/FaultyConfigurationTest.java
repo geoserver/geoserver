@@ -13,22 +13,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/** Tests that metadata module works 'out of the box', without any configuration present yet. */
-public class EmptyConfigurationTest extends AbstractWicketMetadataTest {
+/** Tests that metadata module doesn't fail on faulty configuration file. */
+public class FaultyConfigurationTest extends AbstractWicketMetadataTest {
 
     @Autowired protected ConfigurationServiceImpl configService;
 
-    private File metadataRenamed =
-            new File(DATA_DIRECTORY.getDataDirectoryRoot(), "metadata.renamed");
+    private File faultyConfigIgnored =
+            new File(DATA_DIRECTORY.getDataDirectoryRoot(), "fouteinhoud.yaml.ignore");
+
+    private File faultyConfig = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "fouteinhoud.yaml");
 
     @Before
-    public void initEmptyConfiguration() throws Exception {
-        metadata.renameTo(metadataRenamed);
+    public void initFaultyConfiguration() throws Exception {
+        faultyConfigIgnored.renameTo(faultyConfig);
     }
 
     @After
     public void restoreConfiguration() throws Exception {
-        metadataRenamed.renameTo(metadata);
+        faultyConfig.renameTo(faultyConfigIgnored);
         configService.reload();
     }
 

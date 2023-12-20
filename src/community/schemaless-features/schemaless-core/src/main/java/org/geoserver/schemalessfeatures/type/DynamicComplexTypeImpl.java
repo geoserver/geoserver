@@ -5,7 +5,7 @@
 package org.geoserver.schemalessfeatures.type;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.geotools.api.feature.Property;
@@ -20,8 +20,6 @@ import org.geotools.feature.type.AttributeTypeImpl;
 /** Concrete implementation of a DynamicComplexType */
 public class DynamicComplexTypeImpl extends AttributeTypeImpl implements DynamicComplexType {
 
-    private final Collection<PropertyDescriptor> properties;
-
     private final Map<Name, PropertyDescriptor> propertyMap;
 
     public DynamicComplexTypeImpl(
@@ -33,22 +31,16 @@ public class DynamicComplexTypeImpl extends AttributeTypeImpl implements Dynamic
             AttributeType superType,
             InternationalString description) {
         super(name, Collection.class, identified, isAbstract, restrictions, superType, description);
-        Map<Name, PropertyDescriptor> localPropertyMap;
-        if (properties == null) {
-            localPropertyMap = new HashMap<>();
-        } else {
-            localPropertyMap = new HashMap<>();
-            for (PropertyDescriptor pd : properties) {
-                if (pd == null) {
-                    // descriptor entry may be null if a request was made for a property that does
-                    // not exist
-                    throw new NullPointerException(
-                            "PropertyDescriptor is null - did you request a property that does not exist?");
-                }
-                localPropertyMap.put(pd.getName(), pd);
+        Map<Name, PropertyDescriptor> localPropertyMap = new LinkedHashMap<>();
+        for (PropertyDescriptor pd : properties) {
+            if (pd == null) {
+                // descriptor entry may be null if a request was made for a property that does
+                // not exist
+                throw new NullPointerException(
+                        "PropertyDescriptor is null - did you request a property that does not exist?");
             }
+            localPropertyMap.put(pd.getName(), pd);
         }
-        this.properties = properties;
         this.propertyMap = localPropertyMap;
     }
 
@@ -60,7 +52,7 @@ public class DynamicComplexTypeImpl extends AttributeTypeImpl implements Dynamic
 
     @Override
     public Collection<PropertyDescriptor> getDescriptors() {
-        return properties;
+        return propertyMap.values();
     }
 
     @Override
@@ -85,7 +77,7 @@ public class DynamicComplexTypeImpl extends AttributeTypeImpl implements Dynamic
     }
 
     private PropertyDescriptor getDescriptorByLocalPart(String localPart) {
-        for (PropertyDescriptor pd : properties) {
+        for (PropertyDescriptor pd : propertyMap.values()) {
             if (pd.getName().getLocalPart().equals(localPart)) {
                 return pd;
             }
@@ -111,23 +103,19 @@ public class DynamicComplexTypeImpl extends AttributeTypeImpl implements Dynamic
             return false;
         }
         DynamicComplexTypeImpl other = (DynamicComplexTypeImpl) o;
-        if (!properties.equals(other.properties)) {
-            return false;
-        }
-        return true;
+        return !propertyMap.equals(other.propertyMap);
     }
 
     @Override
     public void addPropertyDescriptor(PropertyDescriptor descriptor) {
-        if (!properties.contains(descriptor)) {
-            properties.add(descriptor);
+        if (!propertyMap.containsValue(descriptor)) {
             propertyMap.put(descriptor.getName(), descriptor);
         }
     }
 
+    @Override
     public void removePropertyDescriptor(PropertyDescriptor descriptor) {
-        if (properties.contains(descriptor)) {
-            properties.remove(descriptor);
+        if (propertyMap.containsValue(descriptor)) {
             propertyMap.remove(descriptor.getName());
         }
     }

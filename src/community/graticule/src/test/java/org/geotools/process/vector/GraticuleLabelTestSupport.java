@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFinder;
 import org.geotools.data.graticule.GraticuleDataStoreFactory;
@@ -21,6 +22,8 @@ public class GraticuleLabelTestSupport {
     public DataStore store;
     protected ReferencedEnvelope bounds;
     protected ArrayList<Double> steps = new ArrayList<>();
+
+    Logger log = Logger.getLogger("GraticuleLabelTest");
 
     @Before
     public void setup() throws IOException {

@@ -10,8 +10,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.vector.GraticuleLabelTestSupport;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,6 +35,14 @@ public class GraticuleFeatureSourceTest extends GraticuleLabelTestSupport {
     @Test
     public void testGetFeatures() throws Exception {
         SimpleFeatureCollection features = source.getFeatures();
-        System.out.println(features.size());
+        Assert.assertEquals(0, features.size()); // we don't currently count them
+        try (SimpleFeatureIterator itr = features.features()) {
+            int count = 0;
+            while (itr.hasNext()) {
+                itr.next();
+                count++;
+            }
+            Assert.assertEquals(56, count);
+        }
     }
 }

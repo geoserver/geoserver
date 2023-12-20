@@ -8,6 +8,7 @@ package org.geotools.process.vector;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import org.geotools.api.feature.Property;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -26,6 +27,7 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
         ReferencedEnvelope box = bounds;
         SimpleFeatureCollection features = runLabels(box, pos);
     }
+
     @Test
     public void testBottomBigBBox() throws Exception {
         ReferencedEnvelope bbox =
@@ -42,7 +44,6 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
                         -260.15625, 279.84375, -97.734375, 172.265625, DefaultGeographicCRS.WGS84);
         SimpleFeatureCollection features = runLabels(bbox, "both");
         checkLabels(features, "both");
-
     }
 
     @Test
@@ -63,7 +64,7 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
     private void checkLabels(SimpleFeatureCollection features, String placement) {
         GraticuleLabelPointProcess.PositionEnum pos =
                 GraticuleLabelPointProcess.PositionEnum.byName(placement).get();
-        System.out.println(pos);
+
         boolean left = false, top = false;
         boolean both = false;
         switch (pos) {
@@ -102,7 +103,7 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
                     left = !left;
                 }
                 boolean horizontal = (boolean) f.getAttribute("horizontal");
-                System.out.println(
+                log.fine(
                         f.getDefaultGeometry()
                                 + " left:"
                                 + f.getAttribute("left")
@@ -131,8 +132,10 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
                 SimpleFeature feature = iterator.next();
 
                 Point p = (Point) feature.getAttribute("element");
-                for(Property prop:feature.getProperties()){
-                    System.out.println(prop);
+                if (log.getLevel() == Level.FINE) {
+                    for (Property prop : feature.getProperties()) {
+                        log.fine(prop.toString());
+                    }
                 }
                 boolean top = (boolean) feature.getAttribute("top");
                 boolean left = (boolean) feature.getAttribute("left");

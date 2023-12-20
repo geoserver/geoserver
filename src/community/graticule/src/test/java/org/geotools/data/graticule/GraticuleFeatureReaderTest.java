@@ -17,16 +17,17 @@ public class GraticuleFeatureReaderTest extends GraticuleLabelTestSupport {
 
     @Test
     public void testReader() throws Exception {
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
-                store.getFeatureReader(new Query(), null);
-        Assert.assertNotNull(reader);
-        double[] counts = new double[steps.size()];
-        while (reader.hasNext()) {
-            SimpleFeature f = reader.next();
-            int level = (int) f.getAttribute("level");
-            counts[level]++;
+        try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                store.getFeatureReader(new Query(), null)) {
+            Assert.assertNotNull(reader);
+            double[] counts = new double[steps.size()];
+            while (reader.hasNext()) {
+                SimpleFeature f = reader.next();
+                int level = (int) f.getAttribute("level");
+                counts[level]++;
+            }
+            Assert.assertEquals(36.0, counts[0], 0.00001);
+            Assert.assertEquals(20.0, counts[1], 0.00001);
         }
-        Assert.assertEquals(36.0, counts[0], 0.00001);
-        Assert.assertEquals(20.0, counts[1], 0.00001);
     }
 }

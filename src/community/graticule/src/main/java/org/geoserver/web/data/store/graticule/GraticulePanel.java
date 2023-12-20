@@ -20,15 +20,12 @@ import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geotools.api.geometry.Bounds;
 import org.geotools.api.referencing.FactoryException;
-import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.graticule.GraticuleDataStore;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 
 public class GraticulePanel extends Panel {
-
-    private static final String RESOURCE_KEY_PREFIX = GraticulePanel.class.getSimpleName();
 
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(GraticuleDataStore.class);
@@ -40,8 +37,6 @@ public class GraticulePanel extends Panel {
     static {
         try {
             DEFAULT_CRS = CRS.decode("EPSG:4326");
-        } catch (NoSuchAuthorityCodeException e) {
-            LOGGER.log(Level.FINER, e.getMessage(), e);
         } catch (FactoryException e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
         }

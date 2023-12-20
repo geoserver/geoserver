@@ -63,6 +63,11 @@ plugins:
       preserve_includer_indent: true
       dedent: true
       comments: false
+  - macros:
+      render_by_default: false
+      on_error_fail: true
+      on_undefined: strict
+      # j2_comment_start_string: __supress_jinja_comments__
   - search
   
 # Customizations
@@ -74,6 +79,8 @@ extra:
     - icon: geoserver/logo
       link: https://geoserver.org/
       name: GeoServer Home
+  version: '2.25'
+  release: '2.25-RC'
 
 # Extensions
 # - These are carefully chosen to work with pandoc markdown support for whole document translation
@@ -83,8 +90,8 @@ markdown_extensions:
   - def_list
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
       options:
         custom_icons:
           - overrides/.icons

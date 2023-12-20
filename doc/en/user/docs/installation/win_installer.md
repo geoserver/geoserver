@@ -1,3 +1,5 @@
+render_macros: true
+---
 # Windows installer {#installation_windows_installer}
 
 The Windows installer provides an easy way to set up GeoServer on your system, as it requires no configuration files to be edited or command line settings.
@@ -15,14 +17,14 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
     !!! abstract "Nightly Build"
 
-        This documentation covers GeoServer 2.25-SNAPSHOT which is under development and is available as a `Nightly <release/main>`{.interpreted-text role="website"} release.
+        This documentation covers GeoServer {{ version }}-SNAPSHOT which is under development and is available as a `Nightly <release/main>`{.interpreted-text role="website"} release.
     
-        Nightly releases are used to test out try out new features and test community modules and do not provide a windows installer. When GeoServer 2.25.0 is released a windows installer will be provided.
+        Nightly releases are used to test out try out new features and test community modules and do not provide a windows installer. When GeoServer {{ version }}.0 is released a windows installer will be provided.
 
 
     !!! abstract "Release"
 
-        These instructions are for GeoServer 2.25-RC.
+        These instructions are for GeoServer {{ release }}.
 
 
 4.  Click the link for the :**Windows Installer**.

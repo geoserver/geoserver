@@ -1,3 +1,5 @@
+render_macros: true
+---
 # Docker Container {#installation_docker}
 
 Geoserver is also packaged as a Docker Container. For more details, see the [Geoserver Docker Container Project](https://github.com/geoserver/docker).
@@ -14,19 +16,19 @@ This will run the container, with the data directory included with the container
 
     !!! abstract "Nightly Build"
 
-        These instructions are for GeoServer 2.25-SNAPSHOT which is provided as a `Nightly <release/main>`{.interpreted-text role="website"} release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
+        These instructions are for GeoServer {{ version }}-SNAPSHOT which is provided as a `Nightly <release/main>`{.interpreted-text role="website"} release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
     
         ``` text
-        docker pull docker.osgeo.org/geoserver:2.25.x
+        docker pull docker.osgeo.org/geoserver: {{ version }}.x
         ```
 
 
     !!! abstract "Release"
 
-        These instructions are for GeoServer 2.25-RC.
+        These instructions are for GeoServer {{ release }}.
     
         ``` text
-        docker pull docker.osgeo.org/geoserver:2.25-RC
+        docker pull docker.osgeo.org/geoserver: {{ release }}
         ```
 
 
@@ -35,14 +37,14 @@ This will run the container, with the data directory included with the container
     !!! abstract "Release"
 
         ``` text
-        docker run -it -p8080:8080 docker.osgeo.org/geoserver:2.25-RC
+        docker run -it -p8080:8080 docker.osgeo.org/geoserver: {{ release }}
         ```
 
 
     !!! abstract "Nightly Build"
 
         ``` text
-        docker run -it -p8080:8080 docker.osgeo.org/geoserver:2.25.x
+        docker run -it -p8080:8080 docker.osgeo.org/geoserver: {{ version }}.x
         ```
 
 
@@ -71,14 +73,14 @@ This will run the container with a local data directory. The data directory will
     !!! abstract "Release"
 
         ``` text
-        docker pull docker.osgeo.org/geoserver:2.25-RC
+        docker pull docker.osgeo.org/geoserver: {{ release }}
         ```
 
 
     !!! abstract "Nightly Build"
 
         ``` text
-        docker pull docker.osgeo.org/geoserver:2.25.x
+        docker pull docker.osgeo.org/geoserver: {{ version }}.x
         ```
 
 
@@ -89,13 +91,13 @@ This will run the container with a local data directory. The data directory will
         ``` text
         ```
     
-        docker run --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:2.25-RC
+        docker run --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver: {{ release }}
 
 
     !!! abstract "Nightly Build"
 
         ``` text
-        docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:2.25.x
+        docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver: {{ version }}.x
         ```
 
 
@@ -117,7 +119,7 @@ You can add GeoServer Extensions - the container will download them during start
     ``` text
     ```
     
-    docker run -it -p8080:8080 \\ --env INSTALL_EXTENSIONS=true \\ --env STABLE_EXTENSIONS="ysld,h2" \\ docker.osgeo.org/geoserver:2.25-RC
+    docker run -it -p8080:8080 \\ --env INSTALL_EXTENSIONS=true \\ --env STABLE_EXTENSIONS="ysld,h2" \\ docker.osgeo.org/geoserver: {{ release }}
 
 
 !!! abstract "Nightly Build"
@@ -126,7 +128,7 @@ You can add GeoServer Extensions - the container will download them during start
     docker run -it -p8080:8080 \\
       \-\-env INSTALL_EXTENSIONS=true \\
       \-\-env STABLE_EXTENSIONS="ysld,h2" \\
-      docker.osgeo.org/geoserver:2.25.x
+      docker.osgeo.org/geoserver: {{ version }}.x
     ```
 
 
@@ -149,14 +151,14 @@ Here is a list of available extensions (taken from the [build server](https://bu
 
 Working with a Nightly build is a good way to test community modules and provide feedback to developers working on new functionality.
 
-To work with community modules you must be using the GeoServer 2.25.x nightly build that matches the community module build:
+To work with community modules you must be using the GeoServer {{ version }}.x nightly build that matches the community module build:
 
 ``` text
 docker run -it -p8080:8080 \\
 \-\-env INSTALL_EXTENSIONS=true \\
 \-\-env STABLE_EXTENSIONS="ysld,h2" \\
 \-\-env COMMUNITY_EXTENSIONS="ogcapi-features,ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
-docker.osgeo.org/geoserver:2.25.x
+docker.osgeo.org/geoserver: {{ version }}.x
 ```
 
 For the current list see GeoServer [build server](https://build.geoserver.org/geoserver/main/community-latest/).

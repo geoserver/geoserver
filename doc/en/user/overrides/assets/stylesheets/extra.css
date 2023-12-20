@@ -15,7 +15,6 @@ img + em, .browser-border + em, .browser-mockup + em {
   column-gap: 2em;
   margin-bottom: 20px;
 }
-/*
 .md-typeset .grid dl {
   display: grid;
   grid-template-columns: repeat(auto-fit,minmax(16rem,1fr));
@@ -51,7 +50,54 @@ img + em, .browser-border + em, .browser-mockup + em {
     width: calc(100vw - 1.2rem - 1.2rem);
   }
 }
-*/
+
+/* geosever branding */
+.md-header {
+  color: var(--md-primary-fg-color);
+  background-color: var(--md-primary-bg-color);
+}
+
+.md-header {
+  color: #0291C8;
+  background-color: fff;
+}
+
+.md-search {
+  color: #0291C8;
+  background-color: fff;
+}
+.md-search__form {
+  color: #0291C8;
+  background-color: ccc;
+}
+.md-search__input {
+  color: #0291C8;
+  background-color: ccc;
+}
+
+.md-search__input + .md-search__icon {
+  color: #0291C8;
+}
+
+
+.md-tabs {
+  background: linear-gradient(
+    to bottom, 
+    #CCE3A7,
+    #C5E09B 2%,
+    #C5E09B 8%,
+    #ADD39C 10%,
+    #2082A0 10%,
+    #0176A1 12%,
+    #0176A1 95%,
+    #017FAE 97%,
+    #017FAE
+  );
+  color: white
+}
+
+
+
 /* definition list used to display general inputs */
 .md-typeset dl dd {
   margin: 10px 0;

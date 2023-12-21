@@ -26,25 +26,17 @@ public class GraticuleFeatureReader implements SimpleFeatureReader {
     private SimpleFeatureSource currentGrid;
     private SimpleFeatureIterator delegate;
     SimpleFeatureType schema;
-    GraticuleDataStore parent;
     Query query;
     int level = 0;
 
-    public GraticuleFeatureReader(GraticuleDataStore graticuleDataStore, Query query)
-            throws IOException {
-        this.parent = graticuleDataStore;
+    public GraticuleFeatureReader(GraticuleFeatureSource fs, Query query) throws IOException {
         this.query = query;
-        this.steps = parent.getSteps();
-        schema = parent.getSchema(query.getTypeName());
-        currentGrid = buildGrid(parent.bounds);
+        this.steps = fs.getSteps();
+        schema = fs.getSchema();
+        currentGrid = buildGrid(fs.getBounds());
         delegate = currentGrid.getFeatures(query).features();
     }
 
-    /**
-     * Return the FeatureType this reader has been configured to create.
-     *
-     * @return the FeatureType of the Features this FeatureReader will create.
-     */
     @Override
     public SimpleFeatureType getFeatureType() {
         return schema;
@@ -54,37 +46,17 @@ public class GraticuleFeatureReader implements SimpleFeatureReader {
         return delegate;
     }
 
-    /**
-     * Reads the next Feature in the FeatureReader.
-     *
-     * @return The next feature in the reader.
-     * @throws IOException If an error occurs reading the Feature.
-     * @throws IllegalAttributeException If the attributes read do not comply with the FeatureType.
-     * @throws NoSuchElementException If there are no more Features in the Reader.
-     */
     @Override
     public SimpleFeature next() throws IllegalArgumentException, NoSuchElementException {
         SimpleFeature next = delegate.next();
         return next;
     }
 
-    /**
-     * Query whether this FeatureReader has another Feature.
-     *
-     * @return True if there are more Features to be read. In other words, true if calls to next
-     *     would return a feature rather than throwing an exception.
-     * @throws IOException If an error occurs determining if there are more Features.
-     */
     @Override
     public boolean hasNext() throws IOException {
         return delegate.hasNext();
     }
 
-    /**
-     * Release the underlying resources associated with this stream.
-     *
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     public void close() throws IOException {
         delegate.close();

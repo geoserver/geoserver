@@ -39,7 +39,6 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
     private boolean projected;
 
     protected int id;
-    private final SimpleFeatureType type;
     private final CoordinateFormat formatter;
     private final Format xFormat;
     private final Format yFormat;
@@ -48,7 +47,6 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
 
     public LineFeatureBuilder(SimpleFeatureType type) {
         super(type);
-        this.type = type;
         formatter = new CoordinateFormat();
         formatter.setNumberPattern("##0.00");
         formatter.setAnglePattern("DD.dd");

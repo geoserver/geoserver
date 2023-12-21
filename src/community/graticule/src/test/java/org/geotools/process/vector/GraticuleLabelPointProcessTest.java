@@ -25,7 +25,7 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
     public void testBothLabelGrid() throws Exception {
         String pos = "both";
         ReferencedEnvelope box = bounds;
-        SimpleFeatureCollection features = runLabels(box, pos);
+        runLabels(box, pos);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
 
     private SimpleFeatureCollection runLabels(ReferencedEnvelope box, String pos)
             throws IOException {
-        SimpleFeatureCollection features = store.getFeatureSource("10_0").getFeatures();
+        SimpleFeatureCollection features = store.getFeatureSource("Graticule_10_30").getFeatures();
 
         GraticuleLabelPointProcess process = new GraticuleLabelPointProcess();
 

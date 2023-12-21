@@ -181,8 +181,7 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                 Point right = null;
                 Point top = null;
                 Point bottom = null;
-                for (int i = 0; i < ps.length; i++) {
-                    Point point = ps[i];
+                for (Point point : ps) {
                     if (left == null) {
                         left = point;
                     } else if (point.getX() < left.getX()) {
@@ -203,9 +202,6 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                     } else if (point.getY() > top.getY()) {
                         top = point;
                     }
-                    // log.finest("Point: " + point.toString() + " left:" + left + " right:" + right
-                    // +
-                    // "\ntop:" + top + " bottom:" + bottom);
                 }
                 switch (position) {
                     case NONE:

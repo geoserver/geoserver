@@ -18,7 +18,7 @@ public class GraticuleFeatureReaderTest extends GraticuleLabelTestSupport {
     @Test
     public void testReader() throws Exception {
         try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
-                store.getFeatureReader(new Query(), null)) {
+                store.getFeatureReader(new Query("Graticule_10_30"), null)) {
             Assert.assertNotNull(reader);
             double[] counts = new double[steps.size()];
             while (reader.hasNext()) {

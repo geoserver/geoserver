@@ -19,7 +19,7 @@ public class GraticuleDataStoreTest extends GraticuleLabelTestSupport {
 
         String[] names = store.getTypeNames();
         assertEquals(1, names.length);
-        SimpleFeatureType schema = store.getSchema("10_0");
+        SimpleFeatureType schema = store.getSchema("Graticule_10_30");
         assertNotNull(schema);
     }
 }

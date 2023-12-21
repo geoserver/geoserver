@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.25-SNAPSHOT</version>
+  </parent>
+  <!-- =========================================================== -->
+  <!--     Module Description                                      -->
+  <!-- =========================================================== -->
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-graticule</artifactId>
+  <packaging>jar</packaging>
+  <name>Decorative Vector grids</name>
+
+  <description>The graticule module allows users to create a decorative vector grid (also known as
+        a graticule) that can be used for display.</description>
+
+  <licenses>
+    <license>
+      <name>Lesser General Public License (LGPL)</name>
+      <url>http://www.gnu.org/copyleft/lesser.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <!-- =========================================================== -->
+  <!--     Developers and Contributors                             -->
+  <!-- =========================================================== -->
+  <developers>
+    <developer>
+      <id>ijturton</id>
+      <name>Ian Turton</name>
+      <email>ian@ianturton.com</email>
+      <roles>
+        <role>Java Developer</role>
+        <role>Module Maintainer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <!-- =========================================================== -->
+  <!--     Dependency Management                                   -->
+  <!-- =========================================================== -->
+  <dependencies>
+
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-main</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-grid</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-render</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-epsg-hsql</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-core</artifactId>
+      <version>${wicket.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-process-feature</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+</project>

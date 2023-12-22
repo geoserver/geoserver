@@ -23,9 +23,21 @@ import java.util.function.UnaryOperator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Info;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -75,7 +87,9 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         return cp;
     }
 
-    /** Intercepts getter and setter methods. */
+    /**
+     * Intercepts getter and setter methods, as well as {@link CatalogInfo#accept(CatalogVisitor)}.
+     */
     @Override
     @SuppressWarnings("unchecked") // lots of generic behavior, cannot use params
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -133,11 +147,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                 && method.getParameters().length == 1
                 && method.getParameters()[0].getType().equals(CatalogVisitor.class)) {
             CatalogVisitor visitor = (CatalogVisitor) args[0];
-
-            if (proxy instanceof FeatureTypeInfo) {
-                visitor.visit((FeatureTypeInfo) proxy);
-                return null;
-            }
+            accept((CatalogInfo) proxy, visitor);
+            return null;
         }
 
         try {
@@ -168,6 +179,36 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         } catch (InvocationTargetException e) {
             Throwable targetException = e.getTargetException();
             throw targetException;
+        }
+    }
+
+    private void accept(CatalogInfo proxy, CatalogVisitor visitor) {
+        if (proxy instanceof WorkspaceInfo) {
+            visitor.visit((WorkspaceInfo) proxy);
+        } else if (proxy instanceof NamespaceInfo) {
+            visitor.visit((NamespaceInfo) proxy);
+        } else if (proxy instanceof CoverageStoreInfo) {
+            visitor.visit((CoverageStoreInfo) proxy);
+        } else if (proxy instanceof DataStoreInfo) {
+            visitor.visit((DataStoreInfo) proxy);
+        } else if (proxy instanceof WMSStoreInfo) {
+            visitor.visit((WMSStoreInfo) proxy);
+        } else if (proxy instanceof WMTSStoreInfo) {
+            visitor.visit((WMTSStoreInfo) proxy);
+        } else if (proxy instanceof CoverageInfo) {
+            visitor.visit((CoverageInfo) proxy);
+        } else if (proxy instanceof FeatureTypeInfo) {
+            visitor.visit((FeatureTypeInfo) proxy);
+        } else if (proxy instanceof WMSLayerInfo) {
+            visitor.visit((WMSLayerInfo) proxy);
+        } else if (proxy instanceof WMTSLayerInfo) {
+            visitor.visit((WMTSLayerInfo) proxy);
+        } else if (proxy instanceof LayerInfo) {
+            visitor.visit((LayerInfo) proxy);
+        } else if (proxy instanceof LayerGroupInfo) {
+            visitor.visit((LayerGroupInfo) proxy);
+        } else if (proxy instanceof StyleInfo) {
+            visitor.visit((StyleInfo) proxy);
         }
     }
 

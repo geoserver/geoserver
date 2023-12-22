@@ -14,11 +14,13 @@ import org.geotools.api.data.SimpleFeatureReader;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.graticule.gridsupport.LineFeatureBuilder;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.grid.Lines;
 import org.geotools.grid.ortholine.LineOrientation;
+import org.geotools.grid.ortholine.OrthoLineBuilder;
 import org.geotools.grid.ortholine.OrthoLineDef;
 
 public class GraticuleFeatureReader implements SimpleFeatureReader {
@@ -63,18 +65,23 @@ public class GraticuleFeatureReader implements SimpleFeatureReader {
     }
 
     private SimpleFeatureSource buildGrid(ReferencedEnvelope box) {
-        List<OrthoLineDef> lineDefs = new ArrayList<>();
+        List<SimpleFeature> lines = new ArrayList<>();
         for (int i = 0; i < steps.size(); i++) {
             double step = steps.get(i);
 
+            List<OrthoLineDef> lineDefs = new ArrayList<>();
             // vertical (longitude) lines
             lineDefs.add(new OrthoLineDef(LineOrientation.VERTICAL, i, step));
             // horizontal (latitude) lines
             lineDefs.add(new OrthoLineDef(LineOrientation.HORIZONTAL, i, step));
+
+            final ListFeatureCollection fc = new ListFeatureCollection(schema);
+            OrthoLineBuilder lineBuilder = new OrthoLineBuilder(box);
+            LineFeatureBuilder gridBuilder = new LineFeatureBuilder(schema);
+            lineBuilder.buildGrid(lineDefs, gridBuilder, -1, fc);
+            lines.addAll(DataUtilities.list(fc));
         }
 
-        SimpleFeatureSource grid =
-                Lines.createOrthoLines(box, lineDefs, steps.get(0), new LineFeatureBuilder(schema));
-        return grid;
+        return DataUtilities.source(new ListFeatureCollection(schema, lines));
     }
 }

@@ -70,7 +70,7 @@ public class GraticuleFeatureSource extends ContentFeatureSource {
         tb.add(LineFeatureBuilder.LEVEL_ATTRIBUTE_NAME, Integer.class);
         tb.add(LineFeatureBuilder.VALUE_LABEL_NAME, String.class);
         tb.add(LineFeatureBuilder.VALUE_ATTRIBUTE_NAME, Double.class);
-        tb.add(LineFeatureBuilder.ORIENTATION_NAME, Boolean.class);
+        tb.add(LineFeatureBuilder.HORIZONTAL, Boolean.class);
         SimpleFeatureType type = tb.buildFeatureType();
         return type;
     }

@@ -14,6 +14,24 @@ import static org.hamcrest.Matchers.sameInstance;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.CatalogVisitorAdapter;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -149,6 +167,109 @@ public class ModificationProxyTest {
         assertThat(bean.getListValue(), contains("Uhh", "Bean"));
         assertThat(newBean.getValue(), equalTo("Edmond Blackadder"));
         assertThat(newBean.getListValue(), contains("Cunning", "Plan"));
+    }
+
+    @Test
+    public void testCatalogVisitorCalledWithProxyObject() {
+        CatalogFactory factory = new CatalogImpl().getFactory();
+
+        testCatalogVisitor(factory.createNamespace(), NamespaceInfo.class);
+        testCatalogVisitor(factory.createWorkspace(), WorkspaceInfo.class);
+
+        testCatalogVisitor(factory.createCoverageStore(), CoverageStoreInfo.class);
+        testCatalogVisitor(factory.createDataStore(), DataStoreInfo.class);
+        testCatalogVisitor(factory.createWebMapServer(), WMSStoreInfo.class);
+        testCatalogVisitor(factory.createWebMapTileServer(), WMTSStoreInfo.class);
+
+        testCatalogVisitor(factory.createCoverage(), CoverageInfo.class);
+        testCatalogVisitor(factory.createFeatureType(), FeatureTypeInfo.class);
+        testCatalogVisitor(factory.createWMSLayer(), WMSLayerInfo.class);
+        testCatalogVisitor(factory.createWMTSLayer(), WMTSLayerInfo.class);
+
+        testCatalogVisitor(factory.createLayer(), LayerInfo.class);
+        testCatalogVisitor(factory.createLayerGroup(), LayerGroupInfo.class);
+        testCatalogVisitor(factory.createStyle(), StyleInfo.class);
+    }
+
+    private <T extends CatalogInfo> void testCatalogVisitor(T info, Class<T> type) {
+        T proxy = ModificationProxy.create(info, type);
+        T visited = visitAndCapture(proxy, type);
+        assertThat(visited, sameInstance(proxy));
+    }
+
+    private <T extends CatalogInfo> T visitAndCapture(T proxy, Class<T> type) {
+
+        AtomicReference<CatalogInfo> captured = new AtomicReference<>();
+
+        CatalogVisitor visitor =
+                new CatalogVisitorAdapter() {
+                    @Override
+                    public void visit(WorkspaceInfo workspace) {
+                        captured.set(workspace);
+                    }
+
+                    @Override
+                    public void visit(NamespaceInfo namespace) {
+                        captured.set(namespace);
+                    }
+
+                    @Override
+                    public void visit(DataStoreInfo dataStore) {
+                        captured.set(dataStore);
+                    }
+
+                    @Override
+                    public void visit(CoverageStoreInfo coverageStore) {
+                        captured.set(coverageStore);
+                    }
+
+                    @Override
+                    public void visit(WMSStoreInfo wmsStore) {
+                        captured.set(wmsStore);
+                    }
+
+                    @Override
+                    public void visit(WMTSStoreInfo wmtsStore) {
+                        captured.set(wmtsStore);
+                    }
+
+                    @Override
+                    public void visit(FeatureTypeInfo featureType) {
+                        captured.set(featureType);
+                    }
+
+                    @Override
+                    public void visit(CoverageInfo coverage) {
+                        captured.set(coverage);
+                    }
+
+                    @Override
+                    public void visit(WMSLayerInfo wmsLayer) {
+                        captured.set(wmsLayer);
+                    }
+
+                    @Override
+                    public void visit(WMTSLayerInfo wmtsLayer) {
+                        captured.set(wmtsLayer);
+                    }
+
+                    @Override
+                    public void visit(LayerInfo layer) {
+                        captured.set(layer);
+                    }
+
+                    @Override
+                    public void visit(StyleInfo style) {
+                        captured.set(style);
+                    }
+
+                    @Override
+                    public void visit(LayerGroupInfo layerGroup) {
+                        captured.set(layerGroup);
+                    }
+                };
+        proxy.accept(visitor);
+        return type.cast(captured.get());
     }
 
     /** Matches a modification proxy wrapping an object matching the given matcher */

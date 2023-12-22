@@ -125,7 +125,7 @@ public class GraticuleLabelPointProcessTest extends GraticuleLabelTestSupport {
 
         GraticuleLabelPointProcess process = new GraticuleLabelPointProcess();
 
-        SimpleFeatureCollection results = process.execute(features, box, pos);
+        SimpleFeatureCollection results = process.execute(features, box, 0d, pos);
         // assertEquals(features.size() * 2, results.size());
         try (SimpleFeatureIterator iterator = results.features()) {
             while (iterator.hasNext()) {

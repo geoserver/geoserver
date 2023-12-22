@@ -36,7 +36,7 @@ public class GraticuleFeatureSourceTest extends GraticuleLabelTestSupport {
     public void testGetFeatures() throws Exception {
         SimpleFeatureCollection features = source.getFeatures();
         assertEquals(-1, source.getCount(Query.ALL)); // no optimized count
-        assertEquals(56, features.size()); // ContentFeatureCollection scans to count
-        assertEquals(56, DataUtilities.count(features)); // DataUtilities.count also scans to count
+        assertEquals(76, features.size()); // ContentFeatureCollection scans to count
+        assertEquals(76, DataUtilities.count(features)); // DataUtilities.count also scans to count
     }
 }

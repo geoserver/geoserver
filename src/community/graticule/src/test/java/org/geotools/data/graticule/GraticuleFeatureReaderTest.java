@@ -26,7 +26,7 @@ public class GraticuleFeatureReaderTest extends GraticuleLabelTestSupport {
                 int level = (int) f.getAttribute("level");
                 counts[level]++;
             }
-            Assert.assertEquals(36.0, counts[0], 0.00001);
+            Assert.assertEquals(56.0, counts[0], 0.00001);
             Assert.assertEquals(20.0, counts[1], 0.00001);
         }
     }

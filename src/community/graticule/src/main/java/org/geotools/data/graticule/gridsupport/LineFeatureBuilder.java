@@ -33,9 +33,18 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
 
     public static final String VALUE_LABEL_NAME = "label";
 
-    public static final String ORIENTATION_NAME = "horizontal";
+    public static final String HORIZONTAL = "horizontal";
     public static final String TOP = "top";
     public static final String LEFT = "left";
+
+    public static final String ANCHOR_X = "anchorX";
+
+    public static final String ANCHOR_Y = "anchorY";
+
+    public static final String OFFSET_X = "offsetX";
+
+    public static final String OFFSET_Y = "offsetY";
+
     private boolean projected;
 
     protected int id;
@@ -105,7 +114,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
             }
             attributes.put(VALUE_ATTRIBUTE_NAME, value);
             attributes.put(VALUE_LABEL_NAME, label);
-            attributes.put(ORIENTATION_NAME, horizontal);
+            attributes.put(HORIZONTAL, horizontal);
         } else {
             throw new IllegalArgumentException("Expected an instance of OrthoLine");
         }

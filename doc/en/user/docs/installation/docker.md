@@ -18,7 +18,7 @@ This will run the container, with the data directory included with the container
 
     !!! abstract "Nightly Build"
 
-        These instructions are for GeoServer {{ version }}-SNAPSHOT which is provided as a `Nightly <release/main>`{.interpreted-text role="website"} release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
+        These instructions are for GeoServer {{ version }}-SNAPSHOT which is provided as a [Nightly](https://geoserver.org/release/main) release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
     
         ``` text
         docker pull docker.osgeo.org/geoserver: {{ version }}.x

@@ -20,8 +20,8 @@ The general GeoServer upgrade process is as follows:
 
 4.  Uninstall the old version and install the new version.
 
-    -   Download `maintenance <release/maintain>`{.interpreted-text role="website"} release to update existing installation
-    -   Download `stable <release/stable>`{.interpreted-text role="website"} release when ready to upgrade
+    -   Download [maintenance](https://geoserver.org/release/maintain) release to update existing installation
+    -   Download [stable](https://geoserver.org/release/stable) release when ready to upgrade
 
 5.  Be sure to download and install each extension used by your prior installation.
 

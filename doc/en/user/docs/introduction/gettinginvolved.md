@@ -16,7 +16,7 @@ Another crucial way to help out is with documentation. Whether it's adding tutor
 
 Our official documentation is contained as part of our [official code repository](https://www.github.com/geoserver/). As part of the GitHub model, anyone can submit patches as pull requests, which will be evaluated by the team.
 
-To learn more about contributing to the GeoServer codebase, we highly recommend joining the GeoServer developers mailing list (see details below). For typos and other small changes, please see our `Documentation Guide <quickfix.html>`{.interpreted-text role="docguide"} for how to make quick fixes.
+To learn more about contributing to the GeoServer codebase, we highly recommend joining the GeoServer developers mailing list (see details below). For typos and other small changes, please see our [Documentation Guide](https://docs.geoserver.org/latest/en/docguide/quickfix.html) for how to make quick fixes.
 
 ## Mailing lists
 
@@ -68,4 +68,4 @@ A further way to help out the GeoServer project is to spread the word. Word-of-m
 
 ## Fund improvements
 
-A final way to help out is to push for GeoServer to be used in your own organization. A number of `commercial organizations <support>`{.interpreted-text role="website"} offer support for GeoServer, and any improvements made due to that funding will benefit the entire GeoServer community.
+A final way to help out is to push for GeoServer to be used in your own organization. A number of [commercial organizations](https://geoserver.org/support) offer support for GeoServer, and any improvements made due to that funding will benefit the entire GeoServer community.

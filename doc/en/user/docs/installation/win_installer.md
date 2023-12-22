@@ -13,13 +13,13 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
         For more information about Java and GeoServer, please see the section on [Java Considerations](../production/java.md).
 
 
-2.  Navigate to the `GeoServer Download page <download>`{.interpreted-text role="website"}.
+2.  Navigate to the [GeoServer Download page](https://geoserver.org/download).
 
-3.  Select the version of GeoServer that you wish to download. If you're not sure, select `Stable <release/stable>`{.interpreted-text role="website"} release.
+3.  Select the version of GeoServer that you wish to download. If you're not sure, select [Stable](https://geoserver.org/release/stable) release.
 
     !!! abstract "Nightly Build"
 
-        This documentation covers GeoServer {{ version }}-SNAPSHOT which is under development and is available as a `Nightly <release/main>`{.interpreted-text role="website"} release.
+        This documentation covers GeoServer {{ version }}-SNAPSHOT which is under development and is available as a [Nightly](https://geoserver.org/release/main) release.
     
         Nightly releases are used to test out try out new features and test community modules and do not provide a windows installer. When GeoServer {{ version }}.0 is released a windows installer will be provided.
 

@@ -79,8 +79,8 @@ extra:
     - icon: geoserver/logo
       link: https://geoserver.org/
       name: GeoServer Home
-  version: '2.25'
-  release: '2.25-RC'
+  version: '2.24'
+  release: '2.24.1'
 
 # Extensions
 # - These are carefully chosen to work with pandoc markdown support for whole document translation

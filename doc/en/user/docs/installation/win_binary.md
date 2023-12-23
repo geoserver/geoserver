@@ -34,27 +34,27 @@ The other way of installing GeoServer on Windows is to use the platform-independ
         These instructions are for GeoServer {{ release }}.
 
 
-4.  Select :**Platform Independent Binary` on the download page: :download_release:`bin**
+4.  Select **Platform Independent Binary** on the download page: [geoserver-{{ release }}-bin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/geoserver-{{ release }}-bin.zip)
 
 5.  Download the archive and unpack to the directory where you would like the program to be located.
 
     !!! note
 
-        A suggested location would be **`C:\\Program Files\\GeoServer`**.
+        A suggested location would be **`C:\\Program Files\GeoServer`**.
 
 
 ### Setting environment variables
 
-You will need to set the `JAVA_HOME` environment variable if it is not already set. This is the path to your JRE such that **`%JAVA_HOME%\\bin\\java.exe`** exists.
+You will need to set the `JAVA_HOME` environment variable if it is not already set. This is the path to your JRE such that **`%JAVA_HOME%\bin\java.exe`** exists.
 
 1.  Navigate to **Control Panel --> System --> Advanced --> Environment Variables**.
-2.  Under :**System variables` click :guilabel:`New**.
-3.  For :**Variable name` enter ``JAVA_HOME``. For :guilabel:`Variable value** enter the path to your JDK/JRE.
+2.  Under **System variables** click **New**.
+3.  For **Variable name** enter `JAVA_HOME`. For **Variable value** enter the path to your JDK/JRE.
 4.  Click OK three times.
 
 !!! note
 
-    You may also want to set the `GEOSERVER_HOME` variable, which is the directory where GeoServer is installed, and the `GEOSERVER_DATA_DIR` variable, which is the location of the GeoServer data directory (which by default is **`%GEOSERVER_HOME\\data_dir`**). The latter is mandatory if you wish to use a data directory other than the default location. The procedure for setting these variables is identical to setting the `JAVA_HOME` variable.
+    You may also want to set the `GEOSERVER_HOME` variable, which is the directory where GeoServer is installed, and the `GEOSERVER_DATA_DIR` variable, which is the location of the GeoServer data directory (which by default is **`%GEOSERVER_HOME\data_dir`**). The latter is mandatory if you wish to use a data directory other than the default location. The procedure for setting these variables is identical to setting the `JAVA_HOME` variable.
 
 
 ## Running

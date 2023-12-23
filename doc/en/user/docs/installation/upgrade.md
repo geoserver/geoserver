@@ -15,7 +15,7 @@ The general GeoServer upgrade process is as follows:
 
 3.  Make a note of any extensions you have installed.
 
-    -   The GeoServer **About --> Server Status** page provides a :**Modules** tab listing the modules installed.
+    -   The GeoServer **About --> Server Status** page provides a **Modules** tab listing the modules installed.
     -   Some extensions include more than one module, as an example the WPS extension is listed as **`gs-wps-core`** and **`gs-web-wps`**.
 
 4.  Uninstall the old version and install the new version.

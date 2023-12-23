@@ -34,7 +34,7 @@ The platform-independent binary is a GeoServer web application bundled inside [J
         These instructions are for GeoServer {{ release }}.
 
 
-4.  Select :**Platform Independent Binary` on the download page: :download_release:`bin**
+4.  Select **Platform Independent Binary** on the download page: [geoserver-{{ release }}-bin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/geoserver-{{ release }}-bin.zip)
 
 5.  Download the **`zip`** archive and unpack to the directory where you would like the program to be located.
 

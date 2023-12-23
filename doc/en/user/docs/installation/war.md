@@ -34,7 +34,7 @@ GeoServer is packaged as a standalone servlet for use with existing application 
         These instructions are for GeoServer {{ release }}.
 
 
-4.  Select :**Web Archive` on the download page: :download_release:`war**
+4.  Select **Web Archive** on the download page: [geoserver-{{ release }}-war.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/geoserver-{{ release }}-war.zip)
 
 5.  Download and unpack the archive.
 

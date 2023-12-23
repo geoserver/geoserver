@@ -129,3 +129,12 @@ nav:
     - installation/war.md
     - installation/docker.md
     - installation/upgrade.md
+  - 'Getting Started':
+    - gettingstarted/index.md
+    - gettingstarted/geopkg-quickstart/index.md
+    - gettingstarted/group-quickstart/index.md
+    - gettingstarted/image-quickstart/index.md
+    - gettingstarted/postgis-quickstart/index.md
+    - gettingstarted/shapefile-quickstart/index.md
+    - gettingstarted/style-quickstart/index.md
+    - gettingstarted/web-admin-quickstart/index.md

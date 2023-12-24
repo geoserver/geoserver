@@ -1,9 +1,9 @@
 Build Windows installer
 -----------------------
 
-We presently have a windows build server which is responsible for packaging up the windows installer for each release.
+We presently have a Windows build server which is responsible for packaging up the windows installer for each release.
 
-The `NSIS <https://nsis.sourceforge.io/Main_Page>`__ program used here can also be run on linux; however we make use of a windows build server in order to digitially sign the result.
+The `NSIS <https://nsis.sourceforge.io/Main_Page>`__ program used here can also be run on Linux; however we make use of a Windows build server in order to digitially sign the result.
 
 However you can create your own installer (using a Windows machine).
 

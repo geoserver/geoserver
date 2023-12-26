@@ -640,6 +640,7 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testSearchCRSFilter() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
         String crs = FeatureService.CRS_PREFIX + "3857";

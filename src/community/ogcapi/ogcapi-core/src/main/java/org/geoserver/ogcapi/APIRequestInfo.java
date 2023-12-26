@@ -210,11 +210,7 @@ public class APIRequestInfo {
                                         "Could not find a service base URL at this stage, maybe the service has not been dispatched yet"));
     }
 
-    /**
-     * Returns the landing page for the current service. Can be called only after the service has
-     * been looked up, may return null if the service has not been resolved yet (e.g., during the
-     * look up of the Spring MVC method handler)
-     */
+    /** Returns the service handling the request */
     public Service getService() {
         return Optional.ofNullable(Dispatcher.REQUEST.get())
                 .map(r -> r.getServiceDescriptor())

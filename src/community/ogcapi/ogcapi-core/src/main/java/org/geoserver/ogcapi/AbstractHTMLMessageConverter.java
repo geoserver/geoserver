@@ -2,7 +2,6 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-
 package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,39 +41,25 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
  */
 public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessageConverter<T> {
     static final Logger LOGGER = Logging.getLogger(AbstractHTMLMessageConverter.class);
-    protected final Class<?> binding;
     protected final GeoServer geoServer;
     protected final FreemarkerTemplateSupport templateSupport;
-    protected final Class<? extends ServiceInfo> serviceConfigurationClass;
 
     /**
      * Builds a message converter
      *
-     * @param binding The bean meant to act as the model for the template
-     * @param serviceConfigurationClass The class holding the configuration for the service
      * @param templateSupport A loader used to locate templates
      * @param geoServer The
      */
     public AbstractHTMLMessageConverter(
-            Class<?> binding,
-            Class<? extends ServiceInfo> serviceConfigurationClass,
-            FreemarkerTemplateSupport templateSupport,
-            GeoServer geoServer) {
+            FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
         super(MediaType.TEXT_HTML);
-        this.binding = binding;
         this.geoServer = geoServer;
-        this.serviceConfigurationClass = serviceConfigurationClass;
         this.templateSupport = templateSupport;
     }
 
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return false;
-    }
-
-    @Override
-    protected boolean supports(Class<?> clazz) {
-        return binding.isAssignableFrom(clazz);
     }
 
     @Override
@@ -96,13 +81,16 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     protected HashMap<String, Object> setupModel(Object value) {
         HashMap<String, Object> model = new HashMap<>();
         model.put("model", value);
-        model.put("service", geoServer.getService(serviceConfigurationClass));
+        model.put("service", geoServer.getService(getServiceConfigurationClass()));
         model.put("contact", geoServer.getGlobal().getSettings().getContact());
         final String baseURL = getBaseURL();
         model.put("baseURL", baseURL);
         addLinkFunctions(baseURL, model);
         return model;
     }
+
+    /** Returns the class holding the configuration for the service */
+    protected abstract Class<? extends ServiceInfo> getServiceConfigurationClass();
 
     /**
      * Adds the <code>serviceLink</code>, <code>serviceLink</code> and <code>externalLinks</code>

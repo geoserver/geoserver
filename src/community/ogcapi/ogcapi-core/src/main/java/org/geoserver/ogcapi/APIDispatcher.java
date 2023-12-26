@@ -189,23 +189,13 @@ public class APIDispatcher extends AbstractController {
         // been provided
         List<HandlerMethodReturnValueHandler> returnValueHandlers =
                 Optional.ofNullable(handlerAdapter.getReturnValueHandlers())
-                        .orElse(Collections.emptyList()).stream()
+                        .orElse(Collections.emptyList())
+                        .stream()
                         .map(
                                 f -> {
-                                    if (f instanceof RequestResponseBodyMethodProcessor) {
-                                        // replace with custom version that can do HTML output based
-                                        // on method annotations and does generic OGC API content
-                                        // negotiation
-                                        return new APIBodyMethodProcessor(
-                                                handlerAdapter.getMessageConverters(),
-                                                contentNegotiationManager,
-                                                GeoServerExtensions.bean(
-                                                        FreemarkerTemplateSupport.class),
-                                                GeoServerExtensions.bean(GeoServer.class),
-                                                callbacks);
-                                    } else {
-                                        return f;
-                                    }
+                                    if (f instanceof RequestResponseBodyMethodProcessor)
+                                        return replaceBodyMethodProcessor(f);
+                                    return f;
                                 })
                         .collect(Collectors.toList());
 
@@ -231,6 +221,16 @@ public class APIDispatcher extends AbstractController {
                                 mavContainer.getModel().put(RESPONSE_OBJECT, returnValue);
                             }
                         }));
+    }
+
+    private HandlerMethodReturnValueHandler replaceBodyMethodProcessor(
+            HandlerMethodReturnValueHandler f) {
+        if (f instanceof RequestResponseBodyMethodProcessor) {
+            return new APIBodyMethodProcessor(
+                    handlerAdapter.getMessageConverters(), contentNegotiationManager, callbacks);
+        } else {
+            return f;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -316,6 +316,10 @@ public class APIDispatcher extends AbstractController {
             // to be bridged to the OGC service responses sometimes (which do need the actual
             // response, not just its class)
             APIRequestInfo.get().setResult(returnValue);
+
+            // Provide the AnnotatedHTMLMessageConverter with access to the method annotation,
+            // so that it can decide whether to participate to the message conversion, or not
+            AnnotatedHTMLMessageConverter.processAnnotation(handler);
 
             returnValueHandlers.handleReturnValue(
                     returnValue,

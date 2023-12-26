@@ -36,16 +36,6 @@
       <version>${gs.version}</version>
     </dependency>
     <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>serializer</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>xml-apis</artifactId>
-          <groupId>xml-apis</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
       <version>${gs.version}</version>

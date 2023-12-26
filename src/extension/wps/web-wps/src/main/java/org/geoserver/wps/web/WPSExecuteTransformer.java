@@ -13,7 +13,9 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.xml.serializer.TreeWalker;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.wps.web.InputParameterValues.ParameterType;
@@ -378,21 +380,26 @@ class WPSExecuteTransformer extends TransformerBase {
 
         private void dumpAsXML(Document document) {
             try {
-                TreeWalker tw = new TreeWalker(contentHandler);
-                tw.traverse(document);
+                TransformerFactory.newInstance()
+                        .newTransformer()
+                        .transform(new DOMSource(document), new SAXResult(contentHandler));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
         private Document parseAsXML(String data) {
+            if (!data.matches("\\s*<.+/.*>\\s*")) {
+                // crude regex to check for potentially parseable XML strings
+                return null;
+            }
             try {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 factory.setNamespaceAware(true);
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 builder.setEntityResolver(entityResolver);
                 if (!data.startsWith("<?xml")) {
-                    data = "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n" + data;
+                    data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + data;
                 }
                 return builder.parse(new ByteArrayInputStream(data.getBytes()));
             } catch (IOException | ParserConfigurationException | SAXException t) {

@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.namespace.QName;
+import net.opengis.wfs.IdentifierGenerationOptionType;
+import net.opengis.wfs.InsertElementType;
+import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs20.DeleteType;
 import net.opengis.wfs20.InsertType;
 import net.opengis.wfs20.NativeType;
@@ -215,6 +218,65 @@ public class BatchManagerTest {
         verify(delete1Handler, times(1)).execute(same(delete1), any(), any(), any(), any());
     }
 
+    @Test
+    public void testAggregationWithDifferentIdGen() {
+        // given: test transactions contents...
+        Insert insertUseExisting1 = newUseExistingIDInsert(feature1);
+        TransactionElementHandler insert1Handler = mock(TransactionElementHandler.class);
+        Insert insertUseExisting2 = newUseExistingIDInsert(feature2);
+        TransactionElementHandler insert2Handler = mock(TransactionElementHandler.class);
+
+        Insert insertGenerateNew3 = newGenerateNewIDInsert(feature3);
+        TransactionElementHandler insert3Handler = mock(TransactionElementHandler.class);
+
+        Insert insertUseExisting4 = newUseExistingIDInsert(feature4);
+        TransactionElementHandler insert4Handler = mock(TransactionElementHandler.class);
+
+        Map<TransactionElement, TransactionElementHandler> element2Handlers =
+                asMap( //
+                        keyValue(insertUseExisting1, insert1Handler), //
+                        keyValue(insertUseExisting2, insert2Handler), //
+                        keyValue(insertGenerateNew3, insert3Handler), //
+                        keyValue(insertUseExisting4, insert4Handler));
+
+        TransactionRequest lTransaction = transactionRequestV11(element2Handlers.keySet());
+
+        // when: BatchManager runs...
+        BatchManager sut =
+                new BatchManager(
+                        lTransaction,
+                        transactionListener,
+                        stores,
+                        transactionResponse,
+                        element2Handlers,
+                        100);
+        sut.run();
+
+        // then:
+        assertEquals("First insert has two features", 2, insertUseExisting1.getFeatures().size());
+        assertEquals(
+                "Second insert has no added features", 1, insertUseExisting2.getFeatures().size());
+        assertEquals(
+                "Second feature has been added to insert1",
+                insertUseExisting1.getFeatures().get(1),
+                feature2);
+        assertEquals(
+                "Third INSERT have been not merged", 1, insertGenerateNew3.getFeatures().size());
+        assertEquals(
+                "Last INSERT have been not merged", 1, insertUseExisting4.getFeatures().size());
+
+        // verify invocations of handlers
+        // INSERT-1 handler was executed with first insert?
+        verify(insert1Handler, times(1))
+                .execute(same(insertUseExisting1), any(), any(), any(), any());
+        // INSERT-2 skipped?
+        verify(insert2Handler, times(0)).execute(any(), any(), any(), any(), any());
+        verify(insert3Handler, times(1))
+                .execute(same(insertGenerateNew3), any(), any(), any(), any());
+        verify(insert4Handler, times(1))
+                .execute(same(insertUseExisting4), any(), any(), any(), any());
+    }
+
     private void testAggregationWithDeleteBatchSize(int pDeleteBatchSize) {
         // given: test transactions contents...
         Insert insert1 = newInsert(feature1);
@@ -319,6 +381,14 @@ public class BatchManagerTest {
         return lTransactionRequest;
     }
 
+    private TransactionRequest transactionRequestV11(Set<TransactionElement> pElems) {
+        net.opengis.wfs.TransactionType lTransactionType =
+                WfsFactory.eINSTANCE.createTransactionType();
+        TransactionRequest lTransactionRequest = TransactionRequest.adapt(lTransactionType);
+        lTransactionRequest.setElements(new ArrayList<>(pElems));
+        return lTransactionRequest;
+    }
+
     private MapEntry<TransactionElement, TransactionElementHandler> keyValue(
             TransactionElement pElement, TransactionElementHandler pElementHandler) {
         return new MapEntry<TransactionElement, TransactionElementHandler>(
@@ -363,6 +433,22 @@ public class BatchManagerTest {
     private Insert newInsert(SimpleFeature pFeature) {
         InsertType lInsertType = Wfs20Factory.eINSTANCE.createInsertType();
         Insert lInsert = new Insert.WFS20(lInsertType);
+        lInsert.setFeatures(Arrays.asList(pFeature));
+        return lInsert;
+    }
+
+    private Insert newUseExistingIDInsert(SimpleFeature pFeature) {
+        InsertElementType lInsertType = WfsFactory.eINSTANCE.createInsertElementType();
+        lInsertType.setIdgen(IdentifierGenerationOptionType.USE_EXISTING_LITERAL);
+        Insert.WFS11 lInsert = new Insert.WFS11(lInsertType);
+        lInsert.setFeatures(Arrays.asList(pFeature));
+        return lInsert;
+    }
+
+    private Insert newGenerateNewIDInsert(SimpleFeature pFeature) {
+        InsertElementType lInsertType = WfsFactory.eINSTANCE.createInsertElementType();
+        lInsertType.setIdgen(IdentifierGenerationOptionType.GENERATE_NEW_LITERAL);
+        Insert.WFS11 lInsert = new Insert.WFS11(lInsertType);
         lInsert.setFeatures(Arrays.asList(pFeature));
         return lInsert;
     }

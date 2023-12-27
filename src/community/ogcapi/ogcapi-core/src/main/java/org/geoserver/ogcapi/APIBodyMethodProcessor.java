@@ -43,24 +43,17 @@ import org.springframework.web.servlet.mvc.method.annotation.JsonViewResponseBod
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
 /**
- * Customized {@link RequestResponseBodyMethodProcessor} that uses its own content negotiation
- * manager and can handle HTML annotated responses
+ * Customized {@link RequestResponseBodyMethodProcessor} that allows full support of {@link
+ * DispatcherCallback}, and has a customized content negotiation strategy that allows to set up the
+ * default media type by using the defaultMediaType annotation on the controller and prefer JSON
+ * producing converters in case no default has been set up.
  */
 public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
     private static final MediaType MEDIA_TYPE_APPLICATION = new MediaType("application");
-    private static final String VERSION_HEADER = "API-Version";
 
     private final ContentNegotiationManager contentNegotiationManager;
     protected List<DispatcherCallback> callbacks;
-
-    public APIBodyMethodProcessor(
-            List<HttpMessageConverter<?>> converters,
-            FreemarkerTemplateSupport templateSupport,
-            GeoServer geoServer,
-            List<DispatcherCallback> callbacks) {
-        this(converters, new APIContentNegotiationManager(), templateSupport, geoServer, callbacks);
-    }
 
     public APIBodyMethodProcessor(
             List<HttpMessageConverter<?>> converters,
@@ -117,17 +110,6 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         Request dr = Dispatcher.REQUEST.get();
         response = fireResponseDispatchedCallback(dr, dr.getOperation(), value, response);
 
-        // add version to the response headers
-        APIService apiService =
-                APIDispatcher.getApiServiceAnnotation(returnType.getContainingClass());
-        if (apiService != null && apiService.version() != null) {
-            outputMessage.getHeaders().add(VERSION_HEADER, apiService.version());
-        } else {
-            logger.debug(
-                    "Could not find the APIService annotation in the controller for:"
-                            + returnType.getContainingClass());
-        }
-
         // write using the response provided by the callbacks
         outputMessage
                 .getHeaders()
@@ -142,7 +124,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         return contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(request));
     }
 
-    public <T> MediaType getMediaTypeToUse(
+    private <T> MediaType getMediaTypeToUse(
             @Nullable T value,
             MethodParameter returnType,
             ServletServerHttpRequest inputMessage,

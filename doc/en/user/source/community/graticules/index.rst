@@ -40,119 +40,114 @@ a level of grid with a gap of *step* units between the gaps.
 Creating a new style for graticule
 ----------------------------------
 
-When creating a new style for a graticule layer, change the ``format`` to ``grid`` and select ``Generate a default style`` for the ``Graticule`` option.
-A new SLD style will be created for graticule layer. The main elements are described below.
+Displaying a graticule in a sensible way will require creating a custom style to control
+the line appearance, the labels, and the visualization hierarchy if multiple levels of
+graticule are used. This can lead to complex styles, which can be tamed by leveraging
+the available attributes along with filter functions.
 
-.. figure:: images/new-style.png
+Let's assume one has a graticule with 5 levels of lines at different resolutions (e.g., 1, 5, 10, 20 and 30 degrees spacing), 
+and wants to display them as follows:
 
-Styling Lines
-+++++++++++++
+ * level 0: scale denominator lower than 1M
+ * level 1: scale denominator between 1M and 20M
+ * level 2: scale denominator between 20M and 100M
+ * level 3: scale denominator between 10M and 400M
+ * level 4: scale denominator higher than 400M
 
-.. code-block:: xml
-
- <sld:FeatureTypeStyle>
-        <sld:Name>name</sld:Name>
-        <sld:Rule>
-          <ogc:Filter>
-            <ogc:PropertyIsGreaterThanOrEqualTo>
-              <ogc:PropertyName>level</ogc:PropertyName>
-              <ogc:Literal>0</ogc:Literal>
-            </ogc:PropertyIsGreaterThanOrEqualTo>
-          </ogc:Filter>
-          <sld:MaxScaleDenominator>4000000.0</sld:MaxScaleDenominator>
-          <sld:LineSymbolizer>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#666666</sld:CssParameter>
-              <sld:CssParameter name="stroke-dasharray">2.0 2.0</sld:CssParameter>
-            </sld:Stroke>
-          </sld:LineSymbolizer>
-        </sld:Rule>
-        <sld:Rule>
-          <ogc:Filter>
-            <ogc:PropertyIsGreaterThanOrEqualTo>
-              <ogc:PropertyName>level</ogc:PropertyName>
-              <ogc:Literal>1</ogc:Literal>
-            </ogc:PropertyIsGreaterThanOrEqualTo>
-          </ogc:Filter>
-          <sld:MaxScaleDenominator>9000000.0</sld:MaxScaleDenominator>
-          <sld:LineSymbolizer>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#666666</sld:CssParameter>
-              <sld:CssParameter name="stroke-dasharray">2.0 2.0</sld:CssParameter>
-            </sld:Stroke>
-          </sld:LineSymbolizer>
-        </sld:Rule>
-        <sld:Rule>
-          <ogc:Filter>
-            <ogc:PropertyIsGreaterThanOrEqualTo>
-              <ogc:PropertyName>level</ogc:PropertyName>
-              <ogc:Literal>2</ogc:Literal>
-            </ogc:PropertyIsGreaterThanOrEqualTo>
-          </ogc:Filter>
-          <sld:MaxScaleDenominator>3.5E7</sld:MaxScaleDenominator>
-          <sld:LineSymbolizer>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#666666</sld:CssParameter>
-              <sld:CssParameter name="stroke-dasharray">2.0 2.0</sld:CssParameter>
-            </sld:Stroke>
-          </sld:LineSymbolizer>
-        </sld:Rule>
-        <sld:Rule>
-          <ogc:Filter>
-            <ogc:PropertyIsGreaterThanOrEqualTo>
-              <ogc:PropertyName>level</ogc:PropertyName>
-              <ogc:Literal>3</ogc:Literal>
-            </ogc:PropertyIsGreaterThanOrEqualTo>
-          </ogc:Filter>
-          <sld:LineSymbolizer>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#666666</sld:CssParameter>
-              <sld:CssParameter name="stroke-dasharray">2.0 2.0</sld:CssParameter>
-            </sld:Stroke>
-          </sld:LineSymbolizer>
-        </sld:Rule>
-        <sld:Rule>
-          <ogc:Filter>
-            <ogc:PropertyIsEqualTo>
-              <ogc:PropertyName>value</ogc:PropertyName>
-              <ogc:Literal>0.0</ogc:Literal>
-            </ogc:PropertyIsEqualTo>
-          </ogc:Filter>
-          <sld:LineSymbolizer>
-            <sld:Stroke/>
-          </sld:LineSymbolizer>
-        </sld:Rule>
-      </sld:FeatureTypeStyle>
-
-This block of SLD is used to style the lines of the graticule. There are 4 ``Rule``s with a ``Filter`` and ``MaxScaleDenominator`` to select which level of lines is drawn as the user
-zooms in and out of the map.
+The following style would be used, using a single Rule, by leveraging the ``Categorize`` function
+along with the ``wms_scale_denominator`` environment variable (:ref:`sld_variable_substitution`):
 
 .. code-block:: xml
 
-  <ogc:Filter>
-    <ogc:PropertyIsGreaterThanOrEqualTo>
-      <ogc:PropertyName>level</ogc:PropertyName>
-      <ogc:Literal>0</ogc:Literal>
-    </ogc:PropertyIsGreaterThanOrEqualTo>
-  </ogc:Filter>
-  <sld:MaxScaleDenominator>4000000.0</sld:MaxScaleDenominator>
+    <?xml version="1.0" encoding="ISO-8859-1"?>
+    <StyledLayerDescriptor version="1.0.0"
+                           xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
+                           xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+                           xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+      <NamedLayer>
+        <Name>graticule</Name>
+        <UserStyle>
+          <FeatureTypeStyle>
+            <Name>name</Name>
+            <Rule>
+              <ogc:Filter>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:PropertyName>level</ogc:PropertyName>
+                  <ogc:Function name="Categorize">
+                    <ogc:Function name="env"><ogc:Literal>wms_scale_denominator</ogc:Literal></ogc:Function>
+                    <ogc:Literal>0</ogc:Literal>
+                    <ogc:Literal>1000000</ogc:Literal>
+                    <ogc:Literal>1</ogc:Literal>
+                    <ogc:Literal>20000000</ogc:Literal>
+                    <ogc:Literal>2</ogc:Literal>
+                    <ogc:Literal>100000000</ogc:Literal>
+                    <ogc:Literal>3</ogc:Literal>
+                    <ogc:Literal>400000000</ogc:Literal>
+                    <ogc:Literal>4</ogc:Literal>
+                  </ogc:Function>
+                </ogc:PropertyIsEqualTo>
+              </ogc:Filter>
+              <LineSymbolizer>
+                <Stroke>
+                  <CssParameter name="stroke">#666666</CssParameter>
+                  <CssParameter name="stroke-dasharray">2.0 2.0</CssParameter>
+                </Stroke>
+              </LineSymbolizer>
+            </Rule>        
+          </FeatureTypeStyle>
+          
+        </UserStyle>
+      </NamedLayer>
+    </StyledLayerDescriptor>
 
-In this case the fiter will show all the lines with a level of 0 or more (all lines) when the map scale is larger that 1:4M. The scale denominator
-most likely needs to adjusted for different CRS and grid steps, but the logic will be the same.
 
-
-
-Adding Labels to the lines
-++++++++++++++++++++++++++
-
-Before we can easily label the lines in the grid we need to find a set of label points to place the labels at, this is done with a rendering transform
-(and as such needs the WPS extension to be installed, though not necessarily enabled). This is applied to the grid in a separate ``FeatureTypeStyle``
+If some important lines are meant to be displayed with solid line rather than dashed, it's possible
+to use a function to keep the style compact, rather than duplicating the whole rule. The following
+example makes the equator and the prime meridian solid lines, while keeping the rest dashed:
 
 .. code-block:: xml
 
-      <sld:FeatureTypeStyle>
-        <sld:Name>name</sld:Name>
-        <sld:Transformation>
+  <LineSymbolizer>
+    <Stroke>
+      <CssParameter name="stroke">#666666</CssParameter>
+      <CssParameter name="stroke-dasharray">
+        <ogc:Function name="if_then_else">
+          <ogc:Function name="equalTo">
+            <ogc:PropertyName>value</ogc:PropertyName>
+            <ogc:Literal>0</ogc:Literal>
+          </ogc:Function>  
+          <ogc:Literal>0</ogc:Literal>
+          <ogc:Literal>3 3</ogc:Literal>
+        </ogc:Function>
+      </CssParameter>
+    </Stroke>
+  </LineSymbolizer>
+
+Finally, labelling can be a tricky job. A rendering transform is provided to help with this, 
+``vec:GraticuleLabelPoint``, which will take the grid lines and return a point at ends of each
+gridline, preserving the attributes of the original line, but adding extra ones that can be used
+to simplify the labelling process:
+
+* "top" indicates if a label is at the top of the line (true) or at the bottom (false) of a vertical line
+* "left" indicates if a label is at the left of the line (true) or at the right (false) of a horizontal line
+* "anchorX", "anchorY" provides a suitable value to anchor the label inside the grid
+* "offsetX" and "offsetY" provides a suitable value to offset the label from the anchor point, again to keep labels inside the grid
+
+The process itself takes the following parameters:
+
+* "grid" is the grid lines being processed (the graticule layer)
+* "boundingBox" is the bounding box of the map being rendered, which is used to clip lines and to calculate the label points, 
+* "offset" is the offset of the label from the grid line (used to compute the values of "offsetX" and "offsetY"), which can be provided using the current request bounding box using the ``wms_bbox`` environment variable (:ref:`sld_variable_substitution`).
+* "positions" indicates which groups of labels should be generated, and can be one of "top", "bottom", "left", "right" or "topleft", "topright", "bottomleft", "bottomright", or the default value "both" which generates labels on all four sides of the map.
+
+Leveraging this process, the labels can be generated using the following style:
+
+.. code-block:: xml
+
+      <FeatureTypeStyle>
+        <Name>label</Name>
+        <Transformation>
           <ogc:Function name="vec:GraticuleLabelPoint">
             <ogc:Function name="parameter">
               <ogc:Literal>grid</ogc:Literal>
@@ -163,8 +158,45 @@ Before we can easily label the lines in the grid we need to find a set of label 
                 <ogc:Literal>wms_bbox</ogc:Literal>
               </ogc:Function>
             </ogc:Function>
+            <ogc:Function name="parameter">
+              <ogc:Literal>offset</ogc:Literal>
+              <ogc:Literal>4</ogc:Literal>
+            </ogc:Function>
           </ogc:Function>
-        </sld:Transformation>
+        </Transformation>
+        <Rule>
+          <TextSymbolizer>
+            <Label>
+              <ogc:PropertyName>label</ogc:PropertyName>
+            </Label>
+            <Font>
+              <CssParameter name="font-family">Noto Sans</CssParameter>
+              <CssParameter name="font-size">12</CssParameter>
+              <CssParameter name="font-style">normal</CssParameter>
+            </Font>
+            <LabelPlacement>
+              <PointPlacement>
+                <AnchorPoint>
+                  <AnchorPointX><ogc:PropertyName>anchorX</ogc:PropertyName></AnchorPointX>
+                  <AnchorPointY><ogc:PropertyName>anchorY</ogc:PropertyName></AnchorPointY>
+                </AnchorPoint>
+                <Displacement>
+                  <DisplacementX><ogc:PropertyName>offsetX</ogc:PropertyName></DisplacementX>
+                  <DisplacementY><ogc:PropertyName>offsetY</ogc:PropertyName></DisplacementY>
+                </Displacement>
+              </PointPlacement>
+            </LabelPlacement>
+            <Halo>
+              <Radius>1</Radius>
+              <Fill>
+                <CssParameter name="fill">#FFFFFF</CssParameter>
+              </Fill>
+            </Halo>
+            <Fill>
+              <CssParameter name="fill">#000000</CssParameter>
+            </Fill>
+            <VendorOption name="partials">true</VendorOption>
+          </TextSymbolizer>
+        </Rule>      
+      </FeatureTypeStyle>
 
-The first parameter ``grid`` takes the features and passes them into the process, the second parameter ``boundingBox`` is the extent of the map being drawn. In this case is filled
-in using the ``wms_bbox`` environment variable (:ref:`sld_variable_substitution`).

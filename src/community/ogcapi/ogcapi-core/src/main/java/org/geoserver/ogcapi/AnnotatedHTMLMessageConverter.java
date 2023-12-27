@@ -43,6 +43,13 @@ public class AnnotatedHTMLMessageConverter<T> extends AbstractHTMLMessageConvert
         super(support, geoServer);
     }
 
+    /**
+     * Looks up an eventual {@link HTMLResponseBody} annotation from the current handler method, and
+     * stores them in request attributes so that they can be re-used later by this class. Normally
+     * invoked by the {@link APIDispatcher} during request processing.
+     *
+     * @param handler
+     */
     public static void processAnnotation(HandlerMethod handler) {
         RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
         HTMLResponseBody htmlResponseBody =

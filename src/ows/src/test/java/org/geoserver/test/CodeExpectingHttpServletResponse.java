@@ -30,13 +30,6 @@ public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void setStatus(int sc, String sm) {
-        myErrorCode = sc;
-        super.setStatus(sc, sm);
-    }
-
-    @Override
     public void sendError(int sc) throws IOException {
         error = true;
         myErrorCode = sc;

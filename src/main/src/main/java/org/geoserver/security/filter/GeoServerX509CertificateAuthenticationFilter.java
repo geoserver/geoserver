@@ -36,7 +36,7 @@ public class GeoServerX509CertificateAuthenticationFilter
     @Override
     protected String getPreAuthenticatedPrincipalName(HttpServletRequest request) {
         X509Certificate[] certs =
-                (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+                (X509Certificate[]) request.getAttribute("jakarta.servlet.request.X509Certificate");
         if (certs == null || certs.length == 0) return null;
 
         X509Certificate cert = certs[0];

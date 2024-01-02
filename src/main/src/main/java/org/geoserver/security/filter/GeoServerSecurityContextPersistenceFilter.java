@@ -67,7 +67,8 @@ public class GeoServerSecurityContextPersistenceFilter extends GeoServerComposit
                         }
                         request.setAttribute(FILTER_APPLIED, Boolean.TRUE);
                         try {
-                            SecurityContext securityContext = repo.loadContext(request).get();
+                            SecurityContext securityContext =
+                                    repo.loadDeferredContext(request).get();
                             SecurityContextHolder.setContext(securityContext);
                             chain.doFilter(request, response);
                         } finally {

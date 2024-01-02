@@ -407,7 +407,8 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
                                     InvalidKeyException, NoSuchProviderException,
                                     SignatureException {}
                 };
-        request.setAttribute("javax.servlet.request.X509Certificate", new X509Certificate[] {x509});
+        request.setAttribute(
+                "jakarta.servlet.request.X509Certificate", new X509Certificate[] {x509});
     }
 
     //    @Override

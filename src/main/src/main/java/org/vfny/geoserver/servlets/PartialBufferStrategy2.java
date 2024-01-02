@@ -52,7 +52,7 @@ public class PartialBufferStrategy2 implements ServiceStrategy {
     /*
      * (non-Javadoc)
      *
-     * @see org.vfny.geoserver.servlets.AbstractService.ServiceStrategy#getDestination(javax.servlet.http.HttpServletResponse)
+     * @see org.vfny.geoserver.servlets.AbstractService.ServiceStrategy#getDestination(jakarta.servlet.http.HttpServletResponse)
      */
     @Override
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {

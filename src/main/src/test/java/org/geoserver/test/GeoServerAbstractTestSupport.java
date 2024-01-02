@@ -405,8 +405,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      * during testing (otherwise no authentication will take place):
      *
      * <pre>
-     * protected List&lt;javax.servlet.Filter&gt; getFilters() {
-     *     return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions
+     * protected List&lt;jakarta.servlet.Filter&gt; getFilters() {
+     *     return Collections.singletonList((jakarta.servlet.Filter) GeoServerExtensions
      *             .bean(&quot;filterChainProxy&quot;));
      * }
      * </pre>

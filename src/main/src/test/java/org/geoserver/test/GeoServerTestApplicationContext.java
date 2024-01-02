@@ -44,7 +44,7 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
         super(configLocation, false);
         try {
             contextTmp = IOUtils.createRandomDirectory("./target", "mock", "tmp");
-            servletContext.setAttribute("javax.servlet.context.tempdir", contextTmp);
+            servletContext.setAttribute("jakarta.servlet.context.tempdir", contextTmp);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

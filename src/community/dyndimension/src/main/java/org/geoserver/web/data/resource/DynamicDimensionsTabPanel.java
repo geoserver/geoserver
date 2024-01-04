@@ -271,9 +271,9 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                                         public void onComponentTag(
                                                 Component component, ComponentTag tag) {
                                             if (property == DEFAULT_VALUE_EXPRESSION) {
-                                                tag.put("style", "width:99%");
+                                                tag.put("class", "w-99pct");
                                             } else {
-                                                tag.put("style", "width:1%");
+                                                tag.put("class", "w-1pct");
                                             }
                                         }
                                     });

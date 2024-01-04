@@ -51,9 +51,9 @@ public class TemplatesPositionPanel extends Panel {
                     @Override
                     protected void onComponentTag(ComponentTag tag) {
                         if (templates.getObject().indexOf(model.getObject()) == 0) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };
@@ -84,9 +84,9 @@ public class TemplatesPositionPanel extends Panel {
                     protected void onComponentTag(ComponentTag tag) {
                         if (templates.getObject().indexOf(model.getObject())
                                 == templates.getObject().size() - 1) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };

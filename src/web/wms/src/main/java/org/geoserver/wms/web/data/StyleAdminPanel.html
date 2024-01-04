@@ -7,7 +7,7 @@
   <body>
     <wicket:panel>
       <div class="clearfix pt-4">
-          <fieldset class="float-start" style="width: 45%; margin-right: 5%; margin-bottom: 0px">
+          <fieldset class="float-start style-data-span">
             <legend>
               <span><wicket:message key="styleDataSpan">Style Info</wicket:message></span>
             </legend>
@@ -23,12 +23,12 @@
               <li>
                 <label for="format"><wicket:message key="format">Format</wicket:message></label>
                 <select wicket:id="format"></select>
-                <div wicket:id="formatReadOnly" class="info-link" style="display: inline-block;">
+                <div wicket:id="formatReadOnly" class="info-link display-inline-block">
                   <wicket:message key="formatReadOnly"></wicket:message>
                 </div>
               </li>
             </ul>
-          <div style="padding-top: 2em"><fieldset style="margin-bottom: 0em">
+          <div class="top-padding-2em"><fieldset class="bottom-margin-0em">
             <legend>
               <span><wicket:message key="styleContentSpan">Style Content</wicket:message></span>
             </legend>
@@ -40,7 +40,7 @@
               </li>
               <li>
                 <label for="name"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
-                <select wicket:id="existingStyles" style="width: 27em;"></select>
+                <select wicket:id="existingStyles" class="w-27-em"></select>
                 <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>
               </li>
               <li>
@@ -51,7 +51,7 @@
             </ul>
           </fieldset></div>
           </fieldset>
-          <fieldset class="float-start" style="width: 45%; margin-right: 5%">
+          <fieldset class="float-start style-legend-span">
             <legend>
               <span><wicket:message key="legendSpan">Legend</wicket:message></span>
             </legend>

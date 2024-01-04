@@ -231,12 +231,8 @@ public class GeoServerApplication extends WebApplication
                         CSPDirective.SCRIPT_SRC,
                         CSPDirectiveSrcValue.SELF,
                         CSPDirectiveSrcValue.UNSAFE_INLINE)
-                // TODO: we definitely want to  remove UNSAFE_INLINE
-                .add(
-                        CSPDirective.STYLE_SRC,
-                        CSPDirectiveSrcValue.SELF,
-                        CSPDirectiveSrcValue.UNSAFE_INLINE)
-                .add(CSPDirective.IMG_SRC, CSPDirectiveSrcValue.SELF)
+                .add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.SELF)
+                .add(CSPDirective.IMG_SRC, "'self'", "data:")
                 .add(CSPDirective.CONNECT_SRC, CSPDirectiveSrcValue.SELF)
                 .add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)
                 .add(CSPDirective.MANIFEST_SRC, CSPDirectiveSrcValue.SELF)

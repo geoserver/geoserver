@@ -57,9 +57,9 @@ public class AttributePositionPanel extends Panel {
                                 || derivedAtts != null
                                         && (derivedAtts.contains(index)
                                                 || derivedAtts.contains(index - 1))) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };
@@ -92,9 +92,9 @@ public class AttributePositionPanel extends Panel {
                                 || derivedAtts != null
                                         && (derivedAtts.contains(index)
                                                 || derivedAtts.contains(index + 1))) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };

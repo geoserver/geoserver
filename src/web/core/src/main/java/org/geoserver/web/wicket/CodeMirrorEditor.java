@@ -104,8 +104,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         toolbar.add(customButtons);
 
         WebMarkupContainer editorParent = new WebMarkupContainer("editorParent");
-        editorParent.add(
-                AttributeModifier.replace("style", "border: 1px solid black; padding-bottom: 3px"));
+        editorParent.add(AttributeModifier.replace("class", "codemirror"));
         container.add(editorParent);
         editor = new TextArea<>("editor", model);
         editorParent.add(editor);

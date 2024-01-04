@@ -342,7 +342,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             extra.add(new ExternalLink("link", source.getHelpLink(ImportDataPage.this)));
 
             if (!source.isAvailable()) {
-                get("name").add(AttributeModifier.replace("style", "font-style: italic;"));
+                get("name").add(AttributeModifier.replace("class", "italic"));
                 add(
                         AttributeModifier.replace(
                                 "title",

@@ -29,6 +29,7 @@ import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.PanelCachingTab;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -45,6 +46,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.io.IOUtils;
 import org.apache.wicket.util.string.StringValue;
@@ -113,6 +115,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     JavaScriptHeaderItem.forReference(
                             new PackageResourceReference(
                                     AbstractStylePage.class, "js/spectrum/spectrum.js")));
+            response.render(
+                    CssHeaderItem.forReference(
+                            new CssResourceReference(AbstractStylePage.class, "StylePage.css")));
             String enableSpectrum =
                     "$(\"#chooser\").spectrum({\n"
                             + "    color: \""

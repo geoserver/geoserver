@@ -13,7 +13,9 @@ Currently, the checks are performed on the following functionality:
 - WMS GetMap and GetFeatureInfo requests in feature portrayal mode (``REMOTE_OWS`` and ``REMOTE_OWS_TYPE`` parameters)
 - WPS remote inputs, either as GET or POST requests
 
-Check this page for any additional remote service access checks added in the future.
+External URLs configured by admins in the GUI (e.g. WFS, cascaded WMS & WMTS) are not subject to this check.
+
+Please refer back to this page for any additional remote service access checks added in the future.
 
 Configuration of URL checks
 ---------------------------

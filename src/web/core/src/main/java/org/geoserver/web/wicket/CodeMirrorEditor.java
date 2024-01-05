@@ -151,58 +151,11 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         // Make the line numbers look good
-        // TODO: this would be better in CodeMirrorEditor.css
         response.render(
-                CssHeaderItem.forCSS(
-                        "     <style type=\"text/css\">\n"
-                                + "      .CodeMirror-line-numbers {\n"
-                                + "        width: 2.2em;\n"
-                                + "        color: #aaa;\n"
-                                + "        background-color: #eee;\n"
-                                + "        text-align: right;\n"
-                                + "        padding-right: .3em;\n"
-                                + "        font-size: 12px;\n"
-                                + "        font-family: monospace;\n"
-                                + "        padding-top: .4em;\n"
-                                + "        line-height: normal;\n"
-                                + "      }\n"
-                                + "      \n"
-                                + "      .fullscreen {\n"
-                                + "        display: block;\n"
-                                + "        position: absolute;\n"
-                                + "        top: 0;\n"
-                                + "        left: 0;\n"
-                                + "        width: 100%;\n"
-                                + "        height: 100%;\n"
-                                + "        z-index: 9999;\n"
-                                + "        margin: 0;\n"
-                                + "        padding: 0;\n"
-                                + "        background: inherit;\n"
-                                + "      }\n"
-                                + "      \n"
-                                + "      .button-toolbar span {\n"
-                                + "           height: 16px;\n"
-                                + "           width: 16px;\n"
-                                + "           margin: 2px;\n"
-                                + "       }\n"
-                                + "       \n"
-                                + "      .button-toolbar a {\n"
-                                + "           float: left;\n"
-                                + "           margin: 0;\n"
-                                + "           padding: 0;\n"
-                                + "           background: none;\n"
-                                + "           border: none;\n"
-                                + "       }\n"
-                                + "       a.separator {\n"
-                                + "           /*border-right: 1px outset;\n"
-                                + "           padding-right: 5px;*/\n"
-                                + "           margin-right: 5px;\n"
-                                + "       }\n"
-                                + "       div.disabled .button-toolbar {\n"
-                                + "         display: none !important;\n"
-                                + "       }\n"
-                                + "    </style>",
-                        "codemirror-line-numbers"));
+                CssHeaderItem.forReference(
+                        new PackageResourceReference(
+                                CodeMirrorEditor.class,
+                                "js/codemirror/css/codemirrorlinenos.css")));
     }
 
     public void setTextAreaMarkupId(String id) {

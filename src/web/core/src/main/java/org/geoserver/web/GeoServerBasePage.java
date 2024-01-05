@@ -528,6 +528,11 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         new PackageResourceReference(
                                 GeoServerBasePage.class, "js/jquery.fullscreen.js")));
 
+        response.render(
+                JavaScriptHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "js/jquery.hide.ajaxFeedback.js")));
+
         List<HeaderContribution> cssContribs =
                 getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {

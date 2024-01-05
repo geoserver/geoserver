@@ -6,6 +6,8 @@
 package org.geoserver.web.demo;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
@@ -78,5 +80,13 @@ public class DemoRequestResponse extends WebPage {
         // element
         // finds out the form by id
         form.setMarkupId("form");
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(
+                OnLoadHeaderItem.forScript(
+                        "document.getElementById('form').submit();return false;"));
     }
 }

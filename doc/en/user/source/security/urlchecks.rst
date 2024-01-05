@@ -182,11 +182,11 @@ File paths can also be checked:
 
 .. note::
 
-   The locations being checked are normalizedmaking it easier to write RegEx patterns:
+   The locations being checked are normalized making it easier to write RegEx patterns:
 
    * URLs paths have been normalized to remove any redundant ``\.`` or ``\..`` paths have been removed
    * File URLs have been normalized so that ``file:/`` is represented as ``file:///``
-   * File paths have been normalized using ``/`` on linux and ``\\`` on windows
+   * File paths have been normalized using ``/`` on Linux and ``\\`` on Windows
 
 .. note::
 

@@ -500,6 +500,34 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         response.render(
                 new PriorityHeaderItem(
                         JavaScriptHeaderItem.forReference(JQueryResourceReference.INSTANCE_3)));
+        response.render(
+                CssReferenceHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "css/blueprint/screen.css"),
+                        "screen, projection"));
+        response.render(
+                CssReferenceHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "css/blueprint/print.css"),
+                        "print"));
+        response.render(
+                CssReferenceHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "css/bootstrap-utilities.min.css"),
+                        "all"));
+        response.render(
+                CssReferenceHeaderItem.forReference(
+                        new PackageResourceReference(GeoServerBasePage.class, "css/geoserver.css"),
+                        "screen, projection"));
+        response.render(
+                JavaScriptHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "js/jquery.placeholder.js")));
+        response.render(
+                JavaScriptHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "js/jquery.fullscreen.js")));
+
         List<HeaderContribution> cssContribs =
                 getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {

@@ -222,16 +222,14 @@ public class GeoServerApplication extends WebApplication
         // enable GeoServer custom resource locators
         getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
-        // TODO WICKET9: This needs some fine tuning
         getCspSettings()
                 .blocking()
                 .clear()
-                // TODO: we definitely want to remove UNSAFE_INLINE
                 .add(
                         CSPDirective.SCRIPT_SRC,
-                        CSPDirectiveSrcValue.SELF,
-                        CSPDirectiveSrcValue.UNSAFE_INLINE)
-                .add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.SELF)
+                        CSPDirectiveSrcValue.STRICT_DYNAMIC,
+                        CSPDirectiveSrcValue.NONCE)
+                .add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.NONCE)
                 .add(CSPDirective.IMG_SRC, "'self'", "data:")
                 .add(CSPDirective.CONNECT_SRC, CSPDirectiveSrcValue.SELF)
                 .add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)

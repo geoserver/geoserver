@@ -13,6 +13,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.feedback.IFeedback;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -36,7 +37,17 @@ public class GeoServerDialog extends Panel {
 
     public GeoServerDialog(String id) {
         super(id);
-        add(window = new ModalWindow("dialog"));
+        add(
+                window =
+                        new ModalWindow("dialog") {
+                            @Override
+                            protected void onComponentTag(ComponentTag tag) {
+                                super.onComponentTag(tag);
+                                // to avoid local style being blocked by CSP
+                                tag.remove("style");
+                                tag.put("class", "hidden");
+                            }
+                        });
     }
 
     /** Sets the window title */

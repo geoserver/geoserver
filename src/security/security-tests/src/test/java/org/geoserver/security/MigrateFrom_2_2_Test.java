@@ -51,21 +51,22 @@ public class MigrateFrom_2_2_Test extends GeoServerSystemTestSupport {
         RoleFilterConfig rfConfig =
                 (RoleFilterConfig)
                         getSecurityManager()
-                                .loadFilterConfig(GeoServerSecurityFilterChain.ROLE_FILTER);
+                                .loadFilterConfig(GeoServerSecurityFilterChain.ROLE_FILTER, true);
 
         assertNotNull(rfConfig);
 
         SSLFilterConfig sslConfig =
                 (SSLFilterConfig)
                         getSecurityManager()
-                                .loadFilterConfig(GeoServerSecurityFilterChain.SSL_FILTER);
+                                .loadFilterConfig(GeoServerSecurityFilterChain.SSL_FILTER, true);
 
         assertNotNull(sslConfig);
 
         assertNull(
                 getSecurityManager()
                         .loadFilterConfig(
-                                GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER));
+                                GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER,
+                                true));
 
         SecurityManagerConfig config = getSecurityManager().loadSecurityConfig();
         for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {

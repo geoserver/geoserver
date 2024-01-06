@@ -15,7 +15,8 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
-import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnEventHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -159,13 +160,16 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                     private static final long serialVersionUID = -1252520208030081584L;
 
                     @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        super.onComponentTag(tag);
-                        tag.put(
-                                "onkeypress",
-                                "if(event.keyCode == 13) {document.getElementById('"
-                                        + hiddenSubmit.getMarkupId()
-                                        + "').click();return false;}");
+                    public void renderHead(IHeaderResponse response) {
+                        super.renderHead(response);
+
+                        response.render(
+                                OnEventHeaderItem.forComponent(
+                                        this,
+                                        "keypress",
+                                        "if(event.keyCode == 13) {document.getElementById('"
+                                                + hiddenSubmit.getMarkupId()
+                                                + "').click();return false;}"));
                     }
 
                     @Override

@@ -1796,6 +1796,7 @@ image-chooser-img {
     max-width: 35px;
     max-height: 35px;
 }
-hidden {
+
+.hidden {
     display: none;
 }

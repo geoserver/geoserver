@@ -21,7 +21,9 @@ public class AuthenticationFiltersProvider
         try {
             for (String name :
                     getSecurityManager().listFilters(GeoServerAuthenticationFilter.class)) {
-                result.add((SecurityAuthFilterConfig) getSecurityManager().loadFilterConfig(name));
+                result.add(
+                        (SecurityAuthFilterConfig)
+                                getSecurityManager().loadFilterConfig(name, false));
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);

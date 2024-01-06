@@ -151,7 +151,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         List<String> securityFilterClassNames = new ArrayList<>();
         for (String name : securityFiltersNames) {
             try {
-                SecurityFilterConfig config = securityManager.loadFilterConfig(name);
+                SecurityFilterConfig config = securityManager.loadFilterConfig(name, true);
                 securityFilterClassNames.add(config.getClassName());
             } catch (Exception e) {
                 LOGGER.log(Level.FINE, "Could not load security filter config for " + name, e);

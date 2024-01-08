@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
+public class AuthenticationKeyOWSTest extends GeoServerSystemTestSupport {
 
     private static String adminKey;
 

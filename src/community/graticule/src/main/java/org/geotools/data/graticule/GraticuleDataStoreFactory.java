@@ -26,6 +26,8 @@ import org.geotools.util.KVP;
 public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
     static final Logger log = Logger.getLogger("GraticuleDataStoreFactory");
 
+    public static final String DISPLAY_NAME = "Graticule";
+
     /** Optional - uri of the FeatureType's namespace */
     public static final Param NAMESPACEP =
             new Param(
@@ -119,7 +121,7 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
 
     @Override
     public String getDisplayName() {
-        return "Graticule";
+        return DISPLAY_NAME;
     }
 
     @Override

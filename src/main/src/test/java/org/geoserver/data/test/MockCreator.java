@@ -298,7 +298,9 @@ public class MockCreator implements Callback {
         // security filters
         SecurityInterceptorFilterConfig filterConfig =
                 createNiceMock(SecurityInterceptorFilterConfig.class);
-        expect(secMgr.loadFilterConfig(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR))
+        expect(
+                        secMgr.loadFilterConfig(
+                                GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR, true))
                 .andReturn(filterConfig)
                 .anyTimes();
 

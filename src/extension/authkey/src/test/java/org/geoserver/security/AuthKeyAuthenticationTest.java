@@ -183,6 +183,44 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     }
 
     @Test
+    public void testMapperParametersFromEnvWhenDisabled() throws Exception {
+        String authKeyUrlParam = "myAuthKeyParams";
+        String filterName = "testAuthKeyParams3";
+
+        AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
+        config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
+        config.setName(filterName);
+        config.setUserGroupServiceName("ug1");
+        config.setAuthKeyParamName(authKeyUrlParam);
+        config.setAuthKeyMapperName("fakeMapper");
+
+        System.setProperty("authkey_param1", "value1");
+        System.setProperty("authkey_param2", "value2");
+        System.setProperty("ALLOW_ENV_PARAMETRIZATION", "false");
+        GeoServerEnvironment.reloadAllowEnvParametrization();
+        try {
+            Map<String, String> mapperParams = new HashMap<>();
+            mapperParams.put("param1", "${authkey_param1}");
+            mapperParams.put("param2", "${authkey_param2}");
+            config.setMapperParameters(mapperParams);
+
+            getSecurityManager().saveFilter(config);
+
+            GeoServerAuthenticationKeyFilter filter =
+                    (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
+            assertTrue(filter.getMapper() instanceof FakeMapper);
+            FakeMapper fakeMapper = (FakeMapper) filter.getMapper();
+            assertEquals("${authkey_param1}", fakeMapper.getMapperParameter("param1"));
+            assertEquals("${authkey_param2}", fakeMapper.getMapperParameter("param2"));
+        } finally {
+            System.clearProperty("authkey_param1");
+            System.clearProperty("authkey_param2");
+            System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
+            GeoServerEnvironment.reloadAllowEnvParametrization();
+        }
+    }
+
+    @Test
     public void testMapperParamsFilterConfigValidation() throws Exception {
 
         AuthenticationKeyFilterConfigValidator validator =

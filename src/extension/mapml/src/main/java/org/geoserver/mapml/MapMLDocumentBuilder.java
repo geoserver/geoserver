@@ -65,11 +65,16 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.capabilities.CapabilityUtil;
 import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.renderer.crs.ProjectionHandler;
+import org.geotools.renderer.crs.ProjectionHandlerFinder;
+import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.grid.GridSubset;
 import org.locationtech.jts.geom.Envelope;
@@ -757,21 +762,60 @@ public class MapMLDocumentBuilder {
         for (ProjType pt : ProjType.values()) {
             // skip the current proj
             if (pt.equals(projType)) continue;
-            Link projectionLink = new Link();
-            projectionLink.setRel(RelType.ALTERNATE);
-            projectionLink.setProjection(pt);
-            // Copy the base params to create one for self style
-            Map<String, String> projParams = new HashMap<>(wmsParams);
-            projParams.put("crs", pt.getEpsgCode());
-            projParams.put("width", Integer.toString(width));
-            projParams.put("height", Integer.toString(height));
-            projParams.put("bbox", bbox);
-            String projURL =
-                    ResponseUtils.buildURL(baseUrl, "wms", projParams, URLMangler.URLType.SERVICE);
-            projectionLink.setHref(projURL);
-            links.add(projectionLink);
+            try {
+                Link projectionLink = new Link();
+                projectionLink.setRel(RelType.ALTERNATE);
+                projectionLink.setProjection(pt);
+                // reproject the bounds
+                ReferencedEnvelope reprojectedBounds = reproject(projectedBox, pt);
+                // Copy the base params to create one for self style
+                Map<String, String> projParams = new HashMap<>(wmsParams);
+                projParams.put("crs", pt.getEpsgCode());
+                projParams.put("width", Integer.toString(width));
+                projParams.put("height", Integer.toString(height));
+                projParams.put("bbox", toCommaDelimitedBbox(reprojectedBounds));
+                String projURL =
+                        ResponseUtils.buildURL(
+                                baseUrl, "wms", projParams, URLMangler.URLType.SERVICE);
+                projectionLink.setHref(projURL);
+                links.add(projectionLink);
+            } catch (Exception e) {
+                // we gave it our best try but reprojection failed anyways, log and skip this link
+                LOGGER.log(Level.INFO, "Unable to reproject bounds for " + pt.value(), e);
+            }
         }
         return head;
+    }
+
+    /**
+     * Reproject the bounds to the target CRS
+     *
+     * @param bounds ReferencedEnvelope object
+     * @param pt ProjType object
+     * @return ReferencedEnvelope object
+     * @throws FactoryException In the event of a factory error.
+     * @throws TransformException In the event of a transform error.
+     */
+    private ReferencedEnvelope reproject(ReferencedEnvelope bounds, ProjType pt)
+            throws FactoryException, TransformException {
+        CoordinateReferenceSystem targetCRS = PREVIEW_TCRS_MAP.get(pt.value()).getCRS();
+        // leverage the rendering ProjectionHandlers to build a set of envelopes
+        // inside the valid area of the target CRS, and fuse them
+        ProjectionHandler ph = ProjectionHandlerFinder.getHandler(bounds, targetCRS, true);
+        ReferencedEnvelope targetBounds = null;
+        if (ph != null) {
+            List<ReferencedEnvelope> queryEnvelopes = ph.getQueryEnvelopes();
+            for (ReferencedEnvelope envelope : queryEnvelopes) {
+                if (targetBounds == null) {
+                    targetBounds = envelope;
+                } else {
+                    targetBounds.expandToInclude(envelope);
+                }
+            }
+        } else {
+            targetBounds = bounds.transform(targetCRS, true);
+        }
+        return targetBounds;
     }
 
     /**
@@ -807,14 +851,39 @@ public class MapMLDocumentBuilder {
             extentList = extent.getInputOrDatalistOrLink();
 
             // zoom
-            zoomInput = new Input();
-            zoomInput.setName("z");
-            zoomInput.setType(InputType.ZOOM);
-            zoomInput.setMin("0");
+            NumberRange<Double> scaleDenominators = null;
+            // layerInfo is null when layer is a layer group or multi layer request for multi-extent
+            if (!mapMLLayerMetadata.isLayerGroup() && mapMLLayerMetadata.getLayerInfo() != null) {
+                scaleDenominators =
+                        CapabilityUtil.searchMinMaxScaleDenominator(
+                                mapMLLayerMetadata.getLayerInfo());
+            } else if (mapMLLayerMetadata.getLayerGroupInfo() != null) {
+                scaleDenominators =
+                        CapabilityUtil.searchMinMaxScaleDenominator(
+                                mapMLLayerMetadata.getLayerGroupInfo());
+            }
+
+            Input extentZoomInput = new Input();
+            TiledCRS tiledCRS = PREVIEW_TCRS_MAP.get(projType.value());
+            extentZoomInput.setName("z");
+            extentZoomInput.setType(InputType.ZOOM);
+            // passing in max sld denominator to get min zoom
+            extentZoomInput.setMin(
+                    scaleDenominators != null
+                            ? String.valueOf(
+                                    tiledCRS.getMinZoomForDenominator(
+                                            scaleDenominators.getMaxValue().intValue()))
+                            : "0");
             int mxz = PREVIEW_TCRS_MAP.get(projType.value()).getScales().length - 1;
-            zoomInput.setMax(Integer.toString(mxz));
-            zoomInput.setValue(Integer.toString(mxz));
-            extentList.add(zoomInput);
+            // passing in min sld denominator to get max zoom
+            String maxZoom =
+                    scaleDenominators != null
+                            ? String.valueOf(
+                                    tiledCRS.getMaxZoomForDenominator(
+                                            scaleDenominators.getMinValue().intValue()))
+                            : String.valueOf(mxz);
+            extentZoomInput.setMax(maxZoom);
+            extentList.add(extentZoomInput);
 
             Input input;
             // shard list
@@ -945,10 +1014,13 @@ public class MapMLDocumentBuilder {
                                 ? mapMLLayerMetadata.getLayerGroupInfo()
                                 : layerInfo.getResource());
         GridSubset gss = gstl.getGridSubset(projType.value());
+
+        long[][] minMax = gss.getWMTSCoverages();
         // zoom start/stop are the min/max published zoom levels
+        zoomInput = (Input) extentList.get(0);
+        // zoom value must be the same as that used to establish the axes min/max
+        // on location inputs, below
         zoomInput.setValue(Integer.toString(gss.getZoomStop()));
-        zoomInput.setMin(Integer.toString(gss.getZoomStart()));
-        zoomInput.setMax(Integer.toString(gss.getZoomStop()));
 
         // tilematrix inputs
         Input input = new Input();
@@ -956,7 +1028,6 @@ public class MapMLDocumentBuilder {
         input.setType(InputType.LOCATION);
         input.setUnits(UnitType.TILEMATRIX);
         input.setAxis(AxisType.COLUMN);
-        long[][] minMax = gss.getWMTSCoverages();
         input.setMin(Long.toString(minMax[minMax.length - 1][0]));
         input.setMax(Long.toString(minMax[minMax.length - 1][2]));
         // there's no way to specify min/max here because

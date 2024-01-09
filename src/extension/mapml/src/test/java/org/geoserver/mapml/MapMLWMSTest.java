@@ -107,6 +107,9 @@ public class MapMLWMSTest extends WMSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
+        testData.addStyle("scaleRange", "scaleRange.sld", getClass(), catalog);
+        testData.addStyle("scaleRangeExtremes", "scaleRangeExtremes.sld", getClass(), catalog);
+        testData.addStyle("scaleRangeNoMax", "scaleRangeNoMax.sld", getClass(), catalog);
 
         String points = MockData.POINTS.getLocalPart();
         String lines = MockData.LINES.getLocalPart();
@@ -182,6 +185,7 @@ public class MapMLWMSTest extends WMSTestSupport {
                 "Use tiles is set to false so the link should be a image link",
                 extentLinksForSingle.get(0).getRel(),
                 RelType.IMAGE);
+
         assertTrue(
                 "Use tiles is set to false so the link should contain getMap",
                 extentLinksForSingle.get(0).getTref().contains("GetMap"));
@@ -279,7 +283,11 @@ public class MapMLWMSTest extends WMSTestSupport {
                 alternateLinksForSingle.get(0).getHref().contains("height=150"));
         assertTrue(
                 "Alternate link should include the bbox",
-                alternateLinksForSingle.get(0).getHref().contains("bbox=0.0%2C0.0%2C1.0%2C1.0"));
+                alternateLinksForSingle
+                        .get(0)
+                        .getHref()
+                        .contains(
+                                "bbox=8318656.5491871815%2C1.2944237150793944E7%2C8318659.2491287%2C1.2944239845880533E7"));
         assertEquals(
                 "There should be one extent object that combines the attributes of all layers",
                 1,
@@ -421,6 +429,203 @@ public class MapMLWMSTest extends WMSTestSupport {
                         .contains("styles=BasicPolygons%2C&"));
     }
 
+    @Test
+    public void testMapMLZoomLayer() throws Exception {
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        li.getStyles().add(cat.getStyleByName("scaleRange"));
+        li.setDefaultStyle(cat.getStyleByName("scaleRange"));
+        cat.save(li);
+        ResourceInfo layerMeta = li.getResource();
+        layerMeta.getMetadata().put("mapml.useTiles", true);
+        cat.save(layerMeta);
+
+        MockRequestResponse requestResponseSingleLayer =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart(), null, null, "EPSG:4326", "scaleRange");
+        StringReader readerSingleLayer =
+                new StringReader(requestResponseSingleLayer.response.getContentAsString());
+        Mapml mapmlSingleLayer = null;
+        MapMLEncoder encoder = new MapMLEncoder();
+        try {
+            mapmlSingleLayer = encoder.decode(readerSingleLayer);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputs =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlSingleLayer.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsSingleLayer = getInputByType(inputs, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min should be set to match what is in the style definition",
+                "1",
+                zoomInputsSingleLayer.get(0).getMin());
+        assertEquals(
+                "The zoom input max should be set to match what is in the style definition",
+                "10",
+                zoomInputsSingleLayer.get(0).getMax());
+
+        li.getStyles().clear();
+        li.getStyles().add(cat.getStyleByName("scaleRangeNoMax"));
+        li.setDefaultStyle(cat.getStyleByName("scaleRangeNoMax"));
+        cat.save(li);
+        MockRequestResponse requestResponseSingleLayerNoMax =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart(),
+                        null,
+                        null,
+                        "EPSG:4326",
+                        "scaleRangeNoMax");
+        StringReader readerSingleLayerNoMax =
+                new StringReader(requestResponseSingleLayerNoMax.response.getContentAsString());
+        Mapml mapmlSingleLayerNoMax = null;
+        MapMLEncoder encoderNoMax = new MapMLEncoder();
+        try {
+            mapmlSingleLayerNoMax = encoderNoMax.decode(readerSingleLayerNoMax);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputsNoMax =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlSingleLayerNoMax
+                                .getBody()
+                                .getExtents()
+                                .get(0)
+                                .getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsSingleLayerNoMax = getInputByType(inputsNoMax, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min should be set to match what is in the style definition",
+                "1",
+                zoomInputsSingleLayerNoMax.get(0).getMin());
+        assertEquals(
+                "The zoom input max should be the max value of the tiled crs because the style does not have a max",
+                "21",
+                zoomInputsSingleLayerNoMax.get(0).getMax());
+
+        li.getStyles().clear();
+        li.getStyles().add(cat.getStyleByName("scaleRangeExtremes"));
+        cat.save(li);
+
+        MockRequestResponse requestResponseSingleLayerExtremes =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart(),
+                        null,
+                        null,
+                        "EPSG:4326",
+                        "scaleRangeExtremes");
+        StringReader readerSingleLayerExtremes =
+                new StringReader(requestResponseSingleLayerExtremes.response.getContentAsString());
+        Mapml mapmlSingleLayerExtremes = null;
+        MapMLEncoder encoderExtremes = new MapMLEncoder();
+        try {
+            mapmlSingleLayerExtremes = encoderExtremes.decode(readerSingleLayerExtremes);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputsExtremes =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlSingleLayerExtremes
+                                .getBody()
+                                .getExtents()
+                                .get(0)
+                                .getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsSingleLayerExtremes = getInputByType(inputsExtremes, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min should be zero because the style denominator is less than the tiled crs min",
+                "0",
+                zoomInputsSingleLayerExtremes.get(0).getMin());
+        assertEquals(
+                "The zoom input max should be the max value of the tiled crs because the style denominator is greater than the tiled crs max",
+                "21",
+                zoomInputsSingleLayerExtremes.get(0).getMax());
+
+        li.getStyles().clear();
+        li.getStyles().add(cat.getStyleByName("scaleRange"));
+        li.setDefaultStyle(cat.getStyleByName("scaleRange"));
+        cat.save(li);
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo wms = geoServer.getService(WMSInfo.class);
+        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.TRUE);
+        geoServer.save(wms);
+
+        MockRequestResponse requestResponseMultiExtentWithMultiStyles =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart() + "," + "layerGroup",
+                        null,
+                        null,
+                        "EPSG:4326",
+                        "scaleRange,");
+        StringReader readerMultiExtentWithMultiStyles =
+                new StringReader(
+                        requestResponseMultiExtentWithMultiStyles.response.getContentAsString());
+        Mapml mapmlMultiExtentWithMultiStyles = null;
+        try {
+            mapmlMultiExtentWithMultiStyles = encoder.decode(readerMultiExtentWithMultiStyles);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputsMultiExtent =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlMultiExtentWithMultiStyles
+                                .getBody()
+                                .getExtents()
+                                .get(0)
+                                .getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsMultiExtent = getInputByType(inputsMultiExtent, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min should be set to match what is in the style definition "
+                        + "when there are multiple extents",
+                "1",
+                zoomInputsMultiExtent.get(0).getMin());
+        assertEquals(
+                "The zoom input max should be set to match what is in the style definition "
+                        + "when there are multiple extents",
+                "10",
+                zoomInputsMultiExtent.get(0).getMax());
+
+        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.FALSE);
+        geoServer.save(wms);
+
+        MockRequestResponse requestResponseSingleExtentWithMultiStyles =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart() + "," + "layerGroup",
+                        null,
+                        null,
+                        "EPSG:4326",
+                        "scaleRange,");
+        StringReader readerSingleExtentWithMultiStyles =
+                new StringReader(
+                        requestResponseSingleExtentWithMultiStyles.response.getContentAsString());
+        Mapml mapmlSingleExtentWithMultiStyles = null;
+        try {
+            mapmlSingleExtentWithMultiStyles = encoder.decode(readerSingleExtentWithMultiStyles);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputsSingleExtent =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlSingleExtentWithMultiStyles
+                                .getBody()
+                                .getExtents()
+                                .get(0)
+                                .getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsSingleExtent = getInputByType(inputsSingleExtent, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min goes to the tiled crs defaults when there is one extent for multiple layers",
+                "0",
+                zoomInputsSingleExtent.get(0).getMin());
+        assertEquals(
+                "The zoom input max goes to the tiled crs defaults when there is one extent for multiple layers",
+                "21",
+                zoomInputsSingleExtent.get(0).getMax());
+    }
+
     @SuppressWarnings("unchecked") // filtering by clazz
     private <T> List<T> getTypeFromInputOrDataListOrLink(
             List<Object> inputOrDatalistOrLink, Class<T> clazz) {
@@ -433,6 +638,12 @@ public class MapMLWMSTest extends WMSTestSupport {
     private List<Link> getLinkByRelType(List<Link> links, RelType relType) {
         return links.stream()
                 .filter(link -> link.getRel().equals(relType))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    private List<Input> getInputByType(List<Input> inputs, InputType inputType) {
+        return inputs.stream()
+                .filter(input -> input.getType().equals(inputType))
                 .collect(java.util.stream.Collectors.toList());
     }
 

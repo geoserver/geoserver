@@ -185,7 +185,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     @Test
     public void testMapperParametersFromEnvWhenDisabled() throws Exception {
         String authKeyUrlParam = "myAuthKeyParams";
-        String filterName = "testAuthKeyParams2";
+        String filterName = "testAuthKeyParams3";
 
         AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
         config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());

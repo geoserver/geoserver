@@ -481,9 +481,8 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         String xml = sw.toString();
         xml =
                 xml.replace(
-                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
-                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                                + "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"WMS_MS_Capabilities.dtd\">");
+                        "<WMT_MS_Capabilities ",
+                        "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"WMS_MS_Capabilities.dtd\"><WMT_MS_Capabilities ");
 
         return xml;
     }

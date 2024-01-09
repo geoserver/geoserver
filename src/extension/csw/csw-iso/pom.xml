@@ -30,10 +30,6 @@
       <artifactId>gs-csw-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>serializer</artifactId>
-    </dependency>
 
     <!-- test dependencies -->
     <dependency>

@@ -639,7 +639,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
-        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        String resultXml = trimTitles(baos.toString()).replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 4);
@@ -649,6 +649,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(" >= 43.0 AND < 61.0", rules[1].getDescription().getTitle().toString());
         assertEquals(" >= 61.0 AND < 90.0", rules[2].getDescription().getTitle().toString());
         assertEquals(" >= 90.0", rules[3].getDescription().getTitle().toString());
+    }
+
+    /** Trim whitespace in Title elements preserving a single leading space character. */
+    private static String trimTitles(String xml) {
+        return xml.replaceAll("<Title>\\s+", "<Title> ").replaceAll("\\s+</Title>", "</Title>");
     }
 
     @Test
@@ -661,7 +666,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + "attribute=foo&intervals=5&open=true&method=equalArea&stddevs=1";
         MockHttpServletResponse response = getAsServletResponse(restPath);
         assertEquals(200, response.getStatus());
-        String resultXml = response.getContentAsString();
+        String resultXml = trimTitles(response.getContentAsString());
         // System.out.println(resultXml);
         Rule[] rules =
                 checkRules(
@@ -687,7 +692,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
-        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        String resultXml = trimTitles(baos.toString()).replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
@@ -2670,7 +2675,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         print(domArea);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(domArea, baos);
-        String result = baos.toString().replace("\r", "").replace("\n", "");
+        String result = trimTitles(baos.toString()).replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(result.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
 

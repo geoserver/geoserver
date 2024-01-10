@@ -220,7 +220,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
     public void testClientConfidential() throws Exception {
         GeoServerSecurityManager manager = getSecurityManager();
         OpenIdConnectFilterConfig config =
-                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect");
+                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
         config.setSendClientSecret(true);
         manager.saveFilter(config);
 
@@ -245,7 +245,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
     public void testIdTokenHintInEndSessionURI() throws Exception {
         GeoServerSecurityManager manager = getSecurityManager();
         OpenIdConnectFilterConfig config =
-                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect");
+                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
         config.setSendClientSecret(true);
         config.setPostLogoutRedirectUri(null);
         manager.saveFilter(config);

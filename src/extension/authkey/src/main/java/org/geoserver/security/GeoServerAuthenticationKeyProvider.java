@@ -170,6 +170,7 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
                 AuthenticationKeyMapper mapper =
                         (AuthenticationKeyMapper)
                                 GeoServerExtensions.bean(config.getAuthKeyMapperName());
+                mapper.setAuthenticationFilterName(filter);
                 mapper.setSecurityManager(securityManager);
                 mapper.setUserGroupServiceName(config.getUserGroupServiceName());
                 int numberOfNewKeys = 0;

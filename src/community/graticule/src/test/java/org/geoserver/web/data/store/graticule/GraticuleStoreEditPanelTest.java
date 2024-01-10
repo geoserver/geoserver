@@ -59,7 +59,7 @@ public class GraticuleStoreEditPanelTest extends GeoServerWicketTestSupport {
         Map<String, Serializable> parameters = graticule10.getConnectionParameters();
         assertEquals("10", parameters.get(STEPS.key));
         ReferencedEnvelope world =
-                new ReferencedEnvelope(-180, 180, -90, 90, CRS.decode("EPSG:4326"));
+                new ReferencedEnvelope(-180, 180, -90, 90, CRS.decode("EPSG:4326", true));
         assertEquals(
                 world, Converters.convert(parameters.get(BOUNDS.key), ReferencedEnvelope.class));
 

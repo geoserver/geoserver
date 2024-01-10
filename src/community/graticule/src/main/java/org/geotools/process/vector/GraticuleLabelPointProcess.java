@@ -5,6 +5,11 @@
 
 package org.geotools.process.vector;
 
+import static org.geotools.data.graticule.gridsupport.LineFeatureBuilder.HORIZONTAL;
+import static org.geotools.data.graticule.gridsupport.LineFeatureBuilder.SEQUENCE;
+import static org.geotools.data.graticule.gridsupport.LineFeatureBuilder.SEQUENCE_END;
+import static org.geotools.data.graticule.gridsupport.LineFeatureBuilder.SEQUENCE_START;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -156,7 +161,7 @@ public class GraticuleLabelPointProcess implements VectorProcess {
             SimpleFeature feature, PreparedGeometry bounds, PositionEnum position, double offset) {
 
         LineString line = (LineString) feature.getDefaultGeometry();
-        boolean horizontal = (boolean) feature.getAttribute(LineFeatureBuilder.HORIZONTAL);
+        boolean horizontal = (boolean) feature.getAttribute(HORIZONTAL);
         Point p = null;
         // find the location of the new point
         if (bounds == null || bounds.contains(line)) {
@@ -316,13 +321,29 @@ public class GraticuleLabelPointProcess implements VectorProcess {
         double anchorY = 0.5;
         double offsetX = 0;
         double offsetY = 0;
-        if (Boolean.TRUE.equals(feature.getAttribute(LineFeatureBuilder.HORIZONTAL))) {
+        String startEndMid = (String) feature.getAttribute(SEQUENCE);
+        if (Boolean.TRUE.equals(feature.getAttribute(HORIZONTAL))) {
             anchorX = left ? 0 : 1;
             offsetX = offset * (left ? 1 : -1);
+            if (SEQUENCE_START.equals(startEndMid)) {
+                anchorY = 0;
+                offsetY = offset;
+            } else if (SEQUENCE_END.equals(startEndMid)) {
+                anchorY = 1;
+                offsetY = -offset;
+            }
         } else {
             anchorY = top ? 1 : 0;
             offsetY = offset * (top ? -1 : 1);
+            if (SEQUENCE_START.equals(startEndMid)) {
+                anchorX = 0;
+                offsetX = offset;
+            } else if (SEQUENCE_END.equals(startEndMid)) {
+                anchorX = 1;
+                offsetX = -offset;
+            }
         }
+
         builder.set(LineFeatureBuilder.ANCHOR_X, anchorX);
         builder.set(LineFeatureBuilder.ANCHOR_Y, anchorY);
         builder.set(LineFeatureBuilder.OFFSET_X, offsetX);

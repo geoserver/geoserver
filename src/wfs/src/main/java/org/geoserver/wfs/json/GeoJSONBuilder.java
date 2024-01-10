@@ -171,7 +171,7 @@ public class GeoJSONBuilder extends JSONBuilder {
      * @param y X ordinate
      * @param z Z ordinate, can be {@code NaN}
      * @param m M ordinate, can be {@code NaN}
-     * @return the JSON builder instance, this allow chained calls
+     * @return the JSON builder instance, this allows chained calls
      */
     private JSONBuilder writeCoordinate(double x, double y, double z, double m) {
         // start encoding JSON array
@@ -179,29 +179,36 @@ public class GeoJSONBuilder extends JSONBuilder {
         // adjust the order of X and Y ordinates if needed
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
             // encode latitude first and then longitude
-            if (!Double.isNaN(y)) { // for 1d linear referencing cases
-                roundedValue(y);
-            }
-            roundedValue(x);
+            encodeCoordinateIfAvailable(y);
+            encodeCoordinateIfAvailable(x);
         } else {
             // encode longitude first and then latitude
-            roundedValue(x);
-            if (!Double.isNaN(y)) { // for 1d linear referencing cases
-                roundedValue(y);
-            }
+            encodeCoordinateIfAvailable(x);
+            encodeCoordinateIfAvailable(y);
         }
         // if Z value is not available but we have a measure, we set Z value to zero
         z = Double.isNaN(z) && !Double.isNaN(m) ? 0 : z;
         // encode Z value if available
-        if (!Double.isNaN(z)) {
-            roundedValue(z);
-        }
+        encodeCoordinateIfAvailable(z);
         // encode M value if available
-        if (!Double.isNaN(m)) {
-            roundedValue(m);
-        }
+        encodeCoordinateIfAvailable(m);
         // we are done with the array
         return this.endArray();
+    }
+
+    private void encodeCoordinateIfAvailable(double value) {
+        if (Double.isNaN(value)) {
+            // the value is not available then we don't encode it
+            return;
+        }
+
+        if (Double.isInfinite(value)) {
+            // the value is +- infinity then we write its value as a String representation
+            super.value(String.valueOf(value));
+        } else {
+            // the value is a finite number then we write it as a rounded double
+            roundedValue(value);
+        }
     }
 
     private void roundedValue(double value) {

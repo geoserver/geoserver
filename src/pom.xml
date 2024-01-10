@@ -146,11 +146,11 @@
     <oracle.jdbc.version>19.18.0.0</oracle.jdbc.version>
     <mysql.jdbc.version>8.0.28</mysql.jdbc.version>
     <solrj.version>7.2.1</solrj.version>
-    <mockito.version>3.12.4</mockito.version>
+    <mockito.version>5.6.0</mockito.version>
     <jacoco.version>0.8.6</jacoco.version>
-    <hazelcast.version>5.3.1</hazelcast.version>
+    <hazelcast.version>5.3.6</hazelcast.version>
     <xalan.version>2.7.3</xalan.version>
-    <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+    <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=240m</argLine>
     <spotless.action>apply</spotless.action>
     <spotless.apply.skip>false</spotless.apply.skip>
     <pom.fmt.action>sort</pom.fmt.action>
@@ -776,12 +776,12 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>4.3</version>
+        <version>5.2.0</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
-        <version>2.2</version>
+        <version>3.3.0</version>
       </dependency>
       <dependency>
         <groupId>httpunit</groupId>
@@ -1449,7 +1449,7 @@
       <dependency>
         <groupId>com.github.oshi</groupId>
         <artifactId>oshi-core</artifactId>
-        <version>6.2.2</version>
+        <version>6.4.10</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>

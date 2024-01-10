@@ -18,7 +18,7 @@
         
     <context:component-scan base-package="org.geoserver.system.status"/>
         
-    <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <bean id="gsMainModule" class="org.geoserver.platform.ModuleStatusImpl">
         <constructor-arg index="0" value="gs-main"/>
         <constructor-arg index="1" value="GeoServer Main"/>
     </bean>

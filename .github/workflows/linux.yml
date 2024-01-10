@@ -14,17 +14,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [ 11, 17 ]
+        jdk: [ 11, 17, 21 ]
         dist: [ 'temurin' ]
         os: [ 'ubuntu-20.04' ]
-        # experimental: [false]
-        # shadow build for jdk 21
-        # include:
-        #    - jdk: 21
-        #      dist: 'temurin'
-        #      os: 'ubuntu-20.04'
-        #      experimental: true
-    # continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
     
     steps:

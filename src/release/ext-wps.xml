@@ -14,7 +14,6 @@
         <include>gt-process-geometry*</include>
         <include>gt-xsd-wps*</include>
         <include>net.opengis.wps*</include>
-        <include>serializer*</include>
         <include>gt-csv*</include>
         <include>opencsv*</include>
         <!-- kmlppio dependencies -->

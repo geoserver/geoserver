@@ -78,9 +78,11 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        // start up tctool - remove it before committing!!!!
-        // new tilecachetool.TCTool().setVisible(true);
-        // Register logging, and bridge to JAI logging
+        // enable JTS overlay-ng unless otherwise set (first thing, before JTS has a chance
+        // to initialize itself)
+        if (System.getProperty("jts.overlay") == null) {
+            System.setProperty("jts.overlay", "ng");
+        }
 
         // establish logging redirection
         GeoToolsLoggingRedirection policy =

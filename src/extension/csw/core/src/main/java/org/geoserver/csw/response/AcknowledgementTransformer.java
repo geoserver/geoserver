@@ -10,8 +10,10 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
 import net.opengis.cat.csw20.RequestBaseType;
-import org.apache.xml.serializer.TreeWalker;
 import org.geoserver.csw.xml.v2_0_2.CSWRecordingXmlReader;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -106,8 +108,9 @@ public class AcknowledgementTransformer extends AbstractCSWTransformer {
 
         private void dumpAsXML(Document document) {
             try {
-                TreeWalker tw = new TreeWalker(contentHandler);
-                tw.traverse(document);
+                TransformerFactory.newInstance()
+                        .newTransformer()
+                        .transform(new DOMSource(document), new SAXResult(contentHandler));
             } catch (Exception e) {
                 throw new ServiceException(
                         "Failed to re-encode the original request in the Acknowledgement response");

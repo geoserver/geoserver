@@ -348,7 +348,8 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                         : configService.getMetadataConfiguration().findType(typeName);
 
         if (coll == null) {
-            LOGGER.log(Level.SEVERE, "Could not find complex attribute type with name " + typeName);
+            LOGGER.log(
+                    Level.WARNING, "Could not find complex attribute type with name " + typeName);
         }
 
         return coll;

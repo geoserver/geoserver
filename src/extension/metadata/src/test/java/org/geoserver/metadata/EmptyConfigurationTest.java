@@ -13,11 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Tests that metadata module works 'out of the box', without any configuration present yet.
- *
- * @author niels
- */
+/** Tests that metadata module works 'out of the box', without any configuration present yet. */
 public class EmptyConfigurationTest extends AbstractWicketMetadataTest {
 
     @Autowired protected ConfigurationServiceImpl configService;

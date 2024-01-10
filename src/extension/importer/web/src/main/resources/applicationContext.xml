@@ -2,7 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  <bean class="org.geoserver.platform.ModuleStatusImpl">
+  <bean id="importerWebExtension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-importer-web"/>
     <constructor-arg index="1" value="Importer Web UI"/>
     <constructor-arg index="2" value="Importer Page"/>

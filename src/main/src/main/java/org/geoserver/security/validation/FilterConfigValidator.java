@@ -258,7 +258,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         if (isNotEmpty(config.getAuthenticationFilterName())) {
             try {
                 SecurityNamedServiceConfig filterConfig =
-                        manager.loadFilterConfig(config.getAuthenticationFilterName());
+                        manager.loadFilterConfig(config.getAuthenticationFilterName(), true);
                 if (filterConfig == null)
                     throw createFilterException(
                             FilterConfigException.INVALID_ENTRY_POINT,

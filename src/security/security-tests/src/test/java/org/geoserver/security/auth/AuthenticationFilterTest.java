@@ -98,7 +98,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     public void revertFilters() throws Exception {
         GeoServerSecurityManager secMgr = getSecurityManager();
         if (secMgr.listFilters().contains(testFilterName2)) {
-            SecurityFilterConfig config = secMgr.loadFilterConfig(testFilterName2);
+            SecurityFilterConfig config = secMgr.loadFilterConfig(testFilterName2, true);
             secMgr.removeFilter(config);
         }
     }

@@ -53,7 +53,7 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
     public void removeCustomFilterConfig() throws Exception {
         GeoServerSecurityManager secMgr = getSecurityManager();
         if (secMgr.listFilters().contains("custom")) {
-            secMgr.removeFilter(secMgr.loadFilterConfig("custom"));
+            secMgr.removeFilter(secMgr.loadFilterConfig("custom", true));
         }
         secMgr.getSecurityConfig().getFilterChain().remove("custom");
 

@@ -713,15 +713,22 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         authKeyFile = new File(authKeyFile, "authkeys.properties");
 
         GeoServerAuthenticationKeyProvider geoServerAuthenticationKeyProvider =
-                new GeoServerAuthenticationKeyProvider(getSecurityManager(), 10);
+                new GeoServerAuthenticationKeyProvider(getSecurityManager(), 2);
         assertNotNull(geoServerAuthenticationKeyProvider.getScheduler());
         assertFalse(geoServerAuthenticationKeyProvider.getScheduler().isTerminated());
         assertFalse(geoServerAuthenticationKeyProvider.getScheduler().isShutdown());
-        assertEquals(10, geoServerAuthenticationKeyProvider.getAutoSyncDelaySeconds());
-        Thread.sleep(2 * geoServerAuthenticationKeyProvider.getAutoSyncDelaySeconds() * 1000L);
-        assertTrue(authKeyFile.exists());
+        assertEquals(2, geoServerAuthenticationKeyProvider.getAutoSyncDelaySeconds());
+
+        // Wait up to 10 seconds for the executor to be ready for the next reload.
         Properties props = new Properties();
-        loadPropFile(authKeyFile, props);
+        for (int i = 0; i < 400 && props.isEmpty(); i++) {
+            try {
+                Thread.sleep(25);
+                loadPropFile(authKeyFile, props);
+            } catch (InterruptedException e) {
+            }
+        }
+        assertTrue(authKeyFile.exists());
         assertFalse(props.isEmpty());
     }
 

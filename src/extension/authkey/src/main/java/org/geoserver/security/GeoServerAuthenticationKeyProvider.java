@@ -32,25 +32,13 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
         implements DisposableBean {
 
-    static Logger LOGGER = Logging.getLogger("org.geoserver.security");
-
     // Use a counter to ensure a unique prefix for each pool.
     private static final AtomicInteger poolCounter = new AtomicInteger();
-
+    static Logger LOGGER = Logging.getLogger("org.geoserver.security");
     private final GeoServerSecurityManager securityManager;
 
     private final ScheduledExecutorService scheduler;
     private final int autoSyncDelaySeconds;
-
-    /** @return a thread factory for the eviction thread */
-    private ThreadFactory getThreadFactory() {
-        CustomizableThreadFactory tFactory =
-                new CustomizableThreadFactory(
-                        String.format(
-                                "GeoServerAuthenticationKey-%d-", poolCounter.getAndIncrement()));
-        tFactory.setDaemon(true);
-        return tFactory;
-    }
 
     /**
      * @param securityManager the security manager
@@ -63,11 +51,22 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
         this.scheduler = Executors.newScheduledThreadPool(1, getThreadFactory());
 
         // schedule auto-sync thread
+        Runnable authKeyMapperSyncTask = new AuthKeyMapperSyncRunnable();
         scheduler.scheduleAtFixedRate(
-                authKayMapperSyncTask,
+                authKeyMapperSyncTask,
                 autoSyncDelaySeconds,
                 autoSyncDelaySeconds,
                 TimeUnit.SECONDS);
+    }
+
+    /** @return a thread factory for the eviction thread */
+    private ThreadFactory getThreadFactory() {
+        CustomizableThreadFactory tFactory =
+                new CustomizableThreadFactory(
+                        String.format(
+                                "GeoServerAuthenticationKey-%d-", poolCounter.getAndIncrement()));
+        tFactory.setDaemon(true);
+        return tFactory;
     }
 
     @Override
@@ -133,70 +132,60 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
         return autoSyncDelaySeconds;
     }
 
-    /** Runnable task to synchronize the AuthenticationKeyMapper */
-    private final Runnable authKayMapperSyncTask =
-            new Runnable() {
-                @Override
-                public void run() {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("AuthenticationKey Mapper Sync task running");
-                    }
-                    try {
-                        securityManager.listFilters(GeoServerAuthenticationKeyFilter.class).stream()
-                                .forEach(
-                                        filter -> {
-                                            AuthenticationKeyFilterConfig config = null;
-                                            try {
-                                                config =
-                                                        (AuthenticationKeyFilterConfig)
-                                                                securityManager.loadFilterConfig(
-                                                                        filter);
-                                            } catch (IOException e) {
-                                                LOGGER.log(
-                                                        Level.WARNING,
-                                                        "Authentication key error ",
-                                                        e);
-                                                throw new RuntimeException(e);
-                                            }
-                                            if (config != null
-                                                    && config.isAllowMapperKeysAutoSync()) {
-                                                AuthenticationKeyMapper mapper =
-                                                        (AuthenticationKeyMapper)
-                                                                GeoServerExtensions.bean(
-                                                                        config
-                                                                                .getAuthKeyMapperName());
-                                                mapper.setSecurityManager(securityManager);
-                                                mapper.setUserGroupServiceName(
-                                                        config.getUserGroupServiceName());
-                                                int numberOfNewKeys = 0;
-                                                try {
-                                                    numberOfNewKeys = mapper.synchronize();
-                                                    if (LOGGER.isLoggable(Level.FINE)) {
-                                                        LOGGER.fine(
-                                                                "AuthenticationKey Mapper Sync task completed with "
-                                                                        + numberOfNewKeys
-                                                                        + " new keys");
-                                                    }
-                                                } catch (IOException e) {
-                                                    LOGGER.log(
-                                                            Level.WARNING,
-                                                            "Authentication key error ",
-                                                            e);
-                                                    throw new RuntimeException(e);
-                                                }
-                                            }
-                                        });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("AuthenticationKey Mapper Sync task completed");
-                    }
-                }
-            };
-
     @Override
     public void destroy() {
         scheduler.shutdown();
+    }
+
+    /** Runnable task to synchronize the AuthenticationKeyMapper */
+    class AuthKeyMapperSyncRunnable implements Runnable {
+        @Override
+        public void run() {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("AuthenticationKey Mapper Sync task running");
+            }
+            try {
+                securityManager
+                        .listFilters(GeoServerAuthenticationKeyFilter.class)
+                        .forEach(this::doSync);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("AuthenticationKey Mapper Sync task completed");
+            }
+        }
+
+        private void doSync(String filter) {
+            AuthenticationKeyFilterConfig config = null;
+            try {
+                config =
+                        (AuthenticationKeyFilterConfig)
+                                securityManager.loadFilterConfig(filter, true);
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, "Authentication key error ", e);
+                throw new RuntimeException(e);
+            }
+            if (config != null && config.isAllowMapperKeysAutoSync()) {
+                AuthenticationKeyMapper mapper =
+                        (AuthenticationKeyMapper)
+                                GeoServerExtensions.bean(config.getAuthKeyMapperName());
+                mapper.setSecurityManager(securityManager);
+                mapper.setUserGroupServiceName(config.getUserGroupServiceName());
+                int numberOfNewKeys = 0;
+                try {
+                    numberOfNewKeys = mapper.synchronize();
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine(
+                                "AuthenticationKey Mapper Sync task completed with "
+                                        + numberOfNewKeys
+                                        + " new keys");
+                    }
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Authentication key error ", e);
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 }

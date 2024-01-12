@@ -178,11 +178,9 @@ Finished early? While waiting take a moment to explore this topic in more detail
    
    #. **Explore:** How does changing to a printed map affect the number of classes you can communicate using the current "pastel" approach? 
      
-     .. only:: instructor
-   
-        .. admonition:: Instructor Notes
-         
-           The answer is five, but to be really sure four. Read the tool tips to determine fitness for purpose.
+      .. admonition:: Instructor Notes
+       
+         The answer is five, but to be really sure four. Read the tool tips to determine fitness for purpose.
 
 .. admonition:: Explore Accessibility 
   
@@ -192,11 +190,9 @@ Finished early? While waiting take a moment to explore this topic in more detail
    
    #. **Explore:** What approach can be used to cater to color-blind map readers?
      
-     .. only:: instructor
-   
-        .. admonition:: Instructor Notes
-         
-           Select a color-blind-safe palette, or make use of texture or pattern to communicate attribute changes.
+      .. admonition:: Instructor Notes
+       
+         Select a color-blind-safe palette, or make use of texture or pattern to communicate attribute changes.
   
 .. admonition:: Explore Color Choice
 
@@ -208,11 +204,9 @@ Finished early? While waiting take a moment to explore this topic in more detail
      
    #. **Explore:** Using this information which color scheme would you choose for a digital elevation model?
      
-     .. only:: instructor
-   
-        .. admonition:: Instructor Notes
-         
-           Sequential scheme to communicate elevation differences with equal emphasis. If a reader wants to use diverging to emphasis the extremes, that is fine as long as they are doing it on purpose.
+      .. admonition:: Instructor Notes
+       
+         Sequential scheme to communicate elevation differences with equal emphasis. If a reader wants to use diverging to emphasis the extremes, that is fine as long as they are doing it on purpose.
 
 .. admonition:: Challenge Adjusted Colour Scheme
 
@@ -222,13 +216,11 @@ Finished early? While waiting take a moment to explore this topic in more detail
       
       Hint: For a target audience of humans sea-level would be considered a critical value.
      
-     .. only:: instructor
-   
-        .. admonition:: Instructor Notes
-         
-           The answer is provided by a **Learn more** link in the application:
-         
-           * http://colorbrewer2.org/js/learnmore/schemes_full.html#diverging
-         
-           Remove colors until the critical value is at sea-level.
+      .. admonition:: Instructor Notes
+       
+         The answer is provided by a **Learn more** link in the application:
+       
+         * http://colorbrewer2.org/js/learnmore/schemes_full.html#diverging
+       
+         Remove colors until the critical value is at sea-level.
 

@@ -20,12 +20,5 @@ This section introduces mapping as a tool for visual communication.
    * `Geographic Markup Language <http://www.opengeospatial.org/standards/gml>`_
    * `OGC Reference Model <http://www.opengeospatial.org/standards/orm>`_ (OGC Portal)
    * `ISO 19107 Geographic information -- Spatial schema <http://www.iso.org/iso/catalogue_detail.htm?csnumber=26012>`_ (ISO)
-
-.. only:: instructor
-
-   .. admonition:: Instructor Notes
-
-      Additional Reference:
-   
-      * http://www.markmonmonier.com/how_to_lie_with_maps_14880.htm
-      * http://www.worldatlas.com/mapterms.htm
+   * `How to Lie with Maps <https://www.markmonmonier.com/how_to_lie_with_maps_14880.htm>`_
+   * `Cartography And Map Terminologies <https://www.worldatlas.com/mapterms.htm>`_

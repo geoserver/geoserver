@@ -497,14 +497,11 @@ Finished early? Here are some opportunities to explore what we have learned, and
 
 In a classroom setting please divide the challenges between teams (this allows us to work through all the material in the time available).
 
-.. only:: instructor
+.. admonition:: Instructor Notes
 
-   .. admonition:: Instructor Notes
+   As usual the Explore section invites readers to reapply the material covered in a slightly different context or dataset.
 
-      As usual the Explore section invites readers to reapply the material covered in a slightly different context or dataset.
-
-      The use of selectors using the roads **type** attribute provides this opportunity.
-
+   The use of selectors using the roads **type** attribute provides this opportunity.
 
 Explore Vendor Option Follow Line
 `````````````````````````````````

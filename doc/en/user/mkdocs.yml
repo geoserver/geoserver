@@ -138,3 +138,76 @@ nav:
     - gettingstarted/shapefile-quickstart/index.md
     - gettingstarted/style-quickstart/index.md
     - gettingstarted/web-admin-quickstart/index.md
+  - 'Web Admin':
+    - webadmin/index.md
+    - webadmin/about.md
+    - webadmin/welcome.md
+  - 'Data':
+    - data/index.md
+    - 'Data Settings':
+      - data/webadmin/index.md
+      - data/webadmin/layergroups.md
+      - data/webadmin/layerpreview.md
+      - data/webadmin/layers.md
+      - data/webadmin/stores.md
+      - data/webadmin/workspaces.md
+    - 'Vector':  
+      - data/vector/index.md
+      - data/vector/directory.md
+      - data/vector/featurepregen.md
+      - data/vector/geopkg.md
+      - data/vector/properties.md
+      - data/vector/shapefile.md
+    - 'Raster':
+      - data/raster/index.md
+      - data/raster/arcgrid.md
+      - data/raster/coverageview.md
+      - data/raster/gdal.md
+      - data/raster/geopkg.md
+      - data/raster/geotiff.md
+      - data/raster/imagepyramid.md
+      - data/raster/worldimage.md
+      - data/raster/imagemosaic/index.md
+      - data/raster/imagemosaic/configuration.md
+      - data/raster/imagemosaic/tutorial.md
+    - 'Database':  
+      - data/database/index.md
+      - data/database/connection-pooling.md
+      - data/database/db2.md
+      - data/database/h2.md
+      - data/database/jndi.md
+      - data/database/mysql.md
+      - data/database/oracle.md
+      - data/database/postgis.md
+      - data/database/primarykey.md
+      - data/database/sqlserver.md
+      - data/database/sqlsession.md
+      - data/database/sqlview.md
+    - 'Cascade':
+      - data/cascaded/index.md
+      - data/cascaded/stored_query.md
+      - data/cascaded/wfs.md
+      - data/cascaded/wms.md
+      - data/cascaded/wmts.md
+    - 'Application Schema':
+      - data/app-schema/index.md
+      - data/app-schema/app-schema-resolution.md
+      - data/app-schema/complex-features.md
+      - data/app-schema/configuration.md
+      - data/app-schema/cql-functions.md
+      - data/app-schema/data-access-integration.md
+      - data/app-schema/data-stores.md
+      - data/app-schema/feature-chaining.md
+      - data/app-schema/installation.md
+      - data/app-schema/joining.md
+      - data/app-schema/mapping-file.md
+      - data/app-schema/mongo-tutorial.md
+      - data/app-schema/polymorphism.md
+      - data/app-schema/property-interpolation.md
+      - data/app-schema/secondary-namespaces.md
+      - data/app-schema/solr-tutorial.md
+      - data/app-schema/supported-gml-versions.md
+      - data/app-schema/tutorial.md
+      - data/app-schema/wfs-2.0-support.md
+      - data/app-schema/wfs-service-settings.md
+      - data/app-schema/wms-support.md

@@ -6,7 +6,6 @@ This tutorial walks through the steps of publishing a layer group combing severa
 
     This tutorial assumes that GeoServer is running at `http://localhost:8080/geoserver`.
 
-
 ## Data preparation
 
 First let's gather that the data that we'll be publishing.
@@ -27,7 +26,6 @@ First let's gather that the data that we'll be publishing.
     !!! note
 
         Layer groups are allowed to be "global" allowing a map to be created combing layers from several workspaces into a single visual.
-
 
 3.  At the top of the list **Layer Groups** locate and click the **Add new layer group** link.
 
@@ -88,7 +86,6 @@ In order to verify that the `tutorial:basemap` layer is published correctly, we 
     !!! note
 
         Use the **Search** field with `al` as shown to limit the number of layers to page through.
-
 
 2.  Click the **OpenLayers** link in the **Common Formats** column.
 

@@ -4,7 +4,6 @@
 
     Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See [Migrating a data directory between versions](../datadirectory/migrating.md) for more details.
 
-
 The general GeoServer upgrade process is as follows:
 
 1.  Back up the current data directory. This can involve simply copying the directory to an additional place.

@@ -12,7 +12,6 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
         For more information about Java and GeoServer, please see the section on [Java Considerations](../production/java.md).
 
-
 2.  Navigate to the [GeoServer Download page](https://geoserver.org/download).
 
 3.  Select the version of GeoServer that you wish to download. If you're not sure, select [Stable](https://geoserver.org/release/stable) release.
@@ -23,11 +22,9 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
     
         Nightly releases are used to test out try out new features and test community modules and do not provide a windows installer. When GeoServer {{ version }}.0 is released a windows installer will be provided.
 
-
     !!! abstract "Release"
 
         These instructions are for GeoServer {{ release }}.
-
 
 4.  Click the link for the **Windows Installer**.
 
@@ -62,16 +59,13 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
         A typical path on Windows would be **`C:\Program Files\Java\jre8`**.
 
-
     !!! note
 
         Don't include the **`\bin`** in the JRE path. So if **`java.exe`** is located at **`C:\Program Files (x86)\Java\jre8\bin\java.exe`**, set the path to be **`C:\Program Files (x86)\Java\jre8`**.
 
-
     !!! note
 
         For more information about Java and GeoServer, please see the section on [Java Considerations](../production/java.md).
-
 
     ![](images/win_jre.png)
     *Selecting a valid JRE*

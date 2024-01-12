@@ -6,7 +6,6 @@ This tutorial walks through the steps of publishing a PostGIS table with GeoServ
 
     This tutorial assumes that PostgreSQL/PostGIS has been previously installed on the system and responding on `localhost` on port `5432`, and also that GeoServer is running at `http://localhost:8080/geoserver`.
 
-
 ## Data preparation
 
 First let's gather that the data that we'll be publishing.
@@ -24,7 +23,6 @@ First let's gather that the data that we'll be publishing.
 
         You may need to supply a username and password with these commands.
 
-
 3.  Extract **`nyc_buildings.sql`** from **`nyc_buildings.zip`**.
 
 4.  Import **`nyc_buildings.sql`** into the `nyc` database:
@@ -41,10 +39,9 @@ The next step is to create a workspace for the data. A workspace is a container 
 
     This step is optional if you'd like to use an existing workspace. Usually, a workspace is created for each project, which can include stores and layers that are related to each other.
 
-
 1.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
-2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
+2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.rst#logging_in) section.
 
 3.  Navigate to **Data --> Workspaces**.
 
@@ -63,7 +60,6 @@ The next step is to create a workspace for the data. A workspace is a container 
     !!! note
 
         A workspace name is an identifier describing your project. It must not exceed ten characters or contain spaces. A Namespace URI (Uniform Resource Identifier) can usually be a URL associated with your project with an added trailing identifier indicating the workspace. The Namespace URI filed does not need to resolve to an actual valid web address.
-
 
 7.  Click the **Submit** button. The `nyc` workspace will be added to the **Workspaces** list.
 
@@ -105,7 +101,6 @@ Once the workspace is created, we are ready to add a new store. The store tells 
     !!! note
 
         Leave all other fields at their default values.
-
 
     ![](connectionParameters.png)
     *Connection Parameters*

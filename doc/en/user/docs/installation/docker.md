@@ -24,7 +24,6 @@ This will run the container, with the data directory included with the container
         docker pull docker.osgeo.org/geoserver: {{ version }}.x
         ```
 
-
     !!! abstract "Release"
 
         These instructions are for GeoServer {{ release }}.
@@ -32,7 +31,6 @@ This will run the container, with the data directory included with the container
         ``` text
         docker pull docker.osgeo.org/geoserver: {{ release }}
         ```
-
 
 3.  Run the container
 
@@ -42,13 +40,11 @@ This will run the container, with the data directory included with the container
         docker run -it -p8080:8080 docker.osgeo.org/geoserver: {{ release }}
         ```
 
-
     !!! abstract "Nightly Build"
 
         ``` text
         docker run -it -p8080:8080 docker.osgeo.org/geoserver: {{ version }}.x
         ```
-
 
 4.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
@@ -67,7 +63,6 @@ This will run the container with a local data directory. The data directory will
 
     Change ``/MY/DATADIRECTORY`` to your data directory. If this directory is empty it will be populated with the standard Geoserver Sample Data Directory.
 
-
 1.  Make sure you have [Docker](https://www.docker.com/) installed.
 
 2.  Download the container
@@ -78,30 +73,25 @@ This will run the container with a local data directory. The data directory will
         docker pull docker.osgeo.org/geoserver: {{ release }}
         ```
 
-
     !!! abstract "Nightly Build"
 
         ``` text
         docker pull docker.osgeo.org/geoserver: {{ version }}.x
         ```
 
-
 3.  Run the container
 
     !!! abstract "Release"
 
         ``` text
+        docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver: {{ release }}
         ```
-    
-        docker run --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver: {{ release }}
-
 
     !!! abstract "Nightly Build"
 
         ``` text
         docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver: {{ version }}.x
         ```
-
 
 4.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
@@ -119,10 +109,11 @@ You can add GeoServer Extensions - the container will download them during start
 !!! abstract "Release"
 
     ``` text
+    docker run -it -p8080:8080 \\
+      \-\-env INSTALL_EXTENSIONS=true \\
+      \-\-env STABLE_EXTENSIONS="ysld,h2" \\
+      docker.osgeo.org/geoserver: {{ release }}
     ```
-    
-    docker run -it -p8080:8080 \\ --env INSTALL_EXTENSIONS=true \\ --env STABLE_EXTENSIONS="ysld,h2" \\ docker.osgeo.org/geoserver: {{ release }}
-
 
 !!! abstract "Nightly Build"
 
@@ -132,7 +123,6 @@ You can add GeoServer Extensions - the container will download them during start
       \-\-env STABLE_EXTENSIONS="ysld,h2" \\
       docker.osgeo.org/geoserver: {{ version }}.x
     ```
-
 
 This will download and install the YSLD and H2 extension.
 
@@ -157,10 +147,10 @@ To work with community modules you must be using the GeoServer {{ version }}.x n
 
 ``` text
 docker run -it -p8080:8080 \\
-\-\-env INSTALL_EXTENSIONS=true \\
-\-\-env STABLE_EXTENSIONS="ysld,h2" \\
-\-\-env COMMUNITY_EXTENSIONS="ogcapi-features,ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
-docker.osgeo.org/geoserver: {{ version }}.x
+  \-\-env INSTALL_EXTENSIONS=true \\
+  \-\-env STABLE_EXTENSIONS="ysld,h2" \\
+  \-\-env COMMUNITY_EXTENSIONS="ogcapi-features,ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
+  docker.osgeo.org/geoserver: {{ version }}.x
 ```
 
 For the current list see GeoServer [build server](https://build.geoserver.org/geoserver/main/community-latest/).

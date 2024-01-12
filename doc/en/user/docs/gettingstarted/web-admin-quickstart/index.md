@@ -23,7 +23,6 @@ GeoServer has a browser-based web administration interface application used to c
 
     For more information, please see the [Welcome](../../webadmin/welcome.md) section.
 
-
 ## Logging In {#logging_in}
 
 In order to change any server settings or configure data, a user must first be authenticated.
@@ -36,7 +35,6 @@ In order to change any server settings or configure data, a user must first be a
     !!! note
 
         These can be changed in the [Security](../../security/index.md) section.
-
 
     ![](login-page.png)
     *Login*
@@ -70,8 +68,6 @@ The [Layer Preview](../../data/webadmin/layerpreview.md) page allows you to quic
 
         Sorting and searching apply to all data configuration pages.
 
-
 !!! note
 
     For more information, please see the [Layer Preview](../../data/webadmin/layerpreview.md) section.
-

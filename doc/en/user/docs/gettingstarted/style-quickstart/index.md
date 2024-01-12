@@ -6,7 +6,6 @@ This tutorial walks through the steps of defining a style and associating it wit
 
     This tutorial assumes that GeoServer is running at `http://localhost:8080/geoserver`.
 
-
 ## Data preparation
 
 First let's gather that the data that we'll be publishing.
@@ -28,7 +27,6 @@ First let's gather that the data that we'll be publishing.
     !!! note
 
         Styles groups are allowed to be "global" allowing a style to be defined that can be used by any layer.
-
 
 3.  At the top of the list **Styles** list, locate and click the **Add a new style** link.
 

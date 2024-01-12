@@ -51,7 +51,6 @@ Responsible Disclosure
     
     Keep in mind PSC members are volunteers and an extensive fix may require fundraising / resources
 
-
 If you are not in position to communicate in public please consider commercial support, contacting a PSC member, or reaching us via the Open Source Geospatial Foundation at <info@osgeo.org>.
 
 ## Translation

@@ -10,7 +10,6 @@ GeoServer is packaged as a standalone servlet for use with existing application 
 
     GeoServer has been mostly tested using Tomcat, and so is the recommended application server. GeoServer requires a newer version of Tomcat (7.0.65 or later) that implements Servlet 3 and annotation processing. Other application servers have been known to work, but are not guaranteed.
 
-
 ## Installation
 
 1.  Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 11** or **Java 17** environment,available from [OpenJDK](https://openjdk.java.net), [Adoptium](https://adoptium.net), or provided by your OS distribution.
@@ -18,7 +17,6 @@ GeoServer is packaged as a standalone servlet for use with existing application 
     !!! note
 
         For more information about Java and GeoServer compatibility, please see the section on [Java Considerations](../production/java.md).
-
 
 2.  Navigate to the [GeoServer Download page](https://geoserver.org/download).
 
@@ -28,11 +26,9 @@ GeoServer is packaged as a standalone servlet for use with existing application 
 
         These instructions are for GeoServer {{ version }}-SNAPSHOT which is provided as a [Nightly](https://geoserver.org/release/main) release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
 
-
     !!! abstract "Release"
 
         These instructions are for GeoServer {{ release }}.
-
 
 4.  Select **Web Archive** on the download page: [geoserver-{{ release }}-war.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/geoserver-{{ release }}-war.zip)
 
@@ -43,7 +39,6 @@ GeoServer is packaged as a standalone servlet for use with existing application 
     !!! note
 
         A restart of your application server may be necessary.
-
 
 ## Tomcat Hardening
 

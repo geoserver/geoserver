@@ -6,7 +6,6 @@ This tutorial walks through the steps of publishing a Shapefile with GeoServer.
 
     This tutorial assumes that GeoServer is running at `http://localhost:8080/geoserver`.
 
-
 ## Data preparation
 
 First let's gather that the data that we'll be publishing.
@@ -30,10 +29,9 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 
     This step is optional if you'd like to use an existing workspace. Usually, a workspace is created for each project, which can include stores and layers that are related to each other.
 
-
 1.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
-2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
+2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.rst#logging_in) section.
 
 3.  Navigate to **Data --> Workspaces**.
 
@@ -52,7 +50,6 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
     !!! note
 
         A workspace name is an identifier describing your project. It must not exceed ten characters or contain spaces. A Namespace URI (Uniform Resource Identifier) can usually be a URL associated with your project with an added trailing identifier indicating the workspace. The Namespace URI filed does not need to resolve to an actual valid web address.
-
 
     ![](workspace_nycroads.png)
     *nyc workspace*

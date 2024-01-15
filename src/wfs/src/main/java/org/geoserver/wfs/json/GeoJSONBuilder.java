@@ -179,24 +179,36 @@ public class GeoJSONBuilder extends JSONBuilder {
         // adjust the order of X and Y ordinates if needed
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
             // encode latitude first and then longitude
-            encodeCoordinateIfAvailable(y);
-            encodeCoordinateIfAvailable(x);
+            encodeOrdinate(y);
+            encodeOrdinate(x);
         } else {
             // encode longitude first and then latitude
-            encodeCoordinateIfAvailable(x);
-            encodeCoordinateIfAvailable(y);
+            encodeOrdinate(x);
+            encodeOrdinate(y);
         }
         // if Z value is not available but we have a measure, we set Z value to zero
         z = Double.isNaN(z) && !Double.isNaN(m) ? 0 : z;
         // encode Z value if available
-        encodeCoordinateIfAvailable(z);
+        encodeOrdinate(z);
         // encode M value if available
-        encodeCoordinateIfAvailable(m);
+        encodeOrdinate(m);
         // we are done with the array
         return this.endArray();
     }
 
-    private void encodeCoordinateIfAvailable(double value) {
+    /**
+     * Writes a double value as a rounded number.
+     *
+     * <p>If the value is {@link Double#NaN} then the value will not be written.
+     *
+     * <p>If the value is {@link Double#POSITIVE_INFINITY} or {@link Double#NEGATIVE_INFINITY} then it will be encoded as
+     * {@code "Infinity"} or {@code "-Infinity"}, respectively, this avoids a {@link JSONException} in case the value
+     * is infinite.
+     *
+     * @param value value to encode
+     * @see #setNumberOfDecimals(int)
+     */
+    private void encodeOrdinate(double value) {
         if (Double.isNaN(value)) {
             // the value is not available then we don't encode it
             return;

@@ -69,19 +69,41 @@ public class GraticuleFeatureReader implements SimpleFeatureReader {
         for (int i = 0; i < steps.size(); i++) {
             double step = steps.get(i);
 
-            List<OrthoLineDef> lineDefs = new ArrayList<>();
             // vertical (longitude) lines
-            lineDefs.add(new OrthoLineDef(LineOrientation.VERTICAL, i, step));
+            List<OrthoLineDef> vertLines = new ArrayList<>();
+            vertLines.add(new OrthoLineDef(LineOrientation.VERTICAL, i, step));
             // horizontal (latitude) lines
-            lineDefs.add(new OrthoLineDef(LineOrientation.HORIZONTAL, i, step));
+            List<OrthoLineDef> horLines = new ArrayList<>();
+            horLines.add(new OrthoLineDef(LineOrientation.HORIZONTAL, i, step));
 
-            final ListFeatureCollection fc = new ListFeatureCollection(schema);
             OrthoLineBuilder lineBuilder = new OrthoLineBuilder(box);
             LineFeatureBuilder gridBuilder = new LineFeatureBuilder(schema);
-            lineBuilder.buildGrid(lineDefs, gridBuilder, -1, fc);
-            lines.addAll(DataUtilities.list(fc));
+
+            final ListFeatureCollection fc = new ListFeatureCollection(schema);
+            lineBuilder.buildGrid(vertLines, gridBuilder, -1, fc);
+            lines.addAll(updatePosition(fc));
+            fc.clear();
+            lineBuilder.buildGrid(horLines, gridBuilder, -1, fc);
+            lines.addAll(updatePosition(fc));
         }
 
         return DataUtilities.source(new ListFeatureCollection(schema, lines));
+    }
+
+    private List<SimpleFeature> updatePosition(ListFeatureCollection fc) {
+        List<SimpleFeature> list = DataUtilities.list(fc);
+        int i = 0;
+        for (SimpleFeature f : list) {
+            String position = LineFeatureBuilder.SEQUENCE_MID;
+            if (i == 0) {
+                position = LineFeatureBuilder.SEQUENCE_START;
+            } else if (i == list.size() - 1) {
+                position = LineFeatureBuilder.SEQUENCE_END;
+            }
+            f.setAttribute(LineFeatureBuilder.SEQUENCE, position);
+            i++;
+        }
+
+        return list;
     }
 }

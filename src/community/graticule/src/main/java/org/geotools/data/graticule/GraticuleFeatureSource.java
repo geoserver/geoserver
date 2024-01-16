@@ -71,6 +71,7 @@ public class GraticuleFeatureSource extends ContentFeatureSource {
         tb.add(LineFeatureBuilder.VALUE_LABEL_NAME, String.class);
         tb.add(LineFeatureBuilder.VALUE_ATTRIBUTE_NAME, Double.class);
         tb.add(LineFeatureBuilder.HORIZONTAL, Boolean.class);
+        tb.add(LineFeatureBuilder.SEQUENCE, String.class);
         SimpleFeatureType type = tb.buildFeatureType();
         return type;
     }

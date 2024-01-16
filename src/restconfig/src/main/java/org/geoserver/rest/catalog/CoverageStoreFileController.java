@@ -443,16 +443,14 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         boolean postRequest =
                 request != null && HttpMethod.POST.name().equalsIgnoreCase(request.getMethod());
 
-        // Prepare the directory only in case this is not an external upload
-        if (method.isInline()) {
-            // Mapping of the input directory
-            if (method == UploadMethod.url) {
-                // For URL upload method, workspace and StoreName are not considered
-                directory = RESTUtils.createUploadRoot(catalog, null, null, postRequest);
-            } else {
-                directory =
-                        RESTUtils.createUploadRoot(catalog, workspaceName, storeName, postRequest);
-            }
+        // Mapping of the input directory
+        if (method == UploadMethod.url) {
+            // For URL upload method, workspace and StoreName are not considered
+            directory = RESTUtils.createUploadRoot(catalog, null, null, postRequest);
+        } else if (method == UploadMethod.file
+                || (method == UploadMethod.external && RESTUtils.isZipMediaType(request))) {
+            // Prepare the directory for file upload or external upload of a zip file
+            directory = RESTUtils.createUploadRoot(catalog, workspaceName, storeName, postRequest);
         }
         return handleFileUpload(
                 storeName, workspaceName, filename, method, format, directory, request);

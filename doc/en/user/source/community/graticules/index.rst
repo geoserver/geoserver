@@ -136,8 +136,8 @@ to simplify the labelling process:
 
 The process itself takes the following parameters:
 
-* "grid" is the grid lines being processed (the graticule layer)
-* "boundingBox" is the bounding box of the map being rendered, which is used to clip lines and to calculate the label points, 
+* "grid" is the grid lines being processed (the graticule layer).
+* "boundingBox" is the bounding box of the map being rendered, which is used to clip lines and to calculate the label points. This parameter is optional, if missing the labels will be generated at the end of the graticule lines no matter what the display area is. For un-tiled maps, the usage of "boundingBox" helps having the labels as a reference in every map, while for tiled maps it's better to omit it, or the labels will be repeated at the border of every (meta)tile.
 * "offset" is the offset of the label from the grid line (used to compute the values of "offsetX" and "offsetY"), which can be provided using the current request bounding box using the ``wms_bbox`` environment variable (:ref:`sld_variable_substitution`).
 * "positions" indicates which groups of labels should be generated, and can be one of "top", "bottom", "left", "right" or "topleft", "topright", "bottomleft", "bottomright", or the default value "both" which generates labels on all four sides of the map.
 

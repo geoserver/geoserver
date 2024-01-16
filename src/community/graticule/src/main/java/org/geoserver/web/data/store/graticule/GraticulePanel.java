@@ -36,7 +36,7 @@ public class GraticulePanel extends Panel {
 
     static {
         try {
-            DEFAULT_CRS = CRS.decode("EPSG:4326");
+            DEFAULT_CRS = CRS.decode("EPSG:4326", true);
         } catch (FactoryException e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
         }
@@ -59,8 +59,9 @@ public class GraticulePanel extends Panel {
                                 "bounds",
                                 new MapModel<org.geotools.geometry.jts.ReferencedEnvelope>(
                                         paramsModel, "bounds")));
-
-        bounds.setDefaultModelObject(new ReferencedEnvelope(DEFAULT_CRS));
+        if (bounds.getModelObject() == null) {
+            bounds.setDefaultModelObject(new ReferencedEnvelope(DEFAULT_CRS));
+        }
         bounds.setRequired(true);
         bounds.setCRSFieldVisible(true);
         bounds.setCrsRequired(true);

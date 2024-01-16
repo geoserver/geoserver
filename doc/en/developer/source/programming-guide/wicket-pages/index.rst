@@ -74,7 +74,7 @@ At this point you've added a page to the UI, but it's not very interesting. In W
      - Tells Wicket to look up a string in the internationalization database and replace the provided text if one is found.
 
 
-Wicket provides quite a few components, of which several can be seen in the `Wicket Component Reference <http://wicketstuff.org/wicket13/compref/>`_\ .  In general, Wicket components require a Model object which handles the getting, setting, and conversion to/from String of the value associated with a component.  For the purposes of this example, we will focus on one of the simplest, the Label, which simply replaces the contents of the element it is bound to with a value provided at runtime.  Continuing the example from above, we can pass a String to the Label's constructor and it is transparently converted to a Model: 
+Wicket provides quite a few components, of which several can be seen in the `Wicket Component Reference <https://examples7x.wicket.apache.org/compref/>`_\ .  In general, Wicket components require a Model object which handles the getting, setting, and conversion to/from String of the value associated with a component.  For the purposes of this example, we will focus on one of the simplest, the Label, which simply replaces the contents of the element it is bound to with a value provided at runtime.  Continuing the example from above, we can pass a String to the Label's constructor and it is transparently converted to a Model: 
 
 .. code-block:: java
     

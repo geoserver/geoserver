@@ -4,8 +4,8 @@
  */
 package org.geoserver.gwc.dispatch;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geowebcache.controller.GeoWebCacheDispatcherController;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;

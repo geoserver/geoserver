@@ -5,12 +5,12 @@
  */
 package org.geoserver.wcs.response;
 
+import jakarta.activation.DataContentHandler;
+import jakarta.activation.DataSource;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.activation.DataContentHandler;
-import javax.activation.DataSource;
 import javax.xml.transform.TransformerException;
 import net.opengis.wcs11.GetCoverageType;
 import org.geoserver.catalog.CoverageInfo;

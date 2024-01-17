@@ -4,7 +4,7 @@
  */
 package org.geoserver.wps.gs.download;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /** The format definition in a map/animation download */
 @XmlRootElement(name = "Format")

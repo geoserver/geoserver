@@ -11,6 +11,9 @@ import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.Mi
 import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.Name;
 
 import it.geosolutions.imageio.pam.PAMDataset;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
@@ -18,9 +21,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.StyleInfo;

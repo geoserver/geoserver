@@ -6,6 +6,11 @@
 package org.vfny.geoserver.wfs.servlets;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,11 +22,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;

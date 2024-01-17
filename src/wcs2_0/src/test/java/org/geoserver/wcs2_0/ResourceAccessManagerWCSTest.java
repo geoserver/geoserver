@@ -54,9 +54,9 @@ public class ResourceAccessManagerWCSTest extends WCSTestSupport {
 
     /** Enable the Spring Security auth filters */
     @Override
-    protected List<javax.servlet.Filter> getFilters() {
+    protected List<jakarta.servlet.Filter> getFilters() {
         return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+                (jakarta.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     /** Add the users */

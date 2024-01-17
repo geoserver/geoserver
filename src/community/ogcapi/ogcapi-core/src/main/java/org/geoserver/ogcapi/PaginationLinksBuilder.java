@@ -4,10 +4,10 @@
  */
 package org.geoserver.ogcapi;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 

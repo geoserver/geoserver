@@ -5,6 +5,7 @@
  */
 package org.vfny.geoserver.servlets;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.DispatcherOutputStream;
 import org.geoserver.ows.ServiceStrategy;
 

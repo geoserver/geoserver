@@ -5,12 +5,12 @@
  */
 package org.geoserver.wcs.responses;
 
+import jakarta.activation.DataContentHandler;
+import jakarta.activation.DataSource;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.activation.DataContentHandler;
-import javax.activation.DataSource;
 
 /**
  * A data handler for the fake "geoserver/coverageDelegate" mime type. Uses a {@link

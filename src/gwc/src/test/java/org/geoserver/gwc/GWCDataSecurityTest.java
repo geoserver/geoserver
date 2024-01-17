@@ -82,9 +82,9 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     }
     /** Enable the Spring Security auth filters */
     @Override
-    protected List<javax.servlet.Filter> getFilters() {
+    protected List<jakarta.servlet.Filter> getFilters() {
         return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+                (jakarta.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Override

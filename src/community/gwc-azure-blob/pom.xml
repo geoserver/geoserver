@@ -33,6 +33,12 @@
       <artifactId>gwc-azure-blob</artifactId>
       <version>${gwc.version}</version>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>

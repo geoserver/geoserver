@@ -8,12 +8,12 @@ package org.geoserver.wcs.response;
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;

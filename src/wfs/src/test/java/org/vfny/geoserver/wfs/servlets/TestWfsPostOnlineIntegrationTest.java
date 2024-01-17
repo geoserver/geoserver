@@ -7,10 +7,10 @@ package org.vfny.geoserver.wfs.servlets;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import javax.servlet.ServletException;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Assume;
 import org.junit.Test;

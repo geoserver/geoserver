@@ -6,12 +6,12 @@ package org.geoserver.catalog.impl;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
+import jakarta.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogCapabilities;
 import org.geoserver.catalog.CatalogFacade;

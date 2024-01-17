@@ -8,9 +8,9 @@ package org.geoserver.monitor;
 import static org.geoserver.monitor.MonitorServletRequestTest.data;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.ServletOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import javax.servlet.ServletOutputStream;
 import org.geoserver.monitor.MonitorServletResponse.MonitorOutputStream;
 import org.junit.Test;
 import org.springframework.mock.web.DelegatingServletOutputStream;

@@ -4,13 +4,13 @@
  */
 package org.geoserver.taskmanager.tasks;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;

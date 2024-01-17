@@ -11,6 +11,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.servlet.ServletResponse;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;

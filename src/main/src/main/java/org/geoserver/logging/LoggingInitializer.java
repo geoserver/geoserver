@@ -5,8 +5,8 @@
  */
 package org.geoserver.logging;
 
+import jakarta.servlet.ServletContext;
 import java.util.List;
-import javax.servlet.ServletContext;
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;

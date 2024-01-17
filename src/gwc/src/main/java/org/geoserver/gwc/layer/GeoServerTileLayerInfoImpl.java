@@ -8,6 +8,7 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.collect.ImmutableSet;
+import jakarta.annotation.Nullable;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;

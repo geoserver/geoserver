@@ -7,8 +7,8 @@ package org.geoserver.filters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import jakarta.servlet.ServletException;
 import java.io.IOException;
-import javax.servlet.ServletException;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;

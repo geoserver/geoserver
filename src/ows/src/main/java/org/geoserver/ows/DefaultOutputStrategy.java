@@ -5,9 +5,9 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * A default output strategy which simple writes all output to the output stream of the response.

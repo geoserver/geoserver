@@ -18,6 +18,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-dggs-core</artifactId>
       <version>${project.version}</version>

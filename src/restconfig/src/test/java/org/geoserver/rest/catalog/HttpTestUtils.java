@@ -4,11 +4,11 @@
  */
 package org.geoserver.rest.catalog;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
-import javax.servlet.http.HttpServletResponse;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

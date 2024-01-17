@@ -5,6 +5,7 @@
 
 package org.geoserver.mapml;
 
+import jakarta.xml.bind.JAXBElement;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBElement;
 import org.apache.commons.text.StringEscapeUtils;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.GeometryContent;

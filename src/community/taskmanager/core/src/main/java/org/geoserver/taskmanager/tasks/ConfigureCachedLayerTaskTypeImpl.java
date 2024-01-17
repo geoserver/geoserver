@@ -6,11 +6,11 @@ package org.geoserver.taskmanager.tasks;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.encoder.GSCachedLayerEncoder;
+import jakarta.annotation.PostConstruct;
 import java.beans.Introspector;
 import java.net.MalformedURLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;

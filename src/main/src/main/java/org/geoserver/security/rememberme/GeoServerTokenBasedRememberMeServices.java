@@ -5,10 +5,10 @@
  */
 package org.geoserver.security.rememberme;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.regex.Matcher;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.filter.GeoServerWebAuthenticationDetails;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.rememberme.RememberMeUserDetailsService.RememberMeUserDetails;

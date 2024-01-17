@@ -4,9 +4,9 @@
  */
 package org.geoserver.taskmanager.tasks;
 
+import jakarta.annotation.PostConstruct;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.PostConstruct;
 import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;

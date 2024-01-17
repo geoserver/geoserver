@@ -43,6 +43,11 @@
       <version>1.2.3</version>
     </dependency>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+    </dependency>
+    <dependency>
       <groupId>jfree</groupId>
       <artifactId>jfreechart</artifactId>
     </dependency>

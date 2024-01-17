@@ -5,8 +5,8 @@
  */
 package org.geoserver.ows;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.springframework.web.servlet.HandlerInterceptor;

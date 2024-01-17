@@ -1,10 +1,10 @@
 package org.geoserver.taskmanager.data.impl;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import org.geoserver.taskmanager.data.LatestBatchRun;
 import org.hibernate.annotations.Subselect;
 

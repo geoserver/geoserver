@@ -7,12 +7,12 @@ package org.geoserver.catalog;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import jakarta.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.annotation.Nullable;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.api.style.NamedLayer;
 import org.geotools.api.style.NamedStyle;

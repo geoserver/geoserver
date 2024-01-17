@@ -5,10 +5,10 @@
  */
 package org.geoserver.catalog;
 
+import jakarta.annotation.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;

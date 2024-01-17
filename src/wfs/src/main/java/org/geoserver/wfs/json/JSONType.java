@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.json;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,7 +16,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
 import org.geoserver.ows.Request;

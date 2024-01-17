@@ -4,8 +4,8 @@
  */
 package org.geoserver.gwc.wmts;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.platform.ServiceException;
 import org.geowebcache.conveyor.Conveyor;

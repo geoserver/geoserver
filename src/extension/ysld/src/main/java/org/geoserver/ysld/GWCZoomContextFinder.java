@@ -6,8 +6,8 @@
 
 package org.geoserver.ysld;
 
+import jakarta.annotation.Nullable;
 import java.util.Set;
-import javax.annotation.Nullable;
 import org.geotools.ysld.parse.MedialZoomContext;
 import org.geotools.ysld.parse.ZoomContext;
 import org.geotools.ysld.parse.ZoomContextFinder;

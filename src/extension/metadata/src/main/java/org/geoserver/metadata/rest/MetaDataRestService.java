@@ -4,11 +4,11 @@
  */
 package org.geoserver.metadata.rest;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;

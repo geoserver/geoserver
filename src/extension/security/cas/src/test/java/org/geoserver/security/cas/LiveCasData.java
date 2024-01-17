@@ -8,6 +8,7 @@ package org.geoserver.security.cas;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,7 +23,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.data.test.LiveSystemTestData;
 import org.geotools.util.logging.Logging;
 

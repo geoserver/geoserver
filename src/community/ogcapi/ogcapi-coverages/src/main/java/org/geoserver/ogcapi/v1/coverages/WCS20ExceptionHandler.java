@@ -4,7 +4,7 @@
  */
 package org.geoserver.ogcapi.v1.coverages;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.DefaultAPIExceptionHandler;

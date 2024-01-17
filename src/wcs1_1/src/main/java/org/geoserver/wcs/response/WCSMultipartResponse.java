@@ -5,16 +5,16 @@
  */
 package org.geoserver.wcs.response;
 
+import jakarta.activation.DataHandler;
+import jakarta.mail.BodyPart;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import javax.activation.DataHandler;
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import net.opengis.wcs11.GetCoverageType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;

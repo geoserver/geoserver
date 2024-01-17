@@ -5,8 +5,8 @@
  */
 package org.geoserver.cluster.server;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Topic;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Topic;
 import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.events.ToggleType;

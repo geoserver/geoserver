@@ -5,10 +5,10 @@
  */
 package org.geoserver.catalog;
 
+import jakarta.annotation.Nullable;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.impl.DefaultCatalogFacade;
 import org.geoserver.catalog.util.CloseableIterator;

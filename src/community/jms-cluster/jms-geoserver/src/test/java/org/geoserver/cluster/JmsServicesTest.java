@@ -9,9 +9,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import jakarta.jms.Message;
 import java.util.List;
 import java.util.UUID;
-import javax.jms.Message;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.cluster.impl.events.configuration.JMSEventType;
 import org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent;

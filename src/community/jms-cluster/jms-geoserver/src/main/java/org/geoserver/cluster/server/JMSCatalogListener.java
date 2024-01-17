@@ -5,10 +5,10 @@
  */
 package org.geoserver.cluster.server;
 
+import jakarta.jms.JMSException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Properties;
-import javax.jms.JMSException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogInfo;

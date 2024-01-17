@@ -5,6 +5,8 @@
 
 package org.geoserver.ogcapi;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;

@@ -5,8 +5,8 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Strategy interface for writing output to an output stream.

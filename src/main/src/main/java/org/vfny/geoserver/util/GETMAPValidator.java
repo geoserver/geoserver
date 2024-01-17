@@ -10,6 +10,7 @@
  */
 package org.vfny.geoserver.util;
 
+import jakarta.servlet.ServletContext;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,7 +18,6 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletContext;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;

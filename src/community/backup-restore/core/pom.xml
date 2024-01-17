@@ -66,6 +66,11 @@
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jakarta.batch</groupId>
+      <artifactId>jakarta.batch-api</artifactId>
+      <version>2.1.1</version>
+    </dependency>
 
     <!-- Spring Batch unit test -->
     <dependency>

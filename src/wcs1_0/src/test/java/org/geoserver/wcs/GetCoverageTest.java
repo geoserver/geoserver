@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletResponse;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 import net.opengis.wcs10.GetCoverageType;
 import org.apache.commons.io.IOUtils;

@@ -5,13 +5,13 @@
 package org.geoserver.opensearch.eo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.response.RSSExceptionTransformer;

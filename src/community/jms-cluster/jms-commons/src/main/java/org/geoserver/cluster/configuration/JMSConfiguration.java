@@ -5,6 +5,7 @@
  */
 package org.geoserver.cluster.configuration;
 
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +13,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
-import javax.annotation.PostConstruct;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;

@@ -6,9 +6,9 @@ package org.geoserver.featurestemplating.expressions;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.api.filter.capability.FunctionName;

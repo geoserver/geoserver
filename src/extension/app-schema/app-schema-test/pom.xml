@@ -177,6 +177,12 @@
       <artifactId>jackson-databind</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+      <scope>test</scope>
+    </dependency>
     <!-- required for Web UI tests -->
     <dependency>
       <groupId>org.geoserver.web</groupId>

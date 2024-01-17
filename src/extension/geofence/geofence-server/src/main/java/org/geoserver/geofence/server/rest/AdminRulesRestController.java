@@ -4,12 +4,12 @@
  */
 package org.geoserver.geofence.server.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.geofence.core.model.AdminRule;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRuleList;

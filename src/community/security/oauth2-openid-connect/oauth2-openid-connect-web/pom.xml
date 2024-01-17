@@ -20,6 +20,11 @@
   <name>GeoServer OAuth2 Connect Security Web Module - OpenId Connect</name>
 
   <dependencies>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+    </dependency>
 
     <dependency>
       <groupId>org.geoserver.web</groupId>

@@ -51,6 +51,16 @@
       <version>0.12.5</version>
     </dependency>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>4.0.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
       <version>${gt.version}</version>
@@ -64,6 +74,11 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-referencing</artifactId>
       <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

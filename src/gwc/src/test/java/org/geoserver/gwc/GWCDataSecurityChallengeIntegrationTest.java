@@ -9,10 +9,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -44,9 +44,9 @@ public class GWCDataSecurityChallengeIntegrationTest extends WMSTestSupport {
     }
 
     @Override
-    protected List<javax.servlet.Filter> getFilters() {
+    protected List<jakarta.servlet.Filter> getFilters() {
         return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+                (jakarta.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Test

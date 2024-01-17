@@ -8,6 +8,7 @@ package org.geoserver.wms.map;
 import static org.geoserver.catalog.LayerGroupHelper.isSingleOrOpaque;
 import static org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +30,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import javax.media.jai.Interpolation;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.EnumerationUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

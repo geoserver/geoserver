@@ -7,10 +7,10 @@ package org.geoserver.filters;
 
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;

@@ -4,12 +4,12 @@
  */
 package org.geoserver.geoserver.authentication.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AuthUser;
 import org.geoserver.security.GeoServerAuthenticationProvider;

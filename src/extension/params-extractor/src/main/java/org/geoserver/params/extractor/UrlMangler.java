@@ -7,12 +7,12 @@ package org.geoserver.params.extractor;
 import static org.geoserver.params.extractor.EchoParametersDao.getEchoParameters;
 import static org.geoserver.params.extractor.EchoParametersDao.getEchoParametersPath;
 
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;

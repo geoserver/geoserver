@@ -5,9 +5,9 @@
  */
 package org.geoserver.cluster.server;
 
+import jakarta.jms.JMSException;
 import java.util.List;
 import java.util.Properties;
-import javax.jms.JMSException;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.cluster.JMSPublisher;
 import org.geoserver.cluster.impl.events.configuration.JMSEventType;

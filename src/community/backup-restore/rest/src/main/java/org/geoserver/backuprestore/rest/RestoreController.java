@@ -5,6 +5,7 @@
 package org.geoserver.backuprestore.rest;
 
 import com.thoughtworks.xstream.XStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,7 +13,6 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geoserver.config.util.XStreamPersister;

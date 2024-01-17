@@ -8,6 +8,8 @@ package org.geoserver.ogcapi;
 import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -24,8 +26,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.Dispatcher;

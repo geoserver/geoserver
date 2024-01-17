@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.Filter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,7 +21,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import javax.servlet.Filter;
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.config.BruteForcePreventionConfig;

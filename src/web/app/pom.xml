@@ -29,6 +29,12 @@
       <artifactId>marlin</artifactId>
     </dependency>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
@@ -226,12 +232,6 @@
       <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>${jetty.servlet-api.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

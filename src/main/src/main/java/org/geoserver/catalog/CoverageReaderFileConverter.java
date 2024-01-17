@@ -4,13 +4,13 @@
  */
 package org.geoserver.catalog;
 
+import jakarta.annotation.Nullable;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;

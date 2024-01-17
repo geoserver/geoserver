@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.junit.Test;

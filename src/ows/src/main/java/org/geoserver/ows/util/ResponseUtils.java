@@ -5,6 +5,7 @@
  */
 package org.geoserver.ows.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -14,7 +15,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.URLMangler.URLType;

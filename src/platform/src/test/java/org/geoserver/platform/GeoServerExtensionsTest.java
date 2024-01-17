@@ -17,11 +17,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;

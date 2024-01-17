@@ -7,11 +7,11 @@ package org.geoserver.jdbc.metrics;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;

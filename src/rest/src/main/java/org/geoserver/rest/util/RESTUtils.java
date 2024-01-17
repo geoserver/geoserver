@@ -5,6 +5,7 @@
  */
 package org.geoserver.rest.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;

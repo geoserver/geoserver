@@ -5,10 +5,9 @@
  */
 package org.geoserver.wcs.responses;
 
+import jakarta.activation.ActivationDataFlavor;
 import jakarta.activation.DataContentHandler;
 import jakarta.activation.DataSource;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -27,14 +26,13 @@ public class CoverageDelegateHandler implements DataContentHandler {
     }
 
     @Override
-    public Object getTransferData(DataFlavor flavor, DataSource source)
-            throws UnsupportedFlavorException, IOException {
+    public Object getTransferData(ActivationDataFlavor df, DataSource ds) throws IOException {
         throw new UnsupportedOperationException(
                 "This handler is not able to work on the parsing side");
     }
 
     @Override
-    public DataFlavor[] getTransferDataFlavors() {
+    public ActivationDataFlavor[] getTransferDataFlavors() {
         throw new UnsupportedOperationException(
                 "This handler is not able to work on the parsing side");
     }

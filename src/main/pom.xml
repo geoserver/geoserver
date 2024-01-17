@@ -142,10 +142,6 @@
       <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.sun.activation</groupId>
-      <artifactId>jakarta.activation</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.github.oshi</groupId>
       <artifactId>oshi-core</artifactId>
     </dependency>

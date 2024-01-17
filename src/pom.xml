@@ -1748,7 +1748,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.2.5</version>
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
@@ -1770,8 +1770,7 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <release>17</release>
           <debug>true</debug>
           <encoding>UTF-8</encoding>
           <fork>${fork.javac}</fork>
@@ -1798,7 +1797,7 @@
           <excludes>
             <exclude>${test.exclude.pattern}</exclude>
           </excludes>
-          <forkMode>once</forkMode>
+          <forkCount>1</forkCount>
           <enableAssertions>true</enableAssertions>
           <printSummary>true</printSummary>
           <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
@@ -1981,7 +1980,7 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <source>11</source>
+          <source>17</source>
           <version>false</version>
           <noqualifier>all</noqualifier>
           <quiet>true</quiet>
@@ -2025,7 +2024,7 @@
           </tags>
 
           <links>
-            <link>https://docs.oracle.com/en/java/javase/11/docs/api</link>
+            <link>https://docs.oracle.com/en/java/javase/17/docs/api</link>
             <link>http://docs.oracle.com/javaee/7/api/</link>
             <link>http://jscience.org/api/</link>
             <link>https://locationtech.github.io/jts/javadoc/</link>
@@ -2122,7 +2121,7 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <source>11</source>
+          <source>17</source>
           <version>false</version>
           <noqualifier>all</noqualifier>
           <quiet>true</quiet>

@@ -15,7 +15,6 @@ import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -29,6 +28,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wps.web.InputParameterValues.ParameterType;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -40,7 +40,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Andrea Aime - OpenGeo
  */
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class ComplexInputPanel extends Panel {
     static final Logger LOGGER = Logging.getLogger(WPSRequestBuilderPanel.class);
 
@@ -50,7 +50,7 @@ public class ComplexInputPanel extends Panel {
 
     List<String> mimeTypes;
 
-    ModalWindow subprocesswindow;
+    GSModalWindow subprocesswindow;
 
     public ComplexInputPanel(String id, InputParameterValues pv, int valueIndex) {
         super(id);
@@ -66,7 +66,7 @@ public class ComplexInputPanel extends Panel {
                         "type", new PropertyModel<>(getDefaultModelObject(), "type"), ptypes);
         add(typeChoice);
 
-        subprocesswindow = new ModalWindow("subprocessPopupWindow");
+        subprocesswindow = new GSModalWindow("subprocessPopupWindow");
         subprocesswindow.setInitialWidth(700);
         subprocesswindow.setInitialHeight(500);
         add(subprocesswindow);
@@ -232,7 +232,7 @@ public class ComplexInputPanel extends Panel {
             f.add(xml);
 
             subprocesswindow.setWindowClosedCallback(
-                    (ModalWindow.WindowClosedCallback)
+                    (GSModalWindow.WindowClosedCallback)
                             target -> {
                                 // turn the GUI request into an actual WPS request
                                 xml.setModelObject(getExecuteXML());

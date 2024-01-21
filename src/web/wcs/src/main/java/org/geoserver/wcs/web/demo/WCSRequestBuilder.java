@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
 import org.geoserver.ows.URLMangler.URLType;
@@ -24,6 +23,7 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.demo.PlainCodePage;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geotools.xml.transform.TransformerBase;
 
 /**
@@ -32,10 +32,10 @@ import org.geotools.xml.transform.TransformerBase;
  *
  * @author Andrea Aime - OpenGeo
  */
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class WCSRequestBuilder extends GeoServerBasePage {
 
-    ModalWindow responseWindow;
+    GSModalWindow responseWindow;
 
     WCSRequestBuilderPanel builder;
 
@@ -49,20 +49,20 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         form.add(builder);
 
         // the xml popup window
-        final ModalWindow xmlWindow = new ModalWindow("xmlWindow");
+        final GSModalWindow xmlWindow = new GSModalWindow("xmlWindow");
         add(xmlWindow);
         xmlWindow.setPageCreator(
-                (ModalWindow.PageCreator)
+                (GSModalWindow.PageCreator)
                         () -> new PlainCodePage(xmlWindow, responseWindow, getRequestXML()));
 
         // the output response window
-        responseWindow = new ModalWindow("responseWindow");
+        responseWindow = new GSModalWindow("responseWindow");
         add(responseWindow);
         // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(
-                (ModalWindow.PageCreator)
+                (GSModalWindow.PageCreator)
                         () -> {
                             DemoRequest request = new DemoRequest(null);
                             HttpServletRequest http = GeoServerApplication.get().servletRequest();

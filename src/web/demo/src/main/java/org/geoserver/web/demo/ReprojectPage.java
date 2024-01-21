@@ -7,7 +7,6 @@ package org.geoserver.web.demo;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -16,6 +15,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CRSPanel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeometryTextArea;
 import org.geoserver.web.wicket.SRSToCRSModel;
@@ -33,7 +33,7 @@ import org.locationtech.jts.geom.Geometry;
  * @author Andrea Aime - GeoSolutions
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class ReprojectPage extends GeoServerBasePage {
 
     String sourceCRS;
@@ -45,7 +45,7 @@ public class ReprojectPage extends GeoServerBasePage {
     GeometryTextArea targetGeom;
 
     /** pop-up window for transformation details * */
-    ModalWindow popupWindow;
+    GSModalWindow popupWindow;
 
     GeoServerAjaxFormLink wktLink;
 
@@ -61,7 +61,7 @@ public class ReprojectPage extends GeoServerBasePage {
         }
 
         // the popup for transformation details
-        popupWindow = new ModalWindow("popup");
+        popupWindow = new GSModalWindow("popup");
         add(popupWindow);
 
         // the main form

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -20,10 +19,10 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /** Allows to edit the root layer of a layer group */
-@SuppressWarnings("deprecation")
 public class RootLayerEntryPanel extends Panel {
 
     private static final long serialVersionUID = 3471204885852128002L;
@@ -85,7 +84,7 @@ public class RootLayerEntryPanel extends Panel {
         styleField.setNullValid(true);
         add(styleField);
 
-        final ModalWindow popupWindow = new ModalWindow("popup");
+        final GSModalWindow popupWindow = new GSModalWindow("popup");
         add(popupWindow);
         add(
                 new AjaxLink<Object>("add") {

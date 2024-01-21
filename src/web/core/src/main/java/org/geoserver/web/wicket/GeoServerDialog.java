@@ -11,9 +11,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.feedback.IFeedback;
-import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -28,26 +26,16 @@ import org.apache.wicket.model.Model;
  * for OK/cancel
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class GeoServerDialog extends Panel {
 
-    ModalWindow window;
+    GSModalWindow window;
     Component userPanel;
     DialogDelegate delegate;
 
     public GeoServerDialog(String id) {
         super(id);
-        add(
-                window =
-                        new ModalWindow("dialog") {
-                            @Override
-                            protected void onComponentTag(ComponentTag tag) {
-                                super.onComponentTag(tag);
-                                // to avoid local style being blocked by CSP
-                                tag.remove("style");
-                                tag.put("class", "hidden");
-                            }
-                        });
+        add(window = new GSModalWindow("dialog"));
     }
 
     /** Sets the window title */
@@ -114,9 +102,9 @@ public class GeoServerDialog extends Panel {
 
         // make sure close == cancel behavior wise
         window.setCloseButtonCallback(
-                (ModalWindow.CloseButtonCallback) target12 -> delegate.onCancel(target12));
+                (GSModalWindow.CloseButtonCallback) target12 -> delegate.onCancel(target12));
         window.setWindowClosedCallback(
-                (ModalWindow.WindowClosedCallback) target1 -> delegate.onClose(target1));
+                (GSModalWindow.WindowClosedCallback) target1 -> delegate.onClose(target1));
 
         // show the window
         this.delegate = delegate;
@@ -135,7 +123,7 @@ public class GeoServerDialog extends Panel {
             AjaxRequestTarget target,
             final IModel<String> heading,
             final IModel<String>... messages) {
-        window.setPageCreator((ModalWindow.PageCreator) () -> new InfoPage(heading, messages));
+        window.setPageCreator((GSModalWindow.PageCreator) () -> new InfoPage(heading, messages));
         window.show(target);
     }
 

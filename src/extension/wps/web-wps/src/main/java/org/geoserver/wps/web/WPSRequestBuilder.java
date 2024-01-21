@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -22,6 +21,7 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.demo.PlainCodePage;
+import org.geoserver.web.wicket.GSModalWindow;
 
 /**
  * Small embedded WPS client enabling users to visually build a WPS Execute request (and as a side
@@ -37,12 +37,12 @@ import org.geoserver.web.demo.PlainCodePage;
  * @author Martin Davis - OpenGeo
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class WPSRequestBuilder extends GeoServerBasePage {
 
     public static final String PARAM_NAME = "name";
 
-    ModalWindow responseWindow;
+    GSModalWindow responseWindow;
     WPSRequestBuilderPanel builder;
 
     public WPSRequestBuilder(PageParameters parameters) {
@@ -66,21 +66,21 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         form.add(builder);
 
         // the xml popup window
-        final ModalWindow xmlWindow = new ModalWindow("xmlWindow");
+        final GSModalWindow xmlWindow = new GSModalWindow("xmlWindow");
         add(xmlWindow);
         xmlWindow.setPageCreator(
-                (ModalWindow.PageCreator)
+                (GSModalWindow.PageCreator)
                         () -> new PlainCodePage(xmlWindow, responseWindow, getRequestXML()));
 
         // the output response window
-        responseWindow = new ModalWindow("responseWindow");
+        responseWindow = new GSModalWindow("responseWindow");
         add(responseWindow);
         // removed, don't know what it did, but page maps are gone in 1.5...
         // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(
-                (ModalWindow.PageCreator)
+                (GSModalWindow.PageCreator)
                         () -> {
                             DemoRequest request = new DemoRequest(null);
                             HttpServletRequest http =

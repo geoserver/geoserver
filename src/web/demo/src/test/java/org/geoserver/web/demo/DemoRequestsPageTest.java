@@ -14,7 +14,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -25,6 +24,7 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geotools.test.TestData;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,6 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
 
     /** Kind of smoke test to make sure the page structure was correctly set up once loaded */
     @Test
-    @SuppressWarnings("deprecation")
     public void testStructure() {
         // print(tester.getLastRenderedPage(), true, true);
 
@@ -61,7 +60,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("demoRequestsForm:password", PasswordTextField.class);
         tester.assertComponent("demoRequestsForm:submit", AjaxSubmitLink.class);
 
-        tester.assertComponent("responseWindow", ModalWindow.class);
+        tester.assertComponent("responseWindow", GSModalWindow.class);
     }
 
     @Test

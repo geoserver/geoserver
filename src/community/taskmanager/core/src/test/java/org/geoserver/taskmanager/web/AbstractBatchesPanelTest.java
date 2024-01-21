@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.geoserver.taskmanager.AbstractWicketTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
@@ -23,6 +22,7 @@ import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.taskmanager.web.model.BatchesModel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
@@ -175,8 +175,8 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
         assertEquals(dummy1.getId(), table.getSelection().get(0).getId());
 
         // click delete
-        ModalWindow w =
-                (ModalWindow)
+        GSModalWindow w =
+                (GSModalWindow)
                         tester.getComponentFromLastRenderedPage(
                                 prefix() + "batchesPanel:dialog:dialog");
         assertFalse(w.isShown());

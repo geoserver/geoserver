@@ -15,7 +15,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -24,6 +23,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidator;
 import org.geoserver.web.data.store.panel.FileModel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -31,11 +31,10 @@ import org.geotools.util.logging.Logging;
  *
  * @author Andrea Aime - GeoSolutions
  */
-@SuppressWarnings("deprecation")
 public class FileInput extends Panel {
     private static final Logger LOGGER = Logging.getLogger(FileInput.class);
     protected TextField<String> textField;
-    protected ModalWindow dialog;
+    protected GSModalWindow dialog;
     protected IModel<? extends FileFilter> fileFilter;
 
     /**
@@ -53,7 +52,7 @@ public class FileInput extends Panel {
         super(id, paramValue);
 
         // add the dialog for the file chooser
-        add(dialog = new ModalWindow("dialog"));
+        add(dialog = new GSModalWindow("dialog"));
 
         // the text field, with a decorator for validations
         FileRootsFinder rootsFinder = new FileRootsFinder(false);

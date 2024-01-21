@@ -24,7 +24,6 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
@@ -71,6 +70,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -86,7 +86,7 @@ import org.xml.sax.SAXParseException;
  * not lost on tab switch.
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     static final Pattern HEX_COLOR = Pattern.compile("^#(?:[0-9a-fA-F]{3}){1,2}$");
@@ -155,7 +155,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     protected CodeMirrorEditor editor;
 
-    protected ModalWindow popup;
+    protected GSModalWindow popup;
 
     protected GeoServerDialog dialog;
 
@@ -239,7 +239,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         styleForm.setMultiPart(true);
 
         /* init popup */
-        popup = new ModalWindow("popup");
+        popup = new GSModalWindow("popup");
         styleForm.add(popup);
         /* init tabs */
         List<ITab> tabs = new ArrayList<>();
@@ -649,7 +649,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     /** Subclasses must implement to define the submit behavior */
     protected abstract void onStyleFormSubmit();
 
-    protected ModalWindow getPopup() {
+    protected GSModalWindow getPopup() {
         return popup;
     }
 

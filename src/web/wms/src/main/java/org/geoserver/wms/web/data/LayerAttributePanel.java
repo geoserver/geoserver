@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.util.logging.Logging;
 
@@ -22,7 +22,6 @@ import org.geotools.util.logging.Logging;
  * layer. Delegates to {@link BandsPanel} or {@link LayerAttributePanel} to display the attributes,
  * depending on the type of the layer resource.
  */
-@SuppressWarnings("deprecation")
 public class LayerAttributePanel extends StyleEditTabPanel {
 
     static final Logger LOGGER = Logging.getLogger(LayerAttributePanel.class);
@@ -41,7 +40,7 @@ public class LayerAttributePanel extends StyleEditTabPanel {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        ModalWindow popup = parent.getPopup();
+                        GSModalWindow popup = parent.getPopup();
 
                         popup.setInitialHeight(400);
                         popup.setInitialWidth(600);

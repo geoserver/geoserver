@@ -11,7 +11,6 @@ import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -28,6 +27,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.geoserver.web.wicket.ConfirmationAjaxLink;
 import org.geoserver.web.wicket.DateTimeLabel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -43,18 +43,18 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
  * @see StorePage
  * @see StoreProvider
  */
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
     private static final long serialVersionUID = 5957961031378924960L;
 
-    private ModalWindow popupWindow;
+    private GSModalWindow popupWindow;
 
     public StorePanel(String id, StoreProvider provider, boolean selectable) {
         super(id, provider, selectable);
 
         // the popup window for messages
-        popupWindow = new ModalWindow("popupWindow");
+        popupWindow = new GSModalWindow("popupWindow");
         add(popupWindow);
     }
 

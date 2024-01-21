@@ -23,7 +23,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
@@ -50,6 +49,7 @@ import org.geoserver.web.data.store.panel.FileModel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.HTTPURLsListTextArea;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -68,7 +68,7 @@ import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
 
 /** Edits the WMS service details */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
     static final List<String> SVG_RENDERERS =
@@ -95,7 +95,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     static final List<String> DISPOSAL_METHODS =
             new ArrayList<>(Arrays.asList(WMS.DISPOSAL_METHODS));
 
-    ModalWindow modal;
+    GSModalWindow modal;
     MimeTypesFormComponent getMapMimeTypesComponent, getFeatureInfoMimeTypesComponent;
     TreeSet<String> getMapAvailable;
     TreeSet<String> getFeatureInfoAvailable;
@@ -122,7 +122,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     protected void build(IModel info, Form form) {
 
         // popups support
-        form.add(modal = new ModalWindow("modal"));
+        form.add(modal = new GSModalWindow("modal"));
 
         // new text field for the title of the root node
         form.add(

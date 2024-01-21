@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.PropertyModel;
@@ -56,13 +55,12 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testPopupWindow() throws Exception {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage(new CRSPanelTestPage(crs));
 
-        ModalWindow window =
-                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        GSModalWindow window =
+                (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         tester.clickLink("form:crs:wkt", true);
@@ -72,13 +70,12 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testPopupWindowNoCRS() throws Exception {
         // see GEOS-3207
         tester.startPage(new CRSPanelTestPage());
 
-        ModalWindow window =
-                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        GSModalWindow window =
+                (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         GeoServerAjaxFormLink link =
@@ -216,13 +213,12 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testPlanetaryPopupWindow() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
         tester.startPage(new CRSPanelTestPage(crs));
 
-        ModalWindow window =
-                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        GSModalWindow window =
+                (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         tester.clickLink("form:crs:wkt", true);
@@ -232,13 +228,12 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testPlanetaryList() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
         tester.startPage(new CRSPanelTestPage(crs));
 
-        ModalWindow window =
-                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        GSModalWindow window =
+                (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         // open the CRS list panel

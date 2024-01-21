@@ -19,7 +19,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -46,6 +45,7 @@ import org.geoserver.importer.web.ImportPage.DataIconModel;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.demo.PreviewLayer;
 import org.geoserver.web.wicket.CRSPanel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -61,7 +61,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings("deprecation")
 public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     static Logger LOGGER = Logging.getLogger(Importer.class);
@@ -70,7 +69,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         return CRS.decode("EPSG:3857");
     }
 
-    ModalWindow popupWindow;
+    GSModalWindow popupWindow;
     GeoServerDialog dialog;
     FeedbackPanel feedbackPanel;
 
@@ -78,7 +77,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             String id, GeoServerDataProvider<ImportTask> dataProvider, boolean selectable) {
         super(id, dataProvider, selectable);
         add(dialog = new GeoServerDialog("dialog"));
-        add(popupWindow = new ModalWindow("popup"));
+        add(popupWindow = new GSModalWindow("popup"));
         ((DataView) get("listContainer:items"))
                 .setItemReuseStrategy(DefaultItemReuseStrategy.getInstance());
     }
@@ -497,12 +496,12 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     }
 
     static class ErrorPanel extends Panel {
-        ModalWindow popupWindow;
+        GSModalWindow popupWindow;
 
         public ErrorPanel(String id, IModel<ImportTask> model) {
             super(id);
 
-            add(popupWindow = new ModalWindow("popup"));
+            add(popupWindow = new GSModalWindow("popup"));
             add(
                     new AjaxLink<ImportTask>("link", model) {
                         @Override

@@ -13,7 +13,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -29,6 +28,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -40,7 +40,6 @@ import org.geoserver.web.wicket.ReorderableTablePanel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
 /** Allows to edit the list of layers contained in a layer group */
-@SuppressWarnings("deprecation")
 public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     private static final long serialVersionUID = -5483938812185582866L;
@@ -60,7 +59,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
     static final List<Property<LayerGroupEntry>> PROPERTIES =
             Arrays.asList(LAYER_TYPE, LAYER, DEFAULT_STYLE, STYLE, REMOVE);
 
-    ModalWindow popupWindow;
+    GSModalWindow popupWindow;
     GeoServerTablePanel<LayerGroupEntry> layerTable;
     List<LayerGroupEntry> items;
     GeoServerDialog dialog;
@@ -142,7 +141,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
             items.add(new LayerGroupEntry(layer, style));
         }
 
-        add(popupWindow = new ModalWindow("popup"));
+        add(popupWindow = new GSModalWindow("popup"));
         add(dialog = new GeoServerDialog("dialog"));
         add(panelTitle(bigLegendTitle));
         // make sure we don't end up serializing the list, but get it fresh from the dataProvider,

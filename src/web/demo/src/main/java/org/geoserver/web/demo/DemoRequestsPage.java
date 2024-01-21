@@ -22,7 +22,6 @@ import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -40,6 +39,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geotools.util.logging.Logging;
 
@@ -49,7 +49,7 @@ import org.geotools.util.logging.Logging;
  * @version $Id$
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class DemoRequestsPage extends GeoServerBasePage {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.demo");
@@ -224,14 +224,14 @@ public class DemoRequestsPage extends GeoServerBasePage {
         password.setRequired(false);
         demoRequestsForm.add(password);
 
-        final ModalWindow responseWindow = new ModalWindow("responseWindow");
+        final GSModalWindow responseWindow = new GSModalWindow("responseWindow");
         add(responseWindow);
 
         // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(
-                (ModalWindow.PageCreator) () -> new DemoRequestResponse(requestModel));
+                (GSModalWindow.PageCreator) () -> new DemoRequestResponse(requestModel));
 
         demoRequestsForm.add(
                 new AjaxSubmitLink("submit", demoRequestsForm) {

@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -37,6 +36,7 @@ import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.api.referencing.operation.MathTransform;
@@ -52,7 +52,7 @@ import org.locationtech.jts.geom.Envelope;
  *
  * @author Andrea Aime - OpenGeo
  */
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class WCSRequestBuilderPanel extends Panel {
 
     /**
@@ -72,7 +72,7 @@ public class WCSRequestBuilderPanel extends Panel {
 
     String description;
 
-    ModalWindow responseWindow;
+    GSModalWindow responseWindow;
 
     private Component feedback;
 
@@ -213,11 +213,11 @@ public class WCSRequestBuilderPanel extends Panel {
         buildAffinePanel();
 
         // the describe response window
-        responseWindow = new ModalWindow("responseWindow");
+        responseWindow = new GSModalWindow("responseWindow");
         add(responseWindow);
 
         responseWindow.setPageCreator(
-                (ModalWindow.PageCreator)
+                (GSModalWindow.PageCreator)
                         () -> {
                             DemoRequest request = new DemoRequest(null);
                             HttpServletRequest http =

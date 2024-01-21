@@ -15,7 +15,6 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -25,6 +24,7 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.junit.Before;
 
@@ -139,8 +139,6 @@ public abstract class AbstractSecurityNamedServicePanelTest
         }
     }
 
-    // TODO: WICKET 9 fix this
-    @SuppressWarnings("deprecation")
     protected void doRemove(String pathForLink, String... serviceNames) throws Exception {
         AbstractSecurityPage testPage = (AbstractSecurityPage) tester.getLastRenderedPage();
 
@@ -176,9 +174,9 @@ public abstract class AbstractSecurityNamedServicePanelTest
 
         tester.assertNoErrorMessage();
 
-        tester.assertComponent(basePanelId + ":dialog:dialog", ModalWindow.class);
-        ModalWindow w = (ModalWindow) testPage.get(basePanelId + ":dialog:dialog");
-        /*(ModalWindow) testPage.get(
+        tester.assertComponent(basePanelId + ":dialog:dialog", GSModalWindow.class);
+        GSModalWindow w = (GSModalWindow) testPage.get(basePanelId + ":dialog:dialog");
+        /*(GSModalWindow) testPage.get(
         testPage.getWicketPath() + ":dialog:dialog");*/
 
         assertFalse(w.isShown());

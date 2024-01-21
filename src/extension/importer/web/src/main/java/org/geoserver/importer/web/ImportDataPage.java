@@ -64,7 +64,7 @@ import org.geotools.util.logging.Logging;
  * @author Justin Deoliveira, OpenGeo
  */
 // TODO WICKET8 - Verify this page works OK
-@SuppressWarnings({"serial", "deprecation"})
+@SuppressWarnings("serial")
 public class ImportDataPage extends GeoServerSecuredPage {
 
     static Logger LOGGER = Logging.getLogger(ImportDataPage.class);

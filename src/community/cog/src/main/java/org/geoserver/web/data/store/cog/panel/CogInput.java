@@ -13,7 +13,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -21,6 +20,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidator;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.browser.FileRootsFinder;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 
@@ -28,7 +28,7 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 /** Basic panel to set the Cog input URL. */
 public class CogInput extends Panel {
     TextField<String> textField;
-    ModalWindow dialog;
+    GSModalWindow dialog;
     IModel<? extends FileFilter> fileFilter;
 
     /**
@@ -48,7 +48,7 @@ public class CogInput extends Panel {
         super(id, paramValue);
 
         // add the dialog for the file chooser
-        add(dialog = new ModalWindow("dialog"));
+        add(dialog = new GSModalWindow("dialog"));
 
         // the text field, with a decorator for validations
         FileRootsFinder rootsFinder = new FileRootsFinder(false);

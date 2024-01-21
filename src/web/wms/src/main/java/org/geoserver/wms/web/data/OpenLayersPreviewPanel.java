@@ -27,7 +27,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.CssUrlReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -50,6 +49,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.template.TemplateUtils;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.SimpleAjaxLink;
@@ -61,7 +61,6 @@ import org.geotools.util.logging.Logging;
  * changing the current preview layer.
  */
 // TODO: WICKET 9 test this page
-@SuppressWarnings("deprecation")
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
 
     private static final long serialVersionUID = -8742721113748106000L;
@@ -94,7 +93,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        ModalWindow popup = parent.getPopup();
+                        GSModalWindow popup = parent.getPopup();
 
                         popup.setInitialHeight(400);
                         popup.setInitialWidth(600);

@@ -201,9 +201,9 @@ public class GeoJSONBuilder extends JSONBuilder {
      *
      * <p>If the value is {@link Double#NaN} then the value will not be written.
      *
-     * <p>If the value is {@link Double#POSITIVE_INFINITY} or {@link Double#NEGATIVE_INFINITY} then it will be encoded as
-     * {@code "Infinity"} or {@code "-Infinity"}, respectively, this avoids a {@link JSONException} in case the value
-     * is infinite.
+     * <p>If the value is {@link Double#POSITIVE_INFINITY} or {@link Double#NEGATIVE_INFINITY} then
+     * it will be encoded as {@code "Infinity"} or {@code "-Infinity"}, respectively, this avoids a
+     * {@link JSONException} in case the value is infinite.
      *
      * @param value value to encode
      * @see #setNumberOfDecimals(int)

@@ -213,6 +213,7 @@ public class BulkInitPanel extends Panel {
                 return;
             } else {
                 config.setValidated(true);
+                beans.getDao().save(config);
             }
         }
     }

@@ -27,6 +27,8 @@ public class GetRecordsTest extends MDTestSupport {
         // insert extra metadata
         ResourceInfo forestInfo = getCatalog().getLayerByName("Forests").getResource();
         forestInfo.getMetadata().put("date", "09/10/2012");
+        forestInfo.getMetadata().put("contact", "blabla");
+        forestInfo.getMetadata().put("contact-href", "http://blabla");
         forestInfo.setLatLonBoundingBox(
                 new ReferencedEnvelope(-200, -180, -100, -90, CRS.decode("EPSG:4326")));
         forestInfo.getKeywords().add(new Keyword("CustomKeyWord-1"));
@@ -185,6 +187,16 @@ public class GetRecordsTest extends MDTestSupport {
                 "srv_works",
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/srv:SV_ServiceIdentification/srv:couplingType/srv:SV_CouplingType/@codeListValue",
                 d);
+
+        // check contact anchor href
+        assertXpathEvaluatesTo(
+                "blabla",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gmx:Anchor",
+                d);
+        assertXpathEvaluatesTo(
+                "http://blabla",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gmx:Anchor/@xlink:href",
+                d);
     }
 
     @Test
@@ -269,6 +281,25 @@ public class GetRecordsTest extends MDTestSupport {
         assertXpathExists(
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Seven']",
                 d);
+    }
+
+    @Test
+    public void testTitleFilterMultiQueryable() throws Exception {
+        String request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd&constraint=Contact = 'blabla'";
+        Document d = getAsDOM(request);
+        // print(d);
+        // validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
+
+        assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsMatched", d);
+
+        request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd&constraint=Contact = 'The Organisation'";
+        d = getAsDOM(request);
+        // print(d);
+        // validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
+
+        assertXpathEvaluatesTo("28", "//csw:SearchResults/@numberOfRecordsMatched", d);
     }
 
     @Test

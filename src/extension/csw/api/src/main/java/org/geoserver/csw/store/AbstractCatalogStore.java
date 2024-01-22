@@ -10,7 +10,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -62,28 +61,35 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         }
 
         // do we have such attribute?
-        final PropertyName property = rd.translateProperty(attributeName);
-        AttributeDescriptor ad = (AttributeDescriptor) property.evaluate(rd.getFeatureType());
-        if (ad == null) {
+        final List<PropertyName> properties = rd.translateProperty(attributeName);
+        boolean hasProperty = false;
+        for (PropertyName property : properties) {
+            AttributeDescriptor ad = (AttributeDescriptor) property.evaluate(rd.getFeatureType());
+            hasProperty |= ad != null;
+        }
+        if (!hasProperty) {
             return new CloseableIteratorAdapter<>(new ArrayList<String>().iterator());
         }
 
         // build the query against csw:record
         Query q = new Query(typeName.getLocalPart());
 
-        q.setProperties(Arrays.asList(translateProperty(rd, attributeName)));
+        q.setProperties(translateProperty(rd, attributeName));
 
         // collect the values without duplicates
         final Set<String> values = new HashSet<>();
         getRecords(q, Transaction.AUTO_COMMIT, rd)
                 .accepts(
                         feature -> {
-                            Property prop = (Property) property.evaluate(feature);
-                            if (prop != null) {
-                                values.add(
-                                        new String(
-                                                ((String) prop.getValue()).getBytes(ISO_8859_1),
-                                                UTF_8));
+                            for (PropertyName property : properties) {
+                                Property prop = (Property) property.evaluate(feature);
+                                if (prop != null) {
+                                    values.add(
+                                            new String(
+                                                    ((String) prop.getValue()).getBytes(ISO_8859_1),
+                                                    UTF_8));
+                                    break;
+                                }
                             }
                         },
                         null);
@@ -160,7 +166,8 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     }
 
     @Override
-    public PropertyName translateProperty(RecordDescriptor rd, Name name) {
-        return AbstractRecordDescriptor.buildPropertyName(rd.getNamespaceSupport(), name);
+    public List<PropertyName> translateProperty(RecordDescriptor rd, Name name) {
+        return Collections.singletonList(
+                AbstractRecordDescriptor.buildPropertyName(rd.getNamespaceSupport(), name));
     }
 }

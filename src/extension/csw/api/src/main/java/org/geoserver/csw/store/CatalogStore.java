@@ -91,5 +91,5 @@ public interface CatalogStore {
     CatalogStoreCapabilities getCapabilities();
 
     /** Maps a qualified name to it's equivalent property name for the backend store. */
-    PropertyName translateProperty(RecordDescriptor rd, Name name);
+    List<PropertyName> translateProperty(RecordDescriptor rd, Name name);
 }

@@ -4,9 +4,12 @@
  */
 package org.geoserver.csw.records.iso;
 
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -23,9 +26,7 @@ import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.api.filter.sort.SortBy;
-import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.filter.SortByImpl;
-import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.FatalBeanException;
 
@@ -40,7 +41,7 @@ public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDes
 
     private GeoServer geoServer;
 
-    protected Map<String, PropertyName> queryableMapping = new HashMap<>();
+    protected Map<String, List<PropertyName>> queryableMapping = new HashMap<>();
 
     public QueryableMappingRecordDescriptor(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -79,7 +80,7 @@ public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDes
                             .collect(
                                     Collectors.toMap(
                                             e -> (String) e.getKey(),
-                                            e -> toProperty((String) e.getValue()))));
+                                            e -> toPropertyNames((String) e.getValue()))));
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -88,70 +89,43 @@ public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDes
     }
 
     @Override
-    public PropertyName translateProperty(Name name) {
+    public List<PropertyName> translateProperty(Name name) {
         return queryableMapping.get(name.getLocalPart());
     }
 
     @Override
     public Query adaptQuery(Query query) {
+        QueryableMappingFilterVisitor visitor =
+                new QueryableMappingFilterVisitor(getFeatureDescriptor(), queryableMapping);
         Filter filter = query.getFilter();
         if (filter != null && !Filter.INCLUDE.equals(filter)) {
-            query.setFilter(
-                    (Filter)
-                            filter.accept(
-                                    new DuplicatingFilterVisitor() {
-                                        @Override
-                                        public Object visit(
-                                                PropertyName expression, Object extraData) {
-                                            return adaptProperty(expression);
-                                        }
-                                    },
-                                    null));
+            query.setFilter((Filter) filter.accept(visitor, null));
         }
 
-        SortBy[] sortBy = query.getSortBy();
-        if (sortBy != null && sortBy.length > 0) {
-            for (int i = 0; i < sortBy.length; i++) {
-                SortBy sb = sortBy[i];
+        if (query.getSortBy() != null && query.getSortBy().length > 0) {
+            List<SortBy> sortBy = Lists.newArrayList();
+            for (int i = 0; i < query.getSortBy().length; i++) {
+                SortBy sb = query.getSortBy()[i];
                 if (!SortBy.NATURAL_ORDER.equals(sb) && !SortBy.REVERSE_ORDER.equals(sb)) {
-                    sortBy[i] =
-                            new SortByImpl(adaptProperty(sb.getPropertyName()), sb.getSortOrder());
+                    @SuppressWarnings("unchecked")
+                    List<PropertyName> properties =
+                            (List<PropertyName>) sb.getPropertyName().accept(visitor, null);
+                    for (PropertyName property : properties) {
+                        sortBy.add(new SortByImpl(property, sb.getSortOrder()));
+                    }
+                } else {
+                    sortBy.add(sb);
                 }
             }
-            query.setSortBy(sortBy);
+            query.setSortBy(sortBy.toArray(new SortBy[sortBy.size()]));
         }
 
         return query;
     }
 
-    private PropertyName toProperty(String name) {
-        return ff.property(name, getNamespaceSupport());
-    }
-
-    /**
-     * Helper method to translate propertyname that possibly contains queryable name to xml x-path
-     *
-     * @param expression property name
-     */
-    private PropertyName adaptProperty(PropertyName expression) {
-
-        XPathUtil.StepList steps =
-                XPathUtil.steps(
-                        getFeatureDescriptor(),
-                        expression.getPropertyName(),
-                        MetaDataDescriptor.NAMESPACES);
-
-        if (steps.size() == 1 && steps.get(0).getName().getNamespaceURI() == null
-                || steps.get(0)
-                        .getName()
-                        .getNamespaceURI()
-                        .equals(MetaDataDescriptor.NAMESPACE_APISO)) {
-            PropertyName fullPath = queryableMapping.get(steps.get(0).getName().getLocalPart());
-            if (fullPath != null) {
-                return fullPath;
-            }
-        }
-
-        return expression;
+    private List<PropertyName> toPropertyNames(String strPropNames) {
+        return Arrays.stream(strPropNames.split(";"))
+                .map(strPropName -> ff.property(strPropName, getNamespaceSupport()))
+                .collect(Collectors.toList());
     }
 }

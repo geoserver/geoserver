@@ -196,6 +196,10 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
             throw new TaskException("Failed to configure layer " + ws + ":" + resource.getName());
         }
 
+        if (extGS.isSupportsMetadata()) {
+            catalogUtil.metadataCustomToNative(restManager, resource.prefixedName());
+        }
+
         return new TaskResult() {
 
             @Override

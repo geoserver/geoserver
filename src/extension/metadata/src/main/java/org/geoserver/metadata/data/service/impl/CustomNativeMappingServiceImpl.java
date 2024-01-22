@@ -122,17 +122,19 @@ public class CustomNativeMappingServiceImpl implements CustomNativeMappingServic
                                         .get(MetadataConstants.CUSTOM_METADATA_KEY),
                         indexMap);
 
-        Set<MappingTypeEnum> cleared = new HashSet<>();
-        for (CustomNativeMappingConfiguration mapping : config.getCustomNativeMappings()) {
-            MappingTypeEnum mappingType = MappingTypeEnum.valueOf(mapping.getType());
+        if (custom != null) {
+            Set<MappingTypeEnum> cleared = new HashSet<>();
+            for (CustomNativeMappingConfiguration mapping : config.getCustomNativeMappings()) {
+                MappingTypeEnum mappingType = MappingTypeEnum.valueOf(mapping.getType());
 
-            if (!cleared.contains(mappingType)) {
-                mappingType.list(layer).clear();
-                cleared.add(mappingType);
+                if (!cleared.contains(mappingType)) {
+                    mappingType.list(layer).clear();
+                    cleared.add(mappingType);
+                }
+                mappingType
+                        .list(layer)
+                        .addAll(build(mapping.getMapping(), mappingType, custom, indexMap));
             }
-            mappingType
-                    .list(layer)
-                    .addAll(build(mapping.getMapping(), mappingType, custom, indexMap));
         }
     }
 
@@ -227,6 +229,9 @@ public class CustomNativeMappingServiceImpl implements CustomNativeMappingServic
     private static Map<String, List<String>> convert(
             Map<String, Serializable> map, Map<String, List<Integer>> indexMap) {
         Map<String, List<String>> result = new HashMap<>();
+        if (map == null) {
+            return null;
+        }
         for (Entry<String, Serializable> entry : map.entrySet()) {
             List<String> list = new ArrayList<>();
             if (entry.getValue() instanceof List<?>) {

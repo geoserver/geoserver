@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.catalog.Keyword;
@@ -224,5 +225,83 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
         assertEquals(0, map.size("contact"));
         assertEquals("1234", map.get(String.class, "identifier-single").getValue());
         assertEquals(0, map.size("referencesystem-object"));
+    }
+
+    @Test
+    public void testCustomToNative() throws IOException {
+        LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Serializable> underlying =
+                (HashMap<String, Serializable>)
+                        layer.getResource()
+                                .getMetadata()
+                                .get(MetadataConstants.CUSTOM_METADATA_KEY);
+        ComplexMetadataMap map = new ComplexMetadataMapImpl(underlying);
+
+        map.get(String.class, "refsystem-as-list", 0).setValue("foo");
+        map.get(String.class, "refsystem-as-list", 1).setValue("bar");
+        map.get(String.class, "refsystem-as-list", 2).setValue(null);
+        map.subMap("contact", 0).get(String.class, "name").setValue("DOV");
+        map.subMap("contact", 1).get(String.class, "name").setValue("Vlaanderen");
+        map.get(String.class, "identifier-single").setValue("1234");
+        map.subMap("referencesystem-object", 0).get(String.class, "code").setValue("abcde");
+        map.subMap("referencesystem-object", 0).get(String.class, "code-space").setValue("DOV-be");
+        map.subMap("referencesystem-object", 1).get(String.class, "code").setValue("fghi");
+        map.subMap("referencesystem-object", 1).get(String.class, "code-space").setValue("EOV-ce");
+
+        geoServer.getCatalog().save(layer);
+
+        restService.customToNative(layer.getName(), null);
+
+        layer = geoServer.getCatalog().getLayers().get(0);
+
+        assertEquals(4, layer.getResource().getKeywords().size());
+
+        assertEquals("KEY_foo", layer.getResource().getKeywords().get(0).getValue());
+
+        assertEquals("KEY_bar", layer.getResource().getKeywords().get(1).getValue());
+
+        assertEquals("KEY_DOV", layer.getResource().getKeywords().get(2).getValue());
+
+        assertEquals("KEY_Vlaanderen", layer.getResource().getKeywords().get(3).getValue());
+
+        assertEquals("VOCABULARY_A", layer.getResource().getKeywords().get(0).getVocabulary());
+
+        assertEquals("VOCABULARY_A", layer.getResource().getKeywords().get(1).getVocabulary());
+
+        assertEquals("VOCABULARY_B", layer.getResource().getKeywords().get(2).getVocabulary());
+
+        assertEquals("VOCABULARY_B", layer.getResource().getKeywords().get(3).getVocabulary());
+
+        assertEquals(2, layer.getResource().getMetadataLinks().size());
+
+        assertEquals(
+                "https://www.dov.vlaanderen.be/geonetwork/?uuid=1234",
+                layer.getResource().getMetadataLinks().get(0).getContent());
+
+        assertEquals("text/html", layer.getResource().getMetadataLinks().get(0).getType());
+
+        assertEquals(
+                "ISO191156:2003", layer.getResource().getMetadataLinks().get(0).getMetadataType());
+
+        assertEquals(
+                "https://www.dov.vlaanderen.be/geonetwork/srv/nl/csw?Service=CSW&Request=GetRecordById&Version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=1234",
+                layer.getResource().getMetadataLinks().get(1).getContent());
+
+        assertEquals("text/xml", layer.getResource().getMetadataLinks().get(1).getType());
+
+        assertEquals(
+                "ISO191156:2003", layer.getResource().getMetadataLinks().get(1).getMetadataType());
+
+        assertEquals(2, layer.getIdentifiers().size());
+
+        assertEquals("abcde", layer.getIdentifiers().get(0).getIdentifier());
+
+        assertEquals("DOV-be", layer.getIdentifiers().get(0).getAuthority());
+
+        assertEquals("fghi", layer.getIdentifiers().get(1).getIdentifier());
+
+        assertEquals("EOV-ce", layer.getIdentifiers().get(1).getAuthority());
     }
 }

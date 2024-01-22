@@ -168,7 +168,12 @@ configuration file.
         <property name="url" value="http://my.geoserver/geoserver" /> 
         <property name="username" value="admin" />
         <property name="password" value="geoserver" />
+        <property name="supportMetadata" value="true" />
     </bean>
+
+The ''supportsMetadata'' field indicates whether this target geoserver contains the
+the :ref:`Metadata Community Module <community_metadata>`, which provides additional
+support for it in certain tasks.
 
 The configuration above will log-in to geoserver using basic authentication.
 Task Manager also supports geoservers protected with keycloak:
@@ -184,6 +189,7 @@ Task Manager also supports geoservers protected with keycloak:
         <property name="clientSecret" value="my clientsecret"/>
         <property name="real" value="my realm"/>
         <property name="authUrl" value="http://my.keycloak.server/auth"/>
+        <property name="supportMetadata" value="true" />
     </bean>
 
 File Services
@@ -491,7 +497,10 @@ Task Types
 -  ``MetaDataSyncTask`` Synchronise the metadata between a local layer
    and a layer on another geoserver (without re-publishing). The user
    can specify a target geoserver, a local and a remote layer. Does not
-   support commit/rollback.
+   support commit/rollback. If the target geoserver supports the :ref:`Metadata Community Module <community_metadata>` 
+   native metadata attributes mapped to custom metadata attributes will be updated.
+   Note that all of the publication tasks will synchronize metadata in the same
+   way.
 
 -  ``ConfigureCachedLayer`` Configure caching for a layer on a remote
    geoserver with internal GWC, synchronise the settings with the local 

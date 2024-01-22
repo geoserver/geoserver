@@ -20,6 +20,8 @@ public class ExternalGSImpl extends NamedImpl implements ExternalGS {
 
     private String password;
 
+    private boolean supportsMetadata;
+
     @Override
     public String getUrl() {
         return url;
@@ -45,5 +47,14 @@ public class ExternalGSImpl extends NamedImpl implements ExternalGS {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public boolean isSupportsMetadata() {
+        return supportsMetadata;
+    }
+
+    public void setSupportsMetadata(boolean supportsMetadata) {
+        this.supportsMetadata = supportsMetadata;
     }
 }

@@ -292,6 +292,10 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 applicableRules = LegendUtils.getApplicableRules(ftStyles, scaleDenominator);
             }
 
+            if (countProcessor != null && !forceLabelsOff) {
+                applicableRules = updateRuleTitles(countProcessor, legend, applicableRules);
+            }
+
             ArrayList<JSONObject> jRules = new ArrayList<>();
             if (legend instanceof CascadedLegendRequest) {
                 CascadedLegendRequest cascadedLegend = (CascadedLegendRequest) legend;
@@ -385,6 +389,11 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         /* }*/
 
         return response;
+    }
+
+    protected Rule[] updateRuleTitles(
+            FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
+        return processor.preProcessRules(legend, applicableRules);
     }
 
     private JSONObject getLayerTitle(JSONObject in, LegendRequest legend) {

@@ -5,9 +5,14 @@
  */
 package org.geoserver.rest.catalog;
 
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
@@ -48,8 +53,10 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.URLs;
 import org.geotools.util.factory.GeoTools;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.referencing.FactoryException;
 import org.springframework.http.MediaType;
@@ -58,6 +65,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
+
+    @ClassRule public static TemporaryFolder temp = new TemporaryFolder();
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -83,6 +92,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             removeStore(
                     coverage.getStore().getWorkspace().getName(), coverage.getStore().getName());
         }
+        removeStore("sf", "usa");
     }
 
     @Test
@@ -753,5 +763,97 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                     catalog.getCoverageByCoverageStore(storeInfo, name).getNativeBoundingBox();
             assertConsumer.accept(current, old);
         }
+    }
+
+    @Test
+    public void testWorldImageUploadExternalZipDirectory() throws Exception {
+        // get the path to a directory
+        File file = temp.getRoot();
+        String body = file.getAbsolutePath();
+        // the request will fail since it won't attempt to copy a directory
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        ROOT_PATH + "/workspaces/foo/coveragestores/bar/external.worldimage",
+                        body,
+                        "application/zip");
+        assertEquals(500, response.getStatus());
+        assertThat(response.getContentAsString(), startsWith("Error renaming zip file from "));
+        // verify that the external file was not deleted
+        assertTrue("The external file was unexpectedly deleted", file.exists());
+    }
+
+    @Test
+    public void testWorldImageUploadExternalZipExistingDirectory() throws Exception {
+        // create a file to copy and get its path
+        File file1 = temp.newFile("test1.zip");
+        String body = file1.getAbsolutePath();
+        // create the file in the data directory
+        File file2 = getResourceLoader().createDirectory("data/foo/bar1/test1.zip");
+        // the request will fail since it won't overwrite an existing zip file
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        ROOT_PATH + "/workspaces/foo/coveragestores/bar1/external.worldimage",
+                        body,
+                        "application/zip");
+        assertEquals(500, response.getStatus());
+        assertThat(response.getContentAsString(), startsWith("Error renaming zip file from "));
+        // verify that the external file was not deleted
+        assertTrue("The external file was unexpectedly deleted", file1.exists());
+        // verify that the file in the data directory was not deleted
+        assertTrue("The file in the data directory was unexpectedly deleted", file2.isDirectory());
+    }
+
+    @Test
+    public void testWorldImageUploadExternalZipBadFile() throws Exception {
+        // create a file that is not a valid zip file and get its path
+        File file = temp.newFile("test2.zip");
+        String body = file.getAbsolutePath();
+        // the request will fail unzipping since it is not a valid zip fail
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        ROOT_PATH + "/workspaces/foo/coveragestores/bar2/external.worldimage",
+                        body,
+                        "application/zip");
+        assertEquals(500, response.getStatus());
+        assertEquals("Error occured unzipping file", response.getContentAsString());
+        // verify that the external file was not deleted
+        assertTrue("The external file was unexpectedly deleted", file.exists());
+        // verify that the zip file was deleted from the data directory
+        assertEquals(
+                "The data directory file was not deleted",
+                Resource.Type.UNDEFINED,
+                getResourceLoader().get("data/foo/bar2/test2.zip").getType());
+    }
+
+    @Test
+    public void testWorldImageUploadExternalZipValid() throws Exception {
+        // create a valid zip file and get its path
+        File file = temp.newFile("test3.zip");
+        FileUtils.copyURLToFile(getClass().getResource("test-data/usa.zip"), file);
+        String body = file.getAbsolutePath();
+        // verify that the coverage does not already exist
+        assertNull(getCatalog().getCoverageStoreByName("sf", "usa"));
+        assertNull(getCatalog().getCoverageByName("sf", "usa"));
+        // the request should succeed
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        ROOT_PATH + "/workspaces/sf/coveragestores/usa/external.worldimage",
+                        body,
+                        "application/zip");
+        assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
+        String content = response.getContentAsString();
+        Document d = dom(new ByteArrayInputStream(content.getBytes()));
+        assertEquals("coverageStore", d.getDocumentElement().getNodeName());
+        // verify that the coverage was created successfully
+        assertNotNull(getCatalog().getCoverageStoreByName("sf", "usa"));
+        assertNotNull(getCatalog().getCoverageByName("sf", "usa"));
+        // verify that the external file was not deleted
+        assertTrue("The external file was unexpectedly deleted", file.exists());
+        // verify that the zip file was deleted from the data directory
+        assertEquals(
+                "The data directory file was not deleted",
+                Resource.Type.UNDEFINED,
+                getResourceLoader().get("data/sf/usa/test3.zip").getType());
     }
 }

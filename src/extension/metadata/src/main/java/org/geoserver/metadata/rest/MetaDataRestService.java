@@ -75,10 +75,12 @@ public class MetaDataRestService {
         LayerInfo layer = geoServer.getCatalog().getLayerByName(layerName);
         if (layer == null) {
             response.sendError(404, "Invalid layer id");
+            return null;
+        } else {
+            customToNativeService.mapCustomToNative(layer);
+            geoServer.getCatalog().save(layer);
+            return "Success.";
         }
-        customToNativeService.mapCustomToNative(layer);
-        geoServer.getCatalog().save(layer);
-        return "Success.";
     }
 
     @PostMapping("import")

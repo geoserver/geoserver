@@ -517,6 +517,39 @@ public class GeoJSONBuilderTest {
         }
     }
 
+    @Test
+    public void testWrite3DPointWithInfiniteCoordinates() throws Exception {
+        Geometry g = new WKTReader().read("POINT(Infinity -Infinity 1)");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"Point\",\"coordinates\":[\"Infinity\",\"-Infinity\",1]}",
+                writer.toString());
+    }
+
+    @Test
+    public void testWritePolygonZMWithInfiniteCoordinates() throws Exception {
+        Geometry g =
+                new WKTReader()
+                        .read(
+                                "POLYGON ZM((0 0 0 0, 0 Infinity 0 0, 10 -Infinity 0 0, 10 0 Infinity -Infinity, 0 0 0 0))");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0,0],[0,\"Infinity\",0,0],[10,\"-Infinity\",0,0],[10,0,\"Infinity\",\"-Infinity\"],[0,0,0,0]]]}",
+                writer.toString());
+    }
+
+    @Test
+    public void testWrite3DLineWithInfiniteCoordinates() throws Exception {
+        Geometry g =
+                new WKTReader()
+                        .read(
+                                "LINESTRING(0 0 0, 0 Infinity 0, 10 -Infinity 0, 10 0 Infinity, 0 0 0)");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"LineString\",\"coordinates\":[[0,0,0],[0,\"Infinity\",0],[10,\"-Infinity\",0],[10,0,\"Infinity\"],[0,0,0]]}",
+                writer.toString());
+    }
+
     private void addLevels(final GeoJSONBuilder builder, int level, final int max) {
         if (level >= max) return;
         level++;

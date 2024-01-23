@@ -137,6 +137,7 @@ JSON output ``system properties``:
 
 * ``json.maxDepth=<max_value>`` is used to determine the max number of allowed JSON nested objects on encoding phase.  By default the value is 100.
 
+.. note:: Coordinates with a value equal to :math:`\pm \infty` will be encoded with their string representation ``"Infinity"`` or ``"-Infinity"``
 
 CSV output
 ----------------

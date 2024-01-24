@@ -131,10 +131,24 @@ MapML resources will be available for any published WMS layers by making a GetMa
 
 Note that the WMS SRS or CRS must be one of the projections supported by MapML:
 
-- EPSG:3857
-- EPSG:3978
-- EPSG:5936
-- EPSG:4326
+- MapML:WGS84 (or EPSG:4326)
+- MapML:OSMTILE (or EPSG:3857)
+- MapML:CBMTILE (or EPSG:3978)
+- MapML:APSTILE (or EPSG:5936)
+
+The equivalent EPSG codes are provided for reference, but the MapML names are recommended, as they
+imply not only a coordinate refefence system, but also a tile grid and a set of zoom levels (Tiled CRS), 
+that the MapML client will use when operating in tiled mode. When using tiles, it's also recommended
+to set up tile caching for the same-named gridsets.
+
+If the native SRS of a layer is not a match for the MapML ones, remember to configure the projection
+policy to "reproject native to declare". You might have to save and reload the layer configuration
+in order to re-compute the native bounds correctly.
+
+If the SRS or CRS is not one of the above, the GetMap request will fail with an ``InvalidParameterValue`` exception.
+The main "MapML" link in the preview page generates a HTML client able to consume MapML resources.
+The link is generated so that it always work, if the CRS configured for the layer is not supported, it will automatically fall back on MapML:WGS84.
+
 
 **MapML Output Format**
 

@@ -24,6 +24,8 @@ public class Projection {
 
     protected CoordinateReferenceSystem crs;
     protected CoordinateReferenceSystem baseCRS;
+    protected boolean baseLatLon;
+
     protected MathTransform toProjected;
     protected MathTransform toLatLng;
 
@@ -35,6 +37,7 @@ public class Projection {
                     CRS.getProjectedCRS(crs) != null
                             ? CRS.getProjectedCRS(crs).getBaseCRS()
                             : this.crs;
+            this.baseLatLon = CRS.getAxisOrder(this.baseCRS) == CRS.AxisOrder.NORTH_EAST;
             this.toProjected = CRS.findMathTransform(this.baseCRS, crs);
             this.toLatLng = this.toProjected.inverse();
         } catch (FactoryException | NoninvertibleTransformException ex) {
@@ -50,10 +53,10 @@ public class Projection {
      */
     public Point project(LatLng latlng) throws MismatchedDimensionException, TransformException {
         if (toProjected.isIdentity()) {
-            return new Point(latlng.lng, latlng.lat);
+            return toPoint(latlng);
         }
         Position2D projected = new Position2D(crs);
-        toProjected.transform(new Position2D(this.baseCRS, latlng.lat, latlng.lng), projected);
+        toProjected.transform(toPosition2D(latlng), projected);
         return new Point(projected.x, projected.y);
     }
 
@@ -65,14 +68,44 @@ public class Projection {
      */
     public LatLng unproject(Point p) throws MismatchedDimensionException, TransformException {
         if (toLatLng.isIdentity()) {
-            return new LatLng(p.y, p.x);
+            return toLatLng(p);
         }
         Position2D unprojected = new Position2D(this.baseCRS);
         toLatLng.transform(new Position2D(this.crs, p.x, p.y), unprojected);
-        return new LatLng(unprojected.getOrdinate(0), unprojected.getOrdinate(1));
+        return toLatLon(unprojected);
     }
 
-    /** @return */
+    /** This method is used to convert a Point to a LatLng. The Point is assumed to be in Lat/Lon */
+    private LatLng toLatLng(Point p) {
+        if (baseLatLon) return new LatLng(p.x, p.y);
+        else return new LatLng(p.y, p.x);
+    }
+
+    /**
+     * This method is used to convert a Position2D to a LatLng. The Position2D is assumed to be in
+     * Lat/Lon
+     */
+    private LatLng toLatLon(Position2D position) {
+        if (baseLatLon) return new LatLng(position.getOrdinate(0), position.getOrdinate(1));
+        else return new LatLng(position.getOrdinate(1), position.getOrdinate(0));
+    }
+
+    /** This method is used to convert a LatLng to a Point. The Point is assumed to be in Lat/Lon */
+    private Point toPoint(LatLng latlng) {
+        if (baseLatLon) return new Point(latlng.lat, latlng.lng);
+        else return new Point(latlng.lng, latlng.lat);
+    }
+
+    /**
+     * This method is used to convert a LatLng to a Position2D. The Position2D is assumed to be in
+     * Lat/Lon
+     */
+    private Position2D toPosition2D(LatLng latlng) {
+        if (baseLatLon) return new Position2D(this.baseCRS, latlng.lat, latlng.lng);
+        else return new Position2D(this.baseCRS, latlng.lng, latlng.lat);
+    }
+
+    /** @return the crs */
     public CoordinateReferenceSystem getCRS() {
         return this.crs;
     }

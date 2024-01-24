@@ -641,7 +641,7 @@ public class MapMLDocumentBuilder {
         wmsParams.put(
                 "format_options", MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":" + imageFormat);
         wmsParams.put("layers", layersCommaDelimited);
-        wmsParams.put("crs", projType.getEpsgCode());
+        wmsParams.put("crs", projType.getCRSCode());
         wmsParams.put("version", "1.3.0");
         wmsParams.put("service", "WMS");
         wmsParams.put("request", "GetMap");
@@ -770,7 +770,7 @@ public class MapMLDocumentBuilder {
                 ReferencedEnvelope reprojectedBounds = reproject(projectedBox, pt);
                 // Copy the base params to create one for self style
                 Map<String, String> projParams = new HashMap<>(wmsParams);
-                projParams.put("crs", pt.getEpsgCode());
+                projParams.put("crs", pt.getCRSCode());
                 projParams.put("width", Integer.toString(width));
                 projParams.put("height", Integer.toString(height));
                 projParams.put("bbox", toCommaDelimitedBbox(reprojectedBounds));
@@ -1173,7 +1173,7 @@ public class MapMLDocumentBuilder {
         params.put("version", "1.3.0");
         params.put("service", "WMS");
         params.put("request", "GetMap");
-        params.put("crs", PREVIEW_TCRS_MAP.get(projType.value()).getCode());
+        params.put("crs", projType.getCRSCode());
         params.put("layers", mapMLLayerMetadata.getLayerName());
         params.put("language", this.request.getLocale().getLanguage());
         params.put("styles", mapMLLayerMetadata.getStyleName());
@@ -1318,7 +1318,7 @@ public class MapMLDocumentBuilder {
         params.put("version", "1.3.0");
         params.put("service", "WMS");
         params.put("request", "GetMap");
-        params.put("crs", PREVIEW_TCRS_MAP.get(projType.value()).getCode());
+        params.put("crs", projType.getCRSCode());
         params.put("layers", mapMLLayerMetadata.getLayerName());
         params.put("styles", mapMLLayerMetadata.getStyleName());
         if (mapMLLayerMetadata.isTimeEnabled()) {
@@ -1429,7 +1429,7 @@ public class MapMLDocumentBuilder {
         params.put("service", "WMS");
         params.put("request", "GetFeatureInfo");
         params.put("feature_count", "50");
-        params.put("crs", PREVIEW_TCRS_MAP.get(projType.value()).getCode());
+        params.put("crs", projType.getCRSCode());
         params.put("language", this.request.getLocale().getLanguage());
         params.put("layers", mapMLLayerMetadata.getLayerName());
         params.put("query_layers", mapMLLayerMetadata.getLayerName());
@@ -1587,10 +1587,7 @@ public class MapMLDocumentBuilder {
                 .append("&LAYERS=")
                 .append(escapeHtml4(layer))
                 .append("&BBOX=")
-                .append(String.valueOf(projectedBbox.getMinX()) + ",")
-                .append(String.valueOf(projectedBbox.getMinY()) + ",")
-                .append(String.valueOf(projectedBbox.getMaxX()) + ",")
-                .append(String.valueOf(projectedBbox.getMaxY()))
+                .append(toCommaDelimitedBbox(projectedBbox))
                 .append("&HEIGHT=")
                 .append(height)
                 .append("&WIDTH=")

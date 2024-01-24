@@ -101,7 +101,7 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
         // The second (4) should still be set
         tester.assertModelValue(
                 "taskTable:listContainer:items:4:itemProperties:2:component:form:crs:srs",
-                "EPSG:4269");
+                "CRS:83");
     }
 
     void fill(String formPath, String fieldPath, String value) {

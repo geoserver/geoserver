@@ -316,7 +316,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
                         throw new ServiceException("Invalid TCRS name");
                     }
                     l.setRel(RelType.ALTERNATE);
-                    this.query.put("srsName", projection.getCode());
+                    this.query.put("srsName", "MapML:" + projection.getName());
                     HashMap<String, String> kvp = new HashMap<>(this.query.size());
                     this.query
                             .keySet()

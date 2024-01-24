@@ -188,6 +188,7 @@ public class ResourcePool {
     public static Hints.Key JOINS = new Hints.Key(List.class);
 
     public static Hints.Key MAP_CRS = new Hints.Key(CoordinateReferenceSystem.class);
+
     /** logging */
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog");
 
@@ -213,6 +214,7 @@ public class ResourcePool {
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
     EntityResolverProvider entityResolverProvider;
+
     /**
      * Applies attributes customization. It's a {@link RetypeFeatureTypeCallback}, it needs to be
      * applied sooner in the process of setting up a FeatureSource, so it does not fit exactly the
@@ -312,6 +314,7 @@ public class ResourcePool {
     public Map<String, DataAccess> getDataStoreCache() {
         return dataStoreCache;
     }
+
     /**
      * DataStoreCache implementation responsible for freeing DataAccess resources when they are no
      * longer in use.
@@ -419,6 +422,7 @@ public class ResourcePool {
     protected Map<String, WebMapTileServer> createWmtsCache() {
         return new WMTSCache();
     }
+
     /**
      * Sets the size of the feature type cache.
      *
@@ -541,12 +545,7 @@ public class ResourcePool {
 
     private static String lookupIdentifierInternal(CoordinateReferenceSystem crs, boolean fullScan)
             throws FactoryException {
-        // privilege EPSG is possible
-        Integer code = CRS.lookupEpsgCode(crs, false);
-        if (code != null) {
-            return "EPSG:" + code;
-        }
-        // otherwise see if there is any code in the object itself
+        // Lookup the first code, it should be the official one for this CRS
         String result =
                 crs.getIdentifiers().stream()
                         .filter(id -> id.getAuthority() != null)
@@ -554,8 +553,29 @@ public class ResourcePool {
                         .findFirst()
                         .map(id -> id.toString())
                         .orElse(null);
+        // .. then validate it can be used to lookup the CRS, and that it matches
+        if (result != null) {
+            try {
+                CoordinateReferenceSystem lookedUp =
+                        CRS.decode(result); // make sure the identifier allows a lookup
+                if (CRS.equalsIgnoreMetadata(crs, lookedUp)) return result;
+            } catch (Exception e) {
+                LOGGER.log(
+                        Level.FINE,
+                        "Failed to lookup the CRS code for "
+                                + crs
+                                + " as "
+                                + result
+                                + ", moving on to look up other potential identifiers",
+                        e);
+            }
+        }
 
-        if (result != null) return result;
+        // otherwise look up for EPSG codes first
+        Integer code = CRS.lookupEpsgCode(crs, false);
+        if (code != null) {
+            return "EPSG:" + code;
+        }
 
         // search in other authorities, skipping the alias ones
         final Set<Citation> authorities = new LinkedHashSet<>();
@@ -2166,6 +2186,7 @@ public class ResourcePool {
 
         return sld;
     }
+
     /**
      * Returns the first {@link Style} in a style resource, caching the result. Any associated
      * images should also be unpacked onto the local machine. ResourcePool will watch the style for
@@ -2445,6 +2466,7 @@ public class ResourcePool {
             }
         }
     }
+
     /**
      * Custom CatalogResourceCache responsible for disposing of DataAccess instances (allowing the
      * recovery of operating system resources).
@@ -2622,6 +2644,7 @@ public class ResourcePool {
             }
         }
     }
+
     /** Listens to catalog events clearing cache entires when resources are modified. */
     public static class CacheClearingListener extends CatalogVisitorAdapter
             implements CatalogListener {
@@ -2679,6 +2702,7 @@ public class ResourcePool {
             pool.clear(style);
         }
     }
+
     /**
      * Used to clean up any outstanding data store listeners.
      *

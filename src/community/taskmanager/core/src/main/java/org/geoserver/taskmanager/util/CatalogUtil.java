@@ -6,6 +6,7 @@
 package org.geoserver.taskmanager.util;
 
 import com.thoughtworks.xstream.io.xml.JDomWriter;
+import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
@@ -14,6 +15,7 @@ import it.geosolutions.geoserver.rest.encoder.authorityurl.GSAuthorityURLInfoEnc
 import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import it.geosolutions.geoserver.rest.encoder.identifier.GSIdentifierInfoEncoder;
+import it.geosolutions.geoserver.rest.manager.GeoServerRESTCustomService;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -307,6 +309,14 @@ public class CatalogUtil {
             } else {
                 return result.toString();
             }
+        }
+    }
+
+    public void metadataCustomToNative(GeoServerRESTManager restMan, String layerName)
+            throws TaskException {
+        GeoServerRESTCustomService metadataService = restMan.getCustomService("rest/metadata");
+        if (metadataService.get("customToNative", "layerName", layerName) == null) {
+            throw new TaskException("Failed to call customToNative on target geoserver.");
         }
     }
 }

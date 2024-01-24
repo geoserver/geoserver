@@ -4,6 +4,8 @@
  */
 package org.geoserver.taskmanager.web;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,11 +19,15 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.taskmanager.AbstractWicketTaskManagerTest;
+import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
+import org.geoserver.taskmanager.data.Run.Status;
+import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
+import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +36,13 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
 
     protected TaskManagerFactory fac;
     protected TaskManagerDao dao;
+    protected TaskManagerDataUtil util;
 
     @Before
     public void before() {
         fac = TaskManagerBeans.get().getFac();
         dao = TaskManagerBeans.get().getDao();
+        util = TaskManagerBeans.get().getDataUtil();
 
         login();
     }
@@ -148,23 +156,39 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
     }
 
     @Test
-    public void testInitializeConfigurations() throws IOException {
+    public void testInitializeConfigurations() throws IOException, InterruptedException {
 
         Configuration config1 = fac.createConfiguration();
         config1.setName("Q-CONFIG");
+        Task task1 = fac.createTask();
+        task1.setName("task1");
+        task1.setType(TestTaskTypeImpl.NAME);
+        util.addTaskToConfiguration(config1, task1);
+        config1 = dao.save(config1);
+        task1 = config1.getTasks().get("task1");
         Batch batch1 = fac.createBatch();
+        util.addBatchElement(batch1, task1);
         batch1.setName("@Initialize");
         batch1 = dao.save(batch1);
-        TaskManagerBeans.get().getDataUtil().addBatchToConfiguration(config1, batch1);
+        util.addBatchToConfiguration(config1, batch1);
         config1 = dao.save(config1);
 
         Configuration config2 = fac.createConfiguration();
         config2.setName("Z-CONFIG");
+        Task task2 = fac.createTask();
+        task2.setName("task2");
+        task2.setType(TestTaskTypeImpl.NAME);
+        util.addTaskToConfiguration(config2, task2);
+        config2 = dao.save(config2);
+        task2 = config2.getTasks().get("task2");
         Batch batch2 = fac.createBatch();
+        util.addBatchElement(batch2, task2);
         batch2.setName("@Initialize");
         batch2 = dao.save(batch2);
-        TaskManagerBeans.get().getDataUtil().addBatchToConfiguration(config2, batch2);
+        util.addBatchToConfiguration(config2, batch2);
         config2 = dao.save(config2);
+
+        TaskManagerBeans.get().getBjService().reloadFromData();
 
         tester.startPage(BulkOperationsPage.class);
 
@@ -209,6 +233,22 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
         tester.assertModelValue(
                 "form:tabs:panel:dialog:dialog:content:form:userPanel",
                 "Are you sure you want to initialize 2 configurations? This will take at least 1 minutes.");
+
+        formTester = tester.newFormTester("form:tabs:panel:dialog:dialog:content:form");
+
+        formTester.submit("submit");
+
+        do {
+            Thread.sleep(100);
+            batch1 = dao.reload(batch1);
+        } while (batch1 == null
+                || batch1.getLatestBatchRun() != null
+                        && batch1.getLatestBatchRun().getBatchRun().getStatus()
+                                != Status.COMMITTED);
+
+        Thread.sleep(100);
+        config1 = dao.reload(config1);
+        assertTrue(config1.isValidated());
 
         dao.delete(batch1);
         dao.delete(batch2);

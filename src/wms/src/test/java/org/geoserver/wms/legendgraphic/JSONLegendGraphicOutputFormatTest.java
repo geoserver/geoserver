@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.xml.transform.TransformerException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -1981,5 +1982,28 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         } finally {
             if (group != null) catalog.remove(group);
         }
+    }
+
+    @Test
+    public void testExternalReferenceGraphic() throws Exception {
+        Style style = readSLD("ExternalReferenceGraphic.sld");
+        GetLegendGraphicRequest req = getRequest();
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.BRIDGES.getNamespaceURI(),
+                                MockData.BRIDGES.getLocalPart());
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(style);
+        req.setLegendOptions(new HashMap<String, String>());
+
+        JSONObject result = this.legendProducer.buildLegendGraphic(req);
+        assertNotNull(result);
+        JSONArray legend = result.getJSONArray("Legend");
+        JSONArray rules = legend.getJSONObject(0).getJSONArray("rules");
+        JSONArray symbolizers = rules.getJSONObject(0).getJSONArray("symbolizers");
+        JSONObject point = symbolizers.getJSONObject(0).getJSONObject("Point");
+        assertTrue(point.has("url"));
+        assertTrue(StringUtils.startsWith(point.getString("url"), "data:image/png;base64,"));
     }
 }

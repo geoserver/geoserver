@@ -8,8 +8,11 @@ package org.geoserver.wms.icons;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -44,6 +47,10 @@ public abstract class IconProperties {
     public abstract String getIconName(Style style);
 
     public abstract boolean isExternal();
+
+    public String uriData() {
+        return null;
+    }
 
     public static IconProperties generator(
             final Double opacity,
@@ -166,8 +173,15 @@ public abstract class IconProperties {
                                                 .substring(styles.getAbsolutePath().length() + 1);
                                 file = new File(relativePath);
                             } else {
-                                // we wont' transform this, other dirs are not published
-                                file = null;
+                                // other dirs are not published, serialize uri-data
+                                Path path = file.toPath();
+                                String contentType = Files.probeContentType(path);
+                                byte[] bytes = Files.readAllBytes(path);
+                                return new StringBuilder("data:")
+                                        .append(contentType)
+                                        .append(";base64,")
+                                        .append(Base64.getEncoder().encodeToString(bytes))
+                                        .toString();
                             }
 
                             // rebuild the icon href accordingly

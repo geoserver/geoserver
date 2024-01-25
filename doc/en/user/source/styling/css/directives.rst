@@ -15,6 +15,7 @@ For example:
 .. code-block:: scss
 
   @mode 'Flat';
+  @styleName 'The name';
   @styleTitle 'The title;
   @styleAbstract 'This is a longer description'
   
@@ -43,6 +44,10 @@ Supported directives
       * Controls how the CSS is translated to SLD. ``Exclusive``, ``Simple`` and ``Auto`` are cascaded modes, ``Flat`` turns off cascading and has the CSS 
         behave like a simplified syntax SLD sheet. See :ref:`css_cascading` for an explanation of how the various modes work
       * false
+    - * ``styleName``
+      * String
+      * The generated SLD style name
+      * No
     - * ``styleTitle``
       * String
       * The generated SLD style title  

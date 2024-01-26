@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -97,7 +98,23 @@ public class MetadataPanel extends Panel {
                         });
             }
 
-            TabbedPanel<AbstractTab> panel = new TabbedPanel<>(id, tabPanels);
+            // we need to override with submit links so that each tab will validate & submit
+            TabbedPanel<AbstractTab> panel =
+                    new TabbedPanel<>(id, tabPanels) {
+                        private static final long serialVersionUID = 2128818273175357135L;
+
+                        @Override
+                        protected WebMarkupContainer newLink(String linkId, final int index) {
+                            return new SubmitLink(linkId) {
+                                private static final long serialVersionUID = -9015199018095752516L;
+
+                                @Override
+                                public void onSubmit() {
+                                    setSelectedTab(index);
+                                }
+                            };
+                        }
+                    };
 
             return panel;
         } else {

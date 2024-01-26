@@ -31,7 +31,7 @@ public class ConfigurationServiceTest extends AbstractMetadataTest {
     public void testFileRegistry() throws IOException {
         MetadataConfiguration configuration = yamlService.getMetadataConfiguration();
         Assert.assertNotNull(configuration);
-        Assert.assertEquals(15, configuration.getAttributes().size());
+        Assert.assertEquals(16, configuration.getAttributes().size());
         Assert.assertEquals(3, configuration.getGeonetworks().size());
         Assert.assertEquals(5, configuration.getTypes().size());
 

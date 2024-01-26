@@ -88,7 +88,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel");
         // derived field hidden
-        assertEquals(14, panel.getDataProvider().size());
+        assertEquals(15, panel.getDataProvider().size());
 
         FormTester ft = tester.newFormTester("publishedinfo");
         ft.submit("save");
@@ -701,7 +701,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 (MarkupContainer)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items");
-        assertEquals(14, c.size());
+        assertEquals(15, c.size());
 
         tester.assertComponent(
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:generate",

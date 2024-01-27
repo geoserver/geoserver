@@ -36,6 +36,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.InternationalContentHelper;
+import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
@@ -812,6 +813,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                         handleFeatureType(ftype);
                         commit();
                     } catch (RuntimeException e) {
+                        // abort processing if the user closed the connection
+                        ClientStreamAbortedException.rethrowUncheked(e);
                         if (skipMisconfigured) {
                             reset();
                             LOGGER.log(
@@ -1721,6 +1724,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                             featureType(featureType, crs);
                             commit();
                         } catch (RuntimeException ex) {
+                            // abort processing if the user closed the connection
+                            ClientStreamAbortedException.rethrowUncheked(ex);
                             if (skipMisconfigured) {
                                 reset();
                                 LOGGER.log(

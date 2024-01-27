@@ -4,7 +4,9 @@
  */
 package org.geoserver.ows;
 
+import com.google.common.base.Throwables;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 /**
  * An IOException that means a {@link
@@ -38,5 +40,21 @@ public final class ClientStreamAbortedException extends IOException {
     public ClientStreamAbortedException(Throwable cause) {
         super();
         initCause(cause);
+    }
+
+    /**
+     * @throws UncheckedIOException if the causal chain of {@code exception} contains a {@code
+     *     ClientStreamAbortedException}, with it as the cause, letting the {@link Dispatcher} abort
+     *     the current request gracefully.
+     */
+    public static void rethrowUncheked(Exception exception) {
+        Throwables.getCausalChain(exception).stream()
+                .filter(ClientStreamAbortedException.class::isInstance)
+                .map(ClientStreamAbortedException.class::cast)
+                .findFirst()
+                .ifPresent(
+                        cause -> {
+                            throw new java.io.UncheckedIOException(cause);
+                        });
     }
 }

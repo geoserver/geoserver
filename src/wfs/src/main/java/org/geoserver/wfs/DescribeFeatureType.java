@@ -16,6 +16,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
 import org.geotools.util.logging.Logging;
@@ -114,6 +115,8 @@ public class DescribeFeatureType {
                         ftInfo.getFeatureType(); // check that we can get a connection to this ftype
                         requested.add(ftInfo);
                     } catch (IOException ioe) {
+                        // abort processing if the user closed the connection
+                        ClientStreamAbortedException.rethrowUncheked(ioe);
                         if (skipMisconfigured) {
                             LOGGER.log(
                                     Level.WARNING,

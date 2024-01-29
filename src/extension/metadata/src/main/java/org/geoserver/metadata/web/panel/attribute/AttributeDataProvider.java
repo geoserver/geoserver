@@ -6,6 +6,7 @@ package org.geoserver.metadata.web.panel.attribute;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,8 +94,9 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeConfig
         if (tab == null) {
             return true;
         } else {
-            String attConfigTab = config.getTab() == null ? "" : config.getTab();
-            return attConfigTab.equals(tab);
+            List<String> attConfigTab =
+                    config.getTab() == null ? Collections.singletonList("") : config.getTab();
+            return attConfigTab.contains(tab);
         }
     }
 

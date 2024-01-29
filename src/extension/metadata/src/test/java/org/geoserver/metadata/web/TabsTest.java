@@ -71,7 +71,7 @@ public class TabsTest extends AbstractWicketMetadataTest {
                 (GeoServerTablePanel<AttributeConfiguration>)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel");
-        assertEquals(4, attPanel.getDataProvider().size());
+        assertEquals(5, attPanel.getDataProvider().size());
 
         logout();
     }
@@ -107,5 +107,44 @@ public class TabsTest extends AbstractWicketMetadataTest {
                 "new-value",
                 ((Map<String, Object>) layer.getResource().getMetadata().get("custom"))
                         .get("extra-text"));
+    }
+
+    @Test
+    public void testMultiTabField() throws IOException {
+
+        login();
+        layer = geoServer.getCatalog().getLayerByName("mylayer");
+        assertNotNull(layer);
+        ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
+        tester.startPage(page);
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs"))
+                .setSelectedTab(4);
+        tester.submitForm("publishedinfo");
+        tester.assertComponent("publishedinfo:tabs:panel:metadataPanel", TabbedPanel.class);
+        tester.assertComponent("publishedinfo:tabs:panel:metadataPanel:panel", MetadataPanel.class);
+
+        assertEquals(
+                "extra-text",
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:0:component")
+                        .getDefaultModelObject());
+
+        FormTester formTester = tester.newFormTester("publishedinfo");
+        formTester.setValue(
+                "tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:textfield",
+                "new-value");
+
+        tester.clickLink("publishedinfo:tabs:panel:metadataPanel:tabs-container:tabs:2:link");
+
+        assertEquals(
+                "extra-text",
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:0:component")
+                        .getDefaultModelObject());
+        assertEquals(
+                "new-value",
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:textfield")
+                        .getDefaultModelObject());
     }
 }

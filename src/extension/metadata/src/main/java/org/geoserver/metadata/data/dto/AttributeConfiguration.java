@@ -25,7 +25,7 @@ public interface AttributeConfiguration extends Serializable {
 
     String getLabel();
 
-    String getTab();
+    List<String> getTab();
 
     void setLabel(String label);
 

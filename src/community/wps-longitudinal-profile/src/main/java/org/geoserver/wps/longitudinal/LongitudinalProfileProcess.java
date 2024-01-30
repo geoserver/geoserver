@@ -24,6 +24,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.Feature;
@@ -50,6 +51,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
+import org.springframework.beans.factory.DisposableBean;
 import si.uom.SI;
 
 @DescribeProcess(
@@ -59,7 +61,7 @@ import si.uom.SI;
                         + "then evaluates altitude for each point and builds longitudinal profile. "
                         + "Altitude will be adjusted if adjustment layer is provided as parameter. "
                         + "Also supports reprojection to different crs")
-public class LongitudinalProfileProcess implements GeoServerProcess {
+public class LongitudinalProfileProcess implements GeoServerProcess, DisposableBean {
 
     static final Logger LOGGER = Logging.getLogger(LongitudinalProfileProcess.class);
 
@@ -68,8 +70,27 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
 
     private final GeoServer geoServer;
 
+    private ExecutorService executor;
+
     public LongitudinalProfileProcess(GeoServer geoServer) {
         this.geoServer = geoServer;
+
+        // Create threads executor
+        int nbTreads = Runtime.getRuntime().availableProcessors();
+        try {
+            nbTreads =
+                    Integer.parseInt(
+                            GeoServerExtensions.getProperty("wpsLongitudinalMaxThreadPoolSize"));
+        } catch (NumberFormatException e) {
+            LOGGER.warning(
+                    "Can't parse wpsLongitudinalMaxThreadPoolSize property, must be an integer. Will use Runtime.getRuntime().availableProcessors() instead.");
+        }
+        this.executor = Executors.newFixedThreadPool(nbTreads);
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        executor.shutdown();
     }
 
     @DescribeResult(
@@ -199,8 +220,6 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
             chunks.add(chunk);
         }
 
-        // Create threads executor
-        ExecutorService executor = Executors.newFixedThreadPool(cores);
         Stack<Future<ArrayList<ProfileVertice>>> treated =
                 new Stack<Future<ArrayList<ProfileVertice>>>();
         GridCoverage2DReader gridCoverageReader =
@@ -219,12 +238,9 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                                     gridCoverage2D)));
         }
         ArrayList<ProfileVertice> result = new ArrayList<ProfileVertice>();
-        try {
-            for (Future<ArrayList<ProfileVertice>> f : treated) {
-                result.addAll(f.get());
-            }
-        } finally {
-            executor.shutdown();
+
+        for (Future<ArrayList<ProfileVertice>> f : treated) {
+            result.addAll(f.get());
         }
 
         // Sort vertices by their number

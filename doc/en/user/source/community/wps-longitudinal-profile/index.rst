@@ -75,3 +75,7 @@ The profile object contains an array of points.
 #. representation - target CRS of resulting points
 #. processedpoints - total number of processed points
 #. executedtime - duration of process execution in milliseconds
+
+
+.. note::
+   It's possible to set wpsLongitudinalMaxThreadPoolSize (integer value) environment variable to limit the size of the extension's thread pool.

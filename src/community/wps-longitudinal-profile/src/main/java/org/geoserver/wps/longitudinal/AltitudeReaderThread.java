@@ -7,7 +7,7 @@ package org.geoserver.wps.longitudinal;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 import org.geotools.api.data.FeatureSource;
@@ -21,17 +21,17 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.Position2D;
 import org.geotools.util.logging.Logging;
 
-public class AltitudeReaderThread implements Callable<Vector<ProfileVertice>> {
+public class AltitudeReaderThread implements Callable<ArrayList<ProfileVertice>> {
     static final Logger LOGGER = Logging.getLogger(AltitudeReaderThread.class);
 
-    private Vector<ProfileVertice> pvs;
+    private ArrayList<ProfileVertice> pvs;
     GridCoverage2D gridCoverage2D;
     private int altitudeIndex;
     FeatureSource adjustmentFeatureSource;
     String altitudeName;
 
     public AltitudeReaderThread(
-            Vector<ProfileVertice> pvs,
+            ArrayList<ProfileVertice> pvs,
             int altitudeIndex,
             FeatureSource adjustmentFeatureSource,
             String altitudeName,
@@ -44,7 +44,7 @@ public class AltitudeReaderThread implements Callable<Vector<ProfileVertice>> {
     }
 
     @Override
-    public Vector<ProfileVertice> call() throws Exception {
+    public ArrayList<ProfileVertice> call() throws Exception {
         for (ProfileVertice pv : pvs) {
             LOGGER.fine("processing position:" + pv.getCoordinate());
             double altitude =

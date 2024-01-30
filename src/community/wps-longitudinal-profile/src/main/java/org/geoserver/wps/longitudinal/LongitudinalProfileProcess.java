@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
-import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -187,9 +186,9 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
         int chunkSize = total / cores;
         int overflow = total % cores;
 
-        Stack<Vector<ProfileVertice>> chunks = new Stack<Vector<ProfileVertice>>();
+        Stack<ArrayList<ProfileVertice>> chunks = new Stack<ArrayList<ProfileVertice>>();
         for (int i = 0; i < cores; i++) {
-            Vector<ProfileVertice> chunk = new Vector<ProfileVertice>();
+            ArrayList<ProfileVertice> chunk = new ArrayList<ProfileVertice>();
             for (int j = 0; j < chunkSize; j++) {
                 chunk.add(vertices.pop());
             }
@@ -202,8 +201,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
 
         // Create threads executor
         ExecutorService executor = Executors.newFixedThreadPool(cores);
-        Stack<Future<Vector<ProfileVertice>>> treated = new Stack<Future<Vector<ProfileVertice>>>();
-
+        Stack<Future<ArrayList<ProfileVertice>>> treated =
+                new Stack<Future<ArrayList<ProfileVertice>>>();
         GridCoverage2DReader gridCoverageReader =
                 (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
         GridCoverage2D gridCoverage2D = gridCoverageReader.read(null);
@@ -219,9 +218,9 @@ public class LongitudinalProfileProcess implements GeoServerProcess {
                                     altitudeName,
                                     gridCoverage2D)));
         }
-        Vector<ProfileVertice> result = new Vector<ProfileVertice>();
+        ArrayList<ProfileVertice> result = new ArrayList<ProfileVertice>();
         try {
-            for (Future<Vector<ProfileVertice>> f : treated) {
+            for (Future<ArrayList<ProfileVertice>> f : treated) {
                 result.addAll(f.get());
             }
         } finally {

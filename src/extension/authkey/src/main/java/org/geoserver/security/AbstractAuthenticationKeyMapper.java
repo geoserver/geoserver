@@ -138,16 +138,13 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
         return new AuthenticationKeyFilterConfigException(errorid, args);
     }
 
-    /**
-     * Get the belonging Auth Filter Name in order to allow the Mapper accessing the auth cache *
-     */
+    /** Get the belonging Auth Filter Name to allow the Mapper accessing the auth cache * */
     public String getAuthenticationFilterName() {
         return authenticationFilterName;
     }
 
-    /**
-     * Set the belonging Auth Filter Name in order to allow the Mapper accessing the auth cache *
-     */
+    /** Set the belonging Auth Filter Name to allow the Mapper accessing the auth cache * */
+    @Override
     public void setAuthenticationFilterName(String authenticationFilterName) {
         this.authenticationFilterName = authenticationFilterName;
     }

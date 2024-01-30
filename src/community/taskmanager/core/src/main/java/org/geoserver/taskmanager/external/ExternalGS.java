@@ -25,4 +25,6 @@ public interface ExternalGS extends Named {
     default GeoServerRESTManager getRESTManager() throws MalformedURLException {
         return new GeoServerRESTManager(new URL(getUrl()), getUsername(), getPassword());
     }
+
+    boolean isSupportsMetadata();
 }

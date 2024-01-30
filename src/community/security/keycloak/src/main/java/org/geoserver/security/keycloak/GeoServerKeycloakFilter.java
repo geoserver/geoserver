@@ -114,20 +114,25 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
         String referer = request.getHeader(HttpHeaders.REFERER);
         String refererNoParams = referer.split("\\?")[0];
 
-        // let geoserver know what to do with this
-        request.setAttribute(
-                GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR,
-                deployment
-                        .getLogoutUrl()
-                        .queryParam(OAuth2Constants.REDIRECT_URI, refererNoParams)
-                        .queryParam(
-                                ID_TOKEN_HINT,
-                                ((org.keycloak.adapters.OidcKeycloakAccount)
-                                                authentication.getDetails())
-                                        .getKeycloakSecurityContext()
-                                        .getIdTokenString())
-                        .build()
-                        .toString());
+        if (authentication
+                .getDetails()
+                .getClass()
+                .isAssignableFrom(org.keycloak.adapters.OidcKeycloakAccount.class)) {
+            // let geoserver know what to do with this
+            request.setAttribute(
+                    GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR,
+                    deployment
+                            .getLogoutUrl()
+                            .queryParam(OAuth2Constants.REDIRECT_URI, refererNoParams)
+                            .queryParam(
+                                    ID_TOKEN_HINT,
+                                    ((org.keycloak.adapters.OidcKeycloakAccount)
+                                                    authentication.getDetails())
+                                            .getKeycloakSecurityContext()
+                                            .getIdTokenString())
+                            .build()
+                            .toString());
+        }
     }
 
     /** Cache based on the "Authorization" HTTP header. */

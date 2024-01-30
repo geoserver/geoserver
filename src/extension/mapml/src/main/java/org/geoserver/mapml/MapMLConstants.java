@@ -18,6 +18,12 @@ public final class MapMLConstants {
     /** format mime type */
     public static final String MAPML_MIME_TYPE = "text/mapml";
 
+    /** HTML format mime type */
+    public static final String MAPML_HTML_MIME_TYPE = "text/html; subtype=mapml";
+
+    /** WMS format_options parameter */
+    public static final String MAPML_WMS_MIME_TYPE_OPTION = "mapml-wms-format";
+
     /** format MediaType */
     public static final MediaType MAPML_MEDIA_TYPE =
             new MediaType("text", "mapml", StandardCharsets.UTF_8);

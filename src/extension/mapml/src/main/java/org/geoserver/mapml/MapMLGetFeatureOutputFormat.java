@@ -40,6 +40,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeodeticCRS;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -295,6 +296,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         }
         return extent;
     }
+
     /**
      * Format TCRS as alternate projection links for use in a WFS response, allowing projection
      * negotiation
@@ -308,7 +310,11 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
                 (String p) -> {
                     Link l = new Link();
                     TiledCRSParams projection = TiledCRSConstants.lookupTCRS(p);
-                    l.setProjection(ProjType.fromValue(projection.getName()));
+                    try {
+                        l.setProjection(ProjType.fromValue(projection.getName()));
+                    } catch (FactoryException e) {
+                        throw new ServiceException("Invalid TCRS name");
+                    }
                     l.setRel(RelType.ALTERNATE);
                     this.query.put("srsName", projection.getCode());
                     HashMap<String, String> kvp = new HashMap<>(this.query.size());
@@ -330,6 +336,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
 
         return links;
     }
+
     /**
      * Set the base context of the URL of the request for use in output format; set by callback
      *
@@ -338,6 +345,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     public void setBase(String base) {
         this.base = base;
     }
+
     /**
      * Set the query part of the URL to use as input to ResponseUtils.buildURL
      *
@@ -346,6 +354,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     public void setQuery(Map<String, Object> query) {
         this.query = query;
     }
+
     /**
      * Set the path to be used as the path parameter for input to ResponseUtils.buildURL
      *

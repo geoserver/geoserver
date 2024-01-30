@@ -586,7 +586,7 @@ public class DGGSService {
             dateTimeList = new DateTimeList();
             dateTimeList.add(wms.getDefaultTime(ft));
         }
-        return wms.getTimeElevationToFilter(dateTimeList, null, ft);
+        return wms.getDimensionFilter(dateTimeList, null, ft, null);
     }
 
     private BigInteger getLimit(BigInteger limit) {

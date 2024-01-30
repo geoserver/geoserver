@@ -33,10 +33,12 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
+import org.geoserver.taskmanager.data.Run.Status;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.external.ExternalGS;
+import org.geoserver.taskmanager.external.impl.ExternalGSImpl;
 import org.geoserver.taskmanager.schedule.BatchJobService;
 import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
@@ -62,7 +64,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
 
     /** If your target geoserver supports the metadata module. */
-    private static final boolean SUPPORTS_METADATA = false;
+    private static final boolean SUPPORTS_METADATA = true;
 
     private static final String STYLE = "grass";
     private static final String SECOND_STYLE = "second_grass";
@@ -114,6 +116,8 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
     @Before
     public void setupBatch() throws Exception {
         Assume.assumeTrue(extGeoservers.get("mygs").getRESTManager().getReader().existGeoserver());
+
+        ((ExternalGSImpl) extGeoservers.get("mygs")).setSupportsMetadata(SUPPORTS_METADATA);
 
         config = fac.createConfiguration();
         config.setName("my_config");
@@ -265,6 +269,13 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
+
+        assertTrue(
+                dao.getBatch(batchSync.getId())
+                        .getLatestBatchRun()
+                        .getBatchRun()
+                        .getStatus()
+                        .equals(Status.COMMITTED));
 
         cov = restManager.getReader().getCoverage("wcs", "DEM", "DEM");
         assertEquals(ci.getTitle(), cov.getTitle());

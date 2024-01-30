@@ -18,7 +18,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
+import net.opengis.wfs.IdentifierGenerationOptionType;
+import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.TransactionType;
+import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.Dispatcher;
@@ -709,7 +712,7 @@ public class Transaction {
          */
         private boolean canAggregate(TransactionElement pElem) {
             if (aggrTargetElement instanceof Insert && pElem instanceof Insert) {
-                return true;
+                return idGenEquals(getIdGen((Insert) aggrTargetElement), getIdGen((Insert) pElem));
             }
             if (aggrTargetElement instanceof Delete && pElem instanceof Delete) {
                 if (aggrDeleteCount >= maxDeleteCount - 1) {
@@ -724,6 +727,22 @@ public class Transaction {
                 }
             }
             return false;
+        }
+
+        private IdentifierGenerationOptionType getIdGen(Insert insert) {
+            EObject adaptee = insert.getAdaptee();
+            if (adaptee instanceof InsertElementType) {
+                return ((InsertElementType) adaptee).getIdgen();
+            }
+            return null;
+        }
+
+        private boolean idGenEquals(
+                IdentifierGenerationOptionType i1, IdentifierGenerationOptionType i2) {
+            return i1 == i2
+                    // GenerateNew is the default value
+                    || (i1 == IdentifierGenerationOptionType.GENERATE_NEW_LITERAL && i2 == null)
+                    || (i2 == IdentifierGenerationOptionType.GENERATE_NEW_LITERAL && i1 == null);
         }
 
         /**

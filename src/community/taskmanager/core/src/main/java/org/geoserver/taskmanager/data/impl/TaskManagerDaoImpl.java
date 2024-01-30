@@ -510,6 +510,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         for (Batch batch : clone.getBatches().values()) {
             batch.setConfiguration(clone);
             ((BatchImpl) batch).setId(null);
+            ((BatchImpl) batch).setLatestBatchRun(null);
             for (BatchElement be : batch.getElements()) {
                 be.setBatch(batch);
                 be.setTask(clone.getTasks().get(be.getTask().getName()));

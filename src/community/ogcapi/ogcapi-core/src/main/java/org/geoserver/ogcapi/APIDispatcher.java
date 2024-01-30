@@ -46,8 +46,7 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
-import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
+import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.validation.Validator;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,6 +76,7 @@ import org.xml.sax.SAXException;
  */
 public class APIDispatcher extends AbstractController {
 
+    private static final String VERSION_HEADER = "API-Version";
     static final String RESPONSE_OBJECT = "ResponseObject";
 
     public static final String ROOT_PATH = "ogc";
@@ -115,28 +115,7 @@ public class APIDispatcher extends AbstractController {
         this.documentCallbacks = GeoServerExtensions.extensions(DocumentCallback.class, context);
         this.apiCallbacks = GeoServerExtensions.extensions(OpenAPICallback.class, context);
 
-        LocalWorkspaceURLPathHelper pathHelper = new LocalWorkspaceURLPathHelper();
-        this.mappingHandler =
-                new RequestMappingHandlerMapping() {
-                    @Override
-                    protected boolean isHandler(Class<?> beanType) {
-                        return hasAnnotation(beanType, APIService.class);
-                    }
-
-                    @Override
-                    public UrlPathHelper getUrlPathHelper() {
-                        return pathHelper;
-                    }
-
-                    @Override
-                    public boolean useTrailingSlashMatch() {
-                        if (geoServer != null && geoServer.getGlobal() != null) {
-                            return geoServer.getGlobal().isTrailingSlashMatch();
-                        } else {
-                            return true;
-                        }
-                    }
-                };
+        this.mappingHandler = new APIRequestHandlerMapping();
         this.mappingHandler.setApplicationContext(context);
         this.mappingHandler.afterPropertiesSet();
 
@@ -154,19 +133,13 @@ public class APIDispatcher extends AbstractController {
                         context.getBean("mvcValidator", Validator.class));
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
-        // force GeoServer version of jackson as the first choice
+        // remove the default Jackson converters, we will add them back later
         handlerAdapter
                 .getMessageConverters()
-                .removeIf(
-                        c ->
-                                c
-                                                instanceof
-                                                org.springframework.http.converter.json
-                                                        .MappingJackson2HttpMessageConverter
-                                        || c instanceof MappingJackson2CborHttpMessageConverter
-                                        || c instanceof MappingJackson2XmlHttpMessageConverter);
-        handlerAdapter.getMessageConverters().add(0, new MappingJackson2HttpMessageConverter());
+                .removeIf(AbstractJackson2HttpMessageConverter.class::isInstance);
+        // force GeoServer version of jackson as the first choice
         handlerAdapter.getMessageConverters().add(0, new MappingJackson2YAMLMessageConverter());
+        handlerAdapter.getMessageConverters().add(0, new MappingJackson2HttpMessageConverter());
         // add all registered converters before the Spring ones too
         List<HttpMessageConverter> extensionConverters =
                 GeoServerExtensions.extensions(HttpMessageConverter.class);
@@ -185,28 +158,12 @@ public class APIDispatcher extends AbstractController {
         addToListBackwards(pluginResolvers, adapterResolvers);
         handlerAdapter.setArgumentResolvers(adapterResolvers);
 
-        // default treatment of "f" parameter and headers, defaulting to JSON if nothing else has
-        // been provided
+        // replace the body processory with one that supports DispatcherCallback and has some
+        // customized content type negotiation
         List<HandlerMethodReturnValueHandler> returnValueHandlers =
                 Optional.ofNullable(handlerAdapter.getReturnValueHandlers())
                         .orElse(Collections.emptyList()).stream()
-                        .map(
-                                f -> {
-                                    if (f instanceof RequestResponseBodyMethodProcessor) {
-                                        // replace with custom version that can do HTML output based
-                                        // on method annotations and does generic OGC API content
-                                        // negotiation
-                                        return new APIBodyMethodProcessor(
-                                                handlerAdapter.getMessageConverters(),
-                                                contentNegotiationManager,
-                                                GeoServerExtensions.bean(
-                                                        FreemarkerTemplateSupport.class),
-                                                GeoServerExtensions.bean(GeoServer.class),
-                                                callbacks);
-                                    } else {
-                                        return f;
-                                    }
-                                })
+                        .map(this::replaceBodyMethodProcessor)
                         .collect(Collectors.toList());
 
         // split handling of response  in two to respect the Dispatcher Operation/Response
@@ -231,6 +188,14 @@ public class APIDispatcher extends AbstractController {
                                 mavContainer.getModel().put(RESPONSE_OBJECT, returnValue);
                             }
                         }));
+    }
+
+    private HandlerMethodReturnValueHandler replaceBodyMethodProcessor(
+            HandlerMethodReturnValueHandler f) {
+        if (f instanceof RequestResponseBodyMethodProcessor)
+            return new APIBodyMethodProcessor(
+                    handlerAdapter.getMessageConverters(), contentNegotiationManager, callbacks);
+        return f;
     }
 
     @SuppressWarnings("unchecked")
@@ -317,6 +282,13 @@ public class APIDispatcher extends AbstractController {
             // response, not just its class)
             APIRequestInfo.get().setResult(returnValue);
 
+            // Provide the AnnotatedHTMLMessageConverter with access to the method annotation,
+            // so that it can decide whether to participate to the message conversion, or not
+            AnnotatedHTMLMessageConverter.processAnnotation(handler);
+
+            // add version to the response headers
+            addServiceVersionHeader(handler, httpResponse);
+
             returnValueHandlers.handleReturnValue(
                     returnValue,
                     new ReturnValueMethodParameter(handler.getMethod(), returnValue),
@@ -334,6 +306,18 @@ public class APIDispatcher extends AbstractController {
         }
 
         return null;
+    }
+
+    private void addServiceVersionHeader(HandlerMethod handler, HttpServletResponse httpResponse) {
+        Class<?> serviceClass = handler.getBean().getClass();
+        APIService apiService = APIDispatcher.getApiServiceAnnotation(serviceClass);
+        if (apiService != null && apiService.version() != null) {
+            httpResponse.addHeader(VERSION_HEADER, apiService.version());
+        } else {
+            logger.debug(
+                    "Could not find the APIService annotation in the controller for:"
+                            + serviceClass);
+        }
     }
 
     private void dispatchService(Request dr, HandlerMethod handler) {
@@ -652,6 +636,33 @@ public class APIDispatcher extends AbstractController {
     private void applyOpenAPICallbacks(Request dr, OpenAPI api) throws IOException {
         for (OpenAPICallback callback : apiCallbacks) {
             callback.apply(dr, api);
+        }
+    }
+
+    /**
+     * Decides whether to handle a request or not, based on the {@link APIService} annotation and
+     * the trailing slash treatment
+     */
+    private class APIRequestHandlerMapping extends RequestMappingHandlerMapping {
+        private final LocalWorkspaceURLPathHelper pathHelper = new LocalWorkspaceURLPathHelper();
+
+        @Override
+        protected boolean isHandler(Class<?> beanType) {
+            return hasAnnotation(beanType, APIService.class);
+        }
+
+        @Override
+        public UrlPathHelper getUrlPathHelper() {
+            return pathHelper;
+        }
+
+        @Override
+        public boolean useTrailingSlashMatch() {
+            if (geoServer != null && geoServer.getGlobal() != null) {
+                return geoServer.getGlobal().isTrailingSlashMatch();
+            } else {
+                return true;
+            }
         }
     }
 }

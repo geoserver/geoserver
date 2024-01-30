@@ -242,7 +242,7 @@ Enabling Mappers' Auto-Synchronization
 
 The following check is available for all provides.
 
-    .. figure:: images/001_auto_sync
+    .. figure:: images/001_auto_sync.png
        :align: center
 
 If enabled, the service will automatically invoke the corresponding mapper synchronize method; the one associated to the current AuthKey provider.

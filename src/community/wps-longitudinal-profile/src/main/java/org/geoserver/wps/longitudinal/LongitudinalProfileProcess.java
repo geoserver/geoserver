@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -193,7 +192,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
 
         // Create a stack with all geometry vertices
         Coordinate[] coords = denseLine.getCoordinates();
-        Stack<ProfileVertice> vertices = new Stack<ProfileVertice>();
+        ArrayList<ProfileVertice> vertices = new ArrayList<ProfileVertice>();
         for (int i = 0; i < coords.length; i++) {
             vertices.add(
                     new ProfileVertice(
@@ -207,21 +206,21 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         int chunkSize = total / cores;
         int overflow = total % cores;
 
-        Stack<ArrayList<ProfileVertice>> chunks = new Stack<ArrayList<ProfileVertice>>();
+        ArrayList<ArrayList<ProfileVertice>> chunks = new ArrayList<ArrayList<ProfileVertice>>();
         for (int i = 0; i < cores; i++) {
             ArrayList<ProfileVertice> chunk = new ArrayList<ProfileVertice>();
             for (int j = 0; j < chunkSize; j++) {
-                chunk.add(vertices.pop());
+                chunk.add(vertices.remove(0));
             }
             if (overflow > 0) {
-                chunk.add(vertices.pop());
+                chunk.add(vertices.remove(0));
                 overflow = overflow - 1;
             }
             chunks.add(chunk);
         }
 
-        Stack<Future<ArrayList<ProfileVertice>>> treated =
-                new Stack<Future<ArrayList<ProfileVertice>>>();
+        ArrayList<Future<ArrayList<ProfileVertice>>> treated =
+                new ArrayList<Future<ArrayList<ProfileVertice>>>();
         GridCoverage2DReader gridCoverageReader =
                 (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
         GridCoverage2D gridCoverage2D = gridCoverageReader.read(null);
@@ -231,7 +230,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
             treated.add(
                     executor.submit(
                             new AltitudeReaderThread(
-                                    chunks.pop(),
+                                    chunks.remove(0),
                                     altitudeIndex,
                                     adjustmentFeatureSource,
                                     altitudeName,

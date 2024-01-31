@@ -820,7 +820,7 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testRoundTripFeatureTypJSONL() throws Exception {
+    public void testRoundTripFeatureTypeJSON() throws Exception {
         // Fetch the feature directly from the catalog
         FeatureTypeInfo before = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
 

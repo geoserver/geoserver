@@ -297,7 +297,7 @@ public class OwsUtils {
             Class<?> type = getter.getReturnType();
             Method setter = properties.setter(p, type);
 
-            // do a check for read only before calling the getter to avoid an uneccesary call
+            // do a check for read only before calling the getter to avoid an unnecessary call
             if (setter == null
                     && !(Collection.class.isAssignableFrom(type)
                             || Map.class.isAssignableFrom(type))) {

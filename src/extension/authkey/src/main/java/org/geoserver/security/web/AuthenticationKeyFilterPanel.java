@@ -15,6 +15,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -58,6 +59,8 @@ public class AuthenticationKeyFilterPanel
         add(new HelpLink("authKeyParametersHelp", this).setDialog(dialog));
 
         add(new TextField<String>("authKeyParamName"));
+
+        add(new CheckBox("allowMapperKeysAutoSync"));
 
         Map<String, String> parameters = model.getObject().getMapperParameters();
         final ParamsPanel paramsPanel =
@@ -116,7 +119,7 @@ public class AuthenticationKeyFilterPanel
                                             .getObject());
                         } catch (Exception e) {
                             error(e);
-                            LOGGER.log(Level.WARNING, "Authentication key  error ", e);
+                            LOGGER.log(Level.WARNING, "Authentication key error ", e);
                         } finally {
                             target.add(getPage().get("topFeedback"));
                         }

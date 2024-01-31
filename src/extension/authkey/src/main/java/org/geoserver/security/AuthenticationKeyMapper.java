@@ -60,4 +60,9 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
 
     /** Validates the given parameter. */
     public void validateParameter(String paramName, String value) throws FilterConfigException;
+
+    /**
+     * Set the belonging Auth Filter Name in order to allow the Mapper accessing the auth cache *
+     */
+    public void setAuthenticationFilterName(String authenticationFilterName);
 }

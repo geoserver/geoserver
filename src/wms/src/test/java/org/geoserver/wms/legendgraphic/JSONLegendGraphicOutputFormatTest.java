@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,6 +98,30 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         namespaces.put("ogc", "http://www.opengis.net/ogc");
         NamespaceContext ctx = new SimpleNamespaceContext(namespaces);
         XMLUnit.setXpathNamespaceContext(ctx);
+
+        addToppWorkspace(testData);
+    }
+
+    private void addToppWorkspace(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        testData.addWorkspace("topp", "http://www.openplans.org/topp", catalog);
+
+        String sourceToppStyles = "/data_dir/nested_layer_groups/workspaces/topp/styles/";
+        testData.addStyle(
+                catalog.getWorkspaceByName("topp"),
+                "toppsample",
+                sourceToppStyles + "toppsample.sld",
+                this.getClass(),
+                catalog);
+
+        // copy redflag.svg
+        File baseDirectory = catalog.getResourceLoader().getBaseDirectory();
+        File toppStylesDir = new File(baseDirectory, "workspaces/topp/styles");
+        catalog.getResourceLoader()
+                .copyFromClassPath(
+                        sourceToppStyles + "redflag.svg",
+                        new File(toppStylesDir, "redflag.svg"),
+                        this.getClass());
     }
 
     @Before
@@ -2005,5 +2030,22 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject point = symbolizers.getJSONObject(0).getJSONObject("Point");
         assertTrue(point.has("url"));
         assertTrue(StringUtils.startsWith(point.getString("url"), "data:image/png;base64,"));
+    }
+
+    @Test
+    public void testExternalReferenceWorkspace() throws Exception {
+        String url =
+                "wms?LAYER="
+                        + MockData.BRIDGES.getLocalPart()
+                        + "&STYLE=toppsample&FORMAT=application/json"
+                        + "&SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&WIDTH=20&HEIGHT=20";
+        JSONObject result = (JSONObject) getAsJSON(url);
+        assertNotNull(result);
+        JSONArray legend = result.getJSONArray("Legend");
+        JSONArray rules = legend.getJSONObject(0).getJSONArray("rules");
+        JSONArray symbolizers = rules.getJSONObject(0).getJSONArray("symbolizers");
+        JSONObject point = symbolizers.getJSONObject(0).getJSONObject("Point");
+        assertTrue(point.has("url"));
+        assertTrue(StringUtils.startsWith(point.getString("url"), "data:image/svg+xml;base64,"));
     }
 }

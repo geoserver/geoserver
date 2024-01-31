@@ -694,6 +694,45 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     }
 
     @Test
+    public void testAuthKeyMapperAutoSynchronize() throws Exception {
+        String authKeyUrlParam = "myAuthKey";
+        String filterName = "testAuthKeyFilterAuto1";
+
+        AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
+        config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
+        config.setName(filterName);
+        config.setAllowMapperKeysAutoSync(true);
+        config.setUserGroupServiceName("ug1");
+        config.setAuthKeyParamName(authKeyUrlParam);
+        config.setAuthKeyMapperName("propertyMapper");
+
+        getSecurityManager().saveFilter(config);
+
+        // File Property Mapper
+        File authKeyFile = new File(getSecurityManager().userGroup().dir(), "testAuthKey");
+        authKeyFile = new File(authKeyFile, "authkeys.properties");
+
+        GeoServerAuthenticationKeyProvider geoServerAuthenticationKeyProvider =
+                new GeoServerAuthenticationKeyProvider(getSecurityManager(), 2);
+        assertNotNull(geoServerAuthenticationKeyProvider.getScheduler());
+        assertFalse(geoServerAuthenticationKeyProvider.getScheduler().isTerminated());
+        assertFalse(geoServerAuthenticationKeyProvider.getScheduler().isShutdown());
+        assertEquals(2, geoServerAuthenticationKeyProvider.getAutoSyncDelaySeconds());
+
+        // Wait up to 10 seconds for the executor to be ready for the next reload.
+        Properties props = new Properties();
+        for (int i = 0; i < 400 && props.isEmpty(); i++) {
+            try {
+                Thread.sleep(25);
+                loadPropFile(authKeyFile, props);
+            } catch (InterruptedException e) {
+            }
+        }
+        assertTrue(authKeyFile.exists());
+        assertFalse(props.isEmpty());
+    }
+
+    @Test
     public void testWebServiceAuthKeyBodyResponseNoRoleMatchingRegex() throws Exception {
         WebServiceBodyResponseUserGroupServiceConfig config =
                 new WebServiceBodyResponseUserGroupServiceConfig();

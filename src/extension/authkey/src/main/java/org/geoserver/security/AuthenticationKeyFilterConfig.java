@@ -35,6 +35,8 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
     private String userGroupServiceName;
     private Map<String, String> mapperParameters;
 
+    private boolean allowMapperKeysAutoSync = false;
+
     @Override
     public boolean providesAuthenticationEntryPoint() {
         return true;
@@ -79,6 +81,16 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
      */
     public void setMapperParameters(Map<String, String> mapperParameters) {
         this.mapperParameters = mapperParameters;
+    }
+
+    /** @return true if the mapper keys auto sync is allowed */
+    public boolean isAllowMapperKeysAutoSync() {
+        return allowMapperKeysAutoSync;
+    }
+
+    /** @param allowMapperKeysAutoSync true if the mapper keys auto sync is allowed */
+    public void setAllowMapperKeysAutoSync(boolean allowMapperKeysAutoSync) {
+        this.allowMapperKeysAutoSync = allowMapperKeysAutoSync;
     }
 
     @Override

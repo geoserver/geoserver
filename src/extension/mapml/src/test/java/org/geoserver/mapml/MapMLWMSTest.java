@@ -1156,6 +1156,46 @@ public class MapMLWMSTest extends WMSTestSupport {
     }
 
     @Test
+    public void testInvalidProjectionHTML() throws Exception {
+        String path =
+                "cite/wms?LAYERS=Lakes"
+                        + "&STYLES=&FORMAT="
+                        + MapMLConstants.MAPML_HTML_MIME_TYPE
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS=EPSG:32632"
+                        + "&BBOX=-13885038,2870337,-7455049,6338174"
+                        + "&WIDTH=150"
+                        + "&HEIGHT=150"
+                        + "&format_options="
+                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":image/png";
+        org.w3c.dom.Document dom = getAsDOM(path);
+        String message = checkLegacyException(dom, "InvalidParameterValue", "crs").trim();
+        assertEquals("This projection is not supported by MapML: EPSG:32632", message);
+    }
+
+    @Test
+    public void testInvalidProjectionMapML() throws Exception {
+        String path =
+                "cite/wms?LAYERS=Lakes"
+                        + "&STYLES=&FORMAT="
+                        + MapMLConstants.MAPML_MIME_TYPE
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS=EPSG:32632"
+                        + "&BBOX=-13885038,2870337,-7455049,6338174"
+                        + "&WIDTH=150"
+                        + "&HEIGHT=150"
+                        + "&format_options="
+                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":image/png";
+        org.w3c.dom.Document dom = getAsDOM(path);
+        String message = checkLegacyException(dom, "InvalidParameterValue", "crs").trim();
+        assertEquals("This projection is not supported by MapML: EPSG:32632", message);
+    }
+
+    @Test
     public void testLargeBounds() throws Exception {
         // a layer whose bounds exceed the capabilities of the projected MapML TileCRS,
         // projection handler is needed to cut them down to size

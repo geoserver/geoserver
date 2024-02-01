@@ -59,6 +59,7 @@ import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
 import org.geoserver.mapml.xml.Select;
 import org.geoserver.mapml.xml.UnitType;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
@@ -109,9 +110,8 @@ public class MapMLDocumentBuilder {
     private final String layersCommaDelimited;
     private final String layerTitlesCommaDelimited;
     private final String stylesCommaDelimited;
-
+    private final GetMapRequest getMapRequest;
     private String defaultStyle;
-
     private String layerTitle;
     private String imageFormat;
     private String baseUrl;
@@ -154,8 +154,7 @@ public class MapMLDocumentBuilder {
         this.wms = wms;
         this.geoServer = geoServer;
         this.request = request;
-        // this.layers = mapContent.layers();
-        GetMapRequest getMapRequest = mapContent.getRequest();
+        this.getMapRequest = mapContent.getRequest();
         String rawLayersCommaDL = getMapRequest.getRawKvp().get("layers");
         this.layers = toRawLayers(rawLayersCommaDL);
         this.stylesCommaDelimited =
@@ -244,12 +243,7 @@ public class MapMLDocumentBuilder {
      * @throws ServiceException In the event of a service error.
      */
     public Mapml getMapMLDocument() throws ServiceException {
-        try {
-            initialize();
-        } catch (RuntimeException re) {
-            LOGGER.log(Level.INFO, re.getMessage());
-            return null;
-        }
+        initialize();
         prepareDocument();
         return this.mapml;
     }
@@ -359,18 +353,38 @@ public class MapMLDocumentBuilder {
         mapMLLayerMetadata.setTimeEnabled(false);
         mapMLLayerMetadata.setElevationEnabled(false);
         mapMLLayerMetadata.setTransparent(transparent.orElse(false));
-        ProjType projType = null;
-        try {
-            projType = ProjType.fromValue(proj.toUpperCase());
-        } catch (IllegalArgumentException | FactoryException iae) {
-            throw new ServiceException("Invalid TCRS name");
-        }
+        ProjType projType = parseProjType();
         mapMLLayerMetadata.setBbbox(layersToBBBox(layers, projType));
         mapMLLayerMetadata.setQueryable(layersToQueryable(layers));
         mapMLLayerMetadata.setLayerLabel(layersToLabel(layers));
         mapMLLayerMetadata.setProjType(projType);
 
         return mapMLLayerMetadata;
+    }
+
+    /**
+     * Parses the projection into a ProjType, or throws a proper service exception indicating the
+     * unsupported CRS
+     */
+    private ProjType parseProjType() {
+        try {
+            return ProjType.fromValue(proj.toUpperCase());
+        } catch (IllegalArgumentException | FactoryException iae) {
+            // figure out the parameter name (version dependent) and the actual original
+            // string value for the srs/crs parameter
+            String parameterName =
+                    Optional.ofNullable(getMapRequest.getVersion())
+                            .filter(v -> v.equals("1.3.0"))
+                            .map(v -> "crs")
+                            .orElse("srs");
+            Map<String, Object> rawKvp = Dispatcher.REQUEST.get().getRawKvp();
+            String value = (String) rawKvp.get("srs");
+            if (value == null) value = (String) rawKvp.get("crs");
+            throw new ServiceException(
+                    "This projection is not supported by MapML: " + value,
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    parameterName);
+        }
     }
 
     /**
@@ -481,7 +495,6 @@ public class MapMLDocumentBuilder {
         String layerTitle = null;
         ResourceInfo resourceInfo = null;
         boolean isTransparent = true;
-        ProjType projType = null;
         String styleName = null;
         boolean tileLayerExists = false;
         if (isLayerGroup) {
@@ -516,11 +529,7 @@ public class MapMLDocumentBuilder {
             layerName = layerInfo.getName().isEmpty() ? layer.getTitle() : layerInfo.getName();
             layerTitle = getTitle(layerInfo, layerName);
         }
-        try {
-            projType = ProjType.fromValue(proj.toUpperCase());
-        } catch (IllegalArgumentException | FactoryException iae) {
-            throw new ServiceException("Invalid TCRS name");
-        }
+        ProjType projType = parseProjType();
         styleName = style != null ? style : "";
         tileLayerExists =
                 gwc.hasTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
@@ -1473,11 +1482,7 @@ public class MapMLDocumentBuilder {
      * @return String
      */
     public String getMapMLHTMLDocument() {
-        try {
-            initialize();
-        } catch (ServiceException se) {
-            throw se;
-        }
+        initialize();
         String layerLabel = "";
         String layer = "";
         String styleName = "";

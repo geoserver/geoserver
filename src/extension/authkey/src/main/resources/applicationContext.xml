@@ -23,11 +23,12 @@
     <property name="userPropertyName" value="UUID"/>
   </bean>
   
-  <bean id="webServiceMapper" class="org.geoserver.security.WebServiceAuthenticationKeyMapper" scope="prototype">
-    
-  </bean>
+  <bean id="webServiceMapper" class="org.geoserver.security.WebServiceAuthenticationKeyMapper" scope="prototype"/>
   
-  <bean id="authenticationKeyProvider" class="org.geoserver.security.GeoServerAuthenticationKeyProvider"/>
+  <bean id="authenticationKeyProvider" class="org.geoserver.security.GeoServerAuthenticationKeyProvider">
+      <constructor-arg ref="geoServerSecurityManager"/>
+      <constructor-arg name="autoSyncDelaySeconds" value="60"/>
+  </bean>
   
   <bean id="authKeyPanelInfo" class="org.geoserver.security.web.AuthenticationKeyFilterPanelInfo">
         <property name="id" value="security.AuthenticationKeyFilter" />
@@ -63,5 +64,5 @@
     <property name="available" value="true"/>
     <property name="enabled" value="true"/>
    </bean>
-    
+
 </beans>

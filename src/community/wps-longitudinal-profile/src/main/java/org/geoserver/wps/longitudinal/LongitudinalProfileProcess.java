@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,8 +28,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
@@ -35,6 +39,8 @@ import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.JTS;
@@ -181,6 +187,28 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
             denseLine = reprojectGeometry(defaultCrs, coverageInfo.getCRS(), denseLine);
         }
 
+        //
+        Map<Geometry, Double> adjGeomValues = new HashMap<Geometry, Double>();
+        if (adjustmentFeatureSource != null) {
+            Query query;
+            Filter filter;
+            filter = CQL.toFilter("INTERSECTS(the_geom, " + geometry.toText() + ")");
+            query = new Query(adjustmentFeatureSource.getSchema().getName().getLocalPart(), filter);
+            FeatureIterator<?> featureIterator =
+                    adjustmentFeatureSource.getFeatures(query).features();
+            try {
+                while (featureIterator.hasNext()) {
+                    Feature f = featureIterator.next();
+                    Geometry g = (Geometry) f.getDefaultGeometryProperty().getValue();
+                    Double altitude = (Double) f.getProperty(altitudeName).getValue();
+                    adjGeomValues.put(g, altitude);
+                }
+            } finally {
+                featureIterator.close();
+            }
+        }
+        //
+
         List<ProfileInfo> profileInfos = new ArrayList<>();
         double positiveAltitude = 0;
         double negativeAltitude = 0;
@@ -194,9 +222,22 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         Coordinate[] coords = denseLine.getCoordinates();
         ArrayList<ProfileVertice> vertices = new ArrayList<ProfileVertice>();
         for (int i = 0; i < coords.length; i++) {
+            Double altCorrection = 0.0;
+            for (Map.Entry<Geometry, Double> entry : adjGeomValues.entrySet()) {
+                if (entry.getKey()
+                        .intersects(
+                                new Point(
+                                        new CoordinateSequence2D(coords[i].x, coords[i].y),
+                                        GEOMETRY_FACTORY))) {
+                    altCorrection = entry.getValue();
+                    break;
+                }
+            }
             vertices.add(
                     new ProfileVertice(
-                            i, new Position2D(coverageCrs, coords[i].x, coords[i].y), null));
+                            i,
+                            new Position2D(coverageCrs, coords[i].x, coords[i].y),
+                            altCorrection));
         }
 
         // Divide vertices stack in chunks to process altitude reading with threads depending of
@@ -230,11 +271,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
             treated.add(
                     executor.submit(
                             new AltitudeReaderThread(
-                                    chunks.remove(0),
-                                    altitudeIndex,
-                                    adjustmentFeatureSource,
-                                    altitudeName,
-                                    gridCoverage2D)));
+                                    chunks.remove(0), altitudeIndex, gridCoverage2D)));
         }
         ArrayList<ProfileVertice> result = new ArrayList<ProfileVertice>();
 

@@ -4,16 +4,16 @@
  */
 package org.geoserver.wps.longitudinal;
 
-import org.geotools.geometry.Position2D;
+import org.locationtech.jts.geom.Coordinate;
 
 public class ProfileVertice {
     Integer number;
-    Position2D coordinate;
+    Coordinate coordinate;
     Double altitude;
 
     public ProfileVertice() {}
 
-    public ProfileVertice(Integer number, Position2D coordinate, Double altitude) {
+    public ProfileVertice(Integer number, Coordinate coordinate, Double altitude) {
         super();
         this.number = number;
         this.coordinate = coordinate;
@@ -28,11 +28,11 @@ public class ProfileVertice {
         this.number = number;
     }
 
-    public Position2D getCoordinate() {
+    public Coordinate getCoordinate() {
         return coordinate;
     }
 
-    public void setCoordinate(Position2D coordinate) {
+    public void setCoordinate(Coordinate coordinate) {
         this.coordinate = coordinate;
     }
 

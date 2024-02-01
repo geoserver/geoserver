@@ -7,32 +7,100 @@ package org.geoserver.wps.longitudinal;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.filter.Filter;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.text.cql2.CQL;
 import org.geotools.geometry.Position2D;
 import org.geotools.util.logging.Logging;
+import org.jaitools.jts.CoordinateSequence2D;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 public class AltitudeReaderThread implements Callable<ArrayList<ProfileVertice>> {
     static final Logger LOGGER = Logging.getLogger(AltitudeReaderThread.class);
 
+    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
+
     private ArrayList<ProfileVertice> pvs;
     GridCoverage2D gridCoverage2D;
     private int altitudeIndex;
+    FeatureSource adjustmentFeatureSource;
+    String altitudeName;
 
     public AltitudeReaderThread(
-            ArrayList<ProfileVertice> pvs, int altitudeIndex, GridCoverage2D gridCoverage2D) {
+            ArrayList<ProfileVertice> pvs,
+            int altitudeIndex,
+            FeatureSource adjustmentFeatureSource,
+            String altitudeName,
+            GridCoverage2D gridCoverage2D) {
         this.pvs = pvs;
         this.gridCoverage2D = gridCoverage2D;
         this.altitudeIndex = altitudeIndex;
+        this.adjustmentFeatureSource = adjustmentFeatureSource;
+        this.altitudeName = altitudeName;
     }
 
     @Override
     public ArrayList<ProfileVertice> call() throws Exception {
+        Coordinate[] coords =
+                pvs.stream()
+                        .map(ProfileVertice::getCoordinate)
+                        .collect(Collectors.toList())
+                        .toArray(new Coordinate[pvs.size()]);
+        Geometry geometry = GEOMETRY_FACTORY.createLineString(coords);
+
+        Map<Geometry, Double> adjGeomValues = new HashMap<Geometry, Double>();
+        if (adjustmentFeatureSource != null) {
+            Query query;
+            Filter filter;
+            filter = CQL.toFilter("INTERSECTS(the_geom, " + geometry.toText() + ")");
+            query = new Query(adjustmentFeatureSource.getSchema().getName().getLocalPart(), filter);
+            FeatureIterator<?> featureIterator =
+                    adjustmentFeatureSource.getFeatures(query).features();
+            try {
+                while (featureIterator.hasNext()) {
+                    Feature f = featureIterator.next();
+                    Geometry g = (Geometry) f.getDefaultGeometryProperty().getValue();
+                    Double altitude = (Double) f.getProperty(altitudeName).getValue();
+                    adjGeomValues.put(g, altitude);
+                }
+            } finally {
+                featureIterator.close();
+            }
+        }
+
         for (ProfileVertice pv : pvs) {
             LOGGER.fine("processing position:" + pv.getCoordinate());
-            double altitude = getAltitude(gridCoverage2D, pv.getCoordinate(), altitudeIndex);
-            pv.setAltitude(altitude - pv.getAltitude());
+            Double altCorrection = 0.0;
+            for (Map.Entry<Geometry, Double> entry : adjGeomValues.entrySet()) {
+                if (entry.getKey()
+                        .intersects(
+                                new Point(
+                                        new CoordinateSequence2D(
+                                                pv.getCoordinate().x, pv.getCoordinate().y),
+                                        GEOMETRY_FACTORY))) {
+                    altCorrection = entry.getValue();
+                    break;
+                }
+            }
+
+            double altitude =
+                    getAltitude(
+                            gridCoverage2D,
+                            new Position2D(pv.getCoordinate().x, pv.getCoordinate().y),
+                            altitudeIndex);
+            pv.setAltitude(altitude - altCorrection);
         }
         return pvs;
     }

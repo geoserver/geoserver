@@ -79,3 +79,4 @@ The profile object contains an array of points.
 
 .. note::
    It's possible to set wpsLongitudinalMaxThreadPoolSize (integer value) environment variable to limit the size of the extension's thread pool.
+   It's possible to set wpsLongitudinalVerticesChunkSize (integer value) environment variable to define number of vertices processed in a chunk.

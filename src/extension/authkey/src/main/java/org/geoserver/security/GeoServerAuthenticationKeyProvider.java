@@ -159,9 +159,7 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
         private void doSync(String filter) {
             AuthenticationKeyFilterConfig config = null;
             try {
-                config =
-                        (AuthenticationKeyFilterConfig)
-                                securityManager.loadFilterConfig(filter, true);
+                config = (AuthenticationKeyFilterConfig) securityManager.loadFilterConfig(filter);
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Authentication key error ", e);
                 throw new RuntimeException(e);

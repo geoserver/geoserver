@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -1582,32 +1583,48 @@ public class MapMLDocumentBuilder {
                 .append(escapeHtml4(layerLabel))
                 .append("\" ")
                 .append("src=\"")
-                .append(request.getContextPath())
-                .append("/wms?")
-                .append("&LAYERS=")
-                .append(escapeHtml4(layer))
-                .append("&BBOX=")
-                .append(toCommaDelimitedBbox(projectedBbox))
-                .append("&HEIGHT=")
-                .append(height)
-                .append("&WIDTH=")
-                .append(width)
-                .append("&SRS=")
-                .append(escapeHtml4(proj))
-                .append("&STYLES=")
-                .append(escapeHtml4(styleName))
-                .append("&FORMAT=")
-                .append(MAPML_MIME_TYPE)
-                .append("&format_options=")
-                .append(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION)
-                .append(":")
-                .append(escapeHtml4((String) format.orElse("image/png")))
-                .append("&SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0")
+                .append(
+                        buildGetMap(
+                                layer,
+                                projectedBbox,
+                                width,
+                                height,
+                                escapeHtml4(proj),
+                                styleName,
+                                format))
                 .append("\" checked></layer->\n")
                 .append("</mapml-viewer>\n")
                 .append("</body>\n")
                 .append("</html>");
         return sb.toString();
+    }
+
+    /** Builds the GetMap backlink to get MapML */
+    private String buildGetMap(
+            String layer,
+            ReferencedEnvelope projectedBbox,
+            int height,
+            int width,
+            String proj,
+            String styleName,
+            Optional<Object> format) {
+        Map<String, String> kvp = new LinkedHashMap<>();
+        kvp.put("LAYERS", escapeHtml4(layer));
+        kvp.put("BBOX", toCommaDelimitedBbox(projectedBbox));
+        kvp.put("HEIGHT", String.valueOf(height));
+        kvp.put("WIDTH", String.valueOf(width));
+        kvp.put("SRS", escapeHtml4(proj));
+        kvp.put("STYLES", escapeHtml4(styleName));
+        kvp.put("FORMAT", MAPML_MIME_TYPE);
+        kvp.put(
+                "format_options",
+                MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":"
+                        + escapeHtml4((String) format.orElse("image/png")));
+        kvp.put("SERVICE", "WMS");
+        kvp.put("REQUEST", "GetMap");
+        kvp.put("VERSION", "1.3.0");
+        return ResponseUtils.buildURL(baseUrl, "wms", kvp, URLMangler.URLType.SERVICE);
     }
 
     /**

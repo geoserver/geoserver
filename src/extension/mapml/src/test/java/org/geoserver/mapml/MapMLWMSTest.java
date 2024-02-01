@@ -7,6 +7,8 @@ package org.geoserver.mapml;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
@@ -1132,6 +1134,28 @@ public class MapMLWMSTest extends WMSTestSupport {
     }
 
     @Test
+    public void testHTMLWorkspaceQualified() throws Exception {
+        String path =
+                "cite/wms?LAYERS=Lakes"
+                        + "&STYLES=&FORMAT="
+                        + MapMLConstants.MAPML_HTML_MIME_TYPE
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS=epsg:3857"
+                        + "&BBOX=-13885038,2870337,-7455049,6338174"
+                        + "&WIDTH=150"
+                        + "&HEIGHT=150"
+                        + "&format_options="
+                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":image/png";
+        Document doc = getAsJSoup(path);
+        Element layer = doc.select("mapml-viewer > layer-").first();
+        String layerSrc = layer.attr("src");
+        assertThat(layerSrc, startsWith("http://localhost:8080/geoserver/cite/wms?"));
+        assertThat(layerSrc, containsString("LAYERS=Lakes"));
+    }
+
+    @Test
     public void testLargeBounds() throws Exception {
         // a layer whose bounds exceed the capabilities of the projected MapML TileCRS,
         // projection handler is needed to cut them down to size
@@ -1189,11 +1213,11 @@ public class MapMLWMSTest extends WMSTestSupport {
     }
 
     @SuppressWarnings("PMD.SimplifiableTestAssertion")
-    private Document testLayersAndGroupsHTML(Object l, Locale locale) throws Exception {
+    private Document testLayersAndGroupsHTML(PublishedInfo l, Locale locale) throws Exception {
         String layerName;
         String layerLabel;
-        LayerInfo lyrInfo = getCatalog().getLayerByName(((PublishedInfo) l).getName());
-        LayerGroupInfo lyrGpInfo = getCatalog().getLayerGroupByName(((PublishedInfo) l).getName());
+        LayerInfo lyrInfo = getCatalog().getLayerByName(l.getName());
+        LayerGroupInfo lyrGpInfo = getCatalog().getLayerGroupByName(l.getName());
         if (lyrInfo != null) { // layer...
             layerName = lyrInfo.getName();
         } else {

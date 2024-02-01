@@ -30,7 +30,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class GeoServerSecurityFilterChainProxy
@@ -205,7 +204,7 @@ public class GeoServerSecurityFilterChainProxy
             securityManager.getAuthenticationCache().removeAll();
 
             proxy = new FilterChainProxy(filterChains);
-            proxy.setFirewall(new DefaultHttpFirewall());
+            proxy.setFirewall(new GeoServerHttpFirewall());
             proxy.afterPropertiesSet();
             chainsInitialized = true;
         }

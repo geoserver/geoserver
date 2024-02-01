@@ -219,6 +219,17 @@ GeoServer provides a number of facilities to control external entity resolution:
   
   This setting prevents ``ENTITY_RESOLUTION_ALLOWLIST`` from being used.
 
+.. _production_config_spring_firewall:
+
+Spring Security Firewall
+------------------------
+
+GeoServer defaults to using Spring Security's StrictHttpFirewall to help improve protection against potentially malicious
+requests. However, some users will need to disable the StrictHttpFirewall if the names of GeoServer resources (workspaces,
+layers, styles, etc.) in URL paths need to contain encoded percent, encoded period or decoded or encoded semicolon characters.
+The ``GEOSERVER_USE_STRICT_FIREWALL`` property can be set to false either via Java system property, command line argument
+(-D), environment variable or web.xml init parameter to use the more lenient DefaultHttpFirewall.
+
 Session Management
 ------------------
 

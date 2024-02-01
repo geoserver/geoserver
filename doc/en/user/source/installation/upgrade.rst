@@ -30,8 +30,18 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
-WCS ArcGRID output format removal
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Spring Security Strict HTTP Firewall (GeoServer 2.25 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.25, Spring Security's StrictHttpFirewall will be enabled by default which will provide stronger
+default protection, particularly against potential path traversal vulnerabilities.
+
+In some cases valid requests may be blocked if the names of GeoServer resources (e.g., workspaces) contain certain
+special characters and are included in URL paths. See the :ref:`production_config_spring_firewall` page for
+instructions to disable the strict firewall and revert to the DefaultHttpFirewall used by earlier versions.
+
+WCS ArcGRID output format removal (GeoServer 2.24 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ArcGRID output format for WCS has been removed in GeoServer 2.24.0.
 If you have been using this format, you will need to switch to another text based format, 

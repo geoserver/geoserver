@@ -927,6 +927,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected MockHttpServletRequest createRequest(String path, boolean createSession) {
         MockHttpServletRequest request = new GeoServerMockHttpServletRequest();
 
+        request.setMethod("GET");
         request.setScheme("http");
         request.setServerName("localhost");
         request.setServerPort(8080);

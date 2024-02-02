@@ -92,7 +92,7 @@ public class GZipFilterTest {
     }
 
     @Test
-    public void testNotGZippedMantainsContentLength() throws Exception {
+    public void testNotGZippedMaintainsContentLength() throws Exception {
         MockHttpServletRequest request =
                 new MockHttpServletRequest("GET", "http://www.geoserver.org");
         request.addHeader("accept-encoding", "gzip");

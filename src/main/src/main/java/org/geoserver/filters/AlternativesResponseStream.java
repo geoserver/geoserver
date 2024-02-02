@@ -73,6 +73,9 @@ public class AlternativesResponseStream extends ServletOutputStream {
         if (type != null && isCompressible(type)) {
             logger.log(Level.FINE, "Compressing output for mimetype: {0}", type);
             myResponse.addHeader("Content-Encoding", "gzip");
+            if (myResponse.getHeader("Content-Length") != null) {
+                myResponse.setHeader("Content-Length", null); // Un-set Content-Length for gzip
+            }
             myStream = new GZIPResponseStream(myResponse);
         } else {
             logger.log(Level.FINE, "Not compressing output for mimetype: {0}", type);

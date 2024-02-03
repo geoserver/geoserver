@@ -1855,7 +1855,8 @@ public class WMS implements ApplicationContextAware {
         DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
         getTimeFilter(times, featureTypeInfo, builder);
         getElevationFilter(elevations, featureTypeInfo, builder);
-        getCustomDimensionFilter(request.getRawKvp(), featureTypeInfo, builder);
+        if (request != null)
+            getCustomDimensionFilter(request.getRawKvp(), featureTypeInfo, builder);
         return builder.getFilter();
     }
 

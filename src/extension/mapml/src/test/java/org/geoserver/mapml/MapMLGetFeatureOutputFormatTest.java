@@ -427,6 +427,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                 "0.0000 -1.0000 1.0000 0.0000 0.0000 1.0000 -1.0000 0.0000 0.0000 -1.0000",
                 coords);
     }
+
     /**
      * Executes a request using the GET method and returns the result as an MapML document.
      *

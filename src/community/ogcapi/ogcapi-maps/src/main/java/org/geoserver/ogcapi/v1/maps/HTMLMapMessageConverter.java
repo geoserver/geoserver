@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIRequestInfo;
-import org.geoserver.ogcapi.AbstractHTMLMessageConverter;
+import org.geoserver.ogcapi.AbstractServiceHTMLMessageConverter;
 import org.geoserver.ogcapi.FreemarkerTemplateSupport;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSInfo;
@@ -32,7 +32,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HTMLMapMessageConverter extends AbstractHTMLMessageConverter<HTMLMap> {
+public class HTMLMapMessageConverter extends AbstractServiceHTMLMessageConverter<HTMLMap> {
 
     static final Logger LOGGER = Logging.getLogger(HTMLMapMessageConverter.class);
 

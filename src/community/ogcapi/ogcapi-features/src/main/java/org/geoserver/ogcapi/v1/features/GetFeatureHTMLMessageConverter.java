@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIRequestInfo;
-import org.geoserver.ogcapi.AbstractHTMLMessageConverter;
+import org.geoserver.ogcapi.AbstractServiceHTMLMessageConverter;
 import org.geoserver.ogcapi.FreemarkerTemplateSupport;
 import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wfs.WFSInfo;
@@ -31,7 +31,8 @@ import org.springframework.stereotype.Component;
 
 /** Produces a Feature response in HTML. */
 @Component
-public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter<FeaturesResponse> {
+public class GetFeatureHTMLMessageConverter
+        extends AbstractServiceHTMLMessageConverter<FeaturesResponse> {
     static final Logger LOGGER = Logging.getLogger(GetFeatureHTMLMessageConverter.class);
 
     public GetFeatureHTMLMessageConverter(

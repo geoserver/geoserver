@@ -9,9 +9,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.metadata.data.model.MetadataTemplate;
+import org.geoserver.metadata.data.service.CustomNativeMappingService;
 import org.geoserver.metadata.data.service.MetaDataBulkService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,8 @@ public class MetaDataRestService {
     @Autowired private MetadataTemplateService templateService;
 
     @Autowired private GeoServer geoServer;
+
+    @Autowired private CustomNativeMappingService customToNativeService;
 
     @DeleteMapping
     public void clearAll(
@@ -62,6 +66,21 @@ public class MetaDataRestService {
     public String nativeToCustom(@RequestParam(required = false) String indexes) {
         bulkService.nativeToCustom(convertToList(indexes));
         return "Success.";
+    }
+
+    @GetMapping("customToNative")
+    public String customToNative(
+            @RequestParam(required = true) String layerName, HttpServletResponse response)
+            throws IOException {
+        LayerInfo layer = geoServer.getCatalog().getLayerByName(layerName);
+        if (layer == null) {
+            response.sendError(404, "Invalid layer id");
+            return null;
+        } else {
+            customToNativeService.mapCustomToNative(layer);
+            geoServer.getCatalog().save(layer);
+            return "Success.";
+        }
     }
 
     @PostMapping("import")

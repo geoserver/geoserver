@@ -15,8 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.geoserver.config.GeoServer;
-import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
@@ -45,40 +43,27 @@ import org.springframework.web.servlet.mvc.method.annotation.JsonViewResponseBod
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
 /**
- * Customized {@link RequestResponseBodyMethodProcessor} that uses its own content negotiation
- * manager and can handle HTML annotated responses
+ * Customized {@link RequestResponseBodyMethodProcessor} that allows full support of {@link
+ * DispatcherCallback}, and has a customized content negotiation strategy that allows to set up the
+ * default media type by using the defaultMediaType annotation on the controller and prefer JSON
+ * producing converters in case no default has been set up.
  */
 public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
     private static final MediaType MEDIA_TYPE_APPLICATION = new MediaType("application");
-    private static final String VERSION_HEADER = "API-Version";
 
     private final ContentNegotiationManager contentNegotiationManager;
-    protected final FreemarkerTemplateSupport templateSupport;
-    protected final GeoServer geoServer;
     protected List<DispatcherCallback> callbacks;
 
     public APIBodyMethodProcessor(
             List<HttpMessageConverter<?>> converters,
-            FreemarkerTemplateSupport templateSupport,
-            GeoServer geoServer,
-            List<DispatcherCallback> callbacks) {
-        this(converters, new APIContentNegotiationManager(), templateSupport, geoServer, callbacks);
-    }
-
-    public APIBodyMethodProcessor(
-            List<HttpMessageConverter<?>> converters,
             ContentNegotiationManager contentNegotiationManager,
-            FreemarkerTemplateSupport templateSupport,
-            GeoServer geoServer,
             List<DispatcherCallback> callbacks) {
         super(
                 converters,
-                new APIContentNegotiationManager(), // this is the customized bit
+                contentNegotiationManager,
                 Collections.singletonList(new JsonViewResponseBodyAdvice()));
         this.contentNegotiationManager = contentNegotiationManager;
-        this.templateSupport = templateSupport;
-        this.geoServer = geoServer;
         this.callbacks = callbacks;
         // allow converter overrides, the Spring internal machinery picks the first one matching
         // but does not seem to be respecting the @Order and Ordered interfaces
@@ -100,60 +85,30 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             return;
         }
 
-        HTMLResponseBody htmlResponseBody = returnType.getMethodAnnotation(HTMLResponseBody.class);
-        MediaType mediaType = getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
-        HttpMessageConverter<T> converter;
-        if (htmlResponseBody != null && MediaType.TEXT_HTML.isCompatibleWith(mediaType)) {
-            // direct HTML encoding based on annotations
-            Class<?> baseClass = htmlResponseBody.baseClass();
-            if (baseClass == Object.class) {
-                baseClass = returnType.getContainingClass();
-            }
-            converter =
-                    new SimpleHTMLMessageConverter<>(
-                            value.getClass(),
-                            getServiceClass(returnType),
-                            baseClass,
-                            templateSupport,
-                            geoServer,
-                            htmlResponseBody.templateName());
-            mediaType = MediaType.TEXT_HTML;
-        } else {
-            converter = getMessageConverter(value, returnType, inputMessage, outputMessage);
-        }
+        HttpMessageConverter<T> converter =
+                getMessageConverter(value, returnType, inputMessage, outputMessage);
 
         // DispatcherCallback bridging
-        final MediaType finalMediaType = mediaType;
+        MediaType mediaType = getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
         Response response =
                 new Response(value.getClass()) {
 
                     @Override
                     public String getMimeType(Object value, Operation operation)
                             throws ServiceException {
-                        return finalMediaType.toString();
+                        return mediaType.toString();
                     }
 
                     @Override
                     @SuppressWarnings("unchecked")
                     public void write(Object value, OutputStream output, Operation operation)
                             throws IOException, ServiceException {
-                        converter.write((T) value, finalMediaType, outputMessage);
+                        converter.write((T) value, mediaType, outputMessage);
                     }
                 };
 
         Request dr = Dispatcher.REQUEST.get();
         response = fireResponseDispatchedCallback(dr, dr.getOperation(), value, response);
-
-        // add version to the response headers
-        APIService apiService =
-                APIDispatcher.getApiServiceAnnotation(returnType.getContainingClass());
-        if (apiService != null && apiService.version() != null) {
-            outputMessage.getHeaders().add(VERSION_HEADER, apiService.version());
-        } else {
-            logger.debug(
-                    "Could not find the APIService annotation in the controller for:"
-                            + returnType.getContainingClass());
-        }
 
         // write using the response provided by the callbacks
         outputMessage
@@ -163,22 +118,13 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         response.write(value, servletResponse.getOutputStream(), dr.getOperation());
     }
 
-    private Class<? extends ServiceInfo> getServiceClass(MethodParameter returnType) {
-        APIService apiService =
-                APIDispatcher.getApiServiceAnnotation(returnType.getContainingClass());
-        if (apiService != null) {
-            return apiService.serviceClass();
-        }
-        throw new RuntimeException("Could not find the APIService annotation in the controller");
-    }
-
     private List<MediaType> getAcceptableMediaTypes(HttpServletRequest request)
             throws HttpMediaTypeNotAcceptableException {
 
         return contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(request));
     }
 
-    public <T> MediaType getMediaTypeToUse(
+    private <T> MediaType getMediaTypeToUse(
             @Nullable T value,
             MethodParameter returnType,
             ServletServerHttpRequest inputMessage,

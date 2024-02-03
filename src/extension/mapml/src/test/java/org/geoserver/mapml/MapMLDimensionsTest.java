@@ -81,7 +81,20 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         assertTrue(elevationInfo.isEnabled());
 
         // get the mapml doc for the layer
-        String path = "mapml/" + getLayerId(V_TIME_ELEVATION) + "/osmtile";
+        String path =
+                "wms?LAYERS="
+                        + getLayerId(V_TIME_ELEVATION)
+                        + "&STYLES=&FORMAT="
+                        + MapMLConstants.MAPML_MIME_TYPE
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS=EPSG:3857"
+                        + "&BBOX=0,0,1,1"
+                        + "&WIDTH=150"
+                        + "&HEIGHT=150"
+                        + "&format_options="
+                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":image/png";
         org.w3c.dom.Document doc = getMapML(path);
         // assure us it's actually working as a document
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
@@ -138,7 +151,20 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         assertTrue(timeInfo.isEnabled());
 
         // get the mapml doc for the layer
-        String path = "mapml/" + getLayerId(V_TIME_ELEVATION) + "/osmtile";
+        String path =
+                "wms?LAYERS="
+                        + getLayerId(V_TIME_ELEVATION)
+                        + "&STYLES=&FORMAT="
+                        + MapMLConstants.MAPML_MIME_TYPE
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS=EPSG:3857"
+                        + "&BBOX=0,0,1,1"
+                        + "&WIDTH=150"
+                        + "&HEIGHT=150"
+                        + "&format_options="
+                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":image/png";
         org.w3c.dom.Document doc = getMapML(path);
         // assure us it's actually working as a document
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
@@ -170,6 +196,7 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo(
                 "4", "count(//html:map-select[@name='time'][@id='time']/html:map-option)", doc);
     }
+
     /**
      * Executes a request using the GET method and returns the result as an MapML document.
      *
@@ -186,6 +213,7 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         String resp = dispatch(request, "UTF-8").getContentAsString();
         return dom(new ByteArrayInputStream(resp.getBytes()), true);
     }
+
     /**
      * Executes a request using the GET method and returns the result as an MapML document.
      *

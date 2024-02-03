@@ -110,8 +110,8 @@ that can be used are:
      - json response where the username is contained in a property named **user**
    * - ``^.*?<username>(.*?)</username>.*$``
      - xml response where the username is contained in a tag named **username**
- 	 
-Synchronizing users with the user/group service is not supported by this mapper.
+
+Synchronizing users with the user/group service means clearing the current Security context cache. The keys cached in memory will be removed and re-created at the next call.
 
 AuthKEY WebService Body Response UserGroup Service
 **************************************************
@@ -236,6 +236,24 @@ After configuring the filter it is necessary to put this filter on the authentic
    The administrator GUI for this filter has button **Synchronize**. Clicking on this button 
    saves the current configuration and triggers a synchronize. If users are added/removed from 
    the backing user/group service, the synchronize logic should be triggered.
+
+Enabling Mappers' Auto-Synchronization
+--------------------------------------
+
+The following check is available for all provides.
+
+    .. figure:: images/001_auto_sync.png
+       :align: center
+
+If enabled, the service will automatically invoke the corresponding mapper synchronize method; the one associated to the current AuthKey provider.
+
+By default the synchronization happens every 60 seconds. In the case an administrator needs to change the auto-sync frequency, he will need to:
+
+1. Edit the file `applicationContext.xml` within the `gs-authkey` jar file
+
+2. Edit the property `autoSyncDelaySeconds` of the `authenticationKeyProvider` bean
+
+3. Restart GeoServer
 
 Provider pluggability
 ---------------------

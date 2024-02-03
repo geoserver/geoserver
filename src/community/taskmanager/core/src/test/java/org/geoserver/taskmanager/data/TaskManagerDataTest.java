@@ -6,6 +6,7 @@ package org.geoserver.taskmanager.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -126,6 +127,27 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
         task = config2.getTasks().get("task");
         assertEquals(1, task.getBatchElements().size());
         assertFalse(config2.getBatches().get("my_batch").isEnabled());
+
+        dao.delete(config2);
+
+        BatchRun br = fac.createBatchRun();
+        br.setBatch(batch);
+        Run run = fac.createRun();
+        run.setBatchRun(br);
+        run.setStart(new Date(3000));
+        run.setEnd(new Date(4000));
+        run.setStatus(Status.COMMITTED);
+        br.getRuns().add(run);
+        dao.save(br);
+        batch = dao.initHistory(dao.getBatch(batch.getId()));
+        assertEquals(1, batch.getBatchRuns().size());
+
+        config2 = dao.copyConfiguration("my_config");
+        config2.setName("my_config2");
+        config2 = dao.save(config2);
+        Batch batch2 = config2.getBatches().get("my_batch");
+        assertEquals(0, batch2.getBatchRuns().size());
+        assertNull(batch2.getLatestBatchRun());
 
         dao.delete(config2);
     }

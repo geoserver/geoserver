@@ -25,6 +25,11 @@
       <artifactId>json-path</artifactId>
     </dependency>
     <dependency>
+      <!-- this is here to override the json-smart -runtime- scope used by json-path -->
+      <groupId>net.minidev</groupId>
+      <artifactId>json-smart</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
     </dependency>

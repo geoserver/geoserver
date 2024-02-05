@@ -6,8 +6,8 @@ package org.geoserver.wps.longitudinal;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
@@ -27,19 +27,19 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
-public class AltitudeReaderThread implements Callable<ArrayList<ProfileVertice>> {
+public class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
     static final Logger LOGGER = Logging.getLogger(AltitudeReaderThread.class);
 
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
-    private ArrayList<ProfileVertice> pvs;
+    private List<ProfileVertice> pvs;
     GridCoverage2D gridCoverage2D;
     private int altitudeIndex;
     FeatureSource adjustmentFeatureSource;
     String altitudeName;
 
     public AltitudeReaderThread(
-            ArrayList<ProfileVertice> pvs,
+            List<ProfileVertice> pvs,
             int altitudeIndex,
             FeatureSource adjustmentFeatureSource,
             String altitudeName,
@@ -52,7 +52,7 @@ public class AltitudeReaderThread implements Callable<ArrayList<ProfileVertice>>
     }
 
     @Override
-    public ArrayList<ProfileVertice> call() throws Exception {
+    public List<ProfileVertice> call() throws Exception {
         Coordinate[] coords =
                 pvs.stream()
                         .map(ProfileVertice::getCoordinate)
@@ -60,23 +60,20 @@ public class AltitudeReaderThread implements Callable<ArrayList<ProfileVertice>>
                         .toArray(new Coordinate[pvs.size()]);
         Geometry geometry = GEOMETRY_FACTORY.createLineString(coords);
 
-        Map<Geometry, Double> adjGeomValues = new HashMap<Geometry, Double>();
+        Map<Geometry, Double> adjGeomValues = new HashMap<>();
         if (adjustmentFeatureSource != null) {
             Query query;
             Filter filter;
             filter = CQL.toFilter("INTERSECTS(the_geom, " + geometry.toText() + ")");
             query = new Query(adjustmentFeatureSource.getSchema().getName().getLocalPart(), filter);
-            FeatureIterator<?> featureIterator =
-                    adjustmentFeatureSource.getFeatures(query).features();
-            try {
+            try (FeatureIterator<?> featureIterator =
+                    adjustmentFeatureSource.getFeatures(query).features()) {
                 while (featureIterator.hasNext()) {
                     Feature f = featureIterator.next();
                     Geometry g = (Geometry) f.getDefaultGeometryProperty().getValue();
                     Double altitude = (Double) f.getProperty(altitudeName).getValue();
                     adjGeomValues.put(g, altitude);
                 }
-            } finally {
-                featureIterator.close();
             }
         }
 

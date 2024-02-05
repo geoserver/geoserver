@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.measure.Unit;
 import javax.measure.UnitConverter;
 import javax.measure.quantity.Length;
@@ -191,10 +193,10 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
 
         // Create an array with all geometry vertices
         Coordinate[] coords = denseLine.getCoordinates();
-        ArrayList<ProfileVertice> vertices = new ArrayList<ProfileVertice>();
-        for (int i = 0; i < coords.length; i++) {
-            vertices.add(new ProfileVertice(i, coords[i], null));
-        }
+        List<ProfileVertice> vertices =
+                IntStream.range(0, coords.length)
+                        .mapToObj(i -> new ProfileVertice(i, coords[i], null))
+                        .collect(Collectors.toList());
 
         // Divide vertices array in chunks
         int chunkSize = 1000;
@@ -206,16 +208,15 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
             LOGGER.warning(
                     "Can't parse wpsLongitudinalVerticesChunkSize property, must be an integer. Will use 1000 instead.");
         }
-        ArrayList<ArrayList<ProfileVertice>> chunks = divide(vertices, chunkSize);
+        List<List<ProfileVertice>> chunks = divide(vertices, chunkSize);
 
-        ArrayList<Future<ArrayList<ProfileVertice>>> treated =
-                new ArrayList<Future<ArrayList<ProfileVertice>>>();
+        List<Future<List<ProfileVertice>>> treated = new ArrayList<>();
         GridCoverage2DReader gridCoverageReader =
                 (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
         GridCoverage2D gridCoverage2D = gridCoverageReader.read(null);
 
         // Process parallel altitude reading
-        for (ArrayList<ProfileVertice> chunk : chunks) {
+        for (List<ProfileVertice> chunk : chunks) {
             treated.add(
                     executor.submit(
                             new AltitudeReaderThread(
@@ -226,8 +227,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
                                     gridCoverage2D)));
         }
 
-        ArrayList<ProfileVertice> result = new ArrayList<ProfileVertice>();
-        for (Future<ArrayList<ProfileVertice>> f : treated) {
+        List<ProfileVertice> result = new ArrayList<>();
+        for (Future<List<ProfileVertice>> f : treated) {
             result.addAll(f.get());
         }
 
@@ -405,9 +406,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         }
     }
 
-    private static ArrayList<ArrayList<ProfileVertice>> divide(
-            ArrayList<ProfileVertice> list, final int L) {
-        ArrayList<ArrayList<ProfileVertice>> parts = new ArrayList<ArrayList<ProfileVertice>>();
+    private static List<List<ProfileVertice>> divide(List<ProfileVertice> list, final int L) {
+        List<List<ProfileVertice>> parts = new ArrayList<>();
         final int N = list.size();
         for (int i = 0; i < N; i += L) {
             parts.add(new ArrayList<ProfileVertice>(list.subList(i, Math.min(N, i + L))));

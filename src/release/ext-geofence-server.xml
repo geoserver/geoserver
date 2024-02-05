@@ -27,8 +27,6 @@
         <include>jackson*</include>
         <include>javassist*</include>
         <include>jta*</include>
-        <include>log4j-api*</include>
-        <include>log4j-slf4j-impl*</include>
         <include>search*</include>
         <include>spring-orm*</include>
         <include>spring-oxm*</include>

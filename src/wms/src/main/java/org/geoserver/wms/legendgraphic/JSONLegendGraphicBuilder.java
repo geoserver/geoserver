@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,6 +19,7 @@ import javax.measure.quantity.Length;
 import javax.swing.Icon;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -292,6 +294,12 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 applicableRules = LegendUtils.getApplicableRules(ftStyles, scaleDenominator);
             }
 
+            if (countProcessor != null
+                    && request.getKvp() != null
+                    && request.getKvp().containsKey("bbox")) {
+                applicableRules = updateRuleTitles(countProcessor, legend, applicableRules);
+            }
+
             ArrayList<JSONObject> jRules = new ArrayList<>();
             if (legend instanceof CascadedLegendRequest) {
                 CascadedLegendRequest cascadedLegend = (CascadedLegendRequest) legend;
@@ -385,6 +393,39 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         /* }*/
 
         return response;
+    }
+
+    protected Rule[] updateRuleTitles(
+            FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
+        // skip rules with RasterSymbolizers, as they are not counted
+        Rule[] rasterRules = rasterRules(applicableRules);
+        Rule[] nonRasterRules = nonRasterRules(applicableRules);
+        Rule[] filteredRules = processor.preProcessRules(legend, nonRasterRules);
+        return ArrayUtils.addAll(filteredRules, rasterRules);
+    }
+
+    private Rule[] rasterRules(Rule[] applicableRules) {
+        return Arrays.stream(applicableRules)
+                .filter(r -> allRaster(r.getSymbolizers()))
+                .toArray(Rule[]::new);
+    }
+
+    private Rule[] nonRasterRules(Rule[] applicableRules) {
+        return Arrays.stream(applicableRules)
+                .filter(r -> !allRaster(r.getSymbolizers()))
+                .toArray(Rule[]::new);
+    }
+
+    private <T> boolean allRaster(T[] symbolizers) {
+        if (ArrayUtils.isEmpty(symbolizers)) {
+            return false;
+        }
+        for (T symbolizer : symbolizers) {
+            if (!(symbolizer instanceof RasterSymbolizer)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private JSONObject getLayerTitle(JSONObject in, LegendRequest legend) {

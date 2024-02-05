@@ -45,7 +45,7 @@ public class ConditionTest extends AbstractWicketMetadataTest {
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items");
         tester.submitForm("publishedinfo");
-        assertEquals(13, c.size());
+        assertEquals(14, c.size());
         logout();
     }
 }

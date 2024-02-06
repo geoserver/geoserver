@@ -28,6 +28,8 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.GeoServerApplication;
@@ -59,62 +61,78 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
 
         MapModel<String> licenseTitleModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        "mapml.licenseTitle");
-        TextField<String> licenseTitle = new TextField<>("licenseTitle", licenseTitleModel);
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.LICENSE_TITLE);
+        TextField<String> licenseTitle =
+                new TextField<>(MapMLConstants.LICENSE_TITLE2, licenseTitleModel);
         add(licenseTitle);
 
         MapModel<String> licenseLinkModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        "mapml.licenseLink");
-        TextField<String> licenseLink = new TextField<>("licenseLink", licenseLinkModel);
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.LICENSE_LINK);
+        TextField<String> licenseLink = new TextField<>(MapMLConstants.LICENSE, licenseLinkModel);
         add(licenseLink);
 
         // add the checkbox to select tiled or not
         MapModel<Boolean> useTilesModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        "mapml.useTiles");
-        CheckBox useTiles = new CheckBox("useTiles", useTilesModel);
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.MAPML_USE_TILES);
+        CheckBox useTiles = new CheckBox(MapMLConstants.USE_TILES, useTilesModel);
         add(useTiles);
+
+        // add the checkbox to select features or not
+        MapModel<Boolean> useFeaturesModel =
+                new MapModel<>(
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.MAPML_USE_FEATURES);
+        CheckBox useFeatures = new CheckBox(MapMLConstants.USE_FEATURES, useFeaturesModel);
+        if (model.getObject() != null && model.getObject() instanceof PublishedInfo) {
+            if (((PublishedInfo) model.getObject()).getType() == PublishedType.RASTER) {
+                useFeatures.setEnabled(false);
+            }
+        }
+        add(useFeatures);
 
         // add the checkbox to enable sharding or not
         MapModel<Boolean> enableShardingModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        "mapml.enableSharding");
-        CheckBox enableSharding = new CheckBox("enableSharding", enableShardingModel);
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.MAPML_PREFIX + MapMLConstants.ENABLE_SHARDING);
+        CheckBox enableSharding = new CheckBox(MapMLConstants.ENABLE_SHARDING, enableShardingModel);
         add(enableSharding);
 
         MapModel<String> shardListModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        "mapml.shardList");
-        TextField<String> shardList = new TextField<>("shardList", shardListModel);
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.MAPML_PREFIX + MapMLConstants.SHARD_LIST);
+        TextField<String> shardList = new TextField<>(MapMLConstants.SHARD_LIST, shardListModel);
         add(shardList);
 
         MapModel<String> shardServerPatternModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        "mapml.shardServerPattern");
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.MAPML_PREFIX + MapMLConstants.SHARD_SERVER_PATTERN);
         TextField<String> shardServerPattern =
-                new TextField<>("shardServerPattern", shardServerPatternModel);
+                new TextField<>(MapMLConstants.SHARD_SERVER_PATTERN, shardServerPatternModel);
         add(shardServerPattern);
 
         MapModel<String> dimensionModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        "mapml.dimension");
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.MAPML_DIMENSION);
         DropDownChoice<String> dimension =
                 new DropDownChoice<>(
-                        "dimension", dimensionModel, getEnabledDimensionNames(model.getObject()));
+                        MapMLConstants.DIMENSION,
+                        dimensionModel,
+                        getEnabledDimensionNames(model.getObject()));
         dimension.setNullValid(true);
         add(dimension);
 
         featureCaptionAttributes =
                 new ListMultipleChoice<>(
-                        "featurecaptionattributes",
+                        MapMLConstants.FEATURE_CAPTION_ATTRIBUTES,
                         new Model<ArrayList<String>>(),
                         getAttributeNames(model.getObject()));
         featureCaptionAttributes.setOutputMarkupId(false);
@@ -122,12 +140,13 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
 
         MapModel<String> featureCaptionModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        "mapml.featureCaption");
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.FEATURE_CAPTION);
         TextArea<String> featureCaptionTemplate =
-                new TextArea<>("featureCaptionTemplate", featureCaptionModel);
+                new TextArea<>(MapMLConstants.FEATURE_CAPTION_TEMPLATE, featureCaptionModel);
         add(featureCaptionTemplate);
     }
+
     /**
      * @param layer a LayerInfo for the layer
      * @return a list of strings of dimension names from the layer info
@@ -156,6 +175,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         }
         return dimensionNames;
     }
+
     /**
      * Process the layer and return all the attribute names or band/dimension names
      *
@@ -190,9 +210,10 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
             }
             return attributeNames;
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Grabbing the attribute list failed", e);
+            LOGGER.log(Level.SEVERE, MapMLConstants.LIST_FAILED, e);
             String error =
-                    new ParamResourceModel("attributeListingFailed", this, e.getMessage())
+                    new ParamResourceModel(
+                                    MapMLConstants.ATTRIBUTE_LIST_FAILED, this, e.getMessage())
                             .getString();
             this.getPage().error(error);
             return Collections.emptyList();

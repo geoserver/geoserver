@@ -67,6 +67,14 @@ Using tiles to access the layer can increase the performance of your web map. Th
 **Use Tiles**
   If the "Use Tiles" checkbox is checked, by default the output MapML will define a tile-based reference to the WMS server. Otherwise, an image-based reference will be used.  If one or more of the MapML-defined GridSets is referenced by the layer or layer group in its "Tile Caching" profile, GeoServer will generate tile references instead of generating WMS GetMap URLs in the MapML document body.
 
+Vector Settings
+^^^^^^^^^^^^^^^
+
+MapML supports the serving of vector feature representations of the data.  This results in a smoother user navigation experience, smaller bandwidth requirements, and more options for dynamic styling on the client-side.
+
+**Use Features**
+  If the "Use Features" checkbox is checked, by default the output MapML will define a feature-based reference to the WMS server. Otherwise, an image-based reference will be used.  Note that this option is only available for vector source data.  For multi-layer requests, all of the layers must have the feature option enabled or image-based links will be returned instead.
+
 Tile Caching
 ^^^^^^^^^^^^
 

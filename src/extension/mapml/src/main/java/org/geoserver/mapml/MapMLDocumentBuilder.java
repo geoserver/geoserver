@@ -6,7 +6,10 @@ package org.geoserver.mapml;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.geoserver.mapml.MapMLConstants.DATE_FORMAT;
+import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FORMAT_OPTIONS;
 import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -32,6 +35,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
@@ -109,8 +113,9 @@ public class MapMLDocumentBuilder {
     private final GWC gwc = GWC.get();
     private final String layersCommaDelimited;
     private final String layerTitlesCommaDelimited;
-    private final String stylesCommaDelimited;
     private final GetMapRequest getMapRequest;
+    private final String stylesCommaDelimited;
+
     private String defaultStyle;
     private String layerTitle;
     private String imageFormat;
@@ -129,6 +134,7 @@ public class MapMLDocumentBuilder {
 
     private Input zoomInput;
 
+    private boolean useFeaturesAllLayers = true;
     private List<MapMLLayerMetadata> mapMLLayerMetadataList = new ArrayList<>();
 
     private Mapml mapml;
@@ -279,6 +285,7 @@ public class MapMLDocumentBuilder {
             MapMLLayerMetadata mapMLLayerMetadata = layersToOneMapMLLayerMetadata(layers);
             mapMLLayerMetadataList.add(mapMLLayerMetadata);
         }
+        useFeaturesAllLayers = allLayersUsingFeatures(layers);
         // populate Map-wide variables using the first layer
         if (!mapMLLayerMetadataList.isEmpty()) {
             defaultStyle =
@@ -360,6 +367,24 @@ public class MapMLDocumentBuilder {
         mapMLLayerMetadata.setProjType(projType);
 
         return mapMLLayerMetadata;
+    }
+
+    /**
+     * Check if all layers in the request use features
+     *
+     * @param layers List of RawLayer objects
+     * @return boolean
+     */
+    private boolean allLayersUsingFeatures(List<RawLayer> layers) {
+        for (RawLayer layer : layers) {
+            Boolean useFeatures =
+                    layer.getPublishedInfo().getMetadata().get(MAPML_USE_FEATURES, Boolean.class);
+            Boolean isVector = (PublishedType.VECTOR == layer.getPublishedInfo().getType());
+            if (useFeatures == null || isVector == null || !useFeatures || !isVector) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -498,7 +523,6 @@ public class MapMLDocumentBuilder {
         String styleName = null;
         boolean tileLayerExists = false;
         if (isLayerGroup) {
-            // layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer.getTitle());
             layerGroupInfo = (LayerGroupInfo) layer.getPublishedInfo();
             if (layerGroupInfo == null) {
                 throw new ServiceException("Invalid layer or layer group name");
@@ -536,7 +560,8 @@ public class MapMLDocumentBuilder {
                         && gwc.getTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
                                         .getGridSubset(projType.value())
                                 != null;
-        boolean useTiles = Boolean.TRUE.equals(layerMeta.get("mapml.useTiles", Boolean.class));
+        boolean useTiles = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_TILES, Boolean.class));
+        boolean useFeatures = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_FEATURES, Boolean.class));
 
         return new MapMLLayerMetadata(
                 layerInfo,
@@ -552,7 +577,8 @@ public class MapMLDocumentBuilder {
                 projType,
                 styleName,
                 tileLayerExists,
-                useTiles);
+                useTiles,
+                useFeatures);
     }
 
     /**
@@ -999,7 +1025,8 @@ public class MapMLDocumentBuilder {
         }
 
         // query inputs
-        if (mapMLLayerMetadata.isQueryable()) {
+        if (mapMLLayerMetadata.isQueryable()
+                && !useFeaturesAllLayers) { // No query links for feature representations
             if (mapMLLayerMetadata.isUseTiles() && mapMLLayerMetadata.isTileLayerExists()) {
                 generateWMTSQueryClientLinks(mapMLLayerMetadata);
             } else {
@@ -1322,7 +1349,11 @@ public class MapMLDocumentBuilder {
 
         // image link
         Link imageLink = new Link();
-        imageLink.setRel(RelType.IMAGE);
+        if (useFeaturesAllLayers) {
+            imageLink.setRel(RelType.FEATURES);
+        } else {
+            imageLink.setRel(RelType.IMAGE);
+        }
         String path = "wms";
         HashMap<String, String> params = new HashMap<>();
         params.put("version", "1.3.0");
@@ -1338,7 +1369,12 @@ public class MapMLDocumentBuilder {
             params.put("elevation", "{elevation}");
         }
         params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
-        params.put("format", imageFormat);
+        if (useFeaturesAllLayers) {
+            params.put("format", MAPML_MIME_TYPE);
+            params.put("format_options", MAPML_FEATURE_FORMAT_OPTIONS);
+        } else {
+            params.put("format", imageFormat);
+        }
         params.put("transparent", Boolean.toString(mapMLLayerMetadata.isTransparent()));
         params.put("language", this.request.getLocale().getLanguage());
         params.put("width", "{w}");
@@ -1746,6 +1782,7 @@ public class MapMLDocumentBuilder {
 
     /** MapML layer metadata */
     static class MapMLLayerMetadata {
+        private boolean useFeatures;
         private LayerInfo layerInfo;
         private ReferencedEnvelope bbox;
         private boolean isLayerGroup;
@@ -1768,6 +1805,24 @@ public class MapMLDocumentBuilder {
         private ReferencedEnvelope bbbox;
 
         private String layerLabel;
+
+        /**
+         * get if the layer uses features
+         *
+         * @return
+         */
+        public boolean isUseFeatures() {
+            return useFeatures;
+        }
+
+        /**
+         * set if the layer uses features
+         *
+         * @param useFeatures boolean
+         */
+        public void setUseFeatures(boolean useFeatures) {
+            this.useFeatures = useFeatures;
+        }
 
         /**
          * Constructor
@@ -1801,7 +1856,8 @@ public class MapMLDocumentBuilder {
                 ProjType projType,
                 String styleName,
                 boolean tileLayerExists,
-                boolean useTiles) {
+                boolean useTiles,
+                boolean useFeatures) {
             this.layerInfo = layerInfo;
             this.bbox = bbox;
             this.isLayerGroup = isLayerGroup;
@@ -1816,6 +1872,7 @@ public class MapMLDocumentBuilder {
             this.isTransparent = isTransparent;
             this.tileLayerExists = tileLayerExists;
             this.useTiles = useTiles;
+            this.useFeatures = useFeatures;
         }
 
         /** Constructor */

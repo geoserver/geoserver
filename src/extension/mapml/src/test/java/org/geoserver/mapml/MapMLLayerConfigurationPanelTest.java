@@ -58,10 +58,13 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertComponent("form", Form.class);
         // check that the attributes dropdown is available
         tester.assertComponent("form:panel:featurecaptionattributes", ListMultipleChoice.class);
+        // check that the "useFeatures" checkbox is enabled as expected with vector data
+        tester.assertEnabled("form:panel:useFeatures");
         FormTester ft = tester.newFormTester("form");
         tester.assertModelValue("form:panel:licenseTitle", null);
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
+        tester.assertModelValue("form:panel:useFeatures", null);
         tester.assertModelValue("form:panel:enableSharding", null);
         tester.assertModelValue("form:panel:shardList", null);
         tester.assertModelValue("form:panel:shardServerPattern", null);
@@ -72,6 +75,8 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         ft.setValue("panel:licenseTitle", "A Fake Title");
         ft.setValue("panel:licenseLink", "https://example.org/mapml");
         ft.setValue("panel:useTiles", true);
+        ft.setValue("panel:useFeatures", true);
+        ft.setValue("panel:enableSharding", true);
         ft.setValue("panel:enableSharding", true);
         ft.setValue("panel:shardList", "a,b,c");
         ft.setValue("panel:shardServerPattern", "{s}");
@@ -91,6 +96,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:licenseTitle", "A Fake Title");
         tester.assertModelValue("form:panel:licenseLink", "https://example.org/mapml");
         tester.assertModelValue("form:panel:useTiles", true);
+        tester.assertModelValue("form:panel:useFeatures", true);
         tester.assertModelValue("form:panel:enableSharding", true);
         tester.assertModelValue("form:panel:shardList", "a,b,c");
         tester.assertModelValue("form:panel:shardServerPattern", "{s}");
@@ -112,11 +118,14 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertComponent("form", Form.class);
         // check that the "attributes" (works with raster dimensions) dropdown is available
         tester.assertComponent("form:panel:featurecaptionattributes", ListMultipleChoice.class);
+        // check that the "useFeatures" checkbox is disabled as expected with raster data
+        tester.assertDisabled("form:panel:useFeatures");
         FormTester ft = tester.newFormTester("form");
         tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:licenseTitle", null);
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
+        tester.assertModelValue("form:panel:useFeatures", null);
         tester.assertModelValue("form:panel:enableSharding", null);
         tester.assertModelValue("form:panel:shardList", null);
         tester.assertModelValue("form:panel:shardServerPattern", null);

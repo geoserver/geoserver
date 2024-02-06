@@ -29,6 +29,7 @@ Current PSC
 * Jukka Rahkonen
 * Kevin Smith
 * Nuno Oliveira
+* Peter Smythe
 * Simone Giannecchini
 * Torben Barsballe
 

@@ -20,6 +20,8 @@ import org.geotools.util.logging.Logging;
 /** @author prushforth */
 public class TiledCRS {
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.mapml.tcrs");
+    public static final int SCREEN_RESOLUTION = 96;
+    public static final double METERS_PER_INCH = 0.0254;
 
     private final Transformation transformation;
     private final Projection projection;
@@ -118,6 +120,7 @@ public class TiledCRS {
                 new Bounds(pb.min.divideBy(TILESIZE).floor(), pb.max.divideBy(TILESIZE).floor());
         return tb;
     }
+
     /**
      * Transforms the point (in projected units) into a bounds centred on that point, in projected
      * units, matching the size of the display bounds
@@ -143,6 +146,7 @@ public class TiledCRS {
     public int getMaxZoom() {
         return Collections.max(tileBounds.keySet());
     }
+
     /**
      * Returns a zoom at which bounds when rendered at the specified display width and height will
      * fit, when centered on bounds' centre point.
@@ -192,6 +196,7 @@ public class TiledCRS {
         }
         return zoom;
     }
+
     /**
      * For testing purposes need to be able to set the pagesize.
      *
@@ -241,6 +246,7 @@ public class TiledCRS {
         Point untransformedPoint = this.transformation.untransform(p, this.scales[zoom]);
         return this.projection.unproject(untransformedPoint);
     }
+
     /**
      * @param p * @return Point transformed from PCRS units to pixel units at zoom
      * @param zoom
@@ -257,6 +263,7 @@ public class TiledCRS {
     public Point untransform(Point p, int zoom) {
         return this.transformation.untransform(p, this.scales[zoom]);
     }
+
     /**
      * @param bounds the LatLngBounds that should be transformed to projected, scaled bounds
      * @param zoom the zoom scale at which to transform the bounds
@@ -270,6 +277,7 @@ public class TiledCRS {
         LatLng ne = bounds.northEast;
         return new Bounds(latLngToPoint(sw, zoom), latLngToPoint(ne, zoom));
     }
+
     /**
      * @param bounds - projected, but not scaled bounds
      * @param zoom - the scale at which to transform the bounds
@@ -280,6 +288,7 @@ public class TiledCRS {
         Point max = this.transformation.transform(bounds.max, this.scales[zoom]).round();
         return new Bounds(min, max);
     }
+
     // convenience methods
 
     /**
@@ -301,6 +310,7 @@ public class TiledCRS {
     public LatLng unproject(Point point) throws MismatchedDimensionException, TransformException {
         return this.projection.unproject(point);
     }
+
     /**
      * Count the width of the *tile* bounds at the given zoom level in integral tile units.
      *
@@ -386,7 +396,51 @@ public class TiledCRS {
         }
         return getTilesForExtent(pb, zoom, start);
     }
+
     // extent is in projected but not scaled units (e.g. meters)
+
+    /**
+     * Get the Min zoom level that matches the given denominator
+     *
+     * @param denominator the denominator to match
+     * @return the zoom level that matches the given denominator
+     */
+    public Integer getMinZoomForDenominator(double denominator) {
+        // handles the case where denominator is larger than the largest scale or is infinity
+        if (denominator == Double.POSITIVE_INFINITY
+                || denominator >= convertGroundResolutionToScale(scales[0])) return 0;
+        for (int i = 0; i < scales.length; i++) {
+            if (convertGroundResolutionToScale(scales[i]) <= denominator) return i;
+        }
+        return 0;
+    }
+
+    /**
+     * Get the Max zoom level that matches the given denominator
+     *
+     * @param denominator the denominator to match
+     * @return the zoom level that matches the given denominator
+     */
+    public Integer getMaxZoomForDenominator(double denominator) {
+        // handles the case where denominator is larger than the largest scale or is infinity
+        if (denominator == Double.POSITIVE_INFINITY
+                || convertGroundResolutionToScale(scales[scales.length - 1]) >= denominator)
+            return scales.length - 1;
+        for (int i = scales.length - 1; i >= 0; i--) {
+            if (convertGroundResolutionToScale(scales[i]) >= denominator) return i;
+        }
+        return scales.length - 1;
+    }
+
+    /**
+     * Convert a ground resolution to a scale
+     *
+     * @param groundResolution the ground resolution to convert
+     * @return the scale
+     */
+    private Double convertGroundResolutionToScale(double groundResolution) {
+        return ((1 / groundResolution) * SCREEN_RESOLUTION) / METERS_PER_INCH;
+    }
 
     /**
      * @param extent
@@ -413,6 +467,7 @@ public class TiledCRS {
     public Point getOrigin() {
         return TILE_ORIGIN;
     }
+
     /**
      * Compares two tile coordinates and ranks them by distance from the constructed center point.
      */

@@ -28,6 +28,8 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.GeoServerApplication;
@@ -79,6 +81,19 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         CheckBox useTiles = new CheckBox("useTiles", useTilesModel);
         add(useTiles);
 
+        // add the checkbox to select features or not
+        MapModel<Boolean> useFeaturesModel =
+                new MapModel<>(
+                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
+                        "mapml.useFeatures");
+        CheckBox useFeatures = new CheckBox("useFeatures", useFeaturesModel);
+        if (model.getObject() != null && model.getObject() instanceof PublishedInfo) {
+            if (((PublishedInfo) model.getObject()).getType() == PublishedType.RASTER) {
+                useFeatures.setEnabled(false);
+            }
+        }
+        add(useFeatures);
+
         // add the checkbox to enable sharding or not
         MapModel<Boolean> enableShardingModel =
                 new MapModel<>(
@@ -128,6 +143,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                 new TextArea<>("featureCaptionTemplate", featureCaptionModel);
         add(featureCaptionTemplate);
     }
+
     /**
      * @param layer a LayerInfo for the layer
      * @return a list of strings of dimension names from the layer info
@@ -156,6 +172,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         }
         return dimensionNames;
     }
+
     /**
      * Process the layer and return all the attribute names or band/dimension names
      *

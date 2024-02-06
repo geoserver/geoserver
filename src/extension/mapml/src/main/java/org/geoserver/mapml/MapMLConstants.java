@@ -31,6 +31,15 @@ public final class MapMLConstants {
     /** format name */
     public static final String FORMAT_NAME = "MAPML";
 
+    /** MapML format options */
+    public static final String MAPML_FEATURE_FORMAT_OPTIONS = "mapmlfeatures:true";
+
+    /** MapML layer metadata use features */
+    public static final String MAPML_USE_FEATURES = "mapml.useFeatures";
+
+    /** MapML layer metadata use tiles */
+    public static final String MAPML_USE_TILES = "mapml.useTiles";
+
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static final String REL_ZOOMIN = "zoomin";

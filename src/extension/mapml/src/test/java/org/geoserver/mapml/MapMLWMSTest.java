@@ -6,6 +6,8 @@ package org.geoserver.mapml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -251,6 +253,88 @@ public class MapMLWMSTest extends WMSTestSupport {
         expectedInternationalTitle = lgi.getInternationalTitle().toString(Locale.CANADA_FRENCH);
         assertTrue("Le titre français".equalsIgnoreCase(expectedInternationalTitle));
         assertTrue(title.equalsIgnoreCase(expectedInternationalTitle));
+    }
+
+    @Test
+    public void testMapMLUseFeaturesLinks() throws Exception {
+
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        li.getMetadata().put(MAPML_USE_FEATURES, true);
+        li.getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(li);
+
+        LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
+        lgi.getMetadata().put(MAPML_USE_FEATURES, true);
+        lgi.getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(lgi);
+
+        MockRequestResponse requestResponse =
+                getMockRequestResponse(
+                        "layerGroup" + "," + MockData.POLYGONS.getLocalPart(),
+                        null,
+                        null,
+                        "EPSG:3857",
+                        null);
+
+        MapMLEncoder encoder = new MapMLEncoder();
+        StringReader reader = new StringReader(requestResponse.response.getContentAsString());
+        Mapml mapmlExtent = null;
+        try {
+            mapmlExtent = encoder.decode(reader);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Link> extentLinks =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlExtent.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> imageLinksForSingle = getLinkByRelType(extentLinks, RelType.FEATURES);
+        assertTrue(
+                "Features link tref should contain format_options=mapmlfeatures:true",
+                imageLinksForSingle.get(0).getTref().contains("format_options=mapmlfeatures:true"));
+        assertTrue(
+                "Features link tref should contain format=text/mapml",
+                imageLinksForSingle.get(0).getTref().contains("format=text/mapml"));
+
+        // now we change one of the layers to not return features
+        lgi.getMetadata().put(MAPML_USE_FEATURES, false);
+        cat.save(lgi);
+        MockRequestResponse requestResponseOneNotFeatures =
+                getMockRequestResponse(
+                        "layerGroup" + "," + MockData.POLYGONS.getLocalPart(),
+                        null,
+                        null,
+                        "EPSG:3857",
+                        null);
+        StringReader readerOneNotFeatures =
+                new StringReader(requestResponseOneNotFeatures.response.getContentAsString());
+        Mapml mapmlOneNotFeatures = null;
+        try {
+            mapmlOneNotFeatures = encoder.decode(readerOneNotFeatures);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Link> extentLinksOneNotFeatures =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlOneNotFeatures
+                                .getBody()
+                                .getExtents()
+                                .get(0)
+                                .getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> featureLinksForSingleOneNotFeatures =
+                getLinkByRelType(extentLinksOneNotFeatures, RelType.FEATURES);
+        assertEquals(
+                "Features link should not be present when useFeatures on even one layer is false",
+                0,
+                featureLinksForSingleOneNotFeatures.size());
+        List<Link> imageLinksForSingleOneNotFeatures =
+                getLinkByRelType(extentLinksOneNotFeatures, RelType.IMAGE);
+        assertEquals(
+                "Image link should be present when useFeatures on even one layer is false",
+                1,
+                imageLinksForSingleOneNotFeatures.size());
     }
 
     @Test

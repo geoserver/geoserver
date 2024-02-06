@@ -4,6 +4,8 @@
  */
 package org.geoserver.mapml;
 
+import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FORMAT_OPTIONS;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -51,9 +53,16 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
     public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         Request request = Dispatcher.REQUEST.get();
         HttpServletRequest httpServletRequest = request.getHttpRequest();
-        MapMLDocumentBuilder mapMLDocumentBuilder =
-                new MapMLDocumentBuilder(mapContent, wms, geoServer, httpServletRequest);
-        return new MapMLMap(mapContent, mapMLDocumentBuilder.getMapMLDocument());
+        String formatOptions = httpServletRequest.getParameter("format_options");
+        if (formatOptions != null && formatOptions.contains(MAPML_FEATURE_FORMAT_OPTIONS)) {
+            MapMLFeaturesBuilder mapMLFeaturesBuilder =
+                    new MapMLFeaturesBuilder(mapContent, wms, geoServer, httpServletRequest);
+            return new MapMLMap(mapContent, mapMLFeaturesBuilder.getMapMLDocument());
+        } else {
+            MapMLDocumentBuilder mapMLDocumentBuilder =
+                    new MapMLDocumentBuilder(mapContent, wms, geoServer, httpServletRequest);
+            return new MapMLMap(mapContent, mapMLDocumentBuilder.getMapMLDocument());
+        }
     }
 
     @Override

@@ -93,7 +93,7 @@
     <gwc.version>1.25-SNAPSHOT</gwc.version>
     <jts.version>1.19.0</jts.version>
     <spring.version>5.3.27</spring.version>
-    <spring.security.version>5.7.10</spring.security.version>
+    <spring.security.version>5.7.11</spring.security.version>
     <spring-integration.version>5.5.18</spring-integration.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <servlet-api.version>3.1.0</servlet-api.version>

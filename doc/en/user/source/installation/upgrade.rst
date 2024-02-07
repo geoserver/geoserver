@@ -30,6 +30,18 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+FreeMarker Template HTML Auto-escaping (GeoServer 2.25 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.25, the FreeMarker library's HTML auto-escaping feature will be enabled by default to prevent
+cross-site scripting (XSS) vulnerabilities in WMS GetFeatureInfo HTML output when using the default FreeMarker
+templates and WMS service settings. Some users may experience incorrectly escaped HTML output when using custom
+templates or if HTML tags are stored in vector data stores.
+
+See the :ref:`production_config_freemarker_escaping` page for information about the limitations of this feature
+and for instructions to disable this feature and delegate to the WMS service setting which defaults to disabling
+HTML auto-escaping.
+
 Spring Security Strict HTTP Firewall (GeoServer 2.25 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

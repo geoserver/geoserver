@@ -27,10 +27,10 @@ public class AlternativesResponseStream extends ServletOutputStream {
     ServletOutputStream myStream;
     Set myCompressibleTypes;
     Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
-    int contentLength;
+    long contentLength;
 
     public AlternativesResponseStream(
-            HttpServletResponse response, Set compressible, int contentLength) throws IOException {
+            HttpServletResponse response, Set compressible, long contentLength) throws IOException {
         super();
         myResponse = response;
         myCompressibleTypes = compressible;
@@ -73,14 +73,11 @@ public class AlternativesResponseStream extends ServletOutputStream {
         if (type != null && isCompressible(type)) {
             logger.log(Level.FINE, "Compressing output for mimetype: {0}", type);
             myResponse.addHeader("Content-Encoding", "gzip");
-            if (myResponse.getHeader("Content-Length") != null) {
-                myResponse.setHeader("Content-Length", null); // Un-set Content-Length for gzip
-            }
             myStream = new GZIPResponseStream(myResponse);
         } else {
             logger.log(Level.FINE, "Not compressing output for mimetype: {0}", type);
             if (contentLength >= 0) {
-                myResponse.setContentLength(contentLength);
+                myResponse.setContentLengthLong(contentLength);
             }
             myStream = myResponse.getOutputStream();
         }

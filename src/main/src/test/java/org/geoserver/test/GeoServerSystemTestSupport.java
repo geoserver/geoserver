@@ -63,6 +63,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import net.sf.json.JSON;
+import net.sf.json.JSONException;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HeaderElement;
@@ -1400,7 +1401,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     protected JSON json(MockHttpServletResponse response) throws UnsupportedEncodingException {
         String content = response.getContentAsString();
-        return JSONSerializer.toJSON(content);
+        try {
+            return JSONSerializer.toJSON(content);
+        } catch (JSONException e) {
+            LOGGER.log(Level.SEVERE, "Error parsing JSON response: " + content, e);
+            throw e;
+        }
     }
 
     /** Retries the request result as a BufferedImage, checking the mime type is the expected one */

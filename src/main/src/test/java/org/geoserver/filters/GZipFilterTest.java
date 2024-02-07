@@ -73,14 +73,14 @@ public class GZipFilterTest {
         MockFilterConfig config = new MockFilterConfig(context);
         config.addInitParameter("compressed-types", "text/plain");
         filter.init(config);
-
+        
         MockFilterChain chain =
                 new MockFilterChain() {
                     @Override
                     @SuppressWarnings("PMD.CloseResource")
                     public void doFilter(ServletRequest request, ServletResponse response)
                             throws IOException, ServletException {
-                        response.setContentLength(1000);
+                        response.setContentLengthLong(1000);
                         AlternativesResponseStream alternatives =
                                 (AlternativesResponseStream) response.getOutputStream();
                         ServletOutputStream gzipStream = alternatives.getStream();
@@ -101,9 +101,10 @@ public class GZipFilterTest {
 
         // run the filter
         GZIPFilter filter = new GZIPFilter();
+        
         MockServletContext context = new MockServletContext();
-        context.setInitParameter("compressed-types", "text/plain");
         MockFilterConfig config = new MockFilterConfig(context);
+        config.addInitParameter("compressed-types", "text/plain");
         filter.init(config);
 
         MockFilterChain chain =
@@ -112,7 +113,7 @@ public class GZipFilterTest {
                     @SuppressWarnings("PMD.CloseResource")
                     public void doFilter(ServletRequest request, ServletResponse response)
                             throws IOException, ServletException {
-                        response.setContentLength(1000);
+                        response.setContentLengthLong(1000);
                         AlternativesResponseStream alternatives =
                                 (AlternativesResponseStream) response.getOutputStream();
 

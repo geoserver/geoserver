@@ -73,7 +73,7 @@ public class GZipFilterTest {
         MockFilterConfig config = new MockFilterConfig(context);
         config.addInitParameter("compressed-types", "text/plain");
         filter.init(config);
-        
+
         MockFilterChain chain =
                 new MockFilterChain() {
                     @Override
@@ -101,7 +101,7 @@ public class GZipFilterTest {
 
         // run the filter
         GZIPFilter filter = new GZIPFilter();
-        
+
         MockServletContext context = new MockServletContext();
         MockFilterConfig config = new MockFilterConfig(context);
         config.addInitParameter("compressed-types", "text/plain");

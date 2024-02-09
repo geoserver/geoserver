@@ -8,6 +8,7 @@ package org.geoserver.featurestemplating.writers;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -208,7 +209,7 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
                     identifier = SrsSyntax.OGC_URN.getPrefix() + code;
                 }
             } else {
-                identifier = CRS.lookupIdentifier(crs, true);
+                identifier = ResourcePool.lookupIdentifier(crs, true);
             }
             return identifier;
         } catch (FactoryException e) {

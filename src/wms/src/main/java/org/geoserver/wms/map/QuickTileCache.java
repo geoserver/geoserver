@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -101,7 +102,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         Point2D origin = request.getTilesOrigin();
         if (CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
             try {
-                String crsId = CRS.lookupIdentifier(request.getCrs(), false);
+                String crsId = ResourcePool.lookupIdentifier(request.getCrs(), false);
                 CoordinateReferenceSystem enCRS = CRS.decode(SrsSyntax.AUTH_CODE.getSRS(crsId));
                 bbox =
                         new ReferencedEnvelope(

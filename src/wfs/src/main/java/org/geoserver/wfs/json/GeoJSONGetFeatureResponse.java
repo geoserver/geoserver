@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.TemporalUtils;
 import org.geoserver.ows.Dispatcher;
@@ -538,7 +539,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     private void writeCrs(final GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs)
             throws FactoryException {
         if (crs != null) {
-            String identifier = SrsSyntax.OGC_URN.getSRS(CRS.lookupIdentifier(crs, true));
+            String identifier = SrsSyntax.OGC_URN.getSRS(ResourcePool.lookupIdentifier(crs, true));
 
             jsonWriter.key("crs");
             jsonWriter.object();

@@ -41,6 +41,7 @@ import net.opengis.wfs20.Wfs20Factory;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.GeoServer;
 import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.ogcapi.APIBBoxParser;
@@ -163,7 +164,7 @@ public class FeatureService {
         if (CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
             return FeatureService.DEFAULT_CRS;
         }
-        String identifier = CRS.lookupIdentifier(crs, false);
+        String identifier = ResourcePool.lookupIdentifier(crs, false);
         return mapResponseSRS(identifier);
     }
 

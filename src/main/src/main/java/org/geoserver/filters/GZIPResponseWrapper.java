@@ -34,7 +34,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     protected Set formatsToCompress;
     protected String requestedURL;
     protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
-    private int contentLength = -1;
+    private long contentLength = -1;
 
     public GZIPResponseWrapper(HttpServletResponse response, Set toCompress, String url) {
         super(response);
@@ -172,6 +172,11 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 
     @Override
     public void setContentLength(int length) {
+        this.contentLength = length;
+    }
+
+    @Override
+    public void setContentLengthLong(long length) {
         this.contentLength = length;
     }
 }

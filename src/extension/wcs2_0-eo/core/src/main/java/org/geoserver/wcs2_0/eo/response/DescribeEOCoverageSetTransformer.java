@@ -22,6 +22,7 @@ import net.opengis.wcs20.Section;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geoserver.wcs.WCSInfo;
@@ -271,7 +272,7 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
             // lookup EPSG code
             String crsId = null;
             try {
-                crsId = CRS.lookupIdentifier(crs, true);
+                crsId = ResourcePool.lookupIdentifier(crs, true);
             } catch (FactoryException e) {
                 throw new IllegalStateException(
                         "Unable to lookup epsg code for this CRS:" + crs, e);

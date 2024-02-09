@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.Styles;
 import org.geoserver.importer.job.ProgressMonitor;
@@ -34,8 +35,6 @@ import org.geotools.referencing.CRS;
 public class SpatialFile extends FileData {
 
     private static final long serialVersionUID = -280215815681792790L;
-
-    static EPSGCodeLookupCache EPSG_LOOKUP_CACHE = new EPSGCodeLookupCache();
 
     /** .prj file */
     File prjFile;
@@ -169,7 +168,7 @@ public class SpatialFile extends FileData {
 
         try {
             CoordinateReferenceSystem epsgCrs = null;
-            String identifier = EPSG_LOOKUP_CACHE.lookupIdentifier(crs);
+            String identifier = ResourcePool.lookupIdentifier(crs, true);
             if (identifier != null) {
                 epsgCrs = CRS.decode(SrsSyntax.AUTH_CODE.getSRS(identifier));
             }

@@ -40,6 +40,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.CoverageUtils;
@@ -231,7 +232,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             final CoordinateReferenceSystem targetCRS;
             if (requestedCRS == null) {
                 targetCRS = reader.getOriginalEnvelope().getCoordinateReferenceSystem();
-                requestedCRS = CRS.lookupIdentifier(targetCRS, true);
+                requestedCRS = ResourcePool.lookupIdentifier(targetCRS, true);
             } else {
                 // FORCE LON,LAT!!!!
                 targetCRS = CRS.decode(requestedCRS, true);

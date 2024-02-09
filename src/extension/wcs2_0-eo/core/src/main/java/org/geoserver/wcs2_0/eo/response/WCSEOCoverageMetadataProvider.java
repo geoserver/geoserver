@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -225,7 +226,7 @@ public class WCSEOCoverageMetadataProvider implements WCS20CoverageMetadataProvi
     private String getSRSName(CoordinateReferenceSystem crs) {
         String crsId = null;
         try {
-            crsId = CRS.lookupIdentifier(crs, true);
+            crsId = ResourcePool.lookupIdentifier(crs, true);
         } catch (FactoryException e) {
             throw new IllegalStateException("Unable to lookup epsg code for this CRS:" + crs, e);
         }

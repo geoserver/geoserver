@@ -556,9 +556,9 @@ public class ResourcePool {
         // .. then validate it can be used to lookup the CRS, and that it matches
         if (result != null) {
             try {
-                CoordinateReferenceSystem lookedUp =
-                        CRS.decode(result); // make sure the identifier allows a lookup
-                if (CRS.equalsIgnoreMetadata(crs, lookedUp)) return result;
+                // make sure the identifier is recognized (allows a lookup)
+                CoordinateReferenceSystem lookedUp = CRS.decode(result);
+                if (lookedUp != null) return result;
             } catch (Exception e) {
                 LOGGER.log(
                         Level.FINE,

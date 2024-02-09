@@ -21,6 +21,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.kvp.GridType;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
@@ -421,7 +422,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         protected String urnIdentifier(final CoordinateReferenceSystem crs)
                 throws FactoryException {
-            String identifier = CRS.lookupIdentifier(crs, false);
+            String identifier = ResourcePool.lookupIdentifier(crs, false);
             return SrsSyntax.OGC_URN.getSRS(identifier);
         }
 

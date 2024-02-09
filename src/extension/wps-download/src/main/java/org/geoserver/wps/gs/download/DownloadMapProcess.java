@@ -31,6 +31,7 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.media.jai.PlanarImage;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.GeoServer;
 import org.geoserver.kml.KMLEncoder;
 import org.geoserver.kml.KmlEncodingContext;
@@ -407,7 +408,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             throw new WPSException("The BBOX parameter must have a coordinate reference system");
         } else {
             // handle possible axis flipping by changing the WMS version accordingly
-            String code = CRS.lookupIdentifier(crs, false);
+            String code = ResourcePool.lookupIdentifier(crs, false);
             if (CRS.getAxisOrder(crs) == CRS.AxisOrder.EAST_NORTH) {
                 template.put("version", "1.1.0");
                 template.put("srs", SrsSyntax.AUTH_CODE.getSRS(code));
@@ -590,7 +591,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
         // check version, if we are using 1.3 we might need to flip the bbox, if version 1.1 and the
         // original bbox was flipped, we'll need to un-flip (what a mess...)
-        String crsId = CRS.lookupIdentifier(bbox.getCoordinateReferenceSystem(), true);
+        String crsId = ResourcePool.lookupIdentifier(bbox.getCoordinateReferenceSystem(), true);
         CoordinateReferenceSystem epsgOrderCrs = CRS.decode(SrsSyntax.OGC_URN.getSRS(crsId));
         CRS.AxisOrder axisOrder = CRS.getAxisOrder(epsgOrderCrs);
         getMap.setSRS(

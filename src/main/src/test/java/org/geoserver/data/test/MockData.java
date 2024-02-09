@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
@@ -39,7 +40,6 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.geotools.geometry.GeneralBounds;
-import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Envelope;
 
 /**
@@ -804,7 +804,7 @@ public class MockData implements TestData {
             CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
             GeneralBounds envelope = reader.getOriginalEnvelope();
             GeneralBounds wgs84envelope = CoverageStoreUtils.getWGS84LonLatEnvelope(envelope);
-            final String nativeCrsName = CRS.lookupIdentifier(crs, false);
+            final String nativeCrsName = ResourcePool.lookupIdentifier(crs, false);
             writer.write(
                     "<envelope crs=\""
                             + crs.toString().replaceAll("\"", "'")

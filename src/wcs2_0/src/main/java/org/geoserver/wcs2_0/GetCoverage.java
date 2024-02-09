@@ -47,6 +47,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -917,7 +918,7 @@ public class GetCoverage {
     private GridCoverage2D enforceLatLongOrder(
             GridCoverage2D coverage, final Hints hints, final CoordinateReferenceSystem outputCRS)
             throws Exception {
-        String identifier = CRS.lookupIdentifier(outputCRS, false);
+        String identifier = ResourcePool.lookupIdentifier(outputCRS, false);
         if (identifier != null) {
             // final CRS
             CoordinateReferenceSystem finalCRS =
@@ -965,7 +966,7 @@ public class GetCoverage {
     private boolean requestingLatLonAxesOrder(CoordinateReferenceSystem outputCRS) {
 
         try {
-            final String identifier = CRS.lookupIdentifier(outputCRS, false);
+            final String identifier = ResourcePool.lookupIdentifier(outputCRS, false);
             if (identifier != null) {
                 CoordinateReferenceSystem originalCRS =
                         CRS.decode(SrsSyntax.OGC_HTTP_URI.getSRS(identifier));
@@ -1501,7 +1502,7 @@ public class GetCoverage {
             // instantiate and make it go lon/lat order if possible
             try {
                 CoordinateReferenceSystem crs = CRS.decode(crsName);
-                final String id = CRS.lookupIdentifier(crs, false);
+                final String id = ResourcePool.lookupIdentifier(crs, false);
                 if (id != null) {
                     return CRS.decode(SrsSyntax.AUTH_CODE.getSRS(id));
                 } else {

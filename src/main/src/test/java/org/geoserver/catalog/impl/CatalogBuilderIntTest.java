@@ -21,6 +21,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -186,6 +187,6 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("IAU:49900"), ci.getCRS()));
 
         // it can be looked up
-        assertEquals("IAU:49900", CRS.lookupIdentifier(ci.getCRS(), true));
+        assertEquals("IAU:49900", ResourcePool.lookupIdentifier(ci.getCRS(), true));
     }
 }

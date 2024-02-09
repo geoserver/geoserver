@@ -26,6 +26,7 @@ import javax.media.jai.iterator.RectIterFactory;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
@@ -173,7 +174,7 @@ class GMLTransformer extends TransformerBase {
             // lookup EPSG code
             String crsId = null;
             try {
-                crsId = CRS.lookupIdentifier(crs, true);
+                crsId = ResourcePool.lookupIdentifier(crs, true);
             } catch (FactoryException e) {
                 throw new IllegalStateException(
                         "Unable to lookup epsg code for this CRS:" + crs, e);

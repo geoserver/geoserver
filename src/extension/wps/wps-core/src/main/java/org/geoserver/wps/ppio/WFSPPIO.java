@@ -17,6 +17,7 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
@@ -108,7 +109,7 @@ public class WFSPPIO extends XMLPPIO {
                 }
 
                 // we assume the crs has a valid identity
-                String identifier = CRS.lookupIdentifier(crs, false);
+                String identifier = ResourcePool.lookupIdentifier(crs, false);
                 if (identifier != null) {
                     String eastNorthId = SrsSyntax.AUTH_CODE.getSRS(identifier);
                     CoordinateReferenceSystem lonLatCrs = CRS.decode(eastNorthId, true);

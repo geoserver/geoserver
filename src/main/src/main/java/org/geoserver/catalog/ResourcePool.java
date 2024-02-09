@@ -541,12 +541,7 @@ public class ResourcePool {
 
     private static String lookupIdentifierInternal(CoordinateReferenceSystem crs, boolean fullScan)
             throws FactoryException {
-        // privilege EPSG is possible
-        Integer code = CRS.lookupEpsgCode(crs, false);
-        if (code != null) {
-            return "EPSG:" + code;
-        }
-        // otherwise see if there is any code in the object itself
+        // Lookup the first code, it should be the official one for this CRS
         String result =
                 crs.getIdentifiers().stream()
                         .filter(id -> id.getAuthority() != null)
@@ -554,8 +549,29 @@ public class ResourcePool {
                         .findFirst()
                         .map(id -> id.toString())
                         .orElse(null);
+        // .. then validate it can be used to lookup the CRS
+        if (result != null) {
+            try {
+                // make sure the identifier is recognized (allows a lookup)
+                CoordinateReferenceSystem lookedUp = CRS.decode(result);
+                if (lookedUp != null) return result;
+            } catch (Exception e) {
+                LOGGER.log(
+                        Level.FINE,
+                        "Failed to lookup the CRS code for "
+                                + crs
+                                + " as "
+                                + result
+                                + ", moving on to look up other potential identifiers",
+                        e);
+            }
+        }
 
-        if (result != null) return result;
+        // otherwise look up for EPSG codes first
+        Integer code = CRS.lookupEpsgCode(crs, false);
+        if (code != null) {
+            return "EPSG:" + code;
+        }
 
         // search in other authorities, skipping the alias ones
         final Set<Citation> authorities = new LinkedHashSet<>();

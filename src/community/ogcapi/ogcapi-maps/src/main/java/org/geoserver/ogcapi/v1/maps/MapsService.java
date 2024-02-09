@@ -22,6 +22,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIBBoxParser;
@@ -45,7 +46,6 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -191,7 +191,7 @@ public class MapsService {
         if ("text/html".equals(format) || "html".equals(format)) {
             DefaultWebMapService.autoSetBoundsAndSize(request);
             if (request.getCrs() != null)
-                request.setSRS(CRS.lookupIdentifier(request.getCrs(), false));
+                request.setSRS(ResourcePool.lookupIdentifier(request.getCrs(), false));
             request.getRawKvp().put("width", String.valueOf(request.getWidth()));
             request.getRawKvp().put("height", String.valueOf(request.getHeight()));
             if (height != null) request.setHeight(height);

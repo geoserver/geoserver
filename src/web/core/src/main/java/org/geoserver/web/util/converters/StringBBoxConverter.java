@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.util.converters;
 
+import org.geoserver.catalog.ResourcePool;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converter;
@@ -27,7 +28,9 @@ public class StringBBoxConverter implements Converter {
                     str.append(envelope.getMaximum(0)).append(SEPARATOR);
                     str.append(envelope.getMinimum(1)).append(SEPARATOR);
                     str.append(envelope.getMaximum(1)).append(SEPARATOR);
-                    str.append(CRS.lookupIdentifier(envelope.getCoordinateReferenceSystem(), true));
+                    str.append(
+                            ResourcePool.lookupIdentifier(
+                                    envelope.getCoordinateReferenceSystem(), true));
 
                     return (T) str.toString();
                 } catch (Exception e) {

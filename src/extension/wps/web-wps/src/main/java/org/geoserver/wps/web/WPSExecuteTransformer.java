@@ -16,6 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.xml.serializer.TreeWalker;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.wps.web.InputParameterValues.ParameterType;
 import org.geoserver.wps.web.InputParameterValues.ParameterValue;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -24,7 +25,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.gml3.GML;
 import org.geotools.ows.v1_1.OWS;
-import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.wps.WPS;
@@ -175,7 +175,7 @@ class WPSExecuteTransformer extends TransformerBase {
                         CoordinateReferenceSystem crs = env.getCoordinateReferenceSystem();
                         if (crs != null) {
                             try {
-                                crsId = CRS.lookupIdentifier(crs, false);
+                                crsId = ResourcePool.lookupIdentifier(crs, false);
                             } catch (Exception e) {
                                 LOGGER.log(Level.WARNING, "Could not get EPSG code for " + crsId);
                             }
@@ -229,7 +229,7 @@ class WPSExecuteTransformer extends TransformerBase {
             try {
                 start("wps:Data");
                 final CoordinateReferenceSystem crs = (CoordinateReferenceSystem) value.value;
-                element("wps:LiteralData", CRS.lookupIdentifier(crs, false));
+                element("wps:LiteralData", ResourcePool.lookupIdentifier(crs, false));
                 end("wps:Data");
             } catch (Exception e) {
                 throw new RuntimeException(e);

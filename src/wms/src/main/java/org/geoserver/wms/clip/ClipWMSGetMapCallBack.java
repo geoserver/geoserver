@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.apache.commons.beanutils.BeanUtilsBean2;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.CachedGridReaderLayer;
 import org.geoserver.wms.GetMapCallback;
@@ -130,7 +131,7 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
         }
         // finally assign map crs in lon/lat order (EWKT is defined in that order)
         if (CRS.getAxisOrder(mapCRS) == CRS.AxisOrder.NORTH_EAST) {
-            String id = CRS.lookupIdentifier(mapCRS, false);
+            String id = ResourcePool.lookupIdentifier(mapCRS, false);
             CoordinateReferenceSystem crs = CRS.decode(SrsSyntax.AUTH_CODE.getSRS(id));
             geom.setUserData(crs);
         } else {

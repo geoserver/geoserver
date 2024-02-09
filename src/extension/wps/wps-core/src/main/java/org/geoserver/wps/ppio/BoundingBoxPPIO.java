@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import net.opengis.ows11.BoundingBoxType;
 import net.opengis.ows11.Ows11Factory;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.wps.WPSException;
 import org.geotools.api.geometry.BoundingBox;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -119,7 +120,7 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
         // handle the EPSG code
         if (crs != null) {
             try {
-                bbox.setCrs(CRS.lookupIdentifier(crs, false));
+                bbox.setCrs(ResourcePool.lookupIdentifier(crs, false));
             } catch (Exception e) {
                 throw new WPSException("Could not lookup epsg code for " + crs, e);
             }

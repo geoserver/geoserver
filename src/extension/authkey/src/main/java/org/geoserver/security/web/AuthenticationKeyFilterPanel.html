@@ -25,12 +25,16 @@
 			  <ul>	  
 				  <li>                    
 				     <label for="authKeyParamName"><wicket:message key="authKeyParamName"></wicket:message></label>
-				     <input id="authKeyParamName" wicket:id="authKeyParamName" type="text" class="text"></input>				         
+				     <input id="authKeyParamName" wicket:id="authKeyParamName" type="text" class="text"/>
 				  </li>
 				  <li>
                     <label ><wicket:message key="authKeyMapperName"></wicket:message></label>
                     <select wicket:id="authKeyMapperName"></select>
                   </li>
+				  <li>
+					  <label for="allowMapperKeysAutoSync"><wicket:message key="allowMapperKeysAutoSync"></wicket:message></label>
+					  <input id="allowMapperKeysAutoSync" wicket:id="allowMapperKeysAutoSync" type="checkbox" class="checkbox"/>
+				  </li>
 				  <li>
                     <div wicket:id="authKeyMapperParamsContainer">
                         <div wicket:id="authKeyMapperParamsPanel">

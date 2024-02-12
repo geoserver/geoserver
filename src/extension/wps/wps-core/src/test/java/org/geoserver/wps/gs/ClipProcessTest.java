@@ -194,4 +194,9 @@ public class ClipProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("1", "count(//gml:featureMember)", d);
         assertXpathEvaluatesTo("Blunck", "//gml:featureMember//gml:name", d);
     }
+
+    @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
+    }
 }

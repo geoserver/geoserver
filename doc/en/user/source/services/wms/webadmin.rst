@@ -223,6 +223,8 @@ By default GetFeatureInfo results are printed in the HTML templates without any 
 
 When the flag is checked, values that are printed in the HTML templates for GetFeatureInfo requests results will be automatically escaped. The default FreeMarker templates can be overridden to enable or disable auto-escaping on a per template, per block or per value basis.
 
+.. note:: Auto-escaping is forced to be enabled by default and that property must be disabled for this setting to have any effect. See the :ref:`production_config_freemarker_escaping` page for instructions.
+
 Setting Remote Style max connection and request time
 ----------------------------------------------------
 

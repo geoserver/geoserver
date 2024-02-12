@@ -6,8 +6,7 @@ MapML
 Map Markup Language (MapML) is a text-based format which allows map authors to encode map information as hypertext documents exchanged over the Uniform Interface of the Web. The format definition is a work-in-progress by the Maps for HTML W3C Community Group. Various tools to work with the format exist, including a Leaflet-based map viewer included in the GeoServer MapML extension. For more information on MapML refer to the `Maps for HTML Community Group <https://maps4html.org/>`.
 
 The MapML module for GeoServer adds new MapML resources to access WMS, WMTS and WFS services configured in Geoserver. The MapML modules includes support for styles, tiling, querying, and dimensions options for WMS layers, and also provides a MapML outputFormat for WMS GetFeatureInfo and WFS GetFeatures requests. See below for information on installing and configuring the MapML module.
-    .. warning:: The MapML extension performance is negatively affected by a recent upgrade to Spring in the GeoServer project.  This affects all versions since 2.22.0. To avoid serious performance penalty, please remove "text/.*" from the gzip filter <param-value> in your web.xml servlet configuration.
-
+    .. note:: The Maps for HTML community kindly requests that if you use MapML and the software provided here or elsewhere, that you give us feedback about your experience: open an issue or start a discussion on `GitHub <https://github.com/Maps4HTML>`_.
     .. warning:: MapML is an experimental proposed extension of HTML for the Web. The objective of the project is to standardize map, layer and feature semantics in HTML.  As the format progresses towards a Web standard, it may change slightly.  Always use the latest version of this extension, and follow or join in the project's progress at https://maps4html.org.
 
 
@@ -131,10 +130,24 @@ MapML resources will be available for any published WMS layers by making a GetMa
 
 Note that the WMS SRS or CRS must be one of the projections supported by MapML:
 
-- EPSG:3857
-- EPSG:3978
-- EPSG:5936
-- EPSG:4326
+- MapML:WGS84 (or EPSG:4326)
+- MapML:OSMTILE (or EPSG:3857)
+- MapML:CBMTILE (or EPSG:3978)
+- MapML:APSTILE (or EPSG:5936)
+
+The equivalent EPSG codes are provided for reference, but the MapML names are recommended, as they
+imply not only a coordinate refefence system, but also a tile grid and a set of zoom levels (Tiled CRS), 
+that the MapML client will use when operating in tiled mode. When using tiles, it's also recommended
+to set up tile caching for the same-named gridsets.
+
+If the native SRS of a layer is not a match for the MapML ones, remember to configure the projection
+policy to "reproject native to declare". You might have to save and reload the layer configuration
+in order to re-compute the native bounds correctly.
+
+If the SRS or CRS is not one of the above, the GetMap request will fail with an ``InvalidParameterValue`` exception.
+The main "MapML" link in the preview page generates a HTML client able to consume MapML resources.
+The link is generated so that it always work, if the CRS configured for the layer is not supported, it will automatically fall back on MapML:WGS84.
+
 
 **MapML Output Format**
 

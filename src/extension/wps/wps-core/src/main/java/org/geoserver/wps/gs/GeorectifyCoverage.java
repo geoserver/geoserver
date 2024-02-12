@@ -35,6 +35,7 @@ import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import javax.media.jai.operator.ConstantDescriptor;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -51,7 +52,6 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.process.factory.DescribeResults;
-import org.geotools.referencing.CRS;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
@@ -473,7 +473,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
     private static String parseCrs(CoordinateReferenceSystem crs) {
         Utilities.ensureNonNull("coordinateReferenceSystem", crs);
         try {
-            return CRS.lookupIdentifier(crs, true);
+            return ResourcePool.lookupIdentifier(crs, true);
         } catch (FactoryException e) {
             throw new WPSException("Error occurred looking up target SRS");
         }

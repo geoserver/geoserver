@@ -5,7 +5,13 @@
 package org.geoserver.mapml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -17,6 +23,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DataBindingException;
-import org.custommonkey.xmlunit.NamespaceContext;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import javax.xml.bind.JAXBException;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
@@ -53,19 +59,28 @@ import org.geoserver.mapml.xml.Link;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.GrowableInternationalString;
 import org.geowebcache.grid.GridSubset;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Description;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -73,13 +88,15 @@ public class MapMLWMSTest extends WMSTestSupport {
 
     private XpathEngine xpath;
 
+    @Override
+    protected void registerNamespaces(Map<String, String> namespaces) {
+        namespaces.put("wms", "http://www.opengis.net/wms");
+        namespaces.put("ows", "http://www.opengis.net/ows");
+        namespaces.put("html", "http://www.w3.org/1999/xhtml");
+    }
+
     @Before
     public void setup() {
-        HashMap<String, String> m = new HashMap<>();
-        m.put("html", "http://www.w3.org/1999/xhtml");
-
-        NamespaceContext ctx = new SimpleNamespaceContext(m);
-        XMLUnit.setXpathNamespaceContext(ctx);
         xpath = XMLUnit.newXpathEngine();
 
         Catalog catalog = getCatalog();
@@ -107,6 +124,9 @@ public class MapMLWMSTest extends WMSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
+        testData.addStyle("scaleRange", "scaleRange.sld", getClass(), catalog);
+        testData.addStyle("scaleRangeExtremes", "scaleRangeExtremes.sld", getClass(), catalog);
+        testData.addStyle("scaleRangeNoMax", "scaleRangeNoMax.sld", getClass(), catalog);
 
         String points = MockData.POINTS.getLocalPart();
         String lines = MockData.LINES.getLocalPart();
@@ -157,6 +177,16 @@ public class MapMLWMSTest extends WMSTestSupport {
     }
 
     @Test
+    public void testCRSInCapabilities() throws Exception {
+        org.w3c.dom.Document dom = getAsDOM("wms?request=getCapabilities&acceptsVersions=1.3.0");
+
+        assertXpathExists("//wms:CRS[text() = 'MapML:WGS84']", dom);
+        assertXpathExists("//wms:CRS[text() = 'MapML:OSMTILE']", dom);
+        assertXpathExists("//wms:CRS[text() = 'MapML:APSTILE']", dom);
+        assertXpathExists("//wms:CRS[text() = 'MapML:CBMTILE']", dom);
+    }
+
+    @Test
     public void testMapMLSingleLayer() throws Exception {
         Catalog cat = getCatalog();
 
@@ -182,6 +212,7 @@ public class MapMLWMSTest extends WMSTestSupport {
                 "Use tiles is set to false so the link should be a image link",
                 extentLinksForSingle.get(0).getRel(),
                 RelType.IMAGE);
+
         assertTrue(
                 "Use tiles is set to false so the link should contain getMap",
                 extentLinksForSingle.get(0).getTref().contains("GetMap"));
@@ -257,29 +288,33 @@ public class MapMLWMSTest extends WMSTestSupport {
         }
         List<Link> selfStyleLinksForSingle =
                 getLinkByRelType(mapmlSingleExtent.getHead().getLinks(), RelType.SELF_STYLE);
-        assertTrue(
-                "No matter the setting, self style should refer to all layers",
-                selfStyleLinksForSingle.get(0).getHref().contains("layers=layerGroup%2CPolygons&"));
-        assertTrue(
-                "Self style should have a bbox",
-                selfStyleLinksForSingle.get(0).getHref().contains("bbox=0.0%2C0.0%2C1.0%2C1.0"));
-        assertTrue(
-                "Self style should have a width",
-                selfStyleLinksForSingle.get(0).getHref().contains("width=150"));
-        assertTrue(
-                "Self style should have a height",
-                selfStyleLinksForSingle.get(0).getHref().contains("height=150"));
+        String selfHref = selfStyleLinksForSingle.get(0).getHref();
+        Map<String, Object> parsedSelfLink = KvpUtils.parseQueryString(selfHref);
+        assertThat(parsedSelfLink, hasEntry("layers", "layerGroup,Polygons"));
+        assertThat(
+                parsedSelfLink,
+                hasEntry(
+                        CoreMatchers.equalTo("bbox"),
+                        new BboxMatcher(new Envelope(0, 111319, 0, 111325), 1)));
+        assertThat(parsedSelfLink, hasEntry("width", "150"));
+        assertThat(parsedSelfLink, hasEntry("height", "150"));
+
         List<Link> alternateLinksForSingle =
                 getLinkByRelType(mapmlSingleExtent.getHead().getLinks(), RelType.ALTERNATE);
-        assertTrue(
-                "Alternate link width should be set",
-                alternateLinksForSingle.get(0).getHref().contains("width=150"));
-        assertTrue(
-                "Alternate link height should be set",
-                alternateLinksForSingle.get(0).getHref().contains("height=150"));
-        assertTrue(
-                "Alternate link should include the bbox",
-                alternateLinksForSingle.get(0).getHref().contains("bbox=0.0%2C0.0%2C1.0%2C1.0"));
+        String alternateHref =
+                alternateLinksForSingle.stream()
+                        .filter(l -> l.getProjection() == ProjType.WGS_84)
+                        .findFirst()
+                        .get()
+                        .getHref();
+        Map<String, Object> parsedAlternateLink = KvpUtils.parseQueryString(alternateHref);
+        assertThat(parsedAlternateLink, hasEntry("width", "150"));
+        assertThat(parsedAlternateLink, hasEntry("height", "150"));
+        assertThat(
+                parsedAlternateLink,
+                hasEntry(
+                        CoreMatchers.equalTo("bbox"),
+                        new BboxMatcher(new Envelope(0, 1, 0, 1), 1e-2)));
         assertEquals(
                 "There should be one extent object that combines the attributes of all layers",
                 1,
@@ -421,6 +456,203 @@ public class MapMLWMSTest extends WMSTestSupport {
                         .contains("styles=BasicPolygons%2C&"));
     }
 
+    @Test
+    public void testMapMLZoomLayer() throws Exception {
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        li.getStyles().add(cat.getStyleByName("scaleRange"));
+        li.setDefaultStyle(cat.getStyleByName("scaleRange"));
+        cat.save(li);
+        ResourceInfo layerMeta = li.getResource();
+        layerMeta.getMetadata().put("mapml.useTiles", true);
+        cat.save(layerMeta);
+
+        MockRequestResponse requestResponseSingleLayer =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart(), null, null, "EPSG:4326", "scaleRange");
+        StringReader readerSingleLayer =
+                new StringReader(requestResponseSingleLayer.response.getContentAsString());
+        Mapml mapmlSingleLayer = null;
+        MapMLEncoder encoder = new MapMLEncoder();
+        try {
+            mapmlSingleLayer = encoder.decode(readerSingleLayer);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputs =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlSingleLayer.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsSingleLayer = getInputByType(inputs, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min should be set to match what is in the style definition",
+                "1",
+                zoomInputsSingleLayer.get(0).getMin());
+        assertEquals(
+                "The zoom input max should be set to match what is in the style definition",
+                "10",
+                zoomInputsSingleLayer.get(0).getMax());
+
+        li.getStyles().clear();
+        li.getStyles().add(cat.getStyleByName("scaleRangeNoMax"));
+        li.setDefaultStyle(cat.getStyleByName("scaleRangeNoMax"));
+        cat.save(li);
+        MockRequestResponse requestResponseSingleLayerNoMax =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart(),
+                        null,
+                        null,
+                        "EPSG:4326",
+                        "scaleRangeNoMax");
+        StringReader readerSingleLayerNoMax =
+                new StringReader(requestResponseSingleLayerNoMax.response.getContentAsString());
+        Mapml mapmlSingleLayerNoMax = null;
+        MapMLEncoder encoderNoMax = new MapMLEncoder();
+        try {
+            mapmlSingleLayerNoMax = encoderNoMax.decode(readerSingleLayerNoMax);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputsNoMax =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlSingleLayerNoMax
+                                .getBody()
+                                .getExtents()
+                                .get(0)
+                                .getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsSingleLayerNoMax = getInputByType(inputsNoMax, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min should be set to match what is in the style definition",
+                "1",
+                zoomInputsSingleLayerNoMax.get(0).getMin());
+        assertEquals(
+                "The zoom input max should be the max value of the tiled crs because the style does not have a max",
+                "21",
+                zoomInputsSingleLayerNoMax.get(0).getMax());
+
+        li.getStyles().clear();
+        li.getStyles().add(cat.getStyleByName("scaleRangeExtremes"));
+        cat.save(li);
+
+        MockRequestResponse requestResponseSingleLayerExtremes =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart(),
+                        null,
+                        null,
+                        "EPSG:4326",
+                        "scaleRangeExtremes");
+        StringReader readerSingleLayerExtremes =
+                new StringReader(requestResponseSingleLayerExtremes.response.getContentAsString());
+        Mapml mapmlSingleLayerExtremes = null;
+        MapMLEncoder encoderExtremes = new MapMLEncoder();
+        try {
+            mapmlSingleLayerExtremes = encoderExtremes.decode(readerSingleLayerExtremes);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputsExtremes =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlSingleLayerExtremes
+                                .getBody()
+                                .getExtents()
+                                .get(0)
+                                .getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsSingleLayerExtremes = getInputByType(inputsExtremes, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min should be zero because the style denominator is less than the tiled crs min",
+                "0",
+                zoomInputsSingleLayerExtremes.get(0).getMin());
+        assertEquals(
+                "The zoom input max should be the max value of the tiled crs because the style denominator is greater than the tiled crs max",
+                "21",
+                zoomInputsSingleLayerExtremes.get(0).getMax());
+
+        li.getStyles().clear();
+        li.getStyles().add(cat.getStyleByName("scaleRange"));
+        li.setDefaultStyle(cat.getStyleByName("scaleRange"));
+        cat.save(li);
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo wms = geoServer.getService(WMSInfo.class);
+        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.TRUE);
+        geoServer.save(wms);
+
+        MockRequestResponse requestResponseMultiExtentWithMultiStyles =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart() + "," + "layerGroup",
+                        null,
+                        null,
+                        "EPSG:4326",
+                        "scaleRange,");
+        StringReader readerMultiExtentWithMultiStyles =
+                new StringReader(
+                        requestResponseMultiExtentWithMultiStyles.response.getContentAsString());
+        Mapml mapmlMultiExtentWithMultiStyles = null;
+        try {
+            mapmlMultiExtentWithMultiStyles = encoder.decode(readerMultiExtentWithMultiStyles);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputsMultiExtent =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlMultiExtentWithMultiStyles
+                                .getBody()
+                                .getExtents()
+                                .get(0)
+                                .getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsMultiExtent = getInputByType(inputsMultiExtent, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min should be set to match what is in the style definition "
+                        + "when there are multiple extents",
+                "1",
+                zoomInputsMultiExtent.get(0).getMin());
+        assertEquals(
+                "The zoom input max should be set to match what is in the style definition "
+                        + "when there are multiple extents",
+                "10",
+                zoomInputsMultiExtent.get(0).getMax());
+
+        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.FALSE);
+        geoServer.save(wms);
+
+        MockRequestResponse requestResponseSingleExtentWithMultiStyles =
+                getMockRequestResponse(
+                        MockData.POLYGONS.getLocalPart() + "," + "layerGroup",
+                        null,
+                        null,
+                        "EPSG:4326",
+                        "scaleRange,");
+        StringReader readerSingleExtentWithMultiStyles =
+                new StringReader(
+                        requestResponseSingleExtentWithMultiStyles.response.getContentAsString());
+        Mapml mapmlSingleExtentWithMultiStyles = null;
+        try {
+            mapmlSingleExtentWithMultiStyles = encoder.decode(readerSingleExtentWithMultiStyles);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Input> inputsSingleExtent =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlSingleExtentWithMultiStyles
+                                .getBody()
+                                .getExtents()
+                                .get(0)
+                                .getInputOrDatalistOrLink(),
+                        Input.class);
+        List<Input> zoomInputsSingleExtent = getInputByType(inputsSingleExtent, InputType.ZOOM);
+        assertEquals(
+                "The zoom input min goes to the tiled crs defaults when there is one extent for multiple layers",
+                "0",
+                zoomInputsSingleExtent.get(0).getMin());
+        assertEquals(
+                "The zoom input max goes to the tiled crs defaults when there is one extent for multiple layers",
+                "21",
+                zoomInputsSingleExtent.get(0).getMax());
+    }
+
     @SuppressWarnings("unchecked") // filtering by clazz
     private <T> List<T> getTypeFromInputOrDataListOrLink(
             List<Object> inputOrDatalistOrLink, Class<T> clazz) {
@@ -433,6 +665,12 @@ public class MapMLWMSTest extends WMSTestSupport {
     private List<Link> getLinkByRelType(List<Link> links, RelType relType) {
         return links.stream()
                 .filter(link -> link.getRel().equals(relType))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    private List<Input> getInputByType(List<Input> inputs, InputType inputType) {
+        return inputs.stream()
+                .filter(input -> input.getType().equals(inputType))
                 .collect(java.util.stream.Collectors.toList());
     }
 
@@ -508,7 +746,18 @@ public class MapMLWMSTest extends WMSTestSupport {
     }
 
     @Test
-    public void testDefaultConfiguredMapMLLayer() throws Exception {
+    public void testDefaultConfiguredMapMLLayerEPSG() throws Exception {
+        // works with a standard EPSG code, as found in the capabiltied document
+        testDefaultConfiguredMapMLLayer("EPSG:3857");
+    }
+
+    @Test
+    public void testDefaultConfiguredMapMLLayerTCRS() throws Exception {
+        // but also works with a native MapML TCRS code
+        testDefaultConfiguredMapMLLayer("MapML:OSMTILE");
+    }
+
+    private void testDefaultConfiguredMapMLLayer(String srs) throws Exception {
         MockRequestResponse requestResponse =
                 getMockRequestResponse(
                         MockData.ROAD_SEGMENTS.getPrefix()
@@ -516,7 +765,7 @@ public class MapMLWMSTest extends WMSTestSupport {
                                 + MockData.ROAD_SEGMENTS.getLocalPart(),
                         null,
                         Locale.FRENCH,
-                        "EPSG:3857",
+                        srs,
                         null);
 
         org.w3c.dom.Document doc =
@@ -524,6 +773,7 @@ public class MapMLWMSTest extends WMSTestSupport {
                         new ByteArrayInputStream(
                                 requestResponse.response.getContentAsString().getBytes()),
                         true);
+        print(doc);
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
         URL url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
@@ -533,7 +783,7 @@ public class MapMLWMSTest extends WMSTestSupport {
         assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
         assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
         assertTrue(vars.get("layers").equalsIgnoreCase(MockData.ROAD_SEGMENTS.getLocalPart()));
-        assertTrue(vars.get("crs").equalsIgnoreCase("urn:x-ogc:def:crs:EPSG:3857"));
+        assertTrue(vars.get("crs").equalsIgnoreCase("MapML:OSMTILE"));
         assertTrue(vars.get("bbox").equalsIgnoreCase("{xmin},{ymin},{xmax},{ymax}"));
         assertTrue(vars.get("format").equalsIgnoreCase("image/png"));
         assertTrue(vars.get("width").equalsIgnoreCase("{w}"));
@@ -550,7 +800,7 @@ public class MapMLWMSTest extends WMSTestSupport {
         assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
         assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
         assertTrue(vars.get("layers").equalsIgnoreCase(MockData.ROAD_SEGMENTS.getLocalPart()));
-        assertTrue(vars.get("crs").equalsIgnoreCase("urn:x-ogc:def:crs:EPSG:3857"));
+        assertTrue(vars.get("crs").equalsIgnoreCase("MapML:OSMTILE"));
         assertTrue(vars.get("bbox").equalsIgnoreCase("{xmin},{ymin},{xmax},{ymax}"));
         assertTrue(vars.get("width").equalsIgnoreCase("{w}"));
         assertTrue(vars.get("height").equalsIgnoreCase("{h}"));
@@ -823,7 +1073,7 @@ public class MapMLWMSTest extends WMSTestSupport {
         assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
         assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
         assertTrue(vars.get("layers").equalsIgnoreCase(MockData.BASIC_POLYGONS.getLocalPart()));
-        assertTrue(vars.get("crs").equalsIgnoreCase("urn:x-ogc:def:crs:EPSG:3857"));
+        assertTrue(vars.get("crs").equalsIgnoreCase("MapML:OSMTILE"));
         assertTrue(vars.get("bbox").equalsIgnoreCase("{xmin},{ymin},{xmax},{ymax}"));
         assertTrue(vars.get("width").equalsIgnoreCase("{w}"));
         assertTrue(vars.get("height").equalsIgnoreCase("{h}"));
@@ -883,12 +1133,131 @@ public class MapMLWMSTest extends WMSTestSupport {
                 "layerGroup".equalsIgnoreCase(d.title()));
     }
 
+    @Test
+    public void testHTMLWorkspaceQualified() throws Exception {
+        String path =
+                "cite/wms?LAYERS=Lakes"
+                        + "&STYLES=&FORMAT="
+                        + MapMLConstants.MAPML_HTML_MIME_TYPE
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS=epsg:3857"
+                        + "&BBOX=-13885038,2870337,-7455049,6338174"
+                        + "&WIDTH=150"
+                        + "&HEIGHT=150"
+                        + "&format_options="
+                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":image/png";
+        Document doc = getAsJSoup(path);
+        Element layer = doc.select("mapml-viewer > layer-").first();
+        String layerSrc = layer.attr("src");
+        assertThat(layerSrc, startsWith("http://localhost:8080/geoserver/cite/wms?"));
+        assertThat(layerSrc, containsString("LAYERS=Lakes"));
+    }
+
+    @Test
+    public void testInvalidProjectionHTML() throws Exception {
+        String path =
+                "cite/wms?LAYERS=Lakes"
+                        + "&STYLES=&FORMAT="
+                        + MapMLConstants.MAPML_HTML_MIME_TYPE
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS=EPSG:32632"
+                        + "&BBOX=-13885038,2870337,-7455049,6338174"
+                        + "&WIDTH=150"
+                        + "&HEIGHT=150"
+                        + "&format_options="
+                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":image/png";
+        org.w3c.dom.Document dom = getAsDOM(path);
+        String message = checkLegacyException(dom, "InvalidParameterValue", "crs").trim();
+        assertEquals("This projection is not supported by MapML: EPSG:32632", message);
+    }
+
+    @Test
+    public void testInvalidProjectionMapML() throws Exception {
+        String path =
+                "cite/wms?LAYERS=Lakes"
+                        + "&STYLES=&FORMAT="
+                        + MapMLConstants.MAPML_MIME_TYPE
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS=EPSG:32632"
+                        + "&BBOX=-13885038,2870337,-7455049,6338174"
+                        + "&WIDTH=150"
+                        + "&HEIGHT=150"
+                        + "&format_options="
+                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":image/png";
+        org.w3c.dom.Document dom = getAsDOM(path);
+        String message = checkLegacyException(dom, "InvalidParameterValue", "crs").trim();
+        assertEquals("This projection is not supported by MapML: EPSG:32632", message);
+    }
+
+    @Test
+    public void testLargeBounds() throws Exception {
+        // a layer whose bounds exceed the capabilities of the projected MapML TileCRS,
+        // projection handler is needed to cut them down to size
+        MockRequestResponse requestResponse =
+                getMockRequestResponse(
+                        getLayerId(MockData.LAKES),
+                        null,
+                        null,
+                        "MapML:WGS84",
+                        null,
+                        new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84));
+
+        Mapml mapml = parseMapML(requestResponse);
+
+        // bounds for self link, same as in the request
+        List<Link> selfLinks = getLinkByRelType(mapml.getHead().getLinks(), RelType.SELF_STYLE);
+        Link selfLink = selfLinks.get(0);
+        Map<String, Object> parsedSelf = KvpUtils.parseQueryString(selfLink.getHref());
+        assertThat(
+                parsedSelf,
+                hasEntry(equalTo("bbox"), new BboxMatcher(new Envelope(-180, 180, -90, 90), 1e-6)));
+
+        // check alternate projections have appropriate bounds too
+        List<Link> alternateLinks = getLinkByRelType(mapml.getHead().getLinks(), RelType.ALTERNATE);
+        testAlternateBounds(
+                alternateLinks, ProjType.OSMTILE, new Envelope(-2E7, 2E7, -2E7, 2E7), 1e6);
+        testAlternateBounds(
+                alternateLinks, ProjType.APSTILE, new Envelope(-1E7, 1.4E7, -1E7, 1.4E7), 1e6);
+        testAlternateBounds(
+                alternateLinks, ProjType.CBMTILE, new Envelope(-8.1E6, 8.3E6, -3.6E6, 1.23E7), 1e5);
+    }
+
+    private void testAlternateBounds(
+            List<Link> alternateLinks, ProjType projType, Envelope bounds, double tolerance) {
+        Link osmLink =
+                alternateLinks.stream()
+                        .filter(l -> l.getProjection() == projType)
+                        .findFirst()
+                        .orElseThrow();
+        Map<String, Object> parsedOSM = KvpUtils.parseQueryString(osmLink.getHref());
+        assertThat(parsedOSM, hasEntry(equalTo("bbox"), new BboxMatcher(bounds, tolerance)));
+    }
+
+    private static Mapml parseMapML(MockRequestResponse requestResponse)
+            throws JAXBException, UnsupportedEncodingException {
+        MapMLEncoder encoder = new MapMLEncoder();
+        StringReader reader = new StringReader(requestResponse.response.getContentAsString());
+        Mapml mapmlSingleExtent = null;
+        try {
+            mapmlSingleExtent = encoder.decode(reader);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        return mapmlSingleExtent;
+    }
+
     @SuppressWarnings("PMD.SimplifiableTestAssertion")
-    private Document testLayersAndGroupsHTML(Object l, Locale locale) throws Exception {
+    private Document testLayersAndGroupsHTML(PublishedInfo l, Locale locale) throws Exception {
         String layerName;
         String layerLabel;
-        LayerInfo lyrInfo = getCatalog().getLayerByName(((PublishedInfo) l).getName());
-        LayerGroupInfo lyrGpInfo = getCatalog().getLayerGroupByName(((PublishedInfo) l).getName());
+        LayerInfo lyrInfo = getCatalog().getLayerByName(l.getName());
+        LayerGroupInfo lyrGpInfo = getCatalog().getLayerGroupByName(l.getName());
         if (lyrInfo != null) { // layer...
             layerName = lyrInfo.getName();
         } else {
@@ -1046,6 +1415,23 @@ public class MapMLWMSTest extends WMSTestSupport {
 
     private MockRequestResponse getMockRequestResponse(
             String name, Map kvp, Locale locale, String srs, String styles) throws Exception {
+        return getMockRequestResponse(
+                name,
+                kvp,
+                locale,
+                srs,
+                styles,
+                new ReferencedEnvelope(0, 1, 0, 1, DefaultGeographicCRS.WGS84));
+    }
+
+    private MockRequestResponse getMockRequestResponse(
+            String name,
+            Map kvp,
+            Locale locale,
+            String srs,
+            String styles,
+            ReferencedEnvelope bounds)
+            throws Exception {
         String path = null;
         MockHttpServletRequest request = null;
         if (kvp != null) {
@@ -1063,7 +1449,8 @@ public class MapMLWMSTest extends WMSTestSupport {
                             + "&REQUEST=GetMap"
                             + "&SRS="
                             + srs
-                            + "&BBOX=0,0,1,1"
+                            + "&BBOX="
+                            + testBounds(srs, bounds)
                             + "&WIDTH=150"
                             + "&HEIGHT=150"
                             + "&format_options="
@@ -1080,6 +1467,18 @@ public class MapMLWMSTest extends WMSTestSupport {
         MockHttpServletResponse response = dispatch(request, "UTF-8");
         MockRequestResponse result = new MockRequestResponse(request, response);
         return result;
+    }
+
+    private String testBounds(String srs, ReferencedEnvelope bounds)
+            throws FactoryException, TransformException {
+        try {
+            CoordinateReferenceSystem crs = CRS.decode(srs);
+            ReferencedEnvelope re = bounds.transform(crs, true);
+            return re.getMinX() + "," + re.getMinY() + "," + re.getMaxX() + "," + re.getMaxY();
+        } catch (Exception e) {
+            // some test use non existing projections, so we just return a default value
+            return "0,0,1,1";
+        }
     }
 
     private static class MockRequestResponse {
@@ -1136,5 +1535,34 @@ public class MapMLWMSTest extends WMSTestSupport {
             vars.put(varValue[0], varValue.length == 2 ? varValue[1] : "");
         }
         return vars;
+    }
+
+    public class BboxMatcher extends BaseMatcher<Object> {
+
+        Envelope expected;
+        double tolerance;
+
+        public BboxMatcher(Envelope expected, double tolerance) {
+            this.expected = expected;
+            this.tolerance = tolerance;
+        }
+
+        @Override
+        public boolean matches(Object s) {
+            try {
+                Envelope parsed = (Envelope) new BBoxKvpParser().parse((String) s);
+                return Math.abs(parsed.getMinX() - expected.getMinX()) < tolerance
+                        && Math.abs(parsed.getMinY() - expected.getMinY()) < tolerance
+                        && Math.abs(parsed.getMaxX() - expected.getMaxX()) < tolerance
+                        && Math.abs(parsed.getMaxY() - expected.getMaxY()) < tolerance;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("Bounds matches " + expected + " with tolerance " + tolerance);
+        }
     }
 }

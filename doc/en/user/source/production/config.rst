@@ -188,6 +188,28 @@ In case you want it set to ``text/xml`` instead, you need to setup the Java Syst
 * ``-Dows10.exception.xml.responsetype=text/xml`` for OWS 1.0.0 version
 * ``-Dows11.exception.xml.responsetype=text/xml`` for OWS 1.1.0 version
 
+.. _production_config_freemarker_escaping:
+
+FreeMarker Template Auto-escaping
+---------------------------------
+
+By default, FreeMarker's built-in automatic escaping functionality will be enabled to mitigate potential cross-site scripting
+(XSS) vulnerabilities in cases where GeoServer uses FreeMarker templates to generate HTML output and administrators are able
+to modify the templates and/or users have significant control over the output through service requests. When the
+``GEOSERVER_FORCE_FREEMARKER_ESCAPING`` property is set to false, auto-escaping will delegate either to the feature's default
+behavior or other settings which allow administrators to enable/disable auto-escaping on a global or per virtual service
+basis. This property can be set to false either via Java system property, command line argument (-D), environment variable or
+web.xml init parameter.
+
+This setting currently applies to the WMS GetFeatureInfo HTML output format and may be applied to other applicable GeoServer
+functionality in the future.
+
+.. warning::
+    While enabling auto-escaping will prevent XSS using the default templates and mitigate many cases where template authors
+    are not considering XSS in their template design, it does **NOT** completely prevent template authors from creating
+    templates that allow XSS (whether this is intentional or not). Additional functionality may be added in the future to
+    mitigate those potential XSS vulnerabilities.
+
 .. _production_config_external_entities:
 
 External Entities Resolution
@@ -218,6 +240,17 @@ GeoServer provides a number of facilities to control external entity resolution:
 * To turn off all restrictions (allowing ``http``, ``https``, and ``file`` references) use the global setting :ref:`config_globalsettings_external_entities`.
   
   This setting prevents ``ENTITY_RESOLUTION_ALLOWLIST`` from being used.
+
+.. _production_config_spring_firewall:
+
+Spring Security Firewall
+------------------------
+
+GeoServer defaults to using Spring Security's StrictHttpFirewall to help improve protection against potentially malicious
+requests. However, some users will need to disable the StrictHttpFirewall if the names of GeoServer resources (workspaces,
+layers, styles, etc.) in URL paths need to contain encoded percent, encoded period or decoded or encoded semicolon characters.
+The ``GEOSERVER_USE_STRICT_FIREWALL`` property can be set to false either via Java system property, command line argument
+(-D), environment variable or web.xml init parameter to use the more lenient DefaultHttpFirewall.
 
 Session Management
 ------------------

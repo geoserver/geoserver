@@ -164,7 +164,7 @@ The ``value`` property of Feature attribute values are given by geoserver in ``S
 
 Auto-Escaping
 `````````````
-Auto-escaping can be used to escape special characters so that they are displayed correctly in clients and to prevent injection. GeoServer administrators can enable or disable auto-escaping for FreeMarker template values for the HTML output format on a global or per virtual service basis. Template authors are able to override the WMS service setting to enable or disable escaping on a per template, per block or per value basis. See `Auto-escaping <https://freemarker.apache.org/docs/dgui_misc_autoescaping.html>` for more information.
+Auto-escaping can be used to escape special characters so that they are displayed correctly in clients and to prevent injection. GeoServer administrators can enable or disable auto-escaping for FreeMarker template values for the HTML output format on a global or per virtual service basis. Template authors are able to override the WMS service setting to enable or disable escaping on a per template, per block or per value basis. See `Auto-escaping <https://freemarker.apache.org/docs/dgui_misc_autoescaping.html>`_ for more information.
 
 Accessing static methods
 ````````````````````````

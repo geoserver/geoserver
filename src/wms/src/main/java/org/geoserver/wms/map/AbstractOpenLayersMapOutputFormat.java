@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
@@ -214,7 +215,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
 
     private boolean isWms13FlippedCRS(CoordinateReferenceSystem crs) {
         try {
-            String code = CRS.lookupIdentifier(crs, false);
+            String code = ResourcePool.lookupIdentifier(crs, false);
             if (code == null) return false;
             if (!code.contains("EPSG:")) {
                 code = "EPGS:" + code;

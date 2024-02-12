@@ -2129,8 +2129,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         File expected =
                 new File("src/test/resources/org/geoserver/wms/wms_1_1_1/dem_with_legend.png");
-        // TODO WICKET8 - This isn't really a wicket change.
-        ImageAssert.assertEquals(expected, image, 3700);
+        ImageAssert.assertEquals(expected, image, 3400);
     }
 
     @Test

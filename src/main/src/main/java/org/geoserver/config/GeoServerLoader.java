@@ -242,7 +242,7 @@ public abstract class GeoServerLoader {
 
     protected GeoServerResourceLoader resourceLoader;
     GeoServer geoserver;
-    XStreamPersisterFactory xpf = new XStreamPersisterFactory();
+    protected XStreamPersisterFactory xpf = new XStreamPersisterFactory();
 
     // JD: this is a hack for the moment, it is used only to maintain tests since the test setup
     // relies

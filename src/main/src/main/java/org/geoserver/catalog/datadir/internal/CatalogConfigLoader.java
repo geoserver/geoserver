@@ -45,7 +45,6 @@ class CatalogConfigLoader {
     final AtomicLong readFileCount = new AtomicLong();
 
     private final DataDirectoryWalker fileWalk;
-    private final XStreamLoader xstreamLoader;
     private final ExecutorService executor;
     private final CatalogImpl catalog;
 
@@ -59,17 +58,12 @@ class CatalogConfigLoader {
     }
 
     public CatalogConfigLoader(
-            CatalogImpl catalog,
-            DataDirectoryWalker fileWalk,
-            XStreamLoader xstreamLoader,
-            ExecutorService executor) {
+            CatalogImpl catalog, DataDirectoryWalker fileWalk, ExecutorService executor) {
         requireNonNull(catalog);
         requireNonNull(fileWalk);
-        requireNonNull(xstreamLoader);
         requireNonNull(executor);
         this.catalog = catalog;
         this.fileWalk = fileWalk;
-        this.xstreamLoader = xstreamLoader;
         this.executor = executor;
     }
 
@@ -93,10 +87,33 @@ class CatalogConfigLoader {
 
         loadStyles(fileWalk.globalStyles().stream());
         loadWorkspaces(fileWalk.workspaces().stream());
+        setDefaultWorkspace(fileWalk.getDefaultWorkspace());
         loadLayerGroups(fileWalk.globalLayerGroups().stream());
 
         LOGGER.config(String.format("Depersisted %,d Catalog files.", readFileCount.get()));
         return this.catalog;
+    }
+
+    private void setDefaultWorkspace(Optional<Path> defaultWorkspace) {
+        defaultWorkspace
+                .flatMap(file -> XStreamLoader.depersist(file, this.catalog))
+                .map(WorkspaceInfo.class::cast)
+                .map(WorkspaceInfo::getName)
+                .map(this.catalog::getWorkspaceByName)
+                .ifPresentOrElse(
+                        ws -> {
+                            NamespaceInfo ns = this.catalog.getNamespaceByPrefix(ws.getName());
+                            if (ns == null) {
+                                LOGGER.warning(
+                                        "Default workspace is "
+                                                + ws.getName()
+                                                + " but no matching namespace found.");
+                            } else {
+                                this.catalog.setDefaultWorkspace(ws);
+                                this.catalog.setDefaultNamespace(ns);
+                            }
+                        },
+                        () -> LOGGER.fine("No default workspace found"));
     }
 
     private void loadWorkspaces(Stream<WorkspaceDirectory> stream) {
@@ -201,7 +218,7 @@ class CatalogConfigLoader {
     }
 
     private <C extends Info> Optional<C> depersist(Path file) {
-        Optional<C> info = xstreamLoader.depersist(file, this.catalog);
+        Optional<C> info = XStreamLoader.depersist(file, this.catalog);
         if (info.isPresent()) readFileCount.incrementAndGet();
         return info;
     }

@@ -25,6 +25,7 @@ import org.geoserver.config.util.XStreamServiceLoader;
 import org.geotools.util.logging.Logging;
 import org.springframework.lang.NonNull;
 
+/** @since 2.25 */
 class DataDirectoryWalker {
 
     private static final Logger LOGGER =
@@ -173,7 +174,7 @@ class DataDirectoryWalker {
 
     public List<WorkspaceDirectory> workspaces() {
         if (workspaces == null) {
-            Path workspacesRoot = dataDirRoot.resolve("workspaces");
+            Path workspacesRoot = workspacesDirectory();
             List<Path> workspaceDirectories = subdirectories(workspacesRoot);
             workspaces =
                     workspaceDirectories.stream()
@@ -182,6 +183,11 @@ class DataDirectoryWalker {
                             .collect(Collectors.toList());
         }
         return workspaces;
+    }
+
+    private Path workspacesDirectory() {
+        Path workspacesRoot = dataDirRoot.resolve("workspaces");
+        return workspacesRoot;
     }
 
     public Optional<Path> gsGlobal() {
@@ -261,5 +267,10 @@ class DataDirectoryWalker {
         } finally {
             children.close();
         }
+    }
+
+    public Optional<Path> getDefaultWorkspace() {
+        return Optional.of(workspacesDirectory().resolve("default.xml"))
+                .filter(Files::isRegularFile);
     }
 }

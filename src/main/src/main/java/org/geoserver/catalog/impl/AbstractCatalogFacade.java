@@ -199,8 +199,9 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
 
     protected void resolve(StoreInfo store) {
         setId(store);
-        StoreInfoImpl s = (StoreInfoImpl) store;
 
+        StoreInfoImpl s = (StoreInfoImpl) store;
+        s.setCatalog(getCatalog());
         // resolve the workspace
         WorkspaceInfo resolved = ResolvingProxy.resolve(getCatalog(), s.getWorkspace());
         if (resolved != null) {
@@ -218,7 +219,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     protected void resolve(ResourceInfo resource) {
         setId(resource);
         ResourceInfoImpl r = (ResourceInfoImpl) resource;
-
+        r.setCatalog(getCatalog());
         // resolve the store
         StoreInfo store = ResolvingProxy.resolve(getCatalog(), r.getStore());
         if (store != null) {

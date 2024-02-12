@@ -7,15 +7,16 @@ package org.geoserver.catalog.datadir;
 import static org.geoserver.catalog.impl.ModificationProxy.unwrap;
 
 import com.google.common.base.Stopwatch;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -41,11 +42,13 @@ import org.geoserver.config.ServicePersister;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
 import org.geotools.api.data.DataStoreFactorySpi;
@@ -56,22 +59,25 @@ import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
 /**
- * {@literal datadir.loader.enabled}
- *
- * <p>The loading process is multi-threaded, and will take place in an {@link Executor} whose
+ * The loading process is multi-threaded, and will take place in an {@link Executor} whose
  * parallelism is determined by an heuristic resolving to the minimum between {@code 16} and the
  * number of available processors as reported by {@link Runtime#availableProcessors()}, or
  * overridden by the value passed through the environment variable or system property {@literal
  * DATADIR_LOAD_PARALLELISM}.
+ *
+ * @since 2.25
  */
 public class DataDirectoryGeoServerLoader extends GeoServerLoader {
 
-    static Logger LOGGER =
+    static final Logger LOGGER =
             Logging.getLogger(DataDirectoryGeoServerLoader.class.getPackage().getName());
 
     private DataDirectoryLoader loader;
 
     private GeoServerSecurityManager securityManager;
+
+    private boolean catalogLoaded;
+    private boolean geoserverLoaded;
 
     /**
      * @param resourceLoader
@@ -83,13 +89,21 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
             GeoServerResourceLoader resourceLoader, GeoServerSecurityManager securityManager) {
         super(resourceLoader);
         this.securityManager = securityManager;
-        this.loader = createLoader();
     }
 
     @Override
-    public void reload() throws Exception {
-        this.loader = createLoader();
-        super.reload();
+    public void destroy() {
+        if (loader != null) {
+            loader.dispose();
+        }
+        super.destroy();
+    }
+
+    private DataDirectoryLoader loader() {
+        if (this.loader == null) {
+            this.loader = createLoader();
+        }
+        return this.loader;
     }
 
     /**
@@ -107,20 +121,30 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
      */
     @Override
     public void loadCatalog(Catalog targetCatalog, XStreamPersister xp) throws Exception {
+        if (isLegacyCatalog()) {
+            targetCatalog.setResourceLoader(resourceLoader);
+            super.readCatalog(targetCatalog, xp);
+            return;
+        }
         Stopwatch startedStopWatch = logStart();
-        final CatalogImpl newlyLoadedCatalog = loader.loadCatalog(newTemporaryCatalog());
-        newlyLoadedCatalog.resolve();
-        logStop(startedStopWatch.stop(), newlyLoadedCatalog);
+        final CatalogImpl loadedCatalog = loader().loadCatalog(newTemporaryCatalog());
+        geoserverLoaded = true;
+        loadedCatalog.resolve();
 
-        decryptDataStorePasswords(newlyLoadedCatalog);
+        logStop(startedStopWatch.stop(), loadedCatalog);
 
-        transferContents(newlyLoadedCatalog, targetCatalog, xp);
+        decryptDataStorePasswords(loadedCatalog);
+
+        xp.setCatalog(targetCatalog);
+        transferContents(loadedCatalog, targetCatalog, xp);
 
         getLoaderListener().loadCatalog(targetCatalog, xp);
+
+        disposeIfBothLoaded();
     }
 
-    protected CatalogImpl newTemporaryCatalog() {
-        return new CatalogImpl();
+    private boolean isLegacyCatalog() {
+        return Resources.exists(resourceLoader.get("catalog.xml"));
     }
 
     @Override
@@ -133,7 +157,9 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
         while (rawCatalog instanceof AbstractDecorator) {
             rawCatalog = ((AbstractDecorator<?>) rawCatalog).unwrap(Catalog.class);
         }
-        GeoServerImpl loaded = loader.loadGeoServer(rawCatalog);
+        GeoServerImpl loaded = loader().loadGeoServer(rawCatalog);
+        catalogLoaded = true;
+        disposeIfBothLoaded();
 
         LOGGER.log(
                 Level.CONFIG,
@@ -148,6 +174,17 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
                 stopWatch.stop());
 
         getLoaderListener().loadGeoServer(geoServer, xp);
+    }
+
+    private void disposeIfBothLoaded() {
+        if (catalogLoaded && geoserverLoaded) {
+            loader().dispose();
+        }
+    }
+
+    /** Override to use an alternative {@link CatalogImpl} subclass */
+    protected CatalogImpl newTemporaryCatalog() {
+        return new CatalogImpl();
     }
 
     private void transferContents(GeoServerImpl source, GeoServer target, XStreamPersister xp) {
@@ -226,13 +263,8 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
 
         catalog.getDataStores().stream()
                 .filter(this::shouldTryDecrypt)
-                .forEach(
-                        store -> {
-                            helper.decode(store);
-                            ModificationProxy h =
-                                    (ModificationProxy) Proxy.getInvocationHandler(store);
-                            h.commit();
-                        });
+                .map(ModificationProxy::unwrap)
+                .forEach(helper::decode);
     }
 
     /**
@@ -260,7 +292,8 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
     protected DataDirectoryLoader createLoader() {
         FileSystemResourceStore resourceStore = resolveResourceStore(resourceLoader);
         List<XStreamServiceLoader<ServiceInfo>> serviceLoaders = findServiceLoaders();
-        return new DataDirectoryLoader(resourceStore, serviceLoaders);
+        XStreamPersisterFactory persisterFactory = super.xpf;
+        return new DataDirectoryLoader(resourceStore, serviceLoaders, persisterFactory);
     }
 
     public static List<XStreamServiceLoader<ServiceInfo>> findServiceLoaders() {
@@ -285,6 +318,7 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
 
         Stopwatch stopWatch = Stopwatch.createStarted();
         sync(source, target);
+        target.setResourceLoader(super.resourceLoader);
         LOGGER.log(
                 Level.CONFIG,
                 "Transferred Catalog config to actual service bean in {0}",
@@ -300,20 +334,26 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
             target.removeListeners(ResourcePool.CacheClearingListener.class);
             ((CatalogImpl) target).sync(source);
             target.setResourceLoader(super.resourceLoader);
+            ((CatalogImpl) target).resolve();
         } else {
-            source.getStyles().forEach(target::add);
-            source.getNamespaces().forEach(target::add);
-            source.getWorkspaces().forEach(target::add);
-            source.getStores(StoreInfo.class).forEach(target::add);
-            source.getResources(ResourceInfo.class).forEach(target::add);
-            source.getLayers().forEach(target::add);
-            source.getLayerGroups().forEach(target::add);
-            source.getMaps().forEach(target::add);
+            transferAll(source.getNamespaces(), target::add);
+            transferAll(source.getWorkspaces(), target::add);
+            transferAll(source.getStyles(), target::add);
+            transferAll(source.getStores(StoreInfo.class), target::add);
+            transferAll(source.getResources(ResourceInfo.class), target::add);
+            transferAll(source.getLayers(), target::add);
+            transferAll(source.getLayerGroups(), target::add);
+            transferAll(source.getMaps(), target::add);
         }
+    }
+
+    private <T extends CatalogInfo> void transferAll(List<T> infos, Consumer<T> addop) {
+        infos.stream().map(ModificationProxy::unwrap).forEach(addop);
     }
 
     private void restoreListeners(
             Catalog target, List<CatalogListener> preservedListeners, XStreamPersister xp) {
+
         // attach back the old listeners
         preservedListeners.forEach(target::addListener);
 
@@ -324,13 +364,14 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
         target.addListener(new GeoServerResourcePersister(target));
     }
 
-    private List<CatalogListener> removePersisterListeners(Catalog catalog) {
+    private List<CatalogListener> removePersisterListeners(Catalog target) {
         // we are going to synch up the catalogs and need to preserve listeners,
-        // but these two fellas are attached to the new catalog as well
-        catalog.removeListeners(GeoServerConfigPersister.class);
-        catalog.removeListeners(GeoServerResourcePersister.class);
+        // but these three fellas are attached to the new catalog as well
+        target.removeListeners(ResourcePool.CacheClearingListener.class);
+        target.removeListeners(GeoServerConfigPersister.class);
+        target.removeListeners(GeoServerResourcePersister.class);
 
-        return new ArrayList<>(catalog.getListeners());
+        return new ArrayList<>(target.getListeners());
     }
 
     private GeoServerLoaderListener getLoaderListener() {

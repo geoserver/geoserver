@@ -5,11 +5,8 @@
  */
 package org.geoserver.ows;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -47,22 +44,15 @@ public class ClasspathPublisher extends AbstractURLPublisher {
      */
     public ClasspathPublisher(Class<?> clazz) {
         this.clazz = clazz;
+        this.replaceWindowsFileSeparator = true;
     }
 
     public ClasspathPublisher() {
-        this.clazz = ClasspathPublisher.class;
+        this(ClasspathPublisher.class);
     }
 
     @Override
-    protected URL getUrl(HttpServletRequest request) throws IOException {
-        String reqPath =
-                URLDecoder.decode(request.getRequestURI(), "UTF-8")
-                        .substring(request.getContextPath().length())
-                        .replace(File.separatorChar, '/');
-        if (Arrays.stream(reqPath.split("/")).anyMatch(".."::equals)) {
-            throw new IllegalArgumentException("Contains invalid '..' path: " + reqPath);
-        }
-
+    protected URL getUrl(HttpServletRequest request, String reqPath) throws IOException {
         // try a few lookups
         URL url = clazz.getResource(reqPath);
         if (url == null && !reqPath.startsWith("/")) {

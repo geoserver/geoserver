@@ -8,11 +8,12 @@ package org.geoserver.ows;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLDecoder;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.URLs;
+import org.springframework.http.MediaType;
 import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.context.support.ServletContextResourceLoader;
 
@@ -40,6 +41,14 @@ import org.springframework.web.context.support.ServletContextResourceLoader;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class FilePublisher extends AbstractURLPublisher {
+
+    /**
+     * System property to control whether or not to disable server static files with the text/html
+     * or application/javascript mime types. When set to true, these mime types will be converted to
+     * text/plain. Default is false.
+     */
+    public static final String DISABLE_STATIC_WEB_FILES = "GEOSERVER_DISABLE_STATIC_WEB_FILES";
+
     /** Resource loader */
     protected GeoServerResourceLoader loader;
 
@@ -61,24 +70,38 @@ public class FilePublisher extends AbstractURLPublisher {
     }
 
     @Override
-    protected URL getUrl(HttpServletRequest request) throws IOException {
-        String ctxPath = request.getContextPath();
-        String reqPath = request.getRequestURI();
-        reqPath = URLDecoder.decode(reqPath, "UTF-8");
-        reqPath = reqPath.substring(ctxPath.length());
+    protected String getMimeType(String reqPath, String filename) {
+        String mimeType = super.getMimeType(reqPath, filename);
+        if (!"/index.html".equals(reqPath)) {
+            String lowerCaseMime = mimeType.toLowerCase();
+            // force using the static web files directory for html/javascript files and only allow
+            // the html/javascript mime types when the system property is set to true to mitigate
+            // stored XSS vulnerabilities
+            if (lowerCaseMime.contains("html") || lowerCaseMime.contains("javascript")) {
+                String prop = GeoServerExtensions.getProperty(DISABLE_STATIC_WEB_FILES);
+                if (Boolean.parseBoolean(prop) || !reqPath.startsWith("/www/")) {
+                    return MediaType.TEXT_PLAIN_VALUE;
+                }
+            }
+        }
+        return mimeType;
+    }
 
+    @Override
+    protected boolean isAttachment(String reqPath, String filename, String mime) {
+        // prevent stored XSS using malicious resources with the
+        // text/xml, application/xml or image/svg+xml mime types
+        return mime.toLowerCase().contains("xml") || super.isAttachment(reqPath, filename, mime);
+    }
+
+    @Override
+    protected URL getUrl(HttpServletRequest request, String reqPath) throws IOException {
         if ((reqPath.length() > 1) && reqPath.startsWith("/")) {
             reqPath = reqPath.substring(1);
         }
 
-        // sigh, in order to serve the file we have to open it 2 times
-        // 1) to determine its mime type
-        // 2) to determine its encoding and really serve it
-        // we can't coalish 1) because we don't have a way to give jmimemagic the bytes at the
-        // beginning of the file without disabling extension quick matching
-
-        // load the file
-        File file = loader.find(reqPath);
+        // load the file (do not load index.html from the data directory)
+        File file = "index.html".equals(reqPath) ? null : loader.find(reqPath);
 
         if (file == null && scloader != null) {
             // try loading as a servlet resource

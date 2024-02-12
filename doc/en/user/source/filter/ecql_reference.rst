@@ -193,8 +193,9 @@ Attribute
 
 An attribute name denotes the value of a feature attribute.
 
-* Simple attribute names are sequences of letters and numbers,
-* Attribute names quoted with double-quotes may be any sequence of characters.
+* Simple attribute names are sequences of letters and numbers, e.g. `States123`
+* Attribute names quoted with double-quotes may be any sequence of characters, e.g. `"States!@#"`
+* `Note <https://gis.stackexchange.com/a/475826/68995>`_: `id` is a reserved word in the GML spec (for the FeatureID) and thus an attribute (or database column) named `id` must be quoted, e.g. `"id"`
 
 .. _ecql_literal:
  

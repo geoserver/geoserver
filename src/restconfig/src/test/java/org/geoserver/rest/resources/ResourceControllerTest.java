@@ -112,6 +112,9 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
                 getDataDirectory().get("mydir2/imagewithoutextension").out(),
                 true,
                 true);
+
+        getDataDirectory().get("mydir3/test.html").file();
+        getDataDirectory().get("mydir3/test.js").file();
     }
 
     @Test
@@ -279,6 +282,25 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
         assertContentType("image/png", response);
         assertEquals(
                 "attachment; filename=\"fake.png\"", response.getHeader("Content-Disposition"));
+    }
+
+    @Test
+    public void testBlockContentTypeHtml() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/resource/mydir3/test.html");
+        assertEquals("resource", response.getHeader("Resource-Type"));
+        assertContentType("text/plain", response);
+        assertEquals(
+                "attachment; filename=\"test.html\"", response.getHeader("Content-Disposition"));
+    }
+
+    @Test
+    public void testBlockContentTypeJavaScript() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/resource/mydir3/test.js");
+        assertEquals("resource", response.getHeader("Resource-Type"));
+        assertContentType("text/plain", response);
+        assertEquals("attachment; filename=\"test.js\"", response.getHeader("Content-Disposition"));
     }
 
     @Test

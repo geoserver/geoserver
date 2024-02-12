@@ -252,6 +252,14 @@ layers, styles, etc.) in URL paths need to contain encoded percent, encoded peri
 The ``GEOSERVER_USE_STRICT_FIREWALL`` property can be set to false either via Java system property, command line argument
 (-D), environment variable or web.xml init parameter to use the more lenient DefaultHttpFirewall.
 
+Static Web Files
+----------------
+
+GeoServer by default allows administrators to serve static files by simply placing them in the ``www``` subdirectory of the
+GeoServer data directory. If this feature is not being used to serve HTML/JavaScript files or is not being used at all, the
+``GEOSERVER_DISABLE_STATIC_WEB_FILES`` property can be set to true to mitigate potential stored XSS issues with that directory.
+See the :ref:`tutorials_staticfiles` page for more details.
+
 Session Management
 ------------------
 

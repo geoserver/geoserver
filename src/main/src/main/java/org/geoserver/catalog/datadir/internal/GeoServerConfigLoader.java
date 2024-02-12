@@ -32,6 +32,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
+/** @since 2.25 */
 class GeoServerConfigLoader {
 
     private static final Logger LOGGER =
@@ -40,7 +41,6 @@ class GeoServerConfigLoader {
     private final AtomicLong readFileCount = new AtomicLong();
 
     private final DataDirectoryWalker fileWalk;
-    private final XStreamLoader xstreamLoader;
     private final ExecutorService executor;
     private final GeoServerImpl geoServer;
 
@@ -48,24 +48,21 @@ class GeoServerConfigLoader {
     private List<XStreamServiceLoader<ServiceInfo>> serviceLoaders;
 
     public GeoServerConfigLoader(
+            GeoServerImpl target,
             DataDirectoryWalker fileWalk,
-            XStreamLoader xstreamLoader,
             ExecutorService executor,
-            GeoServerImpl gs,
             FileSystemResourceStore resourceStore,
             List<XStreamServiceLoader<ServiceInfo>> serviceLoaders) {
 
         requireNonNull(fileWalk);
-        requireNonNull(xstreamLoader);
         requireNonNull(executor);
-        requireNonNull(gs);
+        requireNonNull(target);
         requireNonNull(resourceStore);
         requireNonNull(serviceLoaders);
 
         this.fileWalk = fileWalk;
-        this.geoServer = gs;
+        this.geoServer = target;
         this.resourceStore = resourceStore;
-        this.xstreamLoader = xstreamLoader;
         this.executor = executor;
         this.serviceLoaders = serviceLoaders;
     }
@@ -75,7 +72,7 @@ class GeoServerConfigLoader {
         try {
             return task.get();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw e;
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof Exception) throw (Exception) cause;
@@ -154,7 +151,7 @@ class GeoServerConfigLoader {
         try {
             s = serviceLoader.load(geoServer, directory);
             this.readFileCount.incrementAndGet();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             if (Resources.exists(directory)) {
                 severe(
                         "Failed to load the service configuration in directory: {0} with loader for {1}",
@@ -231,7 +228,7 @@ class GeoServerConfigLoader {
 
     private <C extends Info> Optional<C> depersist(Path file) {
         Catalog catalog = geoServer.getCatalog();
-        Optional<C> info = xstreamLoader.depersist(file, catalog);
+        Optional<C> info = XStreamLoader.depersist(file, catalog);
         if (info.isPresent()) readFileCount.incrementAndGet();
         return info;
     }

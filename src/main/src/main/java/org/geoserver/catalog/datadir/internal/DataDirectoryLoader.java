@@ -21,6 +21,7 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.FileSystemResourceStore;
@@ -42,6 +43,7 @@ import org.springframework.util.StringUtils;
  * @see DataDirectoryWalker
  * @see CatalogConfigLoader
  * @see GeoServerConfigLoader
+ * @since 2.25
  */
 public class DataDirectoryLoader {
 
@@ -50,49 +52,61 @@ public class DataDirectoryLoader {
     private static final Logger LOGGER =
             Logging.getLogger(DataDirectoryLoader.class.getPackage().getName());
 
-    private final DataDirectoryWalker fileWalk;
-
-    private boolean catalogLoaded, geoserverLoaded;
-
-    private FileSystemResourceStore resourceStore;
-    private List<XStreamServiceLoader<ServiceInfo>> serviceLoaders;
-
-    private final ForkJoinPool executor;
     private static final AtomicInteger threadPoolId = new AtomicInteger();
 
-    private final XStreamLoader xstreamLoader;
+    private final FileSystemResourceStore resourceStore;
+    private final List<XStreamServiceLoader<ServiceInfo>> serviceLoaders;
+    private final XStreamPersisterFactory xpf;
+
+    private ForkJoinPool forkJoinPool;
+    private DataDirectoryWalker fileWalker;
 
     public DataDirectoryLoader(
             FileSystemResourceStore resourceStore,
-            List<XStreamServiceLoader<ServiceInfo>> serviceLoaders) {
+            List<XStreamServiceLoader<ServiceInfo>> serviceLoaders,
+            XStreamPersisterFactory xpf) {
 
         this.resourceStore = resourceStore;
         this.serviceLoaders = serviceLoaders;
-        Path dataDirRoot = resourceStore.get("").dir().toPath();
-        List<String> serviceFileNames =
-                serviceLoaders.stream()
-                        .map(XStreamServiceLoader::getFilename)
-                        .collect(Collectors.toList());
-        this.fileWalk = new DataDirectoryWalker(dataDirRoot, serviceFileNames);
-        this.executor = executor();
-        this.xstreamLoader = new XStreamLoader();
+        this.xpf = xpf;
+    }
+
+    private void init() {
+        if (null == forkJoinPool) {
+            XStreamLoader.setXpf(this.xpf);
+            Path dataDirRoot = resourceStore.get("").dir().toPath();
+            List<String> serviceFileNames =
+                    serviceLoaders.stream()
+                            .map(XStreamServiceLoader::getFilename)
+                            .collect(Collectors.toList());
+            this.fileWalker = new DataDirectoryWalker(dataDirRoot, serviceFileNames);
+
+            final int parallelism = determineParallelism();
+            final boolean asyncMode = false;
+            this.forkJoinPool =
+                    new ForkJoinPool(
+                            parallelism, threadFactory(), uncaughtExceptionHandler(), asyncMode);
+        }
+    }
+
+    private DataDirectoryWalker fileWalk() {
+        init();
+        return fileWalker;
     }
 
     private ForkJoinPool executor() {
-        final int parallelism = determineParallelism();
-        final boolean asyncMode = false;
-        final int poolIndex = threadPoolId.incrementAndGet();
-        return new ForkJoinPool(
-                parallelism, threadFactory(poolIndex), uncaughtExceptionHandler(), asyncMode);
+        init();
+        return forkJoinPool;
     }
 
-    private ForkJoinWorkerThreadFactory threadFactory(final int poolIndex) {
+    private ForkJoinWorkerThreadFactory threadFactory() {
 
+        final int poolIndex = threadPoolId.incrementAndGet();
         final AtomicInteger threadIndex = new AtomicInteger();
 
         return pool -> {
             ForkJoinWorkerThread worker =
-                    ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(executor);
+                    ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(executor());
 
             worker.setName(
                     String.format(
@@ -113,17 +127,9 @@ public class DataDirectoryLoader {
     }
 
     public CatalogImpl loadCatalog(CatalogImpl catalogImpl) throws Exception {
-        CatalogConfigLoader loader =
-                new CatalogConfigLoader(catalogImpl, fileWalk, xstreamLoader, executor);
-        try {
-            CatalogImpl catalog = loader.loadCatalog();
-            this.catalogLoaded = true;
-            tryDispose();
-            return catalog;
-        } catch (Exception e) {
-            dispose();
-            throw e;
-        }
+        CatalogConfigLoader loader = new CatalogConfigLoader(catalogImpl, fileWalk(), executor());
+
+        return loader.loadCatalog();
     }
 
     public GeoServerImpl loadGeoServer(Catalog realCatalog) throws Exception {
@@ -135,29 +141,19 @@ public class DataDirectoryLoader {
 
         GeoServerConfigLoader loader =
                 new GeoServerConfigLoader(
-                        fileWalk, xstreamLoader, executor, gs, resourceStore, serviceLoaders);
+                        gs, fileWalk(), executor(), resourceStore, serviceLoaders);
 
-        try {
-            GeoServerImpl geoserver = loader.loadGeoServer();
-            this.geoserverLoaded = true;
-            tryDispose();
-            return geoserver;
-        } catch (Exception e) {
-            dispose();
-            throw e;
-        }
+        return loader.loadGeoServer();
     }
 
-    public synchronized void dispose() {
-        if (!executor.isShutdown()) {
-            executor.shutdownNow();
-            fileWalk.dispose();
-        }
-    }
-
-    private void tryDispose() {
-        if (catalogLoaded && geoserverLoaded) {
-            dispose();
+    public void dispose() {
+        if (forkJoinPool != null && !forkJoinPool.isShutdown()) {
+            try {
+                fileWalker.dispose();
+                forkJoinPool.shutdownNow();
+            } finally {
+                forkJoinPool = null;
+            }
         }
     }
 

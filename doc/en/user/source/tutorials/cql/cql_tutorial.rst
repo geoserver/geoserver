@@ -147,7 +147,7 @@ If instead we want to extract the states whose name is in a given list we can us
    *STATE_NAME IN ('New York', 'California', 'Montana', 'Texas')*
    
 .. warning::
-   `Note <https://gis.stackexchange.com/a/475826/68995>`_: The attribute name `id` is a reserved word in the GML spec (for the FeatureID) and thus an attribute (or database column) named `id` must be quoted, e.g. `"id"`  
+   `Note <https://gis.stackexchange.com/a/475826/68995>`_: `id` is one of a few `reserved keywords <https://github.com/geotools/geotools/blob/main/modules/library/cql/src/main/jjtree/ECQLGrammar.jjt#L180>`_ in ECQL and thus an attribute (or database column) named `id` must be quoted, e.g. `"id"`  
 
 Filter functions
 ------------------------

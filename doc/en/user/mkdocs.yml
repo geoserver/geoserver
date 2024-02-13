@@ -66,14 +66,12 @@ plugins:
   - macros:
       render_by_default: false
       on_error_fail: true
-      on_undefined: keep
-      j2_block_start_string: '[[%'
-      j2_block_end_string: '%]]'
-      j2_variable_start_string: '[['
-      j2_variable_end_string: ']]'
+      on_undefined: strict
   - search
   
 # Customizations
+hooks:
+  - download.py
 extra:
   homepage: https://geoserver.org/
   social:
@@ -115,10 +113,21 @@ markdown_extensions:
   - tables
   - md_in_html
   
+# Validation
+validation:
+  nav:
+    omitted_files: info
+    not_found: warn
+    absolute_links: info
+  links:
+    not_found: info
+    absolute_links: info
+    unrecognized_links: info
+
+# Page tree
 not_in_nav: |
   **/download/*.md
 
-# Page tree
 nav:
   - 'User Manual': index.md
   - 'Introduction':

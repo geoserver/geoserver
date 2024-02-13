@@ -81,7 +81,7 @@ extra:
       link: https://geoserver.org/
       name: GeoServer Home
   version: '2.24'
-  release: '2.24.1'
+  release: '2.24.2'
 
 # Extensions
 # - These are carefully chosen to work with pandoc markdown support for whole document translation
@@ -120,7 +120,7 @@ validation:
     not_found: warn
     absolute_links: info
   links:
-    not_found: info
+    not_found: ignore
     absolute_links: info
     unrecognized_links: info
 

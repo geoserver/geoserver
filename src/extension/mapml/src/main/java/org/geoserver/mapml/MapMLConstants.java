@@ -40,6 +40,38 @@ public final class MapMLConstants {
     /** MapML layer metadata use tiles */
     public static final String MAPML_USE_TILES = "mapml.useTiles";
 
+    /** MapML layer resource metadata */
+    public static final String RESOURCE_METADATA = "resource.metadata";
+
+    public static final String LIST_FAILED = "Grabbing the attribute list failed";
+
+    public static final String ATTRIBUTE_LIST_FAILED = "attributeListingFailed";
+
+    public static final String FEATURE_CAPTION_TEMPLATE = "featureCaptionTemplate";
+
+    public static final String FEATURE_CAPTION = "mapml.featureCaption";
+
+    public static final String FEATURE_CAPTION_ATTRIBUTES = "featurecaptionattributes";
+
+    public static final String MAPML_PREFIX = "mapml.";
+    public static final String DIMENSION = "dimension";
+    public static final String MAPML_DIMENSION = MAPML_PREFIX + DIMENSION;
+    public static final String SHARD_LIST = "shardList";
+    public static final String ENABLE_SHARDING = "enableSharding";
+    public static final String USE_TILES = "useTiles";
+
+    public static final String LICENSE = "licenseLink";
+
+    public static final String LICENSE_TITLE2 = "licenseTitle";
+    public static final String USE_FEATURES = "useFeatures";
+    public static final String SHARD_SERVER_PATTERN = "shardServerPattern";
+
+    /** LICENSE_TITLE */
+    public static final String LICENSE_TITLE = "license.title";
+
+    /** LICENSE_LINK */
+    public static final String LICENSE_LINK = "license.link";
+
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static final String REL_ZOOMIN = "zoomin";

@@ -6,7 +6,6 @@ package org.geoserver.mapml;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -15,7 +14,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.mapml.xml.Mapml;
-import org.geoserver.mapml.xml.Meta;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
@@ -76,14 +74,13 @@ public class MapMLFeaturesBuilder {
 
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
         CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
-        Set<Meta> projectionAndExtent = MapMLFeatureUtil.deduceProjectionAndExtent(crs, layerInfo);
         FeatureType featureType = fc.getSchema();
         ResourceInfo meta =
                 geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
         return MapMLFeatureUtil.featureCollectionToMapML(
                 fc,
                 layerInfo,
-                projectionAndExtent,
+                crs,
                 MapMLFeatureUtil.alternateProjections(
                         ResponseUtils.baseURL(httpServletRequest),
                         "wms",
@@ -102,6 +99,10 @@ public class MapMLFeaturesBuilder {
     private int getNumberOfDecimals(ResourceInfo meta) {
 
         if (meta instanceof FeatureTypeInfo) {
+            FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) meta;
+            if (featureTypeInfo.getNumDecimals() > 0) {
+                return featureTypeInfo.getNumDecimals();
+            }
             return ((FeatureTypeInfo) meta).getNumDecimals();
         }
         SettingsInfo settings = geoServer.getSettings();

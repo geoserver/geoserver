@@ -11,7 +11,6 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
@@ -20,7 +19,6 @@ import net.opengis.wfs.impl.QueryTypeImpl;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.mapml.xml.Mapml;
-import org.geoserver.mapml.xml.Meta;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
@@ -47,7 +45,9 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     private String path;
     private Map<String, Object> query;
 
-    /** @param gs the GeoServer instance */
+    /**
+     * @param gs the GeoServer instance
+     */
     public MapMLGetFeatureOutputFormat(GeoServer gs) {
         super(gs, MapMLConstants.FORMAT_NAME);
     }
@@ -82,8 +82,6 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         } catch (FactoryException e) {
             LOGGER.warning("Could not decode SRS name: " + e.getMessage());
         }
-        Set<Meta> projectionAndExtent =
-                MapMLFeatureUtil.deduceProjectionAndExtent(requestCRS, layerInfo);
         int numDecimals = this.getNumDecimals(featureCollections, gs, gs.getCatalog());
         boolean forcedDecimal = this.getForcedDecimal(featureCollections, gs, gs.getCatalog());
         boolean padWithZeros = this.getPadWithZeros(featureCollections, gs, gs.getCatalog());
@@ -91,7 +89,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
                 MapMLFeatureUtil.featureCollectionToMapML(
                         featureCollection,
                         layerInfo,
-                        projectionAndExtent,
+                        requestCRS,
                         MapMLFeatureUtil.alternateProjections(this.base, this.path, this.query),
                         numDecimals,
                         forcedDecimal,

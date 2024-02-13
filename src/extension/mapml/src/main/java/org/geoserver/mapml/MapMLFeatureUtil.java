@@ -44,7 +44,7 @@ public class MapMLFeatureUtil {
      *
      * @param featureCollection the feature collection to be converted to MapML
      * @param layerInfo metadata for the feature class
-     * @param projectionAndExtent the CRS and extent of the feature collection
+     * @param requestCRS the CRS requested by the client
      * @param alternateProjections alternate projections for the feature collection
      * @param numDecimals number of decimal places to use for coordinates
      * @param forcedDecimal whether to force decimal notation
@@ -55,7 +55,7 @@ public class MapMLFeatureUtil {
     public static Mapml featureCollectionToMapML(
             FeatureCollection featureCollection,
             LayerInfo layerInfo,
-            Set<Meta> projectionAndExtent,
+            CoordinateReferenceSystem requestCRS,
             List<Link> alternateProjections,
             int numDecimals,
             boolean forcedDecimal,
@@ -83,6 +83,7 @@ public class MapMLFeatureUtil {
         meta.setHttpEquiv("Content-Type");
         meta.setContent(MapMLConstants.MAPML_MIME_TYPE);
         metas.add(meta);
+        Set<Meta> projectionAndExtent = deduceProjectionAndExtent(requestCRS, layerInfo);
         metas.addAll(projectionAndExtent);
         List<Link> links = head.getLinks();
         links.addAll(alternateProjections);
@@ -130,7 +131,7 @@ public class MapMLFeatureUtil {
      * @param layerInfo metadata for the feature class
      * @return
      */
-    public static Set<Meta> deduceProjectionAndExtent(
+    private static Set<Meta> deduceProjectionAndExtent(
             CoordinateReferenceSystem requestCRS, LayerInfo layerInfo) {
         Set<Meta> metas = new HashSet<>();
         TiledCRSParams tcrs = null;
@@ -258,7 +259,7 @@ public class MapMLFeatureUtil {
                         throw new ServiceException("Invalid TCRS name");
                     }
                     l.setRel(RelType.ALTERNATE);
-                    query.put("srsName", projection.getCode());
+                    query.put("srsName", "MapML:" + projection.getName());
                     HashMap<String, String> kvp = new HashMap<>(query.size());
                     query.keySet()
                             .forEach(

@@ -70,7 +70,7 @@ In this case the default values should be specified, since the query cannot be e
 
 Once the parameters have been defined, the **Attributes** **Refresh** link is clicked to parse the query and retrieve the attribute columns. The computed geometry type and column identifier details can be corrected if required. From this point on the workflow is the same as for a non-parameterized query.
 
-### Using a parametric SQL View {#using_a_parametric_sql_view}
+### Using a parametric SQL View {: #using_a_parametric_sql_view }
 
 The SQL view parameters are specified by adding the `viewparams` parameter to the WMS `GetMap` or the WFS `GetFeature` request. The `viewparams` argument is a list of `key:value` pairs, separated by semicolons:
 

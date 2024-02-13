@@ -2,7 +2,7 @@
 
 The **Welcome Page** lists the web services published by GeoServer for mapping, data access and processing.
 
-## Web Services {#welcome_webservices}
+## Web Services {: #welcome_webservices }
 
 The welcome page lists the global web services (accessing the complete list of layers).
 

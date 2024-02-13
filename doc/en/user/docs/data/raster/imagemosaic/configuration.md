@@ -4,7 +4,7 @@
 
 Each individual image is commonly referred to as a **granule**. In recent releases of GeoServer the similarities requirements for the granules have been dropped significantly, including:
 
--   The granules do not need to share the same coordinate reference system (see [the multi-CRS mosaic tutorial](tutorial.rst#multi-crs-mosaic))
+-   The granules do not need to share the same coordinate reference system (see [the multi-CRS mosaic tutorial](tutorial.md#multi-crs-mosaic))
 -   The granules can be in different color models, with an allowance of mixing gray, RGB, RGBA and indexed color granules (it is however not possible to mix colored granules with scientific data types like as float/double). In order to benefit of mixed color models JAI-Ext support must be enabled, see [the JAI-EXT support documentation](../../../JAIEXT-broken.md).
 
 In addition it is worth remarking on the fact that currently the ImageMosaic is able to handle raster data whose grid-to-world transformation is a scale and translate transformation, hence no rotation or skew.
@@ -76,7 +76,7 @@ A sample configuration file follows:
     CheckAuxiliaryMetadata=false
     LevelsNum=1
 
-### **`datastore.properties`** {#mosaic_datastore_properties}
+### **`datastore.properties`** {: #mosaic_datastore_properties }
 
 By default the ImageMosaic index is specified by a shapefile, which is located at the root of the ImageMosaic directory, just like the primary configuration file.
 

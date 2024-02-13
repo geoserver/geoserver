@@ -6,11 +6,11 @@ render_macros: true
 
 !!! note
 
-    GeoServer does not come built-in with support for Image Pyramid; it must be installed through an extension. Proceed to [Installing the ImagePyramid extension](imagepyramid.rst#imagepyramid_install) for installation details.
+    GeoServer does not come built-in with support for Image Pyramid; it must be installed through an extension. Proceed to [Installing the ImagePyramid extension](imagepyramid.md#imagepyramid_install) for installation details.
 
 An image pyramid is several layers of an image rendered at various image sizes, to be shown at different zoom levels.
 
-## Installing the ImagePyramid extension {#imagepyramid_install}
+## Installing the ImagePyramid extension {: #imagepyramid_install }
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: `pyramid`{.interpreted-text role="download_extension"}
 

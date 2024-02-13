@@ -1,4 +1,4 @@
-# External Web Map Tile Server
+# External Web Map Tile Server {: #data_external_wmts }
 
 GeoServer has the ability to proxy a remote Web Map Tile Service (WMTS). This process is sometimes known as **Cascading WMTS**, even if the incoming requests follow the WMS protocol and the backing service follows the WMTS one; the WMTS cascading functionality is more like a "protocol translator", where the different handled data (capabilities documents, images) are translated by the "WMTS cascading" logic.
 

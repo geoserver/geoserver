@@ -6,13 +6,13 @@ render_macros: true
 
 !!! note
 
-    GeoServer does not come built-in with support for Db2; it must be installed through an extension. Proceed to [Installing the Db2 extension](db2.rst#Db2_install) for installation details.
+    GeoServer does not come built-in with support for Db2; it must be installed through an extension. Proceed to [Installing the Db2 extension](db2.md#Db2_install) for installation details.
 
 The Db2 spatial support implements the OGC specification "Simple Features for SQL using types and functions" and the ISO "SQL/MM Part 3 Spatial" standard. When installing Db2 on Linux, Unix and Windows platforms, the "custom" option must be selected and the server spatial support included.
 
 A free of charge copy of Db2 can be downloaded from <https://www.ibm.com/analytics/db2/trials>.
 
-## Installing the Db2 extension {#Db2_install}
+## Installing the Db2 extension {: #Db2_install }
 
 !!! warning
 

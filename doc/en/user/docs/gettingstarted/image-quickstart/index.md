@@ -36,7 +36,7 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
 1.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
-2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.rst#logging_in) section.
+2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
 
 3.  Navigate to **Data --> Workspaces**.
 

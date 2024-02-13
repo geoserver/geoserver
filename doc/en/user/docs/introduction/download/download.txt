@@ -1,0 +1,5 @@
+../../../../licenses/GPL.md
+../../../../licenses/apache-1.1.md
+../../../../licenses/epl-1.0.md
+../../../../licenses/apache-2.0.md
+../../../../licenses/NOTICE.md

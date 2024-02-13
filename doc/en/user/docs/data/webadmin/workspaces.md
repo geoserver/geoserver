@@ -5,14 +5,14 @@ This section describes how to view and configure workspaces. Analogous to a name
 ![](img/data_workspaces.png)
 *Workspaces page*
 
-## Add a Workspace {#data_webadmin_workspaces_add_workspace}
+## Add a Workspace {: #data_webadmin_workspaces_add_workspace }
 
 The buttons for adding and removing a workspace can be found at the top of the Workspaces view page.
 
 ![](img/data_workspaces_add_remove.png)
 *Buttons to add and remove*
 
-To add a workspace, select the **Add new workspace** button. You will be prompted to enter the workspace name and URI (as described in [Edit a Workspace](workspaces.rst#data_webadmin_workspaces_edit) below).
+To add a workspace, select the **Add new workspace** button. You will be prompted to enter the workspace name and URI (as described in [Edit a Workspace](workspaces.md#data_webadmin_workspaces_edit) below).
 
 ![](img/data_workspaces_sde.png)
 *New Workspace page with example*
@@ -24,7 +24,7 @@ To remove a workspace, select it by clicking the checkbox next to the workspace.
 ![](img/data_workspaces_rename_confirm.png)
 *Workspace removal confirmation*
 
-## Edit a Workspace {#data_webadmin_workspaces_edit}
+## Edit a Workspace {: #data_webadmin_workspaces_edit }
 
 To view or edit a workspace, click the workspace name. A workspace configuration page will be displayed.
 
@@ -53,7 +53,7 @@ A workspace is defined by a name and a Namespace URI (Uniform Resource Identifie
 
     The workspace contents will only be visible and queryable in the context of a [Virtual Services](../../configuration/virtual-services.md) as described below [Isolated Workspaces](../../configuration/virtual-services.md#workspace_isolated).
 
-### Workspace Services {#workspace_services}
+### Workspace Services {: #workspace_services }
 
 Use the checkbox located next to each service to override the global service definition for the associated service.
 
@@ -67,7 +67,7 @@ Once enabled clicking on the service link will open the settings page for the se
 
 Clients accessing this workspace as a [Virtual Services](../../configuration/virtual-services.md) will use the service metadata and settings provided here.
 
-### Workspace Settings {#workspace_settings}
+### Workspace Settings {: #workspace_settings }
 
 Use **Enabled** checkbox to override the global configuration and contact information for this workspace.
 
@@ -121,7 +121,7 @@ Other settings provide additional [Global Settings](../../configuration/globalse
 
 If this information is not provided the global settings will be used. For details on other settings see [Global Settings](../../configuration/globalsettings.md).
 
-### Security {#workspace_security}
+### Security {: #workspace_security }
 
 The Security tab allows to set data access rules at workspace level.
 

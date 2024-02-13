@@ -7,6 +7,9 @@ The Web administration interface is a web-based tool for configuring all aspects
 
 The following sections detail the menu options available in GeoServer. **Unless otherwise specified, you will need to be logged in with administrative credentials to see the complete list of pages.**
 
+-   [Welcome](welcome.md)
+-   [About GeoServer Page](about.md)
+
 ## Welcome
 
 -   The [Welcome](welcome.md) page lists the web services published by GeoServer.
@@ -114,7 +117,7 @@ To return to the main [Welcome](welcome.md) click on the GeoServer logo at the t
 
 ### User login
 
-The upper right of the web administration interface provides options to [login](../gettingstarted/web-admin-quickstart/index.rst#logging_in).
+The upper right of the web administration interface provides options to [login](../gettingstarted/web-admin-quickstart/index.md#logging_in).
 
 GeoServer will share only the web services and layers available to the current user.
 

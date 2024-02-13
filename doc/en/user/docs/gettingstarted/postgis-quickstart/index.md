@@ -10,7 +10,7 @@ This tutorial walks through the steps of publishing a PostGIS table with GeoServ
 
 First let's gather that the data that we'll be publishing.
 
-1.  Download the file `nyc_buildings.zip`{.interpreted-text role="download"}. It contains a PostGIS dump of a dataset of buildings from New York City.
+1.  Download the file [nyc_buildings.zip](nyc_buildings.zip). It contains a PostGIS dump of a dataset of buildings from New York City.
 
 2.  Create a PostGIS database called `nyc`. This can be done with the following commands:
 
@@ -41,7 +41,7 @@ The next step is to create a workspace for the data. A workspace is a container 
 
 1.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
-2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.rst#logging_in) section.
+2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
 
 3.  Navigate to **Data --> Workspaces**.
 

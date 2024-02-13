@@ -6,11 +6,11 @@ render_macros: true
 
 !!! note
 
-    GeoServer does not come built-in with support for Oracle; it must be installed through an extension. Proceed to [Installing the Oracle extension](oracle.rst#oracle_install) for installation details.
+    GeoServer does not come built-in with support for Oracle; it must be installed through an extension. Proceed to [Installing the Oracle extension](oracle.md#oracle_install) for installation details.
 
 [Oracle Spatial and Locator](http://www.oracle.com/technology/products/spatial/index.html) are the spatial components of Oracle. **Locator** is provided with all Oracle versions, but has limited spatial functions. **Spatial** is Oracle's full-featured spatial offering, but requires a specific license to use.
 
-## Installing the Oracle extension {#oracle_install}
+## Installing the Oracle extension {: #oracle_install }
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: `oracle`{.interpreted-text role="download_extension"}
 
@@ -49,7 +49,7 @@ Once the extension is properly installed **Oracle** appears as an option in the 
 
   `max connections` `min connections` `fetch size` `Connection timeout` `validate connections`   Connection pool configuration parameters. See [Database Connection Pooling](connection-pooling.md) for details.
 
-  `Loose bbox`                                                                                   Controls how bounding box filters are made against geometries in the database. See the [Using loose bounding box](oracle.rst#oracle_loose_bbox) section below.
+  `Loose bbox`                                                                                   Controls how bounding box filters are made against geometries in the database. See the [Using loose bounding box](oracle.md#oracle_loose_bbox) section below.
 
   `Metadata bbox`                                                                                Flag controlling the use of MDSYS.USER_SDO_GEOM_METADATA or MDSYS.ALL_SDO_GEOM_METADATA table for bounding box calculations, this brings a better performance if the views access is fast and the bounds are configured right in the tables default is false
 
@@ -76,7 +76,7 @@ If you are using referrals, enable it by placing a jndi.properties file in geose
 
 > java.naming.referral=follow
 
-### Using loose bounding box {#oracle_loose_bbox}
+### Using loose bounding box {: #oracle_loose_bbox }
 
 When the `Loose bbox` option is set, only the bounding box of database geometries is used in spatial queries. This results in a significant performance gain. The downside is that some geometries may be reported as intersecting a BBOX when they actually do not.
 

@@ -23,7 +23,7 @@ Layers can be divided into two types of data: raster and vector. These two forma
   ![image](img/point_icon.png)         Point
   -------------------------------------------------------------------------------------------------------
 
-## Add a Layer {#data_webadmin_layers_add_a_layer}
+## Add a Layer {: #data_webadmin_layers_add_a_layer }
 
 At the upper left-hand corner of the layers view page there are two buttons for the adding and removal of layers. The green plus button allows you to add a new layer. The red minus button allows you to remove selected layers.
 
@@ -40,7 +40,7 @@ Upon selection of a Store, a list is displayed of resources within the store. Re
 ![](img/data_layers_add_view.png)
 *List of published and available resources in a store*
 
-To add a layer for an available resource click **Publish**. To add a new layer for a published resource click **Publish Again**. (Note that when re-publishing the name of the new layer may have to be modified to avoid conflict with an existing layer.) The actions display an [Edit Layer](layers.rst#data_webadmin_layers_edit_data) page to enter the definition of the new layer.
+To add a layer for an available resource click **Publish**. To add a new layer for a published resource click **Publish Again**. (Note that when re-publishing the name of the new layer may have to be modified to avoid conflict with an existing layer.) The actions display an [Edit Layer](layers.md#data_webadmin_layers_edit_data) page to enter the definition of the new layer.
 
 ## Remove a Layer
 
@@ -56,7 +56,7 @@ All layers can be selected for removal by clicking the checkbox in the header.
 
 Once layer(s) are selected, the **Remove selected resources** link is activated. Once you've clicked the link, you will be asked to confirm or cancel the removal. Selecting **OK** removes the selected layer(s).
 
-## Edit Layer: Data {#data_webadmin_layers_edit_data}
+## Edit Layer: Data {: #data_webadmin_layers_edit_data }
 
 To view or edit a layer, click the layer name. A layer configuration page will be displayed. The **Data** tab, activated by default, allows you to define and change data parameters for a layer.
 
@@ -132,7 +132,7 @@ There are two options pertaining the circular arcs:
 ![](img/curved.png)
 *Curved geometry control*
 
-### Feature Type Details (Vector) {#data_webadmin_layers_edit_publishing}
+### Feature Type Details (Vector) {: #data_webadmin_layers_edit_publishing }
 
 Vector layers have a list of the **Feature Type Details**. These include the **Property** and **Type** of a data source. For example, the `sf:archsites` layer shown below includes a geometry (`the_geom`) of type "point".
 
@@ -227,7 +227,7 @@ Sets the WMS specific publishing parameters.
 -   **Additional styles**---Other styles that can be associated with this layer. Some clients (and the GeoServer Layer Preview) will present those as styling alternatives for that layer to the user.
 -   **Default rendering buffer**---Default value of the `buffer` GetMap/GetFeatureInfo vendor parameter. See the [WMS vendor parameters](../../services/wms/vendor.md) for more details.
 -   **Default WMS path**---Location of the layer in the WMS capabilities layer tree. Useful for building non-opaque layer groups
--   **Default Interpolation Method**---Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see [Raster Rendering Options](../../services/wms/webadmin.rst#services_webadmin_wms_raster_options) for details). Can be overridden by the [interpolations vendor parameter](../../services/wms/vendor.rst#wms_vendor_parameter_interpolations).
+-   **Default Interpolation Method**---Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see [Raster Rendering Options](../../services/wms/webadmin.md#services_webadmin_wms_raster_options) for details). Can be overridden by the [interpolations vendor parameter](../../services/wms/vendor.md#wms_vendor_parameter_interpolations).
 
 ### WMS Attribution
 
@@ -283,7 +283,7 @@ Limits features based on certain criteria, otherwise known as **regionation**.
     -   *native-sorting*---Uses the default sorting algorithm of the backend where the data is hosted. It is faster than external-sorting, but will only work with PostGIS datastores.
     -   *random*---Uses the existing order of the data and does not sort
 
-## Edit Layer: Dimensions {#data_webadmin_layers_edit_dimensions}
+## Edit Layer: Dimensions {: #data_webadmin_layers_edit_dimensions }
 
 GeoServer supports adding specific dimensions to WMS layers, as specified in WMS 1.1.1 and WMS 1.3.0 standards. There are two pre-defined dimensions in the WMS standards mentioned above, **TIME** and **ELEVATION**. Enabling dimensions for a layer allows users to specify those as extra parameters in GetMap requests, filtering the dataset to that particular set of times or elevations.
 

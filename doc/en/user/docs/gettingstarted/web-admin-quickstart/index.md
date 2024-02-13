@@ -23,7 +23,7 @@ GeoServer has a browser-based web administration interface application used to c
 
     For more information, please see the [Welcome](../../webadmin/welcome.md) section.
 
-## Logging In {#logging_in}
+## Logging In {: #logging_in }
 
 In order to change any server settings or configure data, a user must first be authenticated.
 

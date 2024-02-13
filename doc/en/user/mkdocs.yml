@@ -66,8 +66,11 @@ plugins:
   - macros:
       render_by_default: false
       on_error_fail: true
-      on_undefined: strict
-      j2_comment_start_string: __supress_jinja_comments__
+      on_undefined: keep
+      j2_block_start_string: '[[%'
+      j2_block_end_string: '%]]'
+      j2_variable_start_string: '[['
+      j2_variable_end_string: ']]'
   - search
   
 # Customizations
@@ -111,6 +114,9 @@ markdown_extensions:
       alternate_style: true
   - tables
   - md_in_html
+  
+not_in_nav: |
+  **/download/*.md
 
 # Page tree
 nav:

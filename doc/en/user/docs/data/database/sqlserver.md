@@ -6,7 +6,7 @@ render_macros: true
 
 !!! note
 
-    GeoServer does not come built-in with support for SQL Server; it must be installed through an extension. Proceed to [Installing the SQL Server extension](sqlserver.rst#sqlserver_install) for installation details.
+    GeoServer does not come built-in with support for SQL Server; it must be installed through an extension. Proceed to [Installing the SQL Server extension](sqlserver.md#sqlserver_install) for installation details.
 
 Microsoft's [SQL Server](http://www.microsoft.com/sqlserver) is a relational database with spatial functionality. SQL Azure is the database option provided in the Azure cloud solution which is in many respects similar to SQL Server.
 
@@ -14,7 +14,7 @@ Microsoft's [SQL Server](http://www.microsoft.com/sqlserver) is a relational dat
 
 The extension supports SQL Server 2008 - 2019 and SQL Azure.
 
-## Installing the SQL Server extension {#sqlserver_install}
+## Installing the SQL Server extension {: #sqlserver_install }
 
 ### GeoServer files
 
@@ -43,7 +43,7 @@ Once the extension is properly installed `SQL Server` will show up as an option 
 +-------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | `host`            | The sql server instance host name or ip address, only. Note that `server\instance` notation is not accepted - specify the port below, instead, if you have a non-default instance.                                                                                                  |
 +-------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `port`            | The port on which the SQL server instance is accepting connections. See the [note](sqlserver.rst#port_notes) below.                                                                                                                                                                 |
+| `port`            | The port on which the SQL server instance is accepting connections. See the [note](sqlserver.md#port_notes) below.                                                                                                                                                                 |
 +-------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | `database`        | The name of the database to connect to. Might be left blank if the user connecting to SQL Server has a "default database" set in the user configuration                                                                                                                           |
 +-------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -58,7 +58,7 @@ Once the extension is properly installed `SQL Server` will show up as an option 
 | `min connections` |                                                                                                                                                                                                                                                                                     |
 +-------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-### Determining the port used by the SQL Server instance {#port_notes}
+### Determining the port used by the SQL Server instance {: #port_notes }
 
 You can determine the port in use by connecting to your SQL server instance using some other software, and then using ***netstat*** to display details on network connections. In the following example on a Windows PC, the port is 2646 :
 

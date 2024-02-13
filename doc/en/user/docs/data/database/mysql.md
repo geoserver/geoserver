@@ -6,7 +6,7 @@ render_macros: true
 
 !!! note
 
-    GeoServer does not come built-in with support for MySQL; it must be installed through an extension. Proceed to [Installing the MySQL extension](mysql.rst#mysql_install) for installation details.
+    GeoServer does not come built-in with support for MySQL; it must be installed through an extension. Proceed to [Installing the MySQL extension](mysql.md#mysql_install) for installation details.
 
 !!! warning
 
@@ -14,7 +14,7 @@ render_macros: true
 
 [MySQL](http://www.mysql.com) is an open source relational database with some limited spatial functionality.
 
-## Installing the MySQL extension {#mysql_install}
+## Installing the MySQL extension {: #mysql_install }
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: `mysql`{.interpreted-text role="download_extension"}
 

@@ -99,7 +99,7 @@ Connection parameters managing database interaction:
   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Connection Parameter                             Description
   ------------------------------------------------ --------------------------------------------------------------------------------------------------------------------------------------------------
-  **Loose bbox**                                   Performs only the primary filter on the bounding box. See the section on [Using loose bounding box](postgis.rst#postgis_loose_bbox) for details.
+  **Loose bbox**                                   Performs only the primary filter on the bounding box. See the section on [Using loose bounding box](postgis.md#postgis_loose_bbox) for details.
 
   **Estimated extends**                            Use spatial index to quickly estimate bounds, rather than check every row.
 
@@ -155,7 +155,7 @@ When finished, click **Save**.
 
 When properly loaded, all tables in the database will be visible to GeoServer, but they will need to be individually configured before being served by GeoServer. See the section on [Layers](../webadmin/layers.md) for how to add and edit new layers.
 
-## Using loose bounding box {#postgis_loose_bbox}
+## Using loose bounding box {: #postgis_loose_bbox }
 
 When the option **loose bbox** is enabled, only the bounding box of a geometry is used. This can result in a significant performance gain, but at the expense of total accuracy; some geometries may be considered inside of a bounding box when they are technically not.
 

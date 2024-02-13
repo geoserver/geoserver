@@ -27,7 +27,7 @@ Each layer row consists of a type, name, title, and available formats for viewin
   ![image](img/error.png)              Unknown/Other
   -------------------------------------------------------------------------------------------------------
 
-Name refers to the Workspace and Layer Name of a layer, while Title refers to the brief description configured in the [Edit Layer: Data](layers.rst#data_webadmin_layers_edit_data) panel. In the following example, nurc refers to the Workspace, Arc_Sample refers to the Layer Name and "A sample ArcGrid field" is specified on the Edit Later Data panel.
+Name refers to the Workspace and Layer Name of a layer, while Title refers to the brief description configured in the [Edit Layer: Data](layers.md#data_webadmin_layers_edit_data) panel. In the following example, nurc refers to the Workspace, Arc_Sample refers to the Layer Name and "A sample ArcGrid field" is specified on the Edit Later Data panel.
 
 ![](img/preview_row.png)
 *Single Layer preview row*

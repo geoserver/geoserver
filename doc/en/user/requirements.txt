@@ -1,5 +1,5 @@
-mkdocs-material
-mkdocs-include-markdown-plugin
-mkdocs-exclude
-mkdocs-macros-plugin
+mkdocs-material>=9.5.9
+mkdocs-include-markdown-plugin>=6.0.4
+mkdocs-exclude>=1.0.2 
+mkdocs-macros-plugin>=1.0.4
 

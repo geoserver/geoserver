@@ -24,11 +24,11 @@ When you set up a layer based on a stored query, you have to select which stored
   **CQL Expression**   An expression that will be evaluated on every request (see below for more details)
   -------------------- -------------------------------------------------------------------------------------------------------------------------------------------------------
 
-See [Using a parametric SQL View](../database/sqlview.rst#using_a_parametric_sql_view) for more details how clients pass view parameters to GeoServer.
+See [Using a parametric SQL View](../database/sqlview.md#using_a_parametric_sql_view) for more details how clients pass view parameters to GeoServer.
 
 ## CQL expressions
 
-Parameter mappings configured as CQL expressions are evaluated for each request using a context derived from the request query and the view parameters. General information on CQL expressions is available here [Expression](../../filter/ecql_reference.rst#ecql_expr).
+Parameter mappings configured as CQL expressions are evaluated for each request using a context derived from the request query and the view parameters. General information on CQL expressions is available here [Expression](../../filter/ecql_reference.md#ecql_expr).
 
 The context contains the following properties that may be used in the expressions:
 

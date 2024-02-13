@@ -42,7 +42,7 @@ The basic information is common for all formats.
 
 The connection parameters vary depending on data format.
 
-## Add a Store {#data_webadmin_stores_add_a_store}
+## Add a Store {: #data_webadmin_stores_add_a_store }
 
 The buttons for adding and removing a store can be found at the top of the Stores page.
 

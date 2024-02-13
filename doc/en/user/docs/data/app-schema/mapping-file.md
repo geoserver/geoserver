@@ -366,7 +366,7 @@ When referring to database table/view names or column names, use:
 -   lowercase for PostGIS
 -   UPPERCASE for Oracle Spatial
 
-## Denormalised sources {#app-schema.denormalised-sources}
+## Denormalised sources {: #app-schema.denormalised-sources }
 
 Multivalued properties from denormalised sources (the same source feature ID appears more than once) are automatically encoded. For example, a view might have a repeated `id` column with varying `name` so that an arbitrarily large number of `gml:name` properties can be encoded for the output feature.
 

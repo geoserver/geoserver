@@ -18,7 +18,7 @@ For non-application schema configurations, please refer to `app-schema.data-acce
 
 We need one mapping file per complex type that is going to be nested, including non features, e.g. gsml:CompositionPart.
 
-Non-feature types that cannot be individually accessed (eg. CompositionPart as a Data Type) can still be mapped separately for its reusability. For this case, the containing feature type has to include these types in its mapping file. The include tag should contain the nested mapping file path relative to the location of the containing type mapping file. In `GeologicUnit_MappingFile.xml`{.interpreted-text role="download"}:
+Non-feature types that cannot be individually accessed (eg. CompositionPart as a Data Type) can still be mapped separately for its reusability. For this case, the containing feature type has to include these types in its mapping file. The include tag should contain the nested mapping file path relative to the location of the containing type mapping file. In [GeologicUnit_MappingFile.xml](GeologicUnit_MappingFile.xml):
 
     <includedTypes>   
         <Include>CGITermValue_MappingFile.xml</Include>
@@ -29,13 +29,13 @@ Feature types that can be individually accessed don't need to be explicitly incl
 
 **Example**:
 
-For this output: `MappedFeature_Output.xml`{.interpreted-text role="download"}, here are the mapping files:
+For this output: [MappedFeature_Output.xml](MappedFeature_Output.xml), here are the mapping files:
 
-> -   `MappedFeature_MappingFile.xml`{.interpreted-text role="download"}
-> -   `GeologicUnit_MappingFile.xml`{.interpreted-text role="download"}
-> -   `CompositionPart_MappingFile.xml`{.interpreted-text role="download"}
-> -   `GeologicEvent_MappingFile.xml`{.interpreted-text role="download"}
-> -   `CGITermValue_MappingFile.xml`{.interpreted-text role="download"}
+> -   [MappedFeature_MappingFile.xml](MappedFeature_MappingFile.xml)
+> -   [GeologicUnit_MappingFile.xml](GeologicUnit_MappingFile.xml)
+> -   [CompositionPart_MappingFile.xml](CompositionPart_MappingFile.xml)
+> -   [GeologicEvent_MappingFile.xml](GeologicEvent_MappingFile.xml)
+> -   [CGITermValue_MappingFile.xml](CGITermValue_MappingFile.xml)
 
 *GeologicUnit type*
 
@@ -162,7 +162,7 @@ The system field *FEATURE_LINK* doesn't get encoded in the output:
         </gsml:CGI_TermValue>
       </gsml:eventProcess>
 
-**Example Two**: Using existing field (gml:name) to hold the foreign key, see `MappedFeature_MappingFile.xml`{.interpreted-text role="download"}:
+**Example Two**: Using existing field (gml:name) to hold the foreign key, see [MappedFeature_MappingFile.xml](MappedFeature_MappingFile.xml):
 
 gsml:specification links to gml:name in GeologicUnit:
 
@@ -175,7 +175,7 @@ gsml:specification links to gml:name in GeologicUnit:
       </sourceExpression>
     </AttributeMapping>
 
-In `GeologicUnit_MappingFile.xml`{.interpreted-text role="download"}:
+In [GeologicUnit_MappingFile.xml](GeologicUnit_MappingFile.xml):
 
 GeologicUnit has 3 gml:name properties in the mapping file, so each has a code space to clarify them:
 
@@ -219,9 +219,9 @@ The output with multiple gml:name properties and their code spaces:
           <gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitName">Yaugher Volcanic Group</gml:name>
           <gml:name codeSpace="urn:cgi:classifierScheme:GSV:MappedFeatureReference">gu.25678</gml:name>
 
-If this is the "one" side of a one-to-many or many-to-one database relationship, we can use the feature id as the source expression field, as you can see in above examples. See `one_to_many_relationship.JPG`{.interpreted-text role="download"} as an illustration.
+If this is the "one" side of a one-to-many or many-to-one database relationship, we can use the feature id as the source expression field, as you can see in above examples. See [one_to_many_relationship.JPG](one_to_many_relationship.JPG) as an illustration.
 
-If we have a many-to-many relationship, we have to use one denormalized view for either side of the nesting. This means we can either use the feature id as the referenced field, or assign a column to serve this purpose. See `many_to_many_relationship.JPG`{.interpreted-text role="download"} as an illustration.
+If we have a many-to-many relationship, we have to use one denormalized view for either side of the nesting. This means we can either use the feature id as the referenced field, or assign a column to serve this purpose. See [many_to_many_relationship.JPG](many_to_many_relationship.JPG) as an illustration.
 
 !!! note
 

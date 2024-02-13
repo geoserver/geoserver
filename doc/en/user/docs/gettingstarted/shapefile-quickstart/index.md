@@ -10,7 +10,7 @@ This tutorial walks through the steps of publishing a Shapefile with GeoServer.
 
 First let's gather that the data that we'll be publishing.
 
-1.  Download the file `nyc_roads.zip`{.interpreted-text role="download"}. This archive contains a shapefile of roads from New York City that will be used during in this tutorial.
+1.  Download the file [nyc_roads.zip](nyc_roads.zip). This archive contains a shapefile of roads from New York City that will be used during in this tutorial.
 
 2.  Unzip the **`nyc_roads.zip`** into a new directory named **`nyc_roads`**. The archive contains the following four files:
 
@@ -31,7 +31,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 
 1.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
-2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.rst#logging_in) section.
+2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
 
 3.  Navigate to **Data --> Workspaces**.
 

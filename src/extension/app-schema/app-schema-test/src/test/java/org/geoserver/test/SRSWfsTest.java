@@ -6,7 +6,6 @@
 
 package org.geoserver.test;
 
-import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 
 import org.geoserver.data.test.SystemTestData;
@@ -77,6 +76,11 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
         CRS.reset("all");
     }
 
+    private boolean honorsCrsAxisOrder() {
+        String onlineTestId = System.getProperty("testDatabase");
+        return "geopkg".equals(onlineTestId) || "postgis".equals(onlineTestId);
+    }
+
     /** Test content of GetFeature response. */
     @Test
     public void testGetFeatureContent() throws NoSuchAuthorityCodeException, FactoryException {
@@ -144,41 +148,32 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
                 DIMENSION,
                 "(//ex:geomContainer)[1]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Polygon/@srsDimension",
                 doc);
-        if (!isGeopkgTest()) {
-            assertXpathEvaluatesTo(
-                    "-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
-                    "(//ex:geomContainer)[1]/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
-                    "(//ex:geomContainer)[1]/ex:shape/gml:LineString/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "42.58 31.29",
-                    "(//ex:geomContainer)[1]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
-                    "(//ex:geomContainer)[1]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
+
+        final String expectedLinearRing;
+        final String expectedPoint;
+        if (honorsCrsAxisOrder()) {
+            expectedLinearRing = "52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2";
+            expectedPoint = "31.29 42.58";
         } else {
-            assertXpathEvaluatesTo(
-                    "52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
-                    "(//ex:geomContainer)[1]/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
-                    "(//ex:geomContainer)[1]/ex:shape/gml:LineString/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "31.29 42.58",
-                    "(//ex:geomContainer)[1]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
-                    "(//ex:geomContainer)[1]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
+            expectedLinearRing = "-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5";
+            expectedPoint = "42.58 31.29";
         }
+        assertXpathEvaluatesTo(
+                expectedLinearRing,
+                "(//ex:geomContainer)[1]/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                expectedLinearRing,
+                "(//ex:geomContainer)[1]/ex:shape/gml:LineString/gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                expectedPoint,
+                "(//ex:geomContainer)[1]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
+                doc);
+        assertXpathEvaluatesTo(
+                expectedLinearRing,
+                "(//ex:geomContainer)[1]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
+                doc);
 
         // second feature
         id = "2";
@@ -235,37 +230,27 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
                 "(//ex:geomContainer)[2]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Point/@srsDimension",
                 doc);
 
-        if (!isGeopkgTest()) {
-            assertXpathEvaluatesTo(
-                    "42.58 31.29", "(//ex:geomContainer)[2]/ex:geom/gml:Point/gml:pos", doc);
-            assertXpathEvaluatesTo(
-                    "42.58 31.29 42.58 31.29",
-                    "(//ex:geomContainer)[2]/ex:shape/gml:LineString/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
-                    "(//ex:geomContainer)[2]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "42.58 31.29",
-                    "(//ex:geomContainer)[2]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
-                    doc);
+        final String expectedLineString;
+        if (honorsCrsAxisOrder()) {
+            expectedLineString = "31.29 42.58 31.29 42.58";
         } else {
-            assertXpathEvaluatesTo(
-                    "31.29 42.58", "(//ex:geomContainer)[2]/ex:geom/gml:Point/gml:pos", doc);
-            assertXpathEvaluatesTo(
-                    "31.29 42.58 31.29 42.58",
-                    "(//ex:geomContainer)[2]/ex:shape/gml:LineString/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
-                    "(//ex:geomContainer)[2]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "31.29 42.58",
-                    "(//ex:geomContainer)[2]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
-                    doc);
+            expectedLineString = "42.58 31.29 42.58 31.29";
         }
+
+        assertXpathEvaluatesTo(
+                expectedPoint, "(//ex:geomContainer)[2]/ex:geom/gml:Point/gml:pos", doc);
+        assertXpathEvaluatesTo(
+                expectedLineString,
+                "(//ex:geomContainer)[2]/ex:shape/gml:LineString/gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                expectedLinearRing,
+                "(//ex:geomContainer)[2]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                expectedPoint,
+                "(//ex:geomContainer)[2]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
+                doc);
     }
 
     /**
@@ -276,38 +261,48 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
             throws NoSuchAuthorityCodeException, FactoryException, MismatchedDimensionException,
                     TransformException {
 
-        // reprojected geometries
-        CoordinateReferenceSystem sourceCRS = CRS.decode(EPSG_4283);
-        CoordinateReferenceSystem targetCRS = CRS.decode(EPSG_4326);
-        MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-        GeometryFactory factory = new GeometryFactory();
-        Polygon srcPolygon =
-                factory.createPolygon(
-                        factory.createLinearRing(
-                                factory.getCoordinateSequenceFactory()
-                                        .create(
-                                                new Coordinate[] {
-                                                    new Coordinate(-1.2, 52.5),
-                                                    new Coordinate(-1.2, 52.6),
-                                                    new Coordinate(-1.1, 52.6),
-                                                    new Coordinate(-1.1, 52.5),
-                                                    new Coordinate(-1.2, 52.5)
-                                                })),
-                        null);
-        Polygon targetPolygon = (Polygon) JTS.transform(srcPolygon, transform);
-        StringBuffer polygonBuffer = new StringBuffer();
-        CoordinateFormatter formatter = new CoordinateFormatter(8);
-        for (Coordinate coord : targetPolygon.getCoordinates()) {
-            formatter.format(coord.x, polygonBuffer).append(" ");
-            formatter.format(coord.y, polygonBuffer).append(" ");
+        final String targetPolygonCoords;
+        final String targetPointCoord;
+        if (honorsCrsAxisOrder()) {
+            targetPointCoord = "31.29000003 42.58";
+            targetPolygonCoords =
+                    "52.50000004 -1.2 52.60000004 -1.2 52.60000004 -1.1 52.50000004 -1.1 52.50000004 -1.2";
+        } else {
+            // reprojected geometries
+            CoordinateReferenceSystem sourceCRS = CRS.decode(EPSG_4283);
+            CoordinateReferenceSystem targetCRS = CRS.decode(EPSG_4326);
+            MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+            GeometryFactory factory = new GeometryFactory();
+            Polygon srcPolygon =
+                    factory.createPolygon(
+                            factory.createLinearRing(
+                                    factory.getCoordinateSequenceFactory()
+                                            .create(
+                                                    new Coordinate[] {
+                                                        new Coordinate(-1.2, 52.5),
+                                                        new Coordinate(-1.2, 52.6),
+                                                        new Coordinate(-1.1, 52.6),
+                                                        new Coordinate(-1.1, 52.5),
+                                                        new Coordinate(-1.2, 52.5)
+                                                    })),
+                            null);
+            Polygon targetPolygon = (Polygon) JTS.transform(srcPolygon, transform);
+            StringBuffer polygonBuffer = new StringBuffer();
+            CoordinateFormatter formatter = new CoordinateFormatter(8);
+            for (Coordinate coord : targetPolygon.getCoordinates()) {
+                formatter.format(coord.x, polygonBuffer).append(" ");
+                formatter.format(coord.y, polygonBuffer).append(" ");
+            }
+            targetPolygonCoords = polygonBuffer.toString().trim();
+            Point targetPoint =
+                    (Point)
+                            JTS.transform(
+                                    factory.createPoint(new Coordinate(42.58, 31.29)), transform);
+            targetPointCoord =
+                    formatter.format(targetPoint.getCoordinate().x)
+                            + " "
+                            + formatter.format(targetPoint.getCoordinate().y);
         }
-        String targetPolygonCoords = polygonBuffer.toString().trim();
-        Point targetPoint =
-                (Point) JTS.transform(factory.createPoint(new Coordinate(42.58, 31.29)), transform);
-        String targetPointCoord =
-                formatter.format(targetPoint.getCoordinate().x)
-                        + " "
-                        + formatter.format(targetPoint.getCoordinate().y);
 
         Document doc =
                 getAsDOM(
@@ -374,41 +369,22 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
                 "(//ex:geomContainer)[1]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Polygon/@srsDimension",
                 doc);
 
-        if (!isGeopkgTest()) {
-            assertXpathEvaluatesTo(
-                    targetPolygonCoords,
-                    "(//ex:geomContainer)[1]/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    targetPolygonCoords,
-                    "(//ex:geomContainer)[1]/ex:shape/gml:LineString/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    targetPolygonCoords,
-                    "(//ex:geomContainer)[1]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    targetPointCoord,
-                    "(//ex:geomContainer)[1]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
-                    doc);
-        } else {
-            assertXpathEvaluatesTo(
-                    "52.50000004 -1.2 52.60000004 -1.2 52.60000004 -1.1 52.50000004 -1.1 52.50000004 -1.2",
-                    "(//ex:geomContainer)[1]/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "52.50000004 -1.2 52.60000004 -1.2 52.60000004 -1.1 52.50000004 -1.1 52.50000004 -1.2",
-                    "(//ex:geomContainer)[1]/ex:shape/gml:LineString/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "52.50000004 -1.2 52.60000004 -1.2 52.60000004 -1.1 52.50000004 -1.1 52.50000004 -1.2",
-                    "(//ex:geomContainer)[1]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "31.29000003 42.58",
-                    "(//ex:geomContainer)[1]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
-                    doc);
-        }
+        assertXpathEvaluatesTo(
+                targetPolygonCoords,
+                "(//ex:geomContainer)[1]/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                targetPolygonCoords,
+                "(//ex:geomContainer)[1]/ex:shape/gml:LineString/gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                targetPolygonCoords,
+                "(//ex:geomContainer)[1]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                targetPointCoord,
+                "(//ex:geomContainer)[1]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
+                doc);
 
         // second feature
         id = "2";
@@ -464,37 +440,21 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
                 DIMENSION,
                 "(//ex:geomContainer)[2]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Point/@srsDimension",
                 doc);
-        if (!isGeopkgTest()) {
-            assertXpathEvaluatesTo(
-                    targetPointCoord, "(//ex:geomContainer)[2]/ex:geom/gml:Point/gml:pos", doc);
-            assertXpathEvaluatesTo(
-                    targetPointCoord + " " + targetPointCoord,
-                    "(//ex:geomContainer)[2]/ex:shape/gml:LineString/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    targetPolygonCoords,
-                    "(//ex:geomContainer)[2]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    targetPointCoord,
-                    "(//ex:geomContainer)[2]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
-                    doc);
-        } else {
-            assertXpathEvaluatesTo(
-                    "31.29000003 42.58", "(//ex:geomContainer)[2]/ex:geom/gml:Point/gml:pos", doc);
-            assertXpathEvaluatesTo(
-                    "31.29000003 42.58 31.29000003 42.58",
-                    "(//ex:geomContainer)[2]/ex:shape/gml:LineString/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "52.50000004 -1.2 52.60000004 -1.2 52.60000004 -1.1 52.50000004 -1.1 52.50000004 -1.2",
-                    "(//ex:geomContainer)[2]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "31.29000003 42.58",
-                    "(//ex:geomContainer)[2]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
-                    doc);
-        }
+
+        assertXpathEvaluatesTo(
+                targetPointCoord, "(//ex:geomContainer)[2]/ex:geom/gml:Point/gml:pos", doc);
+        assertXpathEvaluatesTo(
+                targetPointCoord + " " + targetPointCoord,
+                "(//ex:geomContainer)[2]/ex:shape/gml:LineString/gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                targetPolygonCoords,
+                "(//ex:geomContainer)[2]/ex:nestedFeature[1]/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                targetPointCoord,
+                "(//ex:geomContainer)[2]/ex:nestedFeature[2]/ex:nestedGeom/ex:geom/gml:Point/gml:pos",
+                doc);
     }
 
     /** Ensure filters are still working. */

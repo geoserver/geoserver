@@ -31,7 +31,6 @@ import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
-import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.logging.Logging;
 
@@ -149,7 +148,8 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
                 JDBCCollectionFeatureStore collectionSource =
                         (JDBCCollectionFeatureStore)
                                 ((JDBCOpenSearchAccess) getDataStore()).getCollectionSource();
-                ComplexFeatureBuilder cb = new ComplexFeatureBuilder(collectionType);
+                ComplexFeatureBuilder cb =
+                        new ComplexFeatureBuilder(collectionType, FEATURE_FACTORY);
                 SimpleFeature sf = (SimpleFeature) collection;
                 collectionSource.mapPropertiesToComplex(cb, sf);
                 Feature collectionFeature =

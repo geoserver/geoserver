@@ -15,11 +15,6 @@ import org.junit.Test;
 
 public class OSEOAdminPageTest extends OSEOWebTestSupport {
 
-    @Override
-    protected String getLogConfiguration() {
-        return "DEFAULT_LOGGING";
-    }
-
     @Before
     public void startPage() {
         login();

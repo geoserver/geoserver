@@ -146,3 +146,122 @@ Support for the `STAC Datacube Extension <https://github.com/stac-extensions/dat
 				</li> 
 			</ul>
 	</li>
+
+
+Layer information support
+-------------------------
+
+The OpenSearch REST admin API allows to create and manage layers, and the STAC API exposes them as collections.
+
+Layers are kept in the ``layers`` attribute of a collection, each one exposes the following information:
+
+* All ``collection_layers`` attributes (``workspace``, ``layer``, ``bands``, and so on)
+* The layer ``title`` and ``description`` from the GeoServer own configuration
+* A list of ``styles``, matching the styles associated to the layer. The first one is the default style. Each style contains the follwoing properties:
+  - ``name``: the style name
+  - ``title``: the style title
+* A ``services`` object with attributes matching a lowercase service name, e.g., ``wms``, ``wcs``, ``wmts``, each one being an object with the following two fields:
+    - ``enabled``: true or false (might depend on the layer configuration too)
+    - ``formats``: the formats supported, for that layer, by the main service output (e.g., maps, coverages, tiles)
+
+This information could be used, for example, to implement the STAC `web-map-links <https://github.com/stac-extensions/web-map-links>`_ extension.
+
+Here is a Freemarker template snipped using the layer information:
+
+   .. code-block::
+
+    <#include "common-header.ftl">
+      <h1>This is a collection with layers</h1>
+      
+      <#list collection.layers as layerWrapper>
+        <#assign layer=layerWrapper.rawValue>
+        <h2>${layer.workspace.value}:${layer.layer.value}</h2>
+        <p class="title">${layer.title.value}</p>
+        <p class="description">${layer.description.value}</p>
+        
+        <#if layer.styles??>
+          <h3>Styles</h3>
+            <#list layer.styles as styleWrapper>
+              <#assign style=styleWrapper.rawValue>
+              <p class="style">${(style.name.value)!}: ${(style.title.value)!}</p>
+            </#list>
+        </#if>
+        
+        <#assign wms=layer.services.rawValue.wms.rawValue>
+        <#if wms??>
+            <h3>WMS</h3>
+            <p>Enabled: ${wms.enabled.value}</p>
+            <p>Formats: 
+            <ul>
+            <#list wms.formats as format>
+              <li>${format.value}</li>
+            </#list>
+            </ul>
+        </#if>
+        
+        <#assign wcs=layer.services.rawValue.wcs.rawValue>
+        <#if wcs??>
+            <h3>WCS</h3>
+            <p>Enabled: ${wcs.enabled.value}</p>
+            <p>Formats: 
+            <ul>
+            <#list wcs.formats as format>
+              <li>${format.value}</li>
+            </#list>
+            </ul>
+        </#if>
+        
+        <#assign wmts=layer.services.rawValue.wmts.rawValue>
+        <#if wmts??>
+            <h3>WMTS</h3>
+            <p>Enabled: ${wmts.enabled.value}</p>
+            <p>Formats: 
+            <ul>
+            <#list wmts.formats as format>
+              <li>${format.value}</li>
+            </#list>
+            </ul>
+        </#if>
+      </#list>
+
+And here is a Features Templating JSON template exposing the same information, to use in the collection JSON output:
+
+   .. code-block:: json
+
+    {
+      "collections": [
+        {
+          "id": "${name}",
+          "title": "${title}",
+          "layers": [
+            {
+              "$source": "layers"
+            },
+            {
+              "workspace": "${workspace}",
+              "layer": "${layer}",
+              "styles": [
+                {
+                  "$source": "styles"
+                },
+                {
+                  "name": "${name}",
+                  "title": "${title}"
+                }
+              ],
+              "services": {
+                "wms": {
+                  "enabled": "${services.wms.enabled}",
+                  "formats": "${services.wms.formats}"
+                },
+                "wcs": {
+                  "enabled": "${services.wcs.enabled}",
+                  "formats": "${services.wcs.formats}"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+

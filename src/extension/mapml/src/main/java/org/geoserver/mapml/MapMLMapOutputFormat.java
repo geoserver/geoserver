@@ -56,7 +56,7 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
         String formatOptions = httpServletRequest.getParameter("format_options");
         if (formatOptions != null && formatOptions.contains(MAPML_FEATURE_FORMAT_OPTIONS)) {
             MapMLFeaturesBuilder mapMLFeaturesBuilder =
-                    new MapMLFeaturesBuilder(mapContent, wms, geoServer, httpServletRequest);
+                    new MapMLFeaturesBuilder(mapContent, geoServer, httpServletRequest);
             return new MapMLMap(mapContent, mapMLFeaturesBuilder.getMapMLDocument());
         } else {
             MapMLDocumentBuilder mapMLDocumentBuilder =

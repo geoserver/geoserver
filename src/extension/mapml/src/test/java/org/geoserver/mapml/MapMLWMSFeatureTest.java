@@ -1,3 +1,7 @@
+/* (c) 2024 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.mapml;
 
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
@@ -52,12 +56,12 @@ public class MapMLWMSFeatureTest extends WMSTestSupport {
         li.getMetadata().put(MAPML_USE_TILES, false);
         cat.save(li);
 
-        MockRequestResponse requestResponse =
+        MockHttpServletResponse response =
                 getMockRequestResponse(
                         MockData.POLYGONS.getLocalPart(), null, null, "EPSG:3857", null);
 
         MapMLEncoder encoder = new MapMLEncoder();
-        StringReader reader = new StringReader(requestResponse.response.getContentAsString());
+        StringReader reader = new StringReader(response.getContentAsString());
         Mapml mapmlFeatures = null;
         try {
             mapmlFeatures = encoder.decode(reader);
@@ -94,7 +98,7 @@ public class MapMLWMSFeatureTest extends WMSTestSupport {
         lgi.getMetadata().put(MAPML_USE_FEATURES, true);
         lgi.getMetadata().put(MAPML_USE_TILES, false);
         cat.save(lgi);
-        MockRequestResponse requestResponse =
+        MockHttpServletResponse response =
                 getMockRequestResponse(
                         "layerGroup" + "," + MockData.POLYGONS.getLocalPart(),
                         null,
@@ -104,14 +108,30 @@ public class MapMLWMSFeatureTest extends WMSTestSupport {
 
         assertTrue(
                 "MapML response contains an exception due to multiple feature types",
-                requestResponse
-                        .response
-                        .getContentAsString()
+                response.getContentAsString()
                         .contains(
-                                "MapML WMS Feature format does not support Multiple Feature Type output."));
+                                "MapML WMS Feature format does not currently support Multiple Feature Type output."));
     }
 
-    private MockRequestResponse getMockRequestResponse(
+    @Test
+    public void testExceptionBecauseBecauseRaster() throws Exception {
+        Catalog cat = getCatalog();
+        LayerInfo liRaster = cat.getLayerByName(MockData.WORLD.getLocalPart());
+        liRaster.getMetadata().put(MAPML_USE_FEATURES, true);
+        liRaster.getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(liRaster);
+        MockHttpServletResponse response =
+                getMockRequestResponse(
+                        MockData.WORLD.getLocalPart(), null, null, "EPSG:3857", null);
+
+        assertTrue(
+                "MapML response contains an exception due to non-vector type",
+                response.getContentAsString()
+                        .contains(
+                                "MapML WMS Feature format does not currently support non-vector layers."));
+    }
+
+    private MockHttpServletResponse getMockRequestResponse(
             String name, Map kvp, Locale locale, String srs, String styles) throws Exception {
         String path = null;
         MockHttpServletRequest request = null;
@@ -144,19 +164,6 @@ public class MapMLWMSFeatureTest extends WMSTestSupport {
         }
         request.setMethod("GET");
         request.setContent(new byte[] {});
-        MockHttpServletResponse response = dispatch(request, "UTF-8");
-        MockRequestResponse result = new MockRequestResponse(request, response);
-        return result;
-    }
-
-    private static class MockRequestResponse {
-        public final MockHttpServletRequest request;
-        public final MockHttpServletResponse response;
-
-        public MockRequestResponse(
-                MockHttpServletRequest request, MockHttpServletResponse response) {
-            this.request = request;
-            this.response = response;
-        }
+        return dispatch(request, "UTF-8");
     }
 }

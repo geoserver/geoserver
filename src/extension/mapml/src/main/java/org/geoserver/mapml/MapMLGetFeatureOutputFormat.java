@@ -45,9 +45,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     private String path;
     private Map<String, Object> query;
 
-    /**
-     * @param gs the GeoServer instance
-     */
+    /** @param gs the GeoServer instance */
     public MapMLGetFeatureOutputFormat(GeoServer gs) {
         super(gs, MapMLConstants.FORMAT_NAME);
     }

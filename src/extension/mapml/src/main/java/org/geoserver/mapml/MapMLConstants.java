@@ -43,27 +43,49 @@ public final class MapMLConstants {
     /** MapML layer resource metadata */
     public static final String RESOURCE_METADATA = "resource.metadata";
 
+    /** LIST FAILED */
     public static final String LIST_FAILED = "Grabbing the attribute list failed";
 
+    /** ATTRIBUTE_LIST_FAILED */
     public static final String ATTRIBUTE_LIST_FAILED = "attributeListingFailed";
 
+    /** FEATURE_CAPTION_TEMPLATE */
     public static final String FEATURE_CAPTION_TEMPLATE = "featureCaptionTemplate";
 
+    /** FEATURE_CAPTION */
     public static final String FEATURE_CAPTION = "mapml.featureCaption";
 
+    /** FEATURE_CAPTION_ATTRIBUTES */
     public static final String FEATURE_CAPTION_ATTRIBUTES = "featurecaptionattributes";
 
+    /** MAPML_PREFIX */
     public static final String MAPML_PREFIX = "mapml.";
+
+    /** DIMENSION */
     public static final String DIMENSION = "dimension";
+
+    /** MAPML_DIMENSION */
     public static final String MAPML_DIMENSION = MAPML_PREFIX + DIMENSION;
+
+    /** SHARD_LIST */
     public static final String SHARD_LIST = "shardList";
+
+    /** ENABLE_SHARDING */
     public static final String ENABLE_SHARDING = "enableSharding";
+
+    /** USE_TILES */
     public static final String USE_TILES = "useTiles";
 
+    /** LICENSE_LINK */
     public static final String LICENSE = "licenseLink";
 
+    /** LICENSE_TITLE2 */
     public static final String LICENSE_TITLE2 = "licenseTitle";
+
+    /** USE_FEATURES */
     public static final String USE_FEATURES = "useFeatures";
+
+    /** SHARD_SERVER_PATTERN */
     public static final String SHARD_SERVER_PATTERN = "shardServerPattern";
 
     /** LICENSE_TITLE */

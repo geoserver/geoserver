@@ -196,6 +196,7 @@ public class MapMLWMSTest extends WMSTestSupport {
         ResourceInfo layerMeta = li.getResource();
         layerMeta.getMetadata().put("mapml.useTiles", true);
         cat.save(layerMeta);
+
         Mapml m = testLayersAndGroupsMapML(li, null);
         String title = m.getHead().getTitle();
         assertTrue(title.equalsIgnoreCase(li.getName()));
@@ -264,14 +265,19 @@ public class MapMLWMSTest extends WMSTestSupport {
         li.getMetadata().put(MAPML_USE_TILES, false);
         cat.save(li);
 
-        LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
-        lgi.getMetadata().put(MAPML_USE_FEATURES, true);
-        lgi.getMetadata().put(MAPML_USE_TILES, false);
-        cat.save(lgi);
+        LayerInfo li2 = cat.getLayerByName(MockData.LINES.getLocalPart());
+        li2.getMetadata().put(MAPML_USE_FEATURES, true);
+        li2.getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(li2);
+
+        LayerInfo li3 = cat.getLayerByName(MockData.WORLD.getLocalPart());
+        li3.getMetadata().put(MAPML_USE_FEATURES, true);
+        li3.getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(li3);
 
         MockRequestResponse requestResponse =
                 getMockRequestResponse(
-                        "layerGroup" + "," + MockData.POLYGONS.getLocalPart(),
+                        MockData.POLYGONS.getLocalPart() + "," + MockData.LINES.getLocalPart(),
                         null,
                         null,
                         "EPSG:3857",
@@ -298,11 +304,11 @@ public class MapMLWMSTest extends WMSTestSupport {
                 imageLinksForSingle.get(0).getTref().contains("format=text/mapml"));
 
         // now we change one of the layers to not return features
-        lgi.getMetadata().put(MAPML_USE_FEATURES, false);
-        cat.save(lgi);
+        li.getMetadata().put(MAPML_USE_FEATURES, false);
+        cat.save(li);
         MockRequestResponse requestResponseOneNotFeatures =
                 getMockRequestResponse(
-                        "layerGroup" + "," + MockData.POLYGONS.getLocalPart(),
+                        MockData.POLYGONS.getLocalPart() + "," + MockData.LINES.getLocalPart(),
                         null,
                         null,
                         "EPSG:3857",
@@ -335,6 +341,43 @@ public class MapMLWMSTest extends WMSTestSupport {
                 "Image link should be present when useFeatures on even one layer is false",
                 1,
                 imageLinksForSingleOneNotFeatures.size());
+
+        // now we add a raster layer
+        li.getMetadata().put(MAPML_USE_FEATURES, true);
+        cat.save(li);
+        MockRequestResponse requestResponseOneRaster =
+                getMockRequestResponse(
+                        "layerGroup"
+                                + ","
+                                + MockData.POLYGONS.getLocalPart()
+                                + ","
+                                + MockData.WORLD.getLocalPart(),
+                        null,
+                        null,
+                        "EPSG:3857",
+                        null);
+        StringReader readerOneRaster =
+                new StringReader(requestResponseOneRaster.response.getContentAsString());
+        Mapml mapmlOneRaster = null;
+        try {
+            mapmlOneRaster = encoder.decode(readerOneRaster);
+        } catch (DataBindingException e) {
+            fail("MapML response is not valid XML");
+        }
+        List<Link> extentLinksOneRaster =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlOneRaster.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> featureLinksForRaster = getLinkByRelType(extentLinksOneRaster, RelType.FEATURES);
+        assertEquals(
+                "Features link should not be present when useFeatures on even one layer is raster",
+                0,
+                featureLinksForRaster.size());
+        List<Link> imageLinksForRaster = getLinkByRelType(extentLinksOneRaster, RelType.IMAGE);
+        assertEquals(
+                "Image link should be present when useFeatures on even one layer is raster",
+                1,
+                imageLinksForRaster.size());
     }
 
     @Test

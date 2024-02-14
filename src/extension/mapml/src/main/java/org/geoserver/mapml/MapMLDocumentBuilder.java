@@ -35,6 +35,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
@@ -378,7 +379,8 @@ public class MapMLDocumentBuilder {
         for (RawLayer layer : layers) {
             Boolean useFeatures =
                     layer.getPublishedInfo().getMetadata().get(MAPML_USE_FEATURES, Boolean.class);
-            if (useFeatures == null || !useFeatures) {
+            Boolean isVector = (PublishedType.VECTOR == layer.getPublishedInfo().getType());
+            if (useFeatures == null || isVector == null || !useFeatures || !isVector) {
                 return false;
             }
         }
@@ -520,8 +522,10 @@ public class MapMLDocumentBuilder {
         boolean isTransparent = true;
         String styleName = null;
         boolean tileLayerExists = false;
+        boolean isVector = true;
         if (isLayerGroup) {
             // layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer.getTitle());
+            isVector = false;
             layerGroupInfo = (LayerGroupInfo) layer.getPublishedInfo();
             if (layerGroupInfo == null) {
                 throw new ServiceException("Invalid layer or layer group name");
@@ -541,8 +545,9 @@ public class MapMLDocumentBuilder {
         } else {
             layerInfo = (LayerInfo) layer.getPublishedInfo();
             resourceInfo = layerInfo.getResource();
+            isVector = (PublishedType.VECTOR == layerInfo.getType());
             bbox = layerInfo.getResource().getLatLonBoundingBox();
-            layerMeta = resourceInfo.getMetadata();
+            layerMeta = layerInfo.getMetadata();
             workspace =
                     (resourceInfo.getStore().getWorkspace() != null
                             ? resourceInfo.getStore().getWorkspace().getName()
@@ -561,8 +566,9 @@ public class MapMLDocumentBuilder {
                                 != null;
         boolean useTiles = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_TILES, Boolean.class));
         boolean useFeatures = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_FEATURES, Boolean.class));
-        if (!useFeatures) {
-            // if any layer in the request is not using features, then the request as a whole is not
+        if (!useFeatures || !isVector) {
+            // if any layer in the request is not using features or is not vector type,
+            // then the request as a whole is not using features
             useFeaturesAllLayers = false;
         }
 

@@ -217,6 +217,7 @@
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>gwc-sqlite</module>
+        <module>jwt-headers</module>
         <module>security</module>
         <module>notification</module>
         <module>notification-common</module>
@@ -462,6 +463,14 @@
         <module>gwc-sqlite</module>
       </modules>
     </profile>
+
+    <profile>
+      <id>jwt-headers</id>
+      <modules>
+        <module>jwt-headers</module>
+      </modules>
+    </profile>
+
     <profile>
       <id>oauth2-google</id>
       <modules>

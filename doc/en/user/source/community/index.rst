@@ -47,6 +47,7 @@ officially part of the GeoServer releases. They are however built along with the
    jdbcconfig/index
    jdbcstore/index
    jms-cluster/index
+   jwt-headers/index
    keycloak/index
    libdeflate/index
    mbtiles/index

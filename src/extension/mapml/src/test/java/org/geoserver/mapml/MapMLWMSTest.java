@@ -120,6 +120,18 @@ public class MapMLWMSTest extends WMSTestSupport {
                         MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT,
                         MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT);
         geoServer.save(wms);
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        li.getMetadata().put(MAPML_USE_FEATURES, false);
+        cat.save(li);
+
+        LayerInfo li2 = cat.getLayerByName(MockData.LINES.getLocalPart());
+        li2.getMetadata().put(MAPML_USE_FEATURES, false);
+        cat.save(li2);
+
+        LayerInfo li3 = cat.getLayerByName(MockData.WORLD.getLocalPart());
+        li3.getMetadata().put(MAPML_USE_FEATURES, false);
+        cat.save(li3);
     }
 
     @Override

@@ -547,7 +547,7 @@ public class MapMLDocumentBuilder {
             resourceInfo = layerInfo.getResource();
             isVector = (PublishedType.VECTOR == layerInfo.getType());
             bbox = layerInfo.getResource().getLatLonBoundingBox();
-            layerMeta = layerInfo.getMetadata();
+            layerMeta = resourceInfo.getMetadata();
             workspace =
                     (resourceInfo.getStore().getWorkspace() != null
                             ? resourceInfo.getStore().getWorkspace().getName()

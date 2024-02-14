@@ -25,6 +25,7 @@ import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Polygon;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -45,6 +46,22 @@ public class MapMLWMSFeatureTest extends WMSTestSupport {
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.calculateLayerGroupBounds(lg, DefaultGeographicCRS.WGS84);
         catalog.add(lg);
+    }
+
+    @After
+    public void tearDown() {
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        li.getMetadata().put(MAPML_USE_FEATURES, false);
+        cat.save(li);
+
+        LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
+        lgi.getMetadata().put(MAPML_USE_FEATURES, false);
+        cat.save(lgi);
+
+        LayerInfo liRaster = cat.getLayerByName(MockData.WORLD.getLocalPart());
+        liRaster.getMetadata().put(MAPML_USE_FEATURES, false);
+        cat.save(liRaster);
     }
 
     @Test

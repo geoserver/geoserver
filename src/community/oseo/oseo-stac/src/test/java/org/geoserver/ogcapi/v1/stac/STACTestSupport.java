@@ -37,7 +37,11 @@ import org.junit.BeforeClass;
 
 public class STACTestSupport extends OGCApiTestSupport {
     protected static final String STAC_TITLE = "STAC server title";
-    protected static final double EPS = 1e-5;
+
+    /**
+     * The EPS value to use for floating point comparisons. Matches precision of the expected values
+     */
+    protected static final double EPS = 1e-4;
 
     static TimeZone currentTimeZone;
     static Locale currentLocale;
@@ -54,6 +58,11 @@ public class STACTestSupport extends OGCApiTestSupport {
     public static void resetTimeZone() {
         TimeZone.setDefault(currentTimeZone);
         Locale.setDefault(currentLocale);
+    }
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no need for test data
     }
 
     @Override
@@ -111,14 +120,24 @@ public class STACTestSupport extends OGCApiTestSupport {
     protected void copyTemplate(String template) throws IOException {
         copyTemplate(template, "templates/ogc/stac/v1/");
     }
+
+    /**
+     * Copies the given template from the classpath to the data directory. Lookup is relative to the
+     * test class.
+     */
+    protected void copyTemplate(String template, String targetPath) throws IOException {
+        copyTemplate(template, "templates/ogc/stac/v1/", template);
+    }
+
     /**
      * Copies the given template from the classpath to the data directory. Lookup is relative to the
      * test class. The target path is for when you want to prioritize a template in a specific
      * folder over an identically named template in a different folder.
      */
-    protected void copyTemplate(String template, String targetPath) throws IOException {
+    protected void copyTemplate(String template, String targetPath, String targetFileName)
+            throws IOException {
         GeoServerDataDirectory dd = getDataDirectory();
-        Resource target = dd.get(targetPath, template);
+        Resource target = dd.get(targetPath, targetFileName);
         if (getClass().getResource(template) == null)
             throw new IllegalArgumentException(
                     "Could not find " + template + " relative to " + getClass());

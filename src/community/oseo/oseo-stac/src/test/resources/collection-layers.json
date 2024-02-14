@@ -1,0 +1,36 @@
+{
+  "collections": [
+    {
+      "id": "${name}",
+      "title": "${title}",
+      "layers": [
+        {
+          "$source": "layers"
+        },
+        {
+          "workspace": "${workspace}",
+          "layer": "${layer}",
+          "styles": [
+            {
+              "$source": "styles"
+            },
+            {
+              "name": "${name}",
+              "title": "${title}"
+            }
+          ],
+          "services": {
+            "wms": {
+              "enabled": "${services.wms.enabled}",
+              "formats": "${services.wms.formats}"
+            },
+            "wcs": {
+              "enabled": "${services.wcs.enabled}",
+              "formats": "${services.wcs.formats}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

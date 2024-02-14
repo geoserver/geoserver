@@ -46,6 +46,6 @@ public class ServiceProviderTest extends GeoServerSystemTestSupport {
         final List<String> services =
                 provider.getServicesForLayerName(getLayerId(SystemTestData.TASMANIA_DEM));
         assertThat(services, not(contains("OSEO")));
-        assertThat(services, contains("WMS"));
+        assertThat(services, containsInAnyOrder("WCS", "WMS"));
     }
 }

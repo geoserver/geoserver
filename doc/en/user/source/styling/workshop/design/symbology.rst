@@ -77,23 +77,19 @@ Selection of an appropriate color palette is difficult, with a tension between w
       Number of data classes
   
 #. Color brewer offers palettes using three different color schemes:
-  
-   =============== =============================
-   Sequential      |sequential|
-   --------------- -----------------------------
-   Diverging       |diverging|
-   --------------- -----------------------------
-   Qualitative     |qualitative|
-   =============== =============================
-  
-   .. |sequential| image:: img/color_sequential.png
-                   :class: inline
-                   
-   .. |diverging| image:: img/color_diverging.png
-                  :class: inline
-                 
-   .. |qualitative| image:: img/color_qualatative.png
-                  :class: inline
+   
+   .. figure:: img/color_sequential.png
+      
+      Sequential
+   
+   .. figure:: img/color_diverging.png
+      
+      Diverging
+    
+   .. figure:: img/color_qualatative.png
+   
+      Qualitative
+      
   
    The nature of our data is qualitative (each attribute value is attached an equal importance, and there is no implied order that wish to communicate with color).
 

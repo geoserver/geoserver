@@ -24,7 +24,6 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.datadir.config.DataDirectoryLoaderConfiguration.DataDirLoaderEnabledCondition;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.config.DefaultGeoServerLoader;
@@ -83,7 +82,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
      */
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        System.setProperty(DataDirLoaderEnabledCondition.SYSPROP_KEY, "false");
+        System.setProperty(DataDirectoryGeoServerLoader.SYSPROP_KEY, "false");
         super.setUpTestData(testData);
     }
 

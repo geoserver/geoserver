@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.datadir;
+package org.geoserver.config;
 
 import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertEquals;
@@ -26,11 +26,6 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
-import org.geoserver.config.DefaultGeoServerLoader;
-import org.geoserver.config.GeoServer;
-import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.ServicePersister;
-import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
@@ -53,9 +48,9 @@ import org.junit.After;
 import org.junit.Test;
 
 /**
- * Test suite for {@link DataDirectoryGeoServerLoader}, first creates the test data using the {@link
- * DefaultGeoServerLoader} and then verifies {@link DataDirectoryGeoServerLoader} produces the same
- * results.
+ * Test suite for {@link org.geoserver.config.DataDirectoryGeoServerLoader}, first creates the test
+ * data using the {@link org.geoserver.config.DefaultGeoServerLoader} and then verifies {@link
+ * org.geoserver.config.DataDirectoryGeoServerLoader} produces the same results.
  */
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport {
@@ -77,8 +72,8 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
 
     /**
      * Disables using this plugin before setting up the test application context, to check the
-     * values of the manually run {@link DataDirectoryGeoServerLoader} against the objects loaded by
-     * {@link DefaultGeoServerLoader}
+     * values of the manually run {@link org.geoserver.config.DataDirectoryGeoServerLoader} against
+     * the objects loaded by {@link org.geoserver.config.DefaultGeoServerLoader}
      */
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {

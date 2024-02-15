@@ -2,10 +2,10 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.datadir;
+package org.geoserver.config;
 
-import static org.geoserver.catalog.datadir.DataDirectoryGeoServerLoader.ENVVAR_KEY;
-import static org.geoserver.catalog.datadir.DataDirectoryGeoServerLoader.SYSPROP_KEY;
+import static org.geoserver.config.DataDirectoryGeoServerLoader.ENVVAR_KEY;
+import static org.geoserver.config.DataDirectoryGeoServerLoader.SYSPROP_KEY;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;

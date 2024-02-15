@@ -366,8 +366,6 @@ Details
 
 This example paints lines with a red stroke, and then adds horizontal black labels at the center of the line, using the "name" attribute to fill the label.
 
-_css_line_
-
 .. _css_cookbook_lines_perpendicularlabel:
 
 Labels along line with perpendicular offset

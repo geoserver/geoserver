@@ -33,7 +33,7 @@ This is a step by step guide to style a GeoServer demo layer, ``sfdem``.
 #. Open :command:`QGIS` (minimum version 3.0)
 #. Load the :file:`states.shp` dataset from the GeoServer data directory, :file:`<GEOSERVER_DATA_DIR>/data/shapefiles/states.shp`
 #. Double click the layer to open the :guilabel:`Properties` dialog and switch to the :guilabel:`Symbology` page.
-#. Choose a `Graduated` rendering, on the ``PERSONS`` column, and click on :guilabel:`Classify` button to generate `1.5` standard deviations, select the `spectral` color ramp, switch mode to `Quantile` and finally and click on the ":guilabel:`Classify` button to generate a 5 classes map, as shown in figure.
+#. Choose a `Graduated` rendering, on the ``PERSONS`` column, and click on :guilabel:`Classify` button to generate `1.5` standard deviations, select the `spectral` color ramp, switch mode to `Quantile` and finally and click on the :guilabel:`Classify` button to generate a 5 classes map, as shown in figure.
 
    .. figure:: images/qgis-vector-style.png
       :align: center

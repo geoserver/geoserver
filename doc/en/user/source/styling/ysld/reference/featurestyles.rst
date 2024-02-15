@@ -302,7 +302,7 @@ Color blending allows buffers to be mixed during composition.
      
        .. image:: img/blend-difference.png
 
-.. note:: For more details about the compositing and blending options, please see the `GeoServer User Manual <../../../geoserver/styling/sld-extensions/composite-blend/>`__.
+.. note:: For more details about the compositing and blending options, please see :ref:`sld-extensions_composite-blend_modes`.
 
 Short syntax
 ------------

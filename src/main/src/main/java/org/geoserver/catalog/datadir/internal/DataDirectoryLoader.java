@@ -20,7 +20,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
@@ -132,12 +131,8 @@ public class DataDirectoryLoader {
         return loader.loadCatalog();
     }
 
-    public GeoServerImpl loadGeoServer(Catalog realCatalog) throws Exception {
-        Objects.requireNonNull(realCatalog);
-
-        GeoServerImpl gs = new GeoServerImpl();
-        // required when depersisting workspace settings and services
-        gs.setCatalog(realCatalog);
+    public GeoServer loadGeoServer(GeoServer gs) throws Exception {
+        Objects.requireNonNull(gs);
 
         GeoServerConfigLoader loader =
                 new GeoServerConfigLoader(

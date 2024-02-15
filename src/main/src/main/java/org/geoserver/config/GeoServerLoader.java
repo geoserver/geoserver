@@ -514,7 +514,7 @@ public abstract class GeoServerLoader {
     }
 
     /** Reads the catalog from disk. */
-    Catalog readCatalog(XStreamPersister xp) throws Exception {
+    protected Catalog readCatalog(XStreamPersister xp) throws Exception {
         CatalogImpl catalog = new CatalogImpl();
         catalog.setResourceLoader(resourceLoader);
         xp.setCatalog(catalog);

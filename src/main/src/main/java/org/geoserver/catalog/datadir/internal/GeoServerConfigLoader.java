@@ -20,11 +20,11 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.datadir.internal.DataDirectoryWalker.WorkspaceDirectory;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
-import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;
@@ -42,13 +42,13 @@ class GeoServerConfigLoader {
 
     private final DataDirectoryWalker fileWalk;
     private final ExecutorService executor;
-    private final GeoServerImpl geoServer;
+    private final GeoServer geoServer;
 
     private FileSystemResourceStore resourceStore;
     private List<XStreamServiceLoader<ServiceInfo>> serviceLoaders;
 
     public GeoServerConfigLoader(
-            GeoServerImpl target,
+            GeoServer target,
             DataDirectoryWalker fileWalk,
             ExecutorService executor,
             FileSystemResourceStore resourceStore,
@@ -67,8 +67,8 @@ class GeoServerConfigLoader {
         this.serviceLoaders = serviceLoaders;
     }
 
-    public GeoServerImpl loadGeoServer() throws Exception {
-        Future<GeoServerImpl> task = executor.submit(this::readGeoServer);
+    public GeoServer loadGeoServer() throws Exception {
+        Future<GeoServer> task = executor.submit(this::readGeoServer);
         try {
             return task.get();
         } catch (InterruptedException e) {
@@ -81,7 +81,7 @@ class GeoServerConfigLoader {
         }
     }
 
-    private GeoServerImpl readGeoServer() {
+    private GeoServer readGeoServer() {
         readFileCount.set(0);
 
         Optional<GeoServerInfo> global = fileWalk.gsGlobal().flatMap(this::depersist);

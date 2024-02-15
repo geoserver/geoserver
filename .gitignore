@@ -42,3 +42,6 @@ src/release/installer/win/target/
 # spotless up to date checks
 .spotless-index
 
+# python mkdocs stuff
+__pycache__
+

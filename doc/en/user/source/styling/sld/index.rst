@@ -8,8 +8,8 @@ This section discusses styling of geospatial data using "Style Layer Descriptor"
 .. toctree::
    :maxdepth: 2
 
-   introduction/
-   working/
+   introduction
+   working
    cookbook/index
    reference/index
    extensions/index

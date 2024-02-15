@@ -709,7 +709,7 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testSearchSortByJson() throws Exception {
         String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        String request = "{\"sortBy\":[\"name\"],\"limit\":2}";
+        String request = "{\"sortby\":[\"name\"],\"limit\":2}";
         DocumentContext json =
                 postAsJSONPath(
                         "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
@@ -722,7 +722,7 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testSearchSortByText() throws Exception {
         String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        String request = "{\"sortBy\":\"name\",\"limit\":2}";
+        String request = "{\"sortby\":\"name\",\"limit\":2}";
         DocumentContext json =
                 postAsJSONPath(
                         "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);

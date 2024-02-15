@@ -65,9 +65,18 @@ In a corporate environment it may be necessary to connect to an external WFS thr
 
 For a Windows install running GeoServer as a service, this is done by modifying the wrapper.conf file. For a default Windows install, modify **`C:\Program Files\GeoServer x.x.x\wrapper\wrapper.conf`** similarly to the following.
 
-> \# Java Additional Parameters
->
-> wrapper.java.additional.1=-Djetty.home=. wrapper.java.additional.2=-DGEOSERVER_DATA_DIR="%GEOSERVER_DATA_DIR%" wrapper.java.additional.3=-Dhttp.proxySet=true wrapper.java.additional.4=-Dhttp.proxyHost=maitproxy wrapper.java.additional.5=-Dhttp.proxyPort=8080 wrapper.java.additional.6=-Dhttps.proxyHost=maitproxy wrapper.java.additional.7=-Dhttps.proxyPort=8080 wrapper.java.additional.8=-Dhttp.nonProxyHosts="mait*localhost"
+``` properties
+# Java Additional Parameters
+
+wrapper.java.additional.1=-Djetty.home=.
+wrapper.java.additional.2=-DGEOSERVER_DATA_DIR="%GEOSERVER_DATA_DIR%"
+wrapper.java.additional.3=-Dhttp.proxySet=true
+wrapper.java.additional.4=-Dhttp.proxyHost=maitproxy
+wrapper.java.additional.5=-Dhttp.proxyPort=8080
+wrapper.java.additional.6=-Dhttps.proxyHost=maitproxy
+wrapper.java.additional.7=-Dhttps.proxyPort=8080
+wrapper.java.additional.8=-Dhttp.nonProxyHosts="mait*|dpi*|localhost"
+```
 
 Note that the ***http.proxySet=true*** parameter is required. Also, the parameter numbers must be consecutive - i.e. no gaps.
 

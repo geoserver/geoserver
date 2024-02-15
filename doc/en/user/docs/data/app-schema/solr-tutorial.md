@@ -1,6 +1,6 @@
 # Apache Solr Tutorial
 
-This tutorial demonstrates how to use the App-Schema plugin with a Apache Solr data store. This tutorial will focus on the Apache Solr data store specific aspects, and the [App-Schema documentation](_app-schema) should be read first.
+This tutorial demonstrates how to use the App-Schema plugin with a Apache Solr data store. This tutorial will focus on the Apache Solr data store specific aspects, and the [App-Schema documentation](index.md) should be read first.
 
 The use case for this tutorial will be to serve through App-Schema the information about some meteorological stations index in an Apache Solr core. Note that this use case is completely fictional and only used to demonstrate the Apache Solr and App-Schema integration.
 

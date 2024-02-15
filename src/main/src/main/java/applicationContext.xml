@@ -16,10 +16,6 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
         
-
-    <!-- defer loading of DataDirectoryLoader to the DataDirectoryLoaderConfiguration @Configuration class -->
-    <context:component-scan base-package="org.geoserver.catalog.datadir.config"/>
-    
     <context:component-scan base-package="org.geoserver.system.status"/>
         
     <bean id="gsMainModule" class="org.geoserver.platform.ModuleStatusImpl">

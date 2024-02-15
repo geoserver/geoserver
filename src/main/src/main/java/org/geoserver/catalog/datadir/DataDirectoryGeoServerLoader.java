@@ -6,6 +6,7 @@ package org.geoserver.catalog.datadir;
 
 import com.google.common.base.Stopwatch;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +26,6 @@ import org.geoserver.config.DefaultGeoServerLoader;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
@@ -40,6 +40,10 @@ import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.IncludeFilter;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 /**
  * The loading process is multi-threaded, and will take place in an {@link Executor} whose
@@ -51,6 +55,8 @@ import org.geotools.util.logging.Logging;
  * @since 2.25
  */
 public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
+    static final String SYSPROP_KEY = "datadir.loader.enabled";
+    static final String ENVVAR_KEY = "DATADIR_LOADER_ENABLED";
 
     static final Logger LOGGER =
             Logging.getLogger(DataDirectoryGeoServerLoader.class.getPackage().getName());
@@ -112,19 +118,23 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         logStop(startedStopWatch.stop(), catalog);
 
         catalogLoaded = true;
+        disposeIfBothLoaded();
         catalog.resolve();
         decryptDataStorePasswords(catalog);
-        disposeIfBothLoaded();
         return catalog;
     }
 
     @Override
     protected void readConfiguration(GeoServer target, XStreamPersister xp) throws Exception {
+        if (isLegacyConfig()) {
+            super.readConfiguration(target, xp);
+            return;
+        }
         LOGGER.config("Loading GeoServer config...");
         Stopwatch stopWatch = Stopwatch.createStarted();
 
         loader().loadGeoServer(target);
-        catalogLoaded = true;
+        geoserverLoaded = true;
         disposeIfBothLoaded();
 
         LOGGER.log(
@@ -148,18 +158,6 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
     /** Override to use an alternative {@link CatalogImpl} subclass */
     protected CatalogImpl newTemporaryCatalog() {
         return new CatalogImpl();
-    }
-
-    private void clear(GeoServer target) {
-        target.getServices().forEach(target::remove);
-
-        target.getCatalog().getWorkspaces().stream()
-                .forEach(
-                        ws -> {
-                            SettingsInfo settings = target.getSettings(ws);
-                            if (null != settings) target.remove(settings);
-                            target.getServices(ws).forEach(target::remove);
-                        });
     }
 
     private void decryptDataStorePasswords(CatalogImpl catalog) {
@@ -239,5 +237,37 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
                             catalog.count(LayerInfo.class, all),
                             catalog.count(LayerGroupInfo.class, all));
                 });
+    }
+
+    /**
+     * Determines whether the {@link DataDirectoryGeoServerLoader} shall be used, works like a
+     * spring-boot's {@code @ConditionalOnProperty(value="datadir.loader.enabled",
+     * havingValue="true", matchIfMissing=true)}, in which the both {@code datadir.loader.enabled}
+     * and {@code DATADIR_LOADER_ENABLED} can be used as System property, environment variable, or
+     * ApplicationContex {@link Environment} property.
+     *
+     * @return {@code true} by default, false if the enabled config property resolves to anything
+     *     but {@code true}
+     * @param context if provided, used to fall back resolving the {@code datadir.loader.enabled} or
+     *     {@code DATADIR_LOADER_ENABLED} config property if not provided as System property or
+     *     environment variable.
+     */
+    public static boolean isEnabled(@Nullable ApplicationContext context) {
+        String value =
+                getProperty(context, SYSPROP_KEY)
+                        .or(() -> getProperty(context, ENVVAR_KEY))
+                        .orElse("true");
+        return Boolean.parseBoolean(value);
+    }
+
+    private static Optional<String> getProperty(@Nullable ApplicationContext context, String prop) {
+        String value = GeoServerExtensions.getProperty(prop);
+        if (!StringUtils.hasText(value) && null != context) {
+            // GeoServerExtensions.getProperty() doesn't check the Environment property
+            // doing it here, with lower priority than env variables and system properties,
+            // so it also works with GeoServer Cloud's externalized configuration
+            value = context.getEnvironment().getProperty(prop);
+        }
+        return Optional.ofNullable(value);
     }
 }

@@ -122,7 +122,7 @@ The properties in the ResourceInfo_ object that can be used are::
 Depending on whether the resource is a FeatureTypeInfo or a CoverageInfo, additional properties may be taken from their respective object structure.
 You may use :ref:`rest` to view an xml model of feature types and datastores in which the xml tags represent the available properties in the objects.
 
-.. _ResourceInfo: http://rancor.boundlessgeo.com:8080/display/GEOS/Catalog+Design#CatalogDesign-resources
+.. _ResourceInfo:
 
 Some fields in the metadata schemes can have multiple occurrences. They may be mapped to properties in the Catalog model that are also multi-valued, such as for example ``keywords``.
 It is also possible to use a filter function called ``list`` to map multiple single-valued or multi-valued catalog properties to a MetaData field with multiple occurrences (see in ISO MetaData Profile example, mapping for the ``identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle`` field). 

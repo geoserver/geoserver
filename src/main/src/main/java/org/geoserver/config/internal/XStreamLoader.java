@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.datadir.internal;
+package org.geoserver.config.internal;
 
 import com.thoughtworks.xstream.XStream;
 import java.io.InputStream;
@@ -26,12 +26,15 @@ import org.springframework.util.StringUtils;
  * Utility class to aid {@link CatalogConfigLoader} and {@link GeoServerConfigLoader}
  * in depersisting {@link CatalogInfo}s from Xstream-encoded XML files.
  * <p>
- * The {@link #depersist(Path, Catalog)} method uses a per-thread {@link XStreamPersister}, using a {@link ThreadLocal}, since it's always called from within a {@link ForkJoinPool} thread,
+ * The {@link #depersist(Path, Catalog)} method uses a per-thread {@link XStreamPersister},
+ * using a {@link ThreadLocal}, since it's always called from within a {@link ForkJoinPool} thread,
  * to avoid the thread contention produced otherwise produced in {@link XStream}.
  * <p>
- * {@link XStreamPersister#setEncryptPasswordFields XStreamPersister#setEncryptPasswordFields(false)} is set on all xstream persisters, and the catalog loader shall
- * decrypt the {@link StoreInfo} password fields on the {@literal main) thread after all stores are loaded into the Catalog. Otherwise
- * it'll try to obtain the GeoServerSecurityManager through GeoServerExtensions, and a deadlock is produced in Spring internal code.
+ * {@link XStreamPersister#setEncryptPasswordFields XStreamPersister#setEncryptPasswordFields(false)}
+ * is set on all xstream persisters, and the catalog loader shall decrypt the {@link StoreInfo}
+ * password fields on the {@literal main) thread after all stores are loaded into the Catalog. Otherwise
+ * it'll try to obtain the GeoServerSecurityManager through GeoServerExtensions,
+ * and a deadlock is produced in Spring internal code.
  *
  * @since 2.25
  */

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.datadir.internal;
+package org.geoserver.config.internal;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.Path;
@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.config.DataDirectoryGeoServerLoader;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -30,6 +31,8 @@ import org.springframework.util.StringUtils;
 /**
  * Provides methods to load both the {@link Catalog} and the {@link GeoServer} config from a data
  * directory, returning new instances of each.
+ *
+ * <p>This is not API, but a collaborator of {@link DataDirectoryGeoServerLoader}
  *
  * <p>The loading process is multi-threaded, and will take place in an {@link Executor} whose
  * parallelism is determined by an heuristic resolving to the minimum between {@code 16} and the
@@ -125,8 +128,8 @@ public class DataDirectoryLoader {
         };
     }
 
-    public CatalogImpl loadCatalog(CatalogImpl catalogImpl) throws Exception {
-        CatalogConfigLoader loader = new CatalogConfigLoader(catalogImpl, fileWalk(), executor());
+    public CatalogImpl loadCatalog(CatalogImpl catalog) throws Exception {
+        CatalogConfigLoader loader = new CatalogConfigLoader(catalog, fileWalk(), executor());
 
         return loader.loadCatalog();
     }

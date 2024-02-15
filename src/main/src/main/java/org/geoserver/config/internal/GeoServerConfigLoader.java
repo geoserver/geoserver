@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.datadir.internal;
+package org.geoserver.config.internal;
 
 import static java.util.Objects.requireNonNull;
 
@@ -19,12 +19,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Info;
-import org.geoserver.catalog.datadir.internal.DataDirectoryWalker.WorkspaceDirectory;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.internal.DataDirectoryWalker.WorkspaceDirectory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;

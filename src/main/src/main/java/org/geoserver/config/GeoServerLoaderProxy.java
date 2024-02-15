@@ -5,7 +5,6 @@
  */
 package org.geoserver.config;
 
-import org.geoserver.catalog.datadir.DataDirectoryGeoServerLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerSecurityManager;

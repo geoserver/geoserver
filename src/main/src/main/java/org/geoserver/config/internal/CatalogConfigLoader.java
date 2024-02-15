@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.catalog.datadir.internal;
+package org.geoserver.config.internal;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,10 +27,10 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.datadir.internal.DataDirectoryWalker.LayerDirectory;
-import org.geoserver.catalog.datadir.internal.DataDirectoryWalker.StoreDirectory;
-import org.geoserver.catalog.datadir.internal.DataDirectoryWalker.WorkspaceDirectory;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.config.internal.DataDirectoryWalker.LayerDirectory;
+import org.geoserver.config.internal.DataDirectoryWalker.StoreDirectory;
+import org.geoserver.config.internal.DataDirectoryWalker.WorkspaceDirectory;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.referencing.FactoryException;

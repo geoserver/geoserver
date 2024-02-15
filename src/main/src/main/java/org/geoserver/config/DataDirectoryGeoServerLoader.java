@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.datadir;
+package org.geoserver.config;
 
 import com.google.common.base.Stopwatch;
 import java.util.List;
@@ -19,13 +19,9 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.datadir.internal.DataDirectoryLoader;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.config.DefaultGeoServerLoader;
-import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerLoader;
-import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.internal.DataDirectoryLoader;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
@@ -46,12 +42,33 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 /**
- * The loading process is multi-threaded, and will take place in an {@link Executor} whose
- * parallelism is determined by an heuristic resolving to the minimum between {@code 16} and the
- * number of available processors as reported by {@link Runtime#availableProcessors()}, or
- * overridden by the value passed through the environment variable or system property {@literal
- * DATADIR_LOAD_PARALLELISM}.
+ * Faster alternative to {@link DefaultGeoServerLoader}, especially over network drives like NFS
+ * shares.
  *
+ * <p>This loader parallelizes both I/O calls and parsing of Catalog and Config info objects,
+ * minimizing I/O calls as much as possible, trying to make a single pass over the `workspaces`
+ * directory tree, and loading both catalog and config files in one pass.
+ *
+ * <p>The point is that large Catalogs contain several thousand small XML files that need to be read
+ * and parsed, and network shares (NFS in particular) are really bad at serving lots of small files.
+ *
+ * <p>This is the default data directory loader since GeoServer 2.25, and can be disabled (falling
+ * back to {@link DefaultGeoServerLoader}), through the {@code datadir.loader.enabled=false} or
+ * {@code DATADIR_LOADER_ENABLED=false} System Property or environment variable.
+ *
+ * <p>The loading process is multi-threaded, and will take place in an {@link Executor} whose
+ * parallelism is determined by an heuristic resolving to the minimum between {@code 16} and the
+ * number of available processors as reported by {@link Runtime#availableProcessors()}.
+ *
+ * <p>The parallelism level can also be overridden through the environment variable or system
+ * property {@literal DATADIR_LOAD_PARALLELISM}. A value of zero or less will produce a warning and
+ * fall back to the default value heuristic mentioned above.
+ *
+ * @implNote this class shares the loading workflow of default {@link GeoServerLoader} and {@link
+ *     DefaultGeoServerLoader}, tapping into {@link #readCatalog(XStreamPersister)} and {@link
+ *     #readConfiguration(GeoServer, XStreamPersister)} to load a catalog, and populate the {@link
+ *     GeoServer} config, respectivelly, using the parallelism and sigle-pass directory walk
+ *     provided by the helper class {@link DataDirectoryLoader}.
  * @since 2.25
  */
 public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
@@ -65,14 +82,24 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
 
     private GeoServerSecurityManager securityManager;
 
+    /**
+     * used in tandem with {@link #geoserverLoaded} to preemptively {@link #disposeIfBothLoaded
+     * dispose} the {@link #loader} once both the catalog and config have been loaded
+     */
     private boolean catalogLoaded;
+    /**
+     * used in tandem with {@link #catalogLoaded} to preemptively {@link #disposeIfBothLoaded
+     * dispose} the {@link #loader} once both the catalog and config have been loaded
+     */
     private boolean geoserverLoaded;
 
     /**
-     * @param resourceLoader
-     * @param securityManager
-     * @throws IllegalArgumentException if the resource loader's {@link ResourceStore} is not a
-     *     {@link FileSystemResourceStore}
+     * @param resourceLoader determines the physical location of the data directory
+     * @param securityManager used to post-process the loaded catalog on the calling thread to
+     *     decrypt {@link DataStoreInfo} password fields and avoid doing so during multi-threaded
+     *     loading, which would cause deadlocks as the {@link XStreamPersister#getSecurityManager()}
+     *     method triggers concurrent loading of spring beans through {@link
+     *     GeoServerExtensions#bean(Class)}
      */
     public DataDirectoryGeoServerLoader(
             GeoServerResourceLoader resourceLoader, GeoServerSecurityManager securityManager) {
@@ -82,10 +109,25 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
 
     @Override
     public void destroy() {
+        dispose();
+        super.destroy();
+    }
+
+    private void dispose() {
+        DataDirectoryLoader loader = this.loader;
+        this.loader = null;
+        catalogLoaded = false;
+        geoserverLoaded = false;
+
         if (loader != null) {
             loader.dispose();
         }
-        super.destroy();
+    }
+
+    private void disposeIfBothLoaded() {
+        if (catalogLoaded && geoserverLoaded) {
+            dispose();
+        }
     }
 
     private DataDirectoryLoader loader() {
@@ -100,6 +142,8 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
      *
      * @param xp not used by this {@link GeoServerLoader} implementation , the {@link
      *     DataDirectoryLoader} collaborator creates one per loading thread.
+     * @throws IllegalArgumentException if the resource loader's {@link ResourceStore} is not a
+     *     {@link FileSystemResourceStore}
      * @implNote note while {@link DefaultGeoServerLoader} decrypts {@link DataStoreInfo} password
      *     connection parameters on the fly as stores are loaded, this implementation does it after
      *     the catalog is completely loaded, to avoid deadlocks on the main thread produced by
@@ -124,6 +168,14 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         return catalog;
     }
 
+    /**
+     * @param target config instance to populate with global config, services, and workspace
+     *     settings, from the data directory
+     * @param xp not used by this {@link GeoServerLoader} implementation , the {@link
+     *     DataDirectoryLoader} collaborator creates one per loading thread.
+     * @throws IllegalArgumentException if the resource loader's {@link ResourceStore} is not a
+     *     {@link FileSystemResourceStore}
+     */
     @Override
     protected void readConfiguration(GeoServer target, XStreamPersister xp) throws Exception {
         if (isLegacyConfig()) {
@@ -147,12 +199,6 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
                 Level.CONFIG,
                 "Transferred GeoServer config to actual service bean in {0}",
                 stopWatch.stop());
-    }
-
-    private void disposeIfBothLoaded() {
-        if (catalogLoaded && geoserverLoaded) {
-            loader().dispose();
-        }
     }
 
     /** Override to use an alternative {@link CatalogImpl} subclass */
@@ -190,13 +236,17 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         return new DataDirectoryLoader(resourceStore, serviceLoaders, persisterFactory);
     }
 
-    public static List<XStreamServiceLoader<ServiceInfo>> findServiceLoaders() {
+    static List<XStreamServiceLoader<ServiceInfo>> findServiceLoaders() {
         @SuppressWarnings({"unchecked", "rawtypes"})
         List<XStreamServiceLoader<ServiceInfo>> loaders =
                 (List) GeoServerExtensions.extensions(XStreamServiceLoader.class);
         return loaders;
     }
 
+    /**
+     * @throws IllegalArgumentException if the resource loader's {@link ResourceStore} is not a
+     *     {@link FileSystemResourceStore}
+     */
     private FileSystemResourceStore resolveResourceStore(GeoServerResourceLoader resourceLoader) {
         ResourceStore resourceStore = resourceLoader.getResourceStore();
         if (!(resourceStore instanceof FileSystemResourceStore)) {

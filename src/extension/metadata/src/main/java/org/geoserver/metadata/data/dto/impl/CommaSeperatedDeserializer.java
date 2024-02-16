@@ -17,6 +17,6 @@ public class CommaSeperatedDeserializer extends JsonDeserializer<List<String>> {
     @Override
     public List<String> deserialize(JsonParser p, DeserializationContext ctxt)
             throws IOException, JacksonException {
-        return Lists.newArrayList(p.getText().split(","));
+        return Lists.newArrayList(p.getText().split("\\s*,\\s*"));
     }
 }

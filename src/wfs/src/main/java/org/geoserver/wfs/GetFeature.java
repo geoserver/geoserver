@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -26,7 +27,6 @@ import net.opengis.wfs.XlinkPropertyNameType;
 import net.opengis.wfs20.QueryType;
 import net.opengis.wfs20.ResultTypeType;
 import net.opengis.wfs20.StoredQueryType;
-import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -120,8 +120,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.xsd.Encoder;
 import org.locationtech.jts.geom.Polygon;
-import org.springframework.cglib.proxy.Enhancer;
-import org.springframework.cglib.proxy.LazyLoader;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -305,7 +303,7 @@ public class GetFeature {
 
         boolean isNumberMatchedSkipped = false;
         int count = 0; // should probably be long
-        BigInteger totalCount = BigInteger.ZERO;
+        Supplier<BigInteger> totalCount = () -> BigInteger.ZERO;
 
         // offset into result set in which to return features
         int totalOffset = request.getStartIndex() != null ? request.getStartIndex().intValue() : -1;
@@ -682,7 +680,20 @@ public class GetFeature {
         }
     }
 
-    private BigInteger updateTotalCount(
+    /**
+     * Total count represents the total count of the features matched for this query in cases where
+     * the client has limited the result set size, so we compute it lazily.
+     *
+     * @param maxFeatures
+     * @param isNumberMatchedSkipped
+     * @param count
+     * @param totalOffset
+     * @param calculateSize
+     * @param totalCountExecutors
+     * @return Lazy calculation of total count, or {@code null} if isNumberMatchedSkipped
+     * @throws IOException
+     */
+    private Supplier<BigInteger> updateTotalCount(
             int maxFeatures,
             boolean isNumberMatchedSkipped,
             int count,
@@ -690,42 +701,27 @@ public class GetFeature {
             boolean calculateSize,
             List<CountExecutor> totalCountExecutors)
             throws IOException {
-        BigInteger totalCount;
-        // total count represents the total count of the features matched for this query in
-        // cases/ where the client has limited the result set size, so we compute it lazily
         if (isNumberMatchedSkipped) {
-            totalCount = BigInteger.valueOf(-1);
+            return () -> BigInteger.valueOf(-1);
         } else if (count < maxFeatures && calculateSize && totalOffset == 0) {
             // optimization: if count < max features then total count == count
             // can't use this optimization for v2
-            totalCount = BigInteger.valueOf(count);
+            return () -> BigInteger.valueOf(count);
         } else if (isPreComputed(totalCountExecutors)) {
             long total = getTotalCount(totalCountExecutors);
-            totalCount = BigInteger.valueOf(total);
+            return () -> BigInteger.valueOf(total);
         } else {
-            if (SystemUtils.IS_JAVA_11 || SystemUtils.IS_JAVA_1_8) {
-                // ok, in this case we're forced to run the queries to discover the actual total
-                // count. We do so lazily, not all output formats need it, leveraging the fact that
-                // BigInteger is not final to wrap it in a lazy loading proxy
-                Enhancer enhancer = new Enhancer();
-                enhancer.setSuperclass(BigInteger.class);
-                enhancer.setCallback(
-                        (LazyLoader)
-                                () -> {
-                                    long totalCount1 = getTotalCount(totalCountExecutors);
-                                    return BigInteger.valueOf(totalCount1);
-                                });
-                totalCount =
-                        (BigInteger)
-                                enhancer.create(new Class[] {String.class}, new Object[] {"0"});
-            } else {
-                // Spring asm does not work with newer versions of Java, skip lazy loading for now
-                // we might want to revisit with a different approach later, e..g, when upgrading
-                // Spring and its internal ASM library
-                totalCount = BigInteger.valueOf(getTotalCount(totalCountExecutors));
-            }
+            return () -> {
+                try {
+                    long totalCount1 = getTotalCount(totalCountExecutors);
+                    return BigInteger.valueOf(totalCount1);
+                } catch (IOException ioException) {
+                    throw new RuntimeException(
+                            "Lazy total count unavailable " + ioException.getMessage(),
+                            ioException);
+                }
+            };
         }
-        return totalCount;
     }
 
     private void collectPropertyNames(
@@ -1020,14 +1016,14 @@ public class GetFeature {
             int offset,
             int maxFeatures,
             int count,
-            BigInteger total,
+            Supplier<BigInteger> total,
             List<FeatureCollection<? extends FeatureType, ? extends Feature>> results,
             String lockId,
             boolean getFeatureById) {
 
         FeatureCollectionResponse result = request.createResponse();
         result.setNumberOfFeatures(BigInteger.valueOf(count));
-        result.setTotalNumberOfFeatures(total);
+        result.setLazyTotalNumberOfFeatures(total);
         result.setTimeStamp(Calendar.getInstance());
         result.setLockId(lockId);
         result.getFeature().addAll(results);

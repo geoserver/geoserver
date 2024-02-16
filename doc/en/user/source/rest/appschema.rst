@@ -1,13 +1,16 @@
 .. _rest_App-Schema:
 
+App Schema
+==========
+
+.. _appschema_upload_create:
+
 Uploading an app-schema mapping file
 ------------------------------------
 
 **Create a new app-schema store and update the feature type mappings of an existing app-schema store by uploading a mapping configuration file**
 
-.. _appschema_upload_create:
-
-.. note:: The following request uploads an app-schema mapping file called ``LandCoverVector.xml`` to a data store called ``LandCoverVector``. If no ``LandCoverVector`` data store existed in workspace ``lcv`` prior to the request, it would be created.
+The following request uploads an app-schema mapping file called ``LandCoverVector.xml`` to a data store called ``LandCoverVector``. If no ``LandCoverVector`` data store existed in workspace ``lcv`` prior to the request, it would be created.
 
 *Request*
 

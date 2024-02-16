@@ -64,7 +64,7 @@ Using your own Data Directory
 
 This will run the container with a local data directory.  The data directory will be `mounted <https://docs.docker.com/storage/bind-mounts/>`__ into the docker container.
 
-.. Note::
+.. note::
 
     Change `/MY/DATADIRECTORY` to your data directory.  If this directory is empty it will be populated with the standard Geoserver Sample Data Directory.
 
@@ -89,13 +89,13 @@ This will run the container with a local data directory.  The data directory wil
    .. only:: not snapshot
 
       .. parsed-literal::
-      
+         
          docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|release|
       
    .. only:: snapshot
    
       .. parsed-literal::
-   
+         
          docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|version|.x
 
 #. In a web browser, navigate to ``http://localhost:8080/geoserver``.

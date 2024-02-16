@@ -1,4 +1,4 @@
-.. _getting_involved: 
+.. _getting_involved:
 
 Getting involved
 ================

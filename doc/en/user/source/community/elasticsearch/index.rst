@@ -10,6 +10,8 @@ This data store allows features from an Elasticsearch index to be published thro
 Configuration
 -------------
 
+.. _config_elasticsearch:
+
 Configuring data store
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -22,8 +24,6 @@ Once the Elasticsearch GeoServer extension is installed, ``Elasticsearch index``
 +-------------+
 | |new_store| |
 +-------------+
-
-.. _config_elasticsearch:
 
 The Elasticsearch data store configuration panel includes connection parameters and search settings.
 

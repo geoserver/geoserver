@@ -74,7 +74,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         // build the query against csw:record
         Query q = new Query(typeName.getLocalPart());
 
-        q.setProperties(translateProperty(rd, attributeName));
+        q.setProperties(translateToPropertyNames(rd, attributeName));
 
         // collect the values without duplicates
         final Set<String> values = new HashSet<>();
@@ -166,7 +166,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     }
 
     @Override
-    public List<PropertyName> translateProperty(RecordDescriptor rd, Name name) {
+    public List<PropertyName> translateToPropertyNames(RecordDescriptor rd, Name name) {
         return Collections.singletonList(
                 AbstractRecordDescriptor.buildPropertyName(rd.getNamespaceSupport(), name));
     }

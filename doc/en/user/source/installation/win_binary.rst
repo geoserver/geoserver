@@ -32,7 +32,7 @@ Installation
 
 #. Download the archive and unpack to the directory where you would like the program to be located.
 
-   .. note:: A suggested location would be :file:`C:\\Program Files\\GeoServer`.
+   .. note:: A suggested location would be :file:`C:\\\\Program Files\\GeoServer`.
 
 Setting environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

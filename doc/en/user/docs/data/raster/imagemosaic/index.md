@@ -1,4 +1,4 @@
-# ImageMosaic
+# ImageMosaic {: #data_imagemosaic }
 
 The ImageMosaic data store allows the creation of a mosaic from a number of georeferenced rasters.
 

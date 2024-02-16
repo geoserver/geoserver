@@ -1,4 +1,4 @@
-# Composite and blending modes
+# Composite and blending modes {: #sld-extensions_composite-blend_modes }
 
 There are two types of modes: alpha composite and color blending.
 

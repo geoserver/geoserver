@@ -1,4 +1,4 @@
-# Polygons
+# Polygons {: #styling_workshop_css_polygon }
 
 Next we look at how CSS styling can be used to represent polygons.
 

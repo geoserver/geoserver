@@ -1,4 +1,4 @@
-# Points
+# Points {: #mbstyle_cookbook.points }
 
 Points are seemingly the simplest type of shape, possessing only position and no other dimensions. MBStyle has a `circle` type that can be styled to represent a point.
 

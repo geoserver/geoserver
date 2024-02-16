@@ -1,4 +1,4 @@
-# YSLD Quickstart
+# YSLD Quickstart {: #styling_workshop_ysld_quickstart }
 
 In the last section, we saw how the OGC defines style using XML documents (called SLD files).
 

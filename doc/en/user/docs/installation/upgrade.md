@@ -1,4 +1,4 @@
-# Upgrading existing versions
+# Upgrading existing versions {: #installation_upgrade }
 
 !!! warning
 

@@ -1,4 +1,4 @@
-# Publishing a GeoPackage
+# Publishing a GeoPackage {: #geopkg_quickstart }
 
 This tutorial walks through the steps of publishing a GeoPackage with GeoServer.
 

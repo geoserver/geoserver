@@ -1,4 +1,4 @@
-# Rendering Selection
+# Rendering Selection {: #rendering_selection }
 
 GeoServer provides a `VendorOption` to define whether a particular element `Rule`, `FeatureTypeStyle` or `Symbolizer` should be applied to a `getLegendGraphic` output or to a `getMap` output.
 

@@ -1,4 +1,4 @@
-# Symbolizers
+# Symbolizers {: #ysld_reference_symbolizers }
 
 The basic unit of visualization is the symbolizer. There are five types of symbolizers: **Point**, **Line**, **Polygon**, **Raster**, and **Text**.
 

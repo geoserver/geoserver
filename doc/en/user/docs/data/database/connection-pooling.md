@@ -1,4 +1,4 @@
-# Database Connection Pooling
+# Database Connection Pooling {: #connection_pooling }
 
 When serving data from a spatial database *connection pooling* is an important aspect of achieving good performance. When GeoServer serves a request that involves loading data from a database table, a connection must first be established with the database. This connection comes with a cost as it takes time to set up such a connection.
 

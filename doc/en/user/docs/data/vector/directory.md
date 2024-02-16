@@ -1,4 +1,4 @@
-# Directory of spatial files
+# Directory of spatial files {: #data_shapefiles_directory }
 
 The directory store automates the process of loading multiple shapefiles into GeoServer. Loading a directory that contains multiple shapefiles will automatically add each shapefile to GeoServer.
 

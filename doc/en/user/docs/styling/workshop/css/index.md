@@ -1,4 +1,4 @@
-# CSS Styling Workbook
+# CSS Styling Workbook {: #styling_workshop_css }
 
 GeoServer styling can be used for a range of creative effects. This section introduces the `on` which can be used to quickly generate SLD files.
 

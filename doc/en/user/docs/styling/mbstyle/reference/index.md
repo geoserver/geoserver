@@ -1,4 +1,4 @@
-# MBStyle references
+# MBStyle references {: #mbstyle_reference }
 
 As MBstyle is heavily modeled on [JSON](http://json.org), it may be useful to refer to the [JSON-Schema documentation](http://json-schema.org/documentation.html) for basic syntax.
 

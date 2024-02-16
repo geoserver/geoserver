@@ -1,4 +1,4 @@
-# Geometry transformations in SLD
+# Geometry transformations in SLD {: #geometry_transformations }
 
 SLD symbolizers may contain an optional `<Geometry>` element, which allows specifying which geometry attribute is to be rendered. In the common case of a featuretype with a single geometry attribute this element is usually omitted, but it is useful when a featuretype has multiple geometry-valued attributes.
 

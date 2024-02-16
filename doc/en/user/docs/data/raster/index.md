@@ -1,4 +1,4 @@
-# Raster data
+# Raster data {: #data_raster }
 
 This section discusses the raster (coverage) data sources that GeoServer can access.
 

@@ -1,4 +1,4 @@
-# Rules
+# Rules {: #sld_reference_rules }
 
 Styling **rules** define the portrayal of features. A rule combines a [filter](filters.md) with any number of symbolizers. Features for which the filter condition evaluates as true are rendered using the symbolizers in the rule.
 

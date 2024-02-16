@@ -1,4 +1,4 @@
-# KML
+# KML {: #css_example_kml }
 
 ## Detecting raster to vector switch in KML
 

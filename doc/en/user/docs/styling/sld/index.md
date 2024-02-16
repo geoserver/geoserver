@@ -1,4 +1,4 @@
-# SLD Styling
+# SLD Styling {: #sld }
 
 This section discusses styling of geospatial data using "Style Layer Descriptor" XML files.
 

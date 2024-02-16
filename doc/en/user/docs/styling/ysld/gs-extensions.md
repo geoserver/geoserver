@@ -1,4 +1,4 @@
-# GeoServer Specific Extensions
+# GeoServer Specific Extensions {: #ysld_vendor }
 
 ## GeoWebCache Integration
 

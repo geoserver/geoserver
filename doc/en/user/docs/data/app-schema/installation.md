@@ -1,4 +1,4 @@
-# Installation
+# Installation {: #app-schema.installation }
 
 Application schema support is a GeoServer extension and is downloaded separately.
 

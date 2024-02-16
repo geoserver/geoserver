@@ -1,4 +1,4 @@
-# PointSymbolizer
+# PointSymbolizer {: #sld_reference_pointsymbolizer }
 
 A **PointSymbolizer** styles features as **points**. Points are depicted as graphic symbols at a single location on the map.
 

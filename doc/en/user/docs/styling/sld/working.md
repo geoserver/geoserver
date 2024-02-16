@@ -1,4 +1,4 @@
-# Working with SLD
+# Working with SLD {: #sld_working }
 
 This section describes how to create, view and troubleshoot SLD styling in GeoServer.
 

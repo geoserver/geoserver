@@ -1,4 +1,4 @@
-# Property listing
+# Property listing {: #css_properties }
 
 This page lists the supported rendering properties. See [CSS value types](valuetypes.md) for more information about the value types for each.
 

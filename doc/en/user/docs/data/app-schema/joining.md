@@ -1,4 +1,4 @@
-# Joining Support For Performance
+# Joining Support For Performance {: #app-schema.joining }
 
 App-schema joining is a optional configuration parameter that tells app-schema to use a different implementation for `app-schema.feature-chaining`{.interpreted-text role="ref"}, which in many cases can improve performance considerably, by reducing the amount of SQL queries sent to the DBMS.
 

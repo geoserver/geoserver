@@ -1,4 +1,4 @@
-# Publishing a shapefile
+# Publishing a shapefile {: #shapefile_quickstart }
 
 This tutorial walks through the steps of publishing a Shapefile with GeoServer.
 

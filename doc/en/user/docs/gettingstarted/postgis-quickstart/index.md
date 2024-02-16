@@ -1,4 +1,4 @@
-# Publishing a PostGIS table
+# Publishing a PostGIS table {: #postgis_quickstart }
 
 This tutorial walks through the steps of publishing a PostGIS table with GeoServer.
 

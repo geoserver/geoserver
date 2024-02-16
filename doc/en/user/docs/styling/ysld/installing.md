@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# Installing the GeoServer YSLD extension
+# Installing the GeoServer YSLD extension {: #ysld_install }
 
 The YSLD extension is listed on the GeoServer download page.
 

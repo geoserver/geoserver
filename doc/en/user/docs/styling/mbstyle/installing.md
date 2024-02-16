@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# Installing the GeoServer MBStyle extension
+# Installing the GeoServer MBStyle extension {: #mbstyle_install }
 
 The MBStyle extension is listed on the GeoServer download page.
 

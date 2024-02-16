@@ -1,4 +1,4 @@
-# Generating SLD styles with QGIS
+# Generating SLD styles with QGIS {: #qgis }
 
 QGIS includes a sophisticated style editor with many map rendering possibilities. Styles generated with QGIS can then be exported (with limitations) to SLD for usage with GeoServer.
 

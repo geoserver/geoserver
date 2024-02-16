@@ -1,4 +1,4 @@
-# Variable substitution in SLD
+# Variable substitution in SLD {: #sld_variable_substitution }
 
 Variable substitution in SLD is a GeoServer extension (starting in version 2.0.2) that allows passing values from WMS requests into SLD styles. This allows dynamically setting values such as colors, fonts, sizes and filter thresholds.
 

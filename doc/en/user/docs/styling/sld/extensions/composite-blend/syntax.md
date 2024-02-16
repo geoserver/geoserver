@@ -1,4 +1,4 @@
-# Specifying compositing and blending in SLD
+# Specifying compositing and blending in SLD {: #sld-extensions_composite-blend_syntax }
 
 ## Composites
 

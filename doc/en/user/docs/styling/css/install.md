@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# Installing the GeoServer CSS extension
+# Installing the GeoServer CSS extension {: #css_install }
 
 The CSS extension is listed among the other extension downloads on the GeoServer download page.
 

@@ -1,4 +1,4 @@
-# Databases
+# Databases {: #data_database }
 
 This section discusses the database data sources that GeoServer can access.
 
@@ -24,4 +24,4 @@ GeoServer provides extensive facilities for controlling how databases are access
 -   [JNDI](jndi.md)
 -   [SQL Views](sqlview.md)
 -   [Controlling feature ID generation in spatial databases](primarykey.md)
--   [Using SQL session scripts to control authorizations at the database level](sqlsession.md)
+-   [Custom SQL session start/stop scripts](sqlsession.md)

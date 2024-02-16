@@ -1,4 +1,4 @@
-# Scale and zoom
+# Scale and zoom {: #ysld_reference_scalezoom }
 
 It is common for different [rules](rules.md) to be applied at different zoom levels on a web map.
 

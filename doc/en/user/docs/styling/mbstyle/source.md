@@ -1,4 +1,4 @@
-# Publishing a GeoServer Layer for use with Mapbox Styles
+# Publishing a GeoServer Layer for use with Mapbox Styles {: #mbstyle_source }
 
 GeoServer can be configured to serve layers as vector tiles to be used as sources for Mapbox styles rendered by client-side applications such as OpenLayers.
 

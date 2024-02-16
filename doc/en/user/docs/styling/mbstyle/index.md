@@ -1,4 +1,4 @@
-# MBStyle Styling
+# MBStyle Styling {: #mbstyle_styling }
 
 This module allows GeoServer to use Mapbox style documents directly.
 

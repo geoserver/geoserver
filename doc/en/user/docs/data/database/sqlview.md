@@ -1,4 +1,4 @@
-# SQL Views
+# SQL Views {: #sql_views }
 
 The traditional way to access database data is to configure layers against either tables or database views. Starting with GeoServer 2.1.0, layers can also be defined as SQL Views. SQL Views allow executing a custom SQL query on each request to the layer. This avoids the need to create a database view for complex queries.
 

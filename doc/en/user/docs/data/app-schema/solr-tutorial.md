@@ -1,4 +1,4 @@
-# Apache Solr Tutorial
+# Apache Solr Tutorial {: #solr_tutorial }
 
 This tutorial demonstrates how to use the App-Schema plugin with a Apache Solr data store. This tutorial will focus on the Apache Solr data store specific aspects, and the [App-Schema documentation](index.md) should be read first.
 

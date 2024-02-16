@@ -1,4 +1,4 @@
-# Enabling z-ordering in a single FeatureTypeStyle
+# Enabling z-ordering in a single FeatureTypeStyle {: #sld-extensions_z_order_syntax }
 
 The z-ordering is implemented as a new FeatureTypeStyle vendor option, `sortBy`, which controls in which order the features are extracted from the data source, and thus painted. The `sortBy` syntax is the same as the WFS one, that is, a list of comma separated field names, with an optional direction modifier (ascending being the default):
 

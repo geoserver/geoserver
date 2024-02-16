@@ -1,4 +1,4 @@
-# Rasters
+# Rasters {: #sld_cookbook_rasters }
 
 Rasters are geographic data displayed in a grid. They are similar to image files such as PNG files, except that instead of each point containing visual information, each point contains geographic information in numerical form. Rasters can be thought of as a georeferenced table of numerical values.
 

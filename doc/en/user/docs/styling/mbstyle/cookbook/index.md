@@ -1,4 +1,4 @@
-# MBStyle Cookbook
+# MBStyle Cookbook {: #mbstyle_cookbook }
 
 The MBStyle Cookbook is a collection of MBStyle "recipes" for creating various types of map styles. Wherever possible, each example is designed to show off a single MBStyle layer so that code can be copied from the examples and adapted when creating MBStyles of your own. While not an exhaustive reference like the [MBStyle reference](../reference/index.md) the MBStyle cookbook is designed to be a practical reference, showing common style templates that are easy to understand.
 

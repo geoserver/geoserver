@@ -1,4 +1,4 @@
-# Lines
+# Lines {: #styling_workshop_mbstyle_line }
 
 We will start our tour of MBStyle styling by looking at the representation of lines.
 

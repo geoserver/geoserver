@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# Windows binary
+# Windows binary {: #installation_windows_bin }
 
 !!! note
 

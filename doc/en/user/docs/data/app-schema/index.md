@@ -1,4 +1,4 @@
-# Application schemas
+# Application schemas {: #app-schema }
 
 The application schema support (app-schema) extension provides support for `app-schema.complex-features`{.interpreted-text role="ref"} in GeoServer WFS.
 

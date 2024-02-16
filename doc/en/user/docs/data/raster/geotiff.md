@@ -1,4 +1,4 @@
-# GeoTIFF
+# GeoTIFF {: #data_geotiff }
 
 A GeoTIFF is a georeferenced TIFF (Tagged Image File Format) file.
 

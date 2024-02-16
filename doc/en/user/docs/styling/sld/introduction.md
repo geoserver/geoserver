@@ -1,4 +1,4 @@
-# Introduction to SLD
+# Introduction to SLD {: #sld_intro }
 
 Geospatial data has no intrinsic visual component. In order to see data, it must be styled. Styling specifies color, thickness, and other visible attributes used to render data on a map.
 

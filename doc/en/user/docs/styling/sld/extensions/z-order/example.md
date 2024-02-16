@@ -1,4 +1,4 @@
-# Z ordering single layer example
+# Z ordering single layer example {: #sld-extensions_z_ordering_example }
 
 The OpenStreetMap dataset uses extensively a `z_order` attribute to model the above/below relationships between elements in the real world.
 

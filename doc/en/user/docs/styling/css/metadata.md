@@ -1,4 +1,4 @@
-# Metadata
+# Metadata {: #css_metadata }
 
 One feature that appears in SLD that has no analog in CSS is the ability to provide *metadata* for styles and style rules. For example, this SLD embeds a title for its single rule:
 

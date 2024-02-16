@@ -1,4 +1,4 @@
-# i18N in SLD
+# i18N in SLD {: #sld_language }
 
 This section describes how to specify metadata (titles and abstracts) in different languages in SLD documents.
 

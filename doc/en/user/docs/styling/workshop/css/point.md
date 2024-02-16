@@ -1,4 +1,4 @@
-# Points
+# Points {: #styling_workshop_css_point }
 
 The next stop of the CSS styling tour is the representation of points.
 

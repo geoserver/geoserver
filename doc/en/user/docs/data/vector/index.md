@@ -1,4 +1,4 @@
-# Vector data
+# Vector data {: #data_vector }
 
 This section discusses the vector data sources that GeoServer can access.
 

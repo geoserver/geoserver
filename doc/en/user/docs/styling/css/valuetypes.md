@@ -1,4 +1,4 @@
-# CSS value types
+# CSS value types {: #css_valuetypes }
 
 This page presents a brief overview of CSS types as used by this project. Note that these can be repeated as described in [Multi-valued properties](multivalueprops.md).
 

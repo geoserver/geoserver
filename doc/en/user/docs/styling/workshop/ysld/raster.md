@@ -1,4 +1,4 @@
-# Rasters
+# Rasters {: #styling_workshop_raster }
 
 Finally we will look at using YSLD styling for the portrayal of raster data.
 

@@ -1,4 +1,4 @@
-# Styling Workshop
+# Styling Workshop {: #styling_workshop }
 
 This workshop will explore how GeoServer styling can be used for a range of creative effects. This workshop also introduces both the CSS and YSLD extensions, which provide alternate styling languages to SLD.
 

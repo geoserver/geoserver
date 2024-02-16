@@ -1,4 +1,4 @@
-# Example of 2.5D extrusion
+# Example of 2.5D extrusion {: #css_example_extrude }
 
 ## Extruding a geometry
 

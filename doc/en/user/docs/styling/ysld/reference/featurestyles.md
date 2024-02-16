@@ -1,4 +1,4 @@
-# Feature Styles
+# Feature Styles {: #ysld_reference_featurestyles }
 
 In YSLD, a Feature Style is a block of styling [Rules](rules.md). The Feature Style is applied to a single feature type and drawn in an off-screen buffer.
 

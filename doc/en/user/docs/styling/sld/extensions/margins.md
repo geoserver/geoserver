@@ -1,4 +1,4 @@
-# Adding space around graphic fills
+# Adding space around graphic fills {: #margins }
 
 Starting with GeoServer 2.3.4 it is possible to add white space around symbols used inside graphic fills, effectively allowing to control the density of the symbols in the map.
 

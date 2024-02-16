@@ -1,4 +1,4 @@
-# WFS Service Settings
+# WFS Service Settings {: #app-schema.wfs-service-settings }
 
 There are two GeoServer WFS service settings that are strongly recommended for interoperable complex feature services. These can be enabled through the **Services --> WFS** page on the GeoServer web interface or by manually editing the **`wfs.xml`** file in the data directory,
 

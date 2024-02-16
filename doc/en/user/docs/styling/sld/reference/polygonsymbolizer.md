@@ -1,4 +1,4 @@
-# PolygonSymbolizer
+# PolygonSymbolizer {: #sld_reference_polygonsymbolizer }
 
 A **PolygonSymbolizer** styles features as **polygons**. Polygons are two-dimensional geometries. They can be depicted with styling for their interior (fill) and their border (stroke). Polygons may contain one or more holes, which are stroked but not filled. When rendering a polygon, the fill is rendered before the border is stroked.
 

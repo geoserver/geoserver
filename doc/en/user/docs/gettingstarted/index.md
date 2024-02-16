@@ -1,4 +1,4 @@
-# Getting started
+# Getting started {: #getting_started }
 
 This section contains short tutorials for common tasks in GeoServer to get new users using the system quickly.
 

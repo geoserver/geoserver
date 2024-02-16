@@ -1,4 +1,4 @@
-# Cascaded Web Feature Service Stored Queries
+# Cascaded Web Feature Service Stored Queries {: #data_external_stored_query }
 
 Stored query is a feature of Web Feature Services. It allows servers to serve pre-configured filter queries or even queries that cannot be expressed as GetFeature filter queries. This feature of GeoServer allows to create cascaded layers out of stored queries.
 

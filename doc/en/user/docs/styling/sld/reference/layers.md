@@ -1,4 +1,4 @@
-# Layers
+# Layers {: #sld_reference_layers }
 
 An SLD document contains a sequence of layer definitions indicating the layers to be styled. Each layer definition is either a **NamedLayer** reference or a supplied **UserLayer**.
 

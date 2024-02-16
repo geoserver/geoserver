@@ -1,4 +1,4 @@
-# TextSymbolizer
+# TextSymbolizer {: #sld_reference_textsymbolizer }
 
 A **TextSymbolizer** styles features as **text labels**. Text labels are positioned either at points or along linear paths derived from the geometry being labelled.
 

@@ -1,4 +1,4 @@
-# LineSymbolizer
+# LineSymbolizer {: #sld_reference_linesymbolizer }
 
 A **LineSymbolizer** styles features as **lines**. Lines are one-dimensional geometries that have both position and length. Each line is comprised of one or more **line segments**, and has either two **ends** or none (if it is closed).
 

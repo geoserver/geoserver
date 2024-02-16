@@ -1,4 +1,4 @@
-# YSLD Cookbook
+# YSLD Cookbook {: #ysld_cookbook }
 
 The YSLD Cookbook is a collection of YSLD "recipes" for creating various types of map styles. Wherever possible, each example is designed to show off a single YSLD feature so that code can be copied from the examples and adapted when creating YSLDs of your own. While not an exhaustive reference like the [YSLD reference](../reference/index.md) the YSLD cookbook is designed to be a practical reference, showing common style templates that are easy to understand.
 

@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# MySQL
+# MySQL {: #data_mysql }
 
 !!! note
 

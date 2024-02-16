@@ -1,4 +1,4 @@
-# Styles
+# Styles {: #sld_reference_styles }
 
 The style elements specify the styling to be applied to a layer.
 

@@ -1,4 +1,4 @@
-# About GeoServer Page
+# About GeoServer Page {: #about }
 
 The **About Page** provides information about GeoServer along with useful documentation links.
 

@@ -1,4 +1,4 @@
-# Styling using Transformation Functions
+# Styling using Transformation Functions {: #transformation_func }
 
 The Symbology Encoding 1.1 specification defines the following **transformation functions**:
 

@@ -1,4 +1,4 @@
-# Data Stores
+# Data Stores {: #app-schema.data-stores }
 
 The app-schema `app-schema.mapping-file`{.interpreted-text role="ref"} requires you to specify your data sources in the `sourceDataStores` section. For GeoServer simple features, these are configured using the web interface, but because app-schema lacks a web configuration interface, data stores must be configured by editing the mapping file.
 

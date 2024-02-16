@@ -1,4 +1,4 @@
-# Points
+# Points {: #styling_workshop_mbstyle_point }
 
 The next stop of the mbstyle styling tour is the representation of points.
 

@@ -1,4 +1,4 @@
-# MongoDB Tutorial
+# MongoDB Tutorial {: #mongo_tutorial }
 
 This tutorial demonstrates how to use app-schema plugin with a MongoDB data store. This tutorial will focus on the MongoDB data store specificities is highly recommended to read the app-schema documentation before.
 

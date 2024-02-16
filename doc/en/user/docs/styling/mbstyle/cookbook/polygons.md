@@ -1,4 +1,4 @@
-# Polygons
+# Polygons {: #mbstyle_cookbook.polygons }
 
 Polygons are two dimensional shapes that contain both an outer stroke (or "outline") and an inside (or "fill"). A polygon can be thought of as an irregularly-shaped point and is styled in similar ways to circles.
 

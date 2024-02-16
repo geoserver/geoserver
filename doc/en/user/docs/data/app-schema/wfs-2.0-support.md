@@ -1,4 +1,4 @@
-# WFS 2.0 Support
+# WFS 2.0 Support {: #app-schema.wfs20-support }
 
 ## Resolving
 

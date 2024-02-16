@@ -1,4 +1,4 @@
-# Point symbolizer
+# Point symbolizer {: #ysld_reference_symbolizers_point }
 
 The point symbolizer is used to style point features or centroids of non-point features.
 

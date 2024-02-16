@@ -1,4 +1,4 @@
-# Stores
+# Stores {: #data_webadmin_stores }
 
 A store connects to a data source that contains raster or vector data. A data source can be a file or group of files, a table in a database, a single raster file, or a directory (for example, a Vector Product Format library). The store construct allows connection parameters to be defined once, rather than for each dataset in a source. As such, it is necessary to register a store before configuring datasets within it.
 

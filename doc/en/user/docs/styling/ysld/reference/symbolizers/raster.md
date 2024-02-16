@@ -1,4 +1,4 @@
-# Raster symbolizer
+# Raster symbolizer {: #ysld_reference_symbolizers_raster }
 
 The raster symbolizer styles raster (coverage) layers. A raster is an array of information with each cell in the array containing one or more values, stored as "bands".
 

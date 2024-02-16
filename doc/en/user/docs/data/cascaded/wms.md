@@ -1,4 +1,4 @@
-# External Web Map Server
+# External Web Map Server {: #data_external_wms }
 
 GeoServer has the ability to proxy a remote Web Map Service (WMS). Supported WMS versions are 1.1.1 and 1.3.0. This process is sometimes known as **Cascading WMS**. Loading a remote WMS is useful for many reasons. If you don't manage or have access to the remote WMS, you can now manage its output as if it were local. Even if the remote WMS is not GeoServer, you can use GeoServer features to treat its output (watermarking, decoration, printing, etc).
 

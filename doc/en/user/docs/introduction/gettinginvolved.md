@@ -1,4 +1,4 @@
-# Getting involved
+# Getting involved {: #getting_involved }
 
 GeoServer exists because of the efforts of people like you.
 

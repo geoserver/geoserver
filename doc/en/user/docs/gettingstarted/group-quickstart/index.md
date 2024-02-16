@@ -1,4 +1,4 @@
-# Publishing a Layer Group
+# Publishing a Layer Group {: #group_quickstart }
 
 This tutorial walks through the steps of publishing a layer group combing several layers into a basemap.
 

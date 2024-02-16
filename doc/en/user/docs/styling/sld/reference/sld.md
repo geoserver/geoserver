@@ -1,4 +1,4 @@
-# StyledLayerDescriptor
+# StyledLayerDescriptor {: #sld_reference_sld }
 
 The root element for an SLD is `<StyledLayerDescriptor>`. It contains a sequence of [Layers](layers.md) defining the styled map content.
 

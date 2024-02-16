@@ -1,4 +1,4 @@
-# Define and reuse YAML Variables
+# Define and reuse YAML Variables {: #ysld_reference_variables }
 
 Variables in YSLD that allow for a certain directive or block of directives to be defined by name and later reused. This can greatly simplify the styling document.
 

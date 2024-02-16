@@ -1,4 +1,4 @@
-# Publishing a Image
+# Publishing a Image {: #image_quickstart }
 
 This tutorial walks through the steps of publishing a World + Image with GeoServer.
 

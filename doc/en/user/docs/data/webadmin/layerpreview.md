@@ -1,4 +1,4 @@
-# Layer Preview
+# Layer Preview {: #layerpreview }
 
 This page provides layer views in various output formats. A layer must be enabled to be previewed.
 

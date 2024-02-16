@@ -1,4 +1,4 @@
-# Multi-valued properties
+# Multi-valued properties {: #css_multivalueprops }
 
 When rendering maps, it is sometimes useful to draw the same feature multiple times. For example, you might want to stroke a roads layer with a thick line and then a slimmer line of a different color to create a halo effect.
 

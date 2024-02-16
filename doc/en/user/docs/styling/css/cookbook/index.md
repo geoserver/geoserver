@@ -1,4 +1,4 @@
-# CSS Cookbook
+# CSS Cookbook {: #css_cookbook }
 
 The CSS Cookbook is a collection of CSS "recipes" for creating various types of map styles. Wherever possible, each example is designed to show off a single CSS feature so that code can be copied from the examples and adapted when creating CSS styles of your own. Most examples are shared with the SLD Cookbook, to make a comparison between the two syntaxes immediate.
 

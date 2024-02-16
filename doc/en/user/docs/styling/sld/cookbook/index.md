@@ -1,4 +1,4 @@
-# SLD Cookbook
+# SLD Cookbook {: #sld_cookbook }
 
 The SLD Cookbook is a collection of SLD "recipes" for creating various types of map styles. Wherever possible, each example is designed to show off a single SLD feature so that code can be copied from the examples and adapted when creating SLDs of your own. While not an exhaustive reference like the [SLD Reference](../reference/index.md) or the [OGC SLD 1.0 specification](http://www.opengeospatial.org/standards/sld) the SLD Cookbook is designed to be a practical reference, showing common style templates that are easy to understand.
 

@@ -1,4 +1,4 @@
-# Cascaded service data
+# Cascaded service data {: #cascaded_services }
 
 This section discusses how GeoServer can proxy external OGC services. This is known as **cascading** services.
 

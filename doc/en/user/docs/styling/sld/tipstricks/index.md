@@ -1,4 +1,4 @@
-# SLD Tips and Tricks
+# SLD Tips and Tricks {: #sld_tips_tricks }
 
 This section details various advanced strategies for working with SLD.
 

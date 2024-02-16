@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# Microsoft SQL Server and SQL Azure
+# Microsoft SQL Server and SQL Azure {: #data_sqlserver }
 
 !!! note
 

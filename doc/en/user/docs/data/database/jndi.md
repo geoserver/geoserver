@@ -1,4 +1,4 @@
-# JNDI
+# JNDI {: #data_jndi }
 
 Many data stores and connections in GeoServer have the option of utilizing [Java Naming and Directory Interface](http://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface) on JNDI. JNDI allows for components in a Java system to look up other objects and data by a predefined name.
 

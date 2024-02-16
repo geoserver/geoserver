@@ -1,4 +1,4 @@
-# WorldImage
+# WorldImage {: #data_worldimage }
 
 A world file is a plain text file used to georeference raster map images. This file (often with an extension of `.jgw` or `.tfw`) accompanies an associated image file (`.jpg` or `.tif`). Together, the world file and the corresponding image file is known as a WorldImage in GeoServer.
 

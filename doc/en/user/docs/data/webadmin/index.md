@@ -1,4 +1,4 @@
-# Data settings
+# Data settings {: #data_webadmin }
 
 This section describes how to manage load, manage, and publish data in the GeoServer web interface.
 

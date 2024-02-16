@@ -1,4 +1,4 @@
-# Mapping File
+# Mapping File {: #app-schema.mapping-file }
 
 An app-schema feature type is configured using a mapping file that defines the data source for the feature and the mappings from the source data to XPaths in the output XML.
 

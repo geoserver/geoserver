@@ -1,4 +1,4 @@
-# Text symbolizer
+# Text symbolizer {: #ysld_reference_symbolizers_text }
 
 The text symbolizer styles labels of vector features. Labels can consist of text strings and/or graphics.
 

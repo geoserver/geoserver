@@ -1,4 +1,4 @@
-# Lines
+# Lines {: #styling_workshop_css_line }
 
 We will start our tour of CSS styling by looking at the representation of lines.
 

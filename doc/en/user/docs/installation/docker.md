@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# Docker Container
+# Docker Container {: #installation_docker }
 
 Geoserver is also packaged as a Docker Container. For more details, see the [Geoserver Docker Container Project](https://github.com/geoserver/docker).
 

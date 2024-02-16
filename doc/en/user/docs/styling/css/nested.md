@@ -1,4 +1,4 @@
-# Nested rules
+# Nested rules {: #css_nestedrules }
 
 Starting with GeoServer 2.10 the CSS modules supports rule nesting, that is, a child rule can be written among properties of a parent rule. The nested rules inherits the parent rule selector and properties, adding its own extra selectors and property overrides.
 

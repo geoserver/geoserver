@@ -1,4 +1,4 @@
-# Rasters
+# Rasters {: #styling_workshop_mbstyle_raster }
 
 Finally we will look at using MBStyle styling for the portrayal of raster data.
 

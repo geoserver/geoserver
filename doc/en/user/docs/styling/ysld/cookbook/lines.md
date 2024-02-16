@@ -1,4 +1,4 @@
-# Lines
+# Lines {: #ysld_cookbook.lines }
 
 While lines can also seem to be simple shapes, having length but no width, there are many options and tricks for making lines display nicely.
 

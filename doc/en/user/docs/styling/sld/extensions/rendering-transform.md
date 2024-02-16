@@ -1,4 +1,4 @@
-# Rendering Transformations
+# Rendering Transformations {: #rendering_transform }
 
 **Rendering Transformations** allow processing to be carried out on datasets within the GeoServer rendering pipeline. A typical transformation computes a derived or aggregated result from the input data, allowing various useful visualization effects to be obtained. Transformations may transform data from one format into another (i.e vector to raster or vice-versa), to provide an appropriate format for display.
 

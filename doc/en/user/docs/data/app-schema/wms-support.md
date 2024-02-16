@@ -1,4 +1,4 @@
-# WMS Support
+# WMS Support {: #app-schema.wms-support }
 
 App-schema supports WMS requests as well as WFS requests. This page provides some useful examples for configuring the WMS service to work with complex features.
 

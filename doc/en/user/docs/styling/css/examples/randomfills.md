@@ -1,4 +1,4 @@
-# Fills with randomized symbols
+# Fills with randomized symbols {: #css_examples_randomfills }
 
 It is possible to generate fills by randomly repeating a symbol in the polygons to be filled. Please refer to the [equivalent SLD chapter](../../sld/extensions/randomized.md) for details on the meaning of the various options.
 

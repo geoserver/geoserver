@@ -1,4 +1,4 @@
-# Label Obstacles
+# Label Obstacles {: #label_obstacles }
 
 GeoServer implements an algorithm for label conflict resolution, to prevent labels from overlapping one another. By default this algorithm only considers conflicts with other labels. This can result in labels overlapping other symbolizers, which may produce an undesirable effect.
 

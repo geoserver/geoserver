@@ -1,4 +1,4 @@
-# Compositing and blending example
+# Compositing and blending example {: #sld-extensions_composite-blend_example }
 
 Let's say we want to draw the `topp:states` layer so that the polygons are not filled with the population keyed colors, but only an inner border inside the polygon should appear, leaving the internal fully transparent.
 

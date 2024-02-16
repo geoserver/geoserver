@@ -1,4 +1,4 @@
-# Coverage Views
+# Coverage Views {: #coverage_views }
 
 Starting with GeoServer 2.6.0, You can define a new raster layer as a Coverage View. Coverage Views allow defining a View made of different bands originally available inside coverages (either bands of the same coverage or different coverages) of the same Coverage Store.
 

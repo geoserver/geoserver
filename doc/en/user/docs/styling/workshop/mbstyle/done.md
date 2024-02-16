@@ -1,4 +1,4 @@
-# MBStyle Workbook Conclusion
+# MBStyle Workbook Conclusion {: #styling_workshop_mbstyle_done }
 
 We hope you have enjoyed this styling workshop.
 

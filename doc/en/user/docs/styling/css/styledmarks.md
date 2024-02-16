@@ -1,4 +1,4 @@
-# Styled marks
+# Styled marks {: #css_styledmarks }
 
 GeoServer's CSS module provides a collection of predefined symbols that you can use and combine to create simple marks, strokes, and fill patterns without needing an image editing program. You can access these symbols via the symbol() CSS function. For example, the built-in circle symbol makes it easy to create a simple 'dot' marker for a point layer:
 

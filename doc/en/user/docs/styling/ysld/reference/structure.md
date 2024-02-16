@@ -1,4 +1,4 @@
-# Structure
+# Structure {: #ysld_reference_structure }
 
 Here is a simple example of a YSLD style containing a single rule inside a single feature style:
 

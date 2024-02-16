@@ -1,4 +1,4 @@
-# Rasters
+# Rasters {: #styling_workshop_css_raster }
 
 Finally we will look at using CSS styling for the portrayal of raster data.
 

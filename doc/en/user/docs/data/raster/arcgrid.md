@@ -1,4 +1,4 @@
-# ArcGrid
+# ArcGrid {: #data_arcgrid }
 
 ArcGrid is a coverage file format created by ESRI.
 

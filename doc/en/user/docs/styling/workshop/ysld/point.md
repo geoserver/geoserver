@@ -1,4 +1,4 @@
-# Points
+# Points {: #styling_workshop_point }
 
 The next stop of the ysld styling tour is the representation of points.
 

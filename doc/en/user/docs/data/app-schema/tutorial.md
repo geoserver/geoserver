@@ -1,4 +1,4 @@
-# Tutorial
+# Tutorial {: #app-schema.tutorial }
 
 This tutorial demonstrates how to configure two complex feature types using the app-schema plugin and data from two property files.
 

@@ -1,4 +1,4 @@
-# Complex Features
+# Complex Features {: #app-schema.complex-features }
 
 To understand complex features, and why you would want use them, you first need to know a little about simple features.
 

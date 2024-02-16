@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# ImagePyramid
+# ImagePyramid {: #data_imagepyramid }
 
 !!! note
 

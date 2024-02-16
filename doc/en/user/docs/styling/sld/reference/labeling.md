@@ -1,4 +1,4 @@
-# Labeling
+# Labeling {: #sld_reference_labeling }
 
 This section discusses the details of controlling label placement via the standard SLD options. It also describes a number of GeoServer enhanced options for label placement that provide better cartographic output.
 

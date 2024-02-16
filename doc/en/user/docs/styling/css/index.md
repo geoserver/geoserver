@@ -1,4 +1,4 @@
-# CSS Styling
+# CSS Styling {: #css }
 
 The CSS extension uses a CSS-derived language instead of SLD. These CSS styles are internally converted to SLD, which is then used as normal by GeoServer. The CSS syntax is duplicated from SVG styling where appropriate, but extended to avoid losing facilities provided by SLD when possible.
 
@@ -12,7 +12,7 @@ CSS is not a part of GeoServer by default, but is available as an extension.
 -   [Property listing](properties.md)
 -   [CSS value types](valuetypes.md)
 -   [Directives](directives.md)
--   [CSS rules application](cascading.md)
+-   [Understanding Cascading in CSS](cascading.md)
 -   [Nested rules](nested.md)
 -   [Rendering transformations in CSS](transformation.md)
 -   [Styled marks](styledmarks.md)

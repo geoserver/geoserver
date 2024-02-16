@@ -1,4 +1,4 @@
-# MBStyle Styling Workbook
+# MBStyle Styling Workbook {: #styling_workshop_mbstyle }
 
 GeoServer styling can be used for a range of creative effects. This section introduces the `on` which can be used as alternative to SLD files.
 

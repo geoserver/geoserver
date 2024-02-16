@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# Web archive
+# Web archive {: #installation_war }
 
 GeoServer is packaged as a standalone servlet for use with existing application servers such as [Apache Tomcat](http://tomcat.apache.org/) and [Jetty](http://eclipse.org/jetty/).
 

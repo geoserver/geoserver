@@ -1,4 +1,4 @@
-# Application Schema Resolution
+# Application Schema Resolution {: #app-schema.app-schema-resolution }
 
 To be able to encode XML responses conforming to a GML application schema, the app-schema plugin must be able to locate the application schema files (XSDs) that define the schema. This page describes the schema resolution process.
 

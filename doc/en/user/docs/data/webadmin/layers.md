@@ -1,4 +1,4 @@
-# Layers
+# Layers {: #data_webadmin_layers }
 
 In GeoServer, the term "layer" refers to a raster or vector dataset that represents a collection of geographic features. Vector layers are analogous to "featureTypes" and raster layers are analogous to "coverages". All layers have a source of data, known as a Store. The layer is associated with the Workspace in which the Store is defined.
 

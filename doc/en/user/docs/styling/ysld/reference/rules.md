@@ -1,4 +1,4 @@
-# Rules
+# Rules {: #ysld_reference_rules }
 
 A rule is a **collection of styling directives**, primarily consisting of [symbolizers](symbolizers/index.md) combined with optional conditional statements.
 

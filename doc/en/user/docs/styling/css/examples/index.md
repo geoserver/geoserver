@@ -1,4 +1,4 @@
-# Styling examples
+# Styling examples {: #css_examples }
 
 The following pages contain CSS styling examples grouped by specific topics.
 

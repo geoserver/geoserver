@@ -1,4 +1,4 @@
-# YSLD Styling
+# YSLD Styling {: #ysld_styling }
 
 This module adds support for the YSLD styling language.
 

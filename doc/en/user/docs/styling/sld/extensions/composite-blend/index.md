@@ -1,4 +1,4 @@
-# Color compositing and color blending
+# Color compositing and color blending {: #sld-extensions_composite-blend }
 
 It is possible to perform color blending and compositing, either between feature type styles or by associating blending operations with each symbolizer.
 

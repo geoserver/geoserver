@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# Linux binary
+# Linux binary {: #installation_linux }
 
 !!! note
 

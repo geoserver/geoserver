@@ -1,4 +1,4 @@
-# Graphic symbology in GeoServer
+# Graphic symbology in GeoServer {: #pointsymbols }
 
 Graphic symbology is supported via the SLD `<Graphic>` element. This element can appear in several contexts in SLD:
 

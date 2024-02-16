@@ -1,4 +1,4 @@
-# Polygons
+# Polygons {: #styling_workshop_mbstyle_polygon }
 
 Next we look at how MBStyle styling can be used to represent polygons.
 

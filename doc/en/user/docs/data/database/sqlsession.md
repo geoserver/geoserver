@@ -1,4 +1,4 @@
-# Custom SQL session start/stop scripts
+# Custom SQL session start/stop scripts {: #data_sqlsession }
 
 Starting with version 2.1.4 GeoServer support custom SQL scripts that can be run every time GeoServer grabs a connection from the connection pool, and every time the session is returned to the pool.
 

@@ -1,4 +1,4 @@
-# Specifying symbolizer sizes in ground units
+# Specifying symbolizer sizes in ground units {: #unit_of_measure }
 
 The SLD 1.0 specification allows giving symbolizer sizes in a single unit of measure: pixels. This means that the size of symbolizers is the same at all zoom levels (which is usually the desired behaviour).
 

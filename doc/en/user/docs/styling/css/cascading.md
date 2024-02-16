@@ -1,4 +1,4 @@
-# Understanding Cascading in CSS
+# Understanding Cascading in CSS {: #css_cascading }
 
 Cascading Style Sheets are the styling language of the web, use a simple syntax, but sometimes their simplicity can be deceitful if the writer is not aware of how the "Cascading" part of it works. The confusion might become greater by looking at the translated SLD, and wondering how all the SLD rules came to be from a much smaller set of CSS rules.
 

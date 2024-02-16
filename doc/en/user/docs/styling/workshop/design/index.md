@@ -1,4 +1,4 @@
-# Design
+# Design {: #mapping }
 
 This section introduces mapping as a tool for visual communication.
 

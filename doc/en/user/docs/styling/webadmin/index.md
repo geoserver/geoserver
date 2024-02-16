@@ -1,4 +1,4 @@
-# Styles
+# Styles {: #styling_webadmin }
 
 This section will detail how to work with the styles pages in the [Web administration interface](../../webadmin/index.md). For more information on styles and syntax, please see the main section on [Styling](../index.md).
 

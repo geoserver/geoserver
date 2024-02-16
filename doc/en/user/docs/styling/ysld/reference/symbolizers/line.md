@@ -1,4 +1,4 @@
-# Line symbolizer
+# Line symbolizer {: #ysld_reference_symbolizers_line }
 
 The line symbolizer is used to style linear (1-dimensional) features. It is in some ways the simplest of the symbolizers because it only contains facilities for the stroke (outline) of a feature.
 

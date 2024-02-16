@@ -1,4 +1,4 @@
-# Using the ImageMosaic extension
+# Using the ImageMosaic extension {: #data_imagemosaic_tutorial }
 
 This tutorial will show you how to configure and publish an ImageMosaic store and coverage, followed by some configuration examples.
 

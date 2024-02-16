@@ -1,4 +1,4 @@
-# Polygons
+# Polygons {: #styling_workshop_polygon }
 
 Next we look at how YSLD styling can be used to represent polygons.
 

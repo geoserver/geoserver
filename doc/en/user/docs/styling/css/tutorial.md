@@ -1,4 +1,4 @@
-# Tutorial: Styling data with CSS
+# Tutorial: Styling data with CSS {: #css_tutorial }
 
 This tutorial will show using CSS to style a layer, along with the equivalent SLD code.
 

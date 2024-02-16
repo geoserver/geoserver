@@ -1,4 +1,4 @@
-# Styling mixed geometry types
+# Styling mixed geometry types {: #mixed_geometries }
 
 On occasion one might need to style a geometry column whose geometry type can be different for each feature (some are polygons, some are points, etc), and use different styling for different geometry types.
 

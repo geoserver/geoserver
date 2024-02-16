@@ -2,7 +2,7 @@
 render_macros: true
 ---
 
-# GDAL Image Formats
+# GDAL Image Formats {: #data_gdal }
 
 GeoServer can leverage the [ImageI/O-Ext](https://github.com/geosolutions-it/imageio-ext/wiki) GDAL libraries to read selected coverage formats. [GDAL](http://www.gdal.org) is able to read many formats, but for the moment GeoServer supports only a few general interest formats and those that can be legally redistributed and operated in an open source server.
 

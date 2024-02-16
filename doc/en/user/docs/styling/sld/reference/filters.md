@@ -1,4 +1,4 @@
-# Filters
+# Filters {: #sld_reference_filters }
 
 A *filter* is the mechanism in SLD for specifying conditions. They are similar in functionality to the SQL "WHERE" clause. Filters are used within [Rules](rules.md) to determine which styles should be applied to which features in a data set. The filter language used by SLD follows the [OGC Filter Encoding standard](http://www.opengeospatial.org/standards/filter). It is described in detail in the [Filter Encoding Reference](../../../filter/filter_reference.md).
 

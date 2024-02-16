@@ -1,4 +1,4 @@
-# Using the web administration interface
+# Using the web administration interface {: #web_admin_quickstart }
 
 GeoServer has a browser-based web administration interface application used to configure all aspects of GeoServer, from adding and publishing data to changing service settings.
 

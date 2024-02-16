@@ -1,4 +1,4 @@
-# Filter syntax
+# Filter syntax {: #css_filters }
 
 Filters limit the set of features affected by a rule's properties. There are several types of simple filters, which can be combined to provide more complex filters for rules.
 

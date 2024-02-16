@@ -1,4 +1,4 @@
-# Publishing a style
+# Publishing a style {: #style_quickstart }
 
 This tutorial walks through the steps of defining a style and associating it with a layer for use.
 

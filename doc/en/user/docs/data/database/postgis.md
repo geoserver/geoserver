@@ -1,4 +1,4 @@
-# PostGIS
+# PostGIS {: #data_postgis }
 
 [PostGIS](http://postgis.net) is an open source spatial database based on [PostgreSQL](http://postgresql.com/), and is currently one of the most popular open source spatial databases today.
 
@@ -85,9 +85,9 @@ Connection parameters managing SQL generation:
 
   **Primary key metadata table**     Provide table defining how primary keys values are generated (see [Controlling feature ID generation in spatial databases](primarykey.md))
 
-  **Session startup SQL**            SQL applied to connection before use (see [Using SQL session scripts to control authorizations at the database level](sqlsession.md))
+  **Session startup SQL**            SQL applied to connection before use (see [Custom SQL session start/stop scripts](sqlsession.md))
 
-  **Session close-up SQL**           SQL applied to connection after use (see [Using SQL session scripts to control authorizations at the database level](sqlsession.md))
+  **Session close-up SQL**           SQL applied to connection after use (see [Custom SQL session start/stop scripts](sqlsession.md))
 
   **preparedStatements**             Enables prepared statements for SQL generation, rather than text substitution.
 

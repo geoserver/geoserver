@@ -1,4 +1,4 @@
-# Secondary Namespaces
+# Secondary Namespaces {: #app-schema.secondary-namespaces }
 
 ## What is a secondary namespace?
 

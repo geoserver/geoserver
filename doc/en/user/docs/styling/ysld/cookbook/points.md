@@ -1,4 +1,4 @@
-# Points
+# Points {: #ysld_cookbook.points }
 
 While points are seemingly the simplest type of shape, possessing only position and no other dimensions, there are many different ways that a point can be styled in YSLD.
 

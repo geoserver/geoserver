@@ -5,18 +5,14 @@
 package org.geotools.renderer.lite;
 
 import com.google.common.base.Preconditions;
-import java.util.logging.Logger;
-import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.MathTransform2D;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.ConcatenatedTransform;
 import org.geotools.util.factory.Hints;
-import org.geotools.util.logging.Logging;
 
 /**
  * Utility methods to deal with transformations and style based queries.
@@ -24,10 +20,6 @@ import org.geotools.util.logging.Logging;
  * <p>Note, most code in this class has been taken and adapted from GeoTools' StreamingRenderer.
  */
 public class VectorMapRenderUtils {
-
-    private static final Logger LOGGER = Logging.getLogger(VectorMapRenderUtils.class);
-
-    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     /**
      * Builds the transform from sourceCRS to destCRS/

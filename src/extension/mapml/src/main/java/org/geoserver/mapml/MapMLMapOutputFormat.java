@@ -39,6 +39,7 @@ public class MapMLMapOutputFormat extends AbstractMapOutputFormat implements Get
      * @param wms the WMS
      */
     public MapMLMapOutputFormat(WMS wms, GeoServer geoServer) {
+        super(MapMLConstants.MAPML_MIME_TYPE, MapMLConstants.MAPML_MIME_TYPE);
         this.wms = wms;
         this.geoServer = geoServer;
     }

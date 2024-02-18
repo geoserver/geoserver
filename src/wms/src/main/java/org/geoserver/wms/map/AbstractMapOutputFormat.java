@@ -7,7 +7,9 @@ package org.geoserver.wms.map;
 
 import static org.geoserver.wms.decoration.MapDecorationLayout.FF;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

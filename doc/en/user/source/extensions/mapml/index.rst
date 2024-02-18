@@ -75,7 +75,21 @@ Vector Settings
 MapML supports the serving of vector feature representations of the data.  This results in a smoother user navigation experience, smaller bandwidth requirements, and more options for dynamic styling on the client-side.
 
 **Use Features**
-  If the "Use Features" checkbox is checked, by default the output MapML will define a feature-based reference to the WMS server. Otherwise, an image-based reference will be used.  Note that this option is only available for vector source data.  For multi-layer requests, all of the layers must have the feature option enabled or image-based links will be returned instead.
+  If the "Use Features" checkbox is checked, by default the output MapML will define a feature-based reference to the WMS server. Otherwise, an image-based reference will be used.  Note that this option is only available for vector source data.  MapML <map-extent> element with a feature link:
+
+.. code-block:: html
+
+    <map-extent units="WGS84" label="Manhattan (NY) points of interest" checked="checked">
+      <map-input name="z" type="zoom" min="0" max="21"/>
+      <map-input name="xmin" type="location" rel="map" position="top-left" axis="longitude" units="gcrs" min="-74.0118315772888" max="-74.00153046439813"/>
+      <map-input name="ymin" type="location" rel="map" position="bottom-left" axis="latitude" units="gcrs" min="40.70754683896324" max="40.719885123828675"/>
+      <map-input name="xmax" type="location" rel="map" position="top-right" axis="longitude" units="gcrs" min="-74.0118315772888" max="-74.00153046439813"/>
+      <map-input name="ymax" type="location" rel="map" position="top-left" axis="latitude" units="gcrs" min="40.70754683896324" max="40.719885123828675"/>
+      <map-input name="w" type="width" min="1" max="10000"/>
+      <map-input name="h" type="height" min="1" max="10000"/>
+      <map-link tref="http://localhost:8080/geoserver/tiger/wms?format_options=mapmlfeatures:true&amp;request=GetMap&amp;crs=MapML:WGS84&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;format=text/mapml&amp;language=en&amp;version=1.3.0&amp;transparent=true&amp;service=WMS&amp;layers=poi&amp;width={w}&amp;styles=&amp;height={h}" rel="features"/>
+    </map-extent>
+
 
 Tile Caching
 ^^^^^^^^^^^^

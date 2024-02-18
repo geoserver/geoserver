@@ -25,6 +25,7 @@ public class MapMLTestSupport extends WMSTestSupport {
      * @param name the name of the layer
      * @param kvp the key value pairs
      * @param locale the locale
+     * @param bbox the bounding box
      * @param srs the SRS
      * @param styles the styles
      * @return the MapML object
@@ -34,12 +35,13 @@ public class MapMLTestSupport extends WMSTestSupport {
             String name,
             Map kvp,
             Locale locale,
+            String bbox,
             String srs,
             String styles,
             boolean isFeatureRepresentation)
             throws Exception {
         MockHttpServletRequest request =
-                getMapMLWMSRequest(name, kvp, locale, srs, styles, isFeatureRepresentation);
+                getMapMLWMSRequest(name, kvp, locale, bbox, srs, styles, isFeatureRepresentation);
         MockHttpServletResponse response = dispatch(request);
         return mapml(response);
     }
@@ -48,12 +50,13 @@ public class MapMLTestSupport extends WMSTestSupport {
             String name,
             Map kvp,
             Locale locale,
+            String bbox,
             String srs,
             String styles,
             boolean isFeatureRepresentation)
             throws Exception {
         MockHttpServletRequest request =
-                getMapMLWMSRequest(name, kvp, locale, srs, styles, isFeatureRepresentation);
+                getMapMLWMSRequest(name, kvp, locale, bbox, srs, styles, isFeatureRepresentation);
         MockHttpServletResponse response = dispatch(request);
         return response.getContentAsString();
     }
@@ -97,6 +100,7 @@ public class MapMLTestSupport extends WMSTestSupport {
      * @param name the name of the layer
      * @param kvp the key value pairs
      * @param locale the locale
+     * @param bbox the bounding box
      * @param srs the SRS
      * @param styles the styles
      * @return the request
@@ -106,6 +110,7 @@ public class MapMLTestSupport extends WMSTestSupport {
             String name,
             Map kvp,
             Locale locale,
+            String bbox,
             String srs,
             String styles,
             boolean isFeatureRepresentation)
@@ -131,7 +136,8 @@ public class MapMLTestSupport extends WMSTestSupport {
                             + "&REQUEST=GetMap"
                             + "&SRS="
                             + srs
-                            + "&BBOX=0,0,1,1"
+                            + "&BBOX="
+                            + (bbox != null ? bbox : "0,0,1,1")
                             + "&WIDTH=150"
                             + "&HEIGHT=150"
                             + "&format_options="

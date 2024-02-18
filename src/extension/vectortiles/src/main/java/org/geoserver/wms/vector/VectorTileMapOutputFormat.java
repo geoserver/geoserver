@@ -6,7 +6,6 @@ package org.geoserver.wms.vector;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 
 import com.google.common.base.Stopwatch;
 import java.awt.Rectangle;
@@ -36,7 +35,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
-import org.geotools.renderer.lite.VectorMapRenderUtils;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
@@ -108,12 +106,12 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
             sourceCrs = geometryDescriptor.getType().getCoordinateReferenceSystem();
             int buffer =
-                    VectorMapRenderUtils.getComputedBuffer(
+                    getComputedBuffer(
                             mapContent.getBuffer(),
-                            VectorMapRenderUtils.getFeatureStyles(
+                            getFeatureStyles(
                                     layer,
                                     paintArea,
-                                    VectorMapRenderUtils.getMapScale(mapContent, renderingArea),
+                                    getMapScale(mapContent, renderingArea),
                                     featureSource.getSchema()));
             if (this.tileBuilderFactory.shouldOversampleScale()) {
                 // buffer is in pixels (style pixels), need to convert to paint area pixels

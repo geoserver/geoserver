@@ -4,7 +4,6 @@
  */
 package org.geoserver.wms.vector;
 
-import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
@@ -192,7 +191,10 @@ public class VectorTileMapOutputFormatTest {
         WMSMapContent mapContent =
                 createMapContent(mapBounds, renderingArea, 0, scaleDependentPolygonLayer);
 
-        Query q = getStyleQuery(scaleDependentPolygonLayer, mapContent);
+        MapBoxTileBuilderFactory mbbf = new MapBoxTileBuilderFactory();
+        VectorTileMapOutputFormat vtof = new VectorTileMapOutputFormat(mbbf);
+
+        Query q = VectorTileMapOutputFormat.getStyleQuery(scaleDependentPolygonLayer, mapContent);
         assertNotSame(q.getFilter(), Filter.EXCLUDE);
 
         // ------------------- abnormal case, there are no rules in the sld that will draw
@@ -203,7 +205,7 @@ public class VectorTileMapOutputFormatTest {
 
         mapContent = createMapContent(mapBounds, renderingArea, 0, scaleDependentPolygonLayer);
 
-        q = getStyleQuery(scaleDependentPolygonLayer, mapContent);
+        q = vtof.getStyleQuery(scaleDependentPolygonLayer, mapContent);
         assertSame(q.getFilter(), Filter.EXCLUDE);
     }
 

@@ -21,6 +21,7 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -33,6 +34,7 @@ public class MapMLFeaturesBuilder {
     private final WMSMapContent mapContent;
     private final HttpServletRequest httpServletRequest;
     private final GetMapRequest getMapRequest;
+    private final List<Query> queries;
 
     /**
      * Constructor
@@ -42,7 +44,10 @@ public class MapMLFeaturesBuilder {
      * @param httpServletRequest the HTTP servlet request
      */
     public MapMLFeaturesBuilder(
-            WMSMapContent mapContent, GeoServer geoServer, HttpServletRequest httpServletRequest) {
+            WMSMapContent mapContent,
+            GeoServer geoServer,
+            HttpServletRequest httpServletRequest,
+            List<Query> queries) {
         this.geoServer = geoServer;
         this.mapContent = mapContent;
         this.getMapRequest = mapContent.getRequest();
@@ -51,6 +56,7 @@ public class MapMLFeaturesBuilder {
                 mapContent.layers().stream()
                         .map(Layer::getFeatureSource)
                         .collect(Collectors.toList());
+        this.queries = queries;
     }
 
     /**
@@ -70,7 +76,13 @@ public class MapMLFeaturesBuilder {
             throw new ServiceException(
                     "MapML WMS Feature format does not currently support non-vector layers.");
         }
-        FeatureCollection featureCollection = featureSources.get(0).getFeatures();
+        FeatureCollection featureCollection = null;
+        if (!queries.isEmpty()) {
+            Query query = queries.get(0);
+            featureCollection = featureSources.get(0).getFeatures(query);
+        } else {
+            featureCollection = featureSources.get(0).getFeatures();
+        }
         if (!(featureCollection instanceof SimpleFeatureCollection)) {
             throw new ServiceException(
                     "MapML WMS Feature format does not currently support Complex Features.");

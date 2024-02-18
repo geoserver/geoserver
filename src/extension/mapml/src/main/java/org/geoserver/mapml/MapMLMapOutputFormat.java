@@ -21,9 +21,11 @@ import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
+import org.geoserver.wms.map.AbstractMapOutputFormat;
+import org.geotools.api.data.Query;
 
 /** Handles a GetMap request that for a map in MapML format. */
-public class MapMLMapOutputFormat implements GetMapOutputFormat {
+public class MapMLMapOutputFormat extends AbstractMapOutputFormat implements GetMapOutputFormat {
     private WMS wms;
     private GeoServer geoServer;
     private final Set<String> OUTPUT_FORMATS =
@@ -55,8 +57,9 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
         HttpServletRequest httpServletRequest = request.getHttpRequest();
         String formatOptions = httpServletRequest.getParameter("format_options");
         if (formatOptions != null && formatOptions.contains(MAPML_FEATURE_FORMAT_OPTIONS)) {
+            List<Query> queries = getStyleQuery(mapContent.layers(), mapContent);
             MapMLFeaturesBuilder mapMLFeaturesBuilder =
-                    new MapMLFeaturesBuilder(mapContent, geoServer, httpServletRequest);
+                    new MapMLFeaturesBuilder(mapContent, geoServer, httpServletRequest, queries);
             return new MapMLMap(mapContent, mapMLFeaturesBuilder.getMapMLDocument());
         } else {
             MapMLDocumentBuilder mapMLDocumentBuilder =

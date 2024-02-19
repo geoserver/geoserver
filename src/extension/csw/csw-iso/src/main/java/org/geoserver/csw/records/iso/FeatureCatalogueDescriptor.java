@@ -120,7 +120,7 @@ public class FeatureCatalogueDescriptor extends AbstractRecordDescriptor {
     }
 
     @Override
-    public PropertyName translateProperty(Name name) {
+    public List<PropertyName> translateProperty(Name name) {
         return null;
     }
 

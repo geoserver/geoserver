@@ -254,7 +254,7 @@ public class GetRecords {
             // of the elements in the feature's schema
             List<PropertyName> result = new ArrayList<>();
             for (QName qn : query.getElementName()) {
-                result.add(store.translateProperty(rd, Types.toTypeName(qn)));
+                result.addAll(store.translateToPropertyNames(rd, Types.toTypeName(qn)));
             }
             return result;
         } else {
@@ -263,7 +263,7 @@ public class GetRecords {
             if (properties != null) {
                 List<PropertyName> result = new ArrayList<>();
                 for (Name pn : properties) {
-                    result.add(store.translateProperty(rd, pn));
+                    result.addAll(store.translateToPropertyNames(rd, pn));
                 }
                 return result;
             } else {

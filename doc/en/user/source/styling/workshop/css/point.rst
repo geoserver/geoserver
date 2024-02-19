@@ -200,6 +200,30 @@ This technique was shown with the initial file:`airport.svg` CSS example.
 
    .. image:: ../style/img/point_graphic_2.png
 
+#. SVG external graphics styles can also be declared in the CSS code.
+   
+   Using the **symbol** function in the **mark** property.
+
+   The styles declarations have to icluded in the **:mark** pseudo-class.
+
+   .. code-block:: css
+
+      /* @title red triangle with blue stroke */
+      *{
+         mark: symbol('https://www.svgrepo.com/show/488433/triangle.svg');
+         mark-mime: "image/svg";
+         mark-size: 25;
+         :mark {
+            fill: #ff3300;
+            stroke: blue;
+            stroke-width: 5px;
+         }
+      }
+
+#. Will result in a modified style for an external SVG graphic resource.
+
+   .. image:: ../style/img/point_graphic_3.png 
+
 Label
 -----
 

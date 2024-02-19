@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import net.opengis.cat.csw20.ElementSetType;
 import org.geoserver.csw.util.NamespaceQualifier;
@@ -306,9 +307,10 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
     }
 
     @Override
-    public PropertyName translateProperty(Name name) {
-        return new CSWPropertyPathExtender()
-                .extendProperty(buildPropertyName(NAMESPACES, name), FF, NAMESPACES);
+    public List<PropertyName> translateProperty(Name name) {
+        return Collections.singletonList(
+                new CSWPropertyPathExtender()
+                        .extendProperty(buildPropertyName(NAMESPACES, name), FF, NAMESPACES));
     }
 
     @Override

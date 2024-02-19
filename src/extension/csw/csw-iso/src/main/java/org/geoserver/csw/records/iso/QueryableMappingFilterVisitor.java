@@ -1,3 +1,7 @@
+/* (c) 2024 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.csw.records.iso;
 
 import java.lang.reflect.Method;
@@ -335,7 +339,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         @SuppressWarnings("unchecked")
         List<Expression> demTwo = (List<Expression>) two.accept(this, extraData);
 
-        List<Filter> filters = new ArrayList<Filter>(); // list of all filters
+        List<Filter> filters = new ArrayList<>(); // list of all filters
         for (Expression exprOne : demOne) {
             for (Expression exprTwo : demTwo) {
                 filters.add(replacer.replaceExpressions(filter, exprOne, exprTwo));
@@ -347,9 +351,9 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     /**
      * combines expression applied to multiple expressions using OR
      *
-     * @param filter The filter
-     * @param replacer The filter replacer
-     * @return the new filter
+     * @param expression The expression
+     * @param replacer The expression replacer
+     * @return the new expression
      */
     protected <T extends Expression> List<Expression> combine(
             T expression, ExpressionReplacer<T> replacer, Object extraData) {
@@ -362,7 +366,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         @SuppressWarnings("unchecked")
         List<Expression> repTwo = (List<Expression>) two.accept(this, extraData);
 
-        List<Expression> expressions = new ArrayList<Expression>(); // list of all filters
+        List<Expression> expressions = new ArrayList<>(); // list of all filters
         for (Expression exprOne : repOne) {
             for (Expression exprTwo : repTwo) {
                 expressions.add(replacer.replaceExpressions(expression, exprOne, exprTwo));
@@ -385,7 +389,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         @SuppressWarnings("unchecked")
         List<Expression> repThree = (List<Expression>) three.accept(this, extraData);
 
-        List<Filter> filters = new ArrayList<Filter>(); // list of all filters
+        List<Filter> filters = new ArrayList<>(); // list of all filters
         for (Expression exprOne : repOne) {
             for (Expression exprTwo : repTwo) {
                 for (Expression exprThree : repThree) {
@@ -663,7 +667,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         List<Expression> repExpr =
                 (List<Expression>) filter.getExpression().accept(this, extraData);
 
-        List<Filter> filters = new ArrayList<Filter>(); // list of all filters
+        List<Filter> filters = new ArrayList<>(); // list of all filters
         for (Expression expr : repExpr) {
             filters.add(
                     ff.like(
@@ -684,7 +688,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         List<Expression> repExpr =
                 (List<Expression>) filter.getExpression().accept(this, extraData);
 
-        List<Filter> filters = new ArrayList<Filter>(); // list of all filters
+        List<Filter> filters = new ArrayList<>(); // list of all filters
         for (Expression expr : repExpr) {
             filters.add(ff.isNull(expr));
         }
@@ -697,7 +701,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         List<Expression> repExpr =
                 (List<Expression>) filter.getExpression().accept(this, extraData);
 
-        List<Filter> filters = new ArrayList<Filter>(); // list of all filters
+        List<Filter> filters = new ArrayList<>(); // list of all filters
         for (Expression expr : repExpr) {
             filters.add(ff.isNil(expr, extraData));
         }
@@ -728,7 +732,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
 
             List<List<Expression>> newParameters = new ArrayList<>();
             for (Expression newParam : repExpr) {
-                if (parameters.size() > 0) {
+                if (!parameters.isEmpty()) {
                     for (List<Expression> parameterList : parameters) {
                         List<Expression> list = new ArrayList<>();
                         list.addAll(parameterList);

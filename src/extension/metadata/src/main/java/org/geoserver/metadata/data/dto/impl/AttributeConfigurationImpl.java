@@ -38,7 +38,7 @@ public class AttributeConfigurationImpl implements AttributeConfiguration {
 
     String condition;
 
-    @JsonDeserialize(using = CommaSeperatedDeserializer.class)
+    @JsonDeserialize(using = CommaSeparatedDeserializer.class)
     List<String> tab;
 
     public AttributeConfigurationImpl() {}

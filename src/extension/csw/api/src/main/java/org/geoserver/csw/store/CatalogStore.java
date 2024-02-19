@@ -97,7 +97,7 @@ public interface CatalogStore {
     @Deprecated
     default PropertyName translateProperty(RecordDescriptor rd, Name name) {
         List<PropertyName> propNames = translateToPropertyNames(rd, name);
-        return propNames != null && propNames.size() > 0 ? propNames.get(0) : null;
+        return propNames != null && !propNames.isEmpty() ? propNames.get(0) : null;
     }
 
     /** Maps a qualified name to its equivalent property names for the backend store. */

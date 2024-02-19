@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.metadata.data.dto.AttributeConfiguration;
@@ -37,7 +38,8 @@ public class AttributeConfigurationImpl implements AttributeConfiguration {
 
     String condition;
 
-    String tab;
+    @JsonDeserialize(using = CommaSeparatedDeserializer.class)
+    List<String> tab;
 
     public AttributeConfigurationImpl() {}
 
@@ -106,7 +108,7 @@ public class AttributeConfigurationImpl implements AttributeConfiguration {
     }
 
     @Override
-    public String getTab() {
+    public List<String> getTab() {
         return tab;
     }
 }

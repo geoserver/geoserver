@@ -134,7 +134,7 @@ public class AbstractCatalogStoreTest {
         }
 
         @Override
-        public PropertyName translateProperty(Name name) {
+        public List<PropertyName> translateProperty(Name name) {
             return delegate.translateProperty(name);
         }
 

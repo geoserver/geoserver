@@ -1,6 +1,6 @@
 # brief
 Identifier=gmd:fileIdentifier/gco:CharacterString
-Title=gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString
+Title=gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString;gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString
 Type=gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue
 BoundingBox=gmd:identificationInfo/srv:SV_ServiceIdentification/srv:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox
 GraphicOverview=gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gco:CharacterString
@@ -33,4 +33,4 @@ SpatialResolution=gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRe
 SpatialRepresentationType=gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue
 TopicCategory=gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory/gco:CharacterString
 # required
-Contact=gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString
+Contact=gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString;gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gmx:Anchor

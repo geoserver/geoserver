@@ -186,7 +186,7 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
     }
 
     @Override
-    public PropertyName translateProperty(RecordDescriptor rd, Name name) {
+    public List<PropertyName> translateToPropertyNames(RecordDescriptor rd, Name name) {
         return rd.translateProperty(name);
     }
 

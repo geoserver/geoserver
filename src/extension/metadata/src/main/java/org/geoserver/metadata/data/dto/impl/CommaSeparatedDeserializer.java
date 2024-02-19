@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 
-public class CommaSeperatedDeserializer extends JsonDeserializer<List<String>> {
+public class CommaSeparatedDeserializer extends JsonDeserializer<List<String>> {
 
     @Override
     public List<String> deserialize(JsonParser p, DeserializationContext ctxt)

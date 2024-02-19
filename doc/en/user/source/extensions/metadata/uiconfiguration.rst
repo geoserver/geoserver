@@ -119,7 +119,7 @@ For example:
 tab
 ^^^
 Optionally, attributes may be displayed on separate tabs. All tabs must be listed under `tabs` in the main configuration. Then this
-property is used to assign each attribute to one or more tab (seperated by comma), 
+property is used to assign each attribute to one or more tab (separated by comma), 
 so that the custom metadata panel is divided in tabs:
 
     .. figure:: images/metadata-tabs.png

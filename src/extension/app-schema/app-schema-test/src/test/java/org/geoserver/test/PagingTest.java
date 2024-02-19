@@ -897,7 +897,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                         "wfs?request=GetFeature&version=2.0.0&typeNames=gsml:MappedFeature&count=1&startIndex=1&outputFormat=csv");
 
         // check the mime type
-        assertEquals("text/csv", resp.getContentType());
+        assertEquals("text/csv", getBaseMimeType(resp.getContentType()));
 
         // check the content disposition
         assertEquals(

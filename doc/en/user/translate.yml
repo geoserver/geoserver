@@ -1,0 +1,44 @@
+# markdown translation
+deepl_base_url: "https://api-free.deepl.com"
+upload_folder: "translate"
+download_folder: "translate"
+
+# mkdocs migration
+project_folder: "."
+rst_folder: "source"
+build_folder: "target"
+docs_folder: "docs"
+anchor_file: 'anchors.txt'
+convert_folder: "convert"
+substitutions:
+  project: GeoServer
+  author: Open Source Geospatial Foundation
+  copyright: 2024, Open Source Geospatial Foundation
+  project_copyright: 2024, Open Source Geospatial Foundation
+  install_directory_winXP: C:\\Program Files\\GeoServer {{ release }}
+  install_directory_win: C:\\Program Files (x86)\\GeoServer {{ release }}
+  install_directory_linux: /var/lib/tomcat9/webapps/geoserver
+  install_directory_mac: /Applications
+  data_directory_winXP: C:\\Program Files\\GeoServer {{ release }}\\data_dir
+  data_directory_win: C:\\Program Files\\GeoServer {{ release }}\\data_dir
+  data_directory_linux: /var/lib/tomcat9/webapps/geoserver/data
+  data_directory_mac: /Applications/GeoServer.app/Contents/Resources/Java/data_dir
+extlinks:
+  wiki: https://github.com/geoserver/geoserver/wiki/%s
+  website: https://geoserver.org/%s
+  user: https://docs.geoserver.org/{{ branch }}/en/user/%s
+  developer: https://docs.geoserver.org/latest/en/developer/%s
+  docguide: https://docs.geoserver.org/latest/en/docguide/%s
+  geos: https://osgeo-org.atlassian.net/browse/GEOS-%s|GEOS-%s
+  geot: https://osgeo-org.atlassian.net/browse/GEOT-%s|GEOT-%s
+  api: https://docs.geoserver.org/latest/en/api/#1.0.0/%s
+  geotools: https://docs.geotools.org/latest/userguide/%s
+  download_release: https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/geoserver-{{ release }}-%s.zip|geoserver-{{ release }}-%s.zip
+nav:
+  index.md: Home
+  webadmin/index.md: Web Admin
+  configuration/index.md: Configuration
+  datadirectory/index.md: Data Directory
+  production/index.md: Production
+  community/index.md: Community
+  

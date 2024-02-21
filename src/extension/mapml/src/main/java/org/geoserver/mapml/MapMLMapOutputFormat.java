@@ -17,6 +17,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
@@ -58,6 +59,16 @@ public class MapMLMapOutputFormat extends AbstractMapOutputFormat implements Get
         HttpServletRequest httpServletRequest = request.getHttpRequest();
         String formatOptions = httpServletRequest.getParameter("format_options");
         if (formatOptions != null && formatOptions.contains(MAPML_FEATURE_FORMAT_OPTIONS)) {
+            if (mapContent.layers() != null && mapContent.layers().size() > 1) {
+                throw new ServiceException(
+                        "MapML WMS Feature format does not currently support Multiple Feature Type output.");
+            }
+            if (!mapContent.getRequest().getLayers().isEmpty()
+                    && MapLayerInfo.TYPE_VECTOR
+                            != mapContent.getRequest().getLayers().get(0).getType()) {
+                throw new ServiceException(
+                        "MapML WMS Feature format does not currently support non-vector layers.");
+            }
             List<Query> queries = getStyleQuery(mapContent.layers(), mapContent);
             MapMLFeaturesBuilder mapMLFeaturesBuilder =
                     new MapMLFeaturesBuilder(mapContent, geoServer, httpServletRequest, queries);

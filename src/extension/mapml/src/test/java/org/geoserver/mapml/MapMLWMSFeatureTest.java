@@ -7,8 +7,14 @@ package org.geoserver.mapml;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -18,12 +24,27 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.MultiPolygon;
-import org.geoserver.mapml.xml.Polygon;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.style.Style;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.memory.MemoryDataStore;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.After;
 import org.junit.Test;
+import org.locationtech.jts.io.ParseException;
 
 public class MapMLWMSFeatureTest extends MapMLTestSupport {
     @Override
@@ -95,11 +116,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                                         .getGeometry()
                                         .getGeometryContent()
                                         .getValue())
-                                .getPolygon()
-                                .get(0)
-                                .getThreeOrMoreCoordinatePairs()
-                                .get(0)
-                                .getValue()
+                        .getPolygon().get(0).getThreeOrMoreCoordinatePairs().get(0).getValue()
                                 .stream()
                                 .collect(Collectors.joining(",")));
     }
@@ -146,6 +163,60 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
     }
 
     @Test
+    public void testMapMLGetStyleQuery() throws Exception {
+        Catalog cat = getCatalog();
+        MemoryDataStore ds = new MemoryDataStore();
+        final String polyTypeSpec = "ADDRESS:String,ip:Integer,geom:Polygon:srid=4326";
+        SimpleFeatureType polyType = DataUtilities.createType("polygons", polyTypeSpec);
+        ds.addFeature(
+                feature(
+                        polyType,
+                        "polygon1",
+                        "123 Main Street",
+                        1000,
+                        "POLYGON ((1 1, 2 2, 3 3, 4 4, 1 1))"));
+        ds.addFeature(
+                feature(
+                        polyType,
+                        "polygon2",
+                        "95 Penny Lane",
+                        2000,
+                        "POLYGON ((6 6, 7 7, 8 8, 9 9, 6 6))"));
+        ds.addFeature(
+                feature(
+                        polyType,
+                        "polygon3",
+                        "154 Sesame Street",
+                        3000,
+                        "POLYGON ((11 11, 12 12, 13 13, 14 14, 11 11))"));
+        ReferencedEnvelope mapBounds =
+                new ReferencedEnvelope(
+                        0, 0.005, 0, 0.005, CRS.decode("urn:x-ogc:def:crs:EPSG:4326"));
+        Rectangle renderingArea = new Rectangle(256, 256);
+
+        FeatureLayer layer =
+                new FeatureLayer(
+                        ds.getFeatureSource("polygons"),
+                        cat.getStyleByName("polygonFilter").getStyle());
+
+        WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, 0, layer);
+        Query q = MapMLMapOutputFormat.getStyleQuery(layer, mapContent);
+        assertTrue(
+                "Query filter should include the SLD filter",
+                q.getFilter().toString().contains("ADDRESS = 123 Main Street"));
+
+        FeatureLayer layerElse =
+                new FeatureLayer(
+                        ds.getFeatureSource("polygons"),
+                        cat.getStyleByName("polygonElseFilter").getStyle());
+        WMSMapContent mapContentElse = createMapContent(mapBounds, renderingArea, 0, layerElse);
+        Query qElse = MapMLMapOutputFormat.getStyleQuery(layerElse, mapContentElse);
+        assertFalse(
+                "Query filter does not include the SLD filter because the else clause is used",
+                qElse.getFilter().toString().contains("ADDRESS = 123 Main Street"));
+    }
+
+    @Test
     public void testExceptionBecauseMoreThanOneFeatureType() throws Exception {
         Catalog cat = getCatalog();
         LayerInfo li = cat.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
@@ -187,5 +258,72 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 "MapML response contains an exception due to non-vector type",
                 response.contains(
                         "MapML WMS Feature format does not currently support non-vector layers."));
+    }
+
+    protected static SimpleFeature feature(SimpleFeatureType type, String id, Object... values)
+            throws ParseException {
+
+        SimpleFeatureBuilder builder = new SimpleFeatureBuilder(type);
+
+        for (int i = 0; i < values.length; i++) {
+            Object value = values[i];
+            if (type.getDescriptor(i) instanceof GeometryDescriptor) {
+                if (value instanceof String) {
+                    value = new WKTReader2().read((String) value);
+                }
+            }
+            builder.set(i, value);
+        }
+        return builder.buildFeature(id);
+    }
+
+    private WMSMapContent createMapContent(
+            ReferencedEnvelope mapBounds, Rectangle renderingArea, Integer buffer, Layer... layers)
+            throws Exception {
+
+        GetMapRequest mapRequest = createGetMapRequest(mapBounds, renderingArea, buffer);
+
+        WMSMapContent map = new WMSMapContent(mapRequest);
+        map.getViewport().setBounds(mapBounds);
+        if (layers != null) {
+            for (Layer l : layers) {
+                map.addLayer(l);
+            }
+        }
+        map.setMapWidth(renderingArea.width);
+        map.setMapHeight(renderingArea.height);
+        if (Objects.nonNull(buffer)) {
+            map.setBuffer(buffer);
+        }
+
+        return map;
+    }
+
+    protected GetMapRequest createGetMapRequest(
+            ReferencedEnvelope requestEnvelope, Rectangle renderingArea, Integer buffer)
+            throws FactoryException {
+        GetMapRequest request = new GetMapRequest();
+        request.setBaseUrl("http://localhost:8080/geoserver");
+
+        List<MapLayerInfo> layers = new ArrayList<>();
+        List<Style> styles = new ArrayList<>();
+
+        request.setLayers(layers);
+        request.setStyles(styles);
+        request.setBbox(requestEnvelope);
+        request.setCrs(requestEnvelope.getCoordinateReferenceSystem());
+        if (requestEnvelope.getCoordinateReferenceSystem()
+                == CRS.decode("urn:x-ogc:def:crs:EPSG:4326")) {
+            request.setSRS("EPSG:4326");
+        } else if (requestEnvelope.getCoordinateReferenceSystem() == CRS.decode("EPSG:3857")) {
+            request.setSRS("EPSG:3857");
+        } else {
+            throw new IllegalArgumentException("Please use one of the test CRS's");
+        }
+        request.setWidth(renderingArea.width);
+        request.setHeight(renderingArea.height);
+        request.setRawKvp(new HashMap<>());
+        request.setBuffer(buffer);
+        return request;
     }
 }

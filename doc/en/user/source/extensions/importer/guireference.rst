@@ -44,7 +44,7 @@ Configure the data source: PostGIS
 
 Fill out fields for :guilabel:`Connection type` (Default or JNDI) :guilabel:`Host`, :guilabel:`Port`, :guilabel:`Database` name, :guilabel:`Schema`, :guilabel:`Username` to connect with, and :guilabel:`Password`.
 
-There are also advanced connection options, which are common to the standard PostGIS store loading procedure. (See the `PostGIS data store <../../geoserver/data/database/>`_ page in the GeoServer reference documentation.)
+There are also advanced connection options, which are common to the standard PostGIS store loading procedure. (See the :ref:`PostGIS data store <data_postgis>` page in the GeoServer reference documentation.)
 
 .. figure:: images/sources_postgis.png
 

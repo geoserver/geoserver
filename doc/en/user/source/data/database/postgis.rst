@@ -1,4 +1,4 @@
-.. _data_postgis: 
+.. _data_postgis:
 
 PostGIS
 =======

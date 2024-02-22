@@ -43,6 +43,11 @@ public class JwtHeadersRolesExtractor {
         if (headerValue == null || headerValue.isBlank()) {
             return null;
         }
+        
+        headerValue = headerValue.replaceFirst("^Bearer","");
+        headerValue = headerValue.replaceFirst("^bearer","");
+        headerValue = headerValue.trim();
+
 
         // JWT - convert JWT to JSON, then extract
         if (jwtHeadersConfig.getRoleSource()

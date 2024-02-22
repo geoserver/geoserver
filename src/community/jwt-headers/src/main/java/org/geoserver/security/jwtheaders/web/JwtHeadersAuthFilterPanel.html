@@ -37,10 +37,23 @@
             }
         }
 
+        function toggleVisible(element,id) {
+            var visibilityDiv = document.getElementById(id);
+            if (element.checked)
+                visibilityDiv.style.display = "block";
+            else
+                visibilityDiv.style.display = "none";
+        }
+
         // When the page is loaded, we hide  the username "json path" input if its not needed.
         window.addEventListener('load', function () {
             usernameFormatChanged();
             showTokenValidationChanged();
+            toggleVisible(document.getElementById('validateToken'),'validateTokenSignatureURLDiv');
+            toggleVisible(document.getElementById('validateTokenAgainstURL'),'validateTokenAgainstURLDiv');
+            toggleVisible(document.getElementById('validateTokenAudience'),'validateTokenAudienceDiv');
+
+
         });
     </script>
 </wicket:head>
@@ -86,8 +99,86 @@
             </label>
         </div>
 
-        <div id="validateTokenDiv">
-            Validation items!
+        <div  style="padding-top:20px">
+            <div style="display:flex">
+                <input class="field checkbox" id="validateTokenExpiry"
+                       style="margin-top:auto;margin-bottom:auto" type="checkbox" wicket:id="validateTokenExpiry"/>
+                <label style="padding-left:5px">
+                    <wicket:message key="validateTokenExpiry"></wicket:message>
+                </label>
+            </div>
+
+        </div>
+
+
+        <div id="validateTokenDiv" style="padding-top:20px">
+            <div style="display:flex">
+                <input class="field checkbox" id="validateTokenSignature" onchange="toggleVisible(this,'validateTokenSignatureURLDiv')"
+                       style="margin-top:auto;margin-bottom:auto" type="checkbox" wicket:id="validateTokenSignature"/>
+                <label style="padding-left:5px">
+                    <wicket:message key="validateTokenSignatureText"></wicket:message>
+                </label>
+            </div>
+            <div id="validateTokenSignatureURLDiv">
+                <label>
+                    <wicket:message key="validateTokenSignatureURL"></wicket:message>
+                </label>
+                <input class="field text" wicket:id="validateTokenSignatureURL"/>
+            </div>
+        </div>
+
+        <div  style="padding-top:20px">
+            <div style="display:flex">
+                <input class="field checkbox" id="validateTokenAgainstURL" onchange="toggleVisible(this,'validateTokenAgainstURLDiv')"
+                       style="margin-top:auto;margin-bottom:auto" type="checkbox" wicket:id="validateTokenAgainstURL"/>
+                <label style="padding-left:5px">
+                    <wicket:message key="validateTokenAgainstURL"></wicket:message>
+                </label>
+            </div>
+            <div id="validateTokenAgainstURLDiv" style="display: flex">
+
+                <label>
+                    <wicket:message key="validateTokenAgainstURLText"></wicket:message>
+                </label>
+                <div>
+                    <input class="field text" wicket:id="validateTokenAgainstURLEndpoint"/>
+                </div>
+                <div style="display:flex">
+                    <input class="field checkbox" id="validateSubjectWithEndpoint"
+                           style="margin-top:auto;margin-bottom:auto" type="checkbox" wicket:id="validateSubjectWithEndpoint"/>
+                    <label style="padding-left:5px">
+                        <wicket:message key="validateTokenAgainstURLSubject"></wicket:message>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div  style="padding-top:20px">
+            <div style="display:flex">
+                <input class="field checkbox" id="validateTokenAudience" onchange="toggleVisible(this,'validateTokenAudienceDiv')"
+                       style="margin-top:auto;margin-bottom:auto" type="checkbox" wicket:id="validateTokenAudience"/>
+                <label style="padding-left:5px">
+                    <wicket:message key="validateTokenAudience"></wicket:message>
+                </label>
+            </div>
+            <div id="validateTokenAudienceDiv" style="display: flex">
+                <label>
+                    <wicket:message key="validateTokenAudienceClaimName"></wicket:message>
+                </label>
+                <div>
+                    <input class="field text" wicket:id="validateTokenAudienceClaimName"/>
+                </div>
+                <label>
+                    <wicket:message key="validateTokenAudienceClaimValue"></wicket:message>
+                </label>
+                <div>
+                    <input class="field text" wicket:id="validateTokenAudienceClaimValue"/>
+                </div>
+
+
+            </div>
         </div>
 
 

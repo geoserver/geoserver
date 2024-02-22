@@ -54,11 +54,98 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
     // show a token be validated?
     protected boolean validateToken;
 
+    protected boolean validateTokenExpiry;
+
+    protected boolean validateTokenSignature;
+    protected String validateTokenSignatureURL;
+
+    protected boolean validateTokenAgainstURL;
+    protected String validateTokenAgainstURLEndpoint;
+
+    protected boolean validateSubjectWithEndpoint;
+
+    protected boolean validateTokenAudience;
+    protected String validateTokenAudienceClaimName;
+    protected String validateTokenAudienceClaimValue;
+
     // --token validation
     // what HTTP header is the user's name stored in
     private String userNameHeaderAttributeName;
 
     // ------------------ getters/setters ----------------------------
+
+    public boolean isValidateSubjectWithEndpoint() {
+        return validateSubjectWithEndpoint;
+    }
+
+    public void setValidateSubjectWithEndpoint(boolean validateSubjectWithEndpoint) {
+        this.validateSubjectWithEndpoint = validateSubjectWithEndpoint;
+    }
+
+    public boolean isValidateTokenExpiry() {
+        return validateTokenExpiry;
+    }
+
+    public void setValidateTokenExpiry(boolean validateTokenExpiry) {
+        this.validateTokenExpiry = validateTokenExpiry;
+    }
+
+    public boolean isValidateTokenAudience() {
+        return validateTokenAudience;
+    }
+
+    public void setValidateTokenAudience(boolean validateTokenAudience) {
+        this.validateTokenAudience = validateTokenAudience;
+    }
+
+    public String getValidateTokenAudienceClaimName() {
+        return validateTokenAudienceClaimName;
+    }
+
+    public void setValidateTokenAudienceClaimName(String validateTokenAudienceClaimName) {
+        this.validateTokenAudienceClaimName = validateTokenAudienceClaimName;
+    }
+
+    public String getValidateTokenAudienceClaimValue() {
+        return validateTokenAudienceClaimValue;
+    }
+
+    public void setValidateTokenAudienceClaimValue(String validateTokenAudienceClaimValue) {
+        this.validateTokenAudienceClaimValue = validateTokenAudienceClaimValue;
+    }
+
+    public boolean isValidateTokenAgainstURL() {
+        return validateTokenAgainstURL;
+    }
+
+    public void setValidateTokenAgainstURL(boolean validateTokenAgainstURL) {
+        this.validateTokenAgainstURL = validateTokenAgainstURL;
+    }
+
+    public String getValidateTokenAgainstURLEndpoint() {
+        return validateTokenAgainstURLEndpoint;
+    }
+
+    public void setValidateTokenAgainstURLEndpoint(String validateTokenAgainstURLEndpoint) {
+        this.validateTokenAgainstURLEndpoint = validateTokenAgainstURLEndpoint;
+    }
+
+    public String getValidateTokenSignatureURL() {
+        return validateTokenSignatureURL;
+    }
+
+    public void setValidateTokenSignatureURL(String validateTokenSignatureURL) {
+        this.validateTokenSignatureURL = validateTokenSignatureURL;
+    }
+
+    public boolean isValidateTokenSignature() {
+        return validateTokenSignature;
+    }
+
+    public void setValidateTokenSignature(boolean validateTokenSignature) {
+        this.validateTokenSignature = validateTokenSignature;
+    }
+
     public boolean isValidateToken() {
         return validateToken;
     }

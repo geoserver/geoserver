@@ -20,6 +20,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.jwtheaders.filter.details.JwtHeadersWebAuthDetailsSource;
 import org.geoserver.security.jwtheaders.filter.details.JwtHeadersWebAuthenticationDetails;
 import org.geoserver.security.jwtheaders.roles.JwtHeadersRolesExtractor;
+import org.geoserver.security.jwtheaders.token.TokenValidator;
 import org.geoserver.security.jwtheaders.username.JwtHeaderUserNameExtractor;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
@@ -49,6 +50,8 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
 
     protected GeoServerJwtHeadersFilterConfig filterConfig;
 
+    protected TokenValidator tokenValidator;
+
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
@@ -56,6 +59,7 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
         GeoServerJwtHeadersFilterConfig authConfig = (GeoServerJwtHeadersFilterConfig) config;
         filterConfig = (GeoServerJwtHeadersFilterConfig) authConfig.clone(true);
         setAuthenticationDetailsSource(new JwtHeadersWebAuthDetailsSource(filterConfig.id));
+        tokenValidator = new TokenValidator(filterConfig);
     }
 
     /**
@@ -148,6 +152,15 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
         String headerValue = request.getHeader(filterConfig.getUserNameHeaderAttributeName());
         JwtHeaderUserNameExtractor extractor = new JwtHeaderUserNameExtractor(getFilterConfig());
         String userName = extractor.extractUserName(headerValue);
+
+        if (userName == null) return null;
+
+        try {
+            tokenValidator.validate(headerValue);
+        } catch (Exception e) {
+            return null;
+        }
+
         if (userName != null) {
             request.setAttribute(HTTP_ATTRIBUTE_CONFIG_ID, filterConfig.getId());
         }

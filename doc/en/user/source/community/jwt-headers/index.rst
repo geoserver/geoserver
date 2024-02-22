@@ -22,9 +22,11 @@ If you are using `OAUTH2/OIDC Access Tokens  <https://www.oauth.com/oauth2-serve
 
    * Validate its Signature
    * Validate that it hasn't expired
-   * Validate components of the Access Token (like `sub (subject) and aud (audience)  <https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims>`_) 
+   * Validate the token against a token verifier URL ("userinfo_endpoint") and check that subjects match
+   * Validate components of the Access Token (like `aud (audience)  <https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims>`_) 
    
 #. The user's roles can also be from any of the standard GeoServer providers (i.e. User Group Service, Role Service, or Request Header).
+#. You can also extract roles from the JWT Access Token (via a JSON path).
 
 
  

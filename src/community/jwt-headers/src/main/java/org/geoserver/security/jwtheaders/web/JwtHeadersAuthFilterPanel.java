@@ -40,8 +40,20 @@ public class JwtHeadersAuthFilterPanel
         add(new TextField("userNameJsonPath").setRequired(false));
 
         add(new CheckBox("validateToken").setRequired(false));
-
         add(new HelpLink("validateTokenHelp", this).setDialog(dialog));
+
+        add(new CheckBox("validateTokenExpiry").setRequired(false));
+
+        add(new CheckBox("validateTokenSignature").setRequired(false));
+        add(new TextField("validateTokenSignatureURL").setRequired(false));
+
+        add(new CheckBox("validateTokenAgainstURL").setRequired(false));
+        add(new TextField("validateTokenAgainstURLEndpoint").setRequired(false));
+        add(new CheckBox("validateSubjectWithEndpoint").setRequired(false));
+
+        add(new CheckBox("validateTokenAudience").setRequired(false));
+        add(new TextField("validateTokenAudienceClaimName").setRequired(false));
+        add(new TextField("validateTokenAudienceClaimValue").setRequired(false));
 
         userNameFormatChoice =
                 new DropDownChoice(

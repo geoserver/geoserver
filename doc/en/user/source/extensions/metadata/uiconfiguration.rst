@@ -19,7 +19,7 @@ A field is defined in the yaml following key-value pairs:
     - `occurrence`_
     - `condition`_
     - `tab`_
-    - `values`_  (specific field types)
+    - `values <#values>`_  (specific field types)
     - `derivedFrom`_  (specific field types)
     - `typename`_  (specific field types)
 

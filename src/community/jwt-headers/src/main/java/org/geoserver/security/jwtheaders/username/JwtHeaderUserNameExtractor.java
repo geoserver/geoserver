@@ -73,8 +73,8 @@ public class JwtHeaderUserNameExtractor {
             return userName;
         }
 
-        userNameHeader = userNameHeader.replaceFirst("^Bearer","");
-        userNameHeader = userNameHeader.replaceFirst("^bearer","");
+        userNameHeader = userNameHeader.replaceFirst("^Bearer", "");
+        userNameHeader = userNameHeader.replaceFirst("^bearer", "");
         userNameHeader = userNameHeader.trim();
 
         // JWT - convert JWT to JSON, then extract

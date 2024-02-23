@@ -17,7 +17,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig;
-import org.springframework.security.jwt.crypto.sign.InvalidSignatureException;
 
 /**
  * This validates the signature of the JWT.
@@ -82,7 +81,7 @@ public class TokenSignatureValidator {
      *
      * @param rsaPublicKey Public key used to validate token signature
      * @param token three part token
-     * @throws InvalidSignatureException
+     * @throws Exception
      */
     public void validateSignature(RSAKey rsaPublicKey, JWSObject token) throws Exception {
 
@@ -90,7 +89,7 @@ public class TokenSignatureValidator {
 
         var valid = token.verify(verifier);
         if (!valid) {
-            throw new InvalidSignatureException(
+            throw new Exception(
                     "Could not verify signature of the JWT with the given RSA Public Key");
         }
     }

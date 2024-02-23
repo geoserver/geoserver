@@ -7,19 +7,19 @@ This output module allows GeoServer to output imagery and terrain in formats
 understood by `NASA World Wind <http://worldwind.arc.nasa.gov/java/>`_. The
 mime-types supported are:
 
- #. Direct Draw Surface (DDS) - image/dds. This format allows efficient loading of textures to the GPU and takes the task off the WorldWind client CPU in converting downloaded PNG, JPEG or TIFF tiles. The DDS compression is done using `DXT3 <http://en.wikipedia.org/wiki/S3_Texture_Compression>`_ with help from the worldwind library on server side.
+#. Direct Draw Surface (DDS) - image/dds. This format allows efficient loading of textures to the GPU and takes the task off the WorldWind client CPU in converting downloaded PNG, JPEG or TIFF tiles. The DDS compression is done using `DXT3 <http://en.wikipedia.org/wiki/S3_Texture_Compression>`_ with help from the worldwind library on server side.
 
- #. Binary Interleaved by Line(BIL) - image/bil. This is actually a very simple raw binary format produced using the `RAW Image Writer <http://www.java2s.com/Open-Source/Java-Document/6.0-JDK-Modules/Java-Advanced-Imaging/com/sun/media/imageioimpl/plugins/raw/RawImageWriterSpi.java.java-doc.htm>`_. The supplied GridCoverage2D undergoes appropriate subsampling, reprojection and bit-depth conversion. The output can be requested as 16bit Int or 32bit Float.
+#. Binary Interleaved by Line(BIL) - image/bil. This is actually a very simple raw binary format produced using the `RAW Image Writer <http://www.java2s.com/Open-Source/Java-Document/6.0-JDK-Modules/Java-Advanced-Imaging/com/sun/media/imageioimpl/plugins/raw/RawImageWriterSpi.java.java-doc.htm>`_. The supplied GridCoverage2D undergoes appropriate subsampling, reprojection and bit-depth conversion. The output can be requested as 16bit Int or 32bit Float.
 
 
 Installing the DDS/BIL extension
 -----------------------------------
 
- #. Download the DDS/BIL extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/main/community-latest/>`_. A prebuilt version for GeoServer 2.0.x can be found on Jira - :geos:`3586`.
+#. Download the DDS/BIL extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/main/community-latest/>`_. A prebuilt version for GeoServer 2.0.x can be found on Jira - :geos:`3586`.
 
-    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
+   .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 
- #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
 Checking if the extension is enabled
 ------------------------------------
@@ -29,10 +29,12 @@ Once the extension is installed, the provided mime-types should appear in the la
 .. figure:: images/bil_dds.jpg
    :align: center
    
-The mime-types will also be listed in the ``GetCapabilities`` document::
+The mime-types will also be listed in the ``GetCapabilities`` document:
 
-<Format>image/bil</Format>
-<Format>image/dds</Format>
+.. code-block:: xml
+
+   <Format>image/bil</Format>
+   <Format>image/dds</Format>
 
 Configuring the BIL format
 ------------------------------------

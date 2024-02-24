@@ -49,6 +49,8 @@ clustered quartz database at the same time at start-up, which is likely
 to cause issues. This initialisation needs to happen only once for the
 entire cluster.
 
+.. _taskmanager_user_databases:
+
 Databases
 ~~~~~~~~~
 
@@ -151,8 +153,7 @@ configured as follows:
         <property name="rawGeometryTable" ref="geomtable"/>
     </bean>
 
-
-
+.. _taskmanager_user_external_geoserver:
 
 External GeoServers
 ~~~~~~~~~~~~~~~~~~~
@@ -169,6 +170,8 @@ configuration file.
         <property name="username" value="admin" />
         <property name="password" value="geoserver" />
     </bean>
+
+.. _taskmanager_user_file_services:
 
 File Services
 ~~~~~~~~~~~~~

@@ -111,11 +111,12 @@ As of GeoServer 2.21, the logging system used by GeoServer has been upgraded fro
 * GeoServer now uses :file:`xml` files for the built-in logging profiles (previously :file:`properties` files were used).
 
 * The built-in logging profiles are upgraded with :file:`xml` files:
+  
+  ::
 
-  | :file:`DEFAULT_LOGGING.xml`
-  | :file:`DEFAULT_LOGGING.properties.bak`
-  
-  
+    DEFAULT_LOGGING.xml
+    DEFAULT_LOGGING.properties.bak
+
 * A backup of the prior :file:`properties` files are created during the upgrade process. If you had previously made any customizations to a built-in profiles these backup files may be used as a reference when customizing the xml file.
 
 * Log4J 2 does have the ability to read Log4j 1.2 properties files although not all features are supported.

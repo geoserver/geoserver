@@ -7,9 +7,9 @@ Introduction
 ------------
 
 Out of the box GeoServer REST and OGC services support authentication via 
-`HTTP Basic authentication <http://en.wikipedia.org/wiki/Basic_access_authentication>`_. 
+`HTTP Basic authentication <https://en.wikipedia.org/wiki/Basic_access_authentication>`__. 
 One of the major downsides of basic auth is that it sends user passwords in 
-plain text. `HTTP Digest authentication <Digest access authentication>`_ offers
+plain text. `HTTP Digest authentication <https://en.wikipedia.org/wiki/Digest_access_authentication>`__ offers
 a more secure alternative that applies a cryptographic hash function to 
 passwords before sending them over the network.
 

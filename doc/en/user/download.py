@@ -32,7 +32,7 @@ def on_pre_build(config, **kwargs):
                     log.info(f"Download '{dest}' updated")
                     shutil.copyfile(resolved, dest, follow_symlinks=True)
                 else:
-                    log.info(f"Download '{resolved}' up to date")
+                    log.debug(f"Download '{resolved}' up to date")
                 downloads.append(os.path.basename(dest))
             else:
                 log.warning(f"Download '{resolved}' not found")

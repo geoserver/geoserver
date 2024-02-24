@@ -161,7 +161,7 @@ At the end of the backup procedure you'll be able to download the generated arch
 
 Status of the operation can be queried making an HTTP GET request to the location listed in the response.
 
-.. code-block:: json
+.. code-block:: text
 
    ``http://mygeoserver/geoserver/rest/br/backup/$ID.{json/xml}``
 
@@ -226,7 +226,7 @@ Available Options are:
 #. ``BK_PASSWORD_TOKENS``: A comma separated list of equal sign separated key/values to be replaced in data store passwords
    in an incoming backup. For example:
    
-   .. code-block:: json
+   .. code-block:: text
 
        BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValye}=foo,${workspace:store2.passwd.encryptedValue}=bar
 
@@ -250,7 +250,7 @@ Also an optional ``Filter`` can be passed to restrict the scope of the restore o
 
 For example:
 
-.. code-block:: json
+.. code-block:: text
 
    {
       "restore":{
@@ -267,7 +267,7 @@ Otherwise the archive needs to be uploaded from your local system.
 
 Then make a POST HTTP request to GeoServer's REST interface endpoint for the restore procedure
 
-.. code-block:: json
+.. code-block:: bash
     
    curl -u "admin:geoserver" -i -H "Content-Type: application/json" -X POST --data @restore_post.json http://mygeoserver/geoserver/rest/br/restore/
 

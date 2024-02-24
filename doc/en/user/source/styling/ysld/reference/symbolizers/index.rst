@@ -119,8 +119,8 @@ The following is the basic syntax common to all symbolizers. Note that the conte
 
 Where:
 
-.. include:: include/symbol.txt
+.. include:: include/symbol.rst
 
-.. include:: include/composite.txt
+.. include:: include/composite.rst
 
-.. include:: include/inclusion.txt
+.. include:: include/inclusion.rst

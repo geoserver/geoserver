@@ -91,6 +91,13 @@ today_fmt = '%B %d, %Y'
 # List of documents that shouldn't be included in the build.
 #unused_docs = []
 
+# A list of glob-style patterns [1] that should be excluded when looking for source files.
+# They are matched against the source file names relative to the source directory,
+# using slashes as directory separators on all platforms.
+exclude_patterns = [
+   '**/symbolizers/include/*.rst'
+]
+
 # List of directories, relative to source directories, that shouldn't be searched
 # for source files.
 exclude_trees = []

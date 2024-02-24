@@ -59,6 +59,7 @@ plugins:
   - exclude:
       glob:
         - '**/download/download.txt'
+        - '**/include/*.md'
   - include-markdown:
       # uses {% include: file %}
       preserve_includer_indent: true

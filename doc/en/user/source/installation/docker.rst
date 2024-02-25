@@ -90,13 +90,17 @@ This will run the container with a local data directory.  The data directory wil
 
       .. parsed-literal::
          
-         docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|release|
+         docker run  -it -p8080:8080
+           --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data \\
+           docker.osgeo.org/geoserver:|release|
       
    .. only:: snapshot
    
       .. parsed-literal::
          
-         docker run \-\-mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:|version|.x
+         docker run -it -p8080:8080 \\
+           --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data \\
+           docker.osgeo.org/geoserver:|version|.x
 
 #. In a web browser, navigate to ``http://localhost:8080/geoserver``.
 
@@ -118,8 +122,8 @@ You can add GeoServer Extensions - the container will download them during start
    .. parsed-literal::
    
       docker run -it -p8080:8080 \\
-        \-\-env INSTALL_EXTENSIONS=true \\
-        \-\-env STABLE_EXTENSIONS="ysld,h2" \\
+        --env INSTALL_EXTENSIONS=true \\
+        --env STABLE_EXTENSIONS="ysld,h2" \\
         docker.osgeo.org/geoserver:|release|
 
 .. only:: snapshot
@@ -127,8 +131,8 @@ You can add GeoServer Extensions - the container will download them during start
    .. parsed-literal::
 
       docker run -it -p8080:8080 \\
-        \-\-env INSTALL_EXTENSIONS=true \\
-        \-\-env STABLE_EXTENSIONS="ysld,h2" \\
+        --env INSTALL_EXTENSIONS=true \\
+        --env STABLE_EXTENSIONS="ysld,h2" \\
         docker.osgeo.org/geoserver:|version|.x
 
 
@@ -159,9 +163,9 @@ To work with community modules you must be using the GeoServer |version|.x night
 .. parsed-literal::
 
    docker run -it -p8080:8080 \\
-     \-\-env INSTALL_EXTENSIONS=true \\
-     \-\-env STABLE_EXTENSIONS="ysld,h2" \\
-     \-\-env COMMUNITY_EXTENSIONS="ogcapi-features,ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
+     --env INSTALL_EXTENSIONS=true \\
+     --env STABLE_EXTENSIONS="ysld,h2" \\
+     --env COMMUNITY_EXTENSIONS="ogcapi-features,ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
      docker.osgeo.org/geoserver:|version|.x
 
 For the current list see GeoServer `build server <https://build.geoserver.org/geoserver/main/community-latest/>`__.

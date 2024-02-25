@@ -340,44 +340,45 @@ Collector SPI name
 
 The `PropertyCollectors` parameter in the example above indicates two additional :file:`.properties` files used to populate the ``ingestion`` and ``elevation`` attributes:
 
-* :file:`timeregex.properties`::
+:file:`timeregex.properties`::
 
      regex=[0-9]{8}T[0-9]{9}Z(\?!.\*[0-9]{8}T[0-9]{9}Z.\*)
 
-  The above is a property file containing a regex used to extract Date and Time represented in `ISO-8601 <https://en.wikipedia.org/wiki/ISO_8601>`_ as part of the filename.
-  (Note the T char between digits for date and digits for time, as per ISO-8601)
+The above is a property file containing a regex used to extract Date and Time represented in `ISO-8601 <https://en.wikipedia.org/wiki/ISO_8601>`_ as part of the filename.
+(Note the T char between digits for date and digits for time, as per ISO-8601)
   
-  In case of custom format datetimes in filename, an additional *format* element should be added after the regex, preceded by a comma, defining the custom representation.
-  
-  Example: `Temperature_2017111319.tif`
-    
-     an hourly Temperature file with datetime = November, 13 2017 at 7:00 PM (the last 2 digits = 19)
-    
-     In that case, the :file:`elevationregex.properties` file should be like this::
-      
-        regex=.*([0-9]{10}).*,format=yyyyMMddHH
-  
-  In case of reduced precision of temporal information, where there is the need to get the higher time included in that reduced value, an additional *,useHighTime=true* element should be added.
-  
-  Example: `Temperature_2017111319.tif`
-    
-     an hourly Temperature file with datetime = November, 13 2017 at 19h 00m 00s 000ms
-     You want to get the max time included in that reduced precision, which is November, 13 2017 at 19h 59m 59s 999ms 
-    
-     In that case, the :file:`elevationregex.properties` file should be like this::
-  
-       regex=.*([0-9]{10}).*,format=yyyyMMddHH,useHighTime=true
-  
-  In case the temporal information is spread along the whole file path, an additional *,fullPath=true* element should be added.
-  
-  Example: `/data/20120202/Temperature.T1800.tif`
-     an hourly Temperature tif file with Year,Month and Day specified in the parent folder (20120202) and time value embedded in the name (Temperature.T1800.tif)
-    
-     In that case, the :file:`elevationregex.properties` file should be like this::
-  
-       regex=(?:\/)(\\d{8})(?:\/)(?:Temperature.)(T\\d{4})(?:.tif),fullPath=true
+In case of custom format datetimes in filename, an additional *format* element should be added after the regex, preceded by a comma, defining the custom representation.
 
-* :file:`elevationregex.properties`::
+   Example: `Temperature_2017111319.tif`
+  
+   an hourly Temperature file with datetime = November, 13 2017 at 7:00 PM (the last 2 digits = 19)
+  
+   In that case, the :file:`elevationregex.properties` file should be like this::
+    
+      regex=.*([0-9]{10}).*,format=yyyyMMddHH
+
+In case of reduced precision of temporal information, where there is the need to get the higher time included in that reduced value, an additional *,useHighTime=true* element should be added.
+
+   Example: `Temperature_2017111319.tif`
+  
+   an hourly Temperature file with datetime = November, 13 2017 at 19h 00m 00s 000ms
+   You want to get the max time included in that reduced precision, which is November, 13 2017 at 19h 59m 59s 999ms 
+  
+   In that case, the :file:`elevationregex.properties` file should be like this::
+
+     regex=.*([0-9]{10}).*,format=yyyyMMddHH,useHighTime=true
+
+In case the temporal information is spread along the whole file path, an additional `*,fullPath=true*` element should be added.
+
+   Example: `/data/20120202/Temperature.T1800.tif`
+   
+   an hourly Temperature tif file with Year,Month and Day specified in the parent folder (20120202) and time value embedded in the name (Temperature.T1800.tif)
+  
+   In that case, the :file:`elevationregex.properties` file should be like this::
+
+     regex=(?:\/)(\\d{8})(?:\/)(?:Temperature.)(T\\d{4})(?:.tif),fullPath=true
+
+:file:`elevationregex.properties`::
 
      regex=(?<=_)(\\d{4}\\.\\d{3})(?=_)
 

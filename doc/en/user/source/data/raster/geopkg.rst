@@ -25,6 +25,7 @@ By default, :guilabel:`GeoPackage (mosaic)` will be an option in the :guilabel:`
 
 .. list-table::
    :widths: 20 80
+   :header-rows: 1
 
    * - **Option**
      - **Description**

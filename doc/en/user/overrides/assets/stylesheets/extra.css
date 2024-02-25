@@ -102,10 +102,37 @@ img + em, .browser-border + em, .browser-mockup + em {
 
 
 
-/* definition list used to display general inputs */
-.md-typeset dl dd {
-  margin: 10px 0;
+/*
+ * definition list used to display general inputs
+ #
+ # present like tables
+ */
+
+.md-typeset dl {
+  background-color: var(--md-default-bg-color);
+  border: .05rem solid var(--md-typeset-table-color);
+  border-radius: .1rem;
+  font-size: .64rem;
+  max-width: 100%;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: max-content auto;
 }
+.md-typeset dl:not([class]) dt {
+  grid-column-start: 1;
+  border-top: .05rem solid var(--md-typeset-table-color);
+  padding: .9375em 1.25em;
+  vertical-align:top;
+  margin: 0
+}
+
+.md-typeset dl:not([class]) dd {
+  grid-column-start: 2;
+  border-top: .05rem solid var(--md-typeset-table-color);
+  vertical-align:top;
+  margin: 0
+}
+
 /*
 [dir=ltr] .md-typeset dd {
   margin-left: 0;

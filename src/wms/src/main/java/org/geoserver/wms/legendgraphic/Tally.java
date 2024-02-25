@@ -11,20 +11,20 @@ import org.geoserver.wms.WMS;
 
 class Tally {
 
-    static final int UNLIMITED = -1;
+    static final long UNLIMITED = -1;
 
-    private int maxMemory;
+    private final long maxMemory;
 
-    private int usedMemory;
+    private long usedMemory;
 
-    public Tally(int maxMemory) {
+    public Tally(long maxMemory) {
         this.maxMemory = maxMemory;
         this.usedMemory = 0;
     }
 
     public Tally(WMS wms) {
         if (wms != null && wms.getMaxRequestMemory() > 0) {
-            this.maxMemory = wms.getMaxRequestMemory() * 1024; // KB to bytes
+            this.maxMemory = wms.getMaxRequestMemory() * 1024L; // KB to bytes
         } else {
             this.maxMemory = UNLIMITED;
         }
@@ -32,9 +32,9 @@ class Tally {
 
     public void addImage(RenderedImage image) {
         if (maxMemory != UNLIMITED) {
-            int imageSize = computeImageSize(image);
+            long imageSize = computeImageSize(image);
             // compute sum as long to avoid overflow
-            if ((((long) usedMemory) + imageSize > maxMemory)) {
+            if (usedMemory + imageSize > maxMemory) {
                 // we don't report the max value as this could be a sub-list
                 throw new ServiceException(
                         LegendGraphicBuilder.MEMORY_USAGE_EXCEEDED,
@@ -44,9 +44,9 @@ class Tally {
         }
     }
 
-    public static int computeImageSize(RenderedImage image) {
+    public static long computeImageSize(RenderedImage image) {
         int pixelSize = IntStream.of(image.getSampleModel().getSampleSize()).sum() / 8;
-        return image.getWidth() * image.getHeight() * (pixelSize);
+        return (long) image.getWidth() * image.getHeight() * (pixelSize);
     }
 
     /** Returns an object representing the residual memory still available before limits kicks in */
@@ -59,11 +59,11 @@ class Tally {
         return new Tally(maxMemory);
     }
 
-    public int getMaxMemory() {
+    public long getMaxMemory() {
         return maxMemory;
     }
 
-    public int getUsedMemory() {
+    public long getUsedMemory() {
         return usedMemory;
     }
 }

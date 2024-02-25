@@ -46,18 +46,13 @@ Configuring a MySQL data store
    * - ``port``
      - The port on which the mysql server is accepting connections.
    * - ``database``
-     - The name of the database to connect to. Can also contain a suffix with a connection URL query, such as mydbname?useSSL=false
+     - The name of the database to connect to. Can also contain a suffix with a connection URL query, such as `mydbname?useSSL=false`
    * - ``user``
      - The name of the user to connect to the mysql database as.
    * - ``password``     
      - The password to use when connecting to the database. Left blank for no
        password.
-   * - ``max connections``
-
-       ``min connections``
-
-       ``validate connections``
-
+   * - ``max connections`` ``min connections`` ``validate connections``
      - Connection pool configuration parameters. See the 
        :ref:`connection_pooling` section for details.
-  
+

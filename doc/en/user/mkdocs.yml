@@ -66,6 +66,7 @@ plugins:
       dedent: true
       comments: false
   - macros:
+      module_name: macros
       # uses {{ variable }} and [[% macro %]] (to avoid conflict with include-markdown plugin)
       render_by_default: false
       on_error_fail: true

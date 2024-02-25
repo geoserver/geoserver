@@ -33,7 +33,10 @@ extlinks:
   geot: https://osgeo-org.atlassian.net/browse/GEOT-%s|GEOT-%s
   api: https://docs.geoserver.org/latest/en/api/#1.0.0/%s
   geotools: https://docs.geotools.org/latest/userguide/%s
-  download_release: https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/geoserver-{{ release }}-%s.zip|geoserver-{{ release }}-%s.zip
+  download_release: "{{ download_release('%s') }} (nightly {{ download_release('%s','snapshot') }})|raw"
+  download_extension: "{{ download_extension('%s') }} (nightly {{ download_extension('%s','snapshot') }})|raw"
+  download_community: "{{ download_community('%s','snapshot') }}|raw"
+
 nav:
   index.md: Home
   webadmin/index.md: Web Admin

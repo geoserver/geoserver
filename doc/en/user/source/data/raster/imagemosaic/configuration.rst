@@ -364,7 +364,7 @@ The `PropertyCollectors` parameter in the example above indicates two additional
   
   In case of custom format datetimes in filename, an additional *format* element should be added after the regex, preceded by a comma, defining the custom representation.
   
-  .. note:: Example: `Temperature_2017111319.tif`
+  Example: `Temperature_2017111319.tif`
     
      an hourly Temperature file with datetime = November, 13 2017 at 7:00 PM (the last 2 digits = 19)
     
@@ -374,7 +374,7 @@ The `PropertyCollectors` parameter in the example above indicates two additional
   
   In case of reduced precision of temporal information, where there is the need to get the higher time included in that reduced value, an additional *,useHighTime=true* element should be added.
   
-  .. note:: Example: `Temperature_2017111319.tif`
+  Example: `Temperature_2017111319.tif`
     
      an hourly Temperature file with datetime = November, 13 2017 at 19h 00m 00s 000ms
      You want to get the max time included in that reduced precision, which is November, 13 2017 at 19h 59m 59s 999ms 
@@ -385,7 +385,7 @@ The `PropertyCollectors` parameter in the example above indicates two additional
   
   In case the temporal information is spread along the whole file path, an additional *,fullPath=true* element should be added.
   
-  .. note:: Example: `/data/20120202/Temperature.T1800.tif`
+  Example: `/data/20120202/Temperature.T1800.tif`
   
      an hourly Temperature tif file with Year,Month and Day specified in the parent folder (20120202) and time value embedded in the name (Temperature.T1800.tif)
     

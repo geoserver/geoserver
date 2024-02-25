@@ -23,15 +23,15 @@ This will run the container, with the data directory included with the container
       Nightly releases change on an ongoing basis and are not suitable for a production environment.
    
       .. parsed-literal::
-
-            docker pull docker.osgeo.org/geoserver:|version|.x
+         
+         docker pull docker.osgeo.org/geoserver:|version|.x
       
    .. only:: not snapshot
 
       These instructions are for GeoServer |release|.
       
       .. parsed-literal::
-
+         
          docker pull docker.osgeo.org/geoserver:|release|
 
 #. Run the container
@@ -90,7 +90,7 @@ This will run the container with a local data directory.  The data directory wil
 
       .. parsed-literal::
          
-         docker run  -it -p8080:8080
+         docker run  -it -p8080:8080 \\
            --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data \\
            docker.osgeo.org/geoserver:|release|
       

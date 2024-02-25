@@ -289,7 +289,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
 
         // final checks
         if (finalLegend == null) throw new IllegalArgumentException("no legend passed");
-        int maxMemory = layersImages.getTally().getMaxMemory();
+        long maxMemory = layersImages.getTally().getMaxMemory();
         if (maxMemory != Tally.UNLIMITED && Tally.computeImageSize(finalLegend) > maxMemory)
             throw new ServiceException(
                     LegendGraphicBuilder.MEMORY_USAGE_EXCEEDED,

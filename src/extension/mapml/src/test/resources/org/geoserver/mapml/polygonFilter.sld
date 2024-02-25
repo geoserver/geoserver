@@ -14,7 +14,7 @@
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
    <ogc:PropertyName>ADDRESS</ogc:PropertyName>
-   <ogc:Literal>123 Main Street</ogc:Literal>
+   <ogc:Literal>215 Main Street</ogc:Literal>
 		</ogc:PropertyIsEqualTo>
           </ogc:Filter>
           <PolygonSymbolizer>
@@ -29,6 +29,26 @@
           </PolygonSymbolizer>
 
         </Rule>
+         <Rule>
+                  <Title>green polygon</Title>
+                  <ogc:Filter>
+                    <ogc:PropertyIsEqualTo>
+           <ogc:PropertyName>ADDRESS</ogc:PropertyName>
+           <ogc:Literal>123 Main Street</ogc:Literal>
+        		</ogc:PropertyIsEqualTo>
+                  </ogc:Filter>
+                  <PolygonSymbolizer>
+                    <Fill>
+                      <CssParameter name="fill">#8833cc
+                      </CssParameter>
+                    </Fill>
+                    <Stroke>
+                      <CssParameter name="stroke">#001200</CssParameter>
+                      <CssParameter name="stroke-width">0.7</CssParameter>
+                    </Stroke>
+                  </PolygonSymbolizer>
+
+                </Rule>
 
       </FeatureTypeStyle>
     </UserStyle>

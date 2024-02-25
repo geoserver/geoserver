@@ -6,10 +6,12 @@ package org.geoserver.mapml;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.feature.ReprojectingFeatureCollection;
@@ -22,8 +24,10 @@ import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.filter.Filter;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.Style;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
@@ -70,11 +74,13 @@ public class MapMLFeaturesBuilder {
             throw new ServiceException(
                     "MapML WMS Feature format does not currently support non-vector layers.");
         }
+
         FeatureCollection featureCollection = null;
-        if (query != null) {
-            featureCollection = featureSources.get(0).getFeatures(query);
-        } else {
+        if (query == null
+                || (query.getFilter() != null && query.getFilter().equals(Filter.EXCLUDE))) {
             featureCollection = featureSources.get(0).getFeatures();
+        } else {
+            featureCollection = featureSources.get(0).getFeatures(query);
         }
         if (!(featureCollection instanceof SimpleFeatureCollection)) {
             throw new ServiceException(
@@ -104,11 +110,20 @@ public class MapMLFeaturesBuilder {
             reprojectedFeatureCollection = fc;
         }
 
+        Map<String, MapMLStyle> styles = getMapMLStyleMap();
+
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
         CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
         FeatureType featureType = fc.getSchema();
         ResourceInfo meta =
                 geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
+        if (query != null
+                && query.getFilter() != null
+                && query.getFilter().equals(Filter.EXCLUDE)) {
+            // if the filter is exclude, return an empty MapML that has header metadata
+            return MapMLFeatureUtil.getEmptyMapML(layerInfo, crs);
+        }
+
         return MapMLFeatureUtil.featureCollectionToMapML(
                 reprojectedFeatureCollection,
                 layerInfo,
@@ -116,7 +131,33 @@ public class MapMLFeaturesBuilder {
                 null, // for WMS GetMap we don't include alternate projections
                 getNumberOfDecimals(meta),
                 getForcedDecimal(meta),
-                getPadWithZeros(meta));
+                getPadWithZeros(meta),
+                styles);
+    }
+
+    /**
+     * Get the MapML styles based on Layer Styles
+     *
+     * @return the MapML styles
+     * @throws IOException if an error occurs
+     */
+    private Map<String, MapMLStyle> getMapMLStyleMap() throws IOException {
+        MapMLStyleVisitor styleVisitor = new MapMLStyleVisitor();
+        styleVisitor.setScaleDenominator(mapContent.getScaleDenominator());
+        Style style = getMapRequest.getStyles().get(0);
+        if (style == null) {
+            StyleInfo styleInfo = getMapRequest.getLayers().get(0).getLayerInfo().getDefaultStyle();
+            if (styleInfo != null && styleInfo.getStyle() != null) {
+                style = styleInfo.getStyle();
+            } else {
+                throw new ServiceException(
+                        "No style or default style found for layer"
+                                + getMapRequest.getLayers().get(0).getLayerInfo().getName());
+            }
+        }
+        style.accept(styleVisitor);
+        Map<String, MapMLStyle> styles = styleVisitor.getStyles();
+        return styles;
     }
 
     /**

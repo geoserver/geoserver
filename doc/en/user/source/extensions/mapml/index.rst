@@ -90,6 +90,96 @@ MapML supports the serving of vector feature representations of the data.  This 
       <map-link tref="http://localhost:8080/geoserver/tiger/wms?format_options=mapmlfeatures:true&amp;request=GetMap&amp;crs=MapML:WGS84&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;format=text/mapml&amp;language=en&amp;version=1.3.0&amp;transparent=true&amp;service=WMS&amp;layers=poi&amp;width={w}&amp;styles=&amp;height={h}" rel="features"/>
     </map-extent>
 
+**Feature Styling**
+  Basic styling of vector features is supported by the MapML extension.  The style is defined in the WMS GetMap request, and the MapML extension will convert the rules and style attributes defined in the SLD into CSS classes and apply those classes to the appropriate features.  Note that this conversion is currently limited to basic styling and does not include transformation functions, external graphics, or styling dependent on individual feature attributes (non-static style values).  See below for a more detailed compatibility table: 
+
++------------------+-------------------+-----------+
+| Symbolizer       | Style Attribute   | Supported |
++==================+===================+===========+
+| PointSymbolizer  | Opacity           | yes       |
+|                  +-------------------+-----------+
+|                  | Default Radius    | yes       |
+|                  +-------------------+-----------+
+|                  | Radius            | yes       |
+|                  +-------------------+-----------+
+|                  | Rotation          | no        |
+|                  +-------------------+-----------+
+|                  | Displacement      | no        |
+|                  +-------------------+-----------+
+|                  | Anchor Point      | no        |
+|                  +-------------------+-----------+
+|                  | Gap               | no        |
+|                  +-------------------+-----------+
+|                  | Initial Gap       | no        |
+|                  +-------------------+-----------+
+|                  | Well Known Name   | yes       |
+|                  +-------------------+-----------+
+|                  | External Mark     | no        |
+|                  +-------------------+-----------+
+|                  | Graphic Fill      | no        |
+|                  +-------------------+-----------+
+|                  | Fill Color        | yes       |
+|                  +-------------------+-----------+
+|                  | Fill Opacity      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Color      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Opacity    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Width      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Linecap    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Array | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Offset| yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Line Join  | no        |
++------------------+-------------------+-----------+
+| LineSymbolizer   | Stroke Linecap    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Array | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Offset| yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Line Join  | no        |
++------------------+-------------------+-----------+
+| PolygonSymbolizer| Displacement      | no        |
+|                  +-------------------+-----------+
+|                  | Perpendicular Offs| no        |
+|                  +-------------------+-----------+
+|                  | Graphic Fill      | no        |
+|                  +-------------------+-----------+
+|                  | Fill Color        | yes       |
+|                  +-------------------+-----------+
+|                  | Fill Opacity      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Color      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Opacity    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Width      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Linecap    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Array | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Offset| yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Line Join  | no        |
++------------------+-------------------+-----------+
+| TextSymbolizer   | ALL               | no        |
++------------------+-------------------+-----------+
+| RasterSymbolizer | ALL               | no        |
++------------------+-------------------+-----------+
+| Transformation   | ALL               | no        |
+| Functions        |                   |           |
++------------------+-------------------+-----------+
+| Zoom             | ALL               | yes       |
+| Denominators     |                   |           |
++------------------+-------------------+-----------+
+
+
 WMS GetMap considerations
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

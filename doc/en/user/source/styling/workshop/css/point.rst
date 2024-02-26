@@ -206,7 +206,7 @@ This technique was shown with the initial file:`airport.svg` CSS example.
 
    The styles declarations have to icluded in the **:mark** pseudo-class.
 
-   .. code-block:: css
+   .. code-block:: scss
 
       /* @title red triangle with blue stroke */
       *{

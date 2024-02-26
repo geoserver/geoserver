@@ -8,7 +8,6 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -23,22 +22,14 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geotools.util.logging.Logging;
-import org.springframework.util.StringUtils;
 
 /**
  * Provides methods to load both the {@link Catalog} and the {@link GeoServer} config from a data
- * directory, returning new instances of each.
+ * directory with a given parallelism.
  *
  * <p>This is not API, but a collaborator of {@link DataDirectoryGeoServerLoader}
- *
- * <p>The loading process is multi-threaded, and will take place in an {@link Executor} whose
- * parallelism is determined by an heuristic resolving to the minimum between {@code 16} and the
- * number of available processors as reported by {@link Runtime#availableProcessors()}, or
- * overridden by the value passed through the environment variable or system property {@literal
- * DATADIR_LOAD_PARALLELISM}.
  *
  * @implNote a {@link DataDirectoryWalker} is created and used to delegate the actual loading logic
  *     to the {@link CatalogConfigLoader} and {@link GeoServerConfigLoader} collaborators.
@@ -48,8 +39,6 @@ import org.springframework.util.StringUtils;
  * @since 2.25
  */
 public class DataDirectoryLoader {
-
-    private static final String DATADIR_LOAD_PARALLELISM = "DATADIR_LOAD_PARALLELISM";
 
     private static final Logger LOGGER =
             Logging.getLogger(DataDirectoryLoader.class.getPackage().getName());
@@ -63,14 +52,18 @@ public class DataDirectoryLoader {
     private ForkJoinPool forkJoinPool;
     private DataDirectoryWalker fileWalker;
 
+    private int parallelism;
+
     public DataDirectoryLoader(
             FileSystemResourceStore resourceStore,
             List<XStreamServiceLoader<ServiceInfo>> serviceLoaders,
-            XStreamPersisterFactory xpf) {
+            XStreamPersisterFactory xpf,
+            int parallelism) {
 
         this.resourceStore = resourceStore;
         this.serviceLoaders = serviceLoaders;
         this.xpf = xpf;
+        this.parallelism = parallelism;
     }
 
     private void init() {
@@ -83,7 +76,6 @@ public class DataDirectoryLoader {
                             .collect(Collectors.toList());
             this.fileWalker = new DataDirectoryWalker(dataDirRoot, serviceFileNames);
 
-            final int parallelism = determineParallelism();
             final boolean asyncMode = false;
             this.forkJoinPool =
                     new ForkJoinPool(
@@ -153,40 +145,5 @@ public class DataDirectoryLoader {
                 forkJoinPool = null;
             }
         }
-    }
-
-    private int determineParallelism() {
-        String configuredParallelism = GeoServerExtensions.getProperty(DATADIR_LOAD_PARALLELISM);
-        final int processors = Runtime.getRuntime().availableProcessors();
-        final int defParallelism = Math.min(processors, 16);
-        int parallelism = defParallelism;
-        String logTailMessage = "out of " + processors + " available cores.";
-        if (StringUtils.hasText(configuredParallelism)) {
-            boolean parseFail = false;
-            try {
-                parallelism = Integer.parseInt(configuredParallelism);
-            } catch (NumberFormatException nfe) {
-                parseFail = true;
-            }
-            if (parseFail || parallelism < 1) {
-                parallelism = defParallelism;
-                LOGGER.log(
-                        Level.WARNING,
-                        () ->
-                                String.format(
-                                        "Configured parallelism is invalid: %s=%s, using default of %d",
-                                        DATADIR_LOAD_PARALLELISM,
-                                        configuredParallelism,
-                                        defParallelism));
-            } else {
-                logTailMessage =
-                        "as indicated by the " + DATADIR_LOAD_PARALLELISM + " environment variable";
-            }
-        }
-        LOGGER.log(
-                Level.CONFIG,
-                "Catalog and configuration loader uses {0} threads {1}",
-                new Object[] {parallelism, logTailMessage});
-        return parallelism;
     }
 }

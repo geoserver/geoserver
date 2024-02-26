@@ -114,7 +114,7 @@ class GeoServerConfigLoader {
     private void loadRootServices() {
         Resource baseDirectory = resourceStore.get("");
         for (XStreamServiceLoader<ServiceInfo> loader : serviceLoaders) {
-            loadService(loader, baseDirectory).ifPresent(this::save);
+            loadService(loader, baseDirectory).ifPresent(this::add);
         }
     }
 
@@ -133,7 +133,7 @@ class GeoServerConfigLoader {
                 .map(Optional::get)
                 .peek(s -> warnIfWorkspaceIsNull(s, wsName))
                 .filter(service -> null != service.getWorkspace())
-                .map(this::save)
+                .map(this::add)
                 .count();
     }
 
@@ -193,21 +193,21 @@ class GeoServerConfigLoader {
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .map(SettingsInfo.class::cast)
-                        .map(this::save)
+                        .map(this::add)
                         .filter(Optional::isPresent)
                         .count();
         config("Loaded {0} workspace-specific settings.", count);
     }
 
-    private Optional<SettingsInfo> save(SettingsInfo settings) {
-        return save(settings, geoServer::add);
+    private Optional<SettingsInfo> add(SettingsInfo settings) {
+        return add(settings, geoServer::add);
     }
 
-    private Optional<ServiceInfo> save(ServiceInfo service) {
-        return save(service, geoServer::add);
+    private Optional<ServiceInfo> add(ServiceInfo service) {
+        return add(service, geoServer::add);
     }
 
-    private <I extends Info> Optional<I> save(I info, Consumer<I> saver) {
+    private <I extends Info> Optional<I> add(I info, Consumer<I> saver) {
         try {
             saver.accept(info);
             return Optional.of(info);

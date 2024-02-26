@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -77,7 +78,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
      */
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        System.setProperty(DataDirectoryGeoServerLoader.SYSPROP_KEY, "false");
+        System.setProperty(DataDirectoryGeoServerLoader.ENABLED_PROPERTY, "false");
         super.setUpTestData(testData);
     }
 
@@ -232,6 +233,11 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         assertSameSize(catalog.getLayerGroups(), newCatalog.getLayerGroups());
     }
 
+    private void assertSameSize(
+            Collection<? extends CatalogInfo> expected, Collection<? extends CatalogInfo> actual) {
+        assertEquals(expected.size(), actual.size());
+    }
+
     @Test
     public void loadCatalog_decrypts_passwords() {
         final Catalog catalog = super.getCatalog();
@@ -321,10 +327,6 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
 
         assertNotNull(newGs.getService(ws2, TestService1.class));
         assertNotNull(newGs.getService(ws2, TestService2.class));
-    }
-
-    private void assertSameSize(Collection<?> expected, Collection<?> actual) {
-        assertEquals(expected.size(), actual.size());
     }
 
     static final class TestServiceLoader1 extends XStreamServiceLoader<TestService1> {

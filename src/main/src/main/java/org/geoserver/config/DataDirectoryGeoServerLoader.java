@@ -61,8 +61,8 @@ import org.springframework.util.StringUtils;
  * number of available processors as reported by {@link Runtime#availableProcessors()}.
  *
  * <p>The parallelism level can also be overridden through the environment variable or system
- * property {@literal DATADIR_LOAD_PARALLELISM}. A value of zero or less will produce a warning and
- * fall back to the default value heuristic mentioned above.
+ * property {@literal DATADIR_LOADER_PARALLELISM}. A value of zero or less will produce a warning
+ * and fall back to the default value heuristic mentioned above.
  *
  * @implNote this class shares the loading workflow of default {@link GeoServerLoader} and {@link
  *     DefaultGeoServerLoader}, tapping into {@link #readCatalog(XStreamPersister)} and {@link
@@ -72,8 +72,8 @@ import org.springframework.util.StringUtils;
  * @since 2.25
  */
 public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
-    static final String SYSPROP_KEY = "datadir.loader.enabled";
-    static final String ENVVAR_KEY = "DATADIR_LOADER_ENABLED";
+    static final String ENABLED_PROPERTY = "datadir.loader.enabled";
+    static final String PARALLELISM_PROPERTY = "datadir.loader.parallelism";
 
     static final Logger LOGGER =
             Logging.getLogger(DataDirectoryGeoServerLoader.class.getPackage().getName());
@@ -93,6 +93,8 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
      */
     private boolean geoserverLoaded;
 
+    private ApplicationContext applicationContext;
+
     /**
      * @param resourceLoader determines the physical location of the data directory
      * @param securityManager used to post-process the loaded catalog on the calling thread to
@@ -105,6 +107,11 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
             GeoServerResourceLoader resourceLoader, GeoServerSecurityManager securityManager) {
         super(resourceLoader);
         this.securityManager = securityManager;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -158,11 +165,14 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         catalog.setResourceLoader(resourceLoader);
         List.copyOf(catalog.getListeners()).forEach(catalog::removeListener);
 
-        catalog = loader().loadCatalog(catalog);
+        try {
+            loader().loadCatalog(catalog);
+        } finally {
+            catalogLoaded = true;
+            disposeIfBothLoaded();
+        }
         logStop(startedStopWatch.stop(), catalog);
 
-        catalogLoaded = true;
-        disposeIfBothLoaded();
         catalog.resolve();
         decryptDataStorePasswords(catalog);
         return catalog;
@@ -185,10 +195,12 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         LOGGER.config("Loading GeoServer config...");
         Stopwatch stopWatch = Stopwatch.createStarted();
 
-        loader().loadGeoServer(target);
-        geoserverLoaded = true;
-        disposeIfBothLoaded();
-
+        try {
+            loader().loadGeoServer(target);
+        } finally {
+            geoserverLoaded = true;
+            disposeIfBothLoaded();
+        }
         LOGGER.log(
                 Level.CONFIG,
                 "GeoServer config (settings and services) loaded in {0}",
@@ -233,7 +245,9 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         FileSystemResourceStore resourceStore = resolveResourceStore(resourceLoader);
         List<XStreamServiceLoader<ServiceInfo>> serviceLoaders = findServiceLoaders();
         XStreamPersisterFactory persisterFactory = super.xpf;
-        return new DataDirectoryLoader(resourceStore, serviceLoaders, persisterFactory);
+        int parallelism = determineParallelism();
+        return new DataDirectoryLoader(
+                resourceStore, serviceLoaders, persisterFactory, parallelism);
     }
 
     static List<XStreamServiceLoader<ServiceInfo>> findServiceLoaders() {
@@ -303,10 +317,7 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
      *     environment variable.
      */
     public static boolean isEnabled(@Nullable ApplicationContext context) {
-        String value =
-                getProperty(context, SYSPROP_KEY)
-                        .or(() -> getProperty(context, ENVVAR_KEY))
-                        .orElse("true");
+        String value = getProperty(context, ENABLED_PROPERTY).orElse("true");
         return Boolean.parseBoolean(value);
     }
 
@@ -319,5 +330,39 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
             value = context.getEnvironment().getProperty(prop);
         }
         return Optional.ofNullable(value);
+    }
+
+    private int determineParallelism() {
+        final int processors = Runtime.getRuntime().availableProcessors();
+        final int defParallelism = Math.min(processors, 16);
+        int parallelism = defParallelism;
+
+        String logTailMessage = "out of " + processors + " available cores.";
+
+        final String configuredParallelism =
+                getProperty(applicationContext, PARALLELISM_PROPERTY).orElse(null);
+        if (StringUtils.hasText(configuredParallelism)) {
+            boolean parseFail = false;
+            try {
+                parallelism = Integer.parseInt(configuredParallelism);
+            } catch (NumberFormatException nfe) {
+                parseFail = true;
+            }
+            if (parseFail || parallelism < 1) {
+                parallelism = defParallelism;
+                LOGGER.log(
+                        Level.WARNING,
+                        "Configured parallelism is invalid: {0}={1}, using default of {2}",
+                        new Object[] {PARALLELISM_PROPERTY, configuredParallelism, defParallelism});
+            } else {
+                logTailMessage =
+                        "as indicated by the " + PARALLELISM_PROPERTY + " environment variable";
+            }
+        }
+        LOGGER.log(
+                Level.CONFIG,
+                "Catalog and configuration loader uses {0} threads {1}",
+                new Object[] {parallelism, logTailMessage});
+        return parallelism;
     }
 }

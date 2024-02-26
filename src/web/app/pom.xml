@@ -726,6 +726,18 @@
         </dependency>
       </dependencies>
     </profile>
+
+    <profile>
+      <id>jwt-headers</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>jwt-headers</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
     <profile>
       <id>cas</id>
       <dependencies>

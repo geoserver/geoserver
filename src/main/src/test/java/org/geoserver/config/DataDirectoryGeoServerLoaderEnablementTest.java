@@ -4,8 +4,7 @@
  */
 package org.geoserver.config;
 
-import static org.geoserver.config.DataDirectoryGeoServerLoader.ENVVAR_KEY;
-import static org.geoserver.config.DataDirectoryGeoServerLoader.SYSPROP_KEY;
+import static org.geoserver.config.DataDirectoryGeoServerLoader.ENABLED_PROPERTY;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -13,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -30,6 +30,11 @@ public class DataDirectoryGeoServerLoaderEnablementTest {
         GeoServerExtensionsHelper.init(null);
     }
 
+    @AfterClass
+    public static void clearContexAfterAll() {
+        GeoServerExtensionsHelper.init(null);
+    }
+
     @Test
     public void testEnabledByDefault() {
         assertTrue(DataDirectoryGeoServerLoader.isEnabled(null));
@@ -37,19 +42,22 @@ public class DataDirectoryGeoServerLoaderEnablementTest {
 
     @Test
     public void testEnabled() {
-        GeoServerExtensionsHelper.property(SYSPROP_KEY, "true");
+        GeoServerExtensionsHelper.property(ENABLED_PROPERTY, "true");
         assertTrue(DataDirectoryGeoServerLoader.isEnabled(null));
     }
 
     @Test
     public void testDisabledWithSystemProperty() {
-        GeoServerExtensionsHelper.property(SYSPROP_KEY, "false");
+        GeoServerExtensionsHelper.property(ENABLED_PROPERTY, "false");
         assertFalse(DataDirectoryGeoServerLoader.isEnabled(null));
     }
 
     @Test
     public void testDisabledWithEnvVariable() {
-        GeoServerExtensionsHelper.property(ENVVAR_KEY, "false");
+        // Simulate having set up the config property as an environment variable picked up by
+        // GeoServerExtensions.getProperty()
+        String envVarKey = "DATADIR_LOADER_ENABLED";
+        GeoServerExtensionsHelper.property(envVarKey, "false");
         assertFalse(DataDirectoryGeoServerLoader.isEnabled(null));
     }
 
@@ -58,7 +66,7 @@ public class DataDirectoryGeoServerLoaderEnablementTest {
         ApplicationContext appContext = mock(ApplicationContext.class);
         Environment env = mock(Environment.class);
         when(appContext.getEnvironment()).thenReturn(env);
-        when(env.getProperty(ENVVAR_KEY)).thenReturn("false");
+        when(env.getProperty(ENABLED_PROPERTY)).thenReturn("false");
         assertFalse(DataDirectoryGeoServerLoader.isEnabled(appContext));
     }
 }

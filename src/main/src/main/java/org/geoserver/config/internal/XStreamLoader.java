@@ -61,7 +61,7 @@ class XStreamLoader {
     public static <C extends Info> Optional<C> depersist(Path file, Catalog catalog) {
         C info = null;
         try (InputStream in = Files.newInputStream(file, StandardOpenOption.READ)) {
-            XStreamPersister xp = getXstream(catalog);
+            XStreamPersister xp = getXStream(catalog);
             Info depersisted = xp.load(in, Info.class);
             if (null == depersisted) {
                 LOGGER.log(Level.WARNING, () -> file + " depersisted to null");
@@ -79,7 +79,7 @@ class XStreamLoader {
         return Optional.ofNullable(info);
     }
 
-    private static XStreamPersister getXstream(Catalog catalog) {
+    private static XStreamPersister getXStream(Catalog catalog) {
         XStreamPersister xp = XP.get();
         xp.setCatalog(catalog);
         xp.setUnwrapNulls(false);

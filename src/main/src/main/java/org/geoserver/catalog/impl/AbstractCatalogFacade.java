@@ -168,6 +168,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     protected void resolve(StyleInfo style) {
         setId(style);
 
+        ((StyleInfoImpl) style).setCatalog(getCatalog());
         // resolve the workspace
         WorkspaceInfo ws = style.getWorkspace();
         if (ws != null) {

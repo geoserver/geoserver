@@ -127,8 +127,8 @@ class CatalogConfigLoader {
         if (wsinfo.isPresent() && nsinfo.isPresent()) {
             WorkspaceInfo ws = wsinfo.get();
             NamespaceInfo ns = nsinfo.get();
-            save(ws, catalog::add);
-            save(ns, catalog::add);
+            add(ws, catalog::add);
+            add(ns, catalog::add);
 
             loadStyles(wsdir.styles().stream());
             loadStores(wsdir.stores());
@@ -137,7 +137,7 @@ class CatalogConfigLoader {
     }
 
     private void loadStyles(Stream<Path> stream) {
-        depersist(stream).map(StyleInfo.class::cast).forEach(this::save);
+        depersist(stream).map(StyleInfo.class::cast).forEach(this::add);
     }
 
     private void loadStores(Stream<StoreDirectory> stream) {
@@ -146,7 +146,7 @@ class CatalogConfigLoader {
 
     private void loadStore(StoreDirectory storeDir) {
         Optional<StoreInfo> store = depersist(storeDir.storeFile);
-        store.flatMap(this::save)
+        store.flatMap(this::add)
                 .ifPresent(
                         storeInfo -> {
                             loadLayers(storeDir.layers());
@@ -163,35 +163,35 @@ class CatalogConfigLoader {
 
     private Optional<ResourceInfo> loadResource(Path resourceFile) {
         Optional<ResourceInfo> resource = depersist(resourceFile);
-        return resource.filter(res -> null != res.getStore()).flatMap(this::save);
+        return resource.filter(res -> null != res.getStore()).flatMap(this::add);
     }
 
     private void loadLayer(LayerDirectory layerDir) {
         Optional<LayerInfo> layer = depersist(layerDir.layerFile);
-        layer.filter(l -> l.getResource() instanceof ResourceInfo).ifPresent(this::save);
+        layer.filter(l -> l.getResource() instanceof ResourceInfo).ifPresent(this::add);
     }
 
-    private Optional<StoreInfo> save(StoreInfo info) {
-        return save(info, catalog::add);
+    private Optional<StoreInfo> add(StoreInfo info) {
+        return add(info, catalog::add);
     }
 
-    private Optional<ResourceInfo> save(ResourceInfo info) {
-        return save(info, catalog::add);
+    private Optional<ResourceInfo> add(ResourceInfo info) {
+        return add(info, catalog::add);
     }
 
-    private void save(LayerInfo info) {
-        save(info, catalog::add);
+    private void add(LayerInfo info) {
+        add(info, catalog::add);
     }
 
-    private void save(LayerGroupInfo info) {
-        save(info, catalog::add);
+    private void add(LayerGroupInfo info) {
+        add(info, catalog::add);
     }
 
-    private void save(StyleInfo info) {
-        save(info, catalog::add);
+    private void add(StyleInfo info) {
+        add(info, catalog::add);
     }
 
-    private <I extends CatalogInfo> Optional<I> save(I info, Consumer<I> saver) {
+    private <I extends CatalogInfo> Optional<I> add(I info, Consumer<I> saver) {
         try {
             saver.accept(info);
         } catch (Exception e) {
@@ -206,7 +206,7 @@ class CatalogConfigLoader {
     }
 
     private void loadLayerGroups(Stream<Path> stream) {
-        depersist(stream).map(LayerGroupInfo.class::cast).forEach(this::save);
+        depersist(stream).map(LayerGroupInfo.class::cast).forEach(this::add);
     }
 
     private Stream<CatalogInfo> depersist(Stream<Path> stream) {

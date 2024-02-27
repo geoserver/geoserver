@@ -16,6 +16,14 @@ This will run the container, with the data directory included with the container
 
 #. Download the container:
 
+   .. only:: not snapshot
+
+      These instructions are for GeoServer |release|.
+      
+      .. parsed-literal::
+         
+         docker pull docker.osgeo.org/geoserver:|release|
+
    .. only:: snapshot
       
       These instructions are for GeoServer |version|-SNAPSHOT which is provided as a :website:`Nightly <release/main>` release.
@@ -25,14 +33,6 @@ This will run the container, with the data directory included with the container
       .. parsed-literal::
          
          docker pull docker.osgeo.org/geoserver:|version|.x
-      
-   .. only:: not snapshot
-
-      These instructions are for GeoServer |release|.
-      
-      .. parsed-literal::
-         
-         docker pull docker.osgeo.org/geoserver:|release|
 
 #. Run the container
 
@@ -158,20 +158,37 @@ Testing Geoserver Community modules
 
 Working with a Nightly build is a good way to test community modules and provide feedback to developers working on new functionality.
 
-To work with community modules you must be using the GeoServer |version|.x nightly build that matches the community module build:
+.. only:: not snapshot
 
-.. parsed-literal::
-
-   docker run -it -p8080:8080 \\
-     --env INSTALL_EXTENSIONS=true \\
-     --env STABLE_EXTENSIONS="ysld,h2" \\
-     --env COMMUNITY_EXTENSIONS="ogcapi-features,ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
-     docker.osgeo.org/geoserver:|version|.x
-
-For the current list see GeoServer `build server <https://build.geoserver.org/geoserver/main/community-latest/>`__.
-
-::
-
+   Community modules are shared as part GeoServer |release| source code bundle to be compiled for testing
+   and feedback by the developer community.
+   
+   When the developer has met the documentation and quality assurance standards for GeoServer they may
+   ask for the module to be included in GeoServer.
+   
+   If you are interested in helping out please contact the developer (list in the :file:`pom.xml` file for the module).
+   
+   Reference:
+   
+   * :developer:`community modules <policies/community-modules.html>` (Developer Guide)
+      
+   
+.. only:: snapshot
+   
+   To work with community modules you must be using the GeoServer |version|.x nightly build that matches the community module build:
+   
+   .. parsed-literal::
+   
+      docker run -it -p8080:8080 \\
+        --env INSTALL_EXTENSIONS=true \\
+        --env STABLE_EXTENSIONS="ysld,h2" \\
+        --env COMMUNITY_EXTENSIONS="ogcapi-features,ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
+        docker.osgeo.org/geoserver:|version|.x
+   
+   For the current list see GeoServer `build server <https://build.geoserver.org/geoserver/main/community-latest/>`__.
+   
+   ::
+   
     activeMQ-broker            jdbcconfig                 pgraster                    
     backup-restore             jdbcstore                  proxy-base-ext              
     cog                        jms-cluster                s3-geotiff                  

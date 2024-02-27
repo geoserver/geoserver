@@ -3,7 +3,7 @@
 GeoPackage
 ==========
 
-`GeoPackage <http://www.opengeospatial.org/projects/groups/geopackageswg/>`_ is an SQLite based standard format that is able to hold multiple vector and raster data layers in a single file.
+`GeoPackage <http://www.geopackage.org>`__ is an SQLite based standard format that is able to hold multiple vector and raster data layers in a single file.
 
 GeoPackage files can be used both as Raster Data Stores as well as Vector Data Stores (so that both kinds of layers can published).
 

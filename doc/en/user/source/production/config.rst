@@ -219,23 +219,28 @@ When processing XML documents from service requests (POST requests, and GET requ
 
 GeoServer provides a number of facilities to control external entity resolution:
 
-* By default `http` and `https` entity resolution is unrestricted, with access to local `file` references prevented.
-  
-* To restrict `http` and `https` entity resolution::
-
-     -DENTITY_RESOLUTION_ALLOWLIST
-  
-  The built-in allow list includes w3c, ogc, and inspire schema locations::
+* By default `http` and `https` entity resolution is restricted to the following default::
   
      www.w3.org|schemas.opengis.net|www.opengis.net|inspire.ec.europa.eu/schemas
      
-  In addition the proxy base url is included, if available from global settings.
+  The default list includes the common w3c, ogc, and inspire schema locations required for OGC Web Service operation.
   
-  Access to local `file` references remains restricted. 
-  
+  Access is provided to the proxy base url from global settings.
+  Access to local `file` references is restricted.
+
 * To allow additional external entity `http` and `https` locations use a comma or bar separated list::
 
      -DENTITY_RESOLUTION_ALLOWLIST=server1|server2|server3/schemas
+  
+  These locations are in addition to the default w3c, ogc, and inspire schema locations above.
+  Access is provided to the proxy base url from global settings.
+  Access to local `file` references remains restricted.
+
+* To allow all `http` and `https` entity resolution ise `*` wildcard::
+
+     -DENTITY_RESOLUTION_ALLOWLIST=*
+  
+  Access to local `file` references remains restricted.
 
 * To turn off all restrictions (allowing ``http``, ``https``, and ``file`` references) use the global setting :ref:`config_globalsettings_external_entities`.
   

@@ -30,6 +30,25 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+External Entity Allow List default (GeoServer 2.25 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The external entity allow list has changed to the following default locations:
+
+* ``www.w3.org``
+* ``schemas.opengis.net``
+* ``www.opengis.net``
+* ``inspire.ec.europa.eu/schemas``
+* proxy base url if configured
+
+The external entity allow list is an important setting from a security standpoint. This update changes its use from a recommended best practice to a default covering the most common locations used for OGC web services.
+
+.. note:: In general only application schema extension users need to update this setting.
+
+.. note:: To restore the previous behavour use system property ``ENTITY_RESOLUTION_ALLOWLIST=*`` to allow external entity resolution from any `http` or `https` location.
+
+For more information, including how to add additional allowed locations see :ref:`production_config_external_entities`.
+
 FreeMarker Template HTML Auto-escaping (GeoServer 2.25 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

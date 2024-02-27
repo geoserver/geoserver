@@ -24,16 +24,19 @@ import org.xml.sax.ext.EntityResolver2;
  */
 public class AllowListEntityResolver implements EntityResolver2, Serializable {
 
+    /** Wildcard '*' location indicating unrestricted http(s) access */
+    public static String UNRESTRICTED = "*";
+
     /** Location of Open Geospatical Consortium schemas for OGC OpenGIS standards */
-    private static String OGC = "schemas.opengis.net|www.opengis.net";
+    public static String OGC = "schemas.opengis.net|www.opengis.net";
 
     /**
      * Location of {@code http://inspire.ec.europa.eu/schemas/ } XSD documents for INSPIRE program
      */
-    private static String INSPIRE = "inspire.ec.europa.eu/schemas";
+    public static String INSPIRE = "inspire.ec.europa.eu/schemas";
 
     /** Location of W3C schema documents (for xlink, etc...) */
-    private static String W3C = "www.w3.org";
+    public static String W3C = "www.w3.org";
 
     /** Prefix used for SAXException message */
     private static final String ERROR_MESSAGE_BASE = "Entity resolution disallowed for ";
@@ -72,8 +75,9 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
     public AllowListEntityResolver(GeoServer geoServer, String baseURL) {
         this.geoServer = geoServer;
         this.baseURL = baseURL;
+
         if (EntityResolverProvider.ALLOW_LIST == null
-                || EntityResolverProvider.ALLOW_LIST.length == 0) {
+                || EntityResolverProvider.ALLOW_LIST.isEmpty()) {
             // Restrict using the built-in allow list
             ALLOWED_URIS =
                     Pattern.compile(
@@ -86,11 +90,14 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
                                     + ")/[^?#;]*\\.xsd");
         } else {
             StringBuilder pattern = new StringBuilder("(?i)(http|https)://(");
-            pattern.append(W3C).append('|');
-            pattern.append(OGC).append('|');
-            pattern.append(INSPIRE);
+            boolean first = true;
             for (String allow : EntityResolverProvider.ALLOW_LIST) {
-                pattern.append('|').append(allow);
+                if (first) {
+                    first = false;
+                } else {
+                    pattern.append('|');
+                }
+                pattern.append(allow);
             }
             pattern.append(")/[^?#;]*\\.xsd");
             String regex = pattern.toString();

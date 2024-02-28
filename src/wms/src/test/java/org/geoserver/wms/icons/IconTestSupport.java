@@ -126,6 +126,10 @@ public class IconTestSupport {
         return mark("circle", Color.BLACK, Color.GRAY, 1f, 16);
     }
 
+    protected final PointSymbolizer redStar() {
+        return mark("star", Color.BLACK, Color.RED, 1f, 16);
+    }
+
     protected final Rule rule(Filter filter, Symbolizer... symbolizer) {
         Rule rule = styleFactory.createRule();
         rule.setFilter(filter);

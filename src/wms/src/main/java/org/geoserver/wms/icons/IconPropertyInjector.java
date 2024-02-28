@@ -44,9 +44,11 @@ public final class IconPropertyInjector {
         this.properties = properties;
     }
 
-    private List<List<MiniRule>> injectProperties(List<List<MiniRule>> ftStyles) {
+    private List<List<MiniRule>> injectProperties(
+            List<List<MiniRule>> ftStyles, boolean filterEmptyRules) {
         List<List<MiniRule>> result = new ArrayList<>();
         for (int ftIdx = 0; ftIdx < ftStyles.size(); ftIdx++) {
+            boolean empty = true;
             List<MiniRule> origRules = ftStyles.get(ftIdx);
             List<MiniRule> resultRules = new ArrayList<>();
             for (int ruleIdx = 0; ruleIdx < origRules.size(); ruleIdx++) {
@@ -57,11 +59,14 @@ public final class IconPropertyInjector {
                     if (properties.containsKey(key)) {
                         Symbolizer sym = origRule.symbolizers.get(symbIdx);
                         resultSymbolizers.add(injectPointSymbolizer(key, sym));
+                        empty = false;
                     }
                 }
                 resultRules.add(new MiniRule(null, false, resultSymbolizers));
             }
-            result.add(resultRules);
+            if (!filterEmptyRules || !empty) {
+                result.add(resultRules);
+            }
         }
         return result;
     }
@@ -276,6 +281,11 @@ public final class IconPropertyInjector {
     }
 
     public static Style injectProperties(Style style, Map<String, String> properties) {
+        return injectProperties(style, properties, false);
+    }
+
+    public static Style injectProperties(
+            Style style, Map<String, String> properties, boolean filterEmptyRules) {
         boolean includeNonPointGraphics =
                 Boolean.valueOf(
                         properties.getOrDefault(
@@ -283,6 +293,7 @@ public final class IconPropertyInjector {
         List<List<MiniRule>> ftStyles = MiniRule.minify(style, includeNonPointGraphics);
         StyleFactory factory = CommonFactoryFinder.getStyleFactory();
         return MiniRule.makeStyle(
-                factory, new IconPropertyInjector(properties).injectProperties(ftStyles));
+                factory,
+                new IconPropertyInjector(properties).injectProperties(ftStyles, filterEmptyRules));
     }
 }

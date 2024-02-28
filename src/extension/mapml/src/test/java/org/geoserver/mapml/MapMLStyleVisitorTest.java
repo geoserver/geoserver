@@ -101,14 +101,14 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         MockData.BUILDINGS.getLocalPart(),
                         null,
                         null,
-                        null,
+                        "0,0,0.01,0.01",
                         "EPSG:4326",
                         "polygonSymbolizer",
                         null,
                         true);
         assertEquals(
                 "Style classes string",
-                ".rule-2_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 4.0;fill: #033080;fill-opacity: 0.74;stroke: #FF66FF;stroke-linecap: butt;} "
+                ".bbox {display:none} .rule-2_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 4.0;fill: #033080;fill-opacity: 0.74;stroke: #FF66FF;stroke-linecap: butt;} "
                         + ".rule-1_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 2.0;fill: #000080;fill-opacity: 0.5;stroke: #FFFFFF;stroke-linecap: butt;}",
                 mapmlFeatures.getHead().getStyle());
         assertEquals(
@@ -135,14 +135,14 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         MockData.BUILDINGS.getLocalPart(),
                         null,
                         null,
-                        null,
+                        "0,0,0.01,0.01",
                         "EPSG:4326",
                         "polygonFilterSymbolizer",
                         null,
                         true);
         assertEquals(
                 "Style classes string",
-                ".rule-2_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 0.7;fill: #8833cc;fill-opacity: 1.0;stroke: #001200;stroke-linecap: butt;} "
+                ".bbox {display:none} .rule-2_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 0.7;fill: #8833cc;fill-opacity: 1.0;stroke: #001200;stroke-linecap: butt;} "
                         + ".rule-1_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 0.5;fill: #0033cc;fill-opacity: 1.0;stroke: #000000;stroke-linecap: butt;}",
                 mapmlFeatures.getHead().getStyle());
 

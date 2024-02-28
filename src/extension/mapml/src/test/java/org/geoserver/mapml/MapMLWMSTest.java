@@ -32,10 +32,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
@@ -47,6 +51,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
@@ -57,6 +62,7 @@ import org.geoserver.mapml.tcrs.Bounds;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Extent;
+import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.Input;
 import org.geoserver.mapml.xml.InputType;
 import org.geoserver.mapml.xml.Link;
@@ -64,6 +70,7 @@ import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.api.referencing.FactoryException;
@@ -74,9 +81,11 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.GrowableInternationalString;
 import org.geowebcache.grid.GridSubset;
+import org.geowebcache.mime.TextMime;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
+import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -409,6 +418,71 @@ public class MapMLWMSTest extends MapMLTestSupport {
     }
 
     @Test
+    public void testCQLTiledLinks() throws Exception {
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+        li.getResource().getMetadata().put(MAPML_USE_TILES, true);
+        cat.save(li);
+
+        Mapml mapmlExtent =
+                getWMSAsMapML(
+                        MockData.POLYGONS.getLocalPart(),
+                        null,
+                        null,
+                        null,
+                        "EPSG:3857",
+                        null,
+                        "id%3D%27t0002%27;INCLUDE",
+                        false);
+
+        List<Link> extentLinks =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlExtent.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> imageLinksForSingle = getLinkByRelType(extentLinks, RelType.TILE);
+        String url = imageLinksForSingle.get(0).getTref();
+        assertThat(url, Matchers.containsString("service=WMS"));
+        assertThat(url, Matchers.containsString("format_options=mapmlfeatures:true"));
+        assertThat(url, Matchers.containsString("format=text/mapml"));
+        assertThat(url, Matchers.containsString("cql_filter=id='t0002'"));
+    }
+
+    @Test
+    public void testCQLTiledCachedLinks() throws Exception {
+        // set up tile caching so that we can check WMTS links
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+        li.getResource().getMetadata().put(MAPML_USE_TILES, true);
+        cat.save(li);
+
+        enableTileCaching(MockData.POLYGONS, cat);
+
+        Mapml mapmlExtent =
+                getWMSAsMapML(
+                        MockData.POLYGONS.getLocalPart(),
+                        null,
+                        null,
+                        null,
+                        "EPSG:3857",
+                        null,
+                        "id%3D%27t0002%27;INCLUDE",
+                        false);
+
+        List<Link> extentLinks =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlExtent.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> imageLinksForSingle = getLinkByRelType(extentLinks, RelType.TILE);
+        String url = imageLinksForSingle.get(0).getTref();
+        assertThat(url, Matchers.containsString("service=WMTS"));
+        assertThat(url, Matchers.containsString("format_options=mapmlfeatures:true"));
+        assertThat(url, Matchers.containsString("format=text/mapml"));
+        assertThat(url, Matchers.containsString("cql_filter=id='t0002'"));
+    }
+
+    @Test
     public void testMapMLMultiLayer() throws Exception {
         Catalog cat = getCatalog();
         GeoServer geoServer = getGeoServer();
@@ -430,7 +504,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         "layerGroup" + "," + MockData.POLYGONS.getLocalPart(),
                         null,
                         null,
-                        null,
+                        "-20000000,-20000000,20000000,20000000",
                         "EPSG:3857",
                         null,
                         null,
@@ -445,7 +519,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 parsedSelfLink,
                 hasEntry(
                         CoreMatchers.equalTo("bbox"),
-                        new BboxMatcher(new Envelope(0, 1, 0, 1), 1)));
+                        new BboxMatcher(
+                                new Envelope(-20000000, 20000000, -20000000, 20000000), 1)));
         assertThat(parsedSelfLink, hasEntry("width", "150"));
         assertThat(parsedSelfLink, hasEntry("height", "150"));
 
@@ -464,9 +539,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 parsedAlternateLink,
                 hasEntry(
                         CoreMatchers.equalTo("bbox"),
-                        new BboxMatcher(
-                                new Envelope(0, 8.983152841195214E-6, 0, 8.983152841195214E-6),
-                                1e-2)));
+                        new BboxMatcher(new Envelope(-179.7, 179.7, -85, 85), 1e-1)));
         assertEquals(
                 "There should be one extent object that combines the attributes of all layers",
                 1,
@@ -973,15 +1046,9 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
     @Test
     public void testGWCTilesConfiguredMapMLLayer() throws Exception {
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
         MockRequestResponse requestResponse =
-                getMockRequestResponse(
-                        MockData.ROAD_SEGMENTS.getPrefix()
-                                + ":"
-                                + MockData.ROAD_SEGMENTS.getLocalPart(),
-                        null,
-                        null,
-                        "EPSG:4326",
-                        null);
+                getMockRequestResponse(layerId, null, null, "EPSG:4326", null);
 
         org.w3c.dom.Document doc =
                 dom(
@@ -995,41 +1062,20 @@ public class MapMLWMSTest extends MapMLTestSupport {
         Catalog catalog = getCatalog();
         ResourceInfo layerMeta =
                 catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
-
-        layerMeta.getMetadata().put("mapml.useTiles", true);
+        layerMeta.getMetadata().put(MAPML_USE_TILES, true);
         catalog.save(layerMeta);
-        GWC gwc = applicationContext.getBean(GWC.class);
-        GWCConfig defaults = GWCConfig.getOldDefaults();
-        // it seems just the fact of retrieving the bean causes the
-        // GridSets to be added to the gwc GridSetBroker, but if you don't do
-        // this, they are not added automatically
-        MapMLGridsets mgs = applicationContext.getBean(MapMLGridsets.class);
-        GridSubset wgs84gridset = createGridSubSet(mgs.getGridSet("WGS84").get());
-        GridSubset osmtilegridset = createGridSubSet(mgs.getGridSet("OSMTILE").get());
-        LayerInfo layerInfo = catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart());
-        GeoServerTileLayer layerInfoTileLayer =
-                new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
-        layerInfoTileLayer.addGridSubset(wgs84gridset);
-        layerInfoTileLayer.addGridSubset(osmtilegridset);
-        gwc.save(layerInfoTileLayer);
-        String wmtsLayerName =
-                MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart();
-        MockRequestResponse requestResponseJapanese =
-                getMockRequestResponse(
-                        MockData.ROAD_SEGMENTS.getPrefix()
-                                + ":"
-                                + MockData.ROAD_SEGMENTS.getLocalPart(),
-                        null,
-                        Locale.JAPANESE,
-                        "EPSG:4326",
-                        null);
+        enableTileCaching(MockData.ROAD_SEGMENTS, catalog);
 
+        // request again
+        MockRequestResponse requestResponseJapanese =
+                getMockRequestResponse(layerId, null, Locale.JAPANESE, "EPSG:4326", null);
         doc =
                 dom(
                         new ByteArrayInputStream(
-                                requestResponseJapanese.response.getContentAsString().getBytes()),
+                                requestResponseJapanese.response.getContentAsByteArray()),
                         true);
 
+        String wmtsLayerName = layerId;
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='tile'][@tref])", doc);
         URL url = new URL(xpath.evaluate("//html:map-link[@rel='tile']/@tref", doc));
         HashMap<String, String> vars = parseQuery(url);
@@ -1044,7 +1090,6 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertTrue(vars.get("TileCol").equalsIgnoreCase("{x}"));
         assertTrue(vars.get("style").equalsIgnoreCase(""));
         assertNull(vars.get("language"));
-        //        assertTrue(vars.get("language").equalsIgnoreCase(Locale.ENGLISH.getLanguage()));
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
         url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
@@ -1111,6 +1156,172 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertTrue(osmTileVars.get("tilematrix").equalsIgnoreCase("{z}"));
         assertTrue(osmTileVars.get("TileRow").equalsIgnoreCase("{y}"));
         assertTrue(osmTileVars.get("TileCol").equalsIgnoreCase("{x}"));
+    }
+
+    @Test
+    public void testGWCTiledFeatureLinks() throws Exception {
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+        MockRequestResponse requestResponse =
+                getMockRequestResponse(layerId, null, null, "EPSG:4326", null);
+
+        org.w3c.dom.Document doc =
+                dom(
+                        new ByteArrayInputStream(requestResponse.response.getContentAsByteArray()),
+                        true);
+
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
+
+        // set up mapml layer to useTiles and useFeatures as well
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
+        layerMeta.getMetadata().put(MAPML_USE_TILES, true);
+        layerMeta.getMetadata().put(MAPML_USE_FEATURES, true);
+        catalog.save(layerMeta);
+        enableTileCaching(MockData.ROAD_SEGMENTS, catalog);
+
+        // request again
+        MockRequestResponse requestResponseJapanese =
+                getMockRequestResponse(layerId, null, Locale.JAPANESE, "EPSG:4326", null);
+        doc =
+                dom(
+                        new ByteArrayInputStream(
+                                requestResponseJapanese.response.getContentAsByteArray()),
+                        true);
+
+        String wmtsLayerName = layerId;
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='tile'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:map-link[@rel='tile']/@tref", doc));
+        HashMap<String, String> vars = parseQuery(url);
+        assertEquals("GetTile", vars.get("request"));
+        assertEquals("WMTS", vars.get("service"));
+        assertEquals("1.0.0", vars.get("version"));
+        assertEquals(wmtsLayerName, vars.get("layer"));
+        assertEquals("text/mapml", vars.get("format"));
+        assertEquals("WGS84", vars.get("tilematrixset"));
+        assertEquals("{z}", vars.get("tilematrix"));
+        assertEquals("{y}", vars.get("TileRow"));
+        assertEquals("{x}", vars.get("TileCol"));
+        assertEquals("", vars.get("style"));
+        assertNull(vars.get("language"));
+
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
+        vars = parseQuery(url);
+
+        assertEquals("GetFeatureInfo", vars.get("request"));
+        assertEquals("WMTS", vars.get("service"));
+        assertEquals("1.0.0", vars.get("version"));
+        assertEquals(wmtsLayerName, vars.get("layer"));
+        assertEquals("WGS84", vars.get("tilematrixset"));
+        assertEquals("{z}", vars.get("tilematrix"));
+        assertEquals("{y}", vars.get("TileRow"));
+        assertEquals("{x}", vars.get("TileCol"));
+        assertEquals("", vars.get("style"));
+        assertEquals("{i}", vars.get("i"));
+        assertEquals("{j}", vars.get("j"));
+        assertEquals("text/mapml", vars.get("infoformat"));
+        assertEquals("50", vars.get("feature_count"));
+        assertNull(vars.get("language"));
+
+        // make sure there's an input for each template variable
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:map-input[@name='x'][@type='location'][@units='tilematrix'][@axis='column'][@min][@max])",
+                doc);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:map-input[@name='y'][@type='location'][@units='tilematrix'][@axis='row'][@min][@max])",
+                doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-input[@name='w'][@type='width'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-input[@name='h'][@type='height'])", doc);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:map-input[@name='x'][@type='location'][@units='tilematrix'])",
+                doc);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:map-input[@name='y'][@type='location'][@units='tilematrix'])",
+                doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:map-input[@name='z'][@type='zoom'][@min][@max])", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:map-input[@name='i'][@type='location'][@units='tile'])", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:map-input[@name='j'][@type='location'][@units='tile'])", doc);
+    }
+
+    @Test
+    public void testGWCCaching() throws Exception {
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+
+        // set up mapml layer to useTiles and useFeatures as well, and with tile caching
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta = catalog.getLayerByName(layerId).getResource();
+        layerMeta.getMetadata().put(MAPML_USE_TILES, true);
+        layerMeta.getMetadata().put(MAPML_USE_FEATURES, true);
+        catalog.save(layerMeta);
+        enableTileCaching(MockData.ROAD_SEGMENTS, catalog);
+
+        // check there is no cached tile
+        GeoServerDataDirectory dd = getDataDirectory();
+        Resource layerCacheDirectory = dd.get("gwc/cite_RoadSegments");
+        assertEquals(Resource.Type.UNDEFINED, layerCacheDirectory.getType());
+
+        // GetTile request, should return mapml and return tiles, cache them on disk
+        String tileRequest =
+                "gwc/service/wmts?service=WMTS&version=1.0&request=GetTile"
+                        + "&tilematrixset=WGS84&tileMatrix=0&tileRow=0&tileCol=0"
+                        + "&format=text/mapml&layer="
+                        + layerId;
+        MockHttpServletResponse response = getAsServletResponse(tileRequest);
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertEquals("text/mapml", response.getContentType());
+        assertEquals("MISS", response.getHeader("geowebcache-cache-result"));
+        assertEquals(Resource.Type.DIRECTORY, layerCacheDirectory.getType());
+        assertEquals(
+                Resource.Type.RESOURCE,
+                layerCacheDirectory.get("WGS84_00/0_0/00_00.mapml").getType());
+
+        // repeat request, this time it should be cached
+        response = getAsServletResponse(tileRequest);
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertEquals("text/mapml", response.getContentType());
+        assertEquals("HIT", response.getHeader("geowebcache-cache-result"));
+
+        // check contents
+        Mapml mapml = mapml(response);
+        List<Feature> features = mapml.getBody().getFeatures();
+        assertEquals(2, features.size());
+        Map<String, Feature> featureMap =
+                features.stream().collect(Collectors.toMap(Feature::getId, Function.identity()));
+
+        // check the features are there, but the attributes have been skipped
+        assertThat(
+                featureMap.keySet(),
+                Matchers.hasItems("RoadSegments.1107532045088", "RoadSegments.1107532045091"));
+        Feature f1 = featureMap.get("RoadSegments.1107532045088");
+        assertNull(f1.getProperties());
+        Feature f2 = featureMap.get("RoadSegments.1107532045088");
+        assertNull(f2.getProperties());
+    }
+
+    private void enableTileCaching(QName layerName, Catalog catalog) {
+        GWC gwc = applicationContext.getBean(GWC.class);
+        GWCConfig defaults = GWCConfig.getOldDefaults();
+        // it seems just the fact of retrieving the bean causes the
+        // GridSets to be added to the gwc GridSetBroker, but if you don't do
+        // this, they are not added automatically
+        MapMLGridsets mgs = applicationContext.getBean(MapMLGridsets.class);
+        GridSubset wgs84gridset = createGridSubSet(mgs.getGridSet("WGS84").get());
+        GridSubset osmtilegridset = createGridSubSet(mgs.getGridSet("OSMTILE").get());
+        LayerInfo layerInfo = catalog.getLayerByName(layerName.getLocalPart());
+        GeoServerTileLayer layerInfoTileLayer =
+                new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
+        layerInfoTileLayer.addGridSubset(wgs84gridset);
+        layerInfoTileLayer.addGridSubset(osmtilegridset);
+        layerInfoTileLayer.getInfo().getMimeFormats().add(TextMime.txtMapml.getMimeType());
+        gwc.save(layerInfoTileLayer);
     }
 
     @Test

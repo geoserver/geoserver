@@ -5,9 +5,9 @@
 package org.geoserver.mapml;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -22,6 +22,7 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.api.filter.Filter;
@@ -29,16 +30,21 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.style.Style;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
-import org.geotools.map.Layer;
+import org.geotools.util.factory.Hints;
+import org.geotools.util.logging.Logging;
 
 public class MapMLFeaturesBuilder {
-    private List<FeatureSource> featureSources;
+
+    static final Logger LOGGER = Logging.getLogger(MapMLFeaturesBuilder.class);
+    private MapMLSimplifier simplifier;
+    private final SimpleFeatureSource featureSource;
     private final GeoServer geoServer;
     private final WMSMapContent mapContent;
     private final GetMapRequest getMapRequest;
     private final Query query;
+
+    private boolean skipAttributes = false;
 
     /**
      * Constructor
@@ -47,14 +53,44 @@ public class MapMLFeaturesBuilder {
      * @param geoServer the GeoServer
      */
     public MapMLFeaturesBuilder(WMSMapContent mapContent, GeoServer geoServer, Query query) {
+        if (mapContent.layers().size() != 1)
+            throw new ServiceException(
+                    "MapML WMS Feature format does not currently support Multiple Feature Type output.");
+        FeatureSource fs = mapContent.layers().get(0).getFeatureSource();
+        if (!(fs instanceof SimpleFeatureSource))
+            throw new ServiceException(
+                    "MapML WMS Feature format does not currently support Complex Features.");
+        this.featureSource = (SimpleFeatureSource) fs;
+
         this.geoServer = geoServer;
         this.mapContent = mapContent;
         this.getMapRequest = mapContent.getRequest();
-        featureSources =
-                mapContent.layers().stream()
-                        .map(Layer::getFeatureSource)
-                        .collect(Collectors.toList());
-        this.query = query;
+        this.query = new Query(query);
+        this.simplifier = getSimplifier(mapContent, query);
+    }
+
+    private MapMLSimplifier getSimplifier(WMSMapContent mapContent, Query query) {
+        try {
+            CoordinateReferenceSystem layerCRS =
+                    featureSource.getSchema().getCoordinateReferenceSystem();
+            MapMLSimplifier simplifier = new MapMLSimplifier(mapContent, layerCRS);
+            if (featureSource.getSupportedHints().contains(Hints.GEOMETRY_DISTANCE)) {
+                query.getHints()
+                        .put(Hints.GEOMETRY_DISTANCE, simplifier.getQuerySimplificationDistance());
+            }
+            return simplifier;
+        } catch (FactoryException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Unable to create MapML Simplifier, proceeding with full geometries",
+                    e);
+        }
+        return null;
+    }
+
+    /** Enables/disables attribute representation skipping (false by default) */
+    public void setSkipAttributes(boolean skipAttributes) {
+        this.skipAttributes = skipAttributes;
     }
 
     /**
@@ -64,29 +100,17 @@ public class MapMLFeaturesBuilder {
      * @throws IOException If an error occurs while producing the map
      */
     public Mapml getMapMLDocument() throws IOException {
-        if (featureSources.size() != 1) {
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support Multiple Feature Type output.");
-        }
-
         if (!getMapRequest.getLayers().isEmpty()
                 && MapLayerInfo.TYPE_VECTOR != getMapRequest.getLayers().get(0).getType()) {
             throw new ServiceException(
                     "MapML WMS Feature format does not currently support non-vector layers.");
         }
-
-        FeatureCollection featureCollection = null;
-        if (query == null
-                || (query.getFilter() != null && query.getFilter().equals(Filter.EXCLUDE))) {
-            featureCollection = featureSources.get(0).getFeatures();
+        SimpleFeatureCollection fc = null;
+        if (query != null) {
+            fc = featureSource.getFeatures(query);
         } else {
-            featureCollection = featureSources.get(0).getFeatures(query);
+            fc = featureSource.getFeatures();
         }
-        if (!(featureCollection instanceof SimpleFeatureCollection)) {
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support Complex Features.");
-        }
-        SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
 
         GeometryDescriptor sourceGeometryDescriptor = fc.getSchema().getGeometryDescriptor();
         if (sourceGeometryDescriptor == null) {
@@ -127,12 +151,15 @@ public class MapMLFeaturesBuilder {
         return MapMLFeatureUtil.featureCollectionToMapML(
                 reprojectedFeatureCollection,
                 layerInfo,
+                getMapRequest.getBbox(), // clip on bound
                 crs,
                 null, // for WMS GetMap we don't include alternate projections
                 getNumberOfDecimals(meta),
                 getForcedDecimal(meta),
                 getPadWithZeros(meta),
-                styles);
+                styles,
+                skipAttributes,
+                simplifier);
     }
 
     /**

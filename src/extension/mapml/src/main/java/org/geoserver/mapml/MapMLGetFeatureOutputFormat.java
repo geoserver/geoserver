@@ -87,11 +87,14 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
                 MapMLFeatureUtil.featureCollectionToMapML(
                         featureCollection,
                         layerInfo,
+                        null,
                         requestCRS,
                         MapMLFeatureUtil.alternateProjections(this.base, this.path, this.query),
                         numDecimals,
                         forcedDecimal,
                         padWithZeros,
+                        null,
+                        false,
                         null);
 
         // write to output

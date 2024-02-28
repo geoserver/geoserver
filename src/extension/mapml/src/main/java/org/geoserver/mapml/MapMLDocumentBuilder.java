@@ -6,8 +6,9 @@ package org.geoserver.mapml;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.geoserver.mapml.MapMLConstants.DATE_FORMAT;
-import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FORMAT_OPTIONS;
+import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
+import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 
@@ -57,6 +58,7 @@ import org.geoserver.mapml.xml.InputType;
 import org.geoserver.mapml.xml.Link;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
+import org.geoserver.mapml.xml.MimeType;
 import org.geoserver.mapml.xml.Option;
 import org.geoserver.mapml.xml.PositionType;
 import org.geoserver.mapml.xml.ProjType;
@@ -1052,10 +1054,10 @@ public class MapMLDocumentBuilder {
             generateWMSClientLinks(mapMLLayerMetadata);
         }
 
-        // query inputs
+        // Query inputs: query links for WMS with images, and WMTS always
+        // (for WMS features, the client is self sufficient, while it's not with tiled features yet)
         if (mapMLLayerMetadata.isQueryable()
-                && !mapMLLayerMetadata
-                        .isUseFeatures()) { // No query links for feature representations
+                && (!mapMLLayerMetadata.isUseFeatures() || mapMLLayerMetadata.isUseTiles())) {
             if (mapMLLayerMetadata.isUseTiles() && mapMLLayerMetadata.isTileLayerExists()) {
                 generateWMTSQueryClientLinks(mapMLLayerMetadata);
             } else {
@@ -1126,7 +1128,22 @@ public class MapMLDocumentBuilder {
         params.put("tilematrix", "{z}");
         params.put("TileCol", "{x}");
         params.put("TileRow", "{y}");
-        params.put("format", imageFormat);
+        if (mapMLLayerMetadata.isUseFeatures()) {
+            params.put("format", MAPML_MIME_TYPE);
+            params.put(
+                    "format_options",
+                    MAPML_FEATURE_FO + ":true;" + MAPML_SKIP_ATTRIBUTES_FO + ":true");
+            tileLink.setType(MimeType.TEXT_MAPML);
+        } else {
+            params.put("format", imageFormat);
+        }
+        if (mapMLLayerMetadata.isTimeEnabled()) {
+            params.put("time", "{time}");
+        }
+        if (mapMLLayerMetadata.isElevationEnabled()) {
+            params.put("elevation", "{elevation}");
+        }
+        if (cqlFilter.isPresent()) params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
         String urlTemplate = "";
         try {
             urlTemplate =
@@ -1249,8 +1266,17 @@ public class MapMLDocumentBuilder {
         if (mapMLLayerMetadata.isElevationEnabled()) {
             params.put("elevation", "{elevation}");
         }
+        if (cqlFilter.isPresent()) params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
         params.put("bbox", "{txmin},{tymin},{txmax},{tymax}");
-        params.put("format", imageFormat);
+        if (mapMLLayerMetadata.isUseFeatures()) {
+            params.put("format", MAPML_MIME_TYPE);
+            params.put(
+                    "format_options",
+                    MAPML_FEATURE_FO + ":true;" + MAPML_SKIP_ATTRIBUTES_FO + ":true");
+            tileLink.setType(MimeType.TEXT_MAPML);
+        } else {
+            params.put("format", imageFormat);
+        }
         params.put("transparent", Boolean.toString(mapMLLayerMetadata.isTransparent()));
         params.put("width", "256");
         params.put("height", "256");
@@ -1401,7 +1427,7 @@ public class MapMLDocumentBuilder {
         params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
         if (mapMLLayerMetadata.isUseFeatures()) {
             params.put("format", MAPML_MIME_TYPE);
-            params.put("format_options", MAPML_FEATURE_FORMAT_OPTIONS);
+            params.put("format_options", MAPML_FEATURE_FO + ":true");
         } else {
             params.put("format", imageFormat);
         }

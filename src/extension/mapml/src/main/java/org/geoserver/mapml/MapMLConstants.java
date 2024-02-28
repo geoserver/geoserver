@@ -31,8 +31,11 @@ public final class MapMLConstants {
     /** format name */
     public static final String FORMAT_NAME = "MAPML";
 
-    /** MapML format options */
-    public static final String MAPML_FEATURE_FORMAT_OPTIONS = "mapmlfeatures:true";
+    /** MapML format option enabling features */
+    public static final String MAPML_FEATURE_FO = "mapmlfeatures";
+
+    /** MapML format option enabling attribute skipping */
+    public static final String MAPML_SKIP_ATTRIBUTES_FO = "mapmlskipattributes";
 
     /** MapML layer metadata use features */
     public static final String MAPML_USE_FEATURES = "mapml.useFeatures";

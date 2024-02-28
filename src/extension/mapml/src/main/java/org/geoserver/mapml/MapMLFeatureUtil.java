@@ -42,34 +42,42 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Envelope;
 
 public class MapMLFeatureUtil {
     private static final Logger LOGGER = Logging.getLogger(MapMLFeatureUtil.class);
     public static final String STYLE_CLASS_PREFIX = ".";
     public static final String STYLE_CLASS_DELIMITER = " ";
+    public static final String BBOX_DISPLAY_NONE = ".bbox {display:none}";
 
     /**
      * Convert a feature collection to a MapML document
      *
      * @param featureCollection the feature collection to be converted to MapML
      * @param layerInfo metadata for the feature class
+     * @param clipBounds the bounds to clip the features to (or null if not clipping is desired)
      * @param requestCRS the CRS requested by the client
      * @param alternateProjections alternate projections for the feature collection
      * @param numDecimals number of decimal places to use for coordinates
      * @param forcedDecimal whether to force decimal notation
      * @param padWithZeros whether to pad with zeros
+     * @param skipAttributes whether to skip attributes HTML representation in the output
+     * @param simplifier the optional geometry simplifier to target vector screen usage
      * @return a MapML document
      * @throws IOException if an error occurs while producing the MapML document
      */
     public static Mapml featureCollectionToMapML(
             FeatureCollection featureCollection,
             LayerInfo layerInfo,
+            Envelope clipBounds,
             CoordinateReferenceSystem requestCRS,
             List<Link> alternateProjections,
             int numDecimals,
             boolean forcedDecimal,
             boolean padWithZeros,
-            Map<String, MapMLStyle> styles)
+            Map<String, MapMLStyle> styles,
+            boolean skipAttributes,
+            MapMLSimplifier simplifier)
             throws IOException {
         if (!(featureCollection instanceof SimpleFeatureCollection)) {
             throw new ServiceException("MapML OutputFormat does not support Complex Features.");
@@ -99,6 +107,9 @@ public class MapMLFeatureUtil {
         if (alternateProjections != null) {
             links.addAll(alternateProjections);
         }
+        if (clipBounds != null) {
+            head.setStyle(".bbox{display:none}");
+        }
 
         String licenseLink = layerMeta.get("mapml.licenseLink", String.class);
         String licenseTitle = layerMeta.get("mapml.licenseTitle", String.class);
@@ -127,6 +138,9 @@ public class MapMLFeatureUtil {
         featureBuilder.setNumDecimals(numDecimals);
         featureBuilder.setForcedDecimal(forcedDecimal);
         featureBuilder.setPadWithZeros(padWithZeros);
+        featureBuilder.setClipBounds(clipBounds);
+        featureBuilder.setSkipAttributes(skipAttributes);
+        featureBuilder.setSimplifier(simplifier);
         try (SimpleFeatureIterator iterator = fc.features()) {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
@@ -242,7 +256,7 @@ public class MapMLFeatureUtil {
      */
     private static String getCSSStylesString(Map<String, MapMLStyle> styles) {
         if (styles == null) {
-            return null;
+            return BBOX_DISPLAY_NONE;
         }
         StringJoiner style = new StringJoiner(STYLE_CLASS_DELIMITER);
         for (Map.Entry<String, MapMLStyle> entry : styles.entrySet()) {
@@ -252,7 +266,7 @@ public class MapMLFeatureUtil {
                 style.add(STYLE_CLASS_PREFIX + mapMLStyle.getStyleAsCSS());
             }
         }
-        return style.toString();
+        return BBOX_DISPLAY_NONE + " " + style.toString();
     }
 
     /**

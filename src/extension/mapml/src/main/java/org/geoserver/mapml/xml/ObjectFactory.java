@@ -326,12 +326,9 @@ public class ObjectFactory {
             namespace = "http://www.w3.org/1999/xhtml",
             name = "map-coordinates",
             scope = Polygon.class)
-    public JAXBElement<List<String>> createPolygonCoordinates(List<String> value) {
+    public JAXBElement<List> createPolygonCoordinates(List value) {
         return new JAXBElement<>(
-                _MultiPointCoordinates_QNAME,
-                ((Class) List.class),
-                Polygon.class,
-                ((List<String>) value));
+                _MultiPointCoordinates_QNAME, ((Class) List.class), Polygon.class, value);
     }
 
     /**

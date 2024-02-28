@@ -111,10 +111,12 @@ public class HeadContent {
         return this.links;
     }
 
+    /** Returns the CSS style for the eventual map-span elements */
     public String getStyle() {
         return style;
     }
 
+    /** Sets the CSS style for the eventual map-span elements */
     public void setStyle(String style) {
         this.style = style;
     }

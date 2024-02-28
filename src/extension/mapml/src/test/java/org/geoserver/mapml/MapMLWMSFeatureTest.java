@@ -11,20 +11,24 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import javax.xml.bind.JAXBElement;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.mapml.xml.Feature;
+import org.geoserver.mapml.xml.LineString;
 import org.geoserver.mapml.xml.Mapml;
-import org.geoserver.mapml.xml.MultiPolygon;
+import org.geoserver.mapml.xml.MultiLineString;
+import org.geoserver.mapml.xml.Polygon;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
@@ -70,12 +74,12 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
     }
 
     @After
-    public void tearDown() {
-        Catalog cat = getCatalog();
-        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
-        li.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
-        cat.save(li);
+    public void tearDown() throws IOException {
+        revertLayer(MockData.POLYGONS);
+        revertLayer(MockData.BUILDINGS);
+        revertLayer(MockData.ROAD_SEGMENTS);
 
+        Catalog cat = getCatalog();
         LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
         lgi.getMetadata().put(MAPML_USE_FEATURES, false);
         cat.save(lgi);
@@ -87,7 +91,6 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
 
     @Test
     public void testMapMLUseFeatures() throws Exception {
-
         Catalog cat = getCatalog();
         LayerInfo li = cat.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
         li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
@@ -109,20 +112,20 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 "Basic Polygons layer has three features, so one should show up in the conversion",
                 3,
                 mapmlFeatures.getBody().getFeatures().size());
+
+        Polygon polygon =
+                (Polygon)
+                        mapmlFeatures
+                                .getBody()
+                                .getFeatures()
+                                .get(0)
+                                .getGeometry()
+                                .getGeometryContent()
+                                .getValue();
         assertEquals(
                 "Polygons layer coordinates should match original feature's coordinates",
-                "0,-1,1,0,0,1,-1,0,0,-1",
-                ((MultiPolygon)
-                                mapmlFeatures
-                                        .getBody()
-                                        .getFeatures()
-                                        .get(0)
-                                        .getGeometry()
-                                        .getGeometryContent()
-                                        .getValue())
-                        .getPolygon().get(0).getThreeOrMoreCoordinatePairs().get(0).getValue()
-                                .stream()
-                                .collect(Collectors.joining(",")));
+                "0 -1 1 0 0 1 -1 0 0 -1",
+                polygon.getThreeOrMoreCoordinatePairs().get(0).getCoordinates().get(0));
     }
 
     @Test
@@ -135,12 +138,13 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         li.getStyles().add(cat.getStyleByName("polygonElseFilter"));
         li.setDefaultStyle(cat.getStyleByName("polygonOneFilter"));
         cat.save(li);
+        String bbox = "-0.1,-0.1,0.1,0.1";
         Mapml mapmlFeatures =
                 getWMSAsMapML(
                         MockData.BUILDINGS.getLocalPart(),
                         null,
                         null,
-                        null,
+                        bbox,
                         "EPSG:4326",
                         "polygonOneFilter",
                         null,
@@ -156,7 +160,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                         MockData.BUILDINGS.getLocalPart(),
                         null,
                         null,
-                        null,
+                        bbox,
                         "EPSG:4326",
                         "polygonElseFilter",
                         null,
@@ -171,14 +175,14 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         kvp.put("CQL_FILTER", "ADDRESS = '123 Main Street'");
         kvp.put("srs", "EPSG:4326");
         kvp.put("styles", "polygonElseFilter");
-        kvp.put("format_options", MapMLConstants.MAPML_FEATURE_FORMAT_OPTIONS);
+        kvp.put("format_options", MapMLConstants.MAPML_FEATURE_FO + ":true");
         kvp.put("layers", MockData.BUILDINGS.getLocalPart());
         kvp.put("request", "GetMap");
         kvp.put("format", MapMLConstants.MAPML_MIME_TYPE);
         kvp.put("width", "256");
         kvp.put("height", "256");
-        kvp.put("BBOX", "-180,-90,180,90");
-        Mapml mapmlFeaturesCQL = getWMSAsMapML(null, kvp, null, null, null, null, null, true);
+        kvp.put("BBOX", bbox);
+        Mapml mapmlFeaturesCQL = getWMSAsMapML(null, kvp, null, bbox, null, null, null, true);
 
         assertEquals(
                 "SLD filters yield two features, only one should show up after the CQL filter is applied",
@@ -186,11 +190,84 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 mapmlFeaturesCQL.getBody().getFeatures().size());
 
         kvp.put("CQL_FILTER", "ADDRESS = '99 Minor Street'");
-        Mapml mapmlNoFeaturesCQL = getWMSAsMapML(null, kvp, null, null, null, null, null, true);
+        Mapml mapmlNoFeaturesCQL = getWMSAsMapML(null, kvp, null, bbox, null, null, null, true);
         assertEquals(
                 "SLD filters yield two features, none should show up after the CQL filter is applied",
                 0,
                 mapmlNoFeaturesCQL.getBody().getFeatures().size());
+    }
+
+    @Test
+    public void testScreenMapSimplification() throws Exception {
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.BUILDINGS.getLocalPart());
+        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+        li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(li);
+
+        // test small bbox, the two features are big enough that they should both be returned
+        Mapml mapmlFeatures =
+                getWMSAsMapML(
+                        MockData.BUILDINGS.getLocalPart(),
+                        null,
+                        null,
+                        "-0.1,-0.1,0.1,0.1",
+                        "EPSG:4326",
+                        null,
+                        null,
+                        true);
+        assertEquals(2, mapmlFeatures.getBody().getFeatures().size());
+
+        // test larger bbox, this time they are smaller than a pixel, only one remains
+        mapmlFeatures =
+                getWMSAsMapML(
+                        MockData.BUILDINGS.getLocalPart(),
+                        null,
+                        null,
+                        "-10,-10,10,10",
+                        "EPSG:4326",
+                        null,
+                        null,
+                        true);
+        assertEquals(1, mapmlFeatures.getBody().getFeatures().size());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testCoordinateSimplification() throws Exception {
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart());
+        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+        li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(li);
+
+        // test with a small bbox, that should still lead to a geometric simplification
+        Mapml mapml =
+                getWMSAsMapML(
+                        MockData.ROAD_SEGMENTS.getLocalPart(),
+                        null,
+                        null,
+                        "-0.1,-0.1,0.1,0.1",
+                        "EPSG:4326",
+                        null,
+                        null,
+                        true);
+        List<Feature> features = mapml.getBody().getFeatures();
+        assertEquals(5, features.size());
+        for (Feature feature : features) {
+            Object geometry = feature.getGeometry().getGeometryContent().getValue();
+            // all lines are small enough that they are simplified to start/end
+            if (geometry instanceof LineString) {
+                LineString ls = (LineString) geometry;
+                assertEquals(4, ls.getCoordinates().size());
+            } else if (geometry instanceof MultiLineString) {
+                MultiLineString mls = (MultiLineString) geometry;
+                for (JAXBElement je : mls.getTwoOrMoreCoordinatePairs()) {
+                    List<String> coordinates = (List<String>) je.getValue();
+                    assertEquals(4, coordinates.size());
+                }
+            }
+        }
     }
 
     @Test

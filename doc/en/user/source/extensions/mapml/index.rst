@@ -90,6 +90,10 @@ MapML supports the serving of vector feature representations of the data.  This 
       <map-link tref="http://localhost:8080/geoserver/tiger/wms?format_options=mapmlfeatures:true&amp;request=GetMap&amp;crs=MapML:WGS84&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;format=text/mapml&amp;language=en&amp;version=1.3.0&amp;transparent=true&amp;service=WMS&amp;layers=poi&amp;width={w}&amp;styles=&amp;height={h}" rel="features"/>
     </map-extent>
 
+When both "Use Tiles" and "Use Features" are checked, the MapML extension will request tiled maps in ``text/mapml`` format.
+The contents of the tiles will be clipped to the requested area, and feature attributes will be skiipped, as the MapML client cannot leverage them for the moment.
+
+
 **Feature Styling**
   Basic styling of vector features is supported by the MapML extension.  The style is defined in the WMS GetMap request, and the MapML extension will convert the rules and style attributes defined in the SLD into CSS classes and apply those classes to the appropriate features.  Note that this conversion is currently limited to basic styling and does not include transformation functions, external graphics, or styling dependent on individual feature attributes (non-static style values).  See below for a more detailed compatibility table: 
 
@@ -194,7 +198,14 @@ With 'Represent multi-layer requests as multiple elements' checked, if two or mo
 Tile Caching
 ^^^^^^^^^^^^
 
-In the Tile Caching tab panel of the Edit Layer or Edit Layer Group page, at the bottom of the page you will see the table of GridSets that are assigned to the layer or layer group.  The values "WGS84" and "OSMTILE" are equivalent to the EPSG:4326 and EPSG:900913 built in GeoWebCache GridSets. However, for the MapML module to recognize these GridSets, you must select and use the MapML names.   For new layers or layer groups, or newly created grid subsets for a layer or layer group, the MapML values are selected by default.  For existing layers that you wish to enable the use of cached tile references by the MapML service, you will have to select and add those values you wish to support from the dropdown of available GridSets.  The set of recognized values for MapML is "WGS84" (equivalent to EPSG:4326), "OSMTILE" (equivalent to EPSG:900913), "CBMTILE" (Canada Base Map) and "APSTILE" (Alaska Polar Stereographic).
+In the Tile Caching tab panel of the Edit Layer or Edit Layer Group page, at the bottom of the page you will see the table of GridSets that are assigned to the layer or layer group.  
+
+The values ``WGS84`` and ``OSMTILE`` are equivalent to the EPSG:4326 and EPSG:900913 built in GeoWebCache GridSets. 
+However, for the MapML module to recognize these GridSets, you must select and use the MapML names.   For new layers or layer groups, or newly created grid subsets for a layer or layer group, the MapML values are selected by default.  For existing layers that you wish to enable the use of cached tile references by the MapML service, you will have to select and add those values you wish to support from the dropdown of available GridSets.  The set of recognized values for MapML is ``WGS84`` (equivalent to EPSG:4326), ``OSMTILE`` (equivalent to EPSG:900913), ``CBMTILE`` (Canada Base Map) and ``APSTILE`` (Alaska Polar Stereographic).
+
+The MapML client will normally request image tiles against WMTS, but if configured to use feature output,
+it will try to use tiles in ``text/mapml`` format, which should be configured as a cachable format
+in order to enable WMTS requests.
 
 .. figure:: images/mapml_tile_caching_panel_ui.png
 

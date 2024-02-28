@@ -8,8 +8,8 @@ site_url: http://jodygarnett.github.io/geoserver/
 # Repository
 repo_name: geoserver
 repo_url: http://github.com/jodygarnett/geoserver
-edit_uri: edit/mkdocs-preflight-rst-fixes/docs/en/user/docs
-edit_uri_template: https://github.com/jodygarnett/geoserver/edit/mkdocs-preflight-rst-fixes/doc/en/user/source/{path_noext}.rst
+edit_uri: edit/mkdocs-main/docs/en/user/docs
+edit_uri_template: https://github.com/jodygarnett/geoserver/edit/mkdocs-main/doc/en/user/docs/{path_noext}.md
 
 # Copyright
 copyright: Copyright &copy; 2024 Open Source Geospatial Foundation
@@ -805,6 +805,10 @@ nav:
       - community/jms-cluster/activemq/activemqBroker.md
       - community/jms-cluster/activemq/JDBC.md
       - community/jms-cluster/activemq/SharedFolder.md
+    - JWT Headers:
+      - community/jwt-headers/index.md
+      - community/jwt-headers/configuration.md
+      - community/jwt-headers/installing.md
     - Keycloak extension:
       - community/keycloak/index.md
       - community/keycloak/installation.md

@@ -325,7 +325,7 @@ public final class Files {
      * @param baseDirectory Optional base directory used to resolve relative file URLs
      * @param url File URL or path relative to data directory
      * @return File indicated by provided URL location
-     * @deprecated use resources.
+     * @deprecated use {@link Resources#fromURL(Resource, URL)}
      */
     @Deprecated
     public static File url(File baseDirectory, String url) {
@@ -381,23 +381,13 @@ public final class Files {
     }
 
     /**
-     * Adapter allowing a File reference to be quickly used a Resource.
+     * Adapter allowing a File reference to be quickly used as a Resource.
      *
      * <p>This is used as a placeholder when updating code to use resource, while still maintaining
-     * deprecated File methods:
+     * deprecated File methods. It is also useful in writing test cases to simulate interaction with
+     * the data directory.
      *
-     * <pre><code>
-     * //deprecated
-     * public FileWatcher( File file ){
-     *    this.resource = Files.asResource( file );
-     * }
-     * //deprecated
-     * public FileWatcher( Resource resource ){
-     *    this.resource = resource;
-     * }
-     * </code></pre>
-     *
-     * Note this only an adapter for single files (not directories).
+     * <p>Note this only an adapter for single files (not directories).
      *
      * @param file File to adapt as a Resource
      * @return resource adaptor for provided file

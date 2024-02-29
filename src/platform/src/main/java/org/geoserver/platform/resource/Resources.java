@@ -692,9 +692,11 @@ public class Resources {
     }
 
     /**
+     * Used to look up a resource based on a provided file.
+     *
      * @param baseDirectory base directory for resource: or relative file: paths
      * @param file the file
-     * @return
+     * @return Resource indicated by the provided file.
      */
     public static Resource fromFile(Resource baseDirectory, File file) {
         String path;

@@ -207,7 +207,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
                         @Override
                         public void onComponentTag(Component component, ComponentTag tag) {
-                            tag.put("style", "width:1%");
+                            tag.put("class", "w-1pct");
                         }
                     });
         }

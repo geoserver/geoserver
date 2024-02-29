@@ -13,7 +13,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -30,6 +29,7 @@ import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 public class BulkInitPanel extends Panel {
 
     private static final long serialVersionUID = -7787191736336649903L;
@@ -98,7 +98,7 @@ public class BulkInitPanel extends Panel {
                     private static final long serialVersionUID = -3288982013478650146L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         if (batches.size() == 0) {
                             error(
                                     new StringResourceModel("noConfigs", BulkInitPanel.this)
@@ -163,7 +163,7 @@ public class BulkInitPanel extends Panel {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                     }
                 };

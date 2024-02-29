@@ -66,7 +66,7 @@ public abstract class ActivityChartBasePanel extends Panel {
                     private static final long serialVersionUID = -6954067333262732996L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         Monitor monitor =
                                 ((GeoServerApplication) getApplication())
                                         .getBeanOfType(Monitor.class);

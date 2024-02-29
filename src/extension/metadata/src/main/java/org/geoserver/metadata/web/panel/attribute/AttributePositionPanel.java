@@ -11,7 +11,6 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -26,6 +25,7 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 
+// TODO WICKET8 - Verify this page works OK
 public class AttributePositionPanel extends Panel {
     private static final long serialVersionUID = -4645368967597125299L;
 
@@ -42,7 +42,7 @@ public class AttributePositionPanel extends Panel {
                     private static final long serialVersionUID = -4165434301439054175L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         moveUpOrDown(mapModel, attConfig, index, -1, tablePanel);
                         ((MarkupContainer) tablePanel.get("listContainer").get("items"))
                                 .removeAll();
@@ -57,9 +57,9 @@ public class AttributePositionPanel extends Panel {
                                 || derivedAtts != null
                                         && (derivedAtts.contains(index)
                                                 || derivedAtts.contains(index - 1))) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };
@@ -76,7 +76,7 @@ public class AttributePositionPanel extends Panel {
                     private static final long serialVersionUID = -8005026702401617344L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         moveUpOrDown(mapModel, attConfig, index, 1, tablePanel);
 
                         ((MarkupContainer) tablePanel.get("listContainer").get("items"))
@@ -92,9 +92,9 @@ public class AttributePositionPanel extends Panel {
                                 || derivedAtts != null
                                         && (derivedAtts.contains(index)
                                                 || derivedAtts.contains(index + 1))) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };

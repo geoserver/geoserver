@@ -35,6 +35,7 @@ import org.geoserver.wfs.WFSInfo;
  *
  * @author Andrea Aime - GeoSolutions
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueResourceIdentifiers> {
 
@@ -154,7 +155,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                 new AjaxButton("addIdentifier") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         UniqueResourceIdentifiersProvider provider =
                                 (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
                         provider.getItems().add(new UniqueResourceIdentifier());
@@ -163,13 +164,13 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         // the form validator triggered, but we don't want the msg to display
                         Session.get()
                                 .getFeedbackMessages()
                                 .clear(); // formally cleanupFeedbackMessages()
                         Session.get().dirty();
-                        onSubmit(target, form);
+                        onSubmit(target);
                     }
                 };
         add(button);

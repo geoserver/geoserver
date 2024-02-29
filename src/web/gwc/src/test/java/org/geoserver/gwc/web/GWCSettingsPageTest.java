@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.Result;
 import org.geoserver.catalog.PublishedType;
@@ -206,13 +207,22 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         final List<String> groupFormats =
                 new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
 
-        tester.assertListView(
+        tester.assertComponent(
+                "form:cachingOptionsPanel:container:configs:vectorFormatsGroup:vectorFromats",
+                ListView.class);
+        tester.assertModelValue(
                 "form:cachingOptionsPanel:container:configs:vectorFormatsGroup:vectorFromats",
                 vectorFormats);
-        tester.assertListView(
+        tester.assertComponent(
+                "form:cachingOptionsPanel:container:configs:rasterFormatsGroup:rasterFromats",
+                ListView.class);
+        tester.assertModelValue(
                 "form:cachingOptionsPanel:container:configs:rasterFormatsGroup:rasterFromats",
                 rasterFormats);
-        tester.assertListView(
+        tester.assertComponent(
+                "form:cachingOptionsPanel:container:configs:otherFormatsGroup:otherFromats",
+                ListView.class);
+        tester.assertModelValue(
                 "form:cachingOptionsPanel:container:configs:otherFormatsGroup:otherFromats",
                 groupFormats);
 

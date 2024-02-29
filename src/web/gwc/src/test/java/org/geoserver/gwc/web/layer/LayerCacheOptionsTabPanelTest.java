@@ -229,7 +229,9 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         LayerCacheOptionsTabPanel panel =
                 (LayerCacheOptionsTabPanel) tester.getComponentFromLastRenderedPage("form:panel");
 
-        formTester.getForm().onFormSubmitted(); // This is an utter hack but is the only way I could
+        formTester
+                .getForm()
+                .onFormSubmitted(null); // This is an utter hack but is the only way I could
         // figure out to exercise the validators the same
         // way that happens in a live GeoServer
 

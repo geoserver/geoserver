@@ -37,6 +37,7 @@ import org.springframework.security.core.Authentication;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecurityServiceConfig> {
 
     private static final long serialVersionUID = 4772173006888418298L;
@@ -227,7 +228,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
             }
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 // since this is not a regular form submit we have to manually update
                 // models
                 // of form components we care about

@@ -5,10 +5,10 @@
  */
 package org.geoserver.web.demo;
 
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.PropertyModel;
+import org.geoserver.web.wicket.GSModalWindow;
 
 /**
  * Shows the text in a <pre> section
@@ -17,7 +17,7 @@ public class PlainCodePage extends WebPage {
     String code;
 
     public PlainCodePage(
-            final ModalWindow container, final ModalWindow responseWindow, String initialXml) {
+            final GSModalWindow container, final GSModalWindow responseWindow, String initialXml) {
         this.code = initialXml;
 
         add(new Label("code", new PropertyModel(this, "code")));

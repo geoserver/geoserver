@@ -58,12 +58,6 @@ public class FileModel implements IModel<String> {
     }
 
     @Override
-    public void detach() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public void setObject(String location) {
 
         if (location != null) {

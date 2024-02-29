@@ -8,7 +8,6 @@ import java.io.File;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidator;
@@ -19,6 +18,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
  *
  * @author Andrea Aime
  */
+// TODO WICKET8 - Verify this page works OK
 public class DirectoryInput extends FileInput {
 
     private static final long serialVersionUID = -8317791966175845831L;
@@ -55,7 +55,7 @@ public class DirectoryInput extends FileInput {
                     }
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         gsDialog.setTitle(new Model<>(windowTitle));
                         gsDialog.showOkCancel(
                                 target,

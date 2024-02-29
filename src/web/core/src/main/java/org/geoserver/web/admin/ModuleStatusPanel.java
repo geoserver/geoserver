@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -25,6 +24,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.ModuleStatusImpl;
 import org.geoserver.web.CatalogIconFactory;
+import org.geoserver.web.wicket.GSModalWindow;
 
 public class ModuleStatusPanel extends Panel {
 
@@ -32,7 +32,7 @@ public class ModuleStatusPanel extends Panel {
 
     final CatalogIconFactory icons = CatalogIconFactory.get();
 
-    ModalWindow popup;
+    GSModalWindow popup;
 
     AjaxLink msgLink;
 
@@ -47,7 +47,7 @@ public class ModuleStatusPanel extends Panel {
         wmc.setOutputMarkupId(true);
         this.add(wmc);
 
-        popup = new ModalWindow("popup");
+        popup = new GSModalWindow("popup");
         add(popup);
 
         // get the list of ModuleStatuses

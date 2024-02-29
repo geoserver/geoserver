@@ -42,9 +42,4 @@ public class LayerModel implements IModel<LayerInfo> {
         this.layerInfo = GeoServerApplication.get().getCatalog().detach(object);
         this.resourceInfo = GeoServerApplication.get().getCatalog().detach(object.getResource());
     }
-
-    @Override
-    public void detach() {
-        // nothing specific to do
-    }
 }

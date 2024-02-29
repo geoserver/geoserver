@@ -41,6 +41,7 @@ import org.geoserver.web.util.MetadataMapModel;
  *
  * @author Fernando Mino - Geosolutions
  */
+// TODO WICKET8 - Verify this page works OK
 public class VectorCustomDimensionsPanel extends Panel {
 
     private final IModel<FeatureTypeInfo> typeInfoModel;
@@ -77,7 +78,7 @@ public class VectorCustomDimensionsPanel extends Panel {
         final AjaxButton addButton =
                 new AjaxButton("addButton", addForm) {
                     @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onAfterSubmit(AjaxRequestTarget target) {
                         nameInput.processInput();
                         final String newName = nameInput.getModelObject();
                         nameInput.getModel().setObject("");

@@ -68,6 +68,7 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 public class AuthenticationPage extends AbstractSecurityPage {
 
     Form<SecurityManagerConfig> form;
@@ -297,7 +298,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
             add(
                     new AjaxSubmitLink("chainTest") {
                         @Override
-                        protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        protected void onSubmit(AjaxRequestTarget target) {
                             try {
                                 String result = "NONE";
                                 HttpServletRequest request = getHttpRequest();

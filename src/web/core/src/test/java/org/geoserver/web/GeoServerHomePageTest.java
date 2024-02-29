@@ -62,7 +62,8 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
     public void testProvidedGetCapabilities() {
         tester.startPage(GeoServerHomePage.class);
 
-        tester.assertListView(
+        tester.assertComponent("providedCaps", org.apache.wicket.markup.html.list.ListView.class);
+        tester.assertModelValue(
                 "providedCaps",
                 Collections.singletonList(
                         getGeoServerApplication()
@@ -105,7 +106,9 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         List<GeoServerHomePageContentProvider> providers =
                 geoServerApplication.getBeansOfType(GeoServerHomePageContentProvider.class);
         assertFalse(providers.isEmpty());
-        tester.assertListView("contributedContent", providers);
+        tester.assertComponent(
+                "contributedContent", org.apache.wicket.markup.html.list.ListView.class);
+        tester.assertModelValue("contributedContent", providers);
     }
 
     @Test

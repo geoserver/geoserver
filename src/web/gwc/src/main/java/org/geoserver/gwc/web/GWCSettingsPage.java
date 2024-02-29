@@ -29,6 +29,7 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 public class GWCSettingsPage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(GWCSettingsPage.class);
@@ -100,13 +101,13 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         return new GeoserverAjaxSubmitLink("apply", form, this) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(form);
             }
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 try {
                     @SuppressWarnings("unchecked")
                     Form<GWCConfig> cast = (Form<GWCConfig>) form;

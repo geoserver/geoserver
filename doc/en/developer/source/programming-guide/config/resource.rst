@@ -17,25 +17,51 @@ Reference:
 * `GSIP-136 - Resource Notification Dispatcher <https://github.com/geoserver/geoserver/wiki/GSIP-136>`__
 * `GSIP-132 - GSIP 132 - Resource Store changes <https://github.com/geoserver/geoserver/wiki/GSIP-132>`__
 
-.. note::
+Parameter Naming Convention
+---------------------------
 
-   The methods in the Resource API use String parameter names consistently:
+The methods in the Resource API use String parameter names consistently:
 
- * ``resource path`` path to a resource in the resource store. (For instance in the case of the default FileSystemResourceStore, this is file path that is relative with respect to the data directory, but to preserve generic behaviour compatible with any resource store, developers should not assume this to be the case). Resource paths do not support the `.` and `..` relative directory names. Resource paths use forward slashes, similar to URL's and unix style file paths, and are OS-independent.
- * ``file path`` absolute path to a file in the file system. While these are OS dependent (with regard to the root of the absolute path) but they must always use forward slashes, as supported by all operating systems and compatible with resource paths as well as file URL's. Note that ``Resource.path()`` for resources obtained by ``Files.asResource(file)`` will return a file path rather than a resource path.  
- * ``file`` a java File reference.  
- * ``url`` a location resolved with respect to the resource store. A number of special cases developed over time distilled into ``Resources.fromUrl(base,url)`` and ``Files.url(base,url)`` methods.  
+* ``resource path`` parameter is a path to a resource in the resource store.
+
+  In the case of the default FileSystemResourceStore, this is file path that is relative with respect to the data directory. To preserve generic behaviour compatible with any resource store, developers should not assume this to be the case.
+  
+  Resource paths do not support the `.` and `..` relative directory names. Resource paths use forward slashes, similar to URL's and unix style file paths, and are OS-independent.
+
+* ``file path`` parameter is an absolute path to a file in the file system.
+
+  While these are OS dependent (with regard to the root of the absolute path) but they must always use forward slashes, as supported by all operating systems and compatible with resource paths as well as file URL's. Note that ``Resource.path()`` for resources obtained by ``Files.asResource(file)`` will return a file path rather than a resource path.
+
+* ``file`` parameter is a java File reference.
+
+* ``url`` a location resolved with respect to the resource store.
+  
+  A number of special cases developed over time distilled into ``Resources.fromUrl(base,url)`` method.
 
 General Guidelines
 ------------------
 
 All geoserver developers should be wary of the following general principles when contributing or reviewing:
 
- * Avoid as much as possible using the file system directly. The only acceptable exception is when third party libraries require this, and even then the Resources API should be used maximally.
- * For custom configuration files with a fixed location, always use ``ResourceStore``. ``GeoServerResourceLoader`` and ``GeoServerDataDirectory`` are legacy and should not be used in new code.
- * For URL's provided by user configuration (such as templates, style sheets, etc), use ``Resources.fromURL``.
- * For input/output, always use ``Resource.in()`` and ``Resource.out()``.
- * Avoid the usage of ``Resource.file()`` and ``Resource.directory()``. These methods are only necessary for third party libraries that require usage of the file system, and only for input.  They should never be used for permanent output: Since there are alternative implementations of the ResourceStore that do not use the file system as underlying storage device, modifying them does not necessarily have a lasting effect
+* Avoid as much as possible using the file system directly.
+  
+  .. note:: The only acceptable exception is when third party libraries require use of a File. Even in this case use Resources API as much as possible.
+
+* Use Avoid the usage of ``Resource.file()`` and ``Resource.directory()``.
+  
+  These methods are only necessary for third party libraries that require usage of the file system, when the third party library accepts a file input.
+  
+  .. note:: The ``file()`` and ``directory()`` methods are never be used for permanent storage. Since there are alternative implementations of the ResourceStore that do not use the file system as underlying storage device, modifying a file on disk does not necessarily have a lasting effect.
+
+* For custom configuration files with a fixed location, always use ``ResourceStore``.
+  
+  ``GeoServerResourceLoader`` and ``GeoServerDataDirectory`` from GeoServer 1.0 have been rewritten internally to use Resource API , and should not be used in new code.
+
+* For URL's provided by user configuration (such as templates, style sheets, etc), use ``Resources.fromURL``.
+
+* For input/output, always use ``Resource.in()`` and ``Resource.out()``.
+x  
+  This approach is compatible with java try-with-resource making for easy to follow code.
 
 ResourceStore
 -------------
@@ -46,10 +72,10 @@ InputStream used to access configuration information:
 
 .. code-block:: java
 
-  Properties properties = new Properties();
-  try (InputStream in = resourceStore.get("module/configuration.properties").in() ){
-    properties.load(in);
-  }
+   Properties properties = new Properties();
+   try (InputStream in = resourceStore.get("module/configuration.properties").in() ){
+     properties.load(in);
+   }
 
 An OutputStream is provided for storage (a Resource will be created as needed):
 
@@ -124,7 +150,7 @@ Paths are broken down into a sequence of names, as listed by ``Paths.names(path)
 
 * ``Path.names("data/tasmania/roads.shp")`` is represented as a list of ``data``, ``tasmania``, ``roads.shp``.
 
-For file paths that are OS dependent, use FilePaths.names instead.
+For file paths that are OS dependent, use ``FilePaths.names(file_path)`` instead.
 
 FilePaths
 ---------
@@ -200,20 +226,25 @@ Files
 
 The ``Files`` facade provides methods for working with file objects, and one method of critical importace to the Resource API.
 
-The ``Files.asResource(file)`` method creates a ``ResourceAdapter`` wrapper around an absolute file location. Allows the use of Resource API when working with content outside of the data directory.
+Files.asResource
+^^^^^^^^^^^^^^^^
+
+The ``Files.asResource(file)`` method creates a ``ResourceAdapter`` wrapper around an absolute file location. Allows the use of Resource API when working with content outside of the data directory. This is primary useful for writing test cases. 
 
 Files.url
 ^^^^^^^^^
 
-The other key method is ``Files.url( baseDirectory, url)`` which is used to look up files based on a user provided URL (or path).
-This method is deprecated because resources should always be used over files.
+.. warning:: This method is deprecated along with File use, recommend use of ``Resources.fromURL (baseDirectory, url )`` to obtain Resource.
 
-* ``Files.fromURL( null, "resource:styles/logo.svg")`` - internal url format restricted to data directory content
-* ``Files.fromURL( null, "/src/gis/cadaster/district.geopgk")`` - absolute file path (linux)
-* ``Files.fromURL( baseDirectory, "D:\\gis\\cadaster\\district.geopkg")`` - absolute file path (windows)
-* ``Files.fromURL( baseDirectory, "file:///D:/gis/cadaster/district.geopkg")`` - absolute file url (windows)
-* ``Files.fromURL( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/")`` - null (external reference ignored as we cannot determine a file)
-* ``Files.fromURL( baseDirectory, "sde://user:pass@server:port")`` - null (custom strings are ignored as we cannot determine a file)
+The other key method is ``Files.url( baseDirectory, url)`` which is used to look up files based on a user provided URL (or path).
+
+
+* ``Files.url( null, "resource:styles/logo.svg")`` - internal url format restricted to data directory content
+* ``Files.url( null, "/src/gis/cadaster/district.geopgk")`` - absolute file path (linux)
+* ``Files.url( baseDirectory, "D:\\gis\\cadaster\\district.geopkg")`` - absolute file path (windows)
+* ``Files.url( baseDirectory, "file:///D:/gis/cadaster/district.geopkg")`` - absolute file url (windows)
+* ``Files.url( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/")`` - null (external reference ignored as we cannot determine a file)
+* ``Files.url( baseDirectory, "sde://user:pass@server:port")`` - null (custom strings are ignored as we cannot determine a file)
 
 
 GeoServerDataDirectory

@@ -8,8 +8,6 @@ package org.geoserver.importer;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +19,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.FilePaths;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.api.data.FileDataStoreFactorySpi;
@@ -116,19 +114,9 @@ public abstract class DataFormat implements Serializable {
             return url;
         }
         File baseDirectory = catalog.getResourceLoader().getBaseDirectory();
-        File f;
-        try {
-            f = new File(new URL(url).getFile());
-        } catch (MalformedURLException e) {
-            f = new File(url);
-        }
+        File f = Files.url(baseDirectory, url);
 
-        String relativePath = Paths.convert(baseDirectory, f);
-        if (!FilePaths.isAbsolute(relativePath)) {
-            return "file:" + relativePath;
-        } else {
-            return url;
-        }
+        return f == null ? url : "file:" + Paths.convert(baseDirectory, f);
     }
 
     public abstract String getName();

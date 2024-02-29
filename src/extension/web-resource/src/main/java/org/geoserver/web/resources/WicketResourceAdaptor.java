@@ -11,6 +11,7 @@ import java.net.URLConnection;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 
 /**
@@ -25,9 +26,9 @@ public class WicketResourceAdaptor extends AbstractResourceStream {
     protected Resource resource;
 
     public WicketResourceAdaptor(Resource resource) {
-        if (!resource.isInternal()) {
+        if (Paths.isAbsolute(resource.path())) {
             // double check resource browser cannot be used to edit
-            // files outside of resource store
+            // absolute path locations
             throw new IllegalStateException("Path location not supported by Resource Browser");
         }
         this.resource = resource;

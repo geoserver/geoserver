@@ -55,15 +55,25 @@ public class ResourceWriterTest extends BackupRestoreTestSupport {
         GeoServerDataDirectory td = new GeoServerDataDirectory(root);
 
         Resource srcTemplatesDir = BackupUtils.dir(dd.get(Paths.BASE), "templates");
-        File srcTitleFtl = srcTemplatesDir.get("title.ftl").file();
+        File srcTitleFtl =
+                Resources.createNewFile(
+                        Files.asResource(new File(srcTemplatesDir.dir(), "title.ftl")));
         File srcHeaderFtl =
-                dd.get(Paths.BASE)
-                        .get(Paths.path("workspaces", "gs", "foo", "t1", "header.ftl"))
-                        .file();
+                Resources.createNewFile(
+                        Files.asResource(
+                                new File(
+                                        Paths.toFile(
+                                                dd.get(Paths.BASE).dir(),
+                                                Paths.path("workspaces", "gs", "foo", "t1")),
+                                        "header.ftl")));
         File srcFakeFtl =
-                dd.get(Paths.BASE)
-                        .get(Paths.path("workspaces", "gs", "foo", "t1", "fake.ftl"))
-                        .file();
+                Resources.createNewFile(
+                        Files.asResource(
+                                new File(
+                                        Paths.toFile(
+                                                dd.get(Paths.BASE).dir(),
+                                                Paths.path("workspaces", "gs", "foo", "t1")),
+                                        "fake.ftl")));
 
         assertTrue(Resources.exists(Files.asResource(srcTitleFtl)));
         assertTrue(Resources.exists(Files.asResource(srcHeaderFtl)));
@@ -80,11 +90,21 @@ public class ResourceWriterTest extends BackupRestoreTestSupport {
 
         assertTrue(Resources.exists(trgTemplatesDir));
 
-        Resource trgTitleFtl = trgTemplatesDir.get("title.ftl");
+        Resource trgTitleFtl = Files.asResource(new File(trgTemplatesDir.dir(), "title.ftl"));
         Resource trgHeaderFtl =
-                td.get(Paths.BASE).get(Paths.path("workspaces", "gs", "foo", "t1", "header.ftl"));
+                Files.asResource(
+                        new File(
+                                Paths.toFile(
+                                        td.get(Paths.BASE).dir(),
+                                        Paths.path("workspaces", "gs", "foo", "t1")),
+                                "header.ftl"));
         Resource trgFakeFtl =
-                td.get(Paths.BASE).get(Paths.path("workspaces", "gs", "foo", "t1", "fake.ftl"));
+                Files.asResource(
+                        new File(
+                                Paths.toFile(
+                                        td.get(Paths.BASE).dir(),
+                                        Paths.path("workspaces", "gs", "foo", "t1")),
+                                "fake.ftl"));
 
         assertTrue(Resources.exists(trgTitleFtl));
         assertTrue(Resources.exists(trgHeaderFtl));

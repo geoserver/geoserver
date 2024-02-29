@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
-import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Paths;
 
 /**
  * Panel for editing.
@@ -22,16 +22,16 @@ public class PanelEdit extends Panel {
 
     private static final long serialVersionUID = -31594049414032328L;
 
-    public PanelEdit(String id, Resource resource, boolean isNew, String contents) {
+    public PanelEdit(String id, String resource, boolean isNew, String contents) {
         super(id);
-        if (!resource.isInternal()) {
+        if (Paths.isAbsolute(resource)) {
             // double check resource browser cannot be used to edit
-            // files outside of resource store
+            // absolute path locations
             throw new IllegalStateException("Path location not supported by Resource Browser");
         }
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
         add(
-                new TextField<String>("resource", new Model<>(resource.toString())) {
+                new TextField<String>("resource", new Model<>(resource)) {
                     private static final long serialVersionUID = 1019950718780805835L;
 
                     @Override

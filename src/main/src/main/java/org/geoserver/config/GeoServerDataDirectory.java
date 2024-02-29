@@ -33,7 +33,6 @@ import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.FilePaths;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -930,7 +929,7 @@ public class GeoServerDataDirectory {
                     file = resource.file();
                 } else {
                     // GEOS-7025: Just get the path; don't try to create the file
-                    file = FilePaths.toFile(root(), resource.path());
+                    file = Paths.toFile(root(), resource.path());
                 }
 
                 URL u = fileToUrlPreservingCqlTemplates(file);

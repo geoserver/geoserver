@@ -9,6 +9,7 @@ import java.util.Base64;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.wicket.model.IModel;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.treeview.TreeNode;
@@ -29,9 +30,9 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
     private String uniqueId;
 
     public ResourceNode(Resource resource, ResourceExpandedStates expandedStates) {
-        if (!resource.isInternal()) {
+        if (Paths.isAbsolute(resource.path())) {
             // double check resource browser cannot be used to edit
-            // files outside of resource store
+            // absolute path locations
             throw new IllegalStateException("Path location not supported by Resource Browser");
         }
         this.resource = Resources.serializable(resource);

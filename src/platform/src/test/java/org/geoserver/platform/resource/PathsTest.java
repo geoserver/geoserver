@@ -5,7 +5,6 @@
 package org.geoserver.platform.resource;
 
 import static org.geoserver.platform.resource.Paths.extension;
-import static org.geoserver.platform.resource.Paths.isAbsolute;
 import static org.geoserver.platform.resource.Paths.name;
 import static org.geoserver.platform.resource.Paths.names;
 import static org.geoserver.platform.resource.Paths.parent;
@@ -20,7 +19,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import org.junit.Test;
 
 public class PathsTest {
@@ -38,16 +36,6 @@ public class PathsTest {
     final String SUBFOLDER = "directory/folder";
 
     final String FILE3 = "directory/folder/file3.txt";
-
-    @Test
-    public void isAbsolutePath() {
-        assertFalse("data directory relative", Paths.isAbsolute("data/tasmania/roads.shp"));
-        assertTrue("linux absolute", Paths.isAbsolute("/srv/gis/cadaster/district.geopkg", false));
-        assertTrue(
-                "windows drive absolute",
-                Paths.isAbsolute("D:/gis/cadaster/district.geopkg", true));
-        assertFalse("windows drive relative", Paths.isAbsolute("D:fail.shp", true));
-    }
 
     @Test
     public void pathTest() {
@@ -127,6 +115,15 @@ public class PathsTest {
     }
 
     @Test
+    public void isValidTest() {
+        // test paths with . and .. are not valid
+        for (String name :
+                new String[] {"directory/./bar", "directory/../bar", "../bar", "./bar"}) {
+            assertFalse(name, Paths.isValid(name));
+        }
+    }
+
+    @Test
     public void parentTest() {
         assertEquals(DIRECTORY, parent(FILE));
         assertEquals(BASE, parent(DIRECTORY));
@@ -144,13 +141,6 @@ public class PathsTest {
 
         assertEquals("directory/file.txt", sidecar("directory/file", "txt"));
         assertEquals("directory/file.prj", sidecar("directory/file.txt", "prj"));
-
-        File home = new File(System.getProperty("user.home")).getCanonicalFile();
-        String absolutePath = Paths.convert(home.getPath());
-
-        assertTrue("home", Paths.isAbsolute(absolutePath));
-        String root = Paths.names(absolutePath).get(0);
-        assertTrue("system root '" + root + "'", Paths.isAbsolute(root));
     }
 
     @Test
@@ -166,7 +156,7 @@ public class PathsTest {
 
         // absolute paths
         File home = new File(System.getProperty("user.home")).getCanonicalFile();
-        assertTrue(isAbsolute(Paths.convert(home.getPath())));
+        assertTrue(FilePaths.isAbsolute(Paths.convert(home.getPath())));
     }
 
     @Test
@@ -184,53 +174,6 @@ public class PathsTest {
 
         String relativePath = relative.getPath();
         assertEquals("file1", Paths.convert(directory, folder, relativePath));
-    }
-
-    @Test
-    public void roundTripFileTests() throws IOException {
-        File home = new File(System.getProperty("user.home")).getCanonicalFile();
-        File directory = new File(home, "directory");
-        File file = new File(directory, "file");
-
-        // absolute paths
-        absolutePathCheck(home);
-        absolutePathCheck(directory);
-        absolutePathCheck(file);
-
-        // relative paths
-        File base = new File(home, "data");
-        relativePathCheck(base, new File("folder"));
-        relativePathCheck(base, new File(new File("folder"), "file"));
-    }
-
-    public void absolutePathCheck(File file) {
-        String filePath = file.getPath();
-        String path1 = Paths.convert(filePath);
-        assertTrue("absolute: " + path1, isAbsolute(path1));
-
-        List<String> names = Paths.names(path1);
-        assertTrue("absolute: " + names.get(0), isAbsolute(names.get(0)));
-
-        String path2 = Paths.toPath(names);
-        assertTrue("absolute:" + path2, isAbsolute(path2));
-
-        File file2 = Paths.toFile(null, path2);
-        assertEquals(file2.getName(), file, file2);
-    }
-
-    public void relativePathCheck(File base, File file) {
-        String path1 = Paths.convert(base, file);
-        assertFalse("absolute: " + path1, isAbsolute(path1));
-
-        List<String> names = Paths.names(path1);
-        assertFalse("absolute: " + names.get(0), isAbsolute(names.get(0)));
-
-        String path2 = Paths.toPath(names);
-        assertFalse("absolute:" + path2, isAbsolute(path2));
-
-        File file2 = Paths.toFile(base, path2);
-        assertTrue("absolute:" + file2.getPath(), file2.isAbsolute());
-        assertEquals(file2.getName(), new File(base, file.getPath()), file2);
     }
 
     @Test

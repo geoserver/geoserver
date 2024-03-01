@@ -46,7 +46,7 @@
       <param-value>true</param-value>
     </context-param>
     -->
-    <!-- 
+    <!--
     <context-param>
       <param-name>PROXY_BASE_URL</param-name>
       <param-value>http://82.58.146.45/geoserver</param-value>
@@ -138,28 +138,28 @@
         -->
     </filter>
 
-    <!-- Uncomment following filter to enable CORS in Jetty. Do not forget the second config block further down.-->
-    <filter>
-        <filter-name>cross-origin</filter-name>
-        <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
-        <init-param>
-            <param-name>chainPreflight</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <init-param>
-            <param-name>allowedOrigins</param-name>
-            <param-value>*</param-value>
-        </init-param>
-        <init-param>
-            <param-name>allowedMethods</param-name>
-            <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
-        </init-param>
-        <init-param>
-            <param-name>allowedHeaders</param-name>
-            <param-value>*</param-value>
-        </init-param>
-    </filter>
-
+    <!-- Uncomment following filter to enable CORS in Jetty. Do not forget the second config block further down.
+     <filter>
+       <filter-name>cross-origin</filter-name>
+       <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+       <init-param>
+         <param-name>chainPreflight</param-name>
+         <param-value>false</param-value>
+       </init-param>
+       <init-param>
+         <param-name>allowedOrigins</param-name>
+         <param-value>*</param-value>
+       </init-param>
+       <init-param>
+         <param-name>allowedMethods</param-name>
+         <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
+       </init-param>
+       <init-param>
+         <param-name>allowedHeaders</param-name>
+         <param-value>*</param-value>
+       </init-param>
+     </filter>
+     -->
 
     <!-- Uncomment following filter to enable CORS in Tomcat. Do not forget the second config block further down.
      <filter>
@@ -180,7 +180,7 @@
      </filter>
      -->
 
-    <!-- 
+    <!--
       THIS FILTER MAPPING MUST BE THE FIRST ONE, otherwise we end up with ruined chars in the input from the GUI
       See the "Note" in the Tomcat character encoding guide:
       http://wiki.apache.org/tomcat/FAQ/CharacterEncoding
@@ -190,12 +190,12 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- Uncomment following filter-mapping to enable CORS    -->
+    <!-- Uncomment following filter-mapping to enable CORS
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
+    -->
 
     <filter-mapping>
         <filter-name>FlushSafeFilter</filter-name>
@@ -217,7 +217,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- 
+    <!--
       If you want to use your security system comment out this one too
     -->
     <filter-mapping>
@@ -271,7 +271,7 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     </servlet>
 
-    <!-- single mapping to spring, this only works properly if the advanced dispatch filter is 
+    <!-- single mapping to spring, this only works properly if the advanced dispatch filter is
          active -->
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>

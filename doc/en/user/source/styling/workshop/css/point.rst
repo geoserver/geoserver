@@ -575,28 +575,24 @@ Dynamic Styling
 Bonus
 -----
 
-.. only:: instructor
+.. admonition:: Instructor Notes 
 
-   .. admonition:: Instructor Notes 
+   The exercise section does not review the examples above, instead it explores the use of: 
 
-      The exercise section does not review the examples above, instead it explores the use of: 
-
-      * scale and attribute selectors
-      * recode to map from attribute to symbol
-      * interpolate to change size by population
+   * scale and attribute selectors
+   * recode to map from attribute to symbol
+   * interpolate to change size by population
 
 .. _css.point.q1:
 
 Challenge Geometry Location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
    
-.. only:: instructor
-  
-   .. admonition:: Instructor Notes 
+.. admonition:: Instructor Notes 
 
-      As usual Explore invites readers to reapply the material covered in a slightly different context or dataset.
- 
-      The use of selectors using the roads **type** attribute provides this opportunity.
+   As usual Explore invites readers to reapply the material covered in a slightly different context or dataset.
+
+   The use of selectors using the roads **type** attribute provides this opportunity.
 
 #. The **mark** property can be used to render any geometry content.
 

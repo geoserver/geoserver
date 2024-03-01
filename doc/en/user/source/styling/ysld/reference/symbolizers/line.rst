@@ -35,7 +35,7 @@ The full syntax of a line symbolizer is:
 
 where:
 
-.. include:: include/stroke.txt
+.. include:: include/stroke.rst
 
 .. list-table::
    :class: non-responsive
@@ -52,13 +52,13 @@ where:
      - Value in pixels for moving the drawn line relative to the location of the feature. 
      - ``0``
 
-.. include:: include/symbol.txt
+.. include:: include/symbol.rst
 
-.. include:: include/misc.txt
+.. include:: include/misc.rst
 
-.. include:: include/composite.txt
+.. include:: include/composite.rst
 
-.. include:: include/inclusion.txt
+.. include:: include/inclusion.rst
 
 Examples
 --------

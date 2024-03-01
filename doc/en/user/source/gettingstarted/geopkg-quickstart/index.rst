@@ -46,10 +46,10 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 #. You will be prompted to enter a workspace :guilabel:`Name` and :guilabel:`Namespace URI`.
 
    .. list-table::
-      :widths: 30 70
-      :width: 100%
-      :stub-columns: 1
+      :header-rows: 1 
 
+      * - Field
+        - Value
       * - Name:
         - :kbd:`tutorial`
       * - Namespace URI
@@ -93,16 +93,16 @@ Once the workspace is created, we are ready to add a new store. The store tells 
 #. Begin by configuring the :guilabel:`Basic Store Info`.
 
    .. list-table::
-      :widths: 30 70
-      :width: 100%
-      :stub-columns: 1
+      :header-rows: 1 
 
+      * - Field
+        - Value
       * - workspace
         - ``tutorial``
       * - Data Source Name
-        - :kbd:`NaturalEarth`
+        - ``NaturalEarth``
       * - Description
-        - :kbd:`GeoPackage of NaturalEarth data`
+        - ``GeoPackage of NaturalEarth data``
    
    This information is internal to GeoServer and is not used as part of the web service protocols. We recommend keeping the :guilabel:`Data Source Name` simple as they will be used to form folders in the data directory (so keep any operating system restrictions on character use in mind).
    
@@ -123,13 +123,13 @@ Once the workspace is created, we are ready to add a new store. The store tells 
 #. The :guilabel:`Connection Parameters` for our geopackage are:
 
    .. list-table::
-      :widths: 30 70
-      :width: 100%
-      :stub-columns: 1
+      :header-rows: 1 
 
-      * - database
-        - :kbd:`file:data/ne/natural_earth.gpkg`
-      * - read_only
+      * - Field
+        - Value
+      * - Database
+        - ``file:data/ne/natural_earth.gpkg``
+      * - Read only
         - checked
    
    The use of :guilabel:`read_only` above indicates that we will not be writing to this GeoPackage, allowing GeoServer to avoid managing write locks when accessing this content for greater performance.
@@ -169,16 +169,16 @@ Now that we have connected to the GeoPackage, we can publish the layer.
 #. Locate :guilabel:`Basic Resource Info` and define the layer:
 
    .. list-table::
-      :widths: 30 70
-      :width: 100%
-      :stub-columns: 1
+      :header-rows: 1 
 
+      * - Field
+        - Value
       * - Name
-        - :kbd:`countries`
+        - ``countries``
       * - Title
-        - :kbd:`countries`
+        - `Countries`
       * - Abstract
-        - :kbd:`Sovereign states`
+        - ``Sovereign states``
 
    The naming of a layer is important, and while GeoServer does not offer restrictions many of the individual protocols will only work with very simple names.
    
@@ -189,14 +189,14 @@ Now that we have connected to the GeoPackage, we can publish the layer.
 #. Double check the :guilabel:`Coordiante Reference Systems` information is correct.
 
    .. list-table::
-      :widths: 30 70
-      :width: 100%
-      :stub-columns: 1
+      :header-rows: 1 
 
+      * - Field
+        - Value
       * - Native SRS
-        - :kbd:`EPSG:4326`
+        - ``EPSG:4326``
       * - Declaired SRS
-        - :kbd:`EPSG:4326`
+        - ``EPSG:4326``
       * - SRS Handling
         - ``Force declared``
 

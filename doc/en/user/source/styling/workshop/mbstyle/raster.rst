@@ -53,13 +53,13 @@ The **raster** layer controls the display of raster data.
    .. list-table:: 
       :widths: 30 70
       :header-rows: 0
-
+   
       * - Name:
-        - :kbd:`image_example`
+        - `image_example`
       * - Workspace:
-        - :kbd:`No workspace`
+        - `No workspace`
       * - Format:
-        - :kbd:`MBStyle`
+        - `MBStyle`
 
 #. Replace the initial MBStyle definition with:
 

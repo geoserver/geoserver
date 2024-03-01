@@ -60,7 +60,7 @@ All geoserver developers should be wary of the following general principles when
 * For URL's provided by user configuration (such as templates, style sheets, etc), use ``Resources.fromURL``.
 
 * For input/output, always use ``Resource.in()`` and ``Resource.out()``.
-x  
+
   This approach is compatible with java try-with-resource making for easy to follow code.
 
 ResourceStore

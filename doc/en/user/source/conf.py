@@ -64,7 +64,7 @@ else:
 
 # Used in build and documentation links
 # branch = version+'.x'
-branch = 'main'
+branch = '2.25.x'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
@@ -134,8 +134,8 @@ extlinks = {
     'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s', None),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-%s'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-%s'),
-    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s', None),
-    'geotools': ('https://docs.geotools.org/latest/userguide/%s', None),
+    'api': ('http://docs.geoserver.org/stable/en/api/#1.0.0/%s', None),
+    'geotools': ('https://docs.geotools.org/stable/userguide/%s', None),
     'download_release': (download_release,'geoserver-'+download+latest+'-%s.zip'),
     'download_extension': (download_extension,'geoserver-'+download+'-%s-plugin.zip'),
     'download_community': (download_community,'geoserver-'+download+'-%s-plugin.zip')

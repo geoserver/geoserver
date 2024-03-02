@@ -105,7 +105,7 @@ extlinks = {
     'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s', None),
     'developer': ('http://docs.geoserver.org/latest/en/developer/%s', None),
     'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s', None),
-    'geotools': ('https://docs.geotools.org/latest/userguide/%s', None),
+    'geotools': ('https://docs.geotools.org/stable/userguide/%s', None),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-%s'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-%s'),
     'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s', None)
@@ -190,7 +190,7 @@ html_context = {
   'display_github': True,
   'github_user': 'geoserver',
   'github_repo': 'geoserver',
-  'github_version': 'main',
+  'github_version': '2.25.x',
   'conf_py_path': 'doc/en/developer/source'
 }
 
@@ -225,17 +225,16 @@ latex_elements = {
   'fncychap': '\\usepackage[Sonny]{fncychap}',
   'preamble': #"""\\usepackage[parfill]{parskip}
   """
-	\\hypersetup{
-		colorlinks = true,
+    \\hypersetup{
+    colorlinks = true,
     linkcolor = [rgb]{0,0.46,0.63},
     anchorcolor = [rgb]{0,0.46,0.63},
     citecolor = blue,
     filecolor = [rgb]{0,0.46,0.63},
     pagecolor = [rgb]{0,0.46,0.63},
     urlcolor = [rgb]{0,0.46,0.63}
-	}
+    }
 
-	
 """
 }
 

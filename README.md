@@ -18,11 +18,11 @@ GeoServer forms a core component of the Geospatial Web.
 
 ## License
 
-GeoServer licensed under the [GPL](https://docs.geoserver.org/latest/en/user/introduction/license.html).
+GeoServer licensed under the [GPL](https://docs.geoserver.org/stable/en/user/introduction/license.html).
 
 ## Using
 
-Please refer to the [user guide](https://docs.geoserver.org/latest/en/user/) for information
+Please refer to the [user guide](https://docs.geoserver.org/stable/en/user/) for information
 on how to install and use GeoServer.
 
 ## Building
@@ -32,7 +32,7 @@ build the application run maven from the ```src``` directory.
 
     mvn clean install
 
-See the [developer guide](https://docs.geoserver.org/latest/en/developer/) 
+See the [developer guide](https://docs.geoserver.org/stable/en/developer/) 
 for more details.
 
 ## Bugs

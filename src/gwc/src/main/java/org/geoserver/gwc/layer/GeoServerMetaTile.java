@@ -7,7 +7,6 @@ package org.geoserver.gwc.layer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import it.geosolutions.jaiext.BufferedImageAdapter;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -213,8 +212,7 @@ public class GeoServerMetaTile extends MetaTile {
                 break;
             case 2:
                 final BufferedImage image = (BufferedImage) metaTileImage;
-                final BufferedImage subimage = image.getSubimage(x, y, tileWidth, tileHeight);
-                tile = new BufferedImageAdapter(subimage);
+                tile = image.getSubimage(x, y, tileWidth, tileHeight);
                 break;
             default:
                 throw new IllegalStateException(

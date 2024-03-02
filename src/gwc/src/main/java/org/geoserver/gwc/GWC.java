@@ -19,6 +19,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -38,6 +39,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
@@ -220,6 +222,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private BlobStoreAggregator blobStoreAggregator;
 
+    private ExecutorService metaTilingExecutor;
+
     /**
      * Constructor for the GWC mediator
      *
@@ -273,6 +277,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.jdbcConfigurationStorage = jdbcConfigurationStorage;
         this.blobStoreAggregator = blobStoreAggregator;
         this.gwcSynchEnv = gwcSynchEnv;
+
+        this.metaTilingExecutor = buildMetaTilingExecutor(getConfig().getMetaTilingThreads());
     }
 
     /** Updates the configurable lock provider to use the specified bean */
@@ -298,6 +304,29 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         lockProvider.setDelegate(delegate);
+    }
+
+    private ExecutorService buildMetaTilingExecutor(Integer metaTilingThreads) {
+        ThreadFactory threadFactory =
+                new ThreadFactoryBuilder().setNameFormat("GWC MetaTiling Thread-%d").build();
+
+        if (metaTilingThreads == null) {
+            metaTilingThreads = Runtime.getRuntime().availableProcessors() * 2;
+        }
+
+        if (metaTilingThreads == 0) {
+            return null;
+        }
+        ThreadPoolExecutor executor =
+                new ThreadPoolExecutor(
+                        metaTilingThreads,
+                        metaTilingThreads,
+                        10,
+                        TimeUnit.SECONDS,
+                        new LinkedBlockingQueue<>(),
+                        threadFactory);
+        executor.allowCoreThreadTimeOut(true);
+        return executor;
     }
 
     /**
@@ -350,6 +379,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
         if (this.catalogStyleChangeListener != null) {
             catalog.removeListener(this.catalogStyleChangeListener);
+        }
+        if (this.metaTilingExecutor != null) {
+            this.metaTilingExecutor.shutdownNow();
         }
         GWC.set(null, null);
     }
@@ -1235,6 +1267,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         // make sure we switch to the lock provider just configured
         updateLockProvider(gwcConfig.getLockProviderName());
+
+        // Reconfigure the metatiling executor because the thread count might have changed
+        if (this.metaTilingExecutor != null) {
+            this.metaTilingExecutor.shutdown();
+        }
+        this.metaTilingExecutor = buildMetaTilingExecutor(gwcConfig.getMetaTilingThreads());
     }
 
     public void saveDiskQuotaConfig(DiskQuotaConfig config, JDBCConfiguration jdbcConfig)
@@ -1366,14 +1404,16 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         try {
             owsDispatcher.handleRequest(req, resp);
         } finally {
-            // reset the old request
+            // reset thread locals
+            tx.apply();
+
+            // reset the old request (after all other thread locals to ensure
+            // it won't get overriden by the ThreadLocalsTransfer).
             if (request != null) {
                 Dispatcher.REQUEST.set(request);
             } else {
                 Dispatcher.REQUEST.remove();
             }
-            // reset thread locals
-            tx.apply();
         }
         return new ByteArrayResource(resp.getBytes());
     }
@@ -2371,6 +2411,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     public LockProvider getLockProvider() {
         return lockProvider;
+    }
+
+    public Executor getMetaTilingExecutor() {
+        return metaTilingExecutor;
     }
 
     public JDBCConfiguration getJDBCDiskQuotaConfig()

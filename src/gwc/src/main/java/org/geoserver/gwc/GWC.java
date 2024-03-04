@@ -38,6 +38,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
@@ -220,6 +223,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private BlobStoreAggregator blobStoreAggregator;
 
+    private ExecutorService tileSavingExecutor = Executors.newCachedThreadPool();
+
     /**
      * Constructor for the GWC mediator
      *
@@ -351,6 +356,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (this.catalogStyleChangeListener != null) {
             catalog.removeListener(this.catalogStyleChangeListener);
         }
+        this.tileSavingExecutor.shutdownNow();
         GWC.set(null, null);
     }
 
@@ -1361,20 +1367,24 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         FakeHttpServletRequest req = new FakeHttpServletRequest(params, cookies, workspace);
         FakeHttpServletResponse resp = new FakeHttpServletResponse();
 
+        //System.out.println("GWC dispatching fake servlet request");
         Request request = Dispatcher.REQUEST.get();
         Dispatcher.REQUEST.remove();
         ThreadLocalsTransfer tx = new ThreadLocalsTransfer();
         try {
             owsDispatcher.handleRequest(req, resp);
         } finally {
-            // reset the old request
+            // reset thread locals
+            tx.apply();
+
+            // reset the old request (after all other thread locals to ensure
+            // it won't get overriden by the ThreadLocalsTransfer).
             if (request != null) {
                 Dispatcher.REQUEST.set(request);
             } else {
                 Dispatcher.REQUEST.remove();
             }
-            // reset thread locals
-            tx.apply();
+
         }
         return new ByteArrayResource(resp.getBytes());
     }
@@ -2372,6 +2382,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     public LockProvider getLockProvider() {
         return lockProvider;
+    }
+
+    public Executor getTileSavingExecutor(){
+        return tileSavingExecutor;
     }
 
     public JDBCConfiguration getJDBCDiskQuotaConfig()

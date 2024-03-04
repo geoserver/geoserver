@@ -1367,7 +1367,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         FakeHttpServletRequest req = new FakeHttpServletRequest(params, cookies, workspace);
         FakeHttpServletResponse resp = new FakeHttpServletResponse();
 
-        //System.out.println("GWC dispatching fake servlet request");
         Request request = Dispatcher.REQUEST.get();
         Dispatcher.REQUEST.remove();
         ThreadLocalsTransfer tx = new ThreadLocalsTransfer();

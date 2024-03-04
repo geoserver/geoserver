@@ -603,23 +603,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     @Test
     public void testMaxMemoryLimit() throws Exception {
         setMemoryLimit(Integer.MAX_VALUE);
-
-        Catalog catalog = getCatalog();
-
-        // setup base group, one layer
-        String groupName = "MEMORY_TEST_GROUP";
-        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
-        group.setName(groupName);
-        group.getLayers().add(catalog.getLayerByName(getLayerId(SF_STATES)));
-        group.getStyles().add(null);
-        new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(group);
-        catalog.add(group);
-
         String request =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer=MEMORY_TEST_GROUP"
+                String.format("wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                        + "&layer=%s"
                         + "&style="
-                        + "&format=image/png&width=20&height=20";
+                        + "&format=image/png&width=20&height=20", SF_STATES_ID);
 
         BufferedImage image = getAsImage(request, "image/png");
         assertThat(image.getWidth() * image.getHeight() * 4, Matchers.lessThan(15 * 1024));

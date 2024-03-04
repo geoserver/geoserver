@@ -191,8 +191,6 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         private void run(AbstractBenchmarkState state) throws Exception {
 
-            // Repeat the previous tile to intentionally get a cache HIT, otherwise
-            // move onto the next tile to get a cache MISS
             int currentIndex = state.currentIndex++;
 
             long[] metaTileIndex = state.tileIndices[currentIndex];

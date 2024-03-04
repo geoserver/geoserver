@@ -92,7 +92,7 @@
     <gt.version>30-SNAPSHOT</gt.version>
     <gwc.version>1.24-SNAPSHOT</gwc.version>
     <jts.version>1.19.0</jts.version>
-    <spring.version>5.3.27</spring.version>
+    <spring.version>5.3.32</spring.version>
     <spring.security.version>5.7.11</spring.security.version>
     <spring-integration.version>5.5.18</spring-integration.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>

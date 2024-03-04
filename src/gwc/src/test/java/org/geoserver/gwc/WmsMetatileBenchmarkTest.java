@@ -12,7 +12,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.ehcache.impl.internal.concurrent.ConcurrentHashMap;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
@@ -75,23 +77,23 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
     @BenchmarkMode(Mode.Throughput)
     @Fork(1)
-    @Threads(1)
+    @Threads(4)
     @Warmup(iterations = 2, time = 1)
     @Measurement(time = 1)
     public static class WmsMetatileBenchmark {
 
-        @State(Scope.Thread)
+        @State(Scope.Benchmark)
         public static class AbstractBenchmarkState {
 
             long[][] tileIndices;
 
-            int currentIndex = 0;
+            AtomicInteger currentIndex = new AtomicInteger(0);
 
             GeoServerSystemTestSupport geoServerSystemTestSupport =
                     new GeoServerSystemTestSupport();
 
             // Track how many cache hits we get just to help validate correctness of our benchmark
-            Map<String, Integer> cacheHitRate = new HashMap<>();
+            Map<String, Integer> cacheHitRate = new ConcurrentHashMap<>();
 
             @Setup
             public void setup() throws Exception {
@@ -120,7 +122,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
-                tileIndices = getTileIndices(LAYER_NAME, 10, 10000, 4, 1);
+                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 1);
             }
         }
 
@@ -129,7 +131,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
-                tileIndices = getTileIndices(LAYER_NAME, 10, 10000, 4, 2);
+                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 2);
             }
         }
 
@@ -138,7 +140,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
-                tileIndices = getTileIndices(LAYER_NAME, 10, 10000, 4, 4);
+                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 4);
             }
         }
 
@@ -148,7 +150,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
 
-                tileIndices = getTileIndices(LAYER_NAME, 10, 10000, 4, 16);
+                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 16);
             }
         }
 
@@ -157,7 +159,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
-                tileIndices = getTileIndices(LAYER_NAME, 10, 10000, 4, 1);
+                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 1);
             }
         }
 
@@ -191,7 +193,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         private void run(AbstractBenchmarkState state) throws Exception {
 
-            int currentIndex = state.currentIndex++;
+            int currentIndex = state.currentIndex.getAndIncrement();
 
             long[] metaTileIndex = state.tileIndices[currentIndex];
 

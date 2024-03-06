@@ -73,6 +73,11 @@ import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.factory.GeoTools;
 
+/**
+ * This Filter Visitor will replace queryables by their mapped XPaths. In the case that queryables
+ * are mapped to more than one XPath, the visitor will automatically multiply the relevant part of
+ * the filter and combine them with the logical "OR" operator.
+ */
 public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionVisitor {
 
     protected final FilterFactory ff;

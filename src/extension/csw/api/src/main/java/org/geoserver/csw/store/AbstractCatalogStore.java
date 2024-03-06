@@ -59,15 +59,10 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         if (rd == null) {
             throw new IOException(typeName + " is not a supported type");
         }
-
-        // do we have such attribute?
         final List<PropertyName> properties = rd.translateProperty(attributeName);
-        boolean hasProperty = false;
-        for (PropertyName property : properties) {
-            AttributeDescriptor ad = (AttributeDescriptor) property.evaluate(rd.getFeatureType());
-            hasProperty |= ad != null;
-        }
-        if (!hasProperty) {
+
+        // do we have these properties?
+        if (!hasProperties(rd.getFeatureType(), properties)) {
             return new CloseableIteratorAdapter<>(new ArrayList<String>().iterator());
         }
 
@@ -98,6 +93,15 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         List<String> result = new ArrayList<>(values);
         Collections.sort(result);
         return new CloseableIteratorAdapter<>(result.iterator());
+    }
+
+    protected boolean hasProperties(FeatureType featureType, List<PropertyName> properties) {
+        boolean hasProperty = false;
+        for (PropertyName property : properties) {
+            AttributeDescriptor ad = (AttributeDescriptor) property.evaluate(featureType);
+            hasProperty |= ad != null;
+        }
+        return hasProperty;
     }
 
     @Override

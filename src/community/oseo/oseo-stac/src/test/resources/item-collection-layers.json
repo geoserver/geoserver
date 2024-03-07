@@ -1,0 +1,57 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "stac_version": "$${env('stac_version', '1.0.0')}",
+      "stac_extensions": [
+        "$filter{eop:parentIdentifier LIKE 'SENTINEL%' or eop:parentIdentifier LIKE 'LANDSAT%'},https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+      ],
+      "id": "${eop:identifier}",
+      "type": "Feature",
+      "geometry": "${footprint}",
+      "bbox": [
+        "$${minx(footprint)}",
+        "$${miny(footprint)}",
+        "$${maxx(footprint)}",
+        "$${maxy(footprint)}"
+      ],
+      "properties": {
+        "start_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeStart}",
+        "end_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeEnd}",
+        "instruments": "${eo:collection/eo:instrument}",
+        "constellation": "$${strToLowerCase(eop:parentIdentifier)}"
+      },
+      "collection": "${eop:parentIdentifier}",
+      "keywords": "${keywords}",
+      "links": [
+        {
+          "href": "$${serviceLink('ogc/stac/v1/collections/%s', eop:parentIdentifier)}",
+          "rel": "collection",
+          "type": "application/json"
+        },
+        {
+          "href": "$${serviceLink('ogc/stac/v1')}",
+          "rel": "root",
+          "type": "application/json"
+        },
+        {
+          "href": "$${serviceLink('ogc/stac/v1/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
+          "rel": "self",
+          "type": "application/geo+json"
+        },
+        {
+          "href": "$${serviceLink('wms')}",
+          "rel": "wms",
+          "type": "image/png",
+          "wms:layers": [
+            {
+              "$source": "eo:collection/layers"
+            },
+            "${layer}"
+          ]
+        }
+      ]
+    }
+  ]
+}

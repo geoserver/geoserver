@@ -254,3 +254,16 @@ As an example customize how collections are listed:
       <#include "common-footer.ftl">
       
 #. For details on how to write templates see :ref:`tutorial_freemarkertemplate` tutorial.
+
+
+The following functions are specific to OGC API templates:
+
+* ``serviceLink(path*, format)`` generates a link back to the same service. 
+  The first argument, mandatory, is the extra path after the service landing page, the second argument, optional, is the format to use for the link.
+* ``genericServiceLink(path*, k1, v1, k2, v2, ....)`` generates a link back to any GeoServer OGC service, with additional query parameters. 
+  The first argument, mandatory, is the extra path after the GeoServer context path (usually ``/geoserver``), 
+  the following arguments are key-value pairs to be added as query parameters to the link.
+* ``resourceLink(path)`` links to a static resource, such as a CSS file or an image. 
+  The argument is the path to the resource, relative to the GeoServer context path (usually ``/geoserver``).
+* 
+

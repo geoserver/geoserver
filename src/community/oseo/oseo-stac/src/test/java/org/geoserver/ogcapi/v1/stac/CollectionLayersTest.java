@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -35,6 +36,8 @@ public class CollectionLayersTest extends STACTestSupport {
         // collection specific templates
         copyTemplate("/collection-layers.ftl", "templates/ogc/stac/v1/", "collection.ftl");
         copyTemplate("/collection-layers.json", "templates/ogc/stac/v1/", "collections.json");
+        copyTemplate("/item-collection-layers.json", "templates/ogc/stac/v1/", "items.json");
+        copyTemplate("/item-collection-layers.ftl", "templates/ogc/stac/v1/", "item_include.ftl");
 
         // Create fake layers matching the collection ones
         Catalog catalog = getCatalog();
@@ -63,8 +66,15 @@ public class CollectionLayersTest extends STACTestSupport {
     }
 
     @Test
-    public void testLandsatLayersHTML() throws Exception {
+    public void testCollectionHTML() throws Exception {
         Document document = getAsJSoup("ogc/stac/v1/collections/LANDSAT8?f=html");
+        checkLandsat8CollectionLayers(document);
+        assertEquals(
+                "http://localhost:8080/geoserver/wms?request=GetCapabilities&service=WMS",
+                document.select("a.wmsCapabilities").attr("href"));
+    }
+
+    private static void checkLandsat8CollectionLayers(Document document) {
         Elements titles = document.select("p.title");
         assertEquals(titles.get(0).text(), "Single title");
         assertEquals(titles.get(1).text(), "Separate title");
@@ -80,7 +90,7 @@ public class CollectionLayersTest extends STACTestSupport {
     }
 
     @Test
-    public void testLandsatLayersJSON() throws Exception {
+    public void testCollectionJSON() throws Exception {
         DocumentContext doc = getAsJSONPath("ogc/stac/v1/collections/LANDSAT8?f=json", 200);
         assertEquals("gs", doc.read("$.layers[0].workspace"));
         assertEquals("landsat8-SINGLE", doc.read("$.layers[0].layer"));
@@ -101,5 +111,20 @@ public class CollectionLayersTest extends STACTestSupport {
         assertEquals("Raster", doc.read("$.layers[1].styles[0].title"));
         assertEquals("polygon", doc.read("$.layers[1].styles[1].name"));
         assertEquals("Grey Polygon", doc.read("$.layers[1].styles[1].title"));
+    }
+
+    @Test
+    public void testItemsJSON() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath("ogc/stac/v1/collections/LANDSAT8/items/LS8_TEST.02", 200);
+        DocumentContext wmsLink = readSingleContext(doc, "$.links[?(@.rel=='wms')]");
+        assertEquals("http://localhost:8080/geoserver/wms", wmsLink.read("$.href"));
+        assertEquals(List.of("landsat8-SINGLE", "landsat8-SEPARATE"), wmsLink.read("wms:layers"));
+    }
+
+    @Test
+    public void testItemsHTML() throws Exception {
+        Document doc = getAsJSoup("ogc/stac/v1/collections/LANDSAT8/items/LS8_TEST.02?f=html");
+        checkLandsat8CollectionLayers(doc);
     }
 }

@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -128,13 +130,12 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
     private Transaction transaction;
 
-    public AbstractMappingStore(
-            JDBCOpenSearchAccess openSearchAccess, FeatureType collectionFeatureType)
+    public AbstractMappingStore(JDBCOpenSearchAccess openSearchAccess, FeatureType schema)
             throws IOException {
         this.openSearchAccess = openSearchAccess;
-        this.schema = collectionFeatureType;
-        this.propertyMapper = new SourcePropertyMapper(schema);
-        this.defaultSort = buildDefaultSort(schema);
+        this.schema = schema;
+        this.propertyMapper = new SourcePropertyMapper(this.schema);
+        this.defaultSort = buildDefaultSort(this.schema);
         this.linkFeatureType = buildLinkFeatureType();
         this.styleType = buildStyleType(openSearchAccess);
         this.collectionLayerSchema = buildCollectionLayerFeatureType(openSearchAccess);
@@ -549,17 +550,21 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             fc = getDelegateSource().getFeatures(dataQuery);
         }
 
-        return new MappingFeatureCollection(schema, fc, this::mapToComplexFeature);
+        // the mapper state allows the simple to complex map funcion to retain state across
+        // feature mappings (e.g. for caching)
+        HashMap<String, Object> mapperState = new HashMap<>();
+        return new MappingFeatureCollection(schema, fc, it -> mapToComplexFeature(it, mapperState));
     }
 
     /** Maps the underlying features (eventually joined) to the output complex feature */
-    protected Feature mapToComplexFeature(PushbackFeatureIterator<SimpleFeature> it) {
+    protected Feature mapToComplexFeature(
+            PushbackFeatureIterator<SimpleFeature> it, Map<String, Object> mapperState) {
         SimpleFeature fi = it.next();
 
         ComplexFeatureBuilder builder = new ComplexFeatureBuilder(schema, FEATURE_FACTORY);
 
         // allow subclasses to perform custom mappings while reusing the common ones
-        mapPropertiesToComplex(builder, fi);
+        mapPropertiesToComplex(builder, fi, mapperState);
 
         // the OGC links can be more than one
         Set<SimpleFeature> links = new LinkedHashSet<>();
@@ -609,7 +614,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     }
 
     /** Performs the common mappings, subclasses can override to add more */
-    protected void mapPropertiesToComplex(ComplexFeatureBuilder builder, SimpleFeature fi) {
+    protected void mapPropertiesToComplex(
+            ComplexFeatureBuilder builder, SimpleFeature fi, Map<String, Object> mapperState) {
         AttributeBuilder ab = new AttributeBuilder(FEATURE_FACTORY);
         FeatureType schema = builder.getFeatureType();
         for (PropertyDescriptor pd : schema.getDescriptors()) {

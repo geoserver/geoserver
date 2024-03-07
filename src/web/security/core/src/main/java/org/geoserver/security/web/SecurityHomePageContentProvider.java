@@ -8,9 +8,11 @@ package org.geoserver.security.web;
 import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
 import static org.geoserver.security.impl.GeoServerUser.DEFAULT_ADMIN_PASSWD;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -46,6 +48,25 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
         return null;
     }
 
+    /** Tests if the data directory is embedded in the GeoServer web archive. */
+    public static boolean isEmbeddedDataDirectory(GeoServerApplication app) {
+        try {
+            String webRootPath = app.getServletContext().getRealPath("/");
+            if (webRootPath == null) {
+                return false; // this should never happen
+            }
+            File dataDir = app.getResourceLoader().getBaseDirectory().getAbsoluteFile();
+            File webRoot = new File(webRootPath).getAbsoluteFile();
+            // 1. check if data directory is a directory in the web archive
+            // 2. check if data directory is a symlink to a directory in the web archive
+            return FilenameUtils.directoryContains(webRoot.getPath(), dataDir.getPath())
+                    || FilenameUtils.directoryContains(
+                            webRoot.getCanonicalPath(), dataDir.getCanonicalPath());
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     // PasswordChangeWarningPanel
     static class SecurityWarningsPanel extends Panel {
 
@@ -53,6 +74,12 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             super(id);
 
             GeoServerSecurityManager manager = GeoServerApplication.get().getSecurityManager();
+
+            // warn if using embedded data directory
+            add(
+                    new Label("embeddedDataDir", new StringResourceModel("embeddedDataDir", this))
+                            .setEscapeModelStrings(false)
+                            .setVisible(isEmbeddedDataDirectory(GeoServerApplication.get())));
 
             // warn in case of an existing masterpw.info
             Resource mpInfo = null;

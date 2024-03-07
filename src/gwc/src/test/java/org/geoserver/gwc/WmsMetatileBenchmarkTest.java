@@ -10,7 +10,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,8 +32,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
-    static final String LAYER_NAME =
-            BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
+    static final String LAYER_NAME = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
 
     /**
      * This isn't a real test. It's a function that is easy to run a profiler against. The JMH
@@ -44,7 +45,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
 
-        long[][] uniqueMetaTileIndices = getTileIndices(LAYER_NAME, 10, 1000, 4, 1);
+        long[][] uniqueMetaTileIndices = getTileIndices(LAYER_NAME, null, 10, 1000, 4, 1);
 
         for (long[] metaTileIndex : uniqueMetaTileIndices) {
 
@@ -66,12 +67,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
     @Ignore
     public void runBenchmark() throws Exception {
 
-        Options options =
-                new OptionsBuilder()
-                        .include(WmsMetatileBenchmark.class.getSimpleName() + ".*")
-                        .result("./target/benchmark-results.json")
-                        .resultFormat(ResultFormatType.JSON)
-                        .build();
+        Options options = new OptionsBuilder().include(WmsMetatileBenchmark.class.getSimpleName() + ".*").result("./target/benchmark-results.json").resultFormat(ResultFormatType.JSON).build();
         new Runner(options).run();
     }
 
@@ -89,8 +85,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
             AtomicInteger currentIndex = new AtomicInteger(0);
 
-            GeoServerSystemTestSupport geoServerSystemTestSupport =
-                    new GeoServerSystemTestSupport();
+            GeoServerSystemTestSupport geoServerSystemTestSupport = new GeoServerSystemTestSupport();
 
             // Track how many cache hits we get just to help validate correctness of our benchmark
             Map<String, Integer> cacheHitRate = new ConcurrentHashMap<>();
@@ -122,7 +117,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
-                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 1);
+                tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 1);
+                WmsMetatileBenchmarkTest.saveToCsv("./target/all-misses.csv", tileIndices);
             }
         }
 
@@ -131,7 +127,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
-                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 2);
+                tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 2);
+                WmsMetatileBenchmarkTest.saveToCsv("./target/50-percent-hits.csv", tileIndices);
             }
         }
 
@@ -140,7 +137,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
-                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 4);
+                tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 4);
+                WmsMetatileBenchmarkTest.saveToCsv("./target/75-percent-hits.csv", tileIndices);
             }
         }
 
@@ -150,7 +148,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
 
-                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 16);
+                tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 16);
+                WmsMetatileBenchmarkTest.saveToCsv("./target/90-percent-hits.csv", tileIndices);
             }
         }
 
@@ -159,7 +158,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
-                tileIndices = getTileIndices(LAYER_NAME, 11, 100000, 4, 1);
+                tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 1);
             }
         }
 
@@ -169,20 +168,17 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         }
 
         @Benchmark
-        public void runWithGwcAnd50PercentCacheHits(GwcAnd50PercentCacheHitsState state)
-                throws Exception {
+        public void runWithGwcAnd50PercentCacheHits(GwcAnd50PercentCacheHitsState state) throws Exception {
             run(state);
         }
 
         @Benchmark
-        public void runWithGwcAnd75PercentCacheHits(GwcAnd75PercentCacheHitsState state)
-                throws Exception {
+        public void runWithGwcAnd75PercentCacheHits(GwcAnd75PercentCacheHitsState state) throws Exception {
             run(state);
         }
 
         @Benchmark
-        public void runWithGwcAnd90PercentCacheHits(GwcAnd90PercentCacheHitsState state)
-                throws Exception {
+        public void runWithGwcAnd90PercentCacheHits(GwcAnd90PercentCacheHitsState state) throws Exception {
             run(state);
         }
 
@@ -199,8 +195,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
             String request = buildGetMap(LAYER_NAME, metaTileIndex);
 
-            MockHttpServletResponse response =
-                    state.geoServerSystemTestSupport.getAsServletResponse(request);
+            MockHttpServletResponse response = state.geoServerSystemTestSupport.getAsServletResponse(request);
 
             String cacheResult = response.getHeader("geowebcache-cache-result");
             if (cacheResult == null) { // will be null if we aren't even using integrated GWC
@@ -215,17 +210,24 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
      *
      * <p>It will attempt to evenly distribute the tiles across the entire gridset coverage.
      *
-     * @param tilesPerMetatile How many tiles from each metatile. By specifying "1" we can ensure all requests will be cache MISSES,
-     *                         whereas anything greater than 1 will ensure some degree of cache HITS.
+     * @param boundingBox      Optional bounding box to constrain tiles to a particular geographical area.
+     * @param tilesPerMetatile How many tiles from each metatile. By specifying "1" we can ensure
+     *                         all requests will be cache MISSES, whereas anything greater than 1 will ensure some
+     *                         degree of cache HITS.
      */
-    private static long[][] getTileIndices(
-            String layerName, int zoomLevel, int amount, int metaTileSize, int tilesPerMetatile) {
+    private static long[][] getTileIndices(String layerName, BoundingBox boundingBox, int zoomLevel, int amount, int metaTileSize, int tilesPerMetatile) {
         final GWC gwc = GWC.get();
         final TileLayer tileLayer = gwc.getTileLayerByName(layerName);
         final GridSubset gridSubset = tileLayer.getGridSubset("EPSG:4326");
 
-        long[] coverage =
-                gridSubset.getCoverage(zoomLevel); // coverage={minx,miny,max,maxy,zoomlevel}
+        long[] coverage; // coverage={minx,miny,max,maxy,zoomlevel}
+        if (boundingBox == null) {
+            coverage = gridSubset.getCoverage(zoomLevel);
+        } else {
+            coverage = gridSubset.getCoverageIntersection(zoomLevel, boundingBox);
+        }
+
+        System.out.printf("Coverage: %d, %d, %d, %d, %d (minx, miny, maxx, maxy, zoomLevel)\n", coverage[0], coverage[1], coverage[2], coverage[3], coverage[4]);
 
         long[][] indices = new long[amount][3]; // each one contains {x,y,zoomLevel}
 
@@ -240,6 +242,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         long maxNumberOfNonOverlappingMetaTilesHorizontally = width / metaTileSize;
         long maxNumberOfNonOverlappingMetaTilesVertically = height / metaTileSize;
 
+        System.out.println("Max number of metatiles with coverage: " + maxNumberOfNonOverlappingMetaTilesHorizontally * maxNumberOfNonOverlappingMetaTilesVertically);
+
         long horizontalIncrementBetweenMetaTiles = width / maxNumberOfNonOverlappingMetaTilesHorizontally;
         long verticalIncrementBetweenMetaTiles = height / maxNumberOfNonOverlappingMetaTilesVertically;
 
@@ -247,12 +251,12 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         int tileCount = 0;
         // Traverse the overall grid to find each metatile
-        for(int metaTileIndex = 0; metaTileIndex < numberOfMetaTiles; metaTileIndex++){
+        for (int metaTileIndex = 0; metaTileIndex < numberOfMetaTiles; metaTileIndex++) {
 
             // Traverse each metatile to pull out individual tiles
             long currentXWithinMetaTile = 0;
             long currentYWithinMetaTile = 0;
-            for(int tileIndex = 0; tileIndex < tilesPerMetatile; tileIndex++){
+            for (int tileIndex = 0; tileIndex < tilesPerMetatile; tileIndex++) {
 
                 indices[tileCount] = new long[]{currentX + currentXWithinMetaTile, currentY + currentYWithinMetaTile, zoomLevel};
                 tileCount++;
@@ -260,7 +264,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
                 currentXWithinMetaTile += 1;
 
                 // navigate to next row of metatile if we hit the end of this one
-                if(currentXWithinMetaTile > metaTileSize){
+                if (currentXWithinMetaTile > metaTileSize) {
                     currentXWithinMetaTile = 0;
                     currentYWithinMetaTile += 1;
                 }
@@ -275,8 +279,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
 
             if (currentY > maxY) {
-                throw new RuntimeException(
-                        "Grid subset isn't large enough to generate the desired number of non-conflicting metatiles; try a larger zoom level.");
+                throw new RuntimeException("Grid subset isn't large enough to generate the desired number of non-conflicting metatiles; try a larger zoom level.");
             }
         }
         return indices;
@@ -302,5 +305,26 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         sb.append("&tilesorigin=-180.0,90.0");
         sb.append("&tiled=true");
         return sb.toString();
+    }
+    /**
+     * Save the indicies to a CSV which can optionally be loaded into JMeter for alternative benchmarking.
+     *
+     * @param location    Location of the CSV
+     * @param tileIndices The tile indices
+     * @throws IOException
+     */
+    static void saveToCsv(String location, long[][] tileIndices) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(location));
+        String gridsetId = "EPSG:4326";
+        final GWC gwc = GWC.get();
+        final TileLayer tileLayer = gwc.getTileLayerByName(LAYER_NAME);
+        final GridSubset gridSubset = tileLayer.getGridSubset(gridsetId);
+
+        for (long[] tileIndex : tileIndices) {
+            BoundingBox bounds = gridSubset.boundsFromIndex(tileIndex);
+            writer.println(bounds.toString());
+        }
+
+        writer.close();
     }
 }

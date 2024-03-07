@@ -1383,7 +1383,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             } else {
                 Dispatcher.REQUEST.remove();
             }
-
         }
         return new ByteArrayResource(resp.getBytes());
     }
@@ -2383,7 +2382,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return lockProvider;
     }
 
-    public Executor getTileSavingExecutor(){
+    public Executor getTileSavingExecutor() {
         return tileSavingExecutor;
     }
 

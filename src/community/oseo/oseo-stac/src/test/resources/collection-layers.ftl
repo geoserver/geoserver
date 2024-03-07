@@ -28,6 +28,7 @@
           <li>${format.value}</li>
         </#list>
         </ul>
+        <p><a class="wmsCapabilities" href="${genericServiceLink('wms', 'service', 'WMS', 'request', 'GetCapabilities')}">Capabilities URL</a></p>
     </#if>
     
     <#assign wcs=layer.services.rawValue.wcs.rawValue>

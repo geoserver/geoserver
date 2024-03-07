@@ -53,7 +53,6 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
-import org.geoserver.gwc.ConfigurableLockProvider;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
@@ -63,7 +62,6 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RequestInfo;
-import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geoserver.util.DimensionWarning;
 import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.*;
@@ -594,10 +592,14 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         final GeoServerMetaTile metaTile = createMetaTile(conveyorTile, metaX, metaY);
 
         /* ****************** Acquire lock on metatile ******************* */
-        final Lock metaTileLock = GWC.get().getLockProvider().getLock(buildMetaTileLockKey(conveyorTile, metaTile));
+        final Lock metaTileLock =
+                GWC.get().getLockProvider().getLock(buildMetaTileLockKey(conveyorTile, metaTile));
 
         /* ****************** Acquire lock on individual tile ******************* */
-        final Lock tileLock = GWC.get().getLockProvider().getLock(buildTileLockKey(conveyorTile, conveyorTile.getTileIndex()));
+        final Lock tileLock =
+                GWC.get()
+                        .getLockProvider()
+                        .getLock(buildTileLockKey(conveyorTile, conveyorTile.getTileIndex()));
 
         try {
 
@@ -634,7 +636,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                     final int numberOfTiles = gridPositions.length;
 
                     final int zoomLevel = (int) gridLoc[2];
-                    final boolean store = this.getExpireCache(zoomLevel) != GWCVars.CACHE_DISABLE_CACHE;
+                    final boolean store =
+                            this.getExpireCache(zoomLevel) != GWCVars.CACHE_DISABLE_CACHE;
 
                     Executor executor = GWC.get().getTileSavingExecutor();
                     List<CompletableFuture<?>> completableFutures = new ArrayList<>();
@@ -649,40 +652,47 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                                 // edge tile outside coverage, do not store it
                                 continue;
                             }
-                            Supplier<Resource> encodeAndSaveTileTask = encodeAndSaveTileTask(metaTile, conveyorTile, requestTime, tileIndex);
-
+                            Supplier<Resource> encodeAndSaveTileTask =
+                                    encodeAndSaveTileTask(
+                                            metaTile, conveyorTile, requestTime, tileIndex);
 
                             if (isConveyorTile) {
                                 // Execute the task for the conveyor tile on this thread
                                 conveyorTile.setBlob(encodeAndSaveTileTask.get());
                             } else {
                                 // For all other tiles, execute the task asynchronously
-                                CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> {
-                                            try {
-                                                encodeAndSaveTileTask.get();
-                                            }finally {
-                                                // Raster cleaner normally runs as a dispatcher callback but in this case
-                                                // there is no dispatcher request on this thread. Neglecting to cleanup
-                                                // the images from the various RenderedImageMapResponse implementations
-                                                // would cause a severe memory leak.
-                                                RasterCleaner.cleanup();
-                                            }
-                                        }
-                                        , executor);
+                                CompletableFuture<Void> completableFuture =
+                                        CompletableFuture.runAsync(
+                                                () -> {
+                                                    try {
+                                                        encodeAndSaveTileTask.get();
+                                                    } finally {
+                                                        // Raster cleaner normally runs as a
+                                                        // dispatcher callback but in this case
+                                                        // there is no dispatcher request on this
+                                                        // thread. Neglecting to cleanup
+                                                        // the images from the various
+                                                        // RenderedImageMapResponse implementations
+                                                        // would cause a severe memory leak.
+                                                        RasterCleaner.cleanup();
+                                                    }
+                                                },
+                                                executor);
                                 completableFutures.add(completableFuture);
                             }
                         }
                     }
 
                     // Dispose of metatile when all completable futures are done
-                    runAsyncAfterAllFuturesComplete(completableFutures, metaTile::dispose, executor);
+                    runAsyncAfterAllFuturesComplete(
+                            completableFutures, metaTile::dispose, executor);
 
                 } catch (Exception e) {
                     Throwables.throwIfInstanceOf(e, GeoWebCacheException.class);
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
                 }
             }
-        }finally {
+        } finally {
             try {
                 /* ****************** Release lock on individual tile ******************* */
                 tileLock.release();
@@ -690,19 +700,20 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 /* ****************** Release lock on metatile ******************* */
                 metaTileLock.release();
             }
-
         }
 
         return finalizeTile(conveyorTile);
     }
 
-    private void runAsyncAfterAllFuturesComplete(List<CompletableFuture<?>> futures, Runnable runnable, Executor executor){
+    private void runAsyncAfterAllFuturesComplete(
+            List<CompletableFuture<?>> futures, Runnable runnable, Executor executor) {
         CompletableFuture<?>[] futureArray = futures.toArray(new CompletableFuture[0]);
         CompletableFuture<Void> afterAllFutures = CompletableFuture.allOf(futureArray);
         afterAllFutures.thenRunAsync(runnable, executor);
     }
 
-    private Supplier<Resource> encodeAndSaveTileTask(GeoServerMetaTile metaTile, ConveyorTile tileProto, long requestTime, int tileIndex) {
+    private Supplier<Resource> encodeAndSaveTileTask(
+            GeoServerMetaTile metaTile, ConveyorTile tileProto, long requestTime, int tileIndex) {
         return () -> {
             final long[][] gridPositions = metaTile.getTilesGridPositions();
             long[] gridPosition = gridPositions[tileIndex];
@@ -712,7 +723,10 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             try {
 
                 /* ****************** Acquire lock on individual tile ******************* */
-                final Lock tileLock = GWC.get().getLockProvider().getLock(buildTileLockKey(tileProto, gridPosition));
+                final Lock tileLock =
+                        GWC.get()
+                                .getLockProvider()
+                                .getLock(buildTileLockKey(tileProto, gridPosition));
 
                 try {
 
@@ -743,12 +757,14 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                     tileProto.getStorageObject().setCreated(tile.getCreated());
 
                 } catch (IOException ioe) {
-                    LOGGER.log(Level.SEVERE, "Unable to write image tile to ByteArrayOutputStream", ioe);
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Unable to write image tile to ByteArrayOutputStream",
+                            ioe);
                 } finally {
 
                     /* ****************** Release lock on individual tile ******************* */
                     tileLock.release();
-
                 }
 
             } catch (GeoWebCacheException e) {
@@ -794,14 +810,15 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     /**
      * Builds a unique string for a given tile.
      *
-     * @param tilePrototype A ConveyorTile that has all the metadata we require by may not be the actual tile we need a key for.
-     * @param gridPosition  The grid position of the ACTUAL tile we need a key for.
+     * @param tilePrototype A ConveyorTile that has all the metadata we require by may not be the
+     *     actual tile we need a key for.
+     * @param gridPosition The grid position of the ACTUAL tile we need a key for.
      */
-    private String buildTileLockKey(ConveyorTile tilePrototype, long[] gridPosition){
+    private String buildTileLockKey(ConveyorTile tilePrototype, long[] gridPosition) {
         return buildLockKey(tilePrototype, "gwc_tile_", gridPosition);
     }
 
-    private String buildLockKey(ConveyorTile tilePrototype, String prefix, long[] position){
+    private String buildLockKey(ConveyorTile tilePrototype, String prefix, long[] position) {
         StringBuilder lockKey = new StringBuilder();
 
         lockKey.append(prefix);

@@ -5,19 +5,18 @@
  */
 package org.geoserver.wms;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.util.ArrayList;
+import java.util.List;
+import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderedImageAdapter;
+import javax.media.jai.RenderedImageList;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.wms.map.RenderedImageTimeDecorator;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.util.ImageUtilities;
-
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RenderedImageAdapter;
-import javax.media.jai.RenderedImageList;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RasterCleaner extends AbstractDispatcherCallback {
     static final ThreadLocal<List<RenderedImage>> images = new ThreadLocal<>();
@@ -57,7 +56,7 @@ public class RasterCleaner extends AbstractDispatcherCallback {
         cleanup();
     }
 
-    public static void cleanup(){
+    public static void cleanup() {
         disposeCoverages();
         disposeImages();
     }
@@ -86,8 +85,6 @@ public class RasterCleaner extends AbstractDispatcherCallback {
             list.clear();
         }
     }
-
-
 
     /** Immediately disposes an image, the image might not be usable any longer after this call */
     private static void disposeImage(RenderedImage image) {

@@ -930,7 +930,7 @@ public class JDBCOpenSearchAccessTest {
                             Double.valueOf(3.3)
                         },
                         "fid.3");
-        jdbcProductFeatureStore.mapPropertiesToComplex(complexFeatureBuilder, f);
+        jdbcProductFeatureStore.mapPropertiesToComplex(complexFeatureBuilder, f, new HashMap<>());
         assertEquals(
                 "{\"a\":{\"archive\":7,\"hello\":6,\"meh\":{\"aver\":9,\"working\":8}},\"c\":5,\"f\":3,\"g\":1,\"h\":4,\"m\":2,\"opt:cloudCover\":34}",
                 f.getAttribute("string").toString());

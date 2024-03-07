@@ -47,6 +47,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.http.client.utils.DateUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -278,6 +280,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.jdbcConfigurationStorage = jdbcConfigurationStorage;
         this.blobStoreAggregator = blobStoreAggregator;
         this.gwcSynchEnv = gwcSynchEnv;
+
+        this.tileSavingExecutor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("gwc-tile-saving-%d").build());
     }
 
     /** Updates the configurable lock provider to use the specified bean */

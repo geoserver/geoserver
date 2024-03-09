@@ -1,6 +1,6 @@
 ﻿.. _extensions_importer_guireference:
 
-Importer interface reference 
+Importer interface reference  
 ============================
 
 The Layer Importer user interface is a component of the GeoServer web interface. You can access it from the GeoServer web interface by clicking the :guilabel:`Import Data` link, found on the left side of the screen after logging in.
@@ -44,7 +44,7 @@ Configure the data source: PostGIS
 
 Fill out fields for :guilabel:`Connection type` (Default or JNDI) :guilabel:`Host`, :guilabel:`Port`, :guilabel:`Database` name, :guilabel:`Schema`, :guilabel:`Username` to connect with, and :guilabel:`Password`.
 
-There are also advanced connection options, which are common to the standard PostGIS store loading procedure. (See the `PostGIS data store <../../geoserver/data/database/>`_ page in the GeoServer reference documentation.)
+There are also advanced connection options, which are common to the standard PostGIS store loading procedure. (See the :ref:`PostGIS data store <data_postgis>` page in the GeoServer reference documentation.)
 
 .. figure:: images/sources_postgis.png
 

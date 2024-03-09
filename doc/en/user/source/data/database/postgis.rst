@@ -1,4 +1,4 @@
-.. _data_postgis: 
+.. _data_postgis:
 
 PostGIS
 =======
@@ -149,7 +149,7 @@ When finished, click :guilabel:`Save`.
 Using JNDI
 ``````````
 
-GeoServer can also connect to a PostGIS database using `JNDI <http://java.sun.com/products/jndi/>`_ (Java Naming and Directory Interface).
+GeoServer can also connect to a PostGIS database using `JNDI <https://docs.oracle.com/javase/tutorial/jndi/overview/index.html>`_ (Java Naming and Directory Interface). This is used to allow a PostGIS DataStore to share a named connection pool of PostGIS connections configured in your application server.
 
 To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS NG (JNDI)`.
 

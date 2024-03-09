@@ -182,11 +182,9 @@ Explore Data
 
 #. Return to the :guilabel:`Data` tab and use the :guilabel:`Compute` link to determine the minimum and maximum for the **scalerank** attribute.
 
-   .. only:: instructor
- 
-      .. admonition:: Instructor Notes
+   .. admonition:: Instructor Notes
 
-         Should be 2 and 9 respectively.
+      Should be 2 and 9 respectively.
 
 Challenge Compare SLD Generation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -215,10 +213,8 @@ Challenge Compare SLD Generation
    
    **Challenge:** What differences can you spot?
    
-   .. only:: instructor
-    
-      .. admonition:: Instructor Notes      
+   .. admonition:: Instructor Notes      
 
-         Generated SLD does not include name or title information; this can of course be added. Please check the MBStyle reference for details.
+      Generated SLD does not include name or title information; this can of course be added. Please check the MBStyle reference for details.
 
-         The second difference is with the use of a fallback Mark when defining a PointSymbolizer.
+      The second difference is with the use of a fallback Mark when defining a PointSymbolizer.

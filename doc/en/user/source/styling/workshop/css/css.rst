@@ -314,10 +314,8 @@ Challenge Compare SLD Generation
    
    **Challenge:** What differences can you spot?
    
-   .. only:: instructor
+   .. admonition:: Instructor Notes      
 
-      .. admonition:: Instructor Notes      
-
-         Generated SLD does not include name or title information; this can be added by students using an annotation. Encourage students to look this up in the reference material provided.
-      
-         The second difference is with the use of a fallback Mark when defining a PointSymbolizer. The CSS extension does not bother with a fallback as it knows the capabilities of the GeoServer rendering engine (and is not trying to create a reusable style).
+      Generated SLD does not include name or title information; this can be added by students using an annotation. Encourage students to look this up in the reference material provided.
+   
+      The second difference is with the use of a fallback Mark when defining a PointSymbolizer. The CSS extension does not bother with a fallback as it knows the capabilities of the GeoServer rendering engine (and is not trying to create a reusable style).

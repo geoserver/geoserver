@@ -47,9 +47,9 @@ The full syntax of a point symbolizer is::
 
 where:
 
-.. include:: include/stroke.txt
+.. include:: include/stroke.rst
 
-.. include:: include/fill.txt
+.. include:: include/fill.rst
 
 .. list-table::
    :class: non-responsive
@@ -102,19 +102,19 @@ where:
      - Value (in degrees) or rotation of the mark. Larger values increase counter-clockwise rotation. A value of ``180`` will make the mark upside-down.
      - ``0``
 
-.. include:: include/symbol.txt
+.. include:: include/symbol.rst
 
 The following properties are equivalent to SLD "vendor options".
 
-.. include:: include/misc.txt
+.. include:: include/misc.rst
 
 Additional "vendor options" properties for :ref:`sld-extensions_composite-blend`:
 
-.. include:: include/composite.txt
+.. include:: include/composite.rst
 
 Additional "vendor options" properties for :ref:`rendering_selection`:
 
-.. include:: include/inclusion.txt
+.. include:: include/inclusion.rst
 
 
 Examples

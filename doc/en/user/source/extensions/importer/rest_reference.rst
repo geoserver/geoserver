@@ -898,9 +898,9 @@ The response will be::
 	  "source": null, 
 	  "target": "EPSG:3005"
 	}
-	
-.. _transformations:	
-	
+
+.. _transformations:
+
 Transformation reference
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

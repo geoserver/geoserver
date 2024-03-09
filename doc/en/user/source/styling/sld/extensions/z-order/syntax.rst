@@ -1,7 +1,7 @@
 .. _sld-extensions_z_order_syntax:
 
 Enabling z-ordering in a single FeatureTypeStyle
-------------------------------------------------
+================================================
 
 The z-ordering is implemented as a new FeatureTypeStyle vendor option, ``sortBy``, which controls
 in which order the features are extracted from the data source, and thus painted.

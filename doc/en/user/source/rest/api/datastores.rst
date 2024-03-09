@@ -175,10 +175,10 @@ Exceptions
 Parameters
 ~~~~~~~~~~
 
+.. _rest_api_datastores_extension:
+
 ``extension``
 ^^^^^^^^^^^^^
-
-.. _rest_api_datastores_extension:
 
 The ``extension`` parameter specifies the type of data being uploaded. The following extensions are supported:
 
@@ -199,19 +199,21 @@ The ``extension`` parameter specifies the type of data being uploaded. The follo
 
 .. _rest_api_datastores_file_put:
 
-.. note::
+File PUT
+^^^^^^^^
 
-   A file can be PUT to a data store as a standalone or zipped archive file. Standalone files are only suitable for data stores that work with a single file such as a GML store. Data stores that work with multiple files, such as the shapefile store, must be sent as a zip archive.
+A file can be PUT to a data store as a standalone or zipped archive file. Standalone files are only suitable for data stores that work with a single file such as a GML store. Data stores that work with multiple files, such as the shapefile store, must be sent as a zip archive.
 
-   When uploading a standalone file, set the ``Content-type`` appropriately based on the file type. If you are loading a zip archive, set the ``Content-type`` to ``application/zip``.
+When uploading a standalone file, set the ``Content-type`` appropriately based on the file type. If you are loading a zip archive, set the ``Content-type`` to ``application/zip``.
 
 .. _rest_api_datastores_file_put_appschema:
 
-.. note::
+file PUT Application Schema
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   The app-schema mapping configuration can either be uploaded as a single file, or split in multiple files for reusability and/or mapping constraints (e.g. multiple mappings of the same feature type are needed). If multiple mapping files are uploaded as a zip archive, the extension of the main mapping file (the one including the others via the ``<includedTypes>`` tag) must be ``.appschema``, otherwise it will not be recognized as the data store's primary file and publishing will fail.
+The app-schema mapping configuration can either be uploaded as a single file, or split in multiple files for reusability and/or mapping constraints (e.g. multiple mappings of the same feature type are needed). If multiple mapping files are uploaded as a zip archive, the extension of the main mapping file (the one including the others via the ``<includedTypes>`` tag) must be ``.appschema``, otherwise it will not be recognized as the data store's primary file and publishing will fail.
 
-   The application schemas (XSD files) required to define the mapping can be added to the zip archive and uploaded along with the mapping configuration. All files contained in the archive are uploaded to the same folder, so the path to the secondary mapping files and the application schemas, as specified in the main mapping file, is simply the file name of the included resource.
+The application schemas (XSD files) required to define the mapping can be added to the zip archive and uploaded along with the mapping configuration. All files contained in the archive are uploaded to the same folder, so the path to the secondary mapping files and the application schemas, as specified in the main mapping file, is simply the file name of the included resource.
 
 .. _rest_api_datastores_configure:
 

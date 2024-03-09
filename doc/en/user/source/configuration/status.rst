@@ -243,19 +243,35 @@ JVM Console
 
 For information on the live Java Runtime Environment the :guilabel:`JVM Console` tab provides access to two useful troubleshooting tools.
 
-Press :guilabel:`Thread Dump` for a summary of all active threads. This is primarily used to troubleshoot performance issues and a non-responsive system. This can be used to identify when significant work is happening in the background, or if threads are stuck waiting on a resource.
+.. note::
 
-.. figure:: img/thread_dump.png
-   
-   Thread Dump console output
-   
-   
+   For more information on effective use see :ref:`troubleshooting`.
 
-Press :guilabel:`Heap Dump` for an overview of memory use. This can be used to troubleshoot systems that are encountering a memory leak over time.
-.. figure:: img/heap_dump.png
-   
-   Heap Dump console output
-   
-* Click :guilabel:`Download` link to download the JVM Console contents.
+Java Threads
+^^^^^^^^^^^^
 
-For more information on effective use see :ref:`troubleshooting`.
+Java Threads are how CPU use is shared between outstanding work GeoServer is performing (or waiting to perform).
+The "Thread Dump" is primarily used to troubleshoot performance issues and a non-responsive system.
+This can be used to identify when significant work is happening in the background, or if threads are stuck waiting on a resource.
+
+1. Press :guilabel:`Thread Dump` for a summary of all active threads.
+
+   .. figure:: img/thread_dump.png
+      
+      Thread Dump console output
+
+2. Click :guilabel:`Download` link to download the JVM Console contents.
+
+Java Heap
+^^^^^^^^^
+
+The Java Heap is a description of dynamic (or heap) memory use.
+The "Thread Dump" can be used to troubleshoot systems that are encountering a memory leak over time.
+
+1. Press :guilabel:`Heap Dump` for an overview of memory use.
+
+   .. figure:: img/heap_dump.png
+      
+      Heap Dump console output
+
+2. Click :guilabel:`Download` link to download the JVM Console contents.

@@ -138,13 +138,11 @@ The **fill-color** property is used to provide the color used to draw the interi
 
    .. image:: ../style/img/polygon_fill_5.png
 
-.. only:: instructor
+.. admonition:: Instructor Notes
 
-   .. admonition:: Instructor Notes
+   In this example we want to ensure readers know the key property for polygon data.
 
-      In this example we want to ensure readers know the key property for polygon data.
-
-      It is also our first example of using opacity.
+   It is also our first example of using opacity.
 
 Pattern
 -------
@@ -555,22 +553,20 @@ Theme
 
 A thematic map (rather than focusing on representing the shape of the world) uses elements of style to illustrate differences in the data under study.  This section is a little more advanced and we will take the time to look at the generated SLD file.
 
-.. only:: instructor
+.. admonition:: Instructor Notes
 
-   .. admonition:: Instructor Notes
+   This instruction section follows our pattern with LineString. Building on the examples and exploring how selectors can be used.
 
-      This instruction section follows our pattern with LineString. Building on the examples and exploring how selectors can be used.
+   * For LineString we explored the use of @scale, in this section we are going to look at theming by attribute.
 
-      * For LineString we explored the use of @scale, in this section we are going to look at theming by attribute.
+   * We also unpack how cascading occurs, and what the result looks like in the generated XML.
 
-      * We also unpack how cascading occurs, and what the result looks like in the generated XML.
+   * care is being taken to introduce the symbology encoding functions as an option for theming ( placing equal importance on their use).
 
-      * care is being taken to introduce the symbology encoding functions as an option for theming ( placing equal importance on their use).
+   Checklist:
 
-      Checklist:
-
-      * filter vs function for theming
-      * Cascading
+   * filter vs function for theming
+   * Cascading
 
 #. We can use a site like `ColorBrewer <http://www.colorbrewer2.com>`_ to explore the use of color theming for polygon symbology. In this approach the fill color of the polygon is determined by the value of the attribute under study.
 
@@ -810,15 +806,13 @@ Explore Antialiasing
 Explore Categorize
 ^^^^^^^^^^^^^^^^^^
 
-.. only:: instructor
+.. admonition:: Instructor Notes
 
-   .. admonition:: Instructor Notes
+   This section reviews use of the Symbology Encoding Categorize function for something else other than color. Goal is to have readers reach for SE Functions as often as selectors when styling.
 
-      This section reviews use of the Symbology Encoding Categorize function for something else other than color. Goal is to have readers reach for SE Functions as often as selectors when styling.
+   Additional exercise ideas:
 
-      Additional exercise ideas:
-
-      * Control size using Interpolate: While Recode offers an alternative for selectors (matching discrete values) Interpolate brings something new to the table - gradual color (or value) progression. The best of example of this is controlling width using the ``ne:rivers`` data layer (which is not yet available).
+   * Control size using Interpolate: While Recode offers an alternative for selectors (matching discrete values) Interpolate brings something new to the table - gradual color (or value) progression. The best of example of this is controlling width using the ``ne:rivers`` data layer (which is not yet available).
 
 #. The **Categorize** function can be used to generate property values based on quantitative information. Here is an example using Categorize to color states according to size.
 

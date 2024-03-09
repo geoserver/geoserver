@@ -47,7 +47,10 @@ Controls all feature types in a given data store / workspace.
 
 .. _rest_api_featuretypes_post:
 
-.. note:: When creating a new feature type via ``POST``, if no underlying dataset with the specified name exists an attempt will be made to create it. This will work only in cases where the underlying data format supports the creation of new types (such as a database). When creating a feature type in this manner the client should include all attribute information in the feature type representation.
+featuretypes POST
+~~~~~~~~~~~~~~~~~
+
+When creating a new feature type via ``POST``, if no underlying dataset with the specified name exists an attempt will be made to create it. This will work only in cases where the underlying data format supports the creation of new types (such as a database). When creating a feature type in this manner the client should include all attribute information in the feature type representation.
 
 Exceptions
 ~~~~~~~~~~

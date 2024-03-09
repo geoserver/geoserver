@@ -7,17 +7,17 @@ GeoServer can leverage the `ImageI/O-Ext <https://github.com/geosolutions-it/ima
 
 The following image formats can be read by GeoServer using GDAL:
 
-* DTED, Military Elevation Data (.dt0, .dt1, .dt2): http://www.gdal.org/frmt_dted.html
-* EHdr, ESRI .hdr Labelled: <http://www.gdal.org/frmt_various.html#EHdr>
-* ENVI, ENVI .hdr Labelled Raster: <http://www.gdal.org/frmt_various.html#ENVI>
-* HFA, Erdas Imagine (.img): <http://www.gdal.org/frmt_hfa.html>
-* JP2MrSID, JPEG2000 (.jp2, .j2k): <http://www.gdal.org/frmt_jp2mrsid.html>
-* MrSID, Multi-resolution Seamless Image Database: <http://www.gdal.org/frmt_mrsid.html>
-* NITF: <http://www.gdal.org/frmt_nitf.html>
-* ECW, ERDAS Compressed Wavelets (.ecw): <http://www.gdal.org/frmt_ecw.html>
-* JP2ECW, JPEG2000 (.jp2, .j2k): http://www.gdal.org/frmt_jp2ecw.html
-* AIG, Arc/Info Binary Grid: <http://www.gdal.org/frmt_various.html#AIG>
-* JP2KAK, JPEG2000 (.jp2, .j2k): <http://www.gdal.org/frmt_jp2kak.html>
+* `DTED <https://www.gdal.org/frmt_dted.html>`__: Military Elevation Data (:file:`.dt0`, :file:`.dt1`, :file:`.dt2`)
+* `EHdr <https://gdal.org/drivers/raster/ehdr.html>`__: ESRI :file:`.hdr` Labelled: 
+* `ENVI <https://gdal.org/drivers/raster/envi.html>`__: ENVI :file:`.hdr` Labelled Raster
+* `HFA <https://www.gdal.org/frmt_hfa.html>`__: Erdas Imagine (:file:`.img`)
+* `JP2MrSID <https://www.gdal.org/frmt_jp2mrsid.html>`__: JPEG2000 (:file:`.jp2`, :file:`.j2k`)
+* `MrSID <https://www.gdal.org/frmt_mrsid.html>`__: Multi-resolution Seamless Image Database
+* `NITF <https://www.gdal.org/frmt_nitf.html>`__: National Imagery Transmission Format
+* `ECW <https://www.gdal.org/frmt_ecw.html>`__: ERDAS Compressed Wavelets (:file:`.ecw)`: 
+* `JP2ECW <https://www.gdal.org/frmt_jp2ecw.html>`__: JPEG2000 (:file:`.jp2`, :file:`.j2k`)
+* `AIG <https://gdal.org/drivers/raster/aig.html>`__: Arc/Info Binary Grid
+* `JP2KAK <https://www.gdal.org/frmt_jp2kak.html>`__: JPEG2000 (:file:`.jp2`, :file:`.j2k`)
 
 Installing GDAL extension
 -------------------------
@@ -146,7 +146,7 @@ Testing the installation
 
 Once these steps have been completed, restart GeoServer.
 
-Navigate to :menuselection:`About > Server Status` page, and change to the :guilabel:`Modules` tab, and click :guilabel:`` link for status information.
+Navigate to :menuselection:`About > Server Status` page, and change to the :guilabel:`Modules` tab, and click :guilabel:`ImageI/O-Ext GDAL Coverage Extension` link for status information.
 
 .. figure:: images/gdal-extension-status.png
    
@@ -161,11 +161,11 @@ If all the steps have been performed  correctly, new data formats will be in the
 
    *GDAL image formats in the list of raster data stores*
    
-If new formats do not appear in the GUI and you see the following message in the log file:
+If new formats do not appear in the GUI and you see the following message in the log file::
 
-*it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
-WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path*
-WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdalalljni in java.library.path*
+    *it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
+    WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path*
+    WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdalalljni in java.library.path*
 
 This means that the extension was installed, bu twas not able to access your gdal library for some reason.
 

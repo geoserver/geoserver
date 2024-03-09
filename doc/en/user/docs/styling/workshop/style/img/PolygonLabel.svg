@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="150px" height="176px" viewBox="0 0 150 176" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>PolygonLabel</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PolygonLabel">
+            <g id="Label" transform="translate(2.000000, 2.000000)">
+                <rect id="Backdrop" stroke="#979797" fill="#FFFFFF" x="0" y="0" width="147" height="170"></rect>
+                <polygon id="Polygon" stroke="#000000" fill="#7EB5D3" points="56.09375 37.4609375 10.5898438 97.8476562 70.8125 97.8476562 99.0742188 67.7382812"></polygon>
+                <text id="Urban" font-family="Cantarell-Regular, Cantarell" font-size="11" font-weight="normal" fill="#000000">
+                    <tspan x="41" y="76.263456">Urban</tspan>
+                </text>
+                <text font-family="ProximaNova-Semibold, Proxima Nova" font-size="13" font-weight="500" fill="#000000">
+                    <tspan x="59.757" y="18">Label</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

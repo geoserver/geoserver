@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GeoServerLayer>
+  <!-- id is optional, but if present, both id and name shall match the 
+       associated GeoServer layer's id and (prefixed) name attributes -->
+  <id>LayerInfoImpl--570ae188:124761b8d78:-7fd0</id>
+  <enabled>true</enabled>
+  <name>tiger:poi</name>
+</GeoServerLayer>

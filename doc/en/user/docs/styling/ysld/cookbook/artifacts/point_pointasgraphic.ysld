@@ -1,0 +1,11 @@
+title: 'YSLD Cook Book: Point as graphic'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - point:
+        size: 32
+        symbols:
+        - external:
+            url: smileyface.png
+            format: image/png

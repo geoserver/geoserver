@@ -1,0 +1,13 @@
+<gwcQuotaConfiguration>
+  <enabled>true</enabled>
+  <diskBlockSize>2048</diskBlockSize>
+  <cacheCleanUpFrequency>5</cacheCleanUpFrequency>
+  <cacheCleanUpUnits>SECONDS</cacheCleanUpUnits>
+  <maxConcurrentCleanUps>5</maxConcurrentCleanUps>
+  <globalExpirationPolicyName>LRU</globalExpirationPolicyName>
+  <globalQuota>
+    <value>100</value>
+    <units>MiB</units>
+  </globalQuota>
+  <layerQuotas/>
+</gwcQuotaConfiguration>

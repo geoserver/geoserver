@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GeoServerLayer>
+  <!-- id is optional, but if present, both id and name shall match the 
+       associated GeoServer layer's id and (prefixed) name attributes -->
+  <id>LayerInfoImpl--570ae188:124761b8d78:-7fd0</id>
+  <enabled>true</enabled>
+  <name>tiger:poi</name>
+  <mimeFormats>
+    <string>image/png8</string>
+  </mimeFormats>
+  <gridSubsets>
+    <gridSubset>
+      <gridSetName>GoogleCRS84Quad</gridSetName>
+      <zoomStart>0</zoomStart>
+      <zoomStop>14</zoomStop>
+      <minCachedLevel>1</minCachedLevel>
+      <maxCachedLevel>9</maxCachedLevel>
+    </gridSubset>
+    <gridSubset>
+      <gridSetName>EPSG:900913</gridSetName>
+      <extent>
+        <coords>
+          <double>-8238959.403861314</double>
+          <double>4969300.121476209</double>
+          <double>-8237812.689219721</double>
+          <double>4971112.167757057</double>
+        </coords>
+      </extent>
+    </gridSubset>
+  </gridSubsets>
+  <metaWidthHeight>
+    <int>4</int>
+    <int>4</int>
+  </metaWidthHeight>
+  <parameterFilters>
+    <stringParameterFilter>
+      <key>STYLES</key>
+      <defaultValue>poi</defaultValue>
+      <values>
+        <string>burg</string>
+        <string>point</string>
+      </values>
+    </stringParameterFilter>
+  </parameterFilters>
+  <gutter>50</gutter>
+  <autoCacheStyles>true</autoCacheStyles>
+</GeoServerLayer>

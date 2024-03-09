@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<seedRequest>
+	<name>topp:states</name>
+	<bounds>
+          <coords>
+            <double>-2495667.977678598</double> <!-- minx -->
+            <double>-2223677.196231552</double> <!-- miny -->
+            <double>3291070.6104286816</double> <!-- maxx -->
+            <double>959189.3312465074</double> <!-- maxy -->
+          </coords>
+	</bounds>
+
+        <!-- These are listed on http://localhost:8080/geowebcache/demo -->
+        <gridSetId>EPSG:2163 Grid Set</gridSetId>
+	<zoomStart>1</zoomStart>
+        <!-- This will be reduced to 3, since the layer is only defined for 0-3 -->
+	<zoomStop>12</zoomStop>
+	<format>image/png</format>
+	
+	<!-- type can be 
+		* seed (add missing tiles) 
+		* reseed (replace tiles)
+		* truncate (remove tiles)
+	-->
+	<type>truncate</type>
+	
+	<!-- Number of seeding threads to run in parallel. If type is truncate only one thread will execute. -->
+	<threadCount>1</threadCount>
+</seedRequest>

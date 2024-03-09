@@ -1,0 +1,89 @@
+/* populated places */
+[@scale < 4000000]{
+   mark: symbol(
+     "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+   );
+   mark-size: [13-SCALERANK];
+   label: [NAME];
+   label-offset: 0 [13-SCALERANK];
+}
+[@scale > 4000000] [@scale < 8000000] [SCALERANK < 7] {
+   mark: symbol(
+     "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+   );
+   mark-size: [12-SCALERANK];
+   label: [NAME];
+   label-offset: 0 [12-SCALERANK];
+}
+
+[@scale > 8000000] [@scale < 17000000] [SCALERANK < 5] {
+   mark: symbol(
+     "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+   );
+   mark-size: [11-SCALERANK];
+   label: [NAME];
+   label-offset: 0 [11-SCALERANK];
+}
+
+[@scale > 17000000] [@scale < 35000000] [SCALERANK < 4] {
+   mark: symbol(
+     "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+   );
+   mark-size: [11-SCALERANK];
+   label: [NAME];
+   label-offset: 0 [11-SCALERANK];
+
+}
+
+[@scale > 35000000] [@scale < 70000000][SCALERANK < 3] {
+   mark: symbol(
+     "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+   );
+   mark-size: [10-SCALERANK];
+   label: [NAME];
+   label-offset: 0 [10-SCALERANK];
+}
+
+[@scale > 70000000] [@scale < 140000000][SCALERANK < 2] {
+   mark: symbol(
+     "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+   );
+   mark-size: [9-SCALERANK];
+   label: [NAME];
+   label-offset: 0 [9-SCALERANK];
+}
+
+[@scale > 140000000] [SCALERANK < 1] {
+   mark: symbol(
+     "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+   );
+   mark-size: 8;
+   label: [NAME];
+   label-offset: 0 8;
+}
+
+* {
+  font-fill: black;
+  font-family: "Arial";
+  font-size: 10;
+
+  label-anchor: 0.5 0;
+
+  halo-radius: 2;
+  halo-color: lightgray;
+  halo-opacity:0.7;
+   
+  -gt-mark-label-obstacle: true;
+  -gt-label-max-displacement: 90;
+  -gt-label-padding: 2;
+  -gt-label-priority: [10 - LABELRANK];
+}
+
+[FEATURECLA = 'Admin-0 capital'] :mark {
+  fill: black;
+}
+
+:symbol {
+  fill: gray;
+  stroke: black;
+}

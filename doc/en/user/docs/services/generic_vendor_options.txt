@@ -1,0 +1,29 @@
+General Vendor Options
+----------------------
+
+These vendor options are available for all operations.
+
+content-disposition
+^^^^^^^^^^^^^^^^^^^
+
+The ``content-disposition`` parameter directs how a web browser directed to handle returned content. The syntax is::
+
+   content-disposition=<disposition>
+
+Where ``content-disposition =attachment`` to direct the browser to save the content to disk.
+
+Where ``content-disposition=inline`` asks the browser to display the content. Note this may present performance issues when asked to display very large content.
+
+filename
+^^^^^^^^
+
+The ``filename`` parameter provides a suggested filename when a browser saves a file (e.g. to Downloads folder). The syntax is::
+
+   filename=<file>
+
+
+An example of filename use is::
+   
+   filename=features.json
+
+When service output is saved as a file, the vendor-option ``filename`` is used to provide the file name used. 

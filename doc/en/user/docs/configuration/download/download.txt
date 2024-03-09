@@ -1,0 +1,7 @@
+../../../../../../src/main/src/main/resources/PRODUCTION_LOGGING.xml
+../../../../../../src/extension/importer/core/src/main/resources/IMPORTER_LOGGING.xml
+../../../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml
+../../../../../../src/main/src/main/resources/QUIET_LOGGING.xml
+../../../../../../src/main/src/main/resources/GEOTOOLS_DEVELOPER_LOGGING.xml
+../../../../../../src/main/src/main/resources/VERBOSE_LOGGING.xml
+../../../../../../src/main/src/main/resources/GEOSERVER_DEVELOPER_LOGGING.xml

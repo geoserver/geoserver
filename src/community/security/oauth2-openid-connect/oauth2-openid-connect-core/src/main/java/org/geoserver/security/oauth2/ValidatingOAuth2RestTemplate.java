@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -35,7 +36,9 @@ class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
             String jwkUri,
             OpenIdConnectFilterConfig config) {
         super(resource, context);
-        if (jwkUri != null) this.store = new JwkTokenStore(jwkUri);
+        if (jwkUri != null) {
+            this.store = new JwkTokenStore(jwkUri);
+        }
         this.config = config;
     }
 
@@ -109,7 +112,13 @@ class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
             String idToken = (String) maybeIdToken;
             setAsRequestAttribute(OpenIdConnectAuthenticationFilter.ID_TOKEN_VALUE, idToken);
             // among other things, this verifies the token
-            if (store != null) store.readAuthentication(idToken);
+            if (store != null) {
+                try {
+                    store.readAuthentication(idToken);
+                } catch (InvalidTokenException e) {
+                    LOGGER.warning("Failed to validate ID token: " + e.getMessage());
+                }
+            }
             // TODO: the authentication just read could contain roles, could be treated as
             // another role source... but needs to be made available to role computation
         }

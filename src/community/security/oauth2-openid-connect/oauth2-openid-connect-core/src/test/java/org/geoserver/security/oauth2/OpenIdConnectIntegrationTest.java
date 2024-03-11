@@ -78,7 +78,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                                         .withStatus(200)
                                         .withHeader(
                                                 "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("jkws.json")));
+                                        .withBodyFile("jwks.json")));
 
         openIdService.stubFor(
                 WireMock.post(urlPathEqualTo("/token"))
@@ -142,6 +142,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         filterConfig.setLoginEndpoint("/j_spring_oauth2_openid_connect_login");
         filterConfig.setLogoutEndpoint("/j_spring_oauth2_openid_connect_logout");
         filterConfig.setLogoutUri(authService + "/endSession");
+        filterConfig.setJwkURI(authService + "/.well-known/jwks.json");
         filterConfig.setScopes("openid profile email phone address");
         filterConfig.setEnableRedirectAuthenticationEntryPoint(true);
         filterConfig.setPrincipalKey("email");

@@ -213,7 +213,7 @@ public class MetaDataDescriptor extends QueryableMappingRecordDescriptor {
         XPathUtil.StepList steps =
                 XPathUtil.steps(
                         getFeatureDescriptor(),
-                        queryableMapping.get(QUERYABLE_BBOX).getPropertyName(),
+                        queryableMapping.get(QUERYABLE_BBOX).get(0).getPropertyName(),
                         getNamespaceSupport());
 
         return CatalogStoreMapping.toDotPath(steps);

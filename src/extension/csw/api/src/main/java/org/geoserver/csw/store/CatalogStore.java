@@ -90,6 +90,16 @@ public interface CatalogStore {
     /** Returns the store capabilities */
     CatalogStoreCapabilities getCapabilities();
 
-    /** Maps a qualified name to it's equivalent property name for the backend store. */
-    PropertyName translateProperty(RecordDescriptor rd, Name name);
+    /**
+     * Maps a qualified name to it's equivalent property names for the backend store. @Deprecated
+     * Use translateToPropertyNames(RecordDescriptor, Name)
+     */
+    @Deprecated
+    default PropertyName translateProperty(RecordDescriptor rd, Name name) {
+        List<PropertyName> propNames = translateToPropertyNames(rd, name);
+        return propNames != null && !propNames.isEmpty() ? propNames.get(0) : null;
+    }
+
+    /** Maps a qualified name to its equivalent property names for the backend store. */
+    List<PropertyName> translateToPropertyNames(RecordDescriptor rd, Name name);
 }

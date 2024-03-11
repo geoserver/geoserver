@@ -10,4 +10,5 @@ This section discusses the Catalog Services for Web (CSW) ISO Metadata Profile e
 
    installing
    mapping
+   queryables
    tutorial

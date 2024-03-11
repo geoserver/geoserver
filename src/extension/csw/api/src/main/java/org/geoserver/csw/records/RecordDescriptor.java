@@ -80,7 +80,7 @@ public interface RecordDescriptor {
      *
      * @return the property name
      */
-    PropertyName translateProperty(Name name);
+    List<PropertyName> translateProperty(Name name);
 
     /**
      * Checks that the spatial filters are actually referring to a spatial property. The {@link

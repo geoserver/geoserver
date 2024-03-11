@@ -19,6 +19,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -47,8 +48,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
-
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.http.client.utils.DateUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -281,7 +280,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.blobStoreAggregator = blobStoreAggregator;
         this.gwcSynchEnv = gwcSynchEnv;
 
-        this.tileSavingExecutor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("gwc-tile-saving-%d").build());
+        this.tileSavingExecutor =
+                Executors.newCachedThreadPool(
+                        new ThreadFactoryBuilder().setNameFormat("gwc-tile-saving-%d").build());
     }
 
     /** Updates the configurable lock provider to use the specified bean */

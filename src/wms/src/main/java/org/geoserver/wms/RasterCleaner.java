@@ -87,7 +87,7 @@ public class RasterCleaner extends AbstractDispatcherCallback {
     }
 
     /** Immediately disposes an image, the image might not be usable any longer after this call */
-    private static void disposeImage(RenderedImage image) {
+    public static void disposeImage(RenderedImage image) {
         if (image instanceof PlanarImage) {
             ImageUtilities.disposePlanarImageChain((PlanarImage) image);
         } else if (image instanceof BufferedImage) {

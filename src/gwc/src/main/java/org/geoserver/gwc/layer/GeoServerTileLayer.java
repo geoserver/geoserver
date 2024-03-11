@@ -599,6 +599,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 GWC.get().getLockProvider().getLock(buildMetaTileLockKey(conveyorTile, metaTile));
 
         /* ****************** Acquire lock on individual tile ******************* */
+        // Will block here if there is an async thread currently saving this tile
         final Lock tileLock =
                 GWC.get()
                         .getLockProvider()
@@ -606,7 +607,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
         try {
 
-            // After getting the lock on the meta tile and invidual tile, try again
+            // After getting the lock on the meta tile and individual tile, try cache again
             if (tryCache && tryCacheFetch(conveyorTile)) {
                 LOGGER.finest(
                         "--> "

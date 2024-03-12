@@ -643,7 +643,16 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                     final boolean store =
                             this.getExpireCache(zoomLevel) != GWCVars.CACHE_DISABLE_CACHE;
 
-                    Executor executor = GWC.get().getTileSavingExecutor();
+
+                    Executor executor = GWC.get().getMetaTilingExecutor();;
+                    if (conveyorTile.servletReq == null) {
+                        // Metatiling concurrency is disabled if this isn't a user request. Concurrency
+                        // reduces the user-experienced latency but isn't useful for seeding. In fact, it
+                        // would be harmful for seeding because it makes it more difficult for an administrator
+                        // to control the amount of resource usage for significant seeding jobs.
+                        System.out.println("Disabling metatiling concurrency because not a user request");
+                        executor = null;
+                    }
                     List<CompletableFuture<?>> completableFutures = new ArrayList<>();
 
                     // A latch to track whether we've locked all the individual tiles or not, before
@@ -669,8 +678,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                                             requestTime,
                                             tileIndex);
 
-                            if (isConveyorTile) {
-                                // Execute the task for the conveyor tile on this thread
+                            if (isConveyorTile || executor == null) {
+                                // Execute the task for the conveyor tile on this thread (and all other tiles
+                                // if concurrency is not enabled)
                                 conveyorTile.setBlob(encodeAndSaveTileTask.get());
                             } else {
                                 // For all other tiles, execute the task asynchronously
@@ -691,6 +701,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                                                     }
                                                 },
                                                 executor);
+
                                 completableFutures.add(completableFuture);
                             }
                         }
@@ -699,9 +710,16 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                     // Wait until we've obtained locks on all individual tiles before proceeding
                     tileLockLatch.await();
 
-                    // Dispose of metatile when all completable futures are done
-                    runAsyncAfterAllFuturesComplete(
-                            completableFutures, metaTile::dispose, executor);
+
+                    // Dispose of meta-tile when all completable futures are done
+                    if(!completableFutures.isEmpty()){
+                        runAsyncAfterAllFuturesComplete(
+                                completableFutures, metaTile::dispose, executor);
+                    }else {
+                        // There were no asynchronous tasks, everything was run on the main thread so
+                        // we can dispose of the meta-tile right away
+                        metaTile.dispose();
+                    }
 
                 } catch (Exception e) {
                     Throwables.throwIfInstanceOf(e, GeoWebCacheException.class);

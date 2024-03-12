@@ -72,6 +72,9 @@ public class GWCConfig implements Cloneable, Serializable {
     /** Default meta-tiling factor for the Y axis */
     private int metaTilingY;
 
+    /** Number of threads available for concurrent encoding/saving of tiles within a meta-tile */
+    private Integer metaTilingThreads;
+
     /** Default gutter size in pixels */
     private int gutter;
 
@@ -279,6 +282,7 @@ public class GWCConfig implements Cloneable, Serializable {
     public boolean isSane() {
         return metaTilingX > 0
                 && metaTilingY > 0
+                && (metaTilingThreads == null || metaTilingThreads >= 0)
                 && gutter >= 0
                 && !defaultCachingGridSetIds.isEmpty()
                 && !defaultCoverageCacheFormats.isEmpty()
@@ -335,6 +339,14 @@ public class GWCConfig implements Cloneable, Serializable {
 
     public void setMetaTilingY(int metaFactorY) {
         this.metaTilingY = metaFactorY;
+    }
+
+    public Integer getMetaTilingThreads() {
+        return metaTilingThreads;
+    }
+
+    public void setMetaTilingThreads(Integer metaTilingThreads) {
+        this.metaTilingThreads = metaTilingThreads;
     }
 
     public int getGutter() {
@@ -396,6 +408,7 @@ public class GWCConfig implements Cloneable, Serializable {
                 && cacheNonDefaultStyles == gwcConfig.cacheNonDefaultStyles
                 && metaTilingX == gwcConfig.metaTilingX
                 && metaTilingY == gwcConfig.metaTilingY
+                && metaTilingThreads == gwcConfig.metaTilingThreads
                 && gutter == gwcConfig.gutter
                 && Objects.equals(version, gwcConfig.version)
                 && Objects.equals(WMTSEnabled, gwcConfig.WMTSEnabled)
@@ -428,6 +441,7 @@ public class GWCConfig implements Cloneable, Serializable {
                 cacheNonDefaultStyles,
                 metaTilingX,
                 metaTilingY,
+                metaTilingThreads,
                 gutter,
                 defaultCachingGridSetIds,
                 defaultCoverageCacheFormats,

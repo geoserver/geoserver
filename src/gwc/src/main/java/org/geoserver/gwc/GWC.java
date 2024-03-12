@@ -39,9 +39,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
@@ -224,7 +222,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private BlobStoreAggregator blobStoreAggregator;
 
-    private ExecutorService tileSavingExecutor = Executors.newCachedThreadPool();
+    private ExecutorService metaTilingExecutor;
 
     /**
      * Constructor for the GWC mediator
@@ -280,9 +278,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.blobStoreAggregator = blobStoreAggregator;
         this.gwcSynchEnv = gwcSynchEnv;
 
-        this.tileSavingExecutor =
-                Executors.newCachedThreadPool(
-                        new ThreadFactoryBuilder().setNameFormat("gwc-tile-saving-%d").build());
+        this.metaTilingExecutor = buildMetaTilingExecutor(getConfig().getMetaTilingThreads());
     }
 
     /** Updates the configurable lock provider to use the specified bean */
@@ -308,6 +304,22 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         lockProvider.setDelegate(delegate);
+    }
+
+    private ExecutorService buildMetaTilingExecutor(Integer metaTilingThreads){
+        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("GWC MetaTiling Thread-%d").build();
+
+        if(metaTilingThreads == null){
+            metaTilingThreads = Runtime.getRuntime().availableProcessors() * 2;
+        }
+
+        System.out.println("Building meta tiling executor with thread pool size of " + metaTilingThreads);
+        if(metaTilingThreads == 0){
+            return null;
+        }
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(metaTilingThreads, metaTilingThreads, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), threadFactory);
+        executor.allowCoreThreadTimeOut(true);
+        return executor;
     }
 
     /**
@@ -361,7 +373,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (this.catalogStyleChangeListener != null) {
             catalog.removeListener(this.catalogStyleChangeListener);
         }
-        this.tileSavingExecutor.shutdownNow();
+        this.metaTilingExecutor.shutdownNow();
         GWC.set(null, null);
     }
 
@@ -2387,8 +2399,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return lockProvider;
     }
 
-    public Executor getTileSavingExecutor() {
-        return tileSavingExecutor;
+    public Executor getMetaTilingExecutor() {
+        return metaTilingExecutor;
     }
 
     public JDBCConfiguration getJDBCDiskQuotaConfig()

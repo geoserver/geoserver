@@ -15,10 +15,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Check;
-import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.CheckGroup;
-import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -111,6 +108,11 @@ public class CachingOptionsPanel extends Panel {
                 new DropDownChoice<>("metaTilingY", metaTilingYModel, metaTilingChoices);
         metaTilingY.setRequired(true);
         configs.add(metaTilingY);
+
+        IModel<Integer> metaTilingThreads = new PropertyModel<>(gwcConfigModel, "metaTilingThreads");
+        TextField<Integer> metaTilingThreadsTextField = new TextField<>("metaTilingThreads", metaTilingThreads);
+        metaTilingThreadsTextField.setRequired(false);
+        configs.add(metaTilingThreadsTextField);
 
         IModel<Integer> gutterModel = new PropertyModel<>(gwcConfigModel, "gutter");
         List<Integer> gutterChoices =

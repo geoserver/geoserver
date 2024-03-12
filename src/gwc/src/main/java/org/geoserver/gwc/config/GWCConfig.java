@@ -408,7 +408,7 @@ public class GWCConfig implements Cloneable, Serializable {
                 && cacheNonDefaultStyles == gwcConfig.cacheNonDefaultStyles
                 && metaTilingX == gwcConfig.metaTilingX
                 && metaTilingY == gwcConfig.metaTilingY
-                && metaTilingThreads == gwcConfig.metaTilingThreads
+                && Objects.equals(metaTilingThreads, gwcConfig.metaTilingThreads)
                 && gutter == gwcConfig.gutter
                 && Objects.equals(version, gwcConfig.version)
                 && Objects.equals(WMTSEnabled, gwcConfig.WMTSEnabled)

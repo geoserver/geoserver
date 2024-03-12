@@ -372,7 +372,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (this.catalogStyleChangeListener != null) {
             catalog.removeListener(this.catalogStyleChangeListener);
         }
-        this.metaTilingExecutor.shutdownNow();
+        if(this.metaTilingExecutor != null) {
+            this.metaTilingExecutor.shutdownNow();
+        }
         GWC.set(null, null);
     }
 
@@ -1257,6 +1259,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         // make sure we switch to the lock provider just configured
         updateLockProvider(gwcConfig.getLockProviderName());
+
+        // Reconfigure the metatiling executor because the thread count might have changed
+        if(this.metaTilingExecutor != null){
+            this.metaTilingExecutor.shutdown();
+        }
+        this.metaTilingExecutor = buildMetaTilingExecutor(gwcConfig.getMetaTilingThreads());
+
     }
 
     public void saveDiskQuotaConfig(DiskQuotaConfig config, JDBCConfiguration jdbcConfig)

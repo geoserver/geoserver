@@ -49,7 +49,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
 
         GWCConfig config = GWC.get().getConfig();
-        config.setMetaTilingThreads(Runtime.getRuntime().availableProcessors());
+        config.setMetaTilingThreads(2 * Runtime.getRuntime().availableProcessors());
         GWC.get().saveConfig(config);
 
         long[][] uniqueMetaTileIndices = getTileIndices(LAYER_NAME, null, 10, 1000, 4, 1);

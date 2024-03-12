@@ -306,17 +306,25 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         lockProvider.setDelegate(delegate);
     }
 
-    private ExecutorService buildMetaTilingExecutor(Integer metaTilingThreads){
-        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("GWC MetaTiling Thread-%d").build();
+    private ExecutorService buildMetaTilingExecutor(Integer metaTilingThreads) {
+        ThreadFactory threadFactory =
+                new ThreadFactoryBuilder().setNameFormat("GWC MetaTiling Thread-%d").build();
 
-        if(metaTilingThreads == null){
+        if (metaTilingThreads == null) {
             metaTilingThreads = Runtime.getRuntime().availableProcessors() * 2;
         }
 
-        if(metaTilingThreads == 0){
+        if (metaTilingThreads == 0) {
             return null;
         }
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(metaTilingThreads, metaTilingThreads, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), threadFactory);
+        ThreadPoolExecutor executor =
+                new ThreadPoolExecutor(
+                        metaTilingThreads,
+                        metaTilingThreads,
+                        10,
+                        TimeUnit.SECONDS,
+                        new LinkedBlockingQueue<>(),
+                        threadFactory);
         executor.allowCoreThreadTimeOut(true);
         return executor;
     }
@@ -372,7 +380,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (this.catalogStyleChangeListener != null) {
             catalog.removeListener(this.catalogStyleChangeListener);
         }
-        if(this.metaTilingExecutor != null) {
+        if (this.metaTilingExecutor != null) {
             this.metaTilingExecutor.shutdownNow();
         }
         GWC.set(null, null);
@@ -1261,11 +1269,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         updateLockProvider(gwcConfig.getLockProviderName());
 
         // Reconfigure the metatiling executor because the thread count might have changed
-        if(this.metaTilingExecutor != null){
+        if (this.metaTilingExecutor != null) {
             this.metaTilingExecutor.shutdown();
         }
         this.metaTilingExecutor = buildMetaTilingExecutor(gwcConfig.getMetaTilingThreads());
-
     }
 
     public void saveDiskQuotaConfig(DiskQuotaConfig config, JDBCConfiguration jdbcConfig)

@@ -66,6 +66,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.FileUtils;
@@ -1639,6 +1640,32 @@ public class GWCTest {
                     GeoWebCacheExtensions.bean(GeoWebCacheEnvironment.class);
             assertEquals("TEST VALUE", gwcEnvironment.resolveValue("${TEST}"));
         }
+    }
+
+    @Test
+    public void testBuildMetatilingExecutor() throws IOException {
+
+        // If user provides thread count, we expect that to be obeyed
+        GWCConfig newConfig = new GWCConfig();
+        newConfig.setMetaTilingThreads(12);
+        mediator.saveConfig(newConfig);
+        assertNotNull(mediator.getMetaTilingExecutor());
+        assertEquals(12, ((ThreadPoolExecutor) mediator.getMetaTilingExecutor()).getCorePoolSize());
+
+        // If thread count is null, we expect a default
+        newConfig = new GWCConfig();
+        newConfig.setMetaTilingThreads(null);
+        mediator.saveConfig(newConfig);
+        assertNotNull(mediator.getMetaTilingExecutor());
+        assertEquals(
+                Runtime.getRuntime().availableProcessors() * 2,
+                ((ThreadPoolExecutor) mediator.getMetaTilingExecutor()).getCorePoolSize());
+
+        // If thread count is 0, we expect a null executor
+        newConfig = new GWCConfig();
+        newConfig.setMetaTilingThreads(0);
+        mediator.saveConfig(newConfig);
+        assertNull(mediator.getMetaTilingExecutor());
     }
 
     @AfterClass

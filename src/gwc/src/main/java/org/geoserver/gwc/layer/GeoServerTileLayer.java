@@ -612,6 +612,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                                 + Thread.currentThread().getName()
                                 + " returns cache hit for "
                                 + Arrays.toString(metaTile.getMetaGridPos()));
+                log(metaTile.getMetaGridPos(), "Got tile from cache");
             } else {
                 LOGGER.finer(
                         "--> "
@@ -623,6 +624,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 WebMap map;
                 try {
                     long requestTime = System.currentTimeMillis();
+                    log(metaTile.getMetaGridPos(), "Dispatching getmap for metatile");
 
                     // Actually fetch the metatile data
                     map = dispatchGetMap(conveyorTile, metaTile);
@@ -656,6 +658,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                         if (isConveyorTile || store) {
                             if (!gridSubset.covers(gridPos)) {
                                 // edge tile outside coverage, do not store it
+                                tileLockLatch.countDown();
                                 continue;
                             }
                             Supplier<Resource> encodeAndSaveTileTask =
@@ -712,6 +715,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 tileLock.release();
             } finally {
                 /* ****************** Release lock on metatile ******************* */
+                log(metaTile.getMetaGridPos(), "Releasing metatile lock");
                 metaTileLock.release();
             }
         }
@@ -741,6 +745,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             try {
 
                 /* ****************** Acquire lock on individual tile ******************* */
+                log(gridPosition, "Acquiring lock");
                 final Lock tileLock =
                         GWC.get()
                                 .getLockProvider()
@@ -784,6 +789,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
                     /* ****************** Release lock on individual tile ******************* */
                     tileLock.release();
+                    log(gridPosition, "Lock released");
                 }
 
             } catch (GeoWebCacheException e) {
@@ -791,6 +797,12 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             }
             return resource;
         };
+    }
+
+    private void log(long[] position, String message){
+        long x = position[0];
+        long y = position[1];
+        System.out.printf("[%s] [%d_%d] %s%n", Thread.currentThread().getName(), x, y, message);
     }
 
     /**

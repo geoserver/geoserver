@@ -7,6 +7,7 @@ The Features Templating plug-in works by allowing us to define a What You See Is
 
 .. list-table::
    :widths: 20 20
+   :header-rows: 1
 
    * - **Service**
      - **Operation**

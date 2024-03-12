@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -607,7 +608,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                             this.getExpireCache(zoomLevel) != GWCVars.CACHE_DISABLE_CACHE;
 
                     Executor executor = GWC.get().getMetaTilingExecutor();
-                    if (conveyorTile.servletReq == null) {
+
+                    if (Dispatcher.REQUEST.get() == null) {
                         // Metatiling concurrency is disabled if this isn't a user request.
                         // Concurrency reduces the user-experienced latency but isn't
                         // useful for seeding. In fact, it would be harmful for seeding

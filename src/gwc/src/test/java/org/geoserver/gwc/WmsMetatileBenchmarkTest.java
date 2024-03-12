@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.ehcache.impl.internal.concurrent.ConcurrentHashMap;
+import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
@@ -28,6 +29,8 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import javax.servlet.ServletResponse;
 
 public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
@@ -44,6 +47,10 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
     public void profileBenchmark() throws Exception {
 
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
+
+        GWCConfig config = GWC.get().getConfig();
+        config.setMetaTilingThreads(Runtime.getRuntime().availableProcessors());
+        GWC.get().saveConfig(config);
 
         long[][] uniqueMetaTileIndices = getTileIndices(LAYER_NAME, null, 10, 1000, 4, 1);
 
@@ -101,6 +108,12 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
                 geoServerSystemTestSupport.doSetup();
             }
 
+            protected void setMetaTilingThreads(int metaTilingThreads) throws IOException {
+                GWCConfig config = GWC.get().getConfig();
+                config.setMetaTilingThreads(metaTilingThreads);
+                GWC.get().saveConfig(config);
+            }
+
             @TearDown
             public void tearDown() throws Exception {
 
@@ -118,42 +131,91 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcAndNoCacheHitsState extends AbstractBenchmarkState {
-
+        public static class AbstractGwcWithConcurrency extends AbstractBenchmarkState {
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
+                setMetaTilingThreads(2 * Runtime.getRuntime().availableProcessors());
+            }
+        }
+
+        public static class AbstractGwcWithoutConcurrency extends AbstractBenchmarkState {
+            @Override
+            public void setup() throws Exception {
+                super.setup();
+                GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
+                setMetaTilingThreads(0);
+            }
+        }
+
+        public static class GwcWithConcurrencyAndNoCacheHitsState extends AbstractGwcWithConcurrency {
+
+            public void setup() throws Exception {
+                super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 1);
                 WmsMetatileBenchmarkTest.saveToCsv("./target/all-misses.csv", tileIndices);
             }
         }
 
-        public static class GwcAnd50PercentCacheHitsState extends AbstractBenchmarkState {
+        public static class GwcWithoutConcurrencyAndNoCacheHitsState extends AbstractGwcWithoutConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
-                GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
+                tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 1);
+                WmsMetatileBenchmarkTest.saveToCsv("./target/all-misses.csv", tileIndices);
+            }
+        }
+
+        public static class GwcWithConcurrencyAnd50PercentCacheHitsState extends AbstractGwcWithConcurrency {
+
+            public void setup() throws Exception {
+                super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 2);
                 WmsMetatileBenchmarkTest.saveToCsv("./target/50-percent-hits.csv", tileIndices);
             }
         }
 
-        public static class GwcAnd75PercentCacheHitsState extends AbstractBenchmarkState {
+        public static class GwcWithoutConcurrencyAnd50PercentCacheHitsState extends AbstractGwcWithoutConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
-                GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
+                tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 2);
+                WmsMetatileBenchmarkTest.saveToCsv("./target/50-percent-hits.csv", tileIndices);
+            }
+        }
+
+        public static class GwcWithConcurrencyAnd75PercentCacheHitsState extends AbstractGwcWithConcurrency {
+
+            public void setup() throws Exception {
+                super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 4);
                 WmsMetatileBenchmarkTest.saveToCsv("./target/75-percent-hits.csv", tileIndices);
             }
         }
 
-        public static class GwcAnd90PercentCacheHitsState extends AbstractBenchmarkState {
+        public static class GwcWithoutConcurrencyAnd75PercentCacheHitsState extends AbstractGwcWithoutConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
-                GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
+                tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 4);
+                WmsMetatileBenchmarkTest.saveToCsv("./target/75-percent-hits.csv", tileIndices);
+            }
+        }
 
+        public static class GwcWithConcurrencyAnd90PercentCacheHitsState extends AbstractGwcWithConcurrency {
+
+            public void setup() throws Exception {
+                super.setup();
+                tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 16);
+                WmsMetatileBenchmarkTest.saveToCsv("./target/90-percent-hits.csv", tileIndices);
+            }
+        }
+
+        public static class GwcWithoutConcurrencyAnd90PercentCacheHitsState extends AbstractGwcWithoutConcurrency {
+
+            public void setup() throws Exception {
+                super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 16);
                 WmsMetatileBenchmarkTest.saveToCsv("./target/90-percent-hits.csv", tileIndices);
             }
@@ -169,34 +231,57 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         }
 
         @Benchmark
-        public void runWithGwcAndNoCacheHits(GwcAndNoCacheHitsState state) throws Exception {
-            run(state);
+        public ServletResponse runWithGwcWithConcurrencyAndNoCacheHits(GwcWithConcurrencyAndNoCacheHitsState state) throws Exception {
+            return run(state);
         }
 
         @Benchmark
-        public void runWithGwcAnd50PercentCacheHits(GwcAnd50PercentCacheHitsState state)
+        public ServletResponse runWithGwcWithoutConcurrencyAndNoCacheHits(GwcWithoutConcurrencyAndNoCacheHitsState state) throws Exception {
+            return run(state);
+        }
+
+        @Benchmark
+        public ServletResponse runWithGwcWithConcurrencyAnd50PercentCacheHits(GwcWithConcurrencyAnd50PercentCacheHitsState state)
                 throws Exception {
-            run(state);
+            return run(state);
         }
 
         @Benchmark
-        public void runWithGwcAnd75PercentCacheHits(GwcAnd75PercentCacheHitsState state)
+        public ServletResponse runWithGwcWithoutConcurrencyAnd50PercentCacheHits(GwcWithoutConcurrencyAnd50PercentCacheHitsState state)
                 throws Exception {
-            run(state);
+            return run(state);
         }
 
         @Benchmark
-        public void runWithGwcAnd90PercentCacheHits(GwcAnd90PercentCacheHitsState state)
+        public ServletResponse runWithGwcWithConcurrencyAnd75PercentCacheHits(GwcWithConcurrencyAnd75PercentCacheHitsState state)
                 throws Exception {
-            run(state);
+            return run(state);
         }
 
         @Benchmark
-        public void runWithoutGwc(NoGwcState state) throws Exception {
-            run(state);
+        public ServletResponse runWithGwcWithoutConcurrencyAnd75PercentCacheHits(GwcWithoutConcurrencyAnd75PercentCacheHitsState state)
+                throws Exception {
+            return run(state);
         }
 
-        private void run(AbstractBenchmarkState state) throws Exception {
+        @Benchmark
+        public ServletResponse runWithGwcWithConcurrencyAnd90PercentCacheHits(GwcWithConcurrencyAnd90PercentCacheHitsState state)
+                throws Exception {
+            return run(state);
+        }
+
+        @Benchmark
+        public ServletResponse runWithGwcWithoutConcurrencyAnd90PercentCacheHits(GwcWithoutConcurrencyAnd90PercentCacheHitsState state)
+                throws Exception {
+            return run(state);
+        }
+
+        @Benchmark
+        public ServletResponse runWithoutGwc(NoGwcState state) throws Exception {
+            return run(state);
+        }
+
+        private ServletResponse run(AbstractBenchmarkState state) throws Exception {
 
             int currentIndex = state.currentIndex.getAndIncrement();
 
@@ -212,6 +297,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
                 cacheResult = "MISS";
             }
             state.cacheHitRate.compute(cacheResult, (key, value) -> value == null ? 1 : value + 1);
+            return response;
         }
     }
 

@@ -1056,6 +1056,47 @@ public class GeoServerTileLayerTest {
         verify(result.getStorageBroker(), times(16)).put(Mockito.any());
     }
 
+    /**
+     * If there is a metatiling executor service configured, but a conveyor tile comes in that is missing the
+     * "servlet request" object, this is not a user-initiated requeset and is likely a seed attempt, and therefore
+     * it should ignore the executor service and encode/save all tiles from a metatile on the main thread.
+     */
+    @Test
+    public void testGetTileWithMetaTilingExecutorButNoServletRequest() throws Exception {
+        GetTileMockTester tester = new GetTileMockTester();
+        GeoServerTileLayer tileLayer = tester.prepareTileLayer();
+
+        ExecutorService executorServiceSpy = spy(Executors.newFixedThreadPool(2));
+        when(mockGWC.getMetaTilingExecutor()).thenReturn(executorServiceSpy);
+
+        // Ensure enough valid coverage to support metatiling
+        resource.setLatLonBoundingBox(new ReferencedEnvelope(-180, 180, -90, 90, WGS84));
+        resource.setNativeBoundingBox(new ReferencedEnvelope(-180, 180, -90, 90, WGS84));
+
+        int zoomLevel = 4; // pick a zoom level that has enough tiles for at least one meta-tile
+        long[] coverage = tileLayer.getGridSubset("EPSG:4326").getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
+
+        long[] tileIndex = new long[]{coverage[0], coverage[1], zoomLevel};
+        ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
+        conveyorTile.servletReq = null; // Null out the servlet request
+
+        GeoServerTileLayer.WEB_MAP.set(tester.prepareFakeMap(1024, 1024));
+        ConveyorTile result = tileLayer.getTile(conveyorTile);
+
+        assertNotNull(result);
+        assertNotNull(result.getBlob());
+        assertEquals(CacheResult.MISS, result.getCacheResult());
+        assertEquals(200, result.getStatus());
+
+        executorServiceSpy.awaitTermination(2, TimeUnit.SECONDS);
+
+        // There should be no executions on the executor service (it should all be on main thread)
+        verify(executorServiceSpy, times(0)).execute(any());
+
+        // 16 tiles to put in storage
+        verify(result.getStorageBroker(), times(16)).put(Mockito.any());
+    }
+
     @Test
     public void testGetTileWithNullMetaTilingExecutor() throws Exception {
         GetTileMockTester tester = new GetTileMockTester();
